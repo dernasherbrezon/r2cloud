@@ -56,6 +56,21 @@ r2cloud converts Raspberry PI into base station which support various radio sign
 
 ![airplanes-map](airplanes-map.png)
 
+![airplanes-text](airplanes-text.png)
+
+### Status
+
+ - monitor status:
+   * CPU
+   * RAM total, RAM used
+   * Disk total, disk used
+   * Temperature (using '/opt/vc/bin/vcgencmd measure_temp' command)
+   * Load average 1m
+ - draw time-based charts:
+   * last hour, week, month
+ - show log
+   * log file will be rotated daily, old logs gzipped and stored for 1 month
+
 # Integrations
 
  - if internet is not available, then data will be stored locally with configured retension period
@@ -66,8 +81,8 @@ r2cloud converts Raspberry PI into base station which support various radio sign
 # Technologies
 
  - web ui: 
-  * Java SE Embedded profile compact1
-  * jetty  
+   * Java SE Embedded profile compact1
+   * jetty  
  - ADS-B decoder: [dump1090](https://github.com/MalcolmRobb/dump1090)
  - APT: [wxtoimg](http://www.wxtoimg.com)
  - RTL-SDR: [rtl-sdr](http://osmocom.org/projects/sdr/wiki/rtl-sdr)
