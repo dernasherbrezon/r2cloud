@@ -52,7 +52,11 @@ r2cloud converts Raspberry PI into base station which support various radio sign
  - single admin user
  - on first access configuration wizard will be executed:
    1) user will be promted for new password
-   2) if no GPS attached, then ask user for lat and lon. If GPS attached and coordinates could be read, then skip this step
+   2) Enter GPS coordinates:
+     - ask users's browser for location information
+     - check if GPS attached to the station
+     - ask user to manually enter lat/lon
+     - optionally skip this step
    3) Ask for domain name to access externally. Could be skipped.
 
 ![airplanes-map](airplanes-map.png)
