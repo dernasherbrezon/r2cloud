@@ -107,3 +107,6 @@ r2cloud converts Raspberry PI into base station which support various radio sign
  - average absolute error detector: [kalibrate](https://github.com/steve-m/kalibrate-rtl)
  - logging: java.util.logging
  - log rotation: [logrotate](https://github.com/logrotate/logrotate)
+ - monitoring:
+   * store data: lightweight (no xml support) version [rrd4j](https://github.com/rrd4j/rrd4j)
+   * render data: modified [javascript-rrd](https://github.com/tjfontaine/javascript-rrd) for use with rrd4j data files and [flot](https://github.com/flot/flot) 
