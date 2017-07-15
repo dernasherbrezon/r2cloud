@@ -31,10 +31,10 @@ public class R2Cloud {
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to load properties", e);
 		}
-		dao = new ADSBDao();
+		dao = new ADSBDao(props);
 		adsb = new ADSB(props, dao);
 
-		//setup web server
+		// setup web server
 		index(new Home());
 		index(new ADSBData(dao));
 		webServer = new WebServer(props, controllers);
@@ -42,12 +42,14 @@ public class R2Cloud {
 
 	public void start() {
 		if ("true".equals(props.getProperty("rx.adsb.enabled"))) {
+			dao.start();
 			adsb.start();
 		}
 		webServer.start();
 	}
 
 	public void stop() {
+		dao.stop();
 		adsb.stop();
 		webServer.stop();
 	}

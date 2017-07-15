@@ -42,7 +42,7 @@ public class ADSB {
 					try {
 						socket = new Socket(host, port);
 						socket.setKeepAlive(true);
-						socket.setSoTimeout(Integer.parseInt(props.getProperty("rx.adsb.timeout")));
+						socket.setSoTimeout(0);
 					} catch (Exception e) {
 						LOG.log(Level.SEVERE, "unable to connect to the dump1090: " + host + ":" + port, e);
 						throttle();
@@ -60,8 +60,13 @@ public class ADSB {
 					try {
 						LOG.info("started");
 						while ((curLine = in.readLine()) != null) {
+							String messageStr = curLine.substring(1, curLine.length() - 1);
+							if (messageStr.equals("0000")) {
+								//sometimes dump1090 returns this message
+								continue;
+							}
 							try {
-								ModeSReply message = Decoder.genericDecoder(curLine.substring(1, curLine.length() - 1));
+								ModeSReply message = Decoder.genericDecoder(messageStr);
 								dao.save(message);
 							} catch (Exception e) {
 								LOG.log(Level.INFO, "unknown message received: " + curLine, e);
@@ -69,6 +74,7 @@ public class ADSB {
 						}
 					} catch (IOException e) {
 						LOG.log(Level.SEVERE, "unable to read data", e);
+						closeSocket();
 						throttle();
 						continue;
 					}
@@ -88,13 +94,7 @@ public class ADSB {
 
 	public synchronized void stop() {
 		started = false;
-		if (socket != null) {
-			try {
-				socket.close();
-			} catch (IOException e) {
-				LOG.log(Level.INFO, "unable to close socket", e);
-			}
-		}
+		closeSocket();
 		if (thread != null) {
 			thread.interrupt();
 			try {
@@ -103,6 +103,16 @@ public class ADSB {
 				Thread.currentThread().interrupt();
 			} catch (Exception e) {
 				LOG.log(Level.SEVERE, "unable to stop thread", e);
+			}
+		}
+	}
+
+	private void closeSocket() {
+		if (socket != null) {
+			try {
+				socket.close();
+			} catch (IOException e) {
+				LOG.log(Level.INFO, "unable to close socket", e);
 			}
 		}
 	}
