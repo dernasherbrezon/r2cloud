@@ -1,0 +1,42 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+
+	<id>internalresources</id>
+	<formats>
+		<format>dir</format>
+	</formats>
+	<baseDirectory>.</baseDirectory>
+	<includeBaseDirectory>false</includeBaseDirectory>
+
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>lib</outputDirectory>
+			<useProjectArtifact>true</useProjectArtifact>
+		</dependencySet>
+		<dependencySet>
+			<includes>
+				<include>${project.groupId}:*</include>
+			</includes>
+			<useProjectArtifact>true</useProjectArtifact>
+			<outputDirectory>etc</outputDirectory>
+			<unpack>true</unpack>
+			<unpackOptions>
+				<encoding>UTF-8</encoding>
+				<includes>
+					<include>**/*.xml</include>
+					<include>**/*.conf</include>
+					<include>**/*.properties</include>
+					<include>**/*.ftl</include>
+					<include>**/*.yml</include>
+					<include>**/*.sh</include>
+					<include>**/*.j2</include>
+				</includes>
+				<excludes>
+					<exclude>**/META-INF/**</exclude>
+				</excludes>
+			</unpackOptions>
+		</dependencySet>
+	</dependencySets>
+
+</assembly>

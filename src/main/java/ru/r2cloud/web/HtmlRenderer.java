@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
+import java.util.Properties;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response;
@@ -12,13 +13,13 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 
-class PageRenderer {
+class HtmlRenderer {
 
 	private final Configuration cfg = new Configuration();
 
-	PageRenderer() {
+	HtmlRenderer(Properties props) {
 		try {
-			cfg.setDirectoryForTemplateLoading(new File("src/main/resources/ftl"));
+			cfg.setDirectoryForTemplateLoading(new File(props.getProperty("server.ftl.location")));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

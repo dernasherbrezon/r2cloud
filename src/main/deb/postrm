@@ -1,0 +1,7 @@
+if [ -e /etc/nginx/sites-enabled/instaseller ]; then
+	rm /etc/nginx/sites-enabled/instaseller
+	nginx -s reload
+fi
+if [ -e /etc/logrotate.d/instaseller-rot.conf ]; then
+	rm /etc/logrotate.d/instaseller-rot.conf
+fi

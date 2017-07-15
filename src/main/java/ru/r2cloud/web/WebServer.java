@@ -2,6 +2,7 @@ package ru.r2cloud.web;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import fi.iki.elonen.NanoHTTPD;
@@ -10,12 +11,14 @@ public class WebServer extends NanoHTTPD {
 
 	private static final Logger LOG = Logger.getLogger(WebServer.class.getName());
 
-	private final PageRenderer pageRenderer;
+	private final HtmlRenderer pageRenderer;
+	private final GsonRenderer jsonRenderer;
 	private final Map<String, HttpContoller> controllers;
 
-	public WebServer(String hostname, int port, Map<String, HttpContoller> controllers) {
-		super(hostname, port);
-		pageRenderer = new PageRenderer();
+	public WebServer(Properties props, Map<String, HttpContoller> controllers) {
+		super(props.getProperty("server.hostname"), Integer.valueOf(props.getProperty("server.port")));
+		pageRenderer = new HtmlRenderer(props);
+		jsonRenderer = new GsonRenderer();
 		this.controllers = controllers;
 	}
 
@@ -40,11 +43,18 @@ public class WebServer extends NanoHTTPD {
 		if (model == null) {
 			model = new ModelAndView();
 		}
-		try {
-			return pageRenderer.render(model.getView(), model);
-		} catch (IOException e) {
-			// FIXME logging and 503 status
-			return null;
+		switch (model.getType()) {
+		case HTML:
+			try {
+				return pageRenderer.render(model.getView(), model);
+			} catch (IOException e) {
+				// FIXME logging and 503 status
+				return null;
+			}
+		case JSON:
+			return jsonRenderer.render(model);
+		default:
+			throw new IllegalArgumentException("unsupported mime type: " + model.getType());
 		}
 	}
 

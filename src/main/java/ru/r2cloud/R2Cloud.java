@@ -9,6 +9,7 @@ import ru.r2cloud.rx.ADSB;
 import ru.r2cloud.rx.ADSBDao;
 import ru.r2cloud.web.HttpContoller;
 import ru.r2cloud.web.WebServer;
+import ru.r2cloud.web.controller.ADSBData;
 import ru.r2cloud.web.controller.Home;
 
 public class R2Cloud {
@@ -34,8 +35,9 @@ public class R2Cloud {
 		adsb = new ADSB(props, dao);
 
 		//setup web server
-		index(new Home(dao));
-		webServer = new WebServer(props.getProperty("server.hostname"), Integer.valueOf(props.getProperty("server.port")), controllers);
+		index(new Home());
+		index(new ADSBData(dao));
+		webServer = new WebServer(props, controllers);
 	}
 
 	public void start() {

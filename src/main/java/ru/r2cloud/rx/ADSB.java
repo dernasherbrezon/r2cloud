@@ -37,7 +37,7 @@ public class ADSB {
 			@Override
 			public void run() {
 				while (!Thread.currentThread().isInterrupted() && started) {
-					String host = "192.168.1.66";
+					String host = props.getProperty("rx.adsb.hostname");
 					int port = Integer.parseInt(props.getProperty("rx.adsb.port"));
 					try {
 						socket = new Socket(host, port);

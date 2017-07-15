@@ -43,6 +43,11 @@
 			<artifactId>libadsb</artifactId>
 			<version>2.1.1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.1</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<extensions>
@@ -173,8 +178,8 @@
 					</execution>
 				</executions>
 				<configuration>
-					<unixUserId>saintech</unixUserId>
-					<unixGroupId>saintech</unixGroupId>
+					<unixUserId>pi</unixUserId>
+					<unixGroupId>pi</unixGroupId>
 					<osDependencies>
 						<ejdk-8-compact1></ejdk-8-compact1>
 						<rtl-sdr></rtl-sdr>

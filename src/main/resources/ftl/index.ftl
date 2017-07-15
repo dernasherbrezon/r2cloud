@@ -11,12 +11,7 @@
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">Dashboard</h1>
           <table border="1">
-          	<#list entity?keys as key>
-          		<tr>
-          			<td>${key}</td>
-          			<td>${entity[key].type}</td>
-          		</tr> 
-			</#list> 
+          	
           </table>
         </div>
       </div>
