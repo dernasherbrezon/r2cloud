@@ -1,4 +1,4 @@
-package ru.r2cloud;
+package ru.r2cloud.web;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,13 +1,24 @@
 package ru.r2cloud;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+
+import ru.r2cloud.rx.ADSB;
+import ru.r2cloud.rx.ADSBDao;
+import ru.r2cloud.web.HttpContoller;
+import ru.r2cloud.web.WebServer;
+import ru.r2cloud.web.controller.Home;
 
 public class R2Cloud {
 
 	private Properties props = new Properties();
 
+	private final Map<String, HttpContoller> controllers = new HashMap<String, HttpContoller>();
 	private WebServer webServer;
+	private ADSB adsb;
+	private ADSBDao dao;
 
 	public R2Cloud() {
 		String propName = "/config.properties";
@@ -19,14 +30,23 @@ public class R2Cloud {
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to load properties", e);
 		}
-		webServer = new WebServer(props.getProperty("server.hostname"), Integer.valueOf(props.getProperty("server.port")));
+		dao = new ADSBDao();
+		adsb = new ADSB(props, dao);
+
+		//setup web server
+		index(new Home(dao));
+		webServer = new WebServer(props.getProperty("server.hostname"), Integer.valueOf(props.getProperty("server.port")), controllers);
 	}
 
 	public void start() {
+		if ("true".equals(props.getProperty("rx.adsb.enabled"))) {
+			adsb.start();
+		}
 		webServer.start();
 	}
 
 	public void stop() {
+		adsb.stop();
 		webServer.stop();
 	}
 
@@ -41,4 +61,7 @@ public class R2Cloud {
 		app.start();
 	}
 
+	private void index(HttpContoller controller) {
+		controllers.put(controller.getRequestMappingURL(), controller);
+	}
 }
