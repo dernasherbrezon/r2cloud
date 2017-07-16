@@ -8,7 +8,7 @@ public class Home implements HttpContoller {
 
 	@Override
 	public ModelAndView httpGet(IHTTPSession session) {
-		ModelAndView result = new ModelAndView("index.ftl");
+		ModelAndView result = new ModelAndView("index");
 		return result;
 	}
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executors;
@@ -102,6 +103,9 @@ public class ADSBDao {
 	public Collection<Airplane> getAirplanes() {
 		synchronized (latestMessages) {
 			return latestMessages.values();
+//			List<Airplane> result = new ArrayList<Airplane>();
+//			result.add(new Airplane());
+//			return result;
 		}
 	}
 }

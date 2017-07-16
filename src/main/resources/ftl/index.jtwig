@@ -1,5 +1,5 @@
-<#escape x as x?html>
-<#include "header.ftl">
+{% autoescape 'html' %}
+{% include '/ftl/header.jtwig' %}
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
@@ -17,5 +17,5 @@
       </div>
 	<script src="/js/adsb.js"></script>    
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAT2lh-lYB8r8fLWUvcD2H7qDruoBm_Zdg&callback=initMap" async defer></script>  
-<#include "footer.ftl">
-</#escape>
+{% include '/ftl/footer.jtwig' %}
+{% endautoescape %}

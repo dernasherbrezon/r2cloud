@@ -45,12 +45,7 @@ public class WebServer extends NanoHTTPD {
 		}
 		switch (model.getType()) {
 		case HTML:
-			try {
-				return pageRenderer.render(model.getView(), model);
-			} catch (IOException e) {
-				// FIXME logging and 503 status
-				return null;
-			}
+			return pageRenderer.render(model.getView() + ".jtwig", model);
 		case JSON:
 			return jsonRenderer.render(model);
 		default:
