@@ -10,6 +10,15 @@ r2cloud converts Raspberry PI into base station which support various radio sign
 
 ![diagram](diagram.png)
 
+# Installation
+
+```
+sudo bash -c "echo 'deb [arch=armhf] http://s3.amazonaws.com/r2cloud r2cloud main' > /etc/apt/sources.list.d/r2cloud.list"
+sudo apt-get update
+sudo apt-get install ejdk-8-compact1 dump1090-mutability nginx-light r2cloud
+dump1090-mutability --net --quiet --raw &
+```
+
 # Core features
 
  - Autonomous:

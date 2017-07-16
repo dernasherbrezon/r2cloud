@@ -58,7 +58,7 @@ public class ADSB {
 					}
 					String curLine = null;
 					try {
-						LOG.info("started");
+						LOG.info("listening for adsb data from " + host + ":" + port);
 						while ((curLine = in.readLine()) != null) {
 							String messageStr = curLine.substring(1, curLine.length() - 1);
 							if (messageStr.equals("0000")) {
@@ -73,7 +73,7 @@ public class ADSB {
 							}
 						}
 					} catch (IOException e) {
-						//do not log error. socket closed
+						// do not log error. socket closed
 						if (!socket.isClosed()) {
 							LOG.log(Level.SEVERE, "unable to read data", e);
 						}
