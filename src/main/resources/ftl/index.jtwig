@@ -3,16 +3,16 @@
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
-            <li class="active"><a href="#">Flights</a></li>
-            <li><a href="#">Satellites</a></li>
-            <li><a href="#">Status</a></li>
-            <li><a href="#">Configuration</a></li>
+            <li class="active"><a href="#"><i class="fa fa-plane" aria-hidden="true"></i>&nbsp;Flights</a></li>
+            <li><a href="#"><i class="fa fa-space-shuttle" aria-hidden="true"></i>&nbsp;Satellites</a></li>
+            <li><a href="#"><i class="fa fa-area-chart" aria-hidden="true"></i>&nbsp;Status</a></li>
+            <li><a href="#"><i class="fa fa-cog" aria-hidden="true"></i>&nbsp;Configuration</a></li>
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Dashboard</h1>
+          <h1 class="page-header">Flights</h1>
           <div>
-          	<div id="map" style="height:600px; width:800px;"></div>
+          	<div id="map" style="height:600px; width:1100px;"></div>
           </div>
         </div>
       </div>
