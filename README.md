@@ -111,10 +111,10 @@ dump1090-mutability --net --quiet --raw &
  - web ui: 
    * Java SE Embedded profile compact1
    * Web server: [nanohttpd](https://github.com/NanoHttpd/nanohttpd)
-   * Templating engine: [freemarker](http://freemarker.org)
+   * Templating engine: [jtwig](http://jtwig.org)
    * SSL termination: [nginx](https://www.nginx.com)
    * SSL: [Let's Encrypt](https://letsencrypt.org)
- - ADS-B decoder: [dump1090](https://github.com/MalcolmRobb/dump1090)
+ - ADS-B decoder: [dump1090](https://github.com/mutability/dump1090)
  - APT: [wxtoimg](http://www.wxtoimg.com)
  - RTL-SDR: [rtl-sdr](http://osmocom.org/projects/sdr/wiki/rtl-sdr)
  - average absolute error detector: [kalibrate](https://github.com/steve-m/kalibrate-rtl)
