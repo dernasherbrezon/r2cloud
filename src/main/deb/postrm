@@ -5,3 +5,9 @@ fi
 if [ -e /etc/logrotate.d/instaseller-rot.conf ]; then
 	rm /etc/logrotate.d/instaseller-rot.conf
 fi
+
+systemctl stop r2cloud.service
+systemctl disable r2cloud.service
+
+rm /etc/systemd/system/r2cloud.service;
+

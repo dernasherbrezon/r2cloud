@@ -62,7 +62,7 @@ public class ADSB {
 						while ((curLine = in.readLine()) != null) {
 							String messageStr = curLine.substring(1, curLine.length() - 1);
 							if (messageStr.equals("0000")) {
-								//sometimes dump1090 returns this message
+								// sometimes dump1090 returns this message
 								continue;
 							}
 							try {
@@ -73,7 +73,10 @@ public class ADSB {
 							}
 						}
 					} catch (IOException e) {
-						LOG.log(Level.SEVERE, "unable to read data", e);
+						//do not log error. socket closed
+						if (!socket.isClosed()) {
+							LOG.log(Level.SEVERE, "unable to read data", e);
+						}
 						closeSocket();
 						throttle();
 						continue;
@@ -105,6 +108,7 @@ public class ADSB {
 				LOG.log(Level.SEVERE, "unable to stop thread", e);
 			}
 		}
+		LOG.info("stopped");
 	}
 
 	private void closeSocket() {

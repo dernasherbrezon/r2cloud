@@ -14,11 +14,16 @@ function initMap() {
 		$.ajax({
 			url : "/adsb/data.json",
 			success : function(data) {
+				
+				var existingFlights = {};
+				
 				for ( var i in data) {
 					var $path = [];
 					for ( var j in data[i].positions) {
 						$path.push(new google.maps.LatLng(data[i].positions[j].latitude, data[i].positions[j].longitude));
 					}
+					
+					existingFlights[data[i].icao24]=true;
 
 					var color;
 					if (data[i].icao24 in flights) {
@@ -54,6 +59,14 @@ function initMap() {
 						};
 					}
 
+				}
+				
+				for( var key in flights ) {
+					if( !(key in existingFlights)  ) {
+						flights[key]["line"].setMap(null);
+						flights[key]["marker"].setMap(null);
+						delete flights[key];
+					}
 				}
 
 			},

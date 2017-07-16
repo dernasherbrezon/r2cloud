@@ -1,12 +1,11 @@
 package ru.r2cloud.rx;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -79,7 +78,7 @@ public class ADSBDao {
 				position = dec.decodePosition(System.currentTimeMillis() / 1000, airpos);
 
 				plane = new Airplane();
-				plane.setPositions(new ArrayList<Position>());
+				plane.setPositions(new CopyOnWriteArrayList<Position>());
 				plane.setDecoder(dec);
 				plane.setIcao24(icao24);
 

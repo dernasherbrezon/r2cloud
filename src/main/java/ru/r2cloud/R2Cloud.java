@@ -4,15 +4,25 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import ru.r2cloud.rx.ADSB;
 import ru.r2cloud.rx.ADSBDao;
+import ru.r2cloud.uitl.ShutdownLoggingManager;
 import ru.r2cloud.web.HttpContoller;
 import ru.r2cloud.web.WebServer;
 import ru.r2cloud.web.controller.ADSBData;
 import ru.r2cloud.web.controller.Home;
 
 public class R2Cloud {
+
+	static {
+		// must be called before any Logger method is used.
+		System.setProperty("java.util.logging.manager", ShutdownLoggingManager.class.getName());
+	}
+
+	private static final Logger LOG = Logger.getLogger(R2Cloud.class.getName());
 
 	private Properties props = new Properties();
 
@@ -46,6 +56,9 @@ public class R2Cloud {
 			adsb.start();
 		}
 		webServer.start();
+		LOG.info("=================================");
+		LOG.info("=========== started =============");
+		LOG.info("=================================");
 	}
 
 	public void stop() {
@@ -59,7 +72,15 @@ public class R2Cloud {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				app.stop();
+				try {
+					LOG.info("stopping");
+					app.stop();
+				} catch (Exception e) {
+					LOG.log(Level.SEVERE, "unable to gracefully shutdown", e);
+				} finally {
+					LOG.info("=========== stopped =============");
+					ShutdownLoggingManager.resetFinally();
+				}
 			}
 		});
 		app.start();
