@@ -1,19 +1,21 @@
 package ru.r2cloud;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ru.r2cloud.rx.ADSB;
 import ru.r2cloud.rx.ADSBDao;
+import ru.r2cloud.uitl.Configuration;
 import ru.r2cloud.uitl.ShutdownLoggingManager;
+import ru.r2cloud.web.Authenticator;
 import ru.r2cloud.web.HttpContoller;
 import ru.r2cloud.web.WebServer;
 import ru.r2cloud.web.controller.ADSBData;
+import ru.r2cloud.web.controller.DoLogin;
 import ru.r2cloud.web.controller.Home;
+import ru.r2cloud.web.controller.Login;
 
 public class R2Cloud {
 
@@ -24,30 +26,27 @@ public class R2Cloud {
 
 	private static final Logger LOG = Logger.getLogger(R2Cloud.class.getName());
 
-	private Properties props = new Properties();
+	private final Configuration props;
 
 	private final Map<String, HttpContoller> controllers = new HashMap<String, HttpContoller>();
 	private WebServer webServer;
 	private ADSB adsb;
 	private ADSBDao dao;
+	private Authenticator auth;
 
 	public R2Cloud() {
-		String propName = "/config.properties";
-		try (InputStream is = R2Cloud.class.getResourceAsStream(propName)) {
-			if (is == null) {
-				throw new RuntimeException("unable to find properties: " + propName);
-			}
-			props.load(is);
-		} catch (Exception e) {
-			throw new RuntimeException("Unable to load properties", e);
-		}
+		props = new Configuration();
 		dao = new ADSBDao(props);
 		adsb = new ADSB(props, dao);
+		
+		auth = new Authenticator(props);
 
 		// setup web server
 		index(new Home());
 		index(new ADSBData(dao));
-		webServer = new WebServer(props, controllers);
+		index(new Login());
+		index(new DoLogin(auth));
+		webServer = new WebServer(props, controllers, auth);
 	}
 
 	public void start() {
@@ -87,6 +86,9 @@ public class R2Cloud {
 	}
 
 	private void index(HttpContoller controller) {
-		controllers.put(controller.getRequestMappingURL(), controller);
+		HttpContoller previous = controllers.put(controller.getRequestMappingURL(), controller);
+		if (previous != null) {
+			throw new IllegalArgumentException("duplicate controller has been registerd: " + controller.getClass().getSimpleName() + " previous: " + previous.getClass().getSimpleName());
+		}
 	}
 }

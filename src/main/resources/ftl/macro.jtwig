@@ -1,0 +1,8 @@
+{% macro input (type, name, value, label, placeholder) %}
+  <div class="form-group">
+  	{% if (label != null) %}
+    <label for="{{ name }}">{{ label }}</label>
+    {% endif %}
+    <input type="{{ type }}" class="form-control" id="{{ name }}" name="{{ name }}" value="{{ value }}" placeholder="{{ placeholder }}">
+  </div>
+{% endmacro %}

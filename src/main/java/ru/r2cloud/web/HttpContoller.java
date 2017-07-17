@@ -4,8 +4,10 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
 public interface HttpContoller {
 
-	ModelAndView httpGet(IHTTPSession session);
+	ModelAndView doGet(IHTTPSession session);
 	
 	String getRequestMappingURL();
+
+	ModelAndView doPost(IHTTPSession session);
 	
 }

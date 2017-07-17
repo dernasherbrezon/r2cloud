@@ -4,7 +4,7 @@ import org.opensky.libadsb.Position;
 
 import ru.r2cloud.model.Airplane;
 import ru.r2cloud.rx.ADSBDao;
-import ru.r2cloud.web.HttpContoller;
+import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.MimeType;
 import ru.r2cloud.web.ModelAndView;
 
@@ -13,7 +13,7 @@ import com.eclipsesource.json.JsonArray;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
-public class ADSBData implements HttpContoller {
+public class ADSBData extends AbstractHttpController {
 
 	private final ADSBDao dao;
 
@@ -22,7 +22,7 @@ public class ADSBData implements HttpContoller {
 	}
 
 	@Override
-	public ModelAndView httpGet(IHTTPSession session) {
+	public ModelAndView doGet(IHTTPSession session) {
 		ModelAndView result = new ModelAndView();
 		result.setType(MimeType.JSON);
 		JsonArray array = (JsonArray) Json.array();
@@ -41,7 +41,7 @@ public class ADSBData implements HttpContoller {
 
 	@Override
 	public String getRequestMappingURL() {
-		return "/adsb/data.json";
+		return "/admin/adsb/data.json";
 	}
 
 }
