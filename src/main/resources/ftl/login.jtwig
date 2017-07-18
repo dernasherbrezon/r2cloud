@@ -51,6 +51,7 @@
       <div class="row">
 		<div class="col-md-3 col-md-offset-4 well anonForm">
 			<legend>Login</legend>
+			{{ macros.generalError(errors) }}
 			<form method="POST" action="/dologin" style="margin-bottom: 0px;" enctype="application/x-www-form-urlencoded">
 				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 				{{ macros.input("email", "j_username", username, null, "Email") }}
