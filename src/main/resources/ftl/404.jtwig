@@ -1,0 +1,9 @@
+{% autoescape 'html' %}
+{% include '/ftl/header.jtwig' %}
+  	  <div class="jumbotron col-md-8 col-md-offset-2">
+        <h1>404</h1>
+        <p class="lead">Not found</p>
+        <p><a class="btn btn-info" href="/admin/">Home</a></p>
+      </div>
+{% include '/ftl/footer.jtwig' %}
+{% endautoescape %}

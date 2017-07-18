@@ -43,25 +43,26 @@ public class WebServer extends NanoHTTPD {
 			return newRedirectResponse("/");
 		}
 		HttpContoller controller = controllers.get(session.getUri());
-		if (controller == null) {
-			// FIXME return
-			return null;
-		}
 		ModelAndView model = null;
-		switch (session.getMethod()) {
-		case GET:
-			model = controller.doGet(session);
-			break;
-		case POST:
-			model = controller.doPost(session);
-			break;
-		default:
-			break;
+		if (controller == null) {
+			model = new ModelAndView("404");
+			model.setStatus(Response.Status.NOT_FOUND);
+		} else {
+			switch (session.getMethod()) {
+			case GET:
+				model = controller.doGet(session);
+				break;
+			case POST:
+				model = controller.doPost(session);
+				break;
+			default:
+				break;
+			}
 		}
 
 		if (model == null) {
-			// FIXME unsupported method
-			return null;
+			model = new ModelAndView("503");
+			model.setStatus(Response.Status.BAD_REQUEST);
 		}
 		switch (model.getType()) {
 		case HTML:
