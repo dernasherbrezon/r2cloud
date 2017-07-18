@@ -34,11 +34,11 @@ public class R2Cloud {
 	private ADSBDao dao;
 	private Authenticator auth;
 
-	public R2Cloud() {
-		props = new Configuration();
+	public R2Cloud(String propertiesLocation) {
+		props = new Configuration(propertiesLocation);
 		dao = new ADSBDao(props);
 		adsb = new ADSB(props, dao);
-		
+
 		auth = new Authenticator(props);
 
 		// setup web server
@@ -67,7 +67,11 @@ public class R2Cloud {
 	}
 
 	public static void main(String[] args) {
-		R2Cloud app = new R2Cloud();
+		if (args.length == 0) {
+			LOG.info("invalid arguments. expected: config.properties");
+			return;
+		}
+		R2Cloud app = new R2Cloud(args[0]);
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {

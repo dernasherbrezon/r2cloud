@@ -1,23 +1,19 @@
 package ru.r2cloud.uitl;
 
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Properties;
 
 public class Configuration extends Properties {
 
 	private static final long serialVersionUID = 4175467887601528587L;
-	private static final String PROP_NAME = "/config.properties";
+	private String propertiesLocation;
 
-	public Configuration() {
-		try (InputStream is = Configuration.class.getResourceAsStream(PROP_NAME)) {
-			if (is == null) {
-				throw new RuntimeException("unable to find properties: " + PROP_NAME);
-			}
+	public Configuration(String propertiesLocation) {
+		this.propertiesLocation = propertiesLocation;
+		try (InputStream is = new FileInputStream(propertiesLocation)) {
 			load(is);
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to load properties", e);
@@ -25,15 +21,7 @@ public class Configuration extends Properties {
 	}
 
 	public void update() {
-		URL url = Configuration.class.getResource(PROP_NAME);
-		File file;
-		try {
-			file = new File(url.toURI().getPath());
-		} catch (URISyntaxException e) {
-			throw new RuntimeException(e);
-		}
-
-		try (FileWriter fos = new FileWriter(file)) {
+		try (FileWriter fos = new FileWriter(propertiesLocation)) {
 			store(fos, "updated");
 		} catch (IOException e) {
 			throw new RuntimeException(e);

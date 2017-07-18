@@ -21,6 +21,7 @@ public class ADSB {
 	private Socket socket;
 	private boolean started = true;
 	private Thread thread;
+	private Process dump1090;
 	private long throttleIntervalMillis;
 
 	public ADSB(Properties props, ADSBDao dao) {
@@ -32,6 +33,9 @@ public class ADSB {
 	public synchronized void start() {
 		LOG.info("starting..");
 		started = true;
+		// give some time for dump1090 to initialize - thus throttle
+		throttle();
+
 		thread = new Thread(new Runnable() {
 
 			@Override
@@ -87,7 +91,20 @@ public class ADSB {
 		thread.start();
 	}
 
+	private void startDump1090() {
+		try {
+			dump1090 = Runtime.getRuntime().exec(new String[] { props.getProperty("rx.adsb.dump1090"), "--raw", "--net", "--quiet" });
+			LOG.info("dump1090 started..");
+		} catch (IOException e1) {
+			LOG.log(Level.SEVERE, "unable to start dump1090", e1);
+		}
+	}
+
 	private void throttle() {
+		if (dump1090 == null || !dump1090.isAlive()) {
+			LOG.info("dump1090 is not alive. starting it");
+			startDump1090();
+		}
 		try {
 			Thread.sleep(throttleIntervalMillis);
 		} catch (InterruptedException e) {
@@ -97,6 +114,9 @@ public class ADSB {
 
 	public synchronized void stop() {
 		started = false;
+		if (dump1090 != null) {
+			dump1090.destroyForcibly();
+		}
 		closeSocket();
 		if (thread != null) {
 			thread.interrupt();

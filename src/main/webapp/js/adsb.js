@@ -12,7 +12,7 @@ function initMap() {
 
 	function update() {
 		$.ajax({
-			url : "/adsb/data.json",
+			url : "/admin/adsb/data.json",
 			success : function(data) {
 				
 				var existingFlights = {};
