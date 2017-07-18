@@ -27,7 +27,7 @@ public class DoLogin extends AbstractHttpController {
 			result.put("username", username);
 			return result;
 		}
-		result.addHeader("Set-Cookie", "JSESSIONID=" + cookie);
+		result.addHeader("Set-Cookie", "JSESSIONID=" + cookie + "; Max-Age=" + auth.getMaxAgeMillis() / 1000);
 		result.addHeader("Location", "/admin/");
 		result.setStatus(Response.Status.REDIRECT);
 		return result;

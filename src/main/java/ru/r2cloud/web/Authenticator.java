@@ -27,18 +27,32 @@ public class Authenticator {
 	private final Splitter equalsSplitter = Splitter.on('=').trimResults().omitEmptyStrings();
 
 	private String authenticatedJSessionId;
+	private long authenticatedAt;
+
 	private String login;
 	private String password;
 	private String salt;
+	private long maxAgeMillis;
 
 	public Authenticator(Configuration props) {
 		this.props = props;
 		this.login = props.getProperty("server.login");
 		this.password = props.getProperty("server.password");
 		this.salt = props.getProperty("server.salt");
+		this.maxAgeMillis = Long.valueOf(props.getProperty("server.session.timeout.millis"));
 	}
 
 	public boolean isAuthenticated(IHTTPSession session) {
+		if (authenticatedJSessionId == null) {
+			return false;
+		}
+		if (System.currentTimeMillis() - authenticatedAt > maxAgeMillis) {
+			if (LOG.isLoggable(Level.FINE)) {
+				LOG.log(Level.FINE, "session expired");
+			}
+			authenticatedJSessionId = null;
+			return false;
+		}
 		String values = session.getHeaders().get("cookie");
 		if (values == null) {
 			return false;
@@ -93,6 +107,7 @@ public class Authenticator {
 		random.nextBytes(cookie);
 
 		this.authenticatedJSessionId = new String(Hex.encode(cookie));
+		this.authenticatedAt = System.currentTimeMillis();
 		return authenticatedJSessionId;
 	}
 
@@ -113,16 +128,20 @@ public class Authenticator {
 	private static String salt(String password, String salt) {
 		return password + "{" + salt + "}";
 	}
-	
+
 	public void setPassword(String login, String password) {
 		this.login = login;
 		this.salt = UUID.randomUUID().toString();
 		this.password = getPasswordToCheck(salt(password, salt));
-		
+
 		props.put("server.login", this.login);
 		props.put("server.salt", this.salt);
 		props.put("server.password", this.password);
 		props.update();
 	}
 	
+	public long getMaxAgeMillis() {
+		return maxAgeMillis;
+	}
+
 }
