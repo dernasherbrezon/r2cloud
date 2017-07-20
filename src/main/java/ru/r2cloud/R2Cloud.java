@@ -14,9 +14,11 @@ import ru.r2cloud.web.HttpContoller;
 import ru.r2cloud.web.WebServer;
 import ru.r2cloud.web.controller.ADSBData;
 import ru.r2cloud.web.controller.DoLogin;
+import ru.r2cloud.web.controller.DoRestore;
 import ru.r2cloud.web.controller.DoSetup;
 import ru.r2cloud.web.controller.Home;
 import ru.r2cloud.web.controller.Login;
+import ru.r2cloud.web.controller.Restore;
 import ru.r2cloud.web.controller.Setup;
 
 public class R2Cloud {
@@ -50,6 +52,8 @@ public class R2Cloud {
 		index(new DoLogin(auth));
 		index(new Setup());
 		index(new DoSetup(auth));
+		index(new Restore());
+		index(new DoRestore(auth));
 		webServer = new WebServer(props, controllers, auth);
 	}
 

@@ -141,14 +141,47 @@ public class Authenticator {
 		this.salt = UUID.randomUUID().toString();
 		this.password = getPasswordToCheck(salt(password, salt));
 
-		props.put("server.login", this.login);
-		props.put("server.salt", this.salt);
-		props.put("server.password", this.password);
+		reloadProps();
+	}
+
+	private void reloadProps() {
+		if (login != null) {
+			props.put("server.login", this.login);
+		} else {
+			props.remove("server.login");
+		}
+		if (salt != null) {
+			props.put("server.salt", this.salt);
+		} else {
+			props.remove("server.salt");
+		}
+		if (password != null) {
+			props.put("server.password", this.password);
+		} else {
+			props.remove("server.password");
+		}
 		props.update();
 	}
 
 	public long getMaxAgeMillis() {
 		return maxAgeMillis;
+	}
+
+	public void resetPassword(String username) {
+		if (username == null || username.trim().length() == 0) {
+			return;
+		}
+		if (!username.equals(login)) {
+			return;
+		}
+
+		this.salt = null;
+		this.password = null;
+		this.login = null;
+		this.authenticatedJSessionId = null;
+		this.authenticatedAt = 0L;
+		
+		reloadProps();
 	}
 
 }

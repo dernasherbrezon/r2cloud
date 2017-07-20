@@ -50,15 +50,12 @@
 </style>
       <div class="row">
 		<div class="col-md-3 col-md-offset-4 well anonForm">
-			<legend>Login</legend>
+			<legend>Restore password</legend>
 			{{ macros.generalError(errors) }}
-			<form method="POST" action="/dologin" style="margin-bottom: 0px;" enctype="application/x-www-form-urlencoded">
-				{{ macros.input("email", "j_username", username, null, "Email") }}
-				{{ macros.input("password", "j_password", "", null, "Password") }}
-				<button type="submit" name="submit" class="btn btn-info btn-block">Login</button>
-				<div style="padding-top: 20px;">
-					<a href="/restore">Forgot password</a>
-				</div>
+			<p>Please enter email address specified during initial setup.</p>
+			<form method="POST" action="/doRestore" style="margin-bottom: 0px;" enctype="application/x-www-form-urlencoded">
+				{{ macros.input("email", "j_username", username, null, "Email", errors) }}
+				<button type="submit" name="submit" class="btn btn-info btn-block">Restore</button>
 			</form>
 		</div>
       </div>

@@ -3,10 +3,10 @@ package ru.r2cloud.web.controller;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.Authenticator;
 import ru.r2cloud.web.ModelAndView;
+import ru.r2cloud.web.Redirect;
 import ru.r2cloud.web.ValidationResult;
 import ru.r2cloud.web.WebServer;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
-import fi.iki.elonen.NanoHTTPD.Response;
 
 public class DoLogin extends AbstractHttpController {
 
@@ -25,16 +25,15 @@ public class DoLogin extends AbstractHttpController {
 
 	public static ModelAndView doLogin(Authenticator auth, String username, String password) {
 		String cookie = auth.authenticate(username, password);
-		ModelAndView result = new ModelAndView();
 		if (cookie == null) {
+			ModelAndView result = new ModelAndView();
 			result.setView("login");
 			result.put("errors", new ValidationResult("Invalid login or password"));
 			result.put("username", username);
 			return result;
 		}
+		Redirect result = new Redirect("/admin/");
 		result.addHeader("Set-Cookie", "JSESSIONID=" + cookie + "; Max-Age=" + auth.getMaxAgeMillis() / 1000);
-		result.addHeader("Location", "/admin/");
-		result.setStatus(Response.Status.REDIRECT);
 		return result;
 	}
 
