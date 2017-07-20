@@ -1,9 +1,12 @@
-{% macro input (type, name, value, label, placeholder) %}
-  <div class="form-group">
+{% macro input (type, name, value, label, placeholder, errors) %}
+  <div class="form-group {% if (errors != null and errors.get(name) != null) %}has-error{% endif %}">
   	{% if (label != null) %}
     <label for="{{ name }}">{{ label }}</label>
     {% endif %}
     <input type="{{ type }}" class="form-control" id="{{ name }}" name="{{ name }}" value="{{ value }}" placeholder="{{ placeholder }}">
+    {% if (errors != null and errors.get(name) != null) %}
+    	<span class="help-block">{{ errors.get(name) }}</span>
+    {% endif %}
   </div>
 {% endmacro %}
 

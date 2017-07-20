@@ -19,7 +19,12 @@ public class DoLogin extends AbstractHttpController {
 	@Override
 	public ModelAndView doPost(IHTTPSession session) {
 		String username = WebServer.getParameter(session, "j_username");
-		String cookie = auth.authenticate(username, WebServer.getParameter(session, "j_password"));
+		String password = WebServer.getParameter(session, "j_password");
+		return doLogin(auth, username, password);
+	}
+
+	public static ModelAndView doLogin(Authenticator auth, String username, String password) {
+		String cookie = auth.authenticate(username, password);
 		ModelAndView result = new ModelAndView();
 		if (cookie == null) {
 			result.setView("login");

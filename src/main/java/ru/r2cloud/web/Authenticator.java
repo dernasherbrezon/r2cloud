@@ -79,6 +79,13 @@ public class Authenticator {
 		return false;
 	}
 
+	public boolean isFirstStart() {
+		if (login == null || login.trim().length() == 0) {
+			return true;
+		}
+		return false;
+	}
+
 	public boolean isAuthenticationRequired(IHTTPSession session) {
 		if (session.getUri().startsWith("/admin/")) {
 			return true;
@@ -139,7 +146,7 @@ public class Authenticator {
 		props.put("server.password", this.password);
 		props.update();
 	}
-	
+
 	public long getMaxAgeMillis() {
 		return maxAgeMillis;
 	}
