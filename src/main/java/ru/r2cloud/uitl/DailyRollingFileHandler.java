@@ -108,7 +108,7 @@ public class DailyRollingFileHandler extends StreamHandler {
 	// used in test
 	void setTime(Calendar cal) {
 		nextRoll = Calendar.getInstance();
-		nextRoll.set(Calendar.HOUR, 0);
+		nextRoll.set(Calendar.HOUR_OF_DAY, 0);
 		nextRoll.set(Calendar.MINUTE, 0);
 		nextRoll.set(Calendar.SECOND, 0);
 		nextRoll.set(Calendar.MILLISECOND, 0);

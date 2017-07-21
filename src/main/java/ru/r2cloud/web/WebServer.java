@@ -2,9 +2,11 @@ package ru.r2cloud.web;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import ru.r2cloud.uitl.Configuration;
@@ -18,6 +20,7 @@ public class WebServer extends NanoHTTPD {
 	private final GsonRenderer jsonRenderer;
 	private final Map<String, HttpContoller> controllers;
 	private final Authenticator auth;
+	private final Set<String> urlsAccessibleOnFirstStart = new HashSet<>();
 
 	public WebServer(Configuration props, Map<String, HttpContoller> controllers, Authenticator auth) {
 		super(props.getProperty("server.hostname"), Integer.valueOf(props.getProperty("server.port")));
@@ -25,6 +28,9 @@ public class WebServer extends NanoHTTPD {
 		jsonRenderer = new GsonRenderer();
 		this.auth = auth;
 		this.controllers = controllers;
+
+		urlsAccessibleOnFirstStart.add("/setup");
+		urlsAccessibleOnFirstStart.add("/doSetup");
 	}
 
 	@Override
@@ -39,7 +45,7 @@ public class WebServer extends NanoHTTPD {
 
 	@Override
 	public Response serve(IHTTPSession session) {
-		if( auth.isFirstStart() && !session.getUri().equals("/setup") && !session.getUri().equals("/doSetup") ) {
+		if (auth.isFirstStart() && !urlsAccessibleOnFirstStart.contains(session.getUri())) {
 			return newRedirectResponse("/setup");
 		}
 		if (auth.isAuthenticationRequired(session) && !auth.isAuthenticated(session)) {
