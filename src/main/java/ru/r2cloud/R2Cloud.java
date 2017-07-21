@@ -51,7 +51,7 @@ public class R2Cloud {
 		index(new Login());
 		index(new DoLogin(auth));
 		index(new Setup());
-		index(new DoSetup(auth));
+		index(new DoSetup(auth, props));
 		index(new Restore());
 		index(new DoRestore(auth));
 		webServer = new WebServer(props, controllers, auth);
