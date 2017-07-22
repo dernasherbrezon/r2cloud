@@ -17,7 +17,6 @@ public class DoRestore extends AbstractHttpController {
 	
 	@Override
 	public ModelAndView doPost(IHTTPSession session) {
-		//FIXME verify same network
 		String username = WebServer.getParameter(session, "j_username");
 		auth.resetPassword(username);
 		return new Redirect("/setup");

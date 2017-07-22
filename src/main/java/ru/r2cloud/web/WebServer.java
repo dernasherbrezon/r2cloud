@@ -47,6 +47,8 @@ public class WebServer extends NanoHTTPD {
 	public Response serve(IHTTPSession session) {
 		if (auth.isFirstStart() && !urlsAccessibleOnFirstStart.contains(session.getUri())) {
 			return newRedirectResponse("/setup");
+		} else if (!auth.isFirstStart() && urlsAccessibleOnFirstStart.contains(session.getUri())) {
+			return newRedirectResponse("/");
 		}
 		if (auth.isAuthenticationRequired(session) && !auth.isAuthenticated(session)) {
 			return newRedirectResponse("/");
