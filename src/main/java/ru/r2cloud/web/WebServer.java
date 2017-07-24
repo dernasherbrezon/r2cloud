@@ -100,7 +100,8 @@ public class WebServer extends NanoHTTPD {
 	}
 
 	public static Response newRedirectResponse(String location) {
-		Response r = NanoHTTPD.newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
+		@SuppressWarnings("deprecation")
+		Response r = NanoHTTPD.newFixedLengthResponse(Response.Status.FOUND, MIME_HTML, "");
 		r.addHeader("Location", location);
 		return r;
 	}

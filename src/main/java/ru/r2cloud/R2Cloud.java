@@ -20,6 +20,7 @@ import ru.r2cloud.web.controller.Home;
 import ru.r2cloud.web.controller.Login;
 import ru.r2cloud.web.controller.Restore;
 import ru.r2cloud.web.controller.Setup;
+import ru.r2cloud.web.controller.Status;
 
 public class R2Cloud {
 
@@ -54,6 +55,7 @@ public class R2Cloud {
 		index(new DoSetup(auth, props));
 		index(new Restore());
 		index(new DoRestore(auth));
+		index(new Status());
 		webServer = new WebServer(props, controllers, auth);
 	}
 

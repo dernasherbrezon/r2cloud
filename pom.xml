@@ -61,6 +61,11 @@
 			<version>1.7.12</version>
 		</dependency>
 		<dependency>
+		    <groupId>org.rrd4j</groupId>
+		    <artifactId>rrd4j-light</artifactId>
+		    <version>3.2-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.10</version>
