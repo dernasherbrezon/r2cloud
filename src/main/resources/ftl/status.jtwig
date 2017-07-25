@@ -5,13 +5,16 @@
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">Status</h1>
           <div class="row">
-          	<div class="col-md-4">
-          		<h3>Temperature</h3>
-          		<div class="rrdgraph" style="width:800px;height:500px" data-src="/admin/data/temp.rrd" data-ds="data" data-cf="AVERAGE" data-start="{{ start }}" data-end="{{ end }}"></div>
-          	</div>
+          	{% for item in metrics %}
+	          	<div class="col-md-12">
+	          		<h3>{{ item }}</h3>
+	          		<div class="rrdgraph" style="width:800px;height:500px" data-src="/admin/data/{{ item }}.rrd" data-ds="data" data-cf="AVERAGE" data-start="{{ start }}" data-end="{{ end }}"></div>
+	          	</div>
+          	{% endfor %}
           </div>
         </div>
       </div>
+    <script src="/js/jquery-1.12.4.min.js"></script>
     <script src="/js/rrd4j-1.0-SNAPSHOT.js"></script>
 	<script src="/js/status.js"></script>    
 {% include '/ftl/footer.jtwig' %}

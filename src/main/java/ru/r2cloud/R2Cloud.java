@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.rx.ADSB;
 import ru.r2cloud.rx.ADSBDao;
 import ru.r2cloud.uitl.Configuration;
@@ -38,6 +39,7 @@ public class R2Cloud {
 	private ADSB adsb;
 	private ADSBDao dao;
 	private Authenticator auth;
+	private Metrics metrics = new Metrics();
 
 	public R2Cloud(String propertiesLocation) {
 		props = new Configuration(propertiesLocation);
@@ -60,6 +62,7 @@ public class R2Cloud {
 	}
 
 	public void start() {
+		metrics.start();
 		if ("true".equals(props.getProperty("rx.adsb.enabled"))) {
 			dao.start();
 			adsb.start();
@@ -74,6 +77,7 @@ public class R2Cloud {
 		dao.stop();
 		adsb.stop();
 		webServer.stop();
+		metrics.stop();
 	}
 
 	public static void main(String[] args) {

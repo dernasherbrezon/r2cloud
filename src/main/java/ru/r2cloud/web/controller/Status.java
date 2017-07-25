@@ -1,6 +1,7 @@
 package ru.r2cloud.web.controller;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
+import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
 
@@ -13,6 +14,7 @@ public class Status extends AbstractHttpController {
 		ModelAndView result = new ModelAndView("status");
 		result.put("start", start);
 		result.put("end", end);
+		result.put("metrics", Metrics.REGISTRY.getMetrics().keySet());
 		return result;
 	}
 	

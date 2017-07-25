@@ -36,6 +36,9 @@
 		$this.test = "test";
 		$this.domElement = domElement;
 		oReq.onload = function(oEvent) {
+			if( oReq.status != 200 ) {
+				return;
+			}
 			$this.file = new RRDFile(new Uint8Array(oReq.response));
 			$this.plot = $.plot(domElement, [ $this.file.getData(domElement.attr("data-ds"), domElement.attr("data-cf"), domElement.attr("data-start"), domElement.attr("data-end")) ], settings);
 			domElement.bind("plothover", function(event, pos, item) {
@@ -54,9 +57,11 @@
 	}
 	
 	RRD4JComponent.prototype.updateInterval = function(start, end) {
-		this.plot.setData([this.file.getData(this.domElement.attr("data-ds"), this.domElement.attr("data-cf"), start, end)]);
-		this.plot.setupGrid();
-		this.plot.draw();
+		if( this.plot ) {
+			this.plot.setData([this.file.getData(this.domElement.attr("data-ds"), this.domElement.attr("data-cf"), start, end)]);
+			this.plot.setupGrid();
+			this.plot.draw();
+		}
 	} 
 
 	function Datasource(rrdFile) {
