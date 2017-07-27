@@ -3,13 +3,12 @@ package ru.r2cloud.metrics;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ru.r2cloud.R2Cloud;
+import ru.r2cloud.uitl.Configuration;
 
-import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.MetricRegistry.MetricSupplier;
@@ -20,7 +19,12 @@ public class Metrics {
 	private static final Logger LOG = Logger.getLogger(R2Cloud.class.getName());
 	public static final MetricRegistry REGISTRY = SharedMetricRegistries.getOrCreate("r2cloud");
 
-	private ConsoleReporter reporter;
+	private RRD4JReporter reporter;
+	private final Configuration config;
+
+	public Metrics(Configuration config) {
+		this.config = config;
+	}
 
 	@SuppressWarnings("rawtypes")
 	public void start() {
@@ -62,9 +66,9 @@ public class Metrics {
 			}
 		});
 
-		reporter = ConsoleReporter.forRegistry(REGISTRY).convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS).build();
-		reporter.start(10, TimeUnit.SECONDS);
-
+		reporter = new RRD4JReporter(config, REGISTRY);
+		reporter.start();
+		LOG.info("metrics started");
 	}
 
 	public void stop() {

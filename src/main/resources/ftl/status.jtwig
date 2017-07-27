@@ -8,13 +8,15 @@
           	{% for item in metrics %}
 	          	<div class="col-md-12">
 	          		<h3>{{ item }}</h3>
-	          		<div class="rrdgraph" style="width:800px;height:500px" data-src="/admin/data/{{ item }}.rrd" data-ds="data" data-cf="AVERAGE" data-start="{{ start }}" data-end="{{ end }}"></div>
+	          		<div class="rrdgraph" style="height:200px" data-src="/admin/static/rrd/{{ item }}.rrd" data-ds="data" data-cf="AVERAGE" data-start="{{ start }}" data-end="{{ end }}"></div>
 	          	</div>
           	{% endfor %}
           </div>
         </div>
       </div>
     <script src="/js/jquery-1.12.4.min.js"></script>
+	<script src="/js/jquery.flot.js"></script>
+	<script src="/js/jquery.flot.time.js"></script>
     <script src="/js/rrd4j-1.0-SNAPSHOT.js"></script>
 	<script src="/js/status.js"></script>    
 {% include '/ftl/footer.jtwig' %}

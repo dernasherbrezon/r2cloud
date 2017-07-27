@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import ru.r2cloud.uitl.Configuration;
+import ru.r2cloud.web.controller.StaticController;
 import fi.iki.elonen.NanoHTTPD;
 
 public class WebServer extends NanoHTTPD {
@@ -22,12 +23,16 @@ public class WebServer extends NanoHTTPD {
 	private final Authenticator auth;
 	private final Set<String> urlsAccessibleOnFirstStart = new HashSet<>();
 
+	private final StaticController staticController;
+
 	public WebServer(Configuration props, Map<String, HttpContoller> controllers, Authenticator auth) {
 		super(props.getProperty("server.hostname"), Integer.valueOf(props.getProperty("server.port")));
 		pageRenderer = new HtmlRenderer(props);
 		jsonRenderer = new GsonRenderer();
 		this.auth = auth;
 		this.controllers = controllers;
+
+		staticController = new StaticController(props);
 
 		urlsAccessibleOnFirstStart.add("/setup");
 		urlsAccessibleOnFirstStart.add("/doSetup");
@@ -52,6 +57,9 @@ public class WebServer extends NanoHTTPD {
 		}
 		if (auth.isAuthenticationRequired(session) && !auth.isAuthenticated(session)) {
 			return newRedirectResponse("/");
+		}
+		if (session.getUri().startsWith(staticController.getRequestMappingURL())) {
+			return staticController.doGet(session);
 		}
 		HttpContoller controller = controllers.get(session.getUri());
 		ModelAndView model = null;

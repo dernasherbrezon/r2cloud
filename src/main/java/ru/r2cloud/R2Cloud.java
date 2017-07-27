@@ -35,11 +35,11 @@ public class R2Cloud {
 	private final Configuration props;
 
 	private final Map<String, HttpContoller> controllers = new HashMap<String, HttpContoller>();
-	private WebServer webServer;
-	private ADSB adsb;
-	private ADSBDao dao;
-	private Authenticator auth;
-	private Metrics metrics = new Metrics();
+	private final WebServer webServer;
+	private final ADSB adsb;
+	private final ADSBDao dao;
+	private final Authenticator auth;
+	private final Metrics metrics;
 
 	public R2Cloud(String propertiesLocation) {
 		props = new Configuration(propertiesLocation);
@@ -47,6 +47,8 @@ public class R2Cloud {
 		adsb = new ADSB(props, dao);
 
 		auth = new Authenticator(props);
+		
+		metrics = new Metrics(props);
 
 		// setup web server
 		index(new Home());
