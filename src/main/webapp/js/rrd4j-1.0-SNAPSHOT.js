@@ -40,17 +40,6 @@
 			}
 			$this.file = new RRDFile(new Uint8Array(oReq.response));
 			$this.plot = $.plot(domElement, [ $this.file.getData(domElement.attr("data-ds"), domElement.attr("data-cf"), domElement.attr("data-start"), domElement.attr("data-end")) ], settings);
-			domElement.bind("plothover", function(event, pos, item) {
-				if (item) {
-					var x = item.datapoint[0].toFixed(2), y = item.datapoint[1].toFixed(2);
-					$("#rrd4jTooltip").html(y).css({
-						top : item.pageY + 5,
-						left : item.pageX + 5
-					}).fadeIn(200);
-				} else {
-					$("#rrd4jTooltip").hide();
-				}
-			});
 		};
 		oReq.send();
 	}

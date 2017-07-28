@@ -6,9 +6,23 @@ jQuery(document).ready(function($) {
 	    yaxis: {
 	    	min: 0, 
 	    	mode: "byte" 
+	    },
+	    tooltip: {
+	    	show: true,
+	    	content: function() {
+	    		return "%y";
+	    	}
 	    }
 	});
-	$("#updateInterval").click(function(){
-		rrd4j.updateInterval(1275346800000, 1277938800000);
+	$("#updateInterval").change(function(){
+		var option = $("option:selected", $(this)).val(), start = new Date();
+		if( option == "DAY" ) {
+			start.setDate(start.getDate() - 1);
+		} else if( option == "MONTH" ) {
+			start.setDate(start.getDate() - 31);
+		} else if( option == "YEAR" ) {
+			start.setDate(start.getDate() - 360);
+		}
+		rrd4j.updateInterval(start.getTime(), Date.now());
 	});
 });

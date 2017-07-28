@@ -4,6 +4,16 @@
       	{{ macros.menu("status") }}
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">Status</h1>
+          <form class="form-inline">
+			  <div class="form-group">
+			    <label for="period">Period</label>
+			    <select id="updateInterval" class="form-control" >
+			    	<option selected value="DAY">Last day</option>
+			    	<option value="MONTH">Last month</option>
+			    	<option value="YEAR">Last year</option>
+			    </select>
+			  </div>          
+          </form>
           <div class="row">
           	{% for item in metrics %}
 	          	<div class="col-md-12">
@@ -18,6 +28,7 @@
 	<script src="/js/jquery.flot.js"></script>
 	<script src="/js/jquery.flot.time.js"></script>
 	<script src="/js/jquery.flot.byte.js"></script>
+	<script src="/js/jquery.flot.tooltip.js"></script>
     <script src="/js/rrd4j-1.0-SNAPSHOT.js"></script>
 	<script src="/js/status.js"></script>    
 {% include '/ftl/footer.jtwig' %}

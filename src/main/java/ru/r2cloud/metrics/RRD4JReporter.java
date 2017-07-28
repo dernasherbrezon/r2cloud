@@ -83,7 +83,6 @@ public class RRD4JReporter extends ScheduledReporter {
 			LOG.log(Level.SEVERE, "unable to create sample", e);
 			return;
 		}
-		System.out.println(value);
 		sample.setValue("data", value);
 		try {
 			sample.update();
