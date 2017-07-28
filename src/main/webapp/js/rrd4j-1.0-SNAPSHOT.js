@@ -7,8 +7,7 @@
 				show : false
 			},
 			xaxis : {
-				mode : "time",
-				timeformat : "%Y/%m/%d"
+				mode : "time"
 			},
 			grid : {
 				hoverable : true,

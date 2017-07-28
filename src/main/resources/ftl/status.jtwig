@@ -17,6 +17,7 @@
     <script src="/js/jquery-1.12.4.min.js"></script>
 	<script src="/js/jquery.flot.js"></script>
 	<script src="/js/jquery.flot.time.js"></script>
+	<script src="/js/jquery.flot.byte.js"></script>
     <script src="/js/rrd4j-1.0-SNAPSHOT.js"></script>
 	<script src="/js/status.js"></script>    
 {% include '/ftl/footer.jtwig' %}

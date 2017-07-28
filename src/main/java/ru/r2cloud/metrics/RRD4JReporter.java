@@ -83,6 +83,7 @@ public class RRD4JReporter extends ScheduledReporter {
 			LOG.log(Level.SEVERE, "unable to create sample", e);
 			return;
 		}
+		System.out.println(value);
 		sample.setValue("data", value);
 		try {
 			sample.update();
@@ -92,8 +93,11 @@ public class RRD4JReporter extends ScheduledReporter {
 	}
 
 	private RrdDb getOrCreate(String metricName, DsType type) {
+		RrdDb result = dbPerMetric.get(metricName);
+		if (result != null) {
+			return result;
+		}
 		File path = new File(basepath, metricName + ".rrd");
-		RrdDb result;
 		if (!path.exists()) {
 			RrdDef rrdDef = new RrdDef(new File(basepath, metricName + ".rrd").getAbsolutePath(), System.currentTimeMillis() / 1000 - 1, STEP);
 			rrdDef.setVersion(2);
@@ -118,7 +122,15 @@ public class RRD4JReporter extends ScheduledReporter {
 			}
 		}
 
-		dbPerMetric.put(metricName, result);
+		RrdDb old = dbPerMetric.put(metricName, result);
+		if (old != null) {
+			LOG.log(Level.SEVERE, "found duplicate rrddb: " + metricName);
+			try {
+				old.close();
+			} catch (IOException e) {
+				LOG.log(Level.SEVERE, "unable to close: " + old.getPath(), e);
+			}
+		}
 
 		return result;
 	}

@@ -60,7 +60,7 @@ public class Metrics {
 				return new Gauge<Long>() {
 					@Override
 					public Long getValue() {
-						return Runtime.getRuntime().totalMemory();
+						return (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
 					}
 				};
 			}
