@@ -39,6 +39,6 @@ sudo apt-get install ejdk-8-compact1 dump1090-mutability nginx-light r2cloud
  - Security
    * safe to expose administration UI to the internet
    
-Details could be found in official [documentation](Features).
+Details could be found in official [documentation](https://github.com/dernasherbrezon/r2cloud/wiki/Features).
 
 
