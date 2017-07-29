@@ -15,7 +15,18 @@
 			}
 		}, options);
 
-		return new RRD4JComponent($(this), settings);
+		var components = [];
+        for (var i=0; i<this.length; i++) {
+        	components.push(new RRD4JComponent($(this[i]), settings))
+        };
+        
+		return {
+			updateInterval: function(start, end) {
+				$(components).each(function(){
+					this.updateInterval(start, end);
+				});
+			}
+		}
 	}
 	
 	function RRD4JComponent(domElement, settings) {

@@ -33,7 +33,8 @@ public class Metrics {
 
 				@Override
 				public Gauge<?> newMetric() {
-					return new Gauge<Double>() {
+					return new FormattedGauge<Double>(MetricFormat.NORMAL) {
+						
 						@Override
 						public Double getValue() {
 							try (BufferedReader fis = new BufferedReader(new FileReader("/sys/class/thermal/thermal_zone0/temp"))) {
@@ -57,7 +58,8 @@ public class Metrics {
 		REGISTRY.gauge("heap", new MetricSupplier<Gauge>() {
 			@Override
 			public Gauge<?> newMetric() {
-				return new Gauge<Long>() {
+				return new FormattedGauge<Long>(MetricFormat.BYTES) {
+					
 					@Override
 					public Long getValue() {
 						return (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());

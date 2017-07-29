@@ -14,7 +14,7 @@ public class Status extends AbstractHttpController {
 		ModelAndView result = new ModelAndView("status");
 		result.put("start", start);
 		result.put("end", end);
-		result.put("metrics", Metrics.REGISTRY.getMetrics().keySet());
+		result.put("metrics", Metrics.REGISTRY.getMetrics());
 		return result;
 	}
 	

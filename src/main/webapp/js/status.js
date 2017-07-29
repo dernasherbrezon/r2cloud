@@ -1,11 +1,24 @@
 jQuery(document).ready(function($) {
-	var rrd4j = $(".rrdgraph").rrd4j({
+	var bytesGraphs = $(".rrdgraph-BYTES").rrd4j({
 	    legend: {
 	        show: false
 	    },
 	    yaxis: {
 	    	min: 0, 
 	    	mode: "byte" 
+	    },
+	    tooltip: {
+	    	show: true,
+	    	content: function() {
+	    		return "%y";
+	    	}
+	    }
+	}), normalGraphs = $(".rrdgraph-NORMAL").rrd4j({
+	    legend: {
+	        show: false
+	    },
+	    yaxis: {
+	    	min: 0, 
 	    },
 	    tooltip: {
 	    	show: true,
@@ -23,6 +36,7 @@ jQuery(document).ready(function($) {
 		} else if( option == "YEAR" ) {
 			start.setDate(start.getDate() - 360);
 		}
-		rrd4j.updateInterval(start.getTime(), Date.now());
+		bytesGraphs.updateInterval(start.getTime(), Date.now());
+		normalGraphs.updateInterval(start.getTime(), Date.now());
 	});
 });

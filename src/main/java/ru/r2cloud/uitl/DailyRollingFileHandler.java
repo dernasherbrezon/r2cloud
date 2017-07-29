@@ -78,14 +78,6 @@ public class DailyRollingFileHandler extends StreamHandler {
 
 	private void rollOver() {
 
-		String datedFilename = pattern + "." + sdf.format(new Date());
-		// It is too early to roll over because we are still within the
-		// bounds of the current interval. Rollover will occur once the
-		// next interval is reached.
-		if (scheduledFilename.equals(datedFilename)) {
-			return;
-		}
-
 		// close current file, and rename it to datedFilename
 		close();
 
@@ -101,7 +93,7 @@ public class DailyRollingFileHandler extends StreamHandler {
 		}
 
 		setOutputStream();
-		scheduledFilename = datedFilename;
+		scheduledFilename = pattern + "." + sdf.format(new Date());
 		nextRoll.add(Calendar.DAY_OF_MONTH, 1);
 	}
 

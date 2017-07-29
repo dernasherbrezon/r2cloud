@@ -66,9 +66,9 @@
 			<version>1.7.12</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.rrd4j</groupId>
+		    <groupId>com.aerse</groupId>
 		    <artifactId>rrd4j-light</artifactId>
-		    <version>3.2-SNAPSHOT</version>
+		    <version>3.7</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

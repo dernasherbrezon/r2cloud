@@ -1,7 +1,5 @@
 package ru.r2cloud.metrics;
 
-import static org.rrd4j.ConsolFun.AVERAGE;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -12,15 +10,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.rrd4j.DsType;
-import org.rrd4j.core.RrdDb;
-import org.rrd4j.core.RrdDef;
-import org.rrd4j.core.Sample;
-
 import ru.r2cloud.R2Cloud;
 import ru.r2cloud.uitl.Configuration;
 import ru.r2cloud.uitl.Util;
 
+import com.aerse.ConsolFun;
+import com.aerse.DsType;
+import com.aerse.core.RrdDb;
+import com.aerse.core.RrdDef;
+import com.aerse.core.Sample;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
@@ -101,10 +99,10 @@ public class RRD4JReporter extends ScheduledReporter {
 			RrdDef rrdDef = new RrdDef(new File(basepath, metricName + ".rrd").getAbsolutePath(), System.currentTimeMillis() / 1000 - 1, STEP);
 			rrdDef.setVersion(2);
 			rrdDef.addDatasource("data", type, 2 * STEP, 0, Double.NaN);
-			rrdDef.addArchive(AVERAGE, 0.5, 1, 600); // ~last 2 days. each point
+			rrdDef.addArchive(ConsolFun.AVERAGE, 0.5, 1, 600); // ~last 2 days. each point
 														// is a 300 seconds
-			rrdDef.addArchive(AVERAGE, 0.5, 24, 775); // ~last 2 months.
-			rrdDef.addArchive(AVERAGE, 0.5, 288, 797); // ~last 2 years. each
+			rrdDef.addArchive(ConsolFun.AVERAGE, 0.5, 24, 775); // ~last 2 months.
+			rrdDef.addArchive(ConsolFun.AVERAGE, 0.5, 288, 797); // ~last 2 years. each
 														// point is a day
 			try {
 				result = new RrdDb(rrdDef);

@@ -15,10 +15,10 @@
 			  </div>          
           </form>
           <div class="row">
-          	{% for item in metrics %}
+          	{% for key, value in metrics %}
 	          	<div class="col-md-12">
-	          		<h3>{{ item }}</h3>
-	          		<div class="rrdgraph" style="height:200px" data-src="/admin/static/rrd/{{ item }}.rrd" data-ds="data" data-cf="AVERAGE" data-start="{{ start }}" data-end="{{ end }}"></div>
+	          		<h3>{{ key }}</h3>
+	          		<div class="rrdgraph-{{ value.format }}" style="height:200px" data-src="/admin/static/rrd/{{ key }}.rrd" data-ds="data" data-cf="AVERAGE" data-start="{{ start }}" data-end="{{ end }}"></div>
 	          	</div>
           	{% endfor %}
           </div>
