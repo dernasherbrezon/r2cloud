@@ -78,7 +78,7 @@ public class DailyRollingFileHandler extends StreamHandler {
 
 	private void rollOver() {
 
-		String datedFilename = pattern + sdf.format(new Date());
+		String datedFilename = pattern + "." + sdf.format(new Date());
 		// It is too early to roll over because we are still within the
 		// bounds of the current interval. Rollover will occur once the
 		// next interval is reached.
@@ -90,14 +90,14 @@ public class DailyRollingFileHandler extends StreamHandler {
 		close();
 
 		File target = new File(scheduledFilename);
-		if (target.exists()) {
-			target.delete();
+		if (target.exists() && !target.delete()) {
+			System.err.println("unable to delete previous: " + target.getAbsolutePath());
 		}
 
 		File file = new File(pattern);
 		boolean result = file.renameTo(target);
 		if (!result) {
-			System.err.println("unable to rename to: " + scheduledFilename);
+			System.err.println("unable to rename to: " + target.getAbsolutePath());
 		}
 
 		setOutputStream();
@@ -117,12 +117,12 @@ public class DailyRollingFileHandler extends StreamHandler {
 			nextRoll.add(Calendar.DAY_OF_MONTH, 1);
 		}
 	}
-	
+
 	private void setPattern(String pattern) {
 		this.pattern = pattern;
-		scheduledFilename = pattern + "." + sdf.format(new Date(System.currentTimeMillis()));
+		scheduledFilename = pattern + "." + sdf.format(new Date());
 	}
-	
+
 	private static String getStringProperty(LogManager manager, String name, String defaultValue) {
 		String val = manager.getProperty(name);
 		if (val == null) {
