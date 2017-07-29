@@ -41,4 +41,8 @@ sudo apt-get install ejdk-8-compact1 dump1090-mutability nginx-light r2cloud
    
 Details could be found in official [documentation](https://github.com/dernasherbrezon/r2cloud/wiki/Features).
 
+# Contribution
+
+Please read our [guidelines](https://github.com/dernasherbrezon/r2cloud/wiki/Contribution).
+
 
