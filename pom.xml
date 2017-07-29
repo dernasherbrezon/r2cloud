@@ -36,6 +36,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>io.dropwizard.metrics</groupId>
+			<artifactId>metrics-core</artifactId>
+			<version>3.2.3</version>
+		</dependency>
+		<dependency>
 			<groupId>org.jtwig</groupId>
 			<artifactId>jtwig-core</artifactId>
 			<version>5.85.3.RELEASE</version>
@@ -59,6 +64,11 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-jdk14</artifactId>
 			<version>1.7.12</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.rrd4j</groupId>
+		    <artifactId>rrd4j-light</artifactId>
+		    <version>3.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

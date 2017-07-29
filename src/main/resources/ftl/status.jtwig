@@ -1,0 +1,34 @@
+{% import '/ftl/macro.jtwig' as macros %}
+{% include '/ftl/header.jtwig' %}
+      <div class="row">
+      	{{ macros.menu("status") }}
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">Status</h1>
+          <form class="form-inline">
+			  <div class="form-group">
+			    <label for="period">Period</label>
+			    <select id="updateInterval" class="form-control" >
+			    	<option selected value="DAY">Last day</option>
+			    	<option value="MONTH">Last month</option>
+			    	<option value="YEAR">Last year</option>
+			    </select>
+			  </div>          
+          </form>
+          <div class="row">
+          	{% for item in metrics %}
+	          	<div class="col-md-12">
+	          		<h3>{{ item }}</h3>
+	          		<div class="rrdgraph" style="height:200px" data-src="/admin/static/rrd/{{ item }}.rrd" data-ds="data" data-cf="AVERAGE" data-start="{{ start }}" data-end="{{ end }}"></div>
+	          	</div>
+          	{% endfor %}
+          </div>
+        </div>
+      </div>
+    <script src="/js/jquery-1.12.4.min.js"></script>
+	<script src="/js/jquery.flot.js"></script>
+	<script src="/js/jquery.flot.time.js"></script>
+	<script src="/js/jquery.flot.byte.js"></script>
+	<script src="/js/jquery.flot.tooltip.js"></script>
+    <script src="/js/rrd4j-1.0.3.js"></script>
+	<script src="/js/status.js"></script>    
+{% include '/ftl/footer.jtwig' %}

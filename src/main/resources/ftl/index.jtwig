@@ -1,14 +1,7 @@
-{% autoescape 'html' %}
+{% import '/ftl/macro.jtwig' as macros %}
 {% include '/ftl/header.jtwig' %}
       <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-            <li class="active"><a href="#"><i class="fa fa-plane" aria-hidden="true"></i>&nbsp;Flights</a></li>
-            <li><a href="#"><i class="fa fa-space-shuttle" aria-hidden="true"></i>&nbsp;Satellites</a></li>
-            <li><a href="#"><i class="fa fa-area-chart" aria-hidden="true"></i>&nbsp;Status</a></li>
-            <li><a href="#"><i class="fa fa-cog" aria-hidden="true"></i>&nbsp;Configuration</a></li>
-          </ul>
-        </div>
+      	{{ macros.menu("flights") }}
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">Flights</h1>
           <div>
@@ -19,4 +12,3 @@
 	<script src="/js/adsb.js"></script>    
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAT2lh-lYB8r8fLWUvcD2H7qDruoBm_Zdg&callback=initMap" async defer></script>  
 {% include '/ftl/footer.jtwig' %}
-{% endautoescape %}

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.rx.ADSB;
 import ru.r2cloud.rx.ADSBDao;
 import ru.r2cloud.uitl.Configuration;
@@ -20,6 +21,7 @@ import ru.r2cloud.web.controller.Home;
 import ru.r2cloud.web.controller.Login;
 import ru.r2cloud.web.controller.Restore;
 import ru.r2cloud.web.controller.Setup;
+import ru.r2cloud.web.controller.Status;
 
 public class R2Cloud {
 
@@ -33,10 +35,11 @@ public class R2Cloud {
 	private final Configuration props;
 
 	private final Map<String, HttpContoller> controllers = new HashMap<String, HttpContoller>();
-	private WebServer webServer;
-	private ADSB adsb;
-	private ADSBDao dao;
-	private Authenticator auth;
+	private final WebServer webServer;
+	private final ADSB adsb;
+	private final ADSBDao dao;
+	private final Authenticator auth;
+	private final Metrics metrics;
 
 	public R2Cloud(String propertiesLocation) {
 		props = new Configuration(propertiesLocation);
@@ -44,6 +47,8 @@ public class R2Cloud {
 		adsb = new ADSB(props, dao);
 
 		auth = new Authenticator(props);
+		
+		metrics = new Metrics(props);
 
 		// setup web server
 		index(new Home());
@@ -54,10 +59,12 @@ public class R2Cloud {
 		index(new DoSetup(auth, props));
 		index(new Restore());
 		index(new DoRestore(auth));
+		index(new Status());
 		webServer = new WebServer(props, controllers, auth);
 	}
 
 	public void start() {
+		metrics.start();
 		if ("true".equals(props.getProperty("rx.adsb.enabled"))) {
 			dao.start();
 			adsb.start();
@@ -72,6 +79,7 @@ public class R2Cloud {
 		dao.stop();
 		adsb.stop();
 		webServer.stop();
+		metrics.stop();
 	}
 
 	public static void main(String[] args) {

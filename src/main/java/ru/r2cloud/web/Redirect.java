@@ -8,7 +8,7 @@ public class Redirect extends ModelAndView {
 
 	public Redirect(String location) {
 		addHeader("Location", location);
-		setStatus(Response.Status.REDIRECT);
+		setStatus(Response.Status.FOUND);
 	}
 
 }
