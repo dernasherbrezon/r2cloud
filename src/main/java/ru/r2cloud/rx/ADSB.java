@@ -48,7 +48,7 @@ public class ADSB {
 						socket.setKeepAlive(true);
 						socket.setSoTimeout(0);
 					} catch (Exception e) {
-						LOG.log(Level.SEVERE, "unable to connect to the dump1090: " + host + ":" + port, e);
+						LOG.log(Level.SEVERE, "unable to connect to the dump1090: " + host + ":" + port + ". check stdout log", e);
 						throttle();
 						continue;
 					}
@@ -93,7 +93,7 @@ public class ADSB {
 
 	private void startDump1090() {
 		try {
-			dump1090 = Runtime.getRuntime().exec(new String[] { props.getProperty("rx.adsb.dump1090"), "--raw", "--net", "--quiet" });
+			dump1090 = new ProcessBuilder().inheritIO().command(new String[] { props.getProperty("rx.adsb.dump1090"), "--raw", "--net", "--quiet" }).start();
 			LOG.info("dump1090 started..");
 		} catch (IOException e1) {
 			LOG.log(Level.SEVERE, "unable to start dump1090", e1);

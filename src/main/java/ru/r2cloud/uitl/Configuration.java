@@ -1,5 +1,6 @@
 package ru.r2cloud.uitl;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,11 +13,18 @@ public class Configuration extends Properties {
 	private String propertiesLocation;
 
 	public Configuration(String propertiesLocation) {
-		this.propertiesLocation = propertiesLocation;
 		try (InputStream is = new FileInputStream(propertiesLocation)) {
 			load(is);
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to load properties", e);
+		}
+		this.propertiesLocation = System.getProperty("user.home") + File.separator + ".r2cloud";
+		if (new File(this.propertiesLocation).exists()) {
+			try (InputStream is = new FileInputStream(this.propertiesLocation)) {
+				load(is);
+			} catch (Exception e) {
+				throw new RuntimeException("Unable to load properties", e);
+			}
 		}
 	}
 
