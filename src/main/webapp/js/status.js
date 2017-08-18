@@ -39,4 +39,45 @@ jQuery(document).ready(function($) {
 		bytesGraphs.updateInterval(start.getTime(), Date.now());
 		normalGraphs.updateInterval(start.getTime(), Date.now());
 	});
+	
+    var dashboard = document.getElementById("dashboard");
+    dashboard.addEventListener("load",function(){
+    	update();
+    }, false);
+    
+    function update() {
+		$.ajax({
+			url : "/admin/status/data.json",
+			success : function(data) {
+				for (var property in data) {
+				    if (!data.hasOwnProperty(property)) {
+				    	continue;
+				    }
+				    
+				    var value = data[property], color;
+				    if( value.status == "SUCCESS" ) {
+				    	color = "#3c763d";
+				    } else if( value.status == "ERROR" ) {
+				    	color = "#a94442";
+				    } else {
+				    	color = "#777";
+				    }
+				    
+				    var elem = dashboard.contentDocument.getElementById(property); 
+				    if( elem != null ) {
+				    	elem.style.fill=color;
+				    	if( value.status == "ERROR" ) {
+				    		elem.innerHTML = "<title>" + value.message + "</title>"; 
+				    	} else {
+				    		elem.innerHTML = "";
+				    	}
+				    }
+				}
+			},
+			complete : function() {
+				setTimeout(update, 5000);
+			}
+		});
+	}
+	
 });

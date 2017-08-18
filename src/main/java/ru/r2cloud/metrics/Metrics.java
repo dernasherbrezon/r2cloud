@@ -13,11 +13,14 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.MetricRegistry.MetricSupplier;
 import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.health.HealthCheckRegistry;
+import com.codahale.metrics.health.SharedHealthCheckRegistries;
 
 public class Metrics {
 
 	private static final Logger LOG = Logger.getLogger(R2Cloud.class.getName());
 	public static final MetricRegistry REGISTRY = SharedMetricRegistries.getOrCreate("r2cloud");
+	public static final HealthCheckRegistry HEALTH_REGISTRY = SharedHealthCheckRegistries.getOrCreate("r2cloud");
 
 	private RRD4JReporter reporter;
 	private final Configuration config;

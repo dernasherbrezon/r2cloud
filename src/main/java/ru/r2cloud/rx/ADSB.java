@@ -11,6 +11,11 @@ import java.util.logging.Logger;
 import org.opensky.libadsb.Decoder;
 import org.opensky.libadsb.msgs.ModeSReply;
 
+import ru.r2cloud.metrics.Metrics;
+import ru.r2cloud.uitl.ResultUtil;
+
+import com.codahale.metrics.health.HealthCheck;
+
 public class ADSB {
 
 	private static final Logger LOG = Logger.getLogger(ADSB.class.getName());
@@ -19,7 +24,8 @@ public class ADSB {
 	private final ADSBDao dao;
 
 	private Socket socket;
-	private boolean started = true;
+	private volatile boolean started = true;
+	private volatile String connectionError = "Unknown status";
 	private Thread thread;
 	private Process dump1090;
 	private long throttleIntervalMillis;
@@ -28,6 +34,19 @@ public class ADSB {
 		this.props = props;
 		this.dao = dao;
 		throttleIntervalMillis = Long.valueOf(props.getProperty("rx.adsb.reconnect.interval"));
+		Metrics.HEALTH_REGISTRY.register("adsb", new HealthCheck() {
+
+			@Override
+			protected Result check() throws Exception {
+				if (!started) {
+					return ResultUtil.unknown();
+				} else if (connectionError == null) {
+					return ResultUtil.healthy();
+				} else {
+					return ResultUtil.unhealthy(connectionError);
+				}
+			}
+		});
 	}
 
 	public synchronized void start() {
@@ -48,7 +67,8 @@ public class ADSB {
 						socket.setKeepAlive(true);
 						socket.setSoTimeout(0);
 					} catch (Exception e) {
-						LOG.log(Level.SEVERE, "unable to connect to the dump1090: " + host + ":" + port + ". check stdout log", e);
+						connectionError = "unable to connect to the dump1090: " + host + ":" + port;
+						LOG.log(Level.SEVERE, connectionError + ". check stdout log", e);
 						throttle();
 						continue;
 					}
@@ -56,10 +76,12 @@ public class ADSB {
 					try {
 						in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 					} catch (IOException e) {
-						LOG.log(Level.SEVERE, "cannot get input stream", e);
+						connectionError = "cannot get input stream";
+						LOG.log(Level.SEVERE, connectionError, e);
 						throttle();
 						continue;
 					}
+					connectionError = null;
 					String curLine = null;
 					try {
 						LOG.info("listening for adsb data from " + host + ":" + port);
@@ -80,6 +102,8 @@ public class ADSB {
 						// do not log error. socket closed
 						if (!socket.isClosed()) {
 							LOG.log(Level.SEVERE, "unable to read data", e);
+						} else {
+							connectionError = "connection was closed remotely: " + e.getMessage();
 						}
 						closeSocket();
 						throttle();

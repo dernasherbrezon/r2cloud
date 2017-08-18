@@ -3,25 +3,43 @@
       <div class="row">
       	{{ macros.menu("status") }}
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Status</h1>
-          <form class="form-inline">
-			  <div class="form-group">
-			    <label for="period">Period</label>
-			    <select id="updateInterval" class="form-control" >
-			    	<option selected value="DAY">Last day</option>
-			    	<option value="MONTH">Last month</option>
-			    	<option value="YEAR">Last year</option>
-			    </select>
-			  </div>          
-          </form>
-          <div class="row">
-          	{% for key, value in metrics %}
-	          	<div class="col-md-12">
-	          		<h3>{{ key }}</h3>
-	          		<div class="rrdgraph-{{ value.format }}" style="height:200px" data-src="/admin/static/rrd/{{ key }}.rrd" data-ds="data" data-cf="AVERAGE" data-start="{{ start }}" data-end="{{ end }}"></div>
-	          	</div>
-          	{% endfor %}
-          </div>
+		  <div class="row">      
+			  <div class="col-md-12">  
+				  <ul class="nav nav-tabs" role="tablist">
+				    <li role="presentation" class="active"><a href="#status" aria-controls="status" role="tab" data-toggle="tab">Status</a></li>
+				    <li role="presentation"><a href="#metrics" aria-controls="metrics" role="tab" data-toggle="tab">Metrics</a></li>
+				  </ul>
+				  <div class="tab-content">
+				    <div role="tabpanel" class="tab-pane active" id="status">
+				    	<div class="row" style="margin-top: 40px;">
+				    		<object id="dashboard" data="/img/dash.svg" type="image/svg+xml"></object>
+				    	</div>
+					</div>
+				    <div role="tabpanel" class="tab-pane" id="metrics">
+				    	<div class="row">
+				          <form class="form-inline">
+							  <div class="form-group">
+							    <label for="period">Period</label>
+							    <select id="updateInterval" class="form-control" >
+							    	<option selected value="DAY">Last day</option>
+							    	<option value="MONTH">Last month</option>
+							    	<option value="YEAR">Last year</option>
+							    </select>
+							  </div>          
+				          </form>
+				    	</div>
+			            <div class="row">
+			          	  {% for key, value in metrics %}
+				            	<div class="col-md-12">
+				          	  	<h3>{{ key }}</h3>
+				          		 <div class="rrdgraph-{{ value.format }}" style="height:200px" data-src="/admin/static/rrd/{{ key }}.rrd" data-ds="data" data-cf="AVERAGE" data-start="{{ start }}" data-end="{{ end }}"></div>
+				          	</div>
+			          	  {% endfor %}
+			            </div>
+					</div>
+				  </div>   
+			  </div>
+		  </div>     
         </div>
       </div>
     <script src="/js/jquery-1.12.4.min.js"></script>

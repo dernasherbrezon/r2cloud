@@ -22,6 +22,7 @@ import ru.r2cloud.web.controller.Login;
 import ru.r2cloud.web.controller.Restore;
 import ru.r2cloud.web.controller.Setup;
 import ru.r2cloud.web.controller.Status;
+import ru.r2cloud.web.controller.StatusData;
 
 public class R2Cloud {
 
@@ -40,6 +41,7 @@ public class R2Cloud {
 	private final ADSBDao dao;
 	private final Authenticator auth;
 	private final Metrics metrics;
+	private final RtlSdrStatusDao rtlsdrStatusDao;
 
 	public R2Cloud(String propertiesLocation) {
 		props = new Configuration(propertiesLocation);
@@ -49,6 +51,8 @@ public class R2Cloud {
 		auth = new Authenticator(props);
 		
 		metrics = new Metrics(props);
+		
+		rtlsdrStatusDao = new RtlSdrStatusDao(props);
 
 		// setup web server
 		index(new Home());
@@ -60,6 +64,7 @@ public class R2Cloud {
 		index(new Restore());
 		index(new DoRestore(auth));
 		index(new Status());
+		index(new StatusData());
 		webServer = new WebServer(props, controllers, auth);
 	}
 
@@ -69,6 +74,7 @@ public class R2Cloud {
 			dao.start();
 			adsb.start();
 		}
+		rtlsdrStatusDao.start();
 		webServer.start();
 		LOG.info("=================================");
 		LOG.info("=========== started =============");
@@ -78,6 +84,7 @@ public class R2Cloud {
 	public void stop() {
 		dao.stop();
 		adsb.stop();
+		rtlsdrStatusDao.stop();
 		webServer.stop();
 		metrics.stop();
 	}
