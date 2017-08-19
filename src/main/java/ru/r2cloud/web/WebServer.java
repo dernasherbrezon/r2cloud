@@ -133,4 +133,12 @@ public class WebServer extends NanoHTTPD {
 		return values.get(0);
 	}
 
+	public static Double getDouble(IHTTPSession session, String name) {
+		String param = getParameter(session, name);
+		if (param == null || param.trim().length() == 0) {
+			return null;
+		}
+		return Double.valueOf(param);
+	}
+
 }

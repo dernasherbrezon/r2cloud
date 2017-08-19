@@ -24,6 +24,7 @@
           <ul class="nav nav-sidebar">
             <li {% if (activeTab == "flights") %}class="active"{% endif %}><a href="/admin/adsb"><i class="fa fa-plane" aria-hidden="true"></i>&nbsp;Flights</a></li>
             <li {% if (activeTab == "status") %}class="active"{% endif %}><a href="/admin/status"><i class="fa fa-area-chart" aria-hidden="true"></i>&nbsp;Status</a></li>
+            <li {% if (activeTab == "config") %}class="active"{% endif %}><a href="/admin/config"><i class="fa fa-cog" aria-hidden="true"></i>&nbsp;Configuration</a></li>
           </ul>
         </div>
 {% endmacro %}

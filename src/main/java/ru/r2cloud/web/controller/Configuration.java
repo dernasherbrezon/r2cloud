@@ -1,29 +1,28 @@
 package ru.r2cloud.web.controller;
 
 import ru.r2cloud.model.ConfigurationBean;
-import ru.r2cloud.uitl.Configuration;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
-public class ADSB extends AbstractHttpController {
-	
-	private final Configuration props;
+public class Configuration extends AbstractHttpController {
 
-	public ADSB(Configuration props) {
+	private final ru.r2cloud.uitl.Configuration props;
+
+	public Configuration(ru.r2cloud.uitl.Configuration props) {
 		this.props = props;
 	}
 
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
-		ModelAndView result = new ModelAndView("adsb");
+		ModelAndView result = new ModelAndView("config");
 		result.put("entity", ConfigurationBean.fromConfig(props));
 		return result;
 	}
 
 	@Override
 	public String getRequestMappingURL() {
-		return "/admin/adsb";
+		return "/admin/config";
 	}
 
 }

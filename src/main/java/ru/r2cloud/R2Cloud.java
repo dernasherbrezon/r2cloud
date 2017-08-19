@@ -19,6 +19,7 @@ import ru.r2cloud.web.controller.DoRestore;
 import ru.r2cloud.web.controller.DoSetup;
 import ru.r2cloud.web.controller.Login;
 import ru.r2cloud.web.controller.Restore;
+import ru.r2cloud.web.controller.SaveConfiguration;
 import ru.r2cloud.web.controller.Setup;
 import ru.r2cloud.web.controller.Status;
 import ru.r2cloud.web.controller.StatusData;
@@ -48,13 +49,13 @@ public class R2Cloud {
 		adsb = new ADSB(props, dao);
 
 		auth = new Authenticator(props);
-		
+
 		metrics = new Metrics(props);
-		
+
 		rtlsdrStatusDao = new RtlSdrStatusDao(props);
 
 		// setup web server
-		index(new ru.r2cloud.web.controller.ADSB());
+		index(new ru.r2cloud.web.controller.ADSB(props));
 		index(new ADSBData(dao));
 		index(new Login());
 		index(new DoLogin(auth));
@@ -64,6 +65,8 @@ public class R2Cloud {
 		index(new DoRestore(auth));
 		index(new Status());
 		index(new StatusData());
+		index(new ru.r2cloud.web.controller.Configuration(props));
+		index(new SaveConfiguration(props));
 		webServer = new WebServer(props, controllers, auth);
 	}
 

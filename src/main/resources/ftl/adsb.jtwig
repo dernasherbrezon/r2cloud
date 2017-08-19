@@ -5,7 +5,7 @@
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">Flights</h1>
           <div>
-          	<div id="map" style="height:600px; width:1100px;"></div>
+          	<div id="map" style="height:600px; width:1100px;" data-lat="{{ entity.lat }}" data-lon="{{ entity.lon }}"></div>
           </div>
         </div>
       </div>

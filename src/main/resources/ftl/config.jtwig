@@ -1,0 +1,31 @@
+{% import '/ftl/macro.jtwig' as macros %}
+{% include '/ftl/header.jtwig' %}
+      <div class="row">
+      	{{ macros.menu("config") }}
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+		  <div class="row">      
+			  <div class="col-md-12">
+				<form action="/admin/config/save" method="POST">
+				  <div class="row">
+				  	<div class="col-md-4">
+				  	  {{ macros.input("text", "lat", entity.lat, "Latitude", "", errors) }}
+					</div>
+					<div class="col-md-4">
+					  {{ macros.input("text", "lon", entity.lon, "Longitude", "", errors) }}
+					</div>
+					<div class="col-md-4">
+					  <div class="form-group">
+						  <label for="detect">&nbsp;</label>
+						  <button id="detect" type="button" class="btn btn-default" style="display: block;">Detect</button>
+					  </div>
+					</div>
+				  </div>
+				  <button type="submit" class="btn btn-default">Save</button>
+				</form>			  	  
+			  </div>
+		  </div>     
+        </div>
+      </div>
+      <script src="/js/jquery-1.12.4.min.js"></script>
+      <script src="/js/config.js"></script>
+{% include '/ftl/footer.jtwig' %}
