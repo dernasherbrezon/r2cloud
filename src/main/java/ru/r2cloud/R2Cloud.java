@@ -17,7 +17,6 @@ import ru.r2cloud.web.controller.ADSBData;
 import ru.r2cloud.web.controller.DoLogin;
 import ru.r2cloud.web.controller.DoRestore;
 import ru.r2cloud.web.controller.DoSetup;
-import ru.r2cloud.web.controller.Home;
 import ru.r2cloud.web.controller.Login;
 import ru.r2cloud.web.controller.Restore;
 import ru.r2cloud.web.controller.Setup;
@@ -55,7 +54,7 @@ public class R2Cloud {
 		rtlsdrStatusDao = new RtlSdrStatusDao(props);
 
 		// setup web server
-		index(new Home());
+		index(new ru.r2cloud.web.controller.ADSB());
 		index(new ADSBData(dao));
 		index(new Login());
 		index(new DoLogin(auth));

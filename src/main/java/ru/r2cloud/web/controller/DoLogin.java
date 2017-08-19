@@ -32,7 +32,7 @@ public class DoLogin extends AbstractHttpController {
 			result.put("username", username);
 			return result;
 		}
-		Redirect result = new Redirect("/admin/");
+		Redirect result = new Redirect("/admin/status");
 		result.addHeader("Set-Cookie", "JSESSIONID=" + cookie + "; Max-Age=" + auth.getMaxAgeMillis() / 1000);
 		return result;
 	}

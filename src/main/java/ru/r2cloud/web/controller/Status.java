@@ -20,7 +20,7 @@ public class Status extends AbstractHttpController {
 	
 	@Override
 	public String getRequestMappingURL() {
-		return "/admin/status2";
+		return "/admin/status";
 	}
 	
 }
