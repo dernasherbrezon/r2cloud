@@ -11,13 +11,16 @@
 				  </ul>
 				  <div class="tab-content">
 				    <div role="tabpanel" class="tab-pane active" id="status">
-				    	<div class="row" style="margin-top: 40px;">
-				    		<object id="dashboard" data="/img/dash.svg" type="image/svg+xml"></object>
+				    	<div class="row" style="margin-top: 20px;">
+				    		<div class="col-md-12">
+				    			<object id="dashboard" data="/img/dash.svg" type="image/svg+xml"></object>
+				    		</div>
 				    	</div>
 					</div>
 				    <div role="tabpanel" class="tab-pane" id="metrics">
 				    	<div class="row">
-				          <form class="form-inline">
+				    	  <div class="col-md-12">
+				          <form class="form-inline" style="margin-top: 20px;">
 							  <div class="form-group">
 							    <label for="period">Period</label>
 							    <select id="updateInterval" class="form-control" >
@@ -27,6 +30,7 @@
 							    </select>
 							  </div>          
 				          </form>
+				          </div>
 				    	</div>
 			            <div class="row">
 			          	  {% for key, value in metrics %}
@@ -48,5 +52,6 @@
 	<script src="/js/jquery.flot.byte.js"></script>
 	<script src="/js/jquery.flot.tooltip.js"></script>
     <script src="/js/rrd4j-1.0.3.js"></script>
+    <script src="/js/bootstrap-3.3.7.js"></script>
 	<script src="/js/status.js"></script>    
 {% include '/ftl/footer.jtwig' %}
