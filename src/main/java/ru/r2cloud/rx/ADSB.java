@@ -14,6 +14,7 @@ import org.opensky.libadsb.msgs.ModeSReply;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.uitl.ResultUtil;
 
+import com.codahale.metrics.Counter;
 import com.codahale.metrics.health.HealthCheck;
 
 public class ADSB {
@@ -24,8 +25,9 @@ public class ADSB {
 	private final ADSBDao dao;
 
 	private Socket socket;
-	private volatile boolean started = true;
+	private volatile boolean started = false;
 	private volatile String connectionError = "Unknown status";
+	private final Counter counter;
 	private Thread thread;
 	private Process dump1090;
 	private long throttleIntervalMillis;
@@ -47,6 +49,7 @@ public class ADSB {
 				}
 			}
 		});
+		this.counter = Metrics.REGISTRY.counter("adsb");
 	}
 
 	public synchronized void start() {
@@ -97,6 +100,7 @@ public class ADSB {
 							} catch (Exception e) {
 								LOG.log(Level.INFO, "unknown message received: " + curLine, e);
 							}
+							counter.inc();
 						}
 					} catch (IOException e) {
 						// do not log error. socket closed
