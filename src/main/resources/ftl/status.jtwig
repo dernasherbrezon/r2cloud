@@ -33,10 +33,10 @@
 				          </div>
 				    	</div>
 			            <div class="row">
-			          	  {% for key, value in metrics %}
+			          	  {% for item in metrics %}
 				            	<div class="col-md-12">
-				          	  	<h3>{{ key }}</h3>
-				          		 <div class="rrdgraph-{{ value.format }}" style="height:200px" data-src="/admin/static/rrd/{{ key }}.rrd" data-ds="data" data-cf="AVERAGE" data-start="{{ start }}" data-end="{{ end }}"></div>
+				          	  	<h3>{{ item.name }}</h3>
+				          		<div class="rrdgraph-{{ item.format }}" style="height:200px" data-src="/admin/static/rrd/{{ item.name }}.rrd" data-ds="data" data-cf="AVERAGE" data-start="{{ start }}" data-end="{{ end }}"></div>
 				          	</div>
 			          	  {% endfor %}
 			            </div>

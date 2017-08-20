@@ -11,10 +11,13 @@ import java.util.logging.Logger;
 import org.opensky.libadsb.Decoder;
 import org.opensky.libadsb.msgs.ModeSReply;
 
+import ru.r2cloud.metrics.FormattedCounter;
+import ru.r2cloud.metrics.MetricFormat;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.uitl.ResultUtil;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry.MetricSupplier;
 import com.codahale.metrics.health.HealthCheck;
 
 public class ADSB {
@@ -49,7 +52,13 @@ public class ADSB {
 				}
 			}
 		});
-		this.counter = Metrics.REGISTRY.counter("adsb");
+		this.counter = Metrics.REGISTRY.counter("adsb", new MetricSupplier<Counter>() {
+			@Override
+			public Counter newMetric() {
+				return new FormattedCounter(MetricFormat.NORMAL);
+			}
+			
+		});
 	}
 
 	public synchronized void start() {
