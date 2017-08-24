@@ -1,4 +1,4 @@
-# About
+# About [![Build Status](https://travis-ci.org/dernasherbrezon/r2cloud.svg?branch=master)](https://travis-ci.org/dernasherbrezon/r2cloud)
 
 r2cloud converts Raspberry PI into the base station which supports various radio signals, such as:
 
@@ -48,5 +48,3 @@ Details could be found in official [documentation](https://github.com/dernasherb
 # Contribution
 
 Please read our [guidelines](https://github.com/dernasherbrezon/r2cloud/wiki/Contribution).
-
-
