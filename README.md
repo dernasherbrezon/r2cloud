@@ -17,6 +17,8 @@ r2cloud converts Raspberry PI into the base station which supports various radio
 2. Login via SSH and execute the following commands:
 
 ```
+sudo gpg --keyserver keyserver.ubuntu.com --recv-keys 129E7CDE
+sudo gpg --armor --export 129E7CDE | sudo apt-key add -
 sudo bash -c "echo 'deb [arch=armhf] http://s3.amazonaws.com/r2cloud r2cloud main' > /etc/apt/sources.list.d/r2cloud.list"
 sudo apt-get update
 sudo apt-get install r2cloud

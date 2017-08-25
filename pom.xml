@@ -94,7 +94,7 @@
 			<plugin>
 				<groupId>com.aerse.maven</groupId>
 				<artifactId>apt-maven-plugin</artifactId>
-				<version>1.8</version>
+				<version>1.9</version>
 				<executions>
 					<execution>
 						<id>deploy</id>
@@ -106,6 +106,9 @@
 				<configuration>
 					<component>main</component>
 					<codename>r2cloud</codename>
+					<sign>true</sign>
+					<keyname>129E7CDE</keyname>
+					<passphraseServerId>r2cloud</passphraseServerId>
 				</configuration>
 			</plugin>
 			<plugin>
