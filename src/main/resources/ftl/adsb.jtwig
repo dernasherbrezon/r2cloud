@@ -4,9 +4,13 @@
       	{{ macros.menu("flights") }}
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">Flights</h1>
+          {% if entity.lat != null or entity.lon != null %}
           <div>
           	<div id="map" style="height:600px; width:1100px;" data-lat="{{ entity.lat }}" data-lon="{{ entity.lon }}"></div>
           </div>
+          {% else %}
+          <p style="text-align: center;">Latitude or Longitude or this station are not configured<br><br><a href="/admin/config" class="btn btn-default">Settings</a></p>
+          {% endif %}
         </div>
       </div>
 	<script src="/js/adsb.js"></script>    
