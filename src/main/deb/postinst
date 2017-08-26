@@ -10,4 +10,9 @@ cp ${config.installDir}/etc/r2cloud-prod.conf /etc/nginx/nginx.conf;
 cp ${config.installDir}/etc/r2cloud-rot.conf /etc/logrotate.d/r2cloud-rot.conf;
 chmod 644 /etc/logrotate.d/r2cloud-rot.conf;
 
-nginx -s reload
+cp ${config.installDir}/etc/r2cloud.crontab /etc/cron.daily/r2cloud
+chmod 755 /etc/cron.daily/r2cloud
+
+if [ -f /run/nginx.pid ]; then
+	nginx -s reload
+fi

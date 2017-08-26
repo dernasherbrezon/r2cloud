@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# r2cloud is executed under user pi, thus unable to change cron.daily.
+if [ -f /home/pi/r2cloud/DO_NOT_UPDATE ]; then
+	exit 0
+fi
+
+echo `date` >> /home/pi/r2cloud/log/r2cloud.log
+sudo apt-get update >> /home/pi/r2cloud/log/r2cloud.log
+echo `date` >> /home/pi/r2cloud/log/r2cloud.log
+sudo apt-get install r2cloud >> /home/pi/r2cloud/log/r2cloud.log
