@@ -2,6 +2,7 @@ package ru.r2cloud.web.controller;
 
 import java.util.logging.Logger;
 
+import ru.r2cloud.AutoUpdate;
 import ru.r2cloud.model.ConfigurationBean;
 import ru.r2cloud.uitl.Configuration;
 import ru.r2cloud.web.AbstractHttpController;
@@ -16,9 +17,11 @@ public class SaveConfiguration extends AbstractHttpController {
 	private final static Logger LOG = Logger.getLogger(SaveConfiguration.class.getName());
 	
 	private final Configuration props;
+	private final AutoUpdate autoUpdate;
 
-	public SaveConfiguration(Configuration props) {
+	public SaveConfiguration(Configuration props, AutoUpdate autoUpdate) {
 		this.props = props;
+		this.autoUpdate = autoUpdate;
 	}
 
 	@Override
@@ -45,6 +48,8 @@ public class SaveConfiguration extends AbstractHttpController {
 			result.put("entity", bean);
 			return result;
 		}
+
+		autoUpdate.setEnabled(WebServer.getBoolean(session, "autoUpdate"));
 
 		props.put("locaiton.lat", bean.getLat());
 		props.put("locaiton.lon", bean.getLon());

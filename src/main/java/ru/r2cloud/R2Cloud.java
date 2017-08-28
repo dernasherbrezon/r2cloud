@@ -42,17 +42,16 @@ public class R2Cloud {
 	private final Authenticator auth;
 	private final Metrics metrics;
 	private final RtlSdrStatusDao rtlsdrStatusDao;
+	private final AutoUpdate autoUpdate;
 
 	public R2Cloud(String propertiesLocation) {
 		props = new Configuration(propertiesLocation);
 		dao = new ADSBDao(props);
 		adsb = new ADSB(props, dao);
-
 		auth = new Authenticator(props);
-
 		metrics = new Metrics(props);
-
 		rtlsdrStatusDao = new RtlSdrStatusDao(props);
+		autoUpdate = new AutoUpdate(props);
 
 		// setup web server
 		index(new ru.r2cloud.web.controller.ADSB(props));
@@ -65,8 +64,8 @@ public class R2Cloud {
 		index(new DoRestore(auth));
 		index(new Status());
 		index(new StatusData());
-		index(new ru.r2cloud.web.controller.Configuration(props));
-		index(new SaveConfiguration(props));
+		index(new ru.r2cloud.web.controller.Configuration(props, autoUpdate));
+		index(new SaveConfiguration(props, autoUpdate));
 		webServer = new WebServer(props, controllers, auth);
 	}
 

@@ -32,6 +32,7 @@
 					<include>**/*.yml</include>
 					<include>**/*.sh</include>
 					<include>**/*.j2</include>
+					<include>**/*.crontab</include>
 				</includes>
 				<excludes>
 					<exclude>**/META-INF/**</exclude>

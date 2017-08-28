@@ -117,9 +117,9 @@ public class WebServer extends NanoHTTPD {
 	public static String getParameter(IHTTPSession session, String name) {
 		Map<String, List<String>> parameters = session.getParameters();
 		if (parameters.isEmpty()) {
-			Map<String, String> files = new HashMap<String, String>();
 			try {
-				session.parseBody(files);
+				session.parseBody(new HashMap<String, String>());
+				parameters = session.getParameters();
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			} catch (ResponseException e) {
@@ -139,6 +139,14 @@ public class WebServer extends NanoHTTPD {
 			return null;
 		}
 		return Double.valueOf(param);
+	}
+
+	public static boolean getBoolean(IHTTPSession session, String name) {
+		String param = getParameter(session, name);
+		if (param == null || param.trim().length() == 0) {
+			return false;
+		}
+		return Boolean.valueOf(param);
 	}
 
 }
