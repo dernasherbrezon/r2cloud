@@ -93,6 +93,22 @@ public class Metrics {
 					};
 				}
 			});
+			REGISTRY.gauge("ram-used", new MetricSupplier<Gauge>() {
+				@Override
+				public Gauge<?> newMetric() {
+					return new FormattedGauge<Double>(MetricFormat.NORMAL) {
+
+						@Override
+						public Double getValue() {
+							try {
+								return sigar.getMem().getUsedPercent();
+							} catch (SigarException e) {
+								return null;
+							}
+						}
+					};
+				}
+			});
 			LOG.info("SIGAR library was loaded");
 		} catch (UnsatisfiedLinkError linkError) {
 			LOG.info("Could not initialize SIGAR library: " + linkError.getMessage());
