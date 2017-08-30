@@ -6,6 +6,9 @@ import java.io.FileReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.hyperic.sigar.Sigar;
+import org.hyperic.sigar.SigarException;
+
 import ru.r2cloud.R2Cloud;
 import ru.r2cloud.uitl.Configuration;
 
@@ -23,6 +26,7 @@ public class Metrics {
 	public static final HealthCheckRegistry HEALTH_REGISTRY = SharedHealthCheckRegistries.getOrCreate("r2cloud");
 
 	private RRD4JReporter reporter;
+	private Sigar sigar;
 	private final Configuration config;
 
 	public Metrics(Configuration config) {
@@ -37,7 +41,7 @@ public class Metrics {
 				@Override
 				public Gauge<?> newMetric() {
 					return new FormattedGauge<Double>(MetricFormat.NORMAL) {
-						
+
 						@Override
 						public Double getValue() {
 							try (BufferedReader fis = new BufferedReader(new FileReader("/sys/class/thermal/thermal_zone0/temp"))) {
@@ -62,7 +66,7 @@ public class Metrics {
 			@Override
 			public Gauge<?> newMetric() {
 				return new FormattedGauge<Long>(MetricFormat.BYTES) {
-					
+
 					@Override
 					public Long getValue() {
 						return (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
@@ -71,12 +75,38 @@ public class Metrics {
 			}
 		});
 
+		try {
+			sigar = new Sigar();
+			REGISTRY.gauge("load-average", new MetricSupplier<Gauge>() {
+				@Override
+				public Gauge<?> newMetric() {
+					return new FormattedGauge<Double>(MetricFormat.NORMAL) {
+
+						@Override
+						public Double getValue() {
+							try {
+								return sigar.getLoadAverage()[0];
+							} catch (SigarException e) {
+								return null;
+							}
+						}
+					};
+				}
+			});
+			LOG.info("SIGAR library was loaded");
+		} catch (UnsatisfiedLinkError linkError) {
+			LOG.info("Could not initialize SIGAR library: " + linkError.getMessage());
+		}
+
 		reporter = new RRD4JReporter(config, REGISTRY);
 		reporter.start();
 		LOG.info("metrics started");
 	}
 
 	public void stop() {
+		if (sigar != null) {
+			sigar.close();
+		}
 		if (reporter != null) {
 			reporter.close();
 		}

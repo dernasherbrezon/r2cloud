@@ -24,6 +24,10 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<sigar.version>1.6.4</sigar.version>
+		<sigar.download.url>https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/magelan/hyperic-sigar-${sigar.version}.zip</sigar.download.url>
+		<sigar.SHA1>8f79d4039ca3ec6c88039d5897a80a268213e6b7</sigar.SHA1>
+		<sigar.download.path>${settings.localRepository}/org/fusesource/sigar/${sigar.version}</sigar.download.path>
 	</properties>
 
 	<distributionManagement>
@@ -35,6 +39,18 @@
 	</distributionManagement>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.fusesource</groupId>
+			<artifactId>sigar</artifactId>
+			<version>${sigar.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-core</artifactId>
@@ -71,9 +87,9 @@
 			<version>1.7.12</version>
 		</dependency>
 		<dependency>
-		    <groupId>com.aerse</groupId>
-		    <artifactId>rrd4j-light</artifactId>
-		    <version>3.7</version>
+			<groupId>com.aerse</groupId>
+			<artifactId>rrd4j-light</artifactId>
+			<version>3.7</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -91,6 +107,45 @@
 			</extension>
 		</extensions>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>prepare</id>
+						<phase>validate</phase>
+						<configuration>
+							<tasks>
+								<echo message="Downloading sigar native binaries..." />
+								<get src="${sigar.download.url}" dest="${sigar.download.path}/"
+									skipExisting="true" />
+								<checksum
+									file="${sigar.download.path}/hyperic-sigar-${sigar.version}.zip"
+									algorithm="SHA1" property="${sigar.SHA1}" verifyProperty="validChecksum" />
+								<fail
+									message="Checksum validation failed for hyperic-sigar-${sigar.version}.zip">
+									<condition>
+										<isfalse value="${validChecksum}" />
+									</condition>
+								</fail>
+								<unzip
+									src="${sigar.download.path}/hyperic-sigar-${sigar.version}.zip"
+									dest="${project.build.directory}/classes/resources">
+									<patternset>
+										<include name="**/lib/libsigar-*" />
+										<include name="**/lib/sigar-*" />
+									</patternset>
+									<mapper type="flatten" />
+								</unzip>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>com.aerse.maven</groupId>
 				<artifactId>apt-maven-plugin</artifactId>
@@ -223,6 +278,7 @@
 						<nginx-light></nginx-light>
 						<logrotate>>=3.7.8</logrotate>
 						<dump1090-mutability></dump1090-mutability>
+						<libhyperic-sigar-java></libhyperic-sigar-java>
 					</osDependencies>
 					<javaServiceWrapper>false</javaServiceWrapper>
 					<fileSets>
