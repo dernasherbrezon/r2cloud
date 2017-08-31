@@ -116,7 +116,7 @@
 						<id>prepare</id>
 						<phase>validate</phase>
 						<configuration>
-							<tasks>
+							<target>
 								<echo message="Downloading sigar native binaries..." />
 								<get src="${sigar.download.url}" dest="${sigar.download.path}/"
 									skipExisting="true" />
@@ -138,7 +138,7 @@
 									</patternset>
 									<mapper type="flatten" />
 								</unzip>
-							</tasks>
+							</target>
 						</configuration>
 						<goals>
 							<goal>run</goal>
