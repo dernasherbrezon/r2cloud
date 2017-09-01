@@ -25,6 +25,7 @@ public class Configuration extends AbstractHttpController {
 		result.put("autoUpdate", autoUpdate.isEnabled());
 		result.put("ddnstypes", DDNSType.values());
 		result.put("ddnsEntity", DDNSBean.fromConfig(props));
+		result.put("activeTab", "general");
 		return result;
 	}
 

@@ -21,6 +21,7 @@ import ru.r2cloud.web.controller.DoSetup;
 import ru.r2cloud.web.controller.Login;
 import ru.r2cloud.web.controller.Restore;
 import ru.r2cloud.web.controller.SaveConfiguration;
+import ru.r2cloud.web.controller.SaveDDNSConfiguration;
 import ru.r2cloud.web.controller.Setup;
 import ru.r2cloud.web.controller.Status;
 import ru.r2cloud.web.controller.StatusData;
@@ -69,6 +70,7 @@ public class R2Cloud {
 		index(new StatusData());
 		index(new ru.r2cloud.web.controller.Configuration(props, autoUpdate));
 		index(new SaveConfiguration(props, autoUpdate));
+		index(new SaveDDNSConfiguration(props, ddnsClient, autoUpdate));
 		webServer = new WebServer(props, controllers, auth);
 	}
 
