@@ -31,9 +31,11 @@ public class DDNSClient {
 			DDNSType type = DDNSType.valueOf(typeStr);
 			switch (type) {
 			case NONE:
+				LOG.info("ddns is disabled");
 				return;
 			case NOIP:
 				task = new NoIPTask(config);
+				LOG.info("ddns provider is no-ip");
 				break;
 			default:
 				throw new IllegalArgumentException("unsupported ddns provider: " + type);
