@@ -55,4 +55,20 @@ public class Configuration extends Properties {
 		}
 	}
 
+	public Long getLong(String name) {
+		String strValue = getProperty(name);
+		if (strValue == null) {
+			return null;
+		}
+		return Long.valueOf(strValue);
+	}
+
+	public Integer getInteger(String name) {
+		String strValue = getProperty(name);
+		if (strValue == null) {
+			return null;
+		}
+		return Integer.valueOf(strValue);
+	}
+
 }

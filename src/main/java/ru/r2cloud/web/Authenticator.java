@@ -39,7 +39,7 @@ public class Authenticator {
 		this.login = props.getProperty("server.login");
 		this.password = props.getProperty("server.password");
 		this.salt = props.getProperty("server.salt");
-		this.maxAgeMillis = Long.valueOf(props.getProperty("server.session.timeout.millis"));
+		this.maxAgeMillis = props.getLong("server.session.timeout.millis");
 	}
 
 	public boolean isAuthenticated(IHTTPSession session) {

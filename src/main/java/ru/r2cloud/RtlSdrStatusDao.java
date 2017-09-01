@@ -42,7 +42,7 @@ public class RtlSdrStatusDao {
 			public void run() {
 				reload();
 			}
-		}, 0, Long.valueOf(props.getProperty("rtltest.interval.seconds")), TimeUnit.SECONDS);
+		}, 0, props.getLong("rtltest.interval.seconds"), TimeUnit.SECONDS);
 		Metrics.HEALTH_REGISTRY.register("rtltest", new HealthCheck() {
 
 			@Override

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,6 +13,7 @@ import org.opensky.libadsb.msgs.ModeSReply;
 import ru.r2cloud.metrics.FormattedCounter;
 import ru.r2cloud.metrics.MetricFormat;
 import ru.r2cloud.metrics.Metrics;
+import ru.r2cloud.uitl.Configuration;
 import ru.r2cloud.uitl.ResultUtil;
 
 import com.codahale.metrics.Counter;
@@ -24,7 +24,7 @@ public class ADSB {
 
 	private static final Logger LOG = Logger.getLogger(ADSB.class.getName());
 
-	private final Properties props;
+	private final Configuration props;
 	private final ADSBDao dao;
 
 	private Socket socket;
@@ -35,10 +35,10 @@ public class ADSB {
 	private Process dump1090;
 	private long throttleIntervalMillis;
 
-	public ADSB(Properties props, ADSBDao dao) {
+	public ADSB(Configuration props, ADSBDao dao) {
 		this.props = props;
 		this.dao = dao;
-		throttleIntervalMillis = Long.valueOf(props.getProperty("rx.adsb.reconnect.interval"));
+		throttleIntervalMillis = props.getLong("rx.adsb.reconnect.interval");
 		Metrics.HEALTH_REGISTRY.register("adsb", new HealthCheck() {
 
 			@Override
@@ -73,7 +73,7 @@ public class ADSB {
 			public void run() {
 				while (!Thread.currentThread().isInterrupted() && started) {
 					String host = props.getProperty("rx.adsb.hostname");
-					int port = Integer.parseInt(props.getProperty("rx.adsb.port"));
+					int port = props.getInteger("rx.adsb.port");
 					try {
 						socket = new Socket(host, port);
 						socket.setKeepAlive(true);
@@ -158,7 +158,7 @@ public class ADSB {
 		if (thread != null) {
 			thread.interrupt();
 			try {
-				thread.join(Long.valueOf(props.getProperty("rx.adsb.timeout")));
+				thread.join(props.getLong("rx.adsb.timeout"));
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			} catch (Exception e) {
