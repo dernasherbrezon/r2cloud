@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.rx.ADSB;
 import ru.r2cloud.rx.ADSBDao;
@@ -20,6 +21,7 @@ import ru.r2cloud.web.controller.DoSetup;
 import ru.r2cloud.web.controller.Login;
 import ru.r2cloud.web.controller.Restore;
 import ru.r2cloud.web.controller.SaveConfiguration;
+import ru.r2cloud.web.controller.SaveDDNSConfiguration;
 import ru.r2cloud.web.controller.Setup;
 import ru.r2cloud.web.controller.Status;
 import ru.r2cloud.web.controller.StatusData;
@@ -43,6 +45,7 @@ public class R2Cloud {
 	private final Metrics metrics;
 	private final RtlSdrStatusDao rtlsdrStatusDao;
 	private final AutoUpdate autoUpdate;
+	private final DDNSClient ddnsClient;
 
 	public R2Cloud(String propertiesLocation) {
 		props = new Configuration(propertiesLocation);
@@ -52,6 +55,7 @@ public class R2Cloud {
 		metrics = new Metrics(props);
 		rtlsdrStatusDao = new RtlSdrStatusDao(props);
 		autoUpdate = new AutoUpdate(props);
+		ddnsClient = new DDNSClient(props);
 
 		// setup web server
 		index(new ru.r2cloud.web.controller.ADSB(props));
@@ -66,6 +70,7 @@ public class R2Cloud {
 		index(new StatusData());
 		index(new ru.r2cloud.web.controller.Configuration(props, autoUpdate));
 		index(new SaveConfiguration(props, autoUpdate));
+		index(new SaveDDNSConfiguration(props, ddnsClient, autoUpdate));
 		webServer = new WebServer(props, controllers, auth);
 	}
 
@@ -75,6 +80,7 @@ public class R2Cloud {
 			dao.start();
 			adsb.start();
 		}
+		ddnsClient.start();
 		rtlsdrStatusDao.start();
 		webServer.start();
 		LOG.info("=================================");
@@ -85,6 +91,7 @@ public class R2Cloud {
 	public void stop() {
 		dao.stop();
 		adsb.stop();
+		ddnsClient.stop();
 		rtlsdrStatusDao.stop();
 		webServer.stop();
 		metrics.stop();

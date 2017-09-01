@@ -26,7 +26,7 @@ public class WebServer extends NanoHTTPD {
 	private final StaticController staticController;
 
 	public WebServer(Configuration props, Map<String, HttpContoller> controllers, Authenticator auth) {
-		super(props.getProperty("server.hostname"), Integer.valueOf(props.getProperty("server.port")));
+		super(props.getProperty("server.hostname"), props.getInteger("server.port"));
 		pageRenderer = new HtmlRenderer(props);
 		jsonRenderer = new GsonRenderer();
 		this.auth = auth;

@@ -5,12 +5,26 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
+import java.util.logging.Logger;
 
 public class Configuration extends Properties {
 
+	private static final Logger LOG = Logger.getLogger(Configuration.class.getName());
 	private static final long serialVersionUID = 4175467887601528587L;
 	private String propertiesLocation;
+
+	private static Set<PosixFilePermission> MODE600 = new HashSet<PosixFilePermission>();
+
+	static {
+		MODE600.add(PosixFilePermission.OWNER_READ);
+		MODE600.add(PosixFilePermission.OWNER_WRITE);
+	}
 
 	public Configuration(String propertiesLocation) {
 		try (InputStream is = new FileInputStream(propertiesLocation)) {
@@ -34,6 +48,27 @@ public class Configuration extends Properties {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		try {
+			Files.setPosixFilePermissions(Paths.get(propertiesLocation), MODE600);
+		} catch (IOException e) {
+			LOG.info("unable to setup 600 permissions: " + e.getMessage());
+		}
+	}
+
+	public Long getLong(String name) {
+		String strValue = getProperty(name);
+		if (strValue == null) {
+			return null;
+		}
+		return Long.valueOf(strValue);
+	}
+
+	public Integer getInteger(String name) {
+		String strValue = getProperty(name);
+		if (strValue == null) {
+			return null;
+		}
+		return Integer.valueOf(strValue);
 	}
 
 }

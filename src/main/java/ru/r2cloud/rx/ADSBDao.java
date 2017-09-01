@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -19,6 +18,7 @@ import org.opensky.libadsb.msgs.ModeSReply;
 import org.opensky.libadsb.msgs.ModeSReply.subtype;
 
 import ru.r2cloud.model.Airplane;
+import ru.r2cloud.uitl.Configuration;
 import ru.r2cloud.uitl.NamingThreadFactory;
 
 public class ADSBDao {
@@ -26,16 +26,16 @@ public class ADSBDao {
 	private static final Logger LOG = Logger.getLogger(ADSBDao.class.getName());
 
 	private final Map<String, Airplane> latestMessages = new HashMap<String, Airplane>();
-	private final Properties props;
+	private final Configuration props;
 
 	private ScheduledExecutorService reaper;
 
-	public ADSBDao(Properties props) {
+	public ADSBDao(Configuration props) {
 		this.props = props;
 	}
 
 	public void start() {
-		long cleanupPeriodMs = Long.parseLong(props.getProperty("rx.adsb.cleanupPeriodMs"));
+		long cleanupPeriodMs = props.getLong("rx.adsb.cleanupPeriodMs");
 
 		reaper = Executors.newScheduledThreadPool(1, new NamingThreadFactory("adsb-data-reaper"));
 		reaper.scheduleAtFixedRate(new Runnable() {
