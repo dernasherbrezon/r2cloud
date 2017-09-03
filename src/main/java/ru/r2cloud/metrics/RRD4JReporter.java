@@ -53,7 +53,23 @@ public class RRD4JReporter extends ScheduledReporter {
 			update(getOrCreate(cur.getKey(), DsType.GAUGE), convertToDouble(cur.getValue().getValue()));
 		}
 		for (Entry<String, Counter> cur : counters.entrySet()) {
-			update(getOrCreate(cur.getKey(), DsType.COUNTER), cur.getValue().getCount());
+			long newValue = cur.getValue().getCount();
+			//split method getOrCreate to retrive lastDatasourceValue only once
+			//if newvalue is less than lastDatasource value, then jvm was restarted
+			//add lastValue to avoid huge spikes in graphs after application restarts/upgrades
+			RrdDb result = dbPerMetric.get(cur.getKey());
+			if (result == null) {
+				result = create(cur.getKey(), DsType.GAUGE);
+				try {
+					double lastValue = result.getLastDatasourceValue("data");
+					if (!Double.isNaN(lastValue) && lastValue > newValue) {
+						newValue += lastValue;
+					}
+				} catch (IOException e) {
+					LOG.log(Level.SEVERE, "unable to load last value", e);
+				}
+			}
+			update(result, newValue);
 		}
 	}
 
@@ -94,16 +110,25 @@ public class RRD4JReporter extends ScheduledReporter {
 		if (result != null) {
 			return result;
 		}
+		return create(metricName, type);
+	}
+
+	private RrdDb create(String metricName, DsType type) {
+		RrdDb result;
 		File path = new File(basepath, metricName + ".rrd");
 		if (!path.exists()) {
 			RrdDef rrdDef = new RrdDef(new File(basepath, metricName + ".rrd").getAbsolutePath(), System.currentTimeMillis() / 1000 - 1, STEP);
 			rrdDef.setVersion(2);
 			rrdDef.addDatasource("data", type, 2 * STEP, 0, Double.NaN);
-			rrdDef.addArchive(ConsolFun.AVERAGE, 0.5, 1, 600); // ~last 2 days. each point
-														// is a 300 seconds
-			rrdDef.addArchive(ConsolFun.AVERAGE, 0.5, 24, 775); // ~last 2 months.
-			rrdDef.addArchive(ConsolFun.AVERAGE, 0.5, 288, 797); // ~last 2 years. each
-														// point is a day
+			rrdDef.addArchive(ConsolFun.AVERAGE, 0.5, 1, 600); // ~last 2 days.
+																// each point
+			// is a 300 seconds
+			rrdDef.addArchive(ConsolFun.AVERAGE, 0.5, 24, 775); // ~last 2
+																// months.
+			rrdDef.addArchive(ConsolFun.AVERAGE, 0.5, 288, 797); // ~last 2
+																	// years.
+																	// each
+			// point is a day
 			try {
 				result = new RrdDb(rrdDef);
 			} catch (IOException e) {
