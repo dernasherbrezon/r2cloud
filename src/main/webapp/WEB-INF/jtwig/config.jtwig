@@ -1,5 +1,5 @@
-{% import '/ftl/macro.jtwig' as macros %}
-{% include '/ftl/header.jtwig' %}
+{% import 'macro.jtwig' as macros %}
+{% include 'header.jtwig' %}
       <div class="row">
       	{{ macros.menu("config") }}
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
@@ -61,4 +61,4 @@
       </div>
       <script src="/js/jquery-1.12.4.js"></script>
       <script src="/js/config.js"></script>
-{% include '/ftl/footer.jtwig' %}
+{% include 'footer.jtwig' %}

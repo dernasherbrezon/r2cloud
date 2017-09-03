@@ -195,9 +195,7 @@
 				</executions>
 				<configuration>
 					<extensionsToFilter>
-						<extensionToFilter>html</extensionToFilter>
-						<extensionToFilter>jsp</extensionToFilter>
-						<extensionToFilter>tag</extensionToFilter>
+						<extensionToFilter>jtwig</extensionToFilter>
 						<extensionToFilter>css</extensionToFilter>
 					</extensionsToFilter>
 					<excludeResources>
@@ -206,9 +204,7 @@
 						<excludeResource>data:</excludeResource>
 					</excludeResources>
 					<htmlExtensions>
-						<htmlExtension>jsp</htmlExtension>
-						<htmlExtension>tag</htmlExtension>
-						<htmlExtension>html</htmlExtension>
+						<htmlExtension>jtwig</htmlExtension>
 					</htmlExtensions>
 				</configuration>
 			</plugin>

@@ -1,5 +1,5 @@
-{% include '/ftl/header.jtwig' %}
-{% import '/ftl/macro.jtwig' as macros %}
+{% include 'header.jtwig' %}
+{% import 'macro.jtwig' as macros %}
 <link href="/css/login.css" rel="stylesheet">
       <div class="row">
 		<div class="col-md-3 col-md-offset-4 well anonForm">
@@ -22,4 +22,4 @@
 			</form>
 		</div>
       </div>
-{% include '/ftl/footer.jtwig' %}
+{% include 'footer.jtwig' %}

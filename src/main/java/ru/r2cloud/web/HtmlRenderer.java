@@ -2,6 +2,7 @@ package ru.r2cloud.web;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.Map;
 import java.util.Properties;
 
@@ -21,7 +22,7 @@ class HtmlRenderer {
 	}
 
 	Response render(String page, Map<String, Object> model) {
-		JtwigTemplate template = JtwigTemplate.classpathTemplate(basepath + "/" + page);
+		JtwigTemplate template = JtwigTemplate.fileTemplate(new File(basepath, page));
 		JtwigModel wigModel = JtwigModel.newModel(model);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		template.render(wigModel, baos);

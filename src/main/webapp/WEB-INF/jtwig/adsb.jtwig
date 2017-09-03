@@ -1,5 +1,5 @@
-{% import '/ftl/macro.jtwig' as macros %}
-{% include '/ftl/header.jtwig' %}
+{% import 'macro.jtwig' as macros %}
+{% include 'header.jtwig' %}
       <div class="row">
       	{{ macros.menu("flights") }}
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
@@ -15,4 +15,4 @@
       </div>
 	<script src="/js/adsb.js"></script>    
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAT2lh-lYB8r8fLWUvcD2H7qDruoBm_Zdg&callback=initMap" async defer></script>  
-{% include '/ftl/footer.jtwig' %}
+{% include 'footer.jtwig' %}
