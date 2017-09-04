@@ -78,11 +78,11 @@ public class Configuration {
 	}
 
 	public String getProperty(String name) {
-		String result = systemSettings.getProperty(name);
+		String result = userSettings.getProperty(name);
 		if (result != null) {
 			return result;
 		}
-		return userSettings.getProperty(name);
+		return systemSettings.getProperty(name);
 	}
 	
 	public void remove(String name) {

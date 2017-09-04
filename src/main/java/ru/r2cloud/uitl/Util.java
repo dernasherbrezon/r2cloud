@@ -1,6 +1,11 @@
 package ru.r2cloud.uitl;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.logging.Logger;
 
 public final class Util {
 	
@@ -13,6 +18,15 @@ public final class Util {
 			throw new IllegalArgumentException("unable to create basepath: " + result.getAbsolutePath());
 		}
 		return result;
+	}
+	
+	public static void toLog(Logger log, InputStream is) throws IOException {
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(is))) {
+			String curLine = null;
+			while ((curLine = in.readLine()) != null) {
+				log.info(curLine);
+			}
+		}
 	}
 	
 	private Util() {
