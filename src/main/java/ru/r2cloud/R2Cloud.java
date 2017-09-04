@@ -79,6 +79,8 @@ public class R2Cloud {
 		if ("true".equals(props.getProperty("rx.adsb.enabled"))) {
 			dao.start();
 			adsb.start();
+		} else {
+			LOG.info("adsb is disabled");
 		}
 		ddnsClient.start();
 		rtlsdrStatusDao.start();

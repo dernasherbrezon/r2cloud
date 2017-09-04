@@ -57,8 +57,8 @@ public class SaveConfiguration extends AbstractHttpController {
 
 		autoUpdate.setEnabled(WebServer.getBoolean(session, "autoUpdate"));
 
-		props.put("locaiton.lat", bean.getLat());
-		props.put("locaiton.lon", bean.getLon());
+		props.setProperty("locaiton.lat", bean.getLat());
+		props.setProperty("locaiton.lon", bean.getLon());
 		props.update();
 
 		return new Redirect("/admin/config");

@@ -4,11 +4,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Map;
-import java.util.Properties;
 
 import org.jtwig.JtwigModel;
 import org.jtwig.JtwigTemplate;
 
+import ru.r2cloud.uitl.Configuration;
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
@@ -17,7 +17,7 @@ class HtmlRenderer {
 
 	private String basepath;
 
-	HtmlRenderer(Properties props) {
+	HtmlRenderer(Configuration props) {
 		basepath = props.getProperty("server.ftl.location");
 	}
 

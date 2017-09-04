@@ -13,13 +13,15 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
-public class Configuration extends Properties {
+public class Configuration {
 
 	private static final Logger LOG = Logger.getLogger(Configuration.class.getName());
-	private static final long serialVersionUID = 4175467887601528587L;
-	private String propertiesLocation;
 
+	private final Properties userSettings = new Properties();
+	private final String userSettingsLocation;
 	private static Set<PosixFilePermission> MODE600 = new HashSet<PosixFilePermission>();
+	
+	private final Properties systemSettings = new Properties();
 
 	static {
 		MODE600.add(PosixFilePermission.OWNER_READ);
@@ -28,28 +30,32 @@ public class Configuration extends Properties {
 
 	public Configuration(String propertiesLocation) {
 		try (InputStream is = new FileInputStream(propertiesLocation)) {
-			load(is);
+			systemSettings.load(is);
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to load properties", e);
 		}
-		this.propertiesLocation = System.getProperty("user.home") + File.separator + ".r2cloud";
-		if (new File(this.propertiesLocation).exists()) {
-			try (InputStream is = new FileInputStream(this.propertiesLocation)) {
-				load(is);
+		userSettingsLocation = System.getProperty("user.home") + File.separator + ".r2cloud";
+		if (new File(userSettingsLocation).exists()) {
+			try (InputStream is = new FileInputStream(userSettingsLocation)) {
+				userSettings.load(is);
 			} catch (Exception e) {
-				throw new RuntimeException("Unable to load properties", e);
+				throw new RuntimeException("Unable to load user properties", e);
 			}
 		}
 	}
 
+	public Object setProperty(Object key, Object value) {
+		return userSettings.put(key, value);
+	}
+
 	public void update() {
-		try (FileWriter fos = new FileWriter(propertiesLocation)) {
-			store(fos, "updated");
+		try (FileWriter fos = new FileWriter(userSettingsLocation)) {
+			userSettings.store(fos, "updated");
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 		try {
-			Files.setPosixFilePermissions(Paths.get(propertiesLocation), MODE600);
+			Files.setPosixFilePermissions(Paths.get(userSettingsLocation), MODE600);
 		} catch (IOException e) {
 			LOG.info("unable to setup 600 permissions: " + e.getMessage());
 		}
@@ -69,6 +75,18 @@ public class Configuration extends Properties {
 			return null;
 		}
 		return Integer.valueOf(strValue);
+	}
+
+	public String getProperty(String name) {
+		String result = systemSettings.getProperty(name);
+		if (result != null) {
+			return result;
+		}
+		return userSettings.getProperty(name);
+	}
+	
+	public void remove(String name) {
+		userSettings.remove(name);
 	}
 
 }

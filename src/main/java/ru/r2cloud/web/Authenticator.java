@@ -146,17 +146,17 @@ public class Authenticator {
 
 	private void reloadProps() {
 		if (login != null) {
-			props.put("server.login", this.login);
+			props.setProperty("server.login", this.login);
 		} else {
 			props.remove("server.login");
 		}
 		if (salt != null) {
-			props.put("server.salt", this.salt);
+			props.setProperty("server.salt", this.salt);
 		} else {
 			props.remove("server.salt");
 		}
 		if (password != null) {
-			props.put("server.password", this.password);
+			props.setProperty("server.password", this.password);
 		} else {
 			props.remove("server.password");
 		}

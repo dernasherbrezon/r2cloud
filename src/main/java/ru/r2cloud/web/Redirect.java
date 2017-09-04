@@ -6,6 +6,7 @@ public class Redirect extends ModelAndView {
 
 	private static final long serialVersionUID = -1878622409174673786L;
 
+	@SuppressWarnings("deprecation")
 	public Redirect(String location) {
 		addHeader("Location", location);
 		setStatus(Response.Status.FOUND);
