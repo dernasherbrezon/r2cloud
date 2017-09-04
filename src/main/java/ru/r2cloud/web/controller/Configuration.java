@@ -4,6 +4,7 @@ import ru.r2cloud.AutoUpdate;
 import ru.r2cloud.ddns.DDNSType;
 import ru.r2cloud.model.ConfigurationBean;
 import ru.r2cloud.model.DDNSBean;
+import ru.r2cloud.ssl.AcmeClient;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
@@ -12,10 +13,12 @@ public class Configuration extends AbstractHttpController {
 
 	private final ru.r2cloud.uitl.Configuration props;
 	private final AutoUpdate autoUpdate;
+	private final AcmeClient acmeClient;
 
-	public Configuration(ru.r2cloud.uitl.Configuration props, AutoUpdate autoUpdate) {
+	public Configuration(ru.r2cloud.uitl.Configuration props, AutoUpdate autoUpdate, AcmeClient acmeClient) {
 		this.props = props;
 		this.autoUpdate = autoUpdate;
+		this.acmeClient = acmeClient;
 	}
 
 	@Override
@@ -25,6 +28,7 @@ public class Configuration extends AbstractHttpController {
 		result.put("autoUpdate", autoUpdate.isEnabled());
 		result.put("ddnstypes", DDNSType.values());
 		result.put("ddnsEntity", DDNSBean.fromConfig(props));
+		result.put("sslEnabled", acmeClient.isSSLEnabled());
 		result.put("activeTab", "general");
 		return result;
 	}

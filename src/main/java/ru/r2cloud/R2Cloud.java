@@ -9,6 +9,7 @@ import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.rx.ADSB;
 import ru.r2cloud.rx.ADSBDao;
+import ru.r2cloud.ssl.AcmeClient;
 import ru.r2cloud.uitl.Configuration;
 import ru.r2cloud.uitl.ShutdownLoggingManager;
 import ru.r2cloud.web.Authenticator;
@@ -46,6 +47,7 @@ public class R2Cloud {
 	private final RtlSdrStatusDao rtlsdrStatusDao;
 	private final AutoUpdate autoUpdate;
 	private final DDNSClient ddnsClient;
+	private final AcmeClient acmeClient;
 
 	public R2Cloud(String propertiesLocation) {
 		props = new Configuration(propertiesLocation);
@@ -56,6 +58,7 @@ public class R2Cloud {
 		rtlsdrStatusDao = new RtlSdrStatusDao(props);
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
+		acmeClient = new AcmeClient(props);
 
 		// setup web server
 		index(new ru.r2cloud.web.controller.ADSB(props));
@@ -68,7 +71,7 @@ public class R2Cloud {
 		index(new DoRestore(auth));
 		index(new Status());
 		index(new StatusData());
-		index(new ru.r2cloud.web.controller.Configuration(props, autoUpdate));
+		index(new ru.r2cloud.web.controller.Configuration(props, autoUpdate, acmeClient));
 		index(new SaveConfiguration(props, autoUpdate));
 		index(new SaveDDNSConfiguration(props, ddnsClient, autoUpdate));
 		webServer = new WebServer(props, controllers, auth);
@@ -82,6 +85,7 @@ public class R2Cloud {
 		} else {
 			LOG.info("adsb is disabled");
 		}
+		acmeClient.start();
 		ddnsClient.start();
 		rtlsdrStatusDao.start();
 		webServer.start();
@@ -93,6 +97,7 @@ public class R2Cloud {
 	public void stop() {
 		dao.stop();
 		adsb.stop();
+		acmeClient.stop();
 		ddnsClient.stop();
 		rtlsdrStatusDao.stop();
 		webServer.stop();

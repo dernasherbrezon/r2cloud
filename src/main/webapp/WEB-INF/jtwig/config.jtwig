@@ -8,6 +8,7 @@
 				  <ul class="nav nav-tabs" role="tablist">
 				    <li role="presentation" {% if (activeTab == "general") %}class="active"{% endif %}><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a></li>
 				    <li role="presentation" {% if (activeTab == "ddns") %}class="active"{% endif %}><a href="#ddns" aria-controls="ddns" role="tab" data-toggle="tab">DDNS</a></li>
+				    <li role="presentation" {% if (activeTab == "ssl") %}class="active"{% endif %}><a href="#ssl" aria-controls="ssl" role="tab" data-toggle="tab">SSL</a></li>
 				  </ul>
 				  <div class="tab-content">
 				    <div role="tabpanel" class="tab-pane {% if (activeTab == "general") %}active{% endif %}" id="general" style="margin-top: 20px;">
@@ -51,6 +52,21 @@
 							  {{ macros.input("password", "noipPassword", ddnsEntity.noipPassword, "Password", "", errors ) }}
 							  {{ macros.input("text", "noipDomain", ddnsEntity.noipDomain, "Domain", "", errors ) }}
 							</div>
+							<button type="submit" class="btn btn-default">Save</button>
+						</form>
+					</div>				  
+				    <div role="tabpanel" class="tab-pane {% if (activeTab == "ssl") %}active{% endif %}" id="ssl" style="margin-top: 20px;">
+						<form action="/admin/config/ssl/save" method="POST">
+							<div class="checkbox">
+							  	<label>
+							      <input type="checkbox" name="sslEnabled" value="true" {% if (sslEnabled != null and sslEnabled) %}checked="true"{% endif %}> SSL enabled
+							    </label>
+						  	</div>
+							<div class="checkbox">
+							  	<label>
+							      <input type="checkbox" name="agreeWithToC" value="true" {% if (sslEnabled != null and sslEnabled) %}checked="true"{% endif %}> Agree with <a href="https://letsencrypt.org/documents/LE-SA-v1.1.1-August-1-2016.pdf" target="blank">Terms and Conditions</a>
+							    </label>
+						  	</div>
 							<button type="submit" class="btn btn-default">Save</button>
 						</form>
 					</div>				  
