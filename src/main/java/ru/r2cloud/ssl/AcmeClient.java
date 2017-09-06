@@ -86,52 +86,57 @@ public class AcmeClient {
 				}
 				messages.clear();
 				
-				Registration reg = loadOrCreateRegistration();
-				if (reg == null) {
-					return;
-				}
-				byte[] csr;
-				try (FileInputStream fis = new FileInputStream(new File(basepath, "domain.csr"))) {
-					csr = CertificateUtils.readCSR(fis).getEncoded();
-				} catch (Exception e) {
-					LOG.log(Level.SEVERE, "unable to load csr. trying to create new", e);
-					CSRBuilder csrb = createCSR(reg);
-					if (csrb == null) {
-						return;
-					}
-					try {
-						csr = csrb.getEncoded();
-					} catch (IOException e1) {
-						LOG.log(Level.SEVERE, "unable to encode csr", e1);
-						return;
-					}
-				}
-
-				Certificate certificate;
-				try {
-					certificate = reg.requestCertificate(csr);
-				} catch (AcmeUnauthorizedException e) {
-					LOG.info("authorizations expired. create new csr");
-					CSRBuilder csrb = createCSR(reg);
-					if (csrb == null) {
-						return;
-					}
-					try {
-						certificate = reg.requestCertificate(csrb.getEncoded());
-					} catch (Exception e1) {
-						LOG.log(Level.SEVERE, "unable to renew certificate with new csr", e1);
-						return;
-					}
-				} catch (AcmeException e) {
-					LOG.log(Level.SEVERE, "unable to renew certificate", e);
-					return;
-				}
-				
-				downloadCertificate(certificate);
+				renew();
 				
 				running.set(false);
 			}
+
 		}, delay, TimeUnit.MILLISECONDS);
+	}
+
+	private void renew() {
+		Registration reg = loadOrCreateRegistration();
+		if (reg == null) {
+			return;
+		}
+		byte[] csr;
+		try (FileInputStream fis = new FileInputStream(new File(basepath, "domain.csr"))) {
+			csr = CertificateUtils.readCSR(fis).getEncoded();
+		} catch (Exception e) {
+			LOG.log(Level.SEVERE, "unable to load csr. trying to create new", e);
+			CSRBuilder csrb = createCSR(reg);
+			if (csrb == null) {
+				return;
+			}
+			try {
+				csr = csrb.getEncoded();
+			} catch (IOException e1) {
+				LOG.log(Level.SEVERE, "unable to encode csr", e1);
+				return;
+			}
+		}
+		
+		Certificate certificate;
+		try {
+			certificate = reg.requestCertificate(csr);
+		} catch (AcmeUnauthorizedException e) {
+			LOG.info("authorizations expired. create new csr");
+			CSRBuilder csrb = createCSR(reg);
+			if (csrb == null) {
+				return;
+			}
+			try {
+				certificate = reg.requestCertificate(csrb.getEncoded());
+			} catch (Exception e1) {
+				LOG.log(Level.SEVERE, "unable to renew certificate with new csr", e1);
+				return;
+			}
+		} catch (AcmeException e) {
+			LOG.log(Level.SEVERE, "unable to renew certificate", e);
+			return;
+		}
+		
+		downloadCertificate(certificate);
 	}
 
 	public void setup() {
@@ -143,34 +148,39 @@ public class AcmeClient {
 
 			@Override
 			public void run() {
-				messages.add("starting up...", LOG);
-
-				Registration reg = loadOrCreateRegistration();
-				if (reg == null) {
-					return;
-				}
-
-				CSRBuilder csrb = createCSR(reg);
-				if (csrb == null) {
-					return;
-				}
-
-				messages.add("requesting certificate", LOG);
-				Certificate certificate;
-				try {
-					certificate = reg.requestCertificate(csrb.getEncoded());
-				} catch (Exception e) {
-					String message = "unable to request certificate";
-					messages.add(message);
-					LOG.log(Level.SEVERE, message, e);
-					return;
-				}
-
-				downloadCertificate(certificate);
+				doSetup();
 
 				running.set(false);
 			}
+
 		});
+	}
+
+	private void doSetup() {
+		messages.add("starting up...", LOG);
+		
+		Registration reg = loadOrCreateRegistration();
+		if (reg == null) {
+			return;
+		}
+		
+		CSRBuilder csrb = createCSR(reg);
+		if (csrb == null) {
+			return;
+		}
+		
+		messages.add("requesting certificate", LOG);
+		Certificate certificate;
+		try {
+			certificate = reg.requestCertificate(csrb.getEncoded());
+		} catch (Exception e) {
+			String message = "unable to request certificate";
+			messages.add(message);
+			LOG.log(Level.SEVERE, message, e);
+			return;
+		}
+		
+		downloadCertificate(certificate);
 	}
 	
 	private void downloadCertificate(Certificate certificate) {

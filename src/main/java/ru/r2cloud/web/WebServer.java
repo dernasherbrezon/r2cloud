@@ -140,6 +140,14 @@ public class WebServer extends NanoHTTPD {
 		}
 		return Double.valueOf(param);
 	}
+	
+	public static Integer getInteger(IHTTPSession session, String name) {
+		String param = getParameter(session, name);
+		if (param == null || param.trim().length() == 0) {
+			return null;
+		}
+		return Integer.valueOf(param);
+	}
 
 	public static boolean getBoolean(IHTTPSession session, String name) {
 		String param = getParameter(session, name);

@@ -72,7 +72,7 @@
 									<ul class="fa-ul" id="sslMessages">
 									    <li><i class="fa-li fa"></i><b>Log</b></li>
 									  {% for cur in sslEntity.messages %}
-									  	<li><i class="fa-li fa {% if (loop.last) %}fa-circle-o-notch fa-spin{% endif %}"></i>{{ cur }}</li>
+									  	<li><i class="fa-li fa {% if (loop.last and sslEntity.sslRunning ) %}fa-circle-o-notch fa-spin{% endif %}"></i>{{ cur }}</li>
 									  {% endfor %}
 									</ul>
 								</div>

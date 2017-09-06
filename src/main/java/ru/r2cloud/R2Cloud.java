@@ -19,6 +19,7 @@ import ru.r2cloud.web.controller.ADSBData;
 import ru.r2cloud.web.controller.DoLogin;
 import ru.r2cloud.web.controller.DoRestore;
 import ru.r2cloud.web.controller.DoSetup;
+import ru.r2cloud.web.controller.GetAcmeLog;
 import ru.r2cloud.web.controller.Login;
 import ru.r2cloud.web.controller.Restore;
 import ru.r2cloud.web.controller.SaveConfiguration;
@@ -76,6 +77,7 @@ public class R2Cloud {
 		index(new SaveConfiguration(props, autoUpdate));
 		index(new SaveDDNSConfiguration(props, ddnsClient, autoUpdate));
 		index(new SaveSSLConfiguration(props, acmeClient));
+		index(new GetAcmeLog(acmeClient));
 		webServer = new WebServer(props, controllers, auth);
 	}
 
