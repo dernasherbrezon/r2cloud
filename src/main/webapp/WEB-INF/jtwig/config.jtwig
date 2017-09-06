@@ -56,19 +56,31 @@
 						</form>
 					</div>				  
 				    <div role="tabpanel" class="tab-pane {% if (activeTab == "ssl") %}active{% endif %}" id="ssl" style="margin-top: 20px;">
+				    	<div class="row">
 						<form action="/admin/config/ssl/save" method="POST">
+					    	<div class="col-md-6">
 							<div class="checkbox">
 							  	<label>
-							      <input type="checkbox" name="sslEnabled" value="true" {% if (sslEnabled != null and sslEnabled) %}checked="true"{% endif %}> SSL enabled
+							      <input type="checkbox" name="sslEnabled" value="true" {% if ((sslEntity.sslEnabled != null and sslEntity.sslEnabled) or (sslEntity.sslRunning != null and sslEntity.sslRunning)) %}checked="true"{% endif %}> SSL enabled
 							    </label>
 						  	</div>
-							<div class="checkbox">
-							  	<label>
-							      <input type="checkbox" name="agreeWithToC" value="true" {% if (sslEnabled != null and sslEnabled) %}checked="true"{% endif %}> Agree with <a href="https://letsencrypt.org/documents/LE-SA-v1.1.1-August-1-2016.pdf" target="blank">Terms and Conditions</a>
-							    </label>
-						  	</div>
-							<button type="submit" class="btn btn-default">Save</button>
+						  	{{ macros.checkbox("agreeWithToC", ((sslEntity.sslEnabled != null and sslEntity.sslEnabled) or (sslEntity.sslRunning != null and sslEntity.sslRunning)), "Agree with <a href=\"https://letsencrypt.org/documents/LE-SA-v1.1.1-August-1-2016.pdf\" target=\"blank\">Terms and Conditions</a>", errors) }}
+							<button type="submit" {% if (sslEntity.sslRunning != null and sslEntity.sslRunning) %}disabled="disabled"{% endif %} class="btn btn-default">Save</button>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<ul class="fa-ul" id="sslMessages">
+									    <li><i class="fa-li fa"></i><b>Log</b></li>
+									  {% for cur in sslEntity.messages %}
+									  	<li><i class="fa-li fa {% if (loop.last) %}fa-circle-o-notch fa-spin{% endif %}"></i>{{ cur }}</li>
+									  {% endfor %}
+									</ul>
+								</div>
+							</div>
+							{% if (sslEntity.sslRunning != null and sslEntity.sslRunning) %}
+							{% endif %}
 						</form>
+						</div>
 					</div>				  
 				  </div>				  
 			  </div>

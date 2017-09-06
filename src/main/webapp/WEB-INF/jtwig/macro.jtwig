@@ -10,6 +10,23 @@
   </div>
 {% endmacro %}
 
+{% macro checkbox (name, value, label, errors) %}
+	{% if (errors != null and errors.get(name) != null) %}
+	<div class="has-error">
+	{% endif %}
+	<div class="checkbox">
+	  	<label>
+	      <input type="checkbox" name="{{ name }}" value="true" {% if (value != null and value) %}checked="true"{% endif %}> {{ label }}
+	    </label>
+		{% if (errors != null and errors.get(name) != null) %}
+	    	<span class="help-block">{{ errors.get(name) }}</span>
+	    {% endif %}
+  	</div>
+	{% if (errors != null and errors.get(name) != null) %}
+	</div>
+	{% endif %}  	
+{% endmacro %}
+
 {% macro generalError (errors) %}
 	{% if (errors != null and errors.getGeneral() != null ) %}
 	<div class="alert alert-danger alert-dismissible" role="alert">
