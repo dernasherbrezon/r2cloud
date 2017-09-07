@@ -8,6 +8,7 @@ import ru.r2cloud.model.SSLStatus;
 import ru.r2cloud.ssl.AcmeClient;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
+import ru.r2cloud.web.WebServer;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
 public class Configuration extends AbstractHttpController {
@@ -24,18 +25,17 @@ public class Configuration extends AbstractHttpController {
 
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
-		SSLStatus sslStatus = new SSLStatus();
-		sslStatus.setMessages(acmeClient.getMessages());
-		sslStatus.setSslEnabled(acmeClient.isSSLEnabled());
-		sslStatus.setSslRunning(acmeClient.isRunning());
-
+		String tab = WebServer.getParameter(session, "tab");
+		if (tab == null) {
+			tab = "general";
+		}
 		ModelAndView result = new ModelAndView("config");
 		result.put("entity", ConfigurationBean.fromConfig(props));
 		result.put("autoUpdate", autoUpdate.isEnabled());
 		result.put("ddnstypes", DDNSType.values());
 		result.put("ddnsEntity", DDNSBean.fromConfig(props));
-		result.put("sslEntity", sslStatus);
-		result.put("activeTab", "general");
+		result.put("sslEntity", SSLStatus.fromAcmeClient(acmeClient));
+		result.put("activeTab", tab);
 		return result;
 	}
 

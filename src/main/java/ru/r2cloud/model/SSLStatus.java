@@ -2,6 +2,7 @@ package ru.r2cloud.model;
 
 import java.util.List;
 
+import ru.r2cloud.ssl.AcmeClient;
 import ru.r2cloud.web.ValidationResult;
 import ru.r2cloud.web.WebServer;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
@@ -49,6 +50,15 @@ public class SSLStatus {
 		SSLStatus result = new SSLStatus();
 		result.setSslEnabled(WebServer.getBoolean(session, "sslEnabled"));
 		result.setAgreeWithToC(WebServer.getBoolean(session, "agreeWithToC"));
+		return result;
+	}
+
+	public static SSLStatus fromAcmeClient(AcmeClient acmeClient) {
+		SSLStatus result = new SSLStatus();
+		result.setMessages(acmeClient.getMessages());
+		result.setSslEnabled(acmeClient.isSSLEnabled());
+		result.setSslRunning(acmeClient.isRunning());
+		result.setAgreeWithToC(result.isSslEnabled() || result.isSslRunning());
 		return result;
 	}
 

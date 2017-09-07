@@ -10,9 +10,9 @@
 				    <li role="presentation" {% if (activeTab == "ddns") %}class="active"{% endif %}><a href="#ddns" aria-controls="ddns" role="tab" data-toggle="tab">DDNS</a></li>
 				    <li role="presentation" {% if (activeTab == "ssl") %}class="active"{% endif %}><a href="#ssl" aria-controls="ssl" role="tab" data-toggle="tab">SSL</a></li>
 				  </ul>
+				  <form action="/admin/config/save" method="POST">
 				  <div class="tab-content">
 				    <div role="tabpanel" class="tab-pane {% if (activeTab == "general") %}active{% endif %}" id="general" style="margin-top: 20px;">
-						<form action="/admin/config/save" method="POST">
 						  <div class="row">
 						  	<div class="col-md-4">
 						  	  {{ macros.input("text", "lat", entity.lat, "Latitude", "", errors) }}
@@ -32,41 +32,38 @@
 						      <input type="checkbox" name="autoUpdate" value="true" {% if (autoUpdate != null and autoUpdate) %}checked="true"{% endif %}> Auto-update enabled
 						    </label>
 						  </div>
-						  <button type="submit" class="btn btn-default">Save</button>
-						</form>
+						  <button type="submit" name="action" value="general" class="btn btn-default">Save</button>
 				    </div>
 				    <div role="tabpanel" class="tab-pane {% if (activeTab == "ddns") %}active{% endif %}" id="ddns" style="margin-top: 20px;">
-						<form action="/admin/config/ddns/save" method="POST">
-							<div class="form-group">
-  								<label for="ddnsType">Type</label>
-								<select class="form-control" name="type" id="ddnsType">
-								  {% for cur in ddnstypes %}
-								  	 <option value="{{ cur }}" {% if (ddnsEntity.type == cur) %}selected{% endif %}>{{ cur }}</option>
-								  {% endfor %}
-								</select>
-							</div>
-							<div id="NONE" {% if (ddnsEntity.type != 'NONE') %}style="display: none;"{% endif %} class="js-type-config">
-							</div>
-							<div id="NOIP" {% if (ddnsEntity.type != 'NOIP') %}style="display: none;"{% endif %} class="js-type-config">
-							  {{ macros.input("text", "noipUsername", ddnsEntity.noipUsername, "User name", "", errors ) }}
-							  {{ macros.input("password", "noipPassword", ddnsEntity.noipPassword, "Password", "", errors ) }}
-							  {{ macros.input("text", "noipDomain", ddnsEntity.noipDomain, "Domain", "", errors ) }}
-							</div>
-							<button type="submit" class="btn btn-default">Save</button>
-						</form>
-					</div>				  
+						<div class="form-group">
+							<label for="ddnsType">Type</label>
+							<select class="form-control" name="type" id="ddnsType">
+							  {% for cur in ddnstypes %}
+							  	 <option value="{{ cur }}" {% if (ddnsEntity.type == cur) %}selected{% endif %}>{{ cur }}</option>
+							  {% endfor %}
+							</select>
+						</div>
+						<div id="NONE" {% if (ddnsEntity.type != 'NONE') %}style="display: none;"{% endif %} class="js-type-config">
+						</div>
+						<div id="NOIP" {% if (ddnsEntity.type != 'NOIP') %}style="display: none;"{% endif %} class="js-type-config">
+						  {{ macros.input("text", "noipUsername", ddnsEntity.noipUsername, "User name", "", errors ) }}
+						  {{ macros.input("password", "noipPassword", ddnsEntity.noipPassword, "Password", "", errors ) }}
+						  {{ macros.input("text", "noipDomain", ddnsEntity.noipDomain, "Domain", "", errors ) }}
+						</div>
+						<button type="submit" name="action" value="ddns" class="btn btn-default">Save</button>
+					</div> 
 				    <div role="tabpanel" class="tab-pane {% if (activeTab == "ssl") %}active{% endif %}" id="ssl" style="margin-top: 20px;">
 				    	<div class="row">
-						<form action="/admin/config/ssl/save" method="POST">
 					    	<div class="col-md-6">
 							<div class="checkbox">
 							  	<label>
 							      <input type="checkbox" name="sslEnabled" value="true" {% if ((sslEntity.sslEnabled != null and sslEntity.sslEnabled) or (sslEntity.sslRunning != null and sslEntity.sslRunning)) %}checked="true"{% endif %}> SSL enabled
 							    </label>
 						  	</div>
-						  	{{ macros.checkbox("agreeWithToC", ((sslEntity.sslEnabled != null and sslEntity.sslEnabled) or (sslEntity.sslRunning != null and sslEntity.sslRunning)), "Agree with <a href=\"https://letsencrypt.org/documents/LE-SA-v1.1.1-August-1-2016.pdf\" target=\"blank\">Terms and Conditions</a>", errors) }}
-							<button type="submit" {% if (sslEntity.sslRunning != null and sslEntity.sslRunning) %}disabled="disabled"{% endif %} class="btn btn-default">Save</button>
+						  	{{ macros.checkbox("agreeWithToC", ((sslEntity.agreeWithToC != null and sslEntity.agreeWithToC)), "Agree with <a href=\"https://letsencrypt.org/documents/LE-SA-v1.1.1-August-1-2016.pdf\" target=\"blank\">Terms and Conditions</a>", errors) }}
+							<button type="submit" name="action" value="ssl" {% if (sslEntity.sslRunning != null and sslEntity.sslRunning) %}disabled="disabled"{% endif %} class="btn btn-default">Save</button>
 							</div>
+							{% if (sslEntity.sslRunning != null and sslEntity.sslRunning) %}
 							<div class="col-md-6">
 								<div class="form-group">
 									<ul class="fa-ul" id="sslMessages">
@@ -77,12 +74,11 @@
 									</ul>
 								</div>
 							</div>
-							{% if (sslEntity.sslRunning != null and sslEntity.sslRunning) %}
 							{% endif %}
-						</form>
 						</div>
 					</div>				  
 				  </div>				  
+				  </form>
 			  </div>
 		  </div>     
         </div>
