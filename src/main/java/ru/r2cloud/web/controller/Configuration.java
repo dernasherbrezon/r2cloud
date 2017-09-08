@@ -4,7 +4,7 @@ import ru.r2cloud.AutoUpdate;
 import ru.r2cloud.ddns.DDNSType;
 import ru.r2cloud.model.ConfigurationBean;
 import ru.r2cloud.model.DDNSBean;
-import ru.r2cloud.model.SSLStatus;
+import ru.r2cloud.model.SSLBean;
 import ru.r2cloud.ssl.AcmeClient;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
@@ -34,7 +34,7 @@ public class Configuration extends AbstractHttpController {
 		result.put("autoUpdate", autoUpdate.isEnabled());
 		result.put("ddnstypes", DDNSType.values());
 		result.put("ddnsEntity", DDNSBean.fromConfig(props));
-		result.put("sslEntity", SSLStatus.fromAcmeClient(acmeClient));
+		result.put("sslEntity", SSLBean.fromAcmeClient(acmeClient));
 		result.put("activeTab", tab);
 		return result;
 	}

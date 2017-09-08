@@ -7,7 +7,7 @@ import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.ddns.DDNSType;
 import ru.r2cloud.model.ConfigurationBean;
 import ru.r2cloud.model.DDNSBean;
-import ru.r2cloud.model.SSLStatus;
+import ru.r2cloud.model.SSLBean;
 import ru.r2cloud.ssl.AcmeClient;
 import ru.r2cloud.uitl.Configuration;
 import ru.r2cloud.web.AbstractHttpController;
@@ -39,7 +39,7 @@ public class SaveConfiguration extends AbstractHttpController {
 		ValidationResult errors = new ValidationResult();
 		ConfigurationBean bean = null;
 		DDNSBean ddnsBean = null;
-		SSLStatus sslBean = null;
+		SSLBean sslBean = null;
 		if (action.equals("general")) {
 			Double lat = WebServer.getDouble(session, "lat");
 			Double lon = WebServer.getDouble(session, "lon");
@@ -58,7 +58,7 @@ public class SaveConfiguration extends AbstractHttpController {
 			ddnsBean = DDNSBean.fromSession(session);
 			errors = ddnsBean.validate();
 		} else if (action.equals("ssl")) {
-			sslBean = SSLStatus.fromSession(session);
+			sslBean = SSLBean.fromSession(session);
 			errors = sslBean.validate();
 		}
 
@@ -79,7 +79,7 @@ public class SaveConfiguration extends AbstractHttpController {
 			if (sslBean != null) {
 				result.put("sslEntity", sslBean);
 			} else {
-				result.put("sslEntity", SSLStatus.fromAcmeClient(acmeClient));
+				result.put("sslEntity", SSLBean.fromAcmeClient(acmeClient));
 			}
 			result.put("autoUpdate", autoUpdate.isEnabled());
 			result.put("ddnstypes", DDNSType.values());
@@ -99,6 +99,8 @@ public class SaveConfiguration extends AbstractHttpController {
 			ddnsClient.start();
 		} else if (sslBean != null) {
 			if (sslBean.isSslEnabled() && !acmeClient.isSSLEnabled()) {
+				props.setProperty("acme.ssl.domain", sslBean.getSslDomain());
+				props.update();
 				acmeClient.setup();
 			}
 		}

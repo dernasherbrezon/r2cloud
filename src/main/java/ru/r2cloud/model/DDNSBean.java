@@ -50,7 +50,7 @@ public class DDNSBean {
 		entity.setNoipUsername(props.getProperty("ddns.noip.username"));
 		entity.setNoipPassword(props.getProperty("ddns.noip.password"));
 		entity.setNoipDomain(props.getProperty("ddns.noip.domain"));
-		entity.setType(DDNSType.valueOf(props.getProperty("ddns.type")));
+		entity.setType(props.getDdnsType("ddns.type"));
 		return entity;
 	}
 

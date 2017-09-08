@@ -38,6 +38,7 @@ import org.shredzone.acme4j.util.CSRBuilder;
 import org.shredzone.acme4j.util.CertificateUtils;
 import org.shredzone.acme4j.util.KeyPairUtils;
 
+import ru.r2cloud.ddns.DDNSType;
 import ru.r2cloud.uitl.Configuration;
 import ru.r2cloud.uitl.NamingThreadFactory;
 import ru.r2cloud.uitl.Util;
@@ -85,9 +86,9 @@ public class AcmeClient {
 					return;
 				}
 				messages.clear();
-				
+
 				renew();
-				
+
 				running.set(false);
 			}
 
@@ -115,7 +116,7 @@ public class AcmeClient {
 				return;
 			}
 		}
-		
+
 		Certificate certificate;
 		try {
 			certificate = reg.requestCertificate(csr);
@@ -135,7 +136,7 @@ public class AcmeClient {
 			LOG.log(Level.SEVERE, "unable to renew certificate", e);
 			return;
 		}
-		
+
 		downloadCertificate(certificate);
 	}
 
@@ -158,17 +159,17 @@ public class AcmeClient {
 
 	private void doSetup() {
 		messages.add("starting up...", LOG);
-		
+
 		Registration reg = loadOrCreateRegistration();
 		if (reg == null) {
 			return;
 		}
-		
+
 		CSRBuilder csrb = createCSR(reg);
 		if (csrb == null) {
 			return;
 		}
-		
+
 		messages.add("requesting certificate", LOG);
 		Certificate certificate;
 		try {
@@ -179,10 +180,10 @@ public class AcmeClient {
 			LOG.log(Level.SEVERE, message, e);
 			return;
 		}
-		
+
 		downloadCertificate(certificate);
 	}
-	
+
 	private void downloadCertificate(Certificate certificate) {
 		messages.add("downloading certificate", LOG);
 		X509Certificate cert;
@@ -194,9 +195,9 @@ public class AcmeClient {
 			LOG.log(Level.SEVERE, message, e);
 			return;
 		}
-		
+
 		scheduleRenew(cert);
-		
+
 		messages.add("downloading certificate chain", LOG);
 		X509Certificate[] chain;
 		try {
@@ -216,7 +217,7 @@ public class AcmeClient {
 			LOG.log(Level.SEVERE, message, e);
 			return;
 		}
-		
+
 		messages.add("reloading nginx configuration", LOG);
 		try {
 			new ProcessBuilder().inheritIO().command(new String[] { "sudo", config.getProperty("nginx.location"), "-s", "reload" }).start();
@@ -226,13 +227,13 @@ public class AcmeClient {
 			LOG.log(Level.SEVERE, message, e);
 			return;
 		}
-		
+
 		config.setProperty("acme.ssl.enabled", "true");
 		config.update();
 	}
 
 	private CSRBuilder createCSR(Registration reg) {
-		String domain = config.getProperty("ddns.noip.domain");
+		String domain = getSslDomain();
 		try {
 			authorize(reg, domain);
 		} catch (Exception e) {
@@ -410,5 +411,16 @@ public class AcmeClient {
 
 	public List<String> getMessages() {
 		return messages.get();
+	}
+
+	public String getSslDomain() {
+		String result = config.getProperty("acme.ssl.domain");
+		if (result == null || result.trim().length() == 0) {
+			DDNSType type = config.getDdnsType("ddns.type");
+			if (type != null && type.equals(DDNSType.NOIP)) {
+				result = config.getProperty("ddns.noip.domain");
+			}
+		}
+		return result;
 	}
 }

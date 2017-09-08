@@ -13,6 +13,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import ru.r2cloud.ddns.DDNSType;
+
 public class Configuration {
 
 	private static final Logger LOG = Logger.getLogger(Configuration.class.getName());
@@ -91,6 +93,14 @@ public class Configuration {
 			return result;
 		}
 		return systemSettings.getProperty(name);
+	}
+	
+	public DDNSType getDdnsType(String name) {
+		String str = getProperty(name);
+		if( str == null || str.trim().length() == 0 ) {
+			return null;
+		}
+		return DDNSType.valueOf(str);
 	}
 
 	public void remove(String name) {

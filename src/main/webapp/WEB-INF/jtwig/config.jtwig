@@ -55,6 +55,7 @@
 				    <div role="tabpanel" class="tab-pane {% if (activeTab == "ssl") %}active{% endif %}" id="ssl" style="margin-top: 20px;">
 				    	<div class="row">
 					    	<div class="col-md-6">
+					    	{{ macros.input("text", "sslDomain", sslEntity.sslDomain, "Domain", "", errors ) }}
 							<div class="checkbox">
 							  	<label>
 							      <input type="checkbox" name="sslEnabled" value="true" {% if ((sslEntity.sslEnabled != null and sslEntity.sslEnabled) or (sslEntity.sslRunning != null and sslEntity.sslRunning)) %}checked="true"{% endif %}> SSL enabled
