@@ -216,6 +216,19 @@ public class AcmeClient {
 			LOG.log(Level.SEVERE, message, e);
 			return;
 		}
+		
+		messages.add("reloading nginx configuration", LOG);
+		try {
+			new ProcessBuilder().inheritIO().command(new String[] { "sudo", config.getProperty("nginx.location"), "-s", "reload" }).start();
+		} catch (IOException e) {
+			String message = "unable to reload configuration";
+			messages.add(message);
+			LOG.log(Level.SEVERE, message, e);
+			return;
+		}
+		
+		config.setProperty("acme.ssl.enabled", "true");
+		config.update();
 	}
 
 	private CSRBuilder createCSR(Registration reg) {
@@ -388,7 +401,7 @@ public class AcmeClient {
 	}
 
 	public boolean isSSLEnabled() {
-		return new File(basepath, "domain-chain.crt").exists();
+		return config.getBoolean("acme.ssl.enabled");
 	}
 
 	public boolean isRunning() {

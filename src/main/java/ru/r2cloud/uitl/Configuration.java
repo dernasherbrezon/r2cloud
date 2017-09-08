@@ -20,7 +20,7 @@ public class Configuration {
 	private final Properties userSettings = new Properties();
 	private final String userSettingsLocation;
 	private static Set<PosixFilePermission> MODE600 = new HashSet<PosixFilePermission>();
-	
+
 	private final Properties systemSettings = new Properties();
 
 	static {
@@ -77,6 +77,14 @@ public class Configuration {
 		return Integer.valueOf(strValue);
 	}
 
+	public boolean getBoolean(String string) {
+		String str = getProperty(string);
+		if (str == null) {
+			return false;
+		}
+		return Boolean.valueOf(str);
+	}
+
 	public String getProperty(String name) {
 		String result = userSettings.getProperty(name);
 		if (result != null) {
@@ -84,7 +92,7 @@ public class Configuration {
 		}
 		return systemSettings.getProperty(name);
 	}
-	
+
 	public void remove(String name) {
 		userSettings.remove(name);
 	}
