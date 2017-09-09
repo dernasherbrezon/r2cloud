@@ -16,5 +16,6 @@ if [ -f /run/nginx.pid ]; then
 fi
 
 cp ${config.installDir}/etc/sudoers-nginx.conf /etc/sudoers.d/nginx
+chmod 440 /etc/sudoers.d/nginx
 
 usermod -a -G systemd-journal pi
