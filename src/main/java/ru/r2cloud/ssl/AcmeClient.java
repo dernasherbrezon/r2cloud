@@ -41,6 +41,7 @@ import org.shredzone.acme4j.util.KeyPairUtils;
 import ru.r2cloud.ddns.DDNSType;
 import ru.r2cloud.uitl.Configuration;
 import ru.r2cloud.uitl.NamingThreadFactory;
+import ru.r2cloud.uitl.SafeRunnable;
 import ru.r2cloud.uitl.Util;
 
 public class AcmeClient {
@@ -77,10 +78,10 @@ public class AcmeClient {
 	private void scheduleRenew(X509Certificate certificate) {
 		long delay = certificate.getNotAfter().getTime() - System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7);
 		messages.add("Schedule certificate renewal. NotAfter: " + certificate.getNotAfter() + " Renew at: " + new Date(certificate.getNotAfter().getTime() - TimeUnit.DAYS.toMillis(7)), LOG);
-		executor.schedule(new Runnable() {
+		executor.schedule(new SafeRunnable() {
 
 			@Override
-			public void run() {
+			public void doRun() {
 				if (!running.compareAndSet(false, true)) {
 					LOG.info("acmeclient is already running. skip renew");
 					return;
@@ -145,10 +146,10 @@ public class AcmeClient {
 			return;
 		}
 		messages.clear();
-		executor.submit(new Runnable() {
+		executor.submit(new SafeRunnable() {
 
 			@Override
-			public void run() {
+			public void doRun() {
 				doSetup();
 
 				running.set(false);

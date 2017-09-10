@@ -15,6 +15,7 @@ import ru.r2cloud.metrics.MetricFormat;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.uitl.Configuration;
 import ru.r2cloud.uitl.ResultUtil;
+import ru.r2cloud.uitl.SafeRunnable;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry.MetricSupplier;
@@ -67,10 +68,10 @@ public class ADSB {
 		// give some time for dump1090 to initialize - thus throttle
 		throttle();
 
-		thread = new Thread(new Runnable() {
-
+		thread = new Thread(new SafeRunnable() {
+			
 			@Override
-			public void run() {
+			public void doRun() {
 				while (!Thread.currentThread().isInterrupted() && started) {
 					String host = props.getProperty("rx.adsb.hostname");
 					int port = props.getInteger("rx.adsb.port");

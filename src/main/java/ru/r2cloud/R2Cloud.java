@@ -1,5 +1,6 @@
 package ru.r2cloud;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -122,6 +123,13 @@ public class R2Cloud {
 					LOG.info("=========== stopped =============");
 					ShutdownLoggingManager.resetFinally();
 				}
+			}
+		});
+		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+
+			@Override
+			public void uncaughtException(Thread t, Throwable e) {
+				LOG.log(Level.SEVERE, "UncaughtException at: " + t.getName(), e);
 			}
 		});
 		app.start();

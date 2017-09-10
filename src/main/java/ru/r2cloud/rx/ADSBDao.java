@@ -20,6 +20,7 @@ import org.opensky.libadsb.msgs.ModeSReply.subtype;
 import ru.r2cloud.model.Airplane;
 import ru.r2cloud.uitl.Configuration;
 import ru.r2cloud.uitl.NamingThreadFactory;
+import ru.r2cloud.uitl.SafeRunnable;
 
 public class ADSBDao {
 
@@ -38,10 +39,10 @@ public class ADSBDao {
 		long cleanupPeriodMs = props.getLong("rx.adsb.cleanupPeriodMs");
 
 		reaper = Executors.newScheduledThreadPool(1, new NamingThreadFactory("adsb-data-reaper"));
-		reaper.scheduleAtFixedRate(new Runnable() {
+		reaper.scheduleAtFixedRate(new SafeRunnable() {
 
 			@Override
-			public void run() {
+			public void doRun() {
 				long expireAt = System.currentTimeMillis() - cleanupPeriodMs;
 				synchronized (latestMessages) {
 					for (Iterator<Map.Entry<String, Airplane>> it = latestMessages.entrySet().iterator(); it.hasNext();) {

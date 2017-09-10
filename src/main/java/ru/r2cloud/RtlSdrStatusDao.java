@@ -16,6 +16,7 @@ import ru.r2cloud.model.RtlSdrStatus;
 import ru.r2cloud.uitl.Configuration;
 import ru.r2cloud.uitl.NamingThreadFactory;
 import ru.r2cloud.uitl.ResultUtil;
+import ru.r2cloud.uitl.SafeRunnable;
 
 import com.codahale.metrics.health.HealthCheck;
 
@@ -36,10 +37,10 @@ public class RtlSdrStatusDao {
 
 	public void start() {
 		executor = Executors.newScheduledThreadPool(1, new NamingThreadFactory("rtlsdr-tester"));
-		executor.scheduleAtFixedRate(new Runnable() {
+		executor.scheduleAtFixedRate(new SafeRunnable() {
 
 			@Override
-			public void run() {
+			public void doRun() {
 				reload();
 			}
 		}, 0, props.getLong("rtltest.interval.seconds"), TimeUnit.SECONDS);
