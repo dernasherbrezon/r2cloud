@@ -253,7 +253,14 @@ public class AcmeClient {
 
 		KeyPair domainKeyPair;
 		try {
-			domainKeyPair = loadOrCreateKeyPair(new File(basepath, "domain.key"));
+			File domainKeyFile = new File(basepath, "domain.key");
+			//if domain.csr doesn't exist then this is first time execution
+			//and domain.key contains self-signed private key stored in git
+			if (new File(basepath, "domain.csr").exists()) {
+				domainKeyPair = loadOrCreateKeyPair(domainKeyFile);
+			} else {
+				domainKeyPair = createKeyPair(domainKeyFile);
+			}
 		} catch (IOException e) {
 			String message = "unable to load domain keypair";
 			messages.add(message);
@@ -318,13 +325,17 @@ public class AcmeClient {
 				return KeyPairUtils.readKeyPair(fr);
 			}
 		} else {
-			messages.add("creating keypair", LOG);
-			KeyPair keyPair = KeyPairUtils.createKeyPair(2048);
-			try (FileWriter fw = new FileWriter(file)) {
-				KeyPairUtils.writeKeyPair(keyPair, fw);
-			}
-			return keyPair;
+			return createKeyPair(file);
 		}
+	}
+
+	private KeyPair createKeyPair(File file) throws IOException {
+		messages.add("creating keypair", LOG);
+		KeyPair keyPair = KeyPairUtils.createKeyPair(2048);
+		try (FileWriter fw = new FileWriter(file)) {
+			KeyPairUtils.writeKeyPair(keyPair, fw);
+		}
+		return keyPair;
 	}
 
 	private Registration loadOrRegisterAccount(Session session) throws AcmeException {
