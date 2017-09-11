@@ -8,7 +8,7 @@ r2cloud converts Raspberry PI into the base station which supports various radio
  
 # Principal diagram
 
-![diagram](diagram.png)
+![diagram](docs/diagram.png)
 
 # Installation
 
