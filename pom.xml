@@ -290,6 +290,7 @@
 						<logrotate>>=3.7.8</logrotate>
 						<dump1090-mutability></dump1090-mutability>
 						<libhyperic-sigar-java></libhyperic-sigar-java>
+						<rtl-sdr></rtl-sdr>
 					</osDependencies>
 					<javaServiceWrapper>false</javaServiceWrapper>
 					<fileSets>
