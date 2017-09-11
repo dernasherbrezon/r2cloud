@@ -8,6 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.opensky.libadsb.Position;
@@ -48,7 +49,9 @@ public class ADSBDao {
 					for (Iterator<Map.Entry<String, Airplane>> it = latestMessages.entrySet().iterator(); it.hasNext();) {
 						Map.Entry<String, Airplane> entry = it.next();
 						if (entry.getValue().getLastUpdatedAt() < expireAt) {
-							LOG.info("expiring data: " + entry.getKey());
+							if (LOG.isLoggable(Level.FINE)) {
+								LOG.log(Level.FINE, "expiring data: " + entry.getKey());
+							}
 							it.remove();
 						}
 					}
@@ -94,8 +97,6 @@ public class ADSBDao {
 			return;
 		}
 
-		// FIXME rotate
-
 		plane.setLastUpdatedAt(System.currentTimeMillis());
 		plane.getPositions().add(position);
 	}
@@ -103,9 +104,6 @@ public class ADSBDao {
 	public Collection<Airplane> getAirplanes() {
 		synchronized (latestMessages) {
 			return latestMessages.values();
-//			List<Airplane> result = new ArrayList<Airplane>();
-//			result.add(new Airplane());
-//			return result;
 		}
 	}
 }
