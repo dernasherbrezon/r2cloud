@@ -12,10 +12,15 @@ r2cloud converts Raspberry PI into the base station which supports various radio
 
 # Installation
 
-1. Insert SD card into the card reader and create file ```r2cloud.txt``` in the root directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
+There are 2 ways to install r2cloud:
 
-2. Login via SSH and execute the following commands:
+1. From the image. This is simpliest way and require brand new SD card
 
+  - Download the [latest](https://s3.amazonaws.com/r2cloud/dist/image_2017-09-09-r2cloud-lite.zip) official image
+  - Insert SD card into the card reader and flash it. You could use [Etcher](https://etcher.io) to do this
+  
+2. From repository binaries. Use this way if you have something already installed on SD card.
+  - Login via SSH and execute the following commands:
 ```
 sudo gpg --keyserver keyserver.ubuntu.com --recv-keys 129E7CDE
 sudo gpg --armor --export 129E7CDE | sudo apt-key add -
@@ -23,6 +28,10 @@ sudo bash -c "echo 'deb [arch=armhf] http://s3.amazonaws.com/r2cloud r2cloud mai
 sudo apt-get update
 sudo apt-get install r2cloud
 ```
+
+Insert SD card into the card reader and create file ```r2cloud.txt``` in the root directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
+
+Insert SD card into the RPi and open [http://raspberrypi](http://raspberrypi) address.
 
 # Design guidelines
 
