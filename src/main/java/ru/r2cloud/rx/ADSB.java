@@ -4,11 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.opensky.libadsb.Decoder;
 import org.opensky.libadsb.msgs.ModeSReply;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.metrics.FormattedCounter;
 import ru.r2cloud.metrics.MetricFormat;
@@ -23,7 +23,7 @@ import com.codahale.metrics.health.HealthCheck;
 
 public class ADSB {
 
-	private static final Logger LOG = Logger.getLogger(ADSB.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(ADSB.class);
 
 	private final Configuration props;
 	private final ADSBDao dao;
@@ -58,7 +58,7 @@ public class ADSB {
 			public Counter newMetric() {
 				return new FormattedCounter(MetricFormat.NORMAL);
 			}
-			
+
 		});
 	}
 
@@ -69,7 +69,7 @@ public class ADSB {
 		throttle();
 
 		thread = new Thread(new SafeRunnable() {
-			
+
 			@Override
 			public void doRun() {
 				while (!Thread.currentThread().isInterrupted() && started) {
@@ -81,7 +81,7 @@ public class ADSB {
 						socket.setSoTimeout(0);
 					} catch (Exception e) {
 						connectionError = "unable to connect to the dump1090: " + host + ":" + port;
-						LOG.log(Level.SEVERE, connectionError + ". check stdout log", e);
+						LOG.error(connectionError + ". check stdout log", e);
 						throttle();
 						continue;
 					}
@@ -90,7 +90,7 @@ public class ADSB {
 						in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 					} catch (IOException e) {
 						connectionError = "cannot get input stream";
-						LOG.log(Level.SEVERE, connectionError, e);
+						LOG.error(connectionError, e);
 						throttle();
 						continue;
 					}
@@ -108,14 +108,14 @@ public class ADSB {
 								ModeSReply message = Decoder.genericDecoder(messageStr);
 								dao.save(message);
 							} catch (Exception e) {
-								LOG.log(Level.INFO, "unknown message received: " + curLine, e);
+								LOG.info("unknown message received: " + curLine, e);
 							}
 							counter.inc();
 						}
 					} catch (IOException e) {
 						// do not log error. socket closed
 						if (!socket.isClosed()) {
-							LOG.log(Level.SEVERE, "unable to read data", e);
+							LOG.error("unable to read data", e);
 						} else {
 							connectionError = "connection was closed remotely: " + e.getMessage();
 						}
@@ -134,7 +134,7 @@ public class ADSB {
 			dump1090 = new ProcessBuilder().inheritIO().command(new String[] { props.getProperty("rx.adsb.dump1090"), "--raw", "--net", "--quiet" }).start();
 			LOG.info("dump1090 started..");
 		} catch (IOException e1) {
-			LOG.log(Level.SEVERE, "unable to start dump1090", e1);
+			LOG.error("unable to start dump1090", e1);
 		}
 	}
 
@@ -163,7 +163,7 @@ public class ADSB {
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			} catch (Exception e) {
-				LOG.log(Level.SEVERE, "unable to stop thread", e);
+				LOG.error("unable to stop thread", e);
 			}
 		}
 		LOG.info("stopped");
@@ -174,7 +174,7 @@ public class ADSB {
 			try {
 				socket.close();
 			} catch (IOException e) {
-				LOG.log(Level.INFO, "unable to close socket", e);
+				LOG.info("unable to close socket", e);
 			}
 		}
 	}

@@ -2,8 +2,9 @@ package ru.r2cloud.web.controller;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.AbstractHttpController;
@@ -15,7 +16,7 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
 public class DoSetup extends AbstractHttpController {
 
-	private final static Logger LOG = Logger.getLogger(DoSetup.class.getName());
+	private final static Logger LOG = LoggerFactory.getLogger(DoSetup.class);
 
 	private final Authenticator auth;
 	private final Configuration config;
@@ -45,7 +46,7 @@ public class DoSetup extends AbstractHttpController {
 			return returnErrors(username, errors);
 		}
 
-		//keyword location extracted for dev environment
+		// keyword location extracted for dev environment
 		try (BufferedReader r = new BufferedReader(new FileReader(config.getProperty("server.keyword.location")))) {
 			String actualKeyword = r.readLine();
 			// actualKeyword can be null here
@@ -56,8 +57,8 @@ public class DoSetup extends AbstractHttpController {
 			}
 		} catch (Exception e) {
 			String message = "unable to read r2cloud file. ";
-			if (LOG.isLoggable(Level.FINE)) {
-				LOG.log(Level.FINE, message, e);
+			if (LOG.isDebugEnabled()) {
+				LOG.debug(message, e);
 			} else {
 				LOG.info(message + e.getMessage());
 			}

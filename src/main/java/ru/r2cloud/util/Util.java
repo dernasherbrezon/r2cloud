@@ -5,7 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
 
 public final class Util {
 	

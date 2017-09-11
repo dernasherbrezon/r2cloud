@@ -7,8 +7,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.R2Cloud;
 import ru.r2cloud.util.Configuration;
@@ -30,7 +31,7 @@ import com.codahale.metrics.Timer;
 
 public class RRD4JReporter extends ScheduledReporter {
 
-	private static final Logger LOG = Logger.getLogger(R2Cloud.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(R2Cloud.class);
 	private static final long STEP = 300; // secs
 
 	private final File basepath;
@@ -54,9 +55,11 @@ public class RRD4JReporter extends ScheduledReporter {
 		}
 		for (Entry<String, Counter> cur : counters.entrySet()) {
 			long newValue = cur.getValue().getCount();
-			//split method getOrCreate to retrive lastDatasourceValue only once
-			//if newvalue is less than lastDatasource value, then jvm was restarted
-			//add lastValue to avoid huge spikes in graphs after application restarts/upgrades
+			// split method getOrCreate to retrive lastDatasourceValue only once
+			// if newvalue is less than lastDatasource value, then jvm was
+			// restarted
+			// add lastValue to avoid huge spikes in graphs after application
+			// restarts/upgrades
 			RrdDb result = dbPerMetric.get(cur.getKey());
 			if (result == null) {
 				result = create(cur.getKey(), DsType.GAUGE);
@@ -66,7 +69,7 @@ public class RRD4JReporter extends ScheduledReporter {
 						newValue += lastValue;
 					}
 				} catch (IOException e) {
-					LOG.log(Level.SEVERE, "unable to load last value", e);
+					LOG.error("unable to load last value", e);
 				}
 			}
 			update(result, newValue);
@@ -94,14 +97,14 @@ public class RRD4JReporter extends ScheduledReporter {
 		try {
 			sample = db.createSample();
 		} catch (IOException e) {
-			LOG.log(Level.SEVERE, "unable to create sample", e);
+			LOG.error("unable to create sample", e);
 			return;
 		}
 		sample.setValue("data", value);
 		try {
 			sample.update();
 		} catch (IOException e) {
-			LOG.log(Level.SEVERE, "unable to update", e);
+			LOG.error("unable to update", e);
 		}
 	}
 
@@ -132,25 +135,25 @@ public class RRD4JReporter extends ScheduledReporter {
 			try {
 				result = new RrdDb(rrdDef);
 			} catch (IOException e) {
-				LOG.log(Level.SEVERE, "unable to create database: " + path.getAbsolutePath(), e);
+				LOG.error("unable to create database: " + path.getAbsolutePath(), e);
 				return null;
 			}
 		} else {
 			try {
 				result = new RrdDb(path.getAbsolutePath());
 			} catch (IOException e) {
-				LOG.log(Level.SEVERE, "unable to load database: " + path.getAbsolutePath(), e);
+				LOG.error("unable to load database: " + path.getAbsolutePath(), e);
 				return null;
 			}
 		}
 
 		RrdDb old = dbPerMetric.put(metricName, result);
 		if (old != null) {
-			LOG.log(Level.SEVERE, "found duplicate rrddb: " + metricName);
+			LOG.error("found duplicate rrddb: " + metricName);
 			try {
 				old.close();
 			} catch (IOException e) {
-				LOG.log(Level.SEVERE, "unable to close: " + old.getPath(), e);
+				LOG.error("unable to close: " + old.getPath(), e);
 			}
 		}
 
@@ -164,7 +167,7 @@ public class RRD4JReporter extends ScheduledReporter {
 			try {
 				cur.close();
 			} catch (IOException e) {
-				LOG.log(Level.SEVERE, "unable to close: " + cur.getPath(), e);
+				LOG.error("unable to close: " + cur.getPath(), e);
 			}
 		}
 	}

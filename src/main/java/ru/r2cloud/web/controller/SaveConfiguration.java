@@ -1,6 +1,7 @@
 package ru.r2cloud.web.controller;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.AutoUpdate;
 import ru.r2cloud.ddns.DDNSClient;
@@ -19,7 +20,7 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
 public class SaveConfiguration extends AbstractHttpController {
 
-	private final static Logger LOG = Logger.getLogger(SaveConfiguration.class.getName());
+	private final static Logger LOG = LoggerFactory.getLogger(SaveConfiguration.class);
 
 	private final Configuration props;
 	private final AutoUpdate autoUpdate;

@@ -3,15 +3,16 @@ package ru.r2cloud.ddns;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
 
 public class DDNSClient {
 
-	private final static Logger LOG = Logger.getLogger(DDNSClient.class.getName());
+	private final static Logger LOG = LoggerFactory.getLogger(DDNSClient.class);
 
 	private final Configuration config;
 
@@ -41,7 +42,7 @@ public class DDNSClient {
 				throw new IllegalArgumentException("unsupported ddns provider: " + type);
 			}
 		} catch (Exception e) {
-			LOG.log(Level.SEVERE, "unable to configure ddns", e);
+			LOG.error("unable to configure ddns", e);
 			return;
 		}
 

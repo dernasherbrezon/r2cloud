@@ -18,8 +18,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.shredzone.acme4j.Authorization;
 import org.shredzone.acme4j.Certificate;
@@ -37,6 +35,8 @@ import org.shredzone.acme4j.exception.AcmeUnauthorizedException;
 import org.shredzone.acme4j.util.CSRBuilder;
 import org.shredzone.acme4j.util.CertificateUtils;
 import org.shredzone.acme4j.util.KeyPairUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.ddns.DDNSType;
 import ru.r2cloud.util.Configuration;
@@ -46,7 +46,7 @@ import ru.r2cloud.util.Util;
 
 public class AcmeClient {
 
-	private final static Logger LOG = Logger.getLogger(AcmeClient.class.getName());
+	private final static Logger LOG = LoggerFactory.getLogger(AcmeClient.class);
 	private final static long INITIAL_RETRY = 3000L;
 
 	private ScheduledExecutorService executor;
@@ -70,7 +70,7 @@ public class AcmeClient {
 				X509Certificate certificate = CertificateUtils.readX509Certificate(fis);
 				scheduleRenew(certificate);
 			} catch (IOException e) {
-				LOG.log(Level.SEVERE, "unable to load certificate for renewal", e);
+				LOG.error("unable to load certificate for renewal", e);
 			}
 		}
 	}
@@ -105,7 +105,7 @@ public class AcmeClient {
 		try (FileInputStream fis = new FileInputStream(new File(basepath, "domain.csr"))) {
 			csr = CertificateUtils.readCSR(fis).getEncoded();
 		} catch (Exception e) {
-			LOG.log(Level.SEVERE, "unable to load csr. trying to create new", e);
+			LOG.error("unable to load csr. trying to create new", e);
 			CSRBuilder csrb = createCSR(reg);
 			if (csrb == null) {
 				return;
@@ -113,7 +113,7 @@ public class AcmeClient {
 			try {
 				csr = csrb.getEncoded();
 			} catch (IOException e1) {
-				LOG.log(Level.SEVERE, "unable to encode csr", e1);
+				LOG.error("unable to encode csr", e1);
 				return;
 			}
 		}
@@ -130,11 +130,11 @@ public class AcmeClient {
 			try {
 				certificate = reg.requestCertificate(csrb.getEncoded());
 			} catch (Exception e1) {
-				LOG.log(Level.SEVERE, "unable to renew certificate with new csr", e1);
+				LOG.error("unable to renew certificate with new csr", e1);
 				return;
 			}
 		} catch (AcmeException e) {
-			LOG.log(Level.SEVERE, "unable to renew certificate", e);
+			LOG.error("unable to renew certificate", e);
 			return;
 		}
 
@@ -178,7 +178,7 @@ public class AcmeClient {
 		} catch (Exception e) {
 			String message = "unable to request certificate";
 			messages.add(message);
-			LOG.log(Level.SEVERE, message, e);
+			LOG.error(message, e);
 			return;
 		}
 
@@ -193,7 +193,7 @@ public class AcmeClient {
 		} catch (AcmeException e) {
 			String message = "unable to download certificate";
 			messages.add(message);
-			LOG.log(Level.SEVERE, message, e);
+			LOG.error(message, e);
 			return;
 		}
 
@@ -206,7 +206,7 @@ public class AcmeClient {
 		} catch (AcmeException e) {
 			String message = "unable to download certificate chain";
 			messages.add(message);
-			LOG.log(Level.SEVERE, message, e);
+			LOG.error(message, e);
 			return;
 		}
 		messages.add("saving certificate", LOG);
@@ -215,7 +215,7 @@ public class AcmeClient {
 		} catch (IOException e) {
 			String message = "unable to save certificate";
 			messages.add(message);
-			LOG.log(Level.SEVERE, message, e);
+			LOG.error(message, e);
 			return;
 		}
 
@@ -225,7 +225,7 @@ public class AcmeClient {
 		} catch (IOException e) {
 			String message = "unable to reload configuration";
 			messages.add(message);
-			LOG.log(Level.SEVERE, message, e);
+			LOG.error(message, e);
 			return;
 		}
 
@@ -240,7 +240,7 @@ public class AcmeClient {
 		} catch (Exception e) {
 			String message = "unable to authorize domain";
 			messages.add(message);
-			LOG.log(Level.SEVERE, message, e);
+			LOG.error(message, e);
 			return null;
 		} finally {
 			messages.add("cleanup challenge data", LOG);
@@ -254,8 +254,8 @@ public class AcmeClient {
 		KeyPair domainKeyPair;
 		try {
 			File domainKeyFile = new File(basepath, "domain.key");
-			//if domain.csr doesn't exist then this is first time execution
-			//and domain.key contains self-signed private key stored in git
+			// if domain.csr doesn't exist then this is first time execution
+			// and domain.key contains self-signed private key stored in git
 			if (new File(basepath, "domain.csr").exists()) {
 				domainKeyPair = loadOrCreateKeyPair(domainKeyFile);
 			} else {
@@ -264,7 +264,7 @@ public class AcmeClient {
 		} catch (IOException e) {
 			String message = "unable to load domain keypair";
 			messages.add(message);
-			LOG.log(Level.SEVERE, message, e);
+			LOG.error(message, e);
 			return null;
 		}
 
@@ -276,7 +276,7 @@ public class AcmeClient {
 		} catch (IOException e) {
 			String message = "unable to sign csr";
 			messages.add(message);
-			LOG.log(Level.SEVERE, message, e);
+			LOG.error(message, e);
 			return null;
 		}
 
@@ -286,7 +286,7 @@ public class AcmeClient {
 		} catch (IOException e) {
 			String message = "unable to save csr";
 			messages.add(message);
-			LOG.log(Level.SEVERE, message, e);
+			LOG.error(message, e);
 			return null;
 		}
 		return csrb;
@@ -299,7 +299,7 @@ public class AcmeClient {
 		} catch (IOException e) {
 			String message = "unable to load user keypair";
 			messages.add(message);
-			LOG.log(Level.SEVERE, message, e);
+			LOG.error(message, e);
 			return null;
 		}
 
@@ -312,7 +312,7 @@ public class AcmeClient {
 		} catch (AcmeException e) {
 			String message = "unable to setup account";
 			messages.add(message);
-			LOG.log(Level.SEVERE, message, e);
+			LOG.error(message, e);
 			return null;
 		}
 		return reg;

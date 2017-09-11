@@ -6,10 +6,11 @@ import java.io.InputStreamReader;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.RtlSdrStatus;
@@ -22,7 +23,7 @@ import com.codahale.metrics.health.HealthCheck;
 
 public class RtlSdrStatusDao {
 
-	private final static Logger LOG = Logger.getLogger(RtlSdrStatusDao.class.getName());
+	private final static Logger LOG = LoggerFactory.getLogger(RtlSdrStatusDao.class);
 	private final static Pattern DEVICEPATTERN = Pattern.compile("^  0:  (.*?), (.*?), SN: (.*?)$");
 
 	private final Configuration props;
@@ -96,7 +97,7 @@ public class RtlSdrStatusDao {
 			rtltestError = null;
 		} catch (IOException e) {
 			rtltestError = "unable to read status";
-			LOG.log(Level.SEVERE, rtltestError, e);
+			LOG.error(rtltestError, e);
 		}
 	}
 

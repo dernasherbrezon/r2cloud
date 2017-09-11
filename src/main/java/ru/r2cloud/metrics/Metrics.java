@@ -3,11 +3,11 @@ package ru.r2cloud.metrics;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.R2Cloud;
 import ru.r2cloud.util.Configuration;
@@ -21,7 +21,7 @@ import com.codahale.metrics.health.SharedHealthCheckRegistries;
 
 public class Metrics {
 
-	private static final Logger LOG = Logger.getLogger(R2Cloud.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(R2Cloud.class);
 	public static final MetricRegistry REGISTRY = SharedMetricRegistries.getOrCreate("r2cloud");
 	public static final HealthCheckRegistry HEALTH_REGISTRY = SharedHealthCheckRegistries.getOrCreate("r2cloud");
 
@@ -51,7 +51,7 @@ public class Metrics {
 								}
 								return ((double) Long.valueOf(line) / 1000);
 							} catch (Exception e) {
-								LOG.log(Level.SEVERE, "unable to get temp: " + e.getMessage());
+								LOG.error("unable to get temp: " + e.getMessage());
 								return null;
 							}
 						}

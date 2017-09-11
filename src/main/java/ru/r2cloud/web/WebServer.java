@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.controller.StaticController;
@@ -15,7 +17,7 @@ import fi.iki.elonen.NanoHTTPD;
 
 public class WebServer extends NanoHTTPD {
 
-	private static final Logger LOG = Logger.getLogger(WebServer.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(WebServer.class);
 
 	private final HtmlRenderer pageRenderer;
 	private final GsonRenderer jsonRenderer;

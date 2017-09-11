@@ -2,15 +2,16 @@ package ru.r2cloud;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
 public class AutoUpdate {
 
-	private static final Logger LOG = Logger.getLogger(AutoUpdate.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(AutoUpdate.class);
 	private final static String FILE_LOCK = "DO_NOT_UPDATE";
 
 	private final File basepath;
@@ -28,15 +29,15 @@ public class AutoUpdate {
 		if (!enabled && !fileLock.exists()) {
 			try {
 				if (!fileLock.createNewFile()) {
-					LOG.log(Level.SEVERE, "unable to create file lock for auto update at: " + fileLock.getAbsolutePath());
+					LOG.error("unable to create file lock for auto update at: " + fileLock.getAbsolutePath());
 				}
 			} catch (IOException e) {
-				LOG.log(Level.SEVERE, "unable to create file lock for auto update at: " + fileLock.getAbsolutePath(), e);
+				LOG.error("unable to create file lock for auto update at: " + fileLock.getAbsolutePath(), e);
 			}
 		}
 		if (enabled && fileLock.exists()) {
 			if (!fileLock.delete()) {
-				LOG.log(Level.SEVERE, "unable to remove file lock for auto update at: " + fileLock.getAbsolutePath());
+				LOG.error("unable to remove file lock for auto update at: " + fileLock.getAbsolutePath());
 			}
 		}
 	}

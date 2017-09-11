@@ -11,13 +11,15 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.ddns.DDNSType;
 
 public class Configuration {
 
-	private static final Logger LOG = Logger.getLogger(Configuration.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(Configuration.class);
 
 	private final Properties userSettings = new Properties();
 	private final String userSettingsLocation;

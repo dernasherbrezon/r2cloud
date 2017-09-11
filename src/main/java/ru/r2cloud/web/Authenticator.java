@@ -6,8 +6,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Hex;
@@ -18,7 +19,7 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
 public class Authenticator {
 
-	private static final Logger LOG = Logger.getLogger(Authenticator.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(Authenticator.class);
 
 	private final SecureRandom random = new SecureRandom();
 
@@ -47,8 +48,8 @@ public class Authenticator {
 			return false;
 		}
 		if (System.currentTimeMillis() - authenticatedAt > maxAgeMillis) {
-			if (LOG.isLoggable(Level.FINE)) {
-				LOG.log(Level.FINE, "session expired");
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("session expired");
 			}
 			authenticatedJSessionId = null;
 			return false;
@@ -98,8 +99,8 @@ public class Authenticator {
 			return null;
 		}
 		if (!this.login.equals(login)) {
-			if (LOG.isLoggable(Level.FINE)) {
-				LOG.log(Level.FINE, "login mismatched: " + login);
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("login mismatched: " + login);
 			}
 			return null;
 		}
@@ -123,7 +124,7 @@ public class Authenticator {
 		try {
 			digest = MessageDigest.getInstance("SHA-256");
 		} catch (NoSuchAlgorithmException e) {
-			LOG.log(Level.SEVERE, "sha-256 not found", e);
+			LOG.error("sha-256 not found", e);
 			return null;
 		}
 
@@ -180,7 +181,7 @@ public class Authenticator {
 		this.login = null;
 		this.authenticatedJSessionId = null;
 		this.authenticatedAt = 0L;
-		
+
 		reloadProps();
 	}
 

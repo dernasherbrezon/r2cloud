@@ -7,8 +7,9 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.SafeRunnable;
@@ -16,7 +17,7 @@ import ru.r2cloud.util.Util;
 
 public class NoIPTask extends SafeRunnable {
 
-	private static final Logger LOG = Logger.getLogger(NoIPTask.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(NoIPTask.class);
 	private static final long RETRY_TIMEOUT = TimeUnit.MINUTES.toMillis(30);
 
 	private final Configuration config;
@@ -66,7 +67,7 @@ public class NoIPTask extends SafeRunnable {
 			con.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.US_ASCII)));
 			int responseCode = con.getResponseCode();
 			if (responseCode != 200) {
-				LOG.log(Level.SEVERE, "unable to update ddns. response code: " + responseCode + ". See logs for details");
+				LOG.error("unable to update ddns. response code: " + responseCode + ". See logs for details");
 				Util.toLog(LOG, con.getInputStream());
 			} else {
 				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
@@ -79,22 +80,24 @@ public class NoIPTask extends SafeRunnable {
 							config.update();
 						}
 					} else if (response.equals("nohost") || response.equals("badauth") || response.equals("badagent") || response.equals("!donator") || response.equals("abuse")) {
-						LOG.log(Level.SEVERE, "fatal error detected: " + response + ". Please check ddns settings");
+						LOG.error("fatal error detected: " + response + ". Please check ddns settings");
 						fatalError = true;
 					} else if (response.equals("911")) {
-						LOG.log(Level.SEVERE, "ddns provider returned internal server error. Will retry update after " + RETRY_TIMEOUT + " millis");
+						LOG.error("ddns provider returned internal server error. Will retry update after " + RETRY_TIMEOUT + " millis");
 						retryAfter = System.currentTimeMillis() + RETRY_TIMEOUT;
 						// save it to show in UI
 						config.setProperty("ddns.retry.after.millis", retryAfter);
 						config.update();
 					} else {
-						LOG.log(Level.FINE, "unknown response code: " + response);
+						if (LOG.isDebugEnabled()) {
+							LOG.debug("unknown response code: " + response);
+						}
 					}
 				}
 			}
 			con.disconnect();
 		} catch (Exception e) {
-			LOG.log(Level.SEVERE, "unable to update ddns", e);
+			LOG.error("unable to update ddns", e);
 		}
 	}
 

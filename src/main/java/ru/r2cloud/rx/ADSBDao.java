@@ -8,8 +8,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.opensky.libadsb.Position;
 import org.opensky.libadsb.PositionDecoder;
@@ -17,6 +15,8 @@ import org.opensky.libadsb.tools;
 import org.opensky.libadsb.msgs.AirbornePositionMsg;
 import org.opensky.libadsb.msgs.ModeSReply;
 import org.opensky.libadsb.msgs.ModeSReply.subtype;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.Airplane;
 import ru.r2cloud.util.Configuration;
@@ -25,7 +25,7 @@ import ru.r2cloud.util.SafeRunnable;
 
 public class ADSBDao {
 
-	private static final Logger LOG = Logger.getLogger(ADSBDao.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(ADSBDao.class);
 
 	private final Map<String, Airplane> latestMessages = new HashMap<String, Airplane>();
 	private final Configuration props;
@@ -49,8 +49,8 @@ public class ADSBDao {
 					for (Iterator<Map.Entry<String, Airplane>> it = latestMessages.entrySet().iterator(); it.hasNext();) {
 						Map.Entry<String, Airplane> entry = it.next();
 						if (entry.getValue().getLastUpdatedAt() < expireAt) {
-							if (LOG.isLoggable(Level.FINE)) {
-								LOG.log(Level.FINE, "expiring data: " + entry.getKey());
+							if (LOG.isDebugEnabled()) {
+								LOG.debug("expiring data: " + entry.getKey());
 							}
 							it.remove();
 						}

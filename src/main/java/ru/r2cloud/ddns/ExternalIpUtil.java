@@ -4,14 +4,15 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.util.Util;
 
 final class ExternalIpUtil {
 
-	private final static Logger LOG = Logger.getLogger(ExternalIpUtil.class.getName());
+	private final static Logger LOG = LoggerFactory.getLogger(ExternalIpUtil.class);
 
 	public static String getExternalIp() {
 		try {
@@ -22,7 +23,7 @@ final class ExternalIpUtil {
 			int responseCode = con.getResponseCode();
 			String result = null;
 			if (responseCode != 200) {
-				LOG.log(Level.SEVERE, "unable to get external ip. response code: " + responseCode + ". See logs for details");
+				LOG.error("unable to get external ip. response code: " + responseCode + ". See logs for details");
 				Util.toLog(LOG, con.getInputStream());
 			} else {
 				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
@@ -33,7 +34,7 @@ final class ExternalIpUtil {
 			con.disconnect();
 			return result;
 		} catch (Exception e) {
-			LOG.log(Level.SEVERE, "unable to get an external ip", e);
+			LOG.error("unable to get an external ip", e);
 			return null;
 		}
 	}

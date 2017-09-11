@@ -3,8 +3,9 @@ package ru.r2cloud;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.metrics.Metrics;
@@ -35,7 +36,7 @@ public class R2Cloud {
 		System.setProperty("java.util.logging.manager", ShutdownLoggingManager.class.getName());
 	}
 
-	private static final Logger LOG = Logger.getLogger(R2Cloud.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(R2Cloud.class);
 
 	private final Configuration props;
 
@@ -118,7 +119,7 @@ public class R2Cloud {
 					LOG.info("stopping");
 					app.stop();
 				} catch (Exception e) {
-					LOG.log(Level.SEVERE, "unable to gracefully shutdown", e);
+					LOG.error("unable to gracefully shutdown", e);
 				} finally {
 					LOG.info("=========== stopped =============");
 					ShutdownLoggingManager.resetFinally();
@@ -129,7 +130,7 @@ public class R2Cloud {
 
 			@Override
 			public void uncaughtException(Thread t, Throwable e) {
-				LOG.log(Level.SEVERE, "UncaughtException at: " + t.getName(), e);
+				LOG.error("UncaughtException at: " + t.getName(), e);
 			}
 		});
 		app.start();
