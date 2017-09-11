@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import ru.r2cloud.uitl.Configuration;
+import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.controller.StaticController;
 import fi.iki.elonen.NanoHTTPD;
 

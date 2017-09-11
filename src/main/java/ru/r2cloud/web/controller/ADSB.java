@@ -1,7 +1,7 @@
 package ru.r2cloud.web.controller;
 
 import ru.r2cloud.model.ConfigurationBean;
-import ru.r2cloud.uitl.Configuration;
+import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;

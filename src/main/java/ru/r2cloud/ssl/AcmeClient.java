@@ -39,10 +39,10 @@ import org.shredzone.acme4j.util.CertificateUtils;
 import org.shredzone.acme4j.util.KeyPairUtils;
 
 import ru.r2cloud.ddns.DDNSType;
-import ru.r2cloud.uitl.Configuration;
-import ru.r2cloud.uitl.NamingThreadFactory;
-import ru.r2cloud.uitl.SafeRunnable;
-import ru.r2cloud.uitl.Util;
+import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.NamingThreadFactory;
+import ru.r2cloud.util.SafeRunnable;
+import ru.r2cloud.util.Util;
 
 public class AcmeClient {
 

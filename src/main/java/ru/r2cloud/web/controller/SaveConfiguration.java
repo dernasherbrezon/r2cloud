@@ -9,7 +9,7 @@ import ru.r2cloud.model.ConfigurationBean;
 import ru.r2cloud.model.DDNSBean;
 import ru.r2cloud.model.SSLBean;
 import ru.r2cloud.ssl.AcmeClient;
-import ru.r2cloud.uitl.Configuration;
+import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
 import ru.r2cloud.web.Redirect;

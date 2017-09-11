@@ -7,7 +7,7 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ru.r2cloud.uitl.Util;
+import ru.r2cloud.util.Util;
 
 final class ExternalIpUtil {
 

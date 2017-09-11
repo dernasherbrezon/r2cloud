@@ -8,7 +8,7 @@ import java.util.Map;
 import org.jtwig.JtwigModel;
 import org.jtwig.JtwigTemplate;
 
-import ru.r2cloud.uitl.Configuration;
+import ru.r2cloud.util.Configuration;
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response;
 import fi.iki.elonen.NanoHTTPD.Response.Status;

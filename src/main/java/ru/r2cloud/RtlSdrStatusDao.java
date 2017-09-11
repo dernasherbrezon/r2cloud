@@ -13,10 +13,10 @@ import java.util.regex.Pattern;
 
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.RtlSdrStatus;
-import ru.r2cloud.uitl.Configuration;
-import ru.r2cloud.uitl.NamingThreadFactory;
-import ru.r2cloud.uitl.ResultUtil;
-import ru.r2cloud.uitl.SafeRunnable;
+import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.NamingThreadFactory;
+import ru.r2cloud.util.ResultUtil;
+import ru.r2cloud.util.SafeRunnable;
 
 import com.codahale.metrics.health.HealthCheck;
 

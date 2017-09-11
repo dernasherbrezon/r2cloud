@@ -13,11 +13,11 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
 public class Configuration extends AbstractHttpController {
 
-	private final ru.r2cloud.uitl.Configuration props;
+	private final ru.r2cloud.util.Configuration props;
 	private final AutoUpdate autoUpdate;
 	private final AcmeClient acmeClient;
 
-	public Configuration(ru.r2cloud.uitl.Configuration props, AutoUpdate autoUpdate, AcmeClient acmeClient) {
+	public Configuration(ru.r2cloud.util.Configuration props, AutoUpdate autoUpdate, AcmeClient acmeClient) {
 		this.props = props;
 		this.autoUpdate = autoUpdate;
 		this.acmeClient = acmeClient;

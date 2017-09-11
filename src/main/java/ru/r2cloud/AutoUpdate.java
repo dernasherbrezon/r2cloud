@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ru.r2cloud.uitl.Configuration;
-import ru.r2cloud.uitl.Util;
+import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 
 public class AutoUpdate {
 

@@ -10,7 +10,7 @@ import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 
 import ru.r2cloud.R2Cloud;
-import ru.r2cloud.uitl.Configuration;
+import ru.r2cloud.util.Configuration;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;

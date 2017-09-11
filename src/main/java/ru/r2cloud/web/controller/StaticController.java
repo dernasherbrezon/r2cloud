@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import ru.r2cloud.uitl.Configuration;
-import ru.r2cloud.uitl.Util;
+import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import fi.iki.elonen.NanoHTTPD.Response;

@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ru.r2cloud.uitl.Configuration;
+import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.Authenticator;
 import ru.r2cloud.web.ModelAndView;

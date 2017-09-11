@@ -1,4 +1,4 @@
-package ru.r2cloud.uitl;
+package ru.r2cloud.util;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

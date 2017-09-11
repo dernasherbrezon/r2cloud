@@ -13,9 +13,9 @@ import org.opensky.libadsb.msgs.ModeSReply;
 import ru.r2cloud.metrics.FormattedCounter;
 import ru.r2cloud.metrics.MetricFormat;
 import ru.r2cloud.metrics.Metrics;
-import ru.r2cloud.uitl.Configuration;
-import ru.r2cloud.uitl.ResultUtil;
-import ru.r2cloud.uitl.SafeRunnable;
+import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.ResultUtil;
+import ru.r2cloud.util.SafeRunnable;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry.MetricSupplier;

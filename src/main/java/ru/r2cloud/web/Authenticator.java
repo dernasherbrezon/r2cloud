@@ -9,8 +9,8 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ru.r2cloud.uitl.Configuration;
-import ru.r2cloud.uitl.Hex;
+import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Hex;
 
 import com.google.common.base.Splitter;
 

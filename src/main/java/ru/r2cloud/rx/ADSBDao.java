@@ -18,9 +18,9 @@ import org.opensky.libadsb.msgs.ModeSReply;
 import org.opensky.libadsb.msgs.ModeSReply.subtype;
 
 import ru.r2cloud.model.Airplane;
-import ru.r2cloud.uitl.Configuration;
-import ru.r2cloud.uitl.NamingThreadFactory;
-import ru.r2cloud.uitl.SafeRunnable;
+import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.NamingThreadFactory;
+import ru.r2cloud.util.SafeRunnable;
 
 public class ADSBDao {
 

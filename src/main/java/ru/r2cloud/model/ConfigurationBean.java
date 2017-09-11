@@ -1,6 +1,6 @@
 package ru.r2cloud.model;
 
-import ru.r2cloud.uitl.Configuration;
+import ru.r2cloud.util.Configuration;
 
 public class ConfigurationBean {
 

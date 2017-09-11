@@ -1,4 +1,4 @@
-package ru.r2cloud.uitl;
+package ru.r2cloud.util;
 
 import java.io.File;
 import java.io.FileInputStream;

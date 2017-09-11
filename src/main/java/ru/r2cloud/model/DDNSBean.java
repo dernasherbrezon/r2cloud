@@ -1,7 +1,7 @@
 package ru.r2cloud.model;
 
 import ru.r2cloud.ddns.DDNSType;
-import ru.r2cloud.uitl.Configuration;
+import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.ValidationResult;
 import ru.r2cloud.web.WebServer;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
