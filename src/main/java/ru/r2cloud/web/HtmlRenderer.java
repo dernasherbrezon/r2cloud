@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.jtwig.JtwigModel;
 import org.jtwig.JtwigTemplate;
@@ -16,13 +17,20 @@ import fi.iki.elonen.NanoHTTPD.Response.Status;
 class HtmlRenderer {
 
 	private String basepath;
+	private final Map<String, JtwigTemplate> cache = new ConcurrentHashMap<String, JtwigTemplate>();
 
 	HtmlRenderer(Configuration props) {
 		basepath = props.getProperty("server.ftl.location");
 	}
 
 	Response render(String page, Map<String, Object> model) {
-		JtwigTemplate template = JtwigTemplate.fileTemplate(new File(basepath, page));
+		JtwigTemplate template = cache.get(page);
+		if (template == null) {
+			//double initialization is possible here
+			//however it's that not critical 
+			template = JtwigTemplate.fileTemplate(new File(basepath, page));
+			cache.put(page, template);
+		}
 		JtwigModel wigModel = JtwigModel.newModel(model);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		template.render(wigModel, baos);
