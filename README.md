@@ -59,3 +59,7 @@ Details could be found in official [documentation](https://github.com/dernasherb
 # Contribution
 
 Please read our [guidelines](https://github.com/dernasherbrezon/r2cloud/wiki/Contribution).
+
+# Contact
+
+Please use [gitter](https://gitter.im/r2cloud/Lobby)
