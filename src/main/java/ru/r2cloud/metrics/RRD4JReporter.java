@@ -62,7 +62,7 @@ public class RRD4JReporter extends ScheduledReporter {
 			// restarts/upgrades
 			RrdDb result = dbPerMetric.get(cur.getKey());
 			if (result == null) {
-				result = create(cur.getKey(), DsType.GAUGE);
+				result = create(cur.getKey(), DsType.COUNTER);
 				try {
 					double lastValue = result.getLastDatasourceValue("data");
 					if (!Double.isNaN(lastValue) && lastValue > newValue) {
