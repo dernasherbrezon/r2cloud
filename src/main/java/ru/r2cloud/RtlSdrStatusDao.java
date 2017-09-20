@@ -42,32 +42,13 @@ public class RtlSdrStatusDao {
 	private ScheduledExecutorService executor = null;
 	private RtlSdrStatus status = null;
 	private String rtltestError = null;
-	private final long intervalSeconds;
 
-	private boolean calculatePpm;
-	private int calculatePpmHours;
-	private int calculatePpmMinutes;
 	private Integer currentPpm;
 
 	public RtlSdrStatusDao(Configuration config, ADSB adsb) {
 		this.props = config;
 		this.adsb = adsb;
-		this.calculatePpm = config.getBoolean("ppm.calculate");
-		this.intervalSeconds = props.getLong("rtltest.interval.seconds");
 		this.currentPpm = props.getInteger("ppm.current");
-		if (calculatePpm) {
-			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-			try {
-				Date date = sdf.parse(config.getProperty("ppm.calculate.timeUTC"));
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(date);
-				calculatePpmHours = cal.get(Calendar.HOUR_OF_DAY);
-				calculatePpmMinutes = cal.get(Calendar.MINUTE);
-			} catch (ParseException e) {
-				LOG.info("invalid time. ppm will be disabled", e);
-				calculatePpm = false;
-			}
-		}
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -79,7 +60,34 @@ public class RtlSdrStatusDao {
 			public void doRun() {
 				reload();
 			}
-		}, 0, intervalSeconds, TimeUnit.SECONDS);
+		}, 0, props.getLong("rtltest.interval.seconds"), TimeUnit.SECONDS);
+		if (props.getBoolean("ppm.calculate")) {
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+			try {
+				Date date = sdf.parse(props.getProperty("ppm.calculate.timeUTC"));
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(date);
+				Calendar executeAt = Calendar.getInstance();
+				executeAt.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY));
+				executeAt.set(Calendar.MINUTE, cal.get(Calendar.MINUTE));
+				executeAt.set(Calendar.SECOND, 0);
+				executeAt.set(Calendar.MILLISECOND, 0);
+				if (executeAt.getTimeInMillis() < System.currentTimeMillis()) {
+					executeAt.add(Calendar.DAY_OF_MONTH, 1);
+				}
+				LOG.info("next ppm execution at: " + executeAt.getTime());
+				executor.scheduleAtFixedRate(new SafeRunnable() {
+
+					@Override
+					public void doRun() {
+						reloadPpm();
+					}
+				}, executeAt.getTimeInMillis(), TimeUnit.DAYS.toMillis(1), TimeUnit.MILLISECONDS);
+
+			} catch (ParseException e) {
+				LOG.info("invalid time. ppm will be disabled", e);
+			}
+		}
 		Metrics.HEALTH_REGISTRY.register("rtltest", new HealthCheck() {
 
 			@Override
@@ -123,94 +131,80 @@ public class RtlSdrStatusDao {
 		}
 	}
 
-	private void reload() {
-		Calendar current = Calendar.getInstance();
-		Calendar start = getPpmExecution();
-		start.add(Calendar.SECOND, -(int) intervalSeconds / 2);
-		Calendar end = getPpmExecution();
-		end.add(Calendar.SECOND, (int) intervalSeconds / 2);
-		if (current.after(start) && current.before(end)) {
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("ppm calculation");
-			}
-			adsb.stop();
+	private void reloadPpm() {
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("ppm calculation");
+		}
+		adsb.stop();
 
-			Process rtlTest = null;
-			try {
-				rtlTest = new ProcessBuilder().command(new String[] { props.getProperty("rtltest.path"), "-p1" }).redirectErrorStream(true).start();
-				BufferedReader r = new BufferedReader(new InputStreamReader(rtlTest.getInputStream()));
-				String curLine = null;
-				int numberOfSamples = 0;
-				while ((curLine = r.readLine()) != null) {
-					if (LOG.isDebugEnabled()) {
-						LOG.debug(curLine);
-					}
-					if (curLine.startsWith("No supported")) {
-						break;
-					} else if (curLine.startsWith("real sample rate")) {
-						numberOfSamples++;
-						if (numberOfSamples >= 10) {
-							Matcher m = PPMPATTERN.matcher(curLine);
-							if (m.find()) {
-								String ppmStr = m.group(1);
-								currentPpm = Integer.valueOf(ppmStr);
-								props.setProperty("ppm.current", String.valueOf(currentPpm));
-								props.update();
-							}
-						}
-					}
+		Process rtlTest = null;
+		try {
+			rtlTest = new ProcessBuilder().command(new String[] { props.getProperty("rtltest.path"), "-p1" }).redirectErrorStream(true).start();
+			BufferedReader r = new BufferedReader(new InputStreamReader(rtlTest.getInputStream()));
+			String curLine = null;
+			int numberOfSamples = 0;
+			while ((curLine = r.readLine()) != null) {
+				if (LOG.isDebugEnabled()) {
+					LOG.debug(curLine);
 				}
-			} catch (IOException e) {
-				LOG.error("unable to calculate ppm", e);
-			} finally {
-				if (rtlTest != null && rtlTest.isAlive()) {
-					try {
-						int statusCode = rtlTest.destroyForcibly().waitFor();
-						if (statusCode != 0) {
-							LOG.info("invalid status code while waiting for rtl_test to stop: " + statusCode);
-						}
-					} catch (InterruptedException e) {
-						Thread.currentThread().interrupt();
-					}
-				}
-			}
-
-			adsb.start();
-		} else {
-			try {
-				Process rtlTest = new ProcessBuilder().command(new String[] { props.getProperty("rtltest.path"), "-t" }).start();
-				BufferedReader r = new BufferedReader(new InputStreamReader(rtlTest.getErrorStream()));
-				String curLine = null;
-				while ((curLine = r.readLine()) != null) {
-					if (curLine.startsWith("No supported")) {
-						status = null;
-						return;
-					} else {
-						Matcher m = DEVICEPATTERN.matcher(curLine);
+				if (curLine.startsWith("No supported")) {
+					break;
+				} else if (curLine.startsWith("real sample rate")) {
+					numberOfSamples++;
+					if (numberOfSamples >= 10) {
+						Matcher m = PPMPATTERN.matcher(curLine);
 						if (m.find()) {
-							status = new RtlSdrStatus();
-							status.setVendor(m.group(1));
-							status.setChip(m.group(2));
-							status.setSerialNumber(m.group(3));
-							break;
+							String ppmStr = m.group(1);
+							currentPpm = Integer.valueOf(ppmStr);
+							props.setProperty("ppm.current", String.valueOf(currentPpm));
+							props.update();
 						}
 					}
 				}
-				rtltestError = null;
-			} catch (IOException e) {
-				rtltestError = "unable to read status";
-				LOG.error(rtltestError, e);
+			}
+		} catch (IOException e) {
+			LOG.error("unable to calculate ppm", e);
+		} finally {
+			if (rtlTest != null && rtlTest.isAlive()) {
+				try {
+					int statusCode = rtlTest.destroyForcibly().waitFor();
+					if (statusCode != 0) {
+						LOG.info("invalid status code while waiting for rtl_test to stop: " + statusCode);
+					}
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
 			}
 		}
+
+		adsb.start();
 	}
 
-	private Calendar getPpmExecution() {
-		Calendar result = Calendar.getInstance();
-		result.set(Calendar.HOUR_OF_DAY, calculatePpmHours);
-		result.set(Calendar.MINUTE, calculatePpmMinutes);
-		result.set(Calendar.SECOND, 0);
-		result.set(Calendar.MILLISECOND, 0);
-		return result;
+	private void reload() {
+		try {
+			Process rtlTest = new ProcessBuilder().command(new String[] { props.getProperty("rtltest.path"), "-t" }).start();
+			BufferedReader r = new BufferedReader(new InputStreamReader(rtlTest.getErrorStream()));
+			String curLine = null;
+			while ((curLine = r.readLine()) != null) {
+				if (curLine.startsWith("No supported")) {
+					status = null;
+					return;
+				} else {
+					Matcher m = DEVICEPATTERN.matcher(curLine);
+					if (m.find()) {
+						status = new RtlSdrStatus();
+						status.setVendor(m.group(1));
+						status.setChip(m.group(2));
+						status.setSerialNumber(m.group(3));
+						break;
+					}
+				}
+			}
+			rtltestError = null;
+		} catch (IOException e) {
+			rtltestError = "unable to read status";
+			LOG.error(rtltestError, e);
+		}
 	}
 
 }
