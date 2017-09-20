@@ -27,19 +27,30 @@ public class ADSB {
 
 	private final Configuration props;
 	private final ADSBDao dao;
+	private final boolean enabled;
+	private final long throttleIntervalMillis;
 
 	private Socket socket;
 	private volatile boolean started = false;
 	private volatile String connectionError = "Unknown status";
-	private final Counter counter;
+	private Counter counter;
 	private Thread thread;
 	private Process dump1090;
-	private long throttleIntervalMillis;
 
 	public ADSB(Configuration props, ADSBDao dao) {
 		this.props = props;
 		this.dao = dao;
-		throttleIntervalMillis = props.getLong("rx.adsb.reconnect.interval");
+		this.enabled = props.getBoolean("rx.adsb.enabled");
+		this.throttleIntervalMillis = props.getLong("rx.adsb.reconnect.interval");
+	}
+
+	public synchronized void start() {
+		if (!enabled) {
+			return;
+		}
+		LOG.info("starting..");
+		started = true;
+
 		Metrics.HEALTH_REGISTRY.register("adsb", new HealthCheck() {
 
 			@Override
@@ -60,11 +71,6 @@ public class ADSB {
 			}
 
 		});
-	}
-
-	public synchronized void start() {
-		LOG.info("starting..");
-		started = true;
 		// give some time for dump1090 to initialize - thus throttle
 		throttle();
 
@@ -151,9 +157,19 @@ public class ADSB {
 	}
 
 	public synchronized void stop() {
+		if (!enabled) {
+			return;
+		}
 		started = false;
 		if (dump1090 != null) {
-			dump1090.destroyForcibly();
+			try {
+				int statusCode = dump1090.destroyForcibly().waitFor();
+				if (statusCode != 0) {
+					LOG.info("invalid status code while stopping dump1090: " + statusCode);
+				}
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
 		}
 		closeSocket();
 		if (thread != null) {
