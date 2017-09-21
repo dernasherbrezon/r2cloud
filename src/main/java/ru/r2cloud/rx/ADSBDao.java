@@ -29,14 +29,19 @@ public class ADSBDao {
 
 	private final Map<String, Airplane> latestMessages = new HashMap<String, Airplane>();
 	private final Configuration props;
+	private final boolean enabled;
 
 	private ScheduledExecutorService reaper;
 
 	public ADSBDao(Configuration props) {
 		this.props = props;
+		this.enabled = props.getBoolean("rx.adsb.enabled");
 	}
 
 	public void start() {
+		if (!enabled) {
+			return;
+		}
 		long cleanupPeriodMs = props.getLong("rx.adsb.cleanupPeriodMs");
 
 		reaper = Executors.newScheduledThreadPool(1, new NamingThreadFactory("adsb-data-reaper"));
@@ -61,6 +66,9 @@ public class ADSBDao {
 	}
 
 	public void stop() {
+		if (!enabled) {
+			return;
+		}
 		if (reaper != null) {
 			reaper.shutdown();
 		}

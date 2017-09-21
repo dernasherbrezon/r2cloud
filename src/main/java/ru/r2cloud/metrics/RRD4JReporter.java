@@ -51,7 +51,11 @@ public class RRD4JReporter extends ScheduledReporter {
 	@Override
 	public void report(SortedMap<String, Gauge> gauges, SortedMap<String, Counter> counters, SortedMap<String, Histogram> histograms, SortedMap<String, Meter> meters, SortedMap<String, Timer> timers) {
 		for (Entry<String, Gauge> cur : gauges.entrySet()) {
-			update(getOrCreate(cur.getKey(), DsType.GAUGE), convertToDouble(cur.getValue().getValue()));
+			Object value = cur.getValue().getValue();
+			if (value == null) {
+				continue;
+			}
+			update(getOrCreate(cur.getKey(), DsType.GAUGE), convertToDouble(value));
 		}
 		for (Entry<String, Counter> cur : counters.entrySet()) {
 			long newValue = cur.getValue().getCount();

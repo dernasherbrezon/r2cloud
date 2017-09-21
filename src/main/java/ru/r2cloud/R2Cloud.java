@@ -57,7 +57,7 @@ public class R2Cloud {
 		adsb = new ADSB(props, dao);
 		auth = new Authenticator(props);
 		metrics = new Metrics(props);
-		rtlsdrStatusDao = new RtlSdrStatusDao(props);
+		rtlsdrStatusDao = new RtlSdrStatusDao(props, adsb);
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
 		acmeClient = new AcmeClient(props);
@@ -81,12 +81,8 @@ public class R2Cloud {
 
 	public void start() {
 		metrics.start();
-		if ("true".equals(props.getProperty("rx.adsb.enabled"))) {
-			dao.start();
-			adsb.start();
-		} else {
-			LOG.info("adsb is disabled");
-		}
+		dao.start();
+		adsb.start();
 		acmeClient.start();
 		ddnsClient.start();
 		rtlsdrStatusDao.start();
@@ -97,12 +93,12 @@ public class R2Cloud {
 	}
 
 	public void stop() {
-		dao.stop();
-		adsb.stop();
-		acmeClient.stop();
-		ddnsClient.stop();
-		rtlsdrStatusDao.stop();
 		webServer.stop();
+		rtlsdrStatusDao.stop();
+		ddnsClient.stop();
+		acmeClient.stop();
+		adsb.stop();
+		dao.stop();
 		metrics.stop();
 	}
 
