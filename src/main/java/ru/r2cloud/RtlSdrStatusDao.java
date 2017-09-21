@@ -118,6 +118,11 @@ public class RtlSdrStatusDao {
 
 					@Override
 					public Integer getValue() {
+						// graph will be displayed anyway.
+						// fill it with 0
+						if (currentPpm == null) {
+							return 0;
+						}
 						return currentPpm;
 					}
 				};

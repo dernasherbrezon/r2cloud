@@ -137,7 +137,11 @@ public class ADSB {
 
 	private void startDump1090() {
 		try {
-			dump1090 = new ProcessBuilder().inheritIO().command(new String[] { props.getProperty("rx.adsb.dump1090"), "--raw", "--net", "--quiet" }).start();
+			Integer ppm = props.getInteger("ppm.current");
+			if (ppm == null) {
+				ppm = 0;
+			}
+			dump1090 = new ProcessBuilder().inheritIO().command(new String[] { props.getProperty("rx.adsb.dump1090"), "--raw", "--net", "--quiet", "--ppm", String.valueOf(ppm) }).start();
 			LOG.info("dump1090 started..");
 		} catch (IOException e1) {
 			LOG.error("unable to start dump1090", e1);
