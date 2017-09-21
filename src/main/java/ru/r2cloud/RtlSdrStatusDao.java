@@ -43,7 +43,7 @@ public class RtlSdrStatusDao {
 	private RtlSdrStatus status = null;
 	private String rtltestError = null;
 
-	private Integer currentPpm;
+	private volatile Integer currentPpm;
 
 	public RtlSdrStatusDao(Configuration config, ADSB adsb) {
 		this.props = config;
@@ -72,7 +72,8 @@ public class RtlSdrStatusDao {
 				executeAt.set(Calendar.MINUTE, cal.get(Calendar.MINUTE));
 				executeAt.set(Calendar.SECOND, 0);
 				executeAt.set(Calendar.MILLISECOND, 0);
-				if (executeAt.getTimeInMillis() < System.currentTimeMillis()) {
+				long current = System.currentTimeMillis();
+				if (executeAt.getTimeInMillis() < current) {
 					executeAt.add(Calendar.DAY_OF_MONTH, 1);
 				}
 				LOG.info("next ppm execution at: " + executeAt.getTime());
@@ -82,7 +83,7 @@ public class RtlSdrStatusDao {
 					public void doRun() {
 						reloadPpm();
 					}
-				}, executeAt.getTimeInMillis(), TimeUnit.DAYS.toMillis(1), TimeUnit.MILLISECONDS);
+				}, executeAt.getTimeInMillis() - current, TimeUnit.DAYS.toMillis(1), TimeUnit.MILLISECONDS);
 
 			} catch (ParseException e) {
 				LOG.info("invalid time. ppm will be disabled", e);
@@ -144,7 +145,7 @@ public class RtlSdrStatusDao {
 
 		Process rtlTest = null;
 		try {
-			rtlTest = new ProcessBuilder().command(new String[] { props.getProperty("rtltest.path"), "-p1" }).redirectErrorStream(true).start();
+			rtlTest = new ProcessBuilder().command(new String[] { props.getProperty("stdbuf.path"), "-i0", "-o0", "-e0", props.getProperty("rtltest.path"), "-p2" }).redirectErrorStream(true).start();
 			BufferedReader r = new BufferedReader(new InputStreamReader(rtlTest.getInputStream()));
 			String curLine = null;
 			int numberOfSamples = 0;
@@ -164,6 +165,7 @@ public class RtlSdrStatusDao {
 							props.setProperty("ppm.current", String.valueOf(currentPpm));
 							props.update();
 						}
+						break;
 					}
 				}
 			}
@@ -172,9 +174,9 @@ public class RtlSdrStatusDao {
 		} finally {
 			if (rtlTest != null && rtlTest.isAlive()) {
 				try {
-					int statusCode = rtlTest.destroyForcibly().waitFor();
-					if (statusCode != 0) {
-						LOG.info("invalid status code while waiting for rtl_test to stop: " + statusCode);
+					rtlTest.destroy();
+					if (!rtlTest.waitFor(5000, TimeUnit.MILLISECONDS)) {
+						LOG.info("unable to stop in time");
 					}
 				} catch (InterruptedException e) {
 					Thread.currentThread().interrupt();
