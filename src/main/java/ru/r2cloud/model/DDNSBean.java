@@ -12,6 +12,15 @@ public class DDNSBean {
 	private String noipUsername;
 	private String noipPassword;
 	private String noipDomain;
+	private String currentIp;
+	
+	public String getCurrentIp() {
+		return currentIp;
+	}
+	
+	public void setCurrentIp(String currentIp) {
+		this.currentIp = currentIp;
+	}
 
 	public DDNSType getType() {
 		return type;
@@ -51,6 +60,7 @@ public class DDNSBean {
 		entity.setNoipPassword(props.getProperty("ddns.noip.password"));
 		entity.setNoipDomain(props.getProperty("ddns.noip.domain"));
 		entity.setType(props.getDdnsType("ddns.type"));
+		entity.setCurrentIp(props.getProperty("ddns.ip"));
 		return entity;
 	}
 

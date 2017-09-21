@@ -49,6 +49,10 @@
 						  {{ macros.input("text", "noipUsername", ddnsEntity.noipUsername, "User name", "", errors ) }}
 						  {{ macros.input("password", "noipPassword", ddnsEntity.noipPassword, "Password", "", errors ) }}
 						  {{ macros.input("text", "noipDomain", ddnsEntity.noipDomain, "Domain", "", errors ) }}
+						  <div class="form-group">
+						  	<label for="currentIp">Current IP</label>
+						  	<input type="text" class="form-control" id="currentIp" name="currentIp" value="{{ ddnsEntity.currentIp }}" disabled>
+						  </div>
 						</div>
 						<button type="submit" name="action" value="ddns" class="btn btn-default">Save</button>
 					</div> 
