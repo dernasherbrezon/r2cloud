@@ -16,6 +16,7 @@ import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ResultUtil;
 import ru.r2cloud.util.SafeRunnable;
+import ru.r2cloud.util.Util;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry.MetricSupplier;
@@ -165,16 +166,7 @@ public class ADSB {
 			return;
 		}
 		started = false;
-		if (dump1090 != null) {
-			try {
-				int statusCode = dump1090.destroyForcibly().waitFor();
-				if (statusCode != 0) {
-					LOG.info("invalid status code while stopping dump1090: " + statusCode);
-				}
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
-		}
+		Util.shutdownProcess(dump1090, throttleIntervalMillis);
 		closeSocket();
 		if (thread != null) {
 			thread.interrupt();

@@ -36,6 +36,7 @@ public class RRD4JReporter extends ScheduledReporter {
 
 	private final File basepath;
 	private final Map<String, RrdDb> dbPerMetric = new HashMap<String, RrdDb>();
+	private final Map<String, Double> lastValueForCounter = new HashMap<String, Double>();
 
 	RRD4JReporter(Configuration config, MetricRegistry registry) {
 		super(registry, "rrd4j-reporter", MetricFilter.ALL, TimeUnit.SECONDS, TimeUnit.MILLISECONDS);
@@ -69,12 +70,16 @@ public class RRD4JReporter extends ScheduledReporter {
 				result = create(cur.getKey(), DsType.COUNTER);
 				try {
 					double lastValue = result.getLastDatasourceValue("data");
-					if (!Double.isNaN(lastValue) && lastValue > newValue) {
-						newValue += lastValue;
+					if (!Double.isNaN(lastValue)) {
+						lastValueForCounter.put(cur.getKey(), lastValue);
 					}
 				} catch (IOException e) {
 					LOG.error("unable to load last value", e);
 				}
+			}
+			Double lastValue = lastValueForCounter.get(cur.getKey());
+			if (lastValue != null) {
+				newValue += lastValue;
 			}
 			update(result, newValue);
 		}

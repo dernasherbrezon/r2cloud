@@ -25,6 +25,7 @@ import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
 import ru.r2cloud.util.ResultUtil;
 import ru.r2cloud.util.SafeRunnable;
+import ru.r2cloud.util.Util;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry.MetricSupplier;
@@ -172,16 +173,7 @@ public class RtlSdrStatusDao {
 		} catch (IOException e) {
 			LOG.error("unable to calculate ppm", e);
 		} finally {
-			if (rtlTest != null && rtlTest.isAlive()) {
-				try {
-					rtlTest.destroy();
-					if (!rtlTest.waitFor(5000, TimeUnit.MILLISECONDS)) {
-						LOG.info("unable to stop in time");
-					}
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-				}
-			}
+			Util.shutdownProcess(rtlTest, 5000);
 		}
 
 		adsb.start();
