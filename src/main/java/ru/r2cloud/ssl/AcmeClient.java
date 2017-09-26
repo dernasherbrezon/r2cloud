@@ -61,6 +61,7 @@ public class AcmeClient {
 		this.config = config;
 		this.basepath = Util.initDirectory(config.getProperty("acme.basepath"));
 		this.challengePath = Util.initDirectory(config.getProperty("acme.webroot") + "/.well-known/acme-challenge/");
+		
 	}
 
 	public void start() {
@@ -384,7 +385,8 @@ public class AcmeClient {
 			while (challenge.getStatus() != Status.VALID) {
 				// Did the authorization fail?
 				if (challenge.getStatus() == Status.INVALID) {
-					throw new AcmeException("Challenge failed... Giving up.");
+					messages.add("Authorization failed: " + challenge.getError().getDetail());
+					throw new AcmeException("Challenge failed...");
 				}
 
 				Thread.sleep(retryTimeout);

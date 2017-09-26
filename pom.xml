@@ -42,13 +42,13 @@
 		<dependency>
 			<groupId>org.shredzone.acme4j</groupId>
 			<artifactId>acme4j-client</artifactId>
-			<version>0.11</version>
+			<version>0.12</version>
 		</dependency>
 		<dependency>
 			<groupId>org.shredzone.acme4j</groupId>
 			<artifactId>acme4j-utils</artifactId>
 			<version>0.11</version>
-		</dependency>	
+		</dependency>
 		<dependency>
 			<groupId>org.fusesource</groupId>
 			<artifactId>sigar</artifactId>

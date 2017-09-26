@@ -77,39 +77,42 @@ public class Metrics {
 
 		try {
 			sigar = new Sigar();
-			REGISTRY.gauge("load-average", new MetricSupplier<Gauge>() {
-				@Override
-				public Gauge<?> newMetric() {
-					return new FormattedGauge<Double>(MetricFormat.NORMAL) {
+			File f = sigar.getNativeLibrary();
+			if (f != null && f.exists()) {
+				REGISTRY.gauge("load-average", new MetricSupplier<Gauge>() {
+					@Override
+					public Gauge<?> newMetric() {
+						return new FormattedGauge<Double>(MetricFormat.NORMAL) {
 
-						@Override
-						public Double getValue() {
-							try {
-								return sigar.getLoadAverage()[0];
-							} catch (SigarException e) {
-								return null;
+							@Override
+							public Double getValue() {
+								try {
+									return sigar.getLoadAverage()[0];
+								} catch (SigarException e) {
+									return null;
+								}
 							}
-						}
-					};
-				}
-			});
-			REGISTRY.gauge("ram-used", new MetricSupplier<Gauge>() {
-				@Override
-				public Gauge<?> newMetric() {
-					return new FormattedGauge<Double>(MetricFormat.NORMAL) {
+						};
+					}
+				});
+				REGISTRY.gauge("ram-used", new MetricSupplier<Gauge>() {
+					@Override
+					public Gauge<?> newMetric() {
+						return new FormattedGauge<Double>(MetricFormat.NORMAL) {
 
-						@Override
-						public Double getValue() {
-							try {
-								return sigar.getMem().getUsedPercent();
-							} catch (SigarException e) {
-								return null;
+							@Override
+							public Double getValue() {
+								try {
+									return sigar.getMem().getUsedPercent();
+								} catch (SigarException e) {
+									return null;
+								}
 							}
-						}
-					};
-				}
-			});
-			LOG.info("SIGAR library was loaded");
+						};
+					}
+				});
+				LOG.info("SIGAR library was loaded");
+			}
 		} catch (UnsatisfiedLinkError linkError) {
 			LOG.info("Could not initialize SIGAR library: " + linkError.getMessage());
 		}

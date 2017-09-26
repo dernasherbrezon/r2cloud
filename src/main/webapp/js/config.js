@@ -14,7 +14,7 @@ jQuery(document).ready(function($) {
 					if (data.length > 0) {
 						$("#sslMessages li:last").find("i").removeClass("fa-circle-o-notch").removeClass("fa-spin");
 						for( var i in data ) {
-							$("#sslMessages").append("<li><i class=\"fa-li fa\"></i>" + data[i] + "</li>");
+							$("#sslMessages").append("<li><i class=\"fa-li fa\"></i>" + escapeHtml(data[i]) + "</li>");
 						}
 						if (xhr.status == 206) {
 							$("#sslMessages li:last").find("i").addClass("fa-circle-o-notch").addClass("fa-spin");
@@ -40,4 +40,13 @@ jQuery(document).ready(function($) {
 		$("input[name='lat']").val(position.coords.latitude);
 		$("input[name='lon']").val(position.coords.longitude);
 	}
+	
+	function escapeHtml(unsafe) {
+	    return unsafe
+	         .replace(/&/g, "&amp;")
+	         .replace(/</g, "&lt;")
+	         .replace(/>/g, "&gt;")
+	         .replace(/"/g, "&quot;")
+	         .replace(/'/g, "&#039;");
+	 }	
 });
