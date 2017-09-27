@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
+import org.hyperic.sigar.FileSystemUsage;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
@@ -104,6 +105,23 @@ public class Metrics {
 							public Double getValue() {
 								try {
 									return sigar.getMem().getUsedPercent();
+								} catch (SigarException e) {
+									return null;
+								}
+							}
+						};
+					}
+				});
+				REGISTRY.gauge("disk-used", new MetricSupplier<Gauge>() {
+					@Override
+					public Gauge<?> newMetric() {
+						return new FormattedGauge<Double>(MetricFormat.NORMAL) {
+
+							@Override
+							public Double getValue() {
+								try {
+									FileSystemUsage fileSystemUsage = sigar.getFileSystemUsage("/");
+									return fileSystemUsage.getUsePercent() * 100;
 								} catch (SigarException e) {
 									return null;
 								}
