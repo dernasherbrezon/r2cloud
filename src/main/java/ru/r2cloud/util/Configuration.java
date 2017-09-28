@@ -8,7 +8,9 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -16,6 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.ddns.DDNSType;
+
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 
 public class Configuration {
 
@@ -96,10 +101,10 @@ public class Configuration {
 		}
 		return systemSettings.getProperty(name);
 	}
-	
+
 	public DDNSType getDdnsType(String name) {
 		String str = getProperty(name);
-		if( str == null || str.trim().length() == 0 ) {
+		if (str == null || str.trim().length() == 0) {
 			return null;
 		}
 		return DDNSType.valueOf(str);
@@ -109,4 +114,11 @@ public class Configuration {
 		userSettings.remove(name);
 	}
 
+	public List<String> getList(String name) {
+		String str = getProperty(name);
+		if (str == null) {
+			return Collections.emptyList();
+		}
+		return Lists.newArrayList(Splitter.on(',').trimResults().omitEmptyStrings().split(str));
+	}
 }
