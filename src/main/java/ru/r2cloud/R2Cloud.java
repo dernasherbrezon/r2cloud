@@ -11,7 +11,9 @@ import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.rx.ADSB;
 import ru.r2cloud.rx.ADSBDao;
+import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.ssl.AcmeClient;
+import ru.r2cloud.tle.TLEDao;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ShutdownLoggingManager;
 import ru.r2cloud.web.Authenticator;
@@ -50,6 +52,8 @@ public class R2Cloud {
 	private final AutoUpdate autoUpdate;
 	private final DDNSClient ddnsClient;
 	private final AcmeClient acmeClient;
+	private final SatelliteDao satelliteDao;
+	private final TLEDao tleDao;
 
 	public R2Cloud(String propertiesLocation) {
 		props = new Configuration(propertiesLocation);
@@ -61,6 +65,8 @@ public class R2Cloud {
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
 		acmeClient = new AcmeClient(props);
+		satelliteDao = new SatelliteDao(props);
+		tleDao = new TLEDao(props, satelliteDao);
 
 		// setup web server
 		index(new ru.r2cloud.web.controller.ADSB(props));
@@ -86,6 +92,7 @@ public class R2Cloud {
 		acmeClient.start();
 		ddnsClient.start();
 		rtlsdrStatusDao.start();
+		tleDao.start();
 		webServer.start();
 		LOG.info("=================================");
 		LOG.info("=========== started =============");
@@ -94,6 +101,7 @@ public class R2Cloud {
 
 	public void stop() {
 		webServer.stop();
+		tleDao.stop();
 		rtlsdrStatusDao.stop();
 		ddnsClient.stop();
 		acmeClient.stop();

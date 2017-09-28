@@ -4,6 +4,15 @@ public class Satellite {
 
 	private String noradCatId;
 	private String name;
+	private long frequency;
+	
+	public long getFrequency() {
+		return frequency;
+	}
+	
+	public void setFrequency(long frequency) {
+		this.frequency = frequency;
+	}
 
 	public String getNoradCatId() {
 		return noradCatId;
