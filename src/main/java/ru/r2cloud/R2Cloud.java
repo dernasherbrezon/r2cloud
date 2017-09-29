@@ -55,6 +55,7 @@ public class R2Cloud {
 	private final AcmeClient acmeClient;
 	private final SatelliteDao satelliteDao;
 	private final TLEDao tleDao;
+	private final Scheduler scheduler;
 
 	public R2Cloud(String propertiesLocation) {
 		props = new Configuration(propertiesLocation);
@@ -68,6 +69,7 @@ public class R2Cloud {
 		acmeClient = new AcmeClient(props);
 		satelliteDao = new SatelliteDao(props);
 		tleDao = new TLEDao(props, satelliteDao);
+		scheduler = new Scheduler(props, satelliteDao);
 
 		// setup web server
 		index(new ru.r2cloud.web.controller.ADSB(props));
@@ -95,6 +97,8 @@ public class R2Cloud {
 		ddnsClient.start();
 		rtlsdrStatusDao.start();
 		tleDao.start();
+		//scheduler should start after tle (it uses TLE to schedule observations)
+		scheduler.start();
 		webServer.start();
 		LOG.info("=================================");
 		LOG.info("=========== started =============");
@@ -103,6 +107,7 @@ public class R2Cloud {
 
 	public void stop() {
 		webServer.stop();
+		scheduler.stop();
 		tleDao.stop();
 		rtlsdrStatusDao.stop();
 		ddnsClient.stop();

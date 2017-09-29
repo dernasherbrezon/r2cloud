@@ -94,6 +94,14 @@ public class Configuration {
 		return Boolean.valueOf(str);
 	}
 
+	public Double getDouble(String name) {
+		String str = getProperty(name);
+		if (str == null) {
+			return null;
+		}
+		return Double.valueOf(str);
+	}
+
 	public String getProperty(String name) {
 		String result = userSettings.getProperty(name);
 		if (result != null) {
