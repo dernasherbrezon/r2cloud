@@ -83,7 +83,7 @@ public class R2Cloud {
 		index(new ru.r2cloud.web.controller.Configuration(props, autoUpdate, acmeClient));
 		index(new SaveConfiguration(props, autoUpdate, ddnsClient, acmeClient));
 		index(new GetAcmeLog(acmeClient));
-		index(new LoadTLE(props));
+		index(new LoadTLE(props, satelliteDao));
 		webServer = new WebServer(props, controllers, auth);
 	}
 

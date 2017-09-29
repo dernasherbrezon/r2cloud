@@ -25,8 +25,8 @@ public class SatelliteDao {
 			if (m.find()) {
 				Satellite curSatellite = new Satellite();
 				curSatellite.setName(m.group(2));
-				curSatellite.setNoradCatId(m.group(1));
-				curSatellite.setFrequency(config.getLong("satellites." + curSatellite.getNoradCatId() + ".freq"));
+				curSatellite.setId(m.group(1));
+				curSatellite.setFrequency(config.getLong("satellites." + curSatellite.getId() + ".freq"));
 				index(curSatellite);
 			}
 		}

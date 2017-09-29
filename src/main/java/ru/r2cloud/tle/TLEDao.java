@@ -3,7 +3,9 @@ package ru.r2cloud.tle;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -47,9 +49,25 @@ public class TLEDao {
 			return;
 		}
 		for (Satellite cur : satelliteDao.findSupported()) {
-			File tle = new File(basepath, cur.getNoradCatId() + File.separator + "tle.txt");
+			File tle = new File(basepath, cur.getId() + File.separator + "tle.txt");
 			if (!tle.exists()) {
 				LOG.info("missing tle for " + cur.getName() + ". reloading all tle");
+				reload();
+				break;
+			}
+			try (BufferedReader r = new BufferedReader(new FileReader(tle))) {
+				String line1 = r.readLine();
+				if (line1 == null) {
+					continue;
+				}
+				String line2 = r.readLine();
+				if (line2 == null) {
+					continue;
+				}
+				cur.setTleLine1(line1);
+				cur.setTleLine2(line2);
+			} catch (IOException e) {
+				LOG.error("unable to load TLE for " + cur.getId(), e);
 				reload();
 				break;
 			}
@@ -112,11 +130,13 @@ public class TLEDao {
 						if (satellite == null) {
 							continue;
 						}
-						File output = new File(basepath, satellite.getNoradCatId() + File.separator + "tle.txt");
+						File output = new File(basepath, satellite.getId() + File.separator + "tle.txt");
 						if (!output.getParentFile().exists() && !output.getParentFile().mkdirs()) {
 							LOG.error("unable to create directory for satellite: " + satellite.getName());
 							continue;
 						}
+						satellite.setTleLine1(line1);
+						satellite.setTleLine2(line2);
 						try (BufferedWriter w = new BufferedWriter(new FileWriter(output))) {
 							w.append(line1);
 							w.newLine();

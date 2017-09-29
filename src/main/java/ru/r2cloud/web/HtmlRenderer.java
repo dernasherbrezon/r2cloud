@@ -16,18 +16,20 @@ import fi.iki.elonen.NanoHTTPD.Response.Status;
 
 class HtmlRenderer {
 
-	private String basepath;
+	private final String basepath;
+	private final boolean useCache;
 	private final Map<String, JtwigTemplate> cache = new ConcurrentHashMap<String, JtwigTemplate>();
 
 	HtmlRenderer(Configuration props) {
 		basepath = props.getProperty("server.ftl.location");
+		useCache = props.getBoolean("server.ftl.cache");
 	}
 
 	Response render(String page, Map<String, Object> model) {
 		JtwigTemplate template = cache.get(page);
-		if (template == null) {
-			//double initialization is possible here
-			//however it's that not critical 
+		if (!useCache || template == null) {
+			// double initialization is possible here
+			// however it's that not critical
 			template = JtwigTemplate.fileTemplate(new File(basepath, page));
 			cache.put(page, template);
 		}

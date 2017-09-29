@@ -4,7 +4,26 @@
       	{{ macros.menu("tle") }}
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">TLE</h1>
-          <p>Last update: {{ lastupdate | date ("dd-MM-yyyy") }}</p>
+          <p class="{{ color }}">Last update: {{ lastupdate | date ("dd-MM-yyyy") }}</p>
+		  <form class="form-inline" style="margin-top: 20px;">
+			  <div class="form-group">
+			    <label for="satellite">Satellite</label>
+			    <select id="satelliteId" class="form-control" >
+			    	<option value="" selected></option>
+			    	{% for item in satellites %}
+				    	<option value="satellite-{{item.id}}">{{ item.name }}</option>
+			    	{% endfor %}
+			    </select>
+			  </div>          
+          </form>
+          {% for item in satellites %}
+          <div id="satellite-{{item.id}}" style="margin-top: 20px; display: none;" class="js-satellite-tle">
+          	<p>{{ item.tleLine1 }}</p>
+          	<p>{{ item.tleLine2 }}</p>
+          </div>
+          {% endfor %}    
         </div>
       </div>
+<script src="/js/jquery-1.12.4.js"></script>      
+<script src="/js/tle.js"></script>      
 {% include 'footer.jtwig' %}
