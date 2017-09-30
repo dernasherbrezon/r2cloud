@@ -308,6 +308,9 @@
 						<libhyperic-sigar-java></libhyperic-sigar-java>
 						<rtl-sdr></rtl-sdr>
 						<coreutils></coreutils>
+						<wxtoimg></wxtoimg>
+						<libxft2></libxft2>
+						<sox></sox>
 					</osDependencies>
 					<javaServiceWrapper>false</javaServiceWrapper>
 					<fileSets>

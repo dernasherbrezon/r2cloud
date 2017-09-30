@@ -35,7 +35,7 @@ public final class Util {
 	}
 
 	public static void shutdownProcess(Process process, long timeoutMillis) {
-		if (process == null) {
+		if (process == null || !process.isAlive()) {
 			return;
 		}
 		try {
@@ -50,6 +50,17 @@ public final class Util {
 
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
+		}
+	}
+
+	public static void deleteDirectory(File f) {
+		if (f.isDirectory()) {
+			for (File c : f.listFiles()) {
+				deleteDirectory(c);
+			}
+		}
+		if (!f.delete()) {
+			LOG.error("Failed to delete file: " + f);
 		}
 	}
 

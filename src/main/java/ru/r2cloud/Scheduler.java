@@ -1,7 +1,12 @@
 package ru.r2cloud;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -15,13 +20,14 @@ import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
 import ru.r2cloud.util.SafeRunnable;
+import ru.r2cloud.util.Util;
 import uk.me.g4dpz.satellite.GroundStationPosition;
 import uk.me.g4dpz.satellite.SatPos;
 import uk.me.g4dpz.satellite.Satellite;
 import uk.me.g4dpz.satellite.SatelliteFactory;
 import uk.me.g4dpz.satellite.TLE;
 
-public class Scheduler {
+public class Scheduler implements RtlSdrListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 
@@ -30,13 +36,16 @@ public class Scheduler {
 	private final double minElevation;
 	private final double guaranteedElevation;
 	private final GroundStationPosition currentLocation;
+	private final File basepath;
 	private ScheduledExecutorService executor = null;
+	private List<Future<?>> scheduledExecutions = new ArrayList<Future<?>>();
 
 	public Scheduler(Configuration config, SatelliteDao satellites) {
 		this.config = config;
 		this.satellites = satellites;
 		this.minElevation = config.getDouble("scheduler.elevation.min");
 		this.guaranteedElevation = config.getDouble("scheduler.elevation.guaranteed");
+		this.basepath = Util.initDirectory(config.getProperty("satellites.basepath.location"));
 		// TODO doesnt support reloading coordinates
 		this.currentLocation = new GroundStationPosition(config.getDouble("locaiton.lat"), config.getDouble("locaiton.lon"), 0.0);
 	}
@@ -47,6 +56,10 @@ public class Scheduler {
 			return;
 		}
 		executor = Executors.newScheduledThreadPool(2, new NamingThreadFactory("scheduler"));
+		scheduleAll();
+	}
+
+	private void scheduleAll() {
 		for (ru.r2cloud.model.Satellite cur : satellites.findSupported()) {
 			TLE tle = new TLE(new String[] { cur.getName(), cur.getTleLine1(), cur.getTleLine2() });
 			Satellite satellite = SatelliteFactory.createSatellite(tle);
@@ -62,25 +75,93 @@ public class Scheduler {
 			return;
 		}
 		LOG.info("scheduled next pass for " + cur.getName() + ": " + nextPass);
+		// ./data/satellites/12312/data/1234234
+		File basepathForCurrent = new File(basepath, cur.getId() + File.separator + "data" + File.separator + System.currentTimeMillis());
 		Future<?> future = executor.schedule(new SafeRunnable() {
 
 			@Override
 			public void doRun() {
-				
-				// TODO Auto-generated method stub
-
+				execute(basepathForCurrent, cur);
 			}
 		}, nextPass.getStart().getTime().getTime() - current, TimeUnit.MILLISECONDS);
+		scheduledExecutions.add(future);
 		executor.schedule(new SafeRunnable() {
 
 			@Override
 			public void doRun() {
 				future.cancel(true);
-				// FIME send image schedule next pass
-				
 				schedule(cur, satellite);
+
+				File wavPath = new File(basepathForCurrent, "output.wav");
+				if (!wavPath.exists()) {
+					LOG.info("nothing saved. cleanup current directory: " + basepathForCurrent.getAbsolutePath());
+					if (!basepathForCurrent.delete()) {
+						LOG.error("unable to delete current base directory: " + basepathForCurrent.getAbsolutePath());
+					}
+					return;
+				}
+
+				processSource(wavPath, "a");
+				processSource(wavPath, "b");
+				if (!wavPath.delete()) {
+					LOG.error("unable to delete source .wav: " + wavPath.getAbsolutePath());
+				}
+
+				File[] dataDirs = basepathForCurrent.getParentFile().listFiles();
+				Integer maxCount = config.getInteger("scheduler.data.retention.count");
+				if (dataDirs.length > maxCount) {
+					Arrays.sort(dataDirs, FilenameComparator.INSTANCE);
+					for (int i = 0; i < (dataDirs.length - maxCount); i++) {
+						Util.deleteDirectory(dataDirs[i]);
+					}
+				}
+
+				// FIXME send image somewhere
+
 			}
 		}, nextPass.getEnd().getTime().getTime() - current, TimeUnit.MILLISECONDS);
+	}
+
+	@Override
+	public void resume() {
+		scheduleAll();
+	}
+
+	@Override
+	public void suspend() {
+		for (Future<?> cur : scheduledExecutions) {
+			cur.cancel(true);
+		}
+	}
+
+	private static void processSource(final File wavFile, String type) {
+		File result = new File(wavFile.getParentFile(), type + ".jpg");
+		String[] cmd = new String[] { "wxtoimg", "-t", "n", "-" + type, "-c", "-o", wavFile.getAbsolutePath(), result.getAbsolutePath() };
+		Process process = null;
+		try {
+			process = new ProcessBuilder().inheritIO().command(cmd).inheritIO().start();
+			process.waitFor();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			Util.shutdownProcess(process, 10000);
+		} catch (IOException e) {
+			LOG.error("unable to run", e);
+		}
+	}
+
+	// put synchonized so no 2 observations run at the same time
+	private synchronized void execute(File basepathForCurrent, ru.r2cloud.model.Satellite satellite) {
+		File wavPath = new File(basepathForCurrent, "output.wav");
+		Process process = null;
+		try {
+			process = new ProcessBuilder().inheritIO().command(new String[] { config.getProperty("satellites.rtlsdr.path"), "-f", String.valueOf(satellite.getFrequency()), "-s", "60k", "-g", "45", "-p", "55", "-E", "wav", "-E", "deemp", "-F", "9", "-", "|", config.getProperty("satellites.sox.path"), "-t", "wav", "-", wavPath.getAbsolutePath(), "rate", "11025" }).inheritIO().start();
+			process.waitFor();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			Util.shutdownProcess(process, 10000);
+		} catch (IOException e) {
+			LOG.error("unable to run", e);
+		}
 	}
 
 	public void stop() {
