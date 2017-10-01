@@ -126,7 +126,7 @@ public class Scheduler implements Lifecycle {
 			process.waitFor();
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			Util.shutdownProcess(process, 10000);
+			Util.shutdown("wxtoimg", process, 10000);
 		} catch (IOException e) {
 			LOG.error("unable to run", e);
 		}
@@ -145,7 +145,7 @@ public class Scheduler implements Lifecycle {
 			process.waitFor();
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			Util.shutdownProcess(process, 10000);
+			Util.shutdown("rtl_sdr for satellites", process, 10000);
 		} catch (IOException e) {
 			LOG.error("unable to run", e);
 		} finally {

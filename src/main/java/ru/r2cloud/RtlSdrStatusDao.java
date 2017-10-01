@@ -182,7 +182,7 @@ public class RtlSdrStatusDao implements Lifecycle {
 		} catch (IOException e) {
 			LOG.error("unable to calculate ppm", e);
 		} finally {
-			Util.shutdownProcess(rtlTest, 5000);
+			Util.shutdown("ppm-test", rtlTest, 5000);
 			lock.unlock(this);
 		}
 	}

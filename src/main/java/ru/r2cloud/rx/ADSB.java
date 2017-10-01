@@ -178,7 +178,7 @@ public class ADSB implements Lifecycle {
 			return;
 		}
 		started = false;
-		Util.shutdownProcess(dump1090, throttleIntervalMillis);
+		Util.shutdown("dump1090", dump1090, throttleIntervalMillis);
 		closeSocket();
 		if (thread != null) {
 			thread.interrupt();
