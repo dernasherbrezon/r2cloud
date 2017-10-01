@@ -61,10 +61,13 @@ public class AcmeClient {
 		this.config = config;
 		this.basepath = Util.initDirectory(config.getProperty("acme.basepath"));
 		this.challengePath = Util.initDirectory(config.getProperty("acme.webroot") + "/.well-known/acme-challenge/");
-		
+
 	}
 
-	public void start() {
+	public synchronized void start() {
+		if (executor != null) {
+			return;
+		}
 		executor = Executors.newSingleThreadScheduledExecutor(new NamingThreadFactory("acme-client"));
 		if (isSSLEnabled()) {
 			try (FileInputStream fis = new FileInputStream(new File(basepath, "domain-chain.crt"))) {
@@ -409,10 +412,9 @@ public class AcmeClient {
 		}
 	}
 
-	public void stop() {
-		if (executor != null) {
-			executor.shutdown();
-		}
+	public synchronized void stop() {
+		Util.shutdown(executor, config.getThreadPoolShutdownMillis());
+		executor = null;
 	}
 
 	public boolean isSSLEnabled() {

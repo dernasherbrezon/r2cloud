@@ -156,10 +156,8 @@ public class Scheduler implements Lifecycle {
 	// protection from calling stop 2 times and more
 	@Override
 	public synchronized void stop() {
-		if (executor != null) {
-			executor.shutdown();
-			executor = null;
-		}
+		Util.shutdown(executor, config.getThreadPoolShutdownMillis());
+		executor = null;
 		LOG.info("stopped");
 	}
 

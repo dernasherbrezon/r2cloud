@@ -22,6 +22,7 @@ import ru.r2cloud.model.Airplane;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
 import ru.r2cloud.util.SafeRunnable;
+import ru.r2cloud.util.Util;
 
 public class ADSBDao {
 
@@ -38,8 +39,11 @@ public class ADSBDao {
 		this.enabled = props.getBoolean("rx.adsb.enabled");
 	}
 
-	public void start() {
+	public synchronized void start() {
 		if (!enabled) {
+			return;
+		}
+		if (reaper != null) {
 			return;
 		}
 		long cleanupPeriodMs = props.getLong("rx.adsb.cleanupPeriodMs");
@@ -65,13 +69,12 @@ public class ADSBDao {
 		}, cleanupPeriodMs, cleanupPeriodMs, TimeUnit.MILLISECONDS);
 	}
 
-	public void stop() {
+	public synchronized void stop() {
 		if (!enabled) {
 			return;
 		}
-		if (reaper != null) {
-			reaper.shutdown();
-		}
+		Util.shutdown(reaper, props.getThreadPoolShutdownMillis());
+		reaper = null;
 	}
 
 	public void save(ModeSReply reply) {

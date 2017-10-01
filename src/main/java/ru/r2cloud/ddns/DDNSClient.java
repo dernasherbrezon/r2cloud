@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
+import ru.r2cloud.util.Util;
 
 public class DDNSClient {
 
@@ -23,7 +24,10 @@ public class DDNSClient {
 		this.config = config;
 	}
 
-	public void start() {
+	public synchronized void start() {
+		if (executor != null) {
+			return;
+		}
 		String typeStr = config.getProperty("ddns.type");
 		if (typeStr == null || typeStr.trim().length() == 0) {
 			return;
@@ -50,10 +54,9 @@ public class DDNSClient {
 		executor.scheduleAtFixedRate(task, 0, config.getLong("ddns.interval.seconds"), TimeUnit.SECONDS);
 	}
 
-	public void stop() {
-		if (executor != null) {
-			executor.shutdown();
-		}
+	public synchronized void stop() {
+		Util.shutdown(executor, config.getThreadPoolShutdownMillis());
+		executor = null;
 	}
 
 }

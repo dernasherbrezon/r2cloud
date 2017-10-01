@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -31,6 +34,34 @@ public final class Util {
 			while ((curLine = in.readLine()) != null) {
 				log.info(curLine);
 			}
+		}
+	}
+
+	public static void shutdown(ScheduledExecutorService executor, long timeoutMillis) {
+		if (executor == null) {
+			return;
+		}
+		executor.shutdown();
+		try {
+			if (!executor.awaitTermination(timeoutMillis, TimeUnit.MILLISECONDS)) {
+				String threadpoolName;
+				if (executor instanceof ScheduledThreadPoolExecutor) {
+					ThreadFactory factory = ((ScheduledThreadPoolExecutor) executor).getThreadFactory();
+					if (factory instanceof NamingThreadFactory) {
+						NamingThreadFactory namingFactory = (NamingThreadFactory) factory;
+						threadpoolName = namingFactory.getPrefix();
+					} else {
+						threadpoolName = "unknown[" + factory.getClass().getSimpleName() + "]";
+					}
+				} else {
+					threadpoolName = "unknown[" + executor.getClass().getSimpleName() + "]";
+				}
+				LOG.error("executor did not terminate in the specified time: " + threadpoolName);
+				executor.shutdownNow();
+			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			executor.shutdownNow();
 		}
 	}
 

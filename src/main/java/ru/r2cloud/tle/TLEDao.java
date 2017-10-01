@@ -43,9 +43,12 @@ public class TLEDao {
 		this.basepath = Util.initDirectory(config.getProperty("satellites.basepath.location"));
 	}
 
-	public void start() {
+	public synchronized void start() {
 		if (!config.getBoolean("satellites.enabled")) {
 			LOG.info("tle tracking is disabled");
+			return;
+		}
+		if (executor != null) {
 			return;
 		}
 		for (Satellite cur : satelliteDao.findSupported()) {
@@ -157,9 +160,8 @@ public class TLEDao {
 		}
 	}
 
-	public void stop() {
-		if (executor != null) {
-			executor.shutdown();
-		}
+	public synchronized void stop() {
+		Util.shutdown(executor, config.getThreadPoolShutdownMillis());
+		executor = null;
 	}
 }

@@ -16,5 +16,9 @@ public class NamingThreadFactory implements ThreadFactory {
 	public Thread newThread(Runnable r) {
 		return new Thread(r, prefix + "-" + threadCreated.incrementAndGet());
 	}
+	
+	public String getPrefix() {
+		return prefix;
+	}
 
 }

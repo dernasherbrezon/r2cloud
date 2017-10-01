@@ -69,6 +69,10 @@ public class Configuration {
 			LOG.info("unable to setup 600 permissions: " + e.getMessage());
 		}
 	}
+	
+	public long getThreadPoolShutdownMillis() {
+		return getLong("threadpool.shutdown.millis");
+	}
 
 	public Long getLong(String name) {
 		String strValue = getProperty(name);

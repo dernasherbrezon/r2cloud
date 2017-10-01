@@ -36,7 +36,7 @@ public class RtlSdrStatusDao implements Lifecycle {
 	private final static Pattern DEVICEPATTERN = Pattern.compile("^  0:  (.*?), (.*?), SN: (.*?)$");
 	private final static Pattern PPMPATTERN = Pattern.compile("real sample rate: \\d+ current PPM: \\d+ cumulative PPM: (\\d+)");
 
-	private final Configuration props;
+	private final Configuration config;
 	private final RtlSdrLock lock;
 
 	private ScheduledExecutorService executor = null;
@@ -46,9 +46,9 @@ public class RtlSdrStatusDao implements Lifecycle {
 	private volatile Integer currentPpm;
 
 	public RtlSdrStatusDao(Configuration config, RtlSdrLock lock) {
-		this.props = config;
+		this.config = config;
 		this.lock = lock;
-		this.currentPpm = props.getInteger("ppm.current");
+		this.currentPpm = config.getInteger("ppm.current");
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -64,11 +64,11 @@ public class RtlSdrStatusDao implements Lifecycle {
 			public void doRun() {
 				reload();
 			}
-		}, 0, props.getLong("rtltest.interval.seconds"), TimeUnit.SECONDS);
-		if (props.getBoolean("ppm.calculate")) {
+		}, 0, config.getLong("rtltest.interval.seconds"), TimeUnit.SECONDS);
+		if (config.getBoolean("ppm.calculate")) {
 			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 			try {
-				Date date = sdf.parse(props.getProperty("ppm.calculate.timeUTC"));
+				Date date = sdf.parse(config.getProperty("ppm.calculate.timeUTC"));
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(date);
 				Calendar executeAt = Calendar.getInstance();
@@ -133,16 +133,14 @@ public class RtlSdrStatusDao implements Lifecycle {
 				};
 			}
 		});
-		
+
 		LOG.info("started");
 	}
 
 	@Override
 	public synchronized void stop() {
-		if (executor != null) {
-			executor.shutdown();
-			executor = null;
-		}
+		Util.shutdown(executor, config.getThreadPoolShutdownMillis());
+		executor = null;
 		LOG.info("stopped");
 	}
 
@@ -157,7 +155,7 @@ public class RtlSdrStatusDao implements Lifecycle {
 
 		Process rtlTest = null;
 		try {
-			rtlTest = new ProcessBuilder().command(new String[] { props.getProperty("stdbuf.path"), "-i0", "-o0", "-e0", props.getProperty("rtltest.path"), "-p2" }).redirectErrorStream(true).start();
+			rtlTest = new ProcessBuilder().command(new String[] { config.getProperty("stdbuf.path"), "-i0", "-o0", "-e0", config.getProperty("rtltest.path"), "-p2" }).redirectErrorStream(true).start();
 			BufferedReader r = new BufferedReader(new InputStreamReader(rtlTest.getInputStream()));
 			String curLine = null;
 			int numberOfSamples = 0;
@@ -174,8 +172,8 @@ public class RtlSdrStatusDao implements Lifecycle {
 						if (m.find()) {
 							String ppmStr = m.group(1);
 							currentPpm = Integer.valueOf(ppmStr);
-							props.setProperty("ppm.current", String.valueOf(currentPpm));
-							props.update();
+							config.setProperty("ppm.current", String.valueOf(currentPpm));
+							config.update();
 						}
 						break;
 					}
@@ -195,7 +193,7 @@ public class RtlSdrStatusDao implements Lifecycle {
 			return;
 		}
 		try {
-			Process rtlTest = new ProcessBuilder().command(new String[] { props.getProperty("rtltest.path"), "-t" }).start();
+			Process rtlTest = new ProcessBuilder().command(new String[] { config.getProperty("rtltest.path"), "-t" }).start();
 			BufferedReader r = new BufferedReader(new InputStreamReader(rtlTest.getErrorStream()));
 			String curLine = null;
 			while ((curLine = r.readLine()) != null) {
