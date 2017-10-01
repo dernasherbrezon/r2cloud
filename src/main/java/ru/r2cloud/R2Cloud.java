@@ -11,7 +11,9 @@ import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.rx.ADSB;
 import ru.r2cloud.rx.ADSBDao;
+import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.satellite.SatelliteDao;
+import ru.r2cloud.satellite.Scheduler;
 import ru.r2cloud.ssl.AcmeClient;
 import ru.r2cloud.tle.TLEDao;
 import ru.r2cloud.util.Configuration;
@@ -57,6 +59,7 @@ public class R2Cloud {
 	private final TLEDao tleDao;
 	private final Scheduler scheduler;
 	private final RtlSdrLock rtlsdrLock;
+	private final Predict predict;
 
 	public R2Cloud(String propertiesLocation) {
 		props = new Configuration(propertiesLocation);
@@ -66,6 +69,7 @@ public class R2Cloud {
 		rtlsdrLock.register(RtlSdrStatusDao.class, 2);
 		rtlsdrLock.register(ADSB.class, 1);
 		
+		predict = new Predict(props);
 		dao = new ADSBDao(props);
 		adsb = new ADSB(props, dao, rtlsdrLock);
 		auth = new Authenticator(props);
@@ -76,7 +80,7 @@ public class R2Cloud {
 		acmeClient = new AcmeClient(props);
 		satelliteDao = new SatelliteDao(props);
 		tleDao = new TLEDao(props, satelliteDao);
-		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock);
+		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, predict);
 
 		// setup web server
 		index(new ru.r2cloud.web.controller.ADSB(props));
