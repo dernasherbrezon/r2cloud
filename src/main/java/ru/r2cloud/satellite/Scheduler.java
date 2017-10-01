@@ -46,6 +46,7 @@ public class Scheduler implements Lifecycle {
 	// protection from calling start 2 times and more
 	@Override
 	public synchronized void start() {
+		//FIXME subscribe for property updates
 		if (!config.getBoolean("satellites.enabled")) {
 			LOG.info("satellite scheduler is disabled");
 			return;
@@ -68,9 +69,11 @@ public class Scheduler implements Lifecycle {
 		SatPass nextPass = predict.calculateNext(new Date(current), satellite);
 		if (nextPass == null) {
 			LOG.info("can't find next pass for " + cur.getName());
+			cur.setNextPass(null);
 			return;
 		}
 		LOG.info("scheduled next pass for " + cur.getName() + ": " + nextPass);
+		cur.setNextPass(nextPass.getStart().getTime());
 		// ./data/satellites/12312/data/1234234
 		File basepathForCurrent = new File(basepath, cur.getId() + File.separator + "data" + File.separator + System.currentTimeMillis());
 		Future<?> future = executor.schedule(new SafeRunnable() {
@@ -105,7 +108,7 @@ public class Scheduler implements Lifecycle {
 				File[] dataDirs = basepathForCurrent.getParentFile().listFiles();
 				Integer maxCount = config.getInteger("scheduler.data.retention.count");
 				if (dataDirs.length > maxCount) {
-					Arrays.sort(dataDirs, FilenameComparator.INSTANCE);
+					Arrays.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
 					for (int i = 0; i < (dataDirs.length - maxCount); i++) {
 						Util.deleteDirectory(dataDirs[i]);
 					}

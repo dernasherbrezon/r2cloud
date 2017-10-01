@@ -1,15 +1,16 @@
-package ru.r2cloud.web.controller;
+package ru.r2cloud.web.controller.weather;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import ru.r2cloud.model.Satellite;
-import ru.r2cloud.model.WeatherObservation;
+import ru.r2cloud.model.WeatherSatellite;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
+import ru.r2cloud.web.ValidationResult;
+import ru.r2cloud.web.WebServer;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
 public class LoadWeatherSatellites extends AbstractHttpController {
@@ -24,14 +25,21 @@ public class LoadWeatherSatellites extends AbstractHttpController {
 
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
+		String errors = WebServer.getParameter(session, "errors");
 		ModelAndView result = new ModelAndView("weather");
 		result.put("enabled", config.getBoolean("satellites.enabled"));
 		List<Satellite> satellites = dao.findSupported();
-		Map<Satellite, List<WeatherObservation>> entity = new HashMap<Satellite, List<WeatherObservation>>();
+		List<WeatherSatellite> entity = new ArrayList<WeatherSatellite>(satellites.size());
 		for (Satellite cur : satellites) {
-			entity.put(cur, dao.findWeatherObservations(cur));
+			WeatherSatellite curData = new WeatherSatellite();
+			curData.setData(dao.findWeatherObservations(cur));
+			curData.setSatellite(cur);
+			entity.add(curData);
 		}
 		result.put("entity", entity);
+		if (errors != null) {
+			result.put("errors", ValidationResult.valueOf("agreeToC", errors));
+		}
 		return result;
 	}
 

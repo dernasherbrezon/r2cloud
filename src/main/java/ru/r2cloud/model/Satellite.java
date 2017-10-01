@@ -1,5 +1,7 @@
 package ru.r2cloud.model;
 
+import java.util.Date;
+
 public class Satellite {
 
 	private String id;
@@ -7,6 +9,15 @@ public class Satellite {
 	private long frequency;
 	private String tleLine1;
 	private String tleLine2;
+	private Date nextPass;
+	
+	public Date getNextPass() {
+		return nextPass;
+	}
+	
+	public void setNextPass(Date nextPass) {
+		this.nextPass = nextPass;
+	}
 
 	public String getTleLine1() {
 		return tleLine1;

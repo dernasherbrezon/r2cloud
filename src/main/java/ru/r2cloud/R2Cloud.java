@@ -33,6 +33,8 @@ import ru.r2cloud.web.controller.SaveConfiguration;
 import ru.r2cloud.web.controller.Setup;
 import ru.r2cloud.web.controller.Status;
 import ru.r2cloud.web.controller.StatusData;
+import ru.r2cloud.web.controller.weather.EnableWeather;
+import ru.r2cloud.web.controller.weather.LoadWeatherSatellites;
 
 public class R2Cloud {
 
@@ -97,6 +99,8 @@ public class R2Cloud {
 		index(new SaveConfiguration(props, autoUpdate, ddnsClient, acmeClient));
 		index(new GetAcmeLog(acmeClient));
 		index(new LoadTLE(props, satelliteDao));
+		index(new LoadWeatherSatellites(props, satelliteDao));
+		index(new EnableWeather(props));
 		webServer = new WebServer(props, controllers, auth);
 	}
 

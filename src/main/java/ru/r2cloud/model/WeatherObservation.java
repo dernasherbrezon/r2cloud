@@ -7,7 +7,7 @@ public class WeatherObservation {
 	private String aPath;
 	private String bPath;
 	private Date date;
-
+	
 	public String getaPath() {
 		return aPath;
 	}

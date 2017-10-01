@@ -2,6 +2,7 @@ package ru.r2cloud.satellite;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ru.r2cloud.FilenameComparator;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.WeatherObservation;
 import ru.r2cloud.util.Configuration;
@@ -58,17 +60,18 @@ public class SatelliteDao {
 			return Collections.emptyList();
 		}
 		File[] observations = dataRoot.listFiles();
+		Arrays.sort(observations, FilenameComparator.INSTANCE_DESC);
 		List<WeatherObservation> result = new ArrayList<WeatherObservation>(observations.length);
 		for (File curDirectory : observations) {
 			WeatherObservation cur = new WeatherObservation();
 			cur.setDate(new Date(Long.valueOf(curDirectory.getName())));
 			File a = new File(curDirectory, "a.jpg");
 			if (a.exists()) {
-				cur.setaPath("/admin/satellites/" + satellite.getId() + "/" + curDirectory.getName() + "/a");
+				cur.setaPath("/admin/static/satellites/" + satellite.getId() + "/data/" + curDirectory.getName() + "/a.jpg");
 			}
 			File b = new File(curDirectory, "b.jpg");
 			if (b.exists()) {
-				cur.setbPath("/admin/satellites/" + satellite.getId() + "/" + curDirectory.getName() + "/b");
+				cur.setbPath("/admin/static/satellites/" + satellite.getId() + "/data/" + curDirectory.getName() + "/b.jpg");
 			}
 			result.add(cur);
 		}
