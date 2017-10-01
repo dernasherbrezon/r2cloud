@@ -20,7 +20,6 @@ import ru.r2cloud.metrics.FormattedGauge;
 import ru.r2cloud.metrics.MetricFormat;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.RtlSdrStatus;
-import ru.r2cloud.rx.ADSB;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
 import ru.r2cloud.util.ResultUtil;
@@ -31,14 +30,14 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry.MetricSupplier;
 import com.codahale.metrics.health.HealthCheck;
 
-public class RtlSdrStatusDao {
+public class RtlSdrStatusDao implements Lifecycle {
 
 	private final static Logger LOG = LoggerFactory.getLogger(RtlSdrStatusDao.class);
 	private final static Pattern DEVICEPATTERN = Pattern.compile("^  0:  (.*?), (.*?), SN: (.*?)$");
 	private final static Pattern PPMPATTERN = Pattern.compile("real sample rate: \\d+ current PPM: \\d+ cumulative PPM: (\\d+)");
 
 	private final Configuration props;
-	private final ADSB adsb;
+	private final RtlSdrLock lock;
 
 	private ScheduledExecutorService executor = null;
 	private RtlSdrStatus status = null;
@@ -46,14 +45,18 @@ public class RtlSdrStatusDao {
 
 	private volatile Integer currentPpm;
 
-	public RtlSdrStatusDao(Configuration config, ADSB adsb) {
+	public RtlSdrStatusDao(Configuration config, RtlSdrLock lock) {
 		this.props = config;
-		this.adsb = adsb;
+		this.lock = lock;
 		this.currentPpm = props.getInteger("ppm.current");
 	}
 
 	@SuppressWarnings("rawtypes")
-	public void start() {
+	@Override
+	public synchronized void start() {
+		if (executor != null) {
+			return;
+		}
 		executor = Executors.newScheduledThreadPool(1, new NamingThreadFactory("rtlsdr-tester"));
 		executor.scheduleAtFixedRate(new SafeRunnable() {
 
@@ -130,19 +133,27 @@ public class RtlSdrStatusDao {
 				};
 			}
 		});
+		
+		LOG.info("started");
 	}
 
-	public void stop() {
+	@Override
+	public synchronized void stop() {
 		if (executor != null) {
 			executor.shutdown();
+			executor = null;
 		}
+		LOG.info("stopped");
 	}
 
 	private void reloadPpm() {
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("ppm calculation");
 		}
-		adsb.stop();
+		if (!lock.tryLock(this)) {
+			LOG.info("unable to lock for ppm calculation");
+			return;
+		}
 
 		Process rtlTest = null;
 		try {
@@ -174,12 +185,15 @@ public class RtlSdrStatusDao {
 			LOG.error("unable to calculate ppm", e);
 		} finally {
 			Util.shutdownProcess(rtlTest, 5000);
+			lock.unlock(this);
 		}
-
-		adsb.start();
 	}
 
 	private void reload() {
+		if (!lock.tryLock(this)) {
+			LOG.info("unable to lock rtl_test");
+			return;
+		}
 		try {
 			Process rtlTest = new ProcessBuilder().command(new String[] { props.getProperty("rtltest.path"), "-t" }).start();
 			BufferedReader r = new BufferedReader(new InputStreamReader(rtlTest.getErrorStream()));
@@ -203,6 +217,8 @@ public class RtlSdrStatusDao {
 		} catch (IOException e) {
 			rtltestError = "unable to read status";
 			LOG.error(rtltestError, e);
+		} finally {
+			lock.unlock(this);
 		}
 	}
 

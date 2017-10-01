@@ -2,11 +2,9 @@ package ru.r2cloud;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -27,7 +25,7 @@ import uk.me.g4dpz.satellite.Satellite;
 import uk.me.g4dpz.satellite.SatelliteFactory;
 import uk.me.g4dpz.satellite.TLE;
 
-public class Scheduler implements RtlSdrListener {
+public class Scheduler implements Lifecycle {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 
@@ -38,33 +36,37 @@ public class Scheduler implements RtlSdrListener {
 	private final GroundStationPosition currentLocation;
 	private final File basepath;
 	private ScheduledExecutorService executor = null;
-	private List<Future<?>> scheduledExecutions = new ArrayList<Future<?>>();
+	private final RtlSdrLock lock;
 
-	public Scheduler(Configuration config, SatelliteDao satellites) {
+	public Scheduler(Configuration config, SatelliteDao satellites, RtlSdrLock lock) {
 		this.config = config;
 		this.satellites = satellites;
 		this.minElevation = config.getDouble("scheduler.elevation.min");
 		this.guaranteedElevation = config.getDouble("scheduler.elevation.guaranteed");
 		this.basepath = Util.initDirectory(config.getProperty("satellites.basepath.location"));
+		this.lock = lock;
 		// TODO doesnt support reloading coordinates
 		this.currentLocation = new GroundStationPosition(config.getDouble("locaiton.lat"), config.getDouble("locaiton.lon"), 0.0);
 	}
 
-	public void start() {
+	//protection from calling start 2 times and more
+	@Override
+	public synchronized void start() {
 		if (!config.getBoolean("satellites.enabled")) {
 			LOG.info("satellite scheduler is disabled");
 			return;
 		}
+		if (executor != null) {
+			return;
+		}
 		executor = Executors.newScheduledThreadPool(2, new NamingThreadFactory("scheduler"));
-		scheduleAll();
-	}
-
-	private void scheduleAll() {
 		for (ru.r2cloud.model.Satellite cur : satellites.findSupported()) {
 			TLE tle = new TLE(new String[] { cur.getName(), cur.getTleLine1(), cur.getTleLine2() });
 			Satellite satellite = SatelliteFactory.createSatellite(tle);
 			schedule(cur, satellite);
 		}
+		
+		LOG.info("started");
 	}
 
 	private void schedule(ru.r2cloud.model.Satellite cur, Satellite satellite) {
@@ -84,7 +86,6 @@ public class Scheduler implements RtlSdrListener {
 				execute(basepathForCurrent, cur);
 			}
 		}, nextPass.getStart().getTime().getTime() - current, TimeUnit.MILLISECONDS);
-		scheduledExecutions.add(future);
 		executor.schedule(new SafeRunnable() {
 
 			@Override
@@ -122,18 +123,6 @@ public class Scheduler implements RtlSdrListener {
 		}, nextPass.getEnd().getTime().getTime() - current, TimeUnit.MILLISECONDS);
 	}
 
-	@Override
-	public void resume() {
-		scheduleAll();
-	}
-
-	@Override
-	public void suspend() {
-		for (Future<?> cur : scheduledExecutions) {
-			cur.cancel(true);
-		}
-	}
-
 	private static void processSource(final File wavFile, String type) {
 		File result = new File(wavFile.getParentFile(), type + ".jpg");
 		String[] cmd = new String[] { "wxtoimg", "-t", "n", "-" + type, "-c", "-o", wavFile.getAbsolutePath(), result.getAbsolutePath() };
@@ -153,6 +142,10 @@ public class Scheduler implements RtlSdrListener {
 	private synchronized void execute(File basepathForCurrent, ru.r2cloud.model.Satellite satellite) {
 		File wavPath = new File(basepathForCurrent, "output.wav");
 		Process process = null;
+		if (!lock.tryLock(this)) {
+			LOG.info("unable to acquire lock for " + satellite.getName());
+			return;
+		}
 		try {
 			process = new ProcessBuilder().inheritIO().command(new String[] { config.getProperty("satellites.rtlsdr.path"), "-f", String.valueOf(satellite.getFrequency()), "-s", "60k", "-g", "45", "-p", "55", "-E", "wav", "-E", "deemp", "-F", "9", "-", "|", config.getProperty("satellites.sox.path"), "-t", "wav", "-", wavPath.getAbsolutePath(), "rate", "11025" }).inheritIO().start();
 			process.waitFor();
@@ -161,13 +154,19 @@ public class Scheduler implements RtlSdrListener {
 			Util.shutdownProcess(process, 10000);
 		} catch (IOException e) {
 			LOG.error("unable to run", e);
+		} finally {
+			lock.unlock(this);
 		}
 	}
 
-	public void stop() {
+	// protection from calling stop 2 times and more
+	@Override
+	public synchronized void stop() {
 		if (executor != null) {
 			executor.shutdown();
+			executor = null;
 		}
+		LOG.info("stopped");
 	}
 
 	// package protected for tests

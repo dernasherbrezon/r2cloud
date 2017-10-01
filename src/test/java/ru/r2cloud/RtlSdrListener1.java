@@ -1,17 +1,17 @@
 package ru.r2cloud;
 
-public class RtlSdrListener1 implements RtlSdrListener {
+public class RtlSdrListener1 implements Lifecycle {
 
 	private boolean suspended = false;
 	private boolean resumed = false;
 
 	@Override
-	public void suspend() {
+	public void stop() {
 		suspended = true;
 	}
 
 	@Override
-	public void resume() {
+	public void start() {
 		resumed = true;
 	}
 

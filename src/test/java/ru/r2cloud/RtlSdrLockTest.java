@@ -19,7 +19,7 @@ public class RtlSdrLockTest {
 		assertTrue(lock.tryLock(listener1));
 		assertTrue(lock.tryLock(listener2));
 		assertTrue(listener1.isSuspended());
-		lock.release(listener2);
+		lock.unlock(listener2);
 		assertTrue(listener1.isResumed());
 	}
 
@@ -31,7 +31,7 @@ public class RtlSdrLockTest {
 		RtlSdrListener1 listener1 = new RtlSdrListener1();
 
 		assertTrue(lock.tryLock(listener1));
-		lock.release(listener1);
+		lock.unlock(listener1);
 		assertFalse(listener1.isResumed());
 	}
 
@@ -46,7 +46,7 @@ public class RtlSdrLockTest {
 
 		assertTrue(lock.tryLock(listener2));
 		assertFalse(lock.tryLock(listener1));
-		lock.release(listener2);
+		lock.unlock(listener2);
 		assertTrue(listener1.isResumed());
 	}
 

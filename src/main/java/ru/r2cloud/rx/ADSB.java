@@ -10,6 +10,8 @@ import org.opensky.libadsb.msgs.ModeSReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.Lifecycle;
+import ru.r2cloud.RtlSdrLock;
 import ru.r2cloud.metrics.FormattedCounter;
 import ru.r2cloud.metrics.MetricFormat;
 import ru.r2cloud.metrics.Metrics;
@@ -22,7 +24,7 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry.MetricSupplier;
 import com.codahale.metrics.health.HealthCheck;
 
-public class ADSB {
+public class ADSB implements Lifecycle {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ADSB.class);
 
@@ -30,6 +32,7 @@ public class ADSB {
 	private final ADSBDao dao;
 	private final boolean enabled;
 	private final long throttleIntervalMillis;
+	private final RtlSdrLock lock;
 
 	private Socket socket;
 	private volatile boolean started = false;
@@ -38,17 +41,25 @@ public class ADSB {
 	private Thread thread;
 	private Process dump1090;
 
-	public ADSB(Configuration props, ADSBDao dao) {
+	public ADSB(Configuration props, ADSBDao dao, RtlSdrLock lock) {
 		this.props = props;
 		this.dao = dao;
+		this.lock = lock;
 		this.enabled = props.getBoolean("rx.adsb.enabled");
 		this.throttleIntervalMillis = props.getLong("rx.adsb.reconnect.interval");
 	}
 
+	@Override
 	public synchronized void start() {
-		if (!enabled) {
+		if (!enabled || started) {
 			return;
 		}
+
+		if (!lock.tryLock(this)) {
+			LOG.info("unable to acquire lock");
+			return;
+		}
+
 		LOG.info("starting..");
 		started = true;
 
@@ -161,8 +172,9 @@ public class ADSB {
 		}
 	}
 
+	@Override
 	public synchronized void stop() {
-		if (!enabled) {
+		if (!enabled || !started) {
 			return;
 		}
 		started = false;
@@ -179,6 +191,8 @@ public class ADSB {
 			}
 		}
 		LOG.info("stopped");
+
+		lock.unlock(this);
 	}
 
 	private void closeSocket() {

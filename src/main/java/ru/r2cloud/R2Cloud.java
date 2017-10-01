@@ -56,20 +56,27 @@ public class R2Cloud {
 	private final SatelliteDao satelliteDao;
 	private final TLEDao tleDao;
 	private final Scheduler scheduler;
+	private final RtlSdrLock rtlsdrLock;
 
 	public R2Cloud(String propertiesLocation) {
 		props = new Configuration(propertiesLocation);
+		
+		rtlsdrLock = new RtlSdrLock();
+		rtlsdrLock.register(Scheduler.class, 3);
+		rtlsdrLock.register(RtlSdrStatusDao.class, 2);
+		rtlsdrLock.register(ADSB.class, 1);
+		
 		dao = new ADSBDao(props);
-		adsb = new ADSB(props, dao);
+		adsb = new ADSB(props, dao, rtlsdrLock);
 		auth = new Authenticator(props);
 		metrics = new Metrics(props);
-		rtlsdrStatusDao = new RtlSdrStatusDao(props, adsb);
+		rtlsdrStatusDao = new RtlSdrStatusDao(props, rtlsdrLock);
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
 		acmeClient = new AcmeClient(props);
 		satelliteDao = new SatelliteDao(props);
 		tleDao = new TLEDao(props, satelliteDao);
-		scheduler = new Scheduler(props, satelliteDao);
+		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock);
 
 		// setup web server
 		index(new ru.r2cloud.web.controller.ADSB(props));

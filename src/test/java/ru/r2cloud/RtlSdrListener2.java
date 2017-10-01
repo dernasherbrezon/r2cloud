@@ -1,16 +1,16 @@
 package ru.r2cloud;
 
 
-public class RtlSdrListener2 implements RtlSdrListener {
+public class RtlSdrListener2 implements Lifecycle {
 
 	@Override
-	public void suspend() {
+	public void stop() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void resume() {
+	public void start() {
 		// TODO Auto-generated method stub
 		
 	}
