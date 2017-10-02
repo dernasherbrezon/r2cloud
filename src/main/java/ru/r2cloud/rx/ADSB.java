@@ -193,7 +193,8 @@ public class ADSB implements Lifecycle {
 		}
 		LOG.info("stopped");
 
-		lock.unlock(this);
+		//never call unlock. it should be always subscribed
+//		lock.unlock(this);
 	}
 
 	private void closeSocket() {

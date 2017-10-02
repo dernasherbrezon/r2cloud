@@ -188,10 +188,6 @@ public class RtlSdrStatusDao implements Lifecycle {
 	}
 
 	private void reload() {
-		if (!lock.tryLock(this)) {
-			LOG.info("unable to lock rtl_test");
-			return;
-		}
 		try {
 			Process rtlTest = new ProcessBuilder().command(new String[] { config.getProperty("rtltest.path"), "-t" }).start();
 			BufferedReader r = new BufferedReader(new InputStreamReader(rtlTest.getErrorStream()));
@@ -215,8 +211,6 @@ public class RtlSdrStatusDao implements Lifecycle {
 		} catch (IOException e) {
 			rtltestError = "unable to read status";
 			LOG.error(rtltestError, e);
-		} finally {
-			lock.unlock(this);
 		}
 	}
 
