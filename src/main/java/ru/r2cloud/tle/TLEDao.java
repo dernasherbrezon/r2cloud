@@ -22,12 +22,13 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.satellite.SatelliteDao;
+import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
 import ru.r2cloud.util.SafeRunnable;
 import ru.r2cloud.util.Util;
 
-public class TLEDao {
+public class TLEDao implements ConfigListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TLEDao.class);
 
@@ -39,8 +40,19 @@ public class TLEDao {
 
 	public TLEDao(Configuration config, SatelliteDao satelliteDao) {
 		this.config = config;
+		this.config.subscribe(this);
 		this.satelliteDao = satelliteDao;
 		this.basepath = Util.initDirectory(config.getProperty("satellites.basepath.location"));
+	}
+
+	@Override
+	public void onConfigUpdated() {
+		boolean enabled = config.getBoolean("satellites.enabled");
+		if (executor == null && enabled) {
+			start();
+		} else if (executor != null && !enabled) {
+			stop();
+		}
 	}
 
 	public synchronized void start() {

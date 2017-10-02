@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ public class Configuration {
 	private static Set<PosixFilePermission> MODE600 = new HashSet<PosixFilePermission>();
 
 	private final Properties systemSettings = new Properties();
+	private final List<ConfigListener> listeners = new CopyOnWriteArrayList<ConfigListener>();
 
 	static {
 		MODE600.add(PosixFilePermission.OWNER_READ);
@@ -68,8 +70,15 @@ public class Configuration {
 		} catch (IOException e) {
 			LOG.info("unable to setup 600 permissions: " + e.getMessage());
 		}
+		for (ConfigListener cur : listeners) {
+			try {
+				cur.onConfigUpdated();
+			} catch (Exception e) {
+				LOG.error("unable to notify listener: " + cur, e);
+			}
+		}
 	}
-	
+
 	public long getThreadPoolShutdownMillis() {
 		return getLong("threadpool.shutdown.millis");
 	}
@@ -133,4 +142,13 @@ public class Configuration {
 		}
 		return Lists.newArrayList(Splitter.on(',').trimResults().omitEmptyStrings().split(str));
 	}
+
+	public void subscribe(ConfigListener listener) {
+		this.listeners.add(listener);
+	}
+
+	public void unsubsribe(ConfigListener listener) {
+		this.listeners.remove(listener);
+	}
+
 }

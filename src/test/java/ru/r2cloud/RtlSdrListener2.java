@@ -3,16 +3,25 @@ package ru.r2cloud;
 
 public class RtlSdrListener2 implements Lifecycle {
 
+	private boolean suspended = false;
+	private boolean resumed = false;
+
 	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
-		
+		suspended = true;
 	}
 
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
-		
+		resumed = true;
+	}
+
+	public boolean isSuspended() {
+		return suspended;
+	}
+
+	public boolean isResumed() {
+		return resumed;
 	}
 
 }

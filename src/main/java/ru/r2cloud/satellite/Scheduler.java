@@ -16,6 +16,7 @@ import ru.r2cloud.FilenameComparator;
 import ru.r2cloud.Lifecycle;
 import ru.r2cloud.RtlSdrLock;
 import ru.r2cloud.model.SatPass;
+import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
 import ru.r2cloud.util.SafeRunnable;
@@ -24,7 +25,7 @@ import uk.me.g4dpz.satellite.Satellite;
 import uk.me.g4dpz.satellite.SatelliteFactory;
 import uk.me.g4dpz.satellite.TLE;
 
-public class Scheduler implements Lifecycle {
+public class Scheduler implements Lifecycle, ConfigListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 
@@ -37,16 +38,27 @@ public class Scheduler implements Lifecycle {
 
 	public Scheduler(Configuration config, SatelliteDao satellites, RtlSdrLock lock, Predict predict) {
 		this.config = config;
+		this.config.subscribe(this);
 		this.satellites = satellites;
 		this.basepath = Util.initDirectory(config.getProperty("satellites.basepath.location"));
 		this.lock = lock;
 		this.predict = predict;
 	}
 
+	@Override
+	public void onConfigUpdated() {
+		boolean satellitesEnabled = config.getBoolean("satellites.enabled");
+		if (executor == null && satellitesEnabled) {
+			start();
+		} else if (executor != null && !satellitesEnabled) {
+			stop();
+		}
+
+	}
+
 	// protection from calling start 2 times and more
 	@Override
 	public synchronized void start() {
-		//FIXME subscribe for property updates
 		if (!config.getBoolean("satellites.enabled")) {
 			LOG.info("satellite scheduler is disabled");
 			return;
@@ -120,9 +132,9 @@ public class Scheduler implements Lifecycle {
 		}, nextPass.getEnd().getTime().getTime() - current, TimeUnit.MILLISECONDS);
 	}
 
-	private static void processSource(final File wavFile, String type) {
+	private void processSource(final File wavFile, String type) {
 		File result = new File(wavFile.getParentFile(), type + ".jpg");
-		String[] cmd = new String[] { "wxtoimg", "-t", "n", "-" + type, "-c", "-o", wavFile.getAbsolutePath(), result.getAbsolutePath() };
+		String[] cmd = new String[] { config.getProperty("satellites.wxtoimg.path"), "-t", "n", "-" + type, "-c", "-o", wavFile.getAbsolutePath(), result.getAbsolutePath() };
 		Process process = null;
 		try {
 			process = new ProcessBuilder().inheritIO().command(cmd).inheritIO().start();
