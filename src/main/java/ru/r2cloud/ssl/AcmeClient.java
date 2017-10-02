@@ -68,7 +68,7 @@ public class AcmeClient {
 		if (executor != null) {
 			return;
 		}
-		executor = Executors.newSingleThreadScheduledExecutor(new NamingThreadFactory("acme-client"));
+		executor = Executors.newScheduledThreadPool(1, new NamingThreadFactory("acme-client"));
 		if (isSSLEnabled()) {
 			try (FileInputStream fis = new FileInputStream(new File(basepath, "domain-chain.crt"))) {
 				X509Certificate certificate = CertificateUtils.readX509Certificate(fis);

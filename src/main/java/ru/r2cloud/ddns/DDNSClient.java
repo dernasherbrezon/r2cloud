@@ -50,7 +50,7 @@ public class DDNSClient {
 			return;
 		}
 
-		executor = Executors.newSingleThreadScheduledExecutor(new NamingThreadFactory("ddns-updater"));
+		executor = Executors.newScheduledThreadPool(1, new NamingThreadFactory("ddns-updater"));
 		executor.scheduleAtFixedRate(task, 0, config.getLong("ddns.interval.seconds"), TimeUnit.SECONDS);
 	}
 

@@ -63,6 +63,8 @@ public class TLEDao implements ConfigListener {
 		if (executor != null) {
 			return;
 		}
+		//TODO check the last tle update time from config
+		//if more than 1 week, than update tle now
 		for (Satellite cur : satelliteDao.findSupported()) {
 			File tle = new File(basepath, cur.getId() + File.separator + "tle.txt");
 			if (!tle.exists()) {
