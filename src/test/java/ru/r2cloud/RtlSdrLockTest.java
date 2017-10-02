@@ -8,6 +8,14 @@ import org.junit.Test;
 public class RtlSdrLockTest {
 
 	@Test
+	public void testLockByUnknown() {
+		RtlSdrLock lock = new RtlSdrLock();
+		lock.register(RtlSdrListener1.class, 1);
+		
+		assertFalse(lock.tryLock(new RtlSdrListener2()));
+	}
+	
+	@Test
 	public void testBasic() {
 		RtlSdrLock lock = new RtlSdrLock();
 		lock.register(RtlSdrListener1.class, 1);

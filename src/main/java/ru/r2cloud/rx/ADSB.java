@@ -83,13 +83,14 @@ public class ADSB implements Lifecycle {
 			}
 
 		});
-		// give some time for dump1090 to initialize - thus throttle
-		throttle();
 
 		thread = new Thread(new SafeRunnable() {
 
 			@Override
 			public void doRun() {
+				// give some time for dump1090 to initialize - thus throttle
+				throttle();
+
 				while (!Thread.currentThread().isInterrupted() && started) {
 					String host = props.getProperty("rx.adsb.hostname");
 					int port = props.getInteger("rx.adsb.port");
