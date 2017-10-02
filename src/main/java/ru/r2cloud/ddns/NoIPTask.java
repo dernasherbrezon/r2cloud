@@ -60,6 +60,7 @@ public class NoIPTask extends SafeRunnable {
 			return;
 		}
 		try {
+			LOG.info("ip has changed. old: " + currentExternalIp + " new: " + externalIp);
 			URL obj = new URL("https://dynupdate.no-ip.com/nic/update?hostname=" + domainName);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			con.setRequestMethod("GET");
