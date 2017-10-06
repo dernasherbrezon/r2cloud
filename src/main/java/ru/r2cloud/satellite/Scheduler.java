@@ -2,6 +2,7 @@ package ru.r2cloud.satellite;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ProcessBuilder.Redirect;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.Executors;
@@ -150,20 +151,29 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	// put synchonized so no 2 observations run at the same time
 	private synchronized void execute(File basepathForCurrent, ru.r2cloud.model.Satellite satellite) {
 		File wavPath = new File(basepathForCurrent, "output.wav");
-		Process process = null;
 		if (!lock.tryLock(this)) {
 			LOG.info("unable to acquire lock for " + satellite.getName());
 			return;
 		}
+		Process rtlfm = null;
+		Process sox = null;
+		Thread t = null;
 		try {
-			process = new ProcessBuilder().command(new String[] { config.getProperty("satellites.rtlsdr.path"), "-f", String.valueOf(satellite.getFrequency()), "-s", "60k", "-g", "45", "-p", "55", "-E", "wav", "-E", "deemp", "-F", "9", "-", "|", config.getProperty("satellites.sox.path"), "-t", "wav", "-", wavPath.getAbsolutePath(), "rate", "11025" }).inheritIO().start();
-			process.waitFor();
+			sox = new ProcessBuilder().command(new String[] { config.getProperty("satellites.sox.path"), "-t", "wav", "-", wavPath.getAbsolutePath(), "rate", "11025" }).redirectError(Redirect.INHERIT).start();
+			rtlfm = new ProcessBuilder().command(new String[] { config.getProperty("satellites.rtlsdr.path"), "-f", String.valueOf(satellite.getFrequency()), "-s", "60k", "-g", "45", "-p", "55", "-E", "wav", "-E", "deemp", "-F", "9", "-" }).redirectError(Redirect.INHERIT).start();
+			t = new Thread(new CopyData(rtlfm.getInputStream(), sox.getOutputStream()), "rtlsdr-pipe");
+			t.start();
+			rtlfm.waitFor();
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			Util.shutdown("rtl_sdr for satellites", process, 10000);
 		} catch (IOException e) {
 			LOG.error("unable to run", e);
 		} finally {
+			Util.shutdown("rtl_sdr for satellites", rtlfm, 10000);
+			Util.shutdown("sox", sox, 10000);
+			if (t != null) {
+				t.interrupt();
+			}
 			lock.unlock(this);
 		}
 	}
