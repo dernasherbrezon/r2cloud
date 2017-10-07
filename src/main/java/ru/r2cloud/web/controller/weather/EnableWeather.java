@@ -40,7 +40,7 @@ public class EnableWeather extends AbstractHttpController {
 			return result;
 		}
 		try (BufferedWriter w = new BufferedWriter(new FileWriter(config.getProperty("satellites.wxtoimg.license.path")))) {
-			w.append("2.11.2 beta");
+			w.append("2.11.2 beta\n");
 		} catch (Exception e) {
 			LOG.error("unable to write license file", e);
 			return new Redirect("/admin/weather?errors=UnknownServerError");

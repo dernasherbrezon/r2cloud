@@ -163,8 +163,12 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		Process sox = null;
 		Thread t = null;
 		try {
+			Integer ppm = config.getInteger("ppm.current");
+			if (ppm == null) {
+				ppm = 0;
+			}
 			sox = new ProcessBuilder().command(new String[] { config.getProperty("satellites.sox.path"), "-t", "raw", "-r", "60000", "-es", "-b", "16", "-", wavPath.getAbsolutePath(), "rate", "11025" }).redirectError(Redirect.INHERIT).start();
-			rtlfm = new ProcessBuilder().command(new String[] { config.getProperty("satellites.rtlsdr.path"), "-f", String.valueOf(satellite.getFrequency()), "-s", "60k", "-g", "45", "-p", "55", "-E", "deemp", "-F", "9", "-" }).redirectError(Redirect.INHERIT).start();
+			rtlfm = new ProcessBuilder().command(new String[] { config.getProperty("satellites.rtlsdr.path"), "-f", String.valueOf(satellite.getFrequency()), "-s", "60k", "-g", "45", "-p", String.valueOf(ppm), "-E", "deemp", "-F", "9", "-" }).redirectError(Redirect.INHERIT).start();
 			t = new Thread(new CopyData(rtlfm.getInputStream(), sox.getOutputStream()), "rtlsdr-pipe");
 			t.start();
 			rtlfm.waitFor();
