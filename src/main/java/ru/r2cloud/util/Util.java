@@ -41,27 +41,28 @@ public final class Util {
 		if (executor == null) {
 			return;
 		}
-		executor.shutdown();
+		executor.shutdownNow();
+		boolean cleanlyTerminated;
 		try {
-			if (!executor.awaitTermination(timeoutMillis, TimeUnit.MILLISECONDS)) {
-				String threadpoolName;
-				if (executor instanceof ScheduledThreadPoolExecutor) {
-					ThreadFactory factory = ((ScheduledThreadPoolExecutor) executor).getThreadFactory();
-					if (factory instanceof NamingThreadFactory) {
-						NamingThreadFactory namingFactory = (NamingThreadFactory) factory;
-						threadpoolName = namingFactory.getPrefix();
-					} else {
-						threadpoolName = "unknown[" + factory.getClass().getSimpleName() + "]";
-					}
-				} else {
-					threadpoolName = "unknown[" + executor.getClass().getSimpleName() + "]";
-				}
-				LOG.error("executor did not terminate in the specified time: " + threadpoolName);
-				executor.shutdownNow();
-			}
+			cleanlyTerminated = executor.awaitTermination(timeoutMillis, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			executor.shutdownNow();
+			cleanlyTerminated = executor.isTerminated();
+		}
+		if (!cleanlyTerminated) {
+			String threadpoolName;
+			if (executor instanceof ScheduledThreadPoolExecutor) {
+				ThreadFactory factory = ((ScheduledThreadPoolExecutor) executor).getThreadFactory();
+				if (factory instanceof NamingThreadFactory) {
+					NamingThreadFactory namingFactory = (NamingThreadFactory) factory;
+					threadpoolName = namingFactory.getPrefix();
+				} else {
+					threadpoolName = "unknown[" + factory.getClass().getSimpleName() + "]";
+				}
+			} else {
+				threadpoolName = "unknown[" + executor.getClass().getSimpleName() + "]";
+			}
+			LOG.error("executor did not terminate in the specified time: " + threadpoolName);
 		}
 	}
 
