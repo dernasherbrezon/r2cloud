@@ -89,6 +89,10 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		cur.setNextPass(nextPass.getStart().getTime());
 		// ./data/satellites/12312/data/1234234
 		File basepathForCurrent = new File(basepath, cur.getId() + File.separator + "data" + File.separator + System.currentTimeMillis());
+		if (!basepathForCurrent.mkdirs()) {
+			LOG.info("unable to create base path for current pass: " + basepathForCurrent.getAbsolutePath());
+			return;
+		}
 		Future<?> future = executor.schedule(new SafeRunnable() {
 
 			@Override
@@ -159,8 +163,8 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		Process sox = null;
 		Thread t = null;
 		try {
-			sox = new ProcessBuilder().command(new String[] { config.getProperty("satellites.sox.path"), "-t", "wav", "-", wavPath.getAbsolutePath(), "rate", "11025" }).redirectError(Redirect.INHERIT).start();
-			rtlfm = new ProcessBuilder().command(new String[] { config.getProperty("satellites.rtlsdr.path"), "-f", String.valueOf(satellite.getFrequency()), "-s", "60k", "-g", "45", "-p", "55", "-E", "wav", "-E", "deemp", "-F", "9", "-" }).redirectError(Redirect.INHERIT).start();
+			sox = new ProcessBuilder().command(new String[] { config.getProperty("satellites.sox.path"), "-t", "raw", "-r", "60000", "-es", "-b", "16", "-", wavPath.getAbsolutePath(), "rate", "11025" }).redirectError(Redirect.INHERIT).start();
+			rtlfm = new ProcessBuilder().command(new String[] { config.getProperty("satellites.rtlsdr.path"), "-f", String.valueOf(satellite.getFrequency()), "-s", "60k", "-g", "45", "-p", "55", "-E", "deemp", "-F", "9", "-" }).redirectError(Redirect.INHERIT).start();
 			t = new Thread(new CopyData(rtlfm.getInputStream(), sox.getOutputStream()), "rtlsdr-pipe");
 			t.start();
 			rtlfm.waitFor();

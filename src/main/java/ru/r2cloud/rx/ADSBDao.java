@@ -1,5 +1,6 @@
 package ru.r2cloud.rx;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -114,7 +115,7 @@ public class ADSBDao {
 
 	public Collection<Airplane> getAirplanes() {
 		synchronized (latestMessages) {
-			return latestMessages.values();
+			return new ArrayList<Airplane>(latestMessages.values());
 		}
 	}
 }
