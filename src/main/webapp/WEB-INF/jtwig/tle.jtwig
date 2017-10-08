@@ -4,7 +4,7 @@
       	{{ macros.menu("tle") }}
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">TLE</h1>
-          <p class="{{ color }}">Last update: {{ lastupdate | date ("dd-MM-yyyy") }}</p>
+          <p class="{{ color }}">Last update: {{ lastupdate | date ("dd-MM-yyyy zzz") }}</p>
 		  <form class="form-inline" style="margin-top: 20px;">
 			  <div class="form-group">
 			    <label for="satellite">Satellite</label>

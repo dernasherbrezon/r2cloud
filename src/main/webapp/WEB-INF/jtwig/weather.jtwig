@@ -14,7 +14,7 @@
 		  	<div class="tab-content">
 			  	{% for cur in entity %}
 			  	<div role="tabpanel" class="tab-pane {% if (loop.first) %}active{% endif %}" id="{{ cur.satellite.id }}" style="margin-top: 20px;">
-			  		<p>Next pass:&nbsp;{{ cur.satellite.nextPass | date ("'<strong>'HH:mm'</strong>' dd-MMM-yyyy") }}</p>
+			  		<p>Next pass:&nbsp;{{ cur.satellite.nextPass | date ("'<strong>'HH:mm'</strong>' dd-MMM-yyyy zzz") }}</p>
 			  		{% if (cur.data.size() != 0) %}
 				  		<ul class="nav nav-pills">
 				  			{% for curData in cur.data %}

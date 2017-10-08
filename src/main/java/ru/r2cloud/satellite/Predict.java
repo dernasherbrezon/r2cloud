@@ -42,7 +42,12 @@ public class Predict {
 					// calculate max elevation only during satellite pass
 					maxElevation = Math.max(maxElevation, elevation);
 					if (!matched) {
-						start = findPrecise(previous, position, satellite);
+						if (previous == null) {
+							//in the middle of the pass
+							start = position;
+						} else {
+							start = findPrecise(previous, position, satellite);
+						}
 					}
 					matched = true;
 				} else {

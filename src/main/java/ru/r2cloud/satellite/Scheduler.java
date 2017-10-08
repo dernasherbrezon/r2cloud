@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -67,8 +68,12 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		if (executor != null) {
 			return;
 		}
-		executor = Executors.newScheduledThreadPool(2, new NamingThreadFactory("scheduler"));
-		for (ru.r2cloud.model.Satellite cur : satellites.findSupported()) {
+		// TODO optimize thread count. 2 satellite passes should not overlap
+		List<ru.r2cloud.model.Satellite> supportedSatellites = satellites.findSupported();
+		// 1 for cancel
+		// 1 for pipe between processes
+		executor = Executors.newScheduledThreadPool(supportedSatellites.size() + 2, new NamingThreadFactory("scheduler"));
+		for (ru.r2cloud.model.Satellite cur : supportedSatellites) {
 			TLE tle = new TLE(new String[] { cur.getName(), cur.getTleLine1(), cur.getTleLine2() });
 			Satellite satellite = SatelliteFactory.createSatellite(tle);
 			schedule(cur, satellite);
@@ -88,16 +93,16 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		LOG.info("scheduled next pass for " + cur.getName() + ": " + nextPass);
 		cur.setNextPass(nextPass.getStart().getTime());
 		// ./data/satellites/12312/data/1234234
-		File basepathForCurrent = new File(basepath, cur.getId() + File.separator + "data" + File.separator + System.currentTimeMillis());
-		if (!basepathForCurrent.mkdirs()) {
-			LOG.info("unable to create base path for current pass: " + basepathForCurrent.getAbsolutePath());
-			return;
-		}
+		File outputDirectory = new File(basepath, cur.getId() + File.separator + "data" + File.separator + cur.getNextPass().getTime());
 		Future<?> future = executor.schedule(new SafeRunnable() {
 
 			@Override
 			public void doRun() {
-				execute(basepathForCurrent, cur);
+				if (!outputDirectory.mkdirs()) {
+					LOG.info("unable to create output directory: " + outputDirectory.getAbsolutePath());
+					return;
+				}
+				execute(outputDirectory, cur);
 			}
 		}, nextPass.getStart().getTime().getTime() - current, TimeUnit.MILLISECONDS);
 		executor.schedule(new SafeRunnable() {
@@ -107,11 +112,11 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				future.cancel(true);
 				schedule(cur, satellite);
 
-				File wavPath = new File(basepathForCurrent, "output.wav");
+				File wavPath = new File(outputDirectory, "output.wav");
 				if (!wavPath.exists()) {
-					LOG.info("nothing saved. cleanup current directory: " + basepathForCurrent.getAbsolutePath());
-					if (!basepathForCurrent.delete()) {
-						LOG.error("unable to delete current base directory: " + basepathForCurrent.getAbsolutePath());
+					LOG.info("nothing saved. cleanup current directory: " + outputDirectory.getAbsolutePath());
+					if (!outputDirectory.delete()) {
+						LOG.error("unable to delete current base directory: " + outputDirectory.getAbsolutePath());
 					}
 					return;
 				}
@@ -122,7 +127,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 					LOG.error("unable to delete source .wav: " + wavPath.getAbsolutePath());
 				}
 
-				File[] dataDirs = basepathForCurrent.getParentFile().listFiles();
+				File[] dataDirs = outputDirectory.getParentFile().listFiles();
 				Integer maxCount = config.getInteger("scheduler.data.retention.count");
 				if (dataDirs.length > maxCount) {
 					Arrays.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
@@ -153,15 +158,15 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	}
 
 	// put synchonized so no 2 observations run at the same time
-	private synchronized void execute(File basepathForCurrent, ru.r2cloud.model.Satellite satellite) {
-		File wavPath = new File(basepathForCurrent, "output.wav");
+	private synchronized void execute(File outputDirectory, ru.r2cloud.model.Satellite satellite) {
+		File wavPath = new File(outputDirectory, "output.wav");
 		if (!lock.tryLock(this)) {
 			LOG.info("unable to acquire lock for " + satellite.getName());
 			return;
 		}
 		Process rtlfm = null;
 		Process sox = null;
-		Thread t = null;
+		CopyData pipe = null;
 		try {
 			Integer ppm = config.getInteger("ppm.current");
 			if (ppm == null) {
@@ -169,19 +174,20 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			}
 			sox = new ProcessBuilder().command(new String[] { config.getProperty("satellites.sox.path"), "-t", "raw", "-r", "60000", "-es", "-b", "16", "-", wavPath.getAbsolutePath(), "rate", "11025" }).redirectError(Redirect.INHERIT).start();
 			rtlfm = new ProcessBuilder().command(new String[] { config.getProperty("satellites.rtlsdr.path"), "-f", String.valueOf(satellite.getFrequency()), "-s", "60k", "-g", "45", "-p", String.valueOf(ppm), "-E", "deemp", "-F", "9", "-" }).redirectError(Redirect.INHERIT).start();
-			t = new Thread(new CopyData(rtlfm.getInputStream(), sox.getOutputStream()), "rtlsdr-pipe");
-			t.start();
+			pipe = new CopyData(rtlfm.getInputStream(), sox.getOutputStream());
+			pipe.start();
 			rtlfm.waitFor();
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		} catch (IOException e) {
 			LOG.error("unable to run", e);
 		} finally {
+			LOG.info("stopping pipe thread");
+			if (pipe != null && !pipe.shutdown()) {
+				LOG.error("unable to stop pipe thread");
+			}
 			Util.shutdown("rtl_sdr for satellites", rtlfm, 10000);
 			Util.shutdown("sox", sox, 10000);
-			if (t != null) {
-				t.interrupt();
-			}
 			lock.unlock(this);
 		}
 	}
