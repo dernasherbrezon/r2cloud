@@ -13,6 +13,9 @@ function initMap() {
 	function update() {
 		$.ajax({
 			url : "/admin/adsb/data.json",
+			headers: {          
+			    Accept: "application/json; charset=utf-8"         
+			},			
 			success : function(data) {
 				
 				var existingFlights = {};
@@ -77,6 +80,12 @@ function initMap() {
 	}
 
 	setTimeout(update, 1000);
+
+	$(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
+		if (jqXHR.status == 401) {
+			location.href = "/";
+		}
+	});
 
 	function calculateRotationDegree($path) {
 		if ($path.length < 2) {
