@@ -30,6 +30,7 @@ import uk.me.g4dpz.satellite.TLE;
 public class Scheduler implements Lifecycle, ConfigListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
+	private static final int BUF_SIZE = 0x1000; // 4K
 
 	private final SatelliteDao satellites;
 	private final Configuration config;
@@ -166,7 +167,6 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		}
 		Process rtlfm = null;
 		Process sox = null;
-		CopyData pipe = null;
 		try {
 			Integer ppm = config.getInteger("ppm.current");
 			if (ppm == null) {
@@ -174,18 +174,19 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			}
 			sox = new ProcessBuilder().command(new String[] { config.getProperty("satellites.sox.path"), "-t", "raw", "-r", "60000", "-es", "-b", "16", "-", wavPath.getAbsolutePath(), "rate", "11025" }).redirectError(Redirect.INHERIT).start();
 			rtlfm = new ProcessBuilder().command(new String[] { config.getProperty("satellites.rtlsdr.path"), "-f", String.valueOf(satellite.getFrequency()), "-s", "60k", "-g", "45", "-p", String.valueOf(ppm), "-E", "deemp", "-F", "9", "-" }).redirectError(Redirect.INHERIT).start();
-			pipe = new CopyData(rtlfm.getInputStream(), sox.getOutputStream());
-			pipe.start();
-			rtlfm.waitFor();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
+			byte[] buf = new byte[BUF_SIZE];
+			while (!Thread.currentThread().isInterrupted()) {
+				int r = rtlfm.getInputStream().read(buf);
+				if (r == -1) {
+					break;
+				}
+				sox.getOutputStream().write(buf, 0, r);
+			}
+			sox.getOutputStream().flush();
 		} catch (IOException e) {
 			LOG.error("unable to run", e);
 		} finally {
 			LOG.info("stopping pipe thread");
-			if (pipe != null && !pipe.shutdown()) {
-				LOG.error("unable to stop pipe thread");
-			}
 			Util.shutdown("rtl_sdr for satellites", rtlfm, 10000);
 			Util.shutdown("sox", sox, 10000);
 			lock.unlock(this);
