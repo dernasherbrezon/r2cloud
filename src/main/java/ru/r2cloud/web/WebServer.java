@@ -58,6 +58,13 @@ public class WebServer extends NanoHTTPD {
 			return newRedirectResponse("/");
 		}
 		if (auth.isAuthenticationRequired(session) && !auth.isAuthenticated(session)) {
+			String accept = session.getHeaders().get("accept");
+			if( accept != null && accept.contains("application/json") ) {
+				ModelAndView model = new ModelAndView();
+				model.setStatus(Response.Status.UNAUTHORIZED);
+				model.put("entity", "{ \"error\": \"UNAUTHORIZED\"}");
+				return jsonRenderer.render(model);
+			}
 			return newRedirectResponse("/");
 		}
 		if (session.getUri().startsWith(staticController.getRequestMappingURL())) {

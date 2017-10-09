@@ -58,6 +58,9 @@ jQuery(document).ready(function($) {
     function update() {
 		$.ajax({
 			url : "/admin/status/data.json",
+			headers: {          
+			    Accept: "application/json; charset=utf-8"         
+			},			
 			success : function(data) {
 				for (var property in data) {
 				    if (!data.hasOwnProperty(property)) {
@@ -89,5 +92,12 @@ jQuery(document).ready(function($) {
 			}
 		});
 	}
+    
+
+	$(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
+		if (jqXHR.status == 401) {
+			location.href = "/";
+		}
+	});
 	
 });
