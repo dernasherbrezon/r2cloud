@@ -11,6 +11,16 @@ cp ${config.installDir}/etc/r2cloud-prod.conf /etc/nginx/nginx.conf;
 cp ${config.installDir}/etc/r2cloud.crontab /etc/cron.daily/r2cloud
 chmod 755 /etc/cron.daily/r2cloud
 
+if [ ! -f ${config.installDir}/ssl/domain.key ]; then
+    echo "Key is not found at ${config.installDir}/ssl/domain.key. Generating new"
+    mkdir -p ${config.installDir}/ssl
+    openssl genrsa -des3 -passout pass:x -out ${config.installDir}/ssl/server.pass.key 2048
+    openssl rsa -passin pass:x -in server.pass.key -out ${config.installDir}/ssl/domain.key
+    rm ${config.installDir}/ssl/server.pass.key
+    openssl req -new -key ${config.installDir}/ssl/domain.key -out ${config.installDir}/ssl/domain.csr -subj "/C=RU/ST=Moscow/L=Moscow/O=r2cloud/OU=r2cloud/CN=localhost"
+    openssl x509 -req -days 365 -in ${config.installDir}/ssl/domain.csr -signkey ${config.installDir}/ssl/domain.key -out ${config.installDir}/ssl/domain-chain.crt
+fi
+
 if [ -f /run/nginx.pid ]; then
 	nginx -s reload
 fi
