@@ -212,6 +212,7 @@
 					<extensionsToFilter>
 						<extensionToFilter>jtwig</extensionToFilter>
 						<extensionToFilter>css</extensionToFilter>
+						<extensionToFilter>html</extensionToFilter>
 					</extensionsToFilter>
 					<excludeResources>
 						<excludeResource>search.xml</excludeResource>
@@ -220,6 +221,7 @@
 					</excludeResources>
 					<htmlExtensions>
 						<htmlExtension>jtwig</htmlExtension>
+						<htmlExtension>html</htmlExtension>
 					</htmlExtensions>
 				</configuration>
 			</plugin>
