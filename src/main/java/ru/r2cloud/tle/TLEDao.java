@@ -162,7 +162,7 @@ public class TLEDao implements ConfigListener {
 						}
 					}
 				}
-				config.setProperty("satellites.tle.lastupdateAtMillis", String.valueOf(System.currentTimeMillis()));
+				config.setProperty("satellites.tle.lastupdateAtMillis", System.currentTimeMillis());
 				config.update();
 			}
 		} catch (Exception e) {

@@ -45,7 +45,7 @@ public class EnableWeather extends AbstractHttpController {
 			LOG.error("unable to write license file", e);
 			return new Redirect("/admin/weather?errors=UnknownServerError");
 		}
-		config.setProperty("satellites.enabled", "true");
+		config.setProperty("satellites.enabled", true);
 		config.update();
 		return new Redirect("/admin/weather");
 	}

@@ -233,7 +233,7 @@ public class AcmeClient {
 			return;
 		}
 
-		config.setProperty("acme.ssl.enabled", "true");
+		config.setProperty("acme.ssl.enabled", true);
 		config.update();
 	}
 

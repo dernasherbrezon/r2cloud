@@ -172,7 +172,7 @@ public class RtlSdrStatusDao implements Lifecycle {
 						if (m.find()) {
 							String ppmStr = m.group(1);
 							currentPpm = Integer.valueOf(ppmStr);
-							config.setProperty("ppm.current", String.valueOf(currentPpm));
+							config.setProperty("ppm.current", currentPpm);
 							config.update();
 						}
 						break;

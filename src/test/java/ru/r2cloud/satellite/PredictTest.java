@@ -19,7 +19,7 @@ public class PredictTest {
 	@Test
 	public void testSameAsWxToImg() throws Exception {
 		Satellite noaa15 = SatelliteFactory.createSatellite(new TLE(new String[] { "NOAA 15", "1 25338U 98030A   17271.51297398  .00000037  00000-0  34305-4 0  9992", "2 25338  98.7817 282.6269 0009465 266.6019  93.4077 14.25818111  7720" }));
-		Configuration config = new Configuration("./src/test/resources/test.properties");
+		Configuration config = new Configuration("./src/test/resources/test.properties", "./target/user.properties");
 		Predict s = new Predict(config);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));

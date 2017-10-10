@@ -41,13 +41,13 @@ public class Configuration {
 		MODE600.add(PosixFilePermission.OWNER_WRITE);
 	}
 
-	public Configuration(String propertiesLocation) {
-		try (InputStream is = new FileInputStream(propertiesLocation)) {
+	public Configuration(String systemSettingsLocation, String userSettingsLocation) {
+		try (InputStream is = new FileInputStream(systemSettingsLocation)) {
 			systemSettings.load(is);
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to load properties", e);
 		}
-		userSettingsLocation = System.getProperty("user.home") + File.separator + ".r2cloud";
+		this.userSettingsLocation = userSettingsLocation;
 		if (new File(userSettingsLocation).exists()) {
 			try (InputStream is = new FileInputStream(userSettingsLocation)) {
 				userSettings.load(is);
@@ -56,12 +56,24 @@ public class Configuration {
 			}
 		}
 	}
+	
+	public String setProperty(String key, Long value) {
+		return setProperty(key, String.valueOf(value));
+	}
 
-	public Object setProperty(Object key, Object value) {
+	public String setProperty(String key, Integer value) {
+		return setProperty(key, String.valueOf(value));
+	}
+	
+	public String setProperty(String key, boolean value) {
+		return setProperty(key, String.valueOf(value));
+	}
+
+	public String setProperty(String key, String value) {
 		synchronized (changedProperties) {
-			changedProperties.add((String) key);
+			changedProperties.add(key);
 		}
-		return userSettings.put(key, value);
+		return (String) userSettings.put(key, value);
 	}
 
 	public void update() {

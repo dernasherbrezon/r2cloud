@@ -1,5 +1,6 @@
 package ru.r2cloud;
 
+import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,7 +65,7 @@ public class R2Cloud {
 	private final Predict predict;
 
 	public R2Cloud(String propertiesLocation) {
-		props = new Configuration(propertiesLocation);
+		props = new Configuration(propertiesLocation, System.getProperty("user.home") + File.separator + ".r2cloud");
 		
 		rtlsdrLock = new RtlSdrLock();
 		rtlsdrLock.register(Scheduler.class, 3);
