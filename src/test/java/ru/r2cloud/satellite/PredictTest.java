@@ -22,6 +22,7 @@ public class PredictTest {
 		Configuration config = new Configuration("./src/test/resources/test.properties");
 		Predict s = new Predict(config);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+		sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
 		assertPosition("18:05:58", "18:17:13", s.calculateNext(sdf.parse("29-09-2017 14:54:00"), noaa15));
 		assertPosition("19:46:57", "19:56:34", s.calculateNext(sdf.parse("29-09-2017 19:00:00"), noaa15));
 	}
