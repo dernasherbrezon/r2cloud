@@ -42,7 +42,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	public Scheduler(Configuration config, SatelliteDao satellites, RtlSdrLock lock, Predict predict) {
 		this.config = config;
-		this.config.subscribe(this);
+		this.config.subscribe(this, "satellites.enabled");
 		this.satellites = satellites;
 		this.basepath = Util.initDirectory(config.getProperty("satellites.basepath.location"));
 		this.lock = lock;

@@ -11,9 +11,10 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,8 @@ public class Configuration {
 	private static Set<PosixFilePermission> MODE600 = new HashSet<PosixFilePermission>();
 
 	private final Properties systemSettings = new Properties();
-	private final List<ConfigListener> listeners = new CopyOnWriteArrayList<ConfigListener>();
+	private final Map<String, ConfigListener> listeners = new ConcurrentHashMap<String, ConfigListener>();
+	private final Set<String> changedProperties = new HashSet<String>();
 
 	static {
 		MODE600.add(PosixFilePermission.OWNER_READ);
@@ -56,6 +58,9 @@ public class Configuration {
 	}
 
 	public Object setProperty(Object key, Object value) {
+		synchronized (changedProperties) {
+			changedProperties.add((String) key);
+		}
 		return userSettings.put(key, value);
 	}
 
@@ -70,7 +75,19 @@ public class Configuration {
 		} catch (IOException e) {
 			LOG.info("unable to setup 600 permissions: " + e.getMessage());
 		}
-		for (ConfigListener cur : listeners) {
+		Set<ConfigListener> toNotify = new HashSet<ConfigListener>();
+		synchronized (changedProperties) {
+			for (String cur : changedProperties) {
+				ConfigListener curListener = listeners.get(cur);
+				if (curListener == null) {
+					continue;
+				}
+				toNotify.add(curListener);
+			}
+			changedProperties.clear();
+		}
+
+		for (ConfigListener cur : toNotify) {
 			try {
 				cur.onConfigUpdated();
 			} catch (Exception e) {
@@ -143,12 +160,10 @@ public class Configuration {
 		return Lists.newArrayList(Splitter.on(',').trimResults().omitEmptyStrings().split(str));
 	}
 
-	public void subscribe(ConfigListener listener) {
-		this.listeners.add(listener);
-	}
-
-	public void unsubsribe(ConfigListener listener) {
-		this.listeners.remove(listener);
+	public void subscribe(ConfigListener listener, String... names) {
+		for (String cur : names) {
+			this.listeners.put(cur, listener);
+		}
 	}
 
 }

@@ -5,21 +5,30 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import ru.r2cloud.model.SatPass;
+import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
 import uk.me.g4dpz.satellite.GroundStationPosition;
 import uk.me.g4dpz.satellite.SatPos;
 import uk.me.g4dpz.satellite.Satellite;
 
-public class Predict {
+public class Predict implements ConfigListener {
 
 	private final double minElevation;
 	private final double guaranteedElevation;
-	private final GroundStationPosition currentLocation;
+	private final Configuration config;
+
+	private GroundStationPosition currentLocation;
 
 	public Predict(Configuration config) {
 		this.minElevation = config.getDouble("scheduler.elevation.min");
 		this.guaranteedElevation = config.getDouble("scheduler.elevation.guaranteed");
-		// TODO doesnt support reloading coordinates
+		this.config = config;
+		this.config.subscribe(this, "locaiton.lat", "locaiton.lon");
+		this.currentLocation = new GroundStationPosition(config.getDouble("locaiton.lat"), config.getDouble("locaiton.lon"), 0.0);
+	}
+
+	@Override
+	public void onConfigUpdated() {
 		this.currentLocation = new GroundStationPosition(config.getDouble("locaiton.lat"), config.getDouble("locaiton.lon"), 0.0);
 	}
 
@@ -43,7 +52,7 @@ public class Predict {
 					maxElevation = Math.max(maxElevation, elevation);
 					if (!matched) {
 						if (previous == null) {
-							//in the middle of the pass
+							// in the middle of the pass
 							start = position;
 						} else {
 							start = findPrecise(previous, position, satellite);
