@@ -36,7 +36,8 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private final Configuration config;
 	private final File basepath;
 	private final Predict predict;
-	private ScheduledExecutorService executor = null;
+	private ScheduledExecutorService scheduler = null;
+	private ScheduledExecutorService reaper = null;
 	private final RtlSdrLock lock;
 
 	public Scheduler(Configuration config, SatelliteDao satellites, RtlSdrLock lock, Predict predict) {
@@ -51,9 +52,9 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	@Override
 	public void onConfigUpdated() {
 		boolean satellitesEnabled = config.getBoolean("satellites.enabled");
-		if (executor == null && satellitesEnabled) {
+		if (scheduler == null && satellitesEnabled) {
 			start();
-		} else if (executor != null && !satellitesEnabled) {
+		} else if (scheduler != null && !satellitesEnabled) {
 			stop();
 		}
 
@@ -66,14 +67,12 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			LOG.info("satellite scheduler is disabled");
 			return;
 		}
-		if (executor != null) {
+		if (scheduler != null) {
 			return;
 		}
-		// TODO optimize thread count. 2 satellite passes should not overlap
 		List<ru.r2cloud.model.Satellite> supportedSatellites = satellites.findSupported();
-		// 1 for cancel
-		// 1 for pipe between processes
-		executor = Executors.newScheduledThreadPool(supportedSatellites.size() + 2, new NamingThreadFactory("scheduler"));
+		scheduler = Executors.newScheduledThreadPool(1, new NamingThreadFactory("scheduler"));
+		reaper = Executors.newScheduledThreadPool(1, new NamingThreadFactory("reaper"));
 		for (ru.r2cloud.model.Satellite cur : supportedSatellites) {
 			TLE tle = new TLE(new String[] { cur.getName(), cur.getTleLine1(), cur.getTleLine2() });
 			Satellite satellite = SatelliteFactory.createSatellite(tle);
@@ -95,7 +94,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		cur.setNextPass(nextPass.getStart().getTime());
 		// ./data/satellites/12312/data/1234234
 		File outputDirectory = new File(basepath, cur.getId() + File.separator + "data" + File.separator + cur.getNextPass().getTime());
-		Future<?> future = executor.schedule(new SafeRunnable() {
+		Future<?> future = scheduler.schedule(new SafeRunnable() {
 
 			@Override
 			public void doRun() {
@@ -106,7 +105,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				execute(outputDirectory, cur);
 			}
 		}, nextPass.getStart().getTime().getTime() - current, TimeUnit.MILLISECONDS);
-		executor.schedule(new SafeRunnable() {
+		reaper.schedule(new SafeRunnable() {
 
 			@Override
 			public void doRun() {
@@ -196,8 +195,9 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	// protection from calling stop 2 times and more
 	@Override
 	public synchronized void stop() {
-		Util.shutdown(executor, config.getThreadPoolShutdownMillis());
-		executor = null;
+		Util.shutdown(scheduler, config.getThreadPoolShutdownMillis());
+		Util.shutdown(reaper, config.getThreadPoolShutdownMillis());
+		scheduler = null;
 		LOG.info("stopped");
 	}
 
