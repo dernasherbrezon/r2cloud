@@ -4,10 +4,6 @@
       <div class="row">
 		<div class="col-md-3 col-md-offset-4 well anonForm">
 			<legend>Login</legend>
-			<div id="sslAlert" class="alert alert-warning alert-dismissible" role="alert" style="display:none;">
-				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				Connection is <strong>NOT</strong> secure. Please configure SSL at: <strong>Configuration</strong>&rarr;<strong>SSL</strong>
-			</div>			
 			{{ macros.generalError(errors) }}
 			<form method="POST" action="/dologin" style="margin-bottom: 0px;" enctype="application/x-www-form-urlencoded">
 				{{ macros.input("email", "j_username", username, null, "Email") }}
@@ -19,12 +15,4 @@
 			</form>
 		</div>
       </div>
-<script src="/js/jquery-1.12.4.js"></script>
-<script>
-jQuery(document).ready(function($) {
-	if( location.protocol != "https:" ) {
-		$("#sslAlert").show();
-	} 
-});
-</script>
 {% include 'footer.jtwig' %}
