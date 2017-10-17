@@ -1,8 +1,6 @@
 package ru.r2cloud.metrics;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 
 import org.hyperic.sigar.FileSystemUsage;
 import org.hyperic.sigar.Sigar;
@@ -36,29 +34,9 @@ public class Metrics {
 
 	@SuppressWarnings("rawtypes")
 	public void start() {
-		if (new File("/sys/class/thermal/thermal_zone0/temp").exists()) {
-			REGISTRY.gauge("temperature", new MetricSupplier<Gauge>() {
-
-				@Override
-				public Gauge<?> newMetric() {
-					return new FormattedGauge<Double>(MetricFormat.NORMAL) {
-
-						@Override
-						public Double getValue() {
-							try (BufferedReader fis = new BufferedReader(new FileReader("/sys/class/thermal/thermal_zone0/temp"))) {
-								String line = fis.readLine();
-								if (line == null) {
-									return null;
-								}
-								return ((double) Long.valueOf(line) / 1000);
-							} catch (Exception e) {
-								LOG.error("unable to get temp: " + e.getMessage());
-								return null;
-							}
-						}
-					};
-				}
-			});
+		Temperature temp = new Temperature("/sys/class/thermal/thermal_zone0/temp");
+		if (temp.isAvailable()) {
+			REGISTRY.gauge("temperature", temp);
 		} else {
 			LOG.info("temperature metric is not available");
 		}
