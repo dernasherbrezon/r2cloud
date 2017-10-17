@@ -6,7 +6,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import java.io.File;
 import java.util.Random;
 import java.util.UUID;
 
@@ -14,10 +13,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import ru.r2cloud.TestConfiguration;
+
 public class ConfigurationTest {
 
-	private final File userSettings = new File("./target/user.properties");
-	private Configuration config;
+	private TestConfiguration config;
 
 	@Test
 	public void notCalled() {
@@ -61,14 +61,12 @@ public class ConfigurationTest {
 
 	@Before
 	public void start() {
-		config = new Configuration("./src/test/resources/test.properties", userSettings.getAbsolutePath());
+		config = new TestConfiguration();
 	}
 
 	@After
 	public void stop() {
-		if (userSettings.exists()) {
-			userSettings.delete();
-		}
+		config.stop();
 	}
 
 }

@@ -5,21 +5,24 @@ import static org.junit.Assert.assertEquals;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
+import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.model.SatPass;
-import ru.r2cloud.util.Configuration;
 import uk.me.g4dpz.satellite.Satellite;
 import uk.me.g4dpz.satellite.SatelliteFactory;
 import uk.me.g4dpz.satellite.TLE;
 
 public class PredictTest {
+	
+	private TestConfiguration config;
 
 	// expected pass times taken from wxtoimg
 	@Test
 	public void testSameAsWxToImg() throws Exception {
 		Satellite noaa15 = SatelliteFactory.createSatellite(new TLE(new String[] { "NOAA 15", "1 25338U 98030A   17271.51297398  .00000037  00000-0  34305-4 0  9992", "2 25338  98.7817 282.6269 0009465 266.6019  93.4077 14.25818111  7720" }));
-		Configuration config = new Configuration("./src/test/resources/test.properties", "./target/user.properties");
 		Predict s = new Predict(config);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
@@ -32,6 +35,16 @@ public class PredictTest {
 		sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
 		assertEquals(start, sdf.format(pass.getStart().getTime()));
 		assertEquals(end, sdf.format(pass.getEnd().getTime()));
+	}
+	
+	@Before
+	public void start() {
+		config = new TestConfiguration();
+	}
+
+	@After
+	public void stop() {
+		config.stop();
 	}
 
 }
