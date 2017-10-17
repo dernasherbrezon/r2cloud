@@ -28,6 +28,35 @@ public class RRD4JReporterTest {
 	private RRD4JReporter reporter;
 	private TestConfiguration config;
 	private File basepath = new File("./target/rrd4jtest");
+	
+	@Test
+	public void testCounterResumeFromLast() throws Exception {
+		String name = UUID.randomUUID().toString();
+		Counter c = registry.counter(name);
+		c.inc(2);
+		report(name, c);
+		//simulate restart
+		reporter.close();
+		registry.remove(name);
+		
+		c = registry.counter(name);
+		c.inc(1);
+		Thread.sleep(1000);
+		report(name, c);
+		
+		File f = new File(basepath, name + ".rrd");
+		assertTrue(f.exists());
+		RrdDb db = new RrdDb(f.getAbsolutePath());
+		assertEquals(3.0, db.getLastDatasourceValue("data"), 0.0);
+		db.close();
+		c.inc(1);
+		Thread.sleep(1000);
+		report(name, c);
+		
+		db = new RrdDb(f.getAbsolutePath());
+		assertEquals(4.0, db.getLastDatasourceValue("data"), 0.0);
+		db.close();
+	}
 
 	@Test
 	public void testSimpleCounter() throws Exception {

@@ -179,6 +179,7 @@ public class RRD4JReporter extends ScheduledReporter {
 				LOG.error("unable to close: " + cur.getPath(), e);
 			}
 		}
+		dbPerMetric.clear();
 	}
 
 }
