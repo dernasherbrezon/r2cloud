@@ -179,7 +179,6 @@ public class ADSB implements Lifecycle {
 			return;
 		}
 		started = false;
-		Util.shutdown("dump1090", dump1090, throttleIntervalMillis);
 		closeSocket();
 		if (thread != null) {
 			thread.interrupt();
@@ -191,6 +190,7 @@ public class ADSB implements Lifecycle {
 				LOG.error("unable to stop thread", e);
 			}
 		}
+		Util.shutdown("dump1090", dump1090, throttleIntervalMillis);
 		LOG.info("stopped");
 
 		//never call unlock. it should be always subscribed
