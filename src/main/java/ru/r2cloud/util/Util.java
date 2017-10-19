@@ -75,7 +75,7 @@ public final class Util {
 			if (!process.waitFor(timeoutMillis, TimeUnit.MILLISECONDS)) {
 				LOG.info("unable to cleanly shutdown. kill process: " + name);
 				int statusCode = process.destroyForcibly().waitFor();
-				if (statusCode != 0) {
+				if (statusCode != 0 && statusCode != 137) {
 					LOG.info("invalid status code while stopping: " + statusCode);
 				}
 			}
@@ -85,15 +85,21 @@ public final class Util {
 		}
 	}
 
-	public static void deleteDirectory(File f) {
+	public static boolean deleteDirectory(File f) {
 		if (f.isDirectory()) {
 			for (File c : f.listFiles()) {
-				deleteDirectory(c);
+				boolean curResult = deleteDirectory(c);
+				if (!curResult) {
+					LOG.error("unable to delete: " + c.getAbsolutePath());
+					return false;
+				}
 			}
 		}
 		if (!f.delete()) {
 			LOG.error("Failed to delete file: " + f);
+			return false;
 		}
+		return true;
 	}
 
 	private Util() {
