@@ -39,6 +39,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private ScheduledExecutorService scheduler = null;
 	private ScheduledExecutorService reaper = null;
 	private final RtlSdrLock lock;
+	private Process rtlfm = null;
 
 	public Scheduler(Configuration config, SatelliteDao satellites, RtlSdrLock lock, Predict predict) {
 		this.config = config;
@@ -110,14 +111,16 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			@Override
 			public void doRun() {
 				future.cancel(true);
+				synchronized (Scheduler.this) {
+					Util.shutdown("rtl_sdr for satellites", rtlfm, 10000);
+					rtlfm = null;
+				}
 				schedule(cur, satellite);
 
 				File wavPath = new File(outputDirectory, "output.wav");
 				if (!wavPath.exists()) {
 					LOG.info("nothing saved. cleanup current directory: " + outputDirectory.getAbsolutePath());
-					if (!outputDirectory.delete()) {
-						LOG.error("unable to delete current base directory: " + outputDirectory.getAbsolutePath());
-					}
+					Util.deleteDirectory(outputDirectory);
 					return;
 				}
 
@@ -164,14 +167,13 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			LOG.info("unable to acquire lock for " + satellite.getName());
 			return;
 		}
-		Process rtlfm = null;
 		Process sox = null;
 		try {
 			Integer ppm = config.getInteger("ppm.current");
 			if (ppm == null) {
 				ppm = 0;
 			}
-			sox = new ProcessBuilder().command(new String[] { config.getProperty("satellites.sox.path"), "-t", "raw", "-r", "60000", "-es", "-b", "16", "-", wavPath.getAbsolutePath(), "rate", "11025" }).redirectError(Redirect.INHERIT).start();
+			sox = new ProcessBuilder().command(new String[] { config.getProperty("satellites.sox.path"), "-t", "raw", "-r", "60000", "-es", "-b", "16", "-", wavPath.getAbsolutePath(), "rate", "11025" }).inheritIO().start();
 			rtlfm = new ProcessBuilder().command(new String[] { config.getProperty("satellites.rtlsdr.path"), "-f", String.valueOf(satellite.getFrequency()), "-s", "60k", "-g", "45", "-p", String.valueOf(ppm), "-E", "deemp", "-F", "9", "-" }).redirectError(Redirect.INHERIT).start();
 			byte[] buf = new byte[BUF_SIZE];
 			while (!Thread.currentThread().isInterrupted()) {
