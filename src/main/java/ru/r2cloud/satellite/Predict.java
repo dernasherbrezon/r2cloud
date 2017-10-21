@@ -24,7 +24,13 @@ public class Predict implements ConfigListener {
 		this.guaranteedElevation = config.getDouble("scheduler.elevation.guaranteed");
 		this.config = config;
 		this.config.subscribe(this, "locaiton.lat", "locaiton.lon");
-		this.currentLocation = new GroundStationPosition(config.getDouble("locaiton.lat"), config.getDouble("locaiton.lon"), 0.0);
+		Double lat = config.getDouble("locaiton.lat");
+		Double lon = config.getDouble("locaiton.lon");
+		if (lat == null || lon == null) {
+			this.currentLocation = null;
+		} else {
+			this.currentLocation = new GroundStationPosition(lat, lon, 0.0);
+		}
 	}
 
 	@Override
@@ -33,7 +39,7 @@ public class Predict implements ConfigListener {
 	}
 
 	public SatPass calculateNext(Date current, Satellite satellite) {
-		if (!satellite.willBeSeen(currentLocation)) {
+		if (currentLocation == null || !satellite.willBeSeen(currentLocation)) {
 			return null;
 		}
 		Calendar cal = Calendar.getInstance();

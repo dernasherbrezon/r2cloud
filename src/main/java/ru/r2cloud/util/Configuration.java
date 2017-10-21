@@ -56,7 +56,7 @@ public class Configuration {
 			}
 		}
 	}
-	
+
 	public String setProperty(String key, Long value) {
 		return setProperty(key, String.valueOf(value));
 	}
@@ -64,7 +64,7 @@ public class Configuration {
 	public String setProperty(String key, Integer value) {
 		return setProperty(key, String.valueOf(value));
 	}
-	
+
 	public String setProperty(String key, boolean value) {
 		return setProperty(key, String.valueOf(value));
 	}
@@ -161,6 +161,9 @@ public class Configuration {
 	}
 
 	public void remove(String name) {
+		synchronized (changedProperties) {
+			changedProperties.add(name);
+		}
 		userSettings.remove(name);
 	}
 
