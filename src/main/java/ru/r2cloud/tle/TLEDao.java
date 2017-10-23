@@ -40,7 +40,7 @@ public class TLEDao implements ConfigListener {
 
 	public TLEDao(Configuration config, SatelliteDao satelliteDao) {
 		this.config = config;
-		this.config.subscribe(this);
+		this.config.subscribe(this, "satellites.enabled");
 		this.satelliteDao = satelliteDao;
 		this.basepath = Util.initDirectory(config.getProperty("satellites.basepath.location"));
 	}
