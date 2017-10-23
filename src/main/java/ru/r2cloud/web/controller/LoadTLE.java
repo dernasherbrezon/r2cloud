@@ -3,7 +3,7 @@ package ru.r2cloud.web.controller;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import ru.r2cloud.satellite.SatelliteDao;
+import ru.r2cloud.tle.TLEDao;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
@@ -12,9 +12,9 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 public class LoadTLE extends AbstractHttpController {
 
 	private final Configuration config;
-	private final SatelliteDao service;
+	private final TLEDao service;
 
-	public LoadTLE(Configuration config, SatelliteDao service) {
+	public LoadTLE(Configuration config, TLEDao service) {
 		this.config = config;
 		this.service = service;
 	}
@@ -34,7 +34,7 @@ public class LoadTLE extends AbstractHttpController {
 		}
 		result.put("color", color);
 		result.put("lastupdate", new Date(lastUpdateMillis));
-		result.put("satellites", service.findSupported());
+		result.put("satellites", service.findAll());
 		return result;
 	}
 

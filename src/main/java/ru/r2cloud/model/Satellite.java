@@ -7,8 +7,6 @@ public class Satellite {
 	private String id;
 	private String name;
 	private long frequency;
-	private String tleLine1;
-	private String tleLine2;
 	private Date nextPass;
 	
 	public Date getNextPass() {
@@ -17,22 +15,6 @@ public class Satellite {
 	
 	public void setNextPass(Date nextPass) {
 		this.nextPass = nextPass;
-	}
-
-	public String getTleLine1() {
-		return tleLine1;
-	}
-
-	public void setTleLine1(String tleLine1) {
-		this.tleLine1 = tleLine1;
-	}
-
-	public String getTleLine2() {
-		return tleLine2;
-	}
-
-	public void setTleLine2(String tleLine2) {
-		this.tleLine2 = tleLine2;
 	}
 
 	public long getFrequency() {

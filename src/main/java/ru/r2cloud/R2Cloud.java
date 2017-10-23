@@ -83,7 +83,7 @@ public class R2Cloud {
 		acmeClient = new AcmeClient(props);
 		satelliteDao = new SatelliteDao(props);
 		tleDao = new TLEDao(props, satelliteDao);
-		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, predict);
+		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, predict, tleDao);
 
 		// setup web server
 		index(new ru.r2cloud.web.controller.ADSB(props));
@@ -99,7 +99,7 @@ public class R2Cloud {
 		index(new ru.r2cloud.web.controller.Configuration(props, autoUpdate, acmeClient));
 		index(new SaveConfiguration(props, autoUpdate, ddnsClient, acmeClient));
 		index(new GetAcmeLog(acmeClient));
-		index(new LoadTLE(props, satelliteDao));
+		index(new LoadTLE(props, tleDao));
 		index(new LoadWeatherSatellites(props, satelliteDao));
 		index(new EnableWeather(props));
 		webServer = new WebServer(props, controllers, auth);

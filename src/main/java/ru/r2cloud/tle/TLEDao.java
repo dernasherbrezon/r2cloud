@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Executors;
@@ -37,6 +38,7 @@ public class TLEDao implements ConfigListener {
 	private final File basepath;
 	private final CelestrakClient celestrak;
 
+	private Map<String, TLE> tle;
 	private ScheduledExecutorService executor = null;
 
 	public TLEDao(Configuration config, SatelliteDao satelliteDao) {
@@ -65,16 +67,22 @@ public class TLEDao implements ConfigListener {
 		if (executor != null) {
 			return;
 		}
-		// TODO check the last tle update time from config
-		// if more than 1 week, than update tle now
+		this.tle = new HashMap<String, TLE>();
+		boolean reload = false;
 		for (Satellite cur : satelliteDao.findSupported()) {
-			File tle = new File(basepath, cur.getId() + File.separator + "tle.txt");
-			if (!tle.exists()) {
-				LOG.info("missing tle for " + cur.getName() + ". reloading all tle");
-				reload();
-				break;
+			File tleFile = new File(basepath, cur.getId() + File.separator + "tle.txt");
+			if (!tleFile.exists()) {
+				LOG.info("missing tle for " + cur.getName() + ". schedule reloading");
+				reload = true;
+				continue;
 			}
-			try (BufferedReader r = new BufferedReader(new FileReader(tle))) {
+			if (System.currentTimeMillis() - tleFile.lastModified() > TimeUnit.DAYS.toMillis(7)) {
+				LOG.info("tle file: " + tleFile.getAbsolutePath() + " stale. Last updated at: " + new Date(tleFile.lastModified()) + ". schedule reloading");
+				reload = true;
+				// shcedule reload, but read it anyway in case celestrak is not
+				// available. better to get stale results, rather than none
+			}
+			try (BufferedReader r = new BufferedReader(new FileReader(tleFile))) {
 				String line1 = r.readLine();
 				if (line1 == null) {
 					continue;
@@ -83,13 +91,17 @@ public class TLEDao implements ConfigListener {
 				if (line2 == null) {
 					continue;
 				}
-				cur.setTleLine1(line1);
-				cur.setTleLine2(line2);
+				this.tle.put(cur.getId(), new TLE(new String[] { cur.getName(), line1, line2 }));
 			} catch (IOException e) {
 				LOG.error("unable to load TLE for " + cur.getId(), e);
-				reload();
-				break;
+				reload = true;
+				continue;
 			}
+		}
+		// load as much as possible, because celestrak might be unavailable
+		// do it on the same thread, as other services might depend on the tle data
+		if (reload) {
+			reload();
 		}
 		executor = Executors.newScheduledThreadPool(1, new NamingThreadFactory("tle-updater"));
 		SimpleDateFormat sdf = new SimpleDateFormat("u HH:mm");
@@ -121,32 +133,41 @@ public class TLEDao implements ConfigListener {
 		}
 	}
 
+	public TLE findById(String id) {
+		return tle.get(id);
+	}
+	
+	public Map<String, TLE> findAll() {
+		return tle;
+	}
+
 	private void reload() {
 		Map<String, TLE> tle = celestrak.getWeatherTLE();
 		if (tle.isEmpty()) {
 			return;
 		}
+		Map<String, TLE> reKeyed = new HashMap<String, TLE>(tle.size());
 		for (Entry<String, TLE> cur : tle.entrySet()) {
 			Satellite satellite = satelliteDao.findByName(cur.getKey());
 			if (satellite == null) {
 				continue;
 			}
+			reKeyed.put(satellite.getId(), cur.getValue());
 			File output = new File(basepath, satellite.getId() + File.separator + "tle.txt");
 			if (!output.getParentFile().exists() && !output.getParentFile().mkdirs()) {
 				LOG.error("unable to create directory for satellite: " + satellite.getName());
 				continue;
 			}
-			satellite.setTleLine1(cur.getValue().getRaw()[1]);
-			satellite.setTleLine2(cur.getValue().getRaw()[2]);
 			try (BufferedWriter w = new BufferedWriter(new FileWriter(output))) {
-				w.append(satellite.getTleLine1());
+				w.append(cur.getValue().getRaw()[1]);
 				w.newLine();
-				w.append(satellite.getTleLine2());
+				w.append(cur.getValue().getRaw()[2]);
 				w.newLine();
 			} catch (IOException e) {
 				LOG.error("unable to write tle for: " + cur.getKey(), e);
 			}
 		}
+		this.tle = reKeyed;
 		config.setProperty("satellites.tle.lastupdateAtMillis", System.currentTimeMillis());
 		config.update();
 	}

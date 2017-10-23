@@ -10,16 +10,16 @@
 			    <label for="satellite">Satellite</label>
 			    <select id="satelliteId" class="form-control" >
 			    	<option value="" selected></option>
-			    	{% for item in satellites %}
-				    	<option value="satellite-{{item.id}}">{{ item.name }}</option>
+			    	{% for key,value in satellites %}
+				    	<option value="satellite-{{key}}">{{ value.raw[0] }}</option>
 			    	{% endfor %}
 			    </select>
 			  </div>          
           </form>
-          {% for item in satellites %}
-          <div id="satellite-{{item.id}}" style="margin-top: 20px; display: none;" class="js-satellite-tle">
-          	<p>{{ item.tleLine1 }}</p>
-          	<p>{{ item.tleLine2 }}</p>
+          {% for key,value in satellites %}
+          <div id="satellite-{{key}}" style="margin-top: 20px; display: none;" class="js-satellite-tle">
+          	<p>{{ value.raw[1] }}</p>
+          	<p>{{ value.raw[2] }}</p>
           </div>
           {% endfor %}    
         </div>

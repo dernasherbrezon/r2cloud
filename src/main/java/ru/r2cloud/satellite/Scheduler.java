@@ -18,6 +18,7 @@ import ru.r2cloud.FilenameComparator;
 import ru.r2cloud.Lifecycle;
 import ru.r2cloud.RtlSdrLock;
 import ru.r2cloud.model.SatPass;
+import ru.r2cloud.tle.TLEDao;
 import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
@@ -33,6 +34,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private static final int BUF_SIZE = 0x1000; // 4K
 
 	private final SatelliteDao satellites;
+	private final TLEDao tleDao;
 	private final Configuration config;
 	private final File basepath;
 	private final Predict predict;
@@ -41,13 +43,14 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private final RtlSdrLock lock;
 	private Process rtlfm = null;
 
-	public Scheduler(Configuration config, SatelliteDao satellites, RtlSdrLock lock, Predict predict) {
+	public Scheduler(Configuration config, SatelliteDao satellites, RtlSdrLock lock, Predict predict, TLEDao tleDao) {
 		this.config = config;
 		this.config.subscribe(this, "satellites.enabled");
 		this.satellites = satellites;
 		this.basepath = Util.initDirectory(config.getProperty("satellites.basepath.location"));
 		this.lock = lock;
 		this.predict = predict;
+		this.tleDao = tleDao;
 	}
 
 	@Override
@@ -75,7 +78,11 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		scheduler = Executors.newScheduledThreadPool(1, new NamingThreadFactory("scheduler"));
 		reaper = Executors.newScheduledThreadPool(1, new NamingThreadFactory("reaper"));
 		for (ru.r2cloud.model.Satellite cur : supportedSatellites) {
-			TLE tle = new TLE(new String[] { cur.getName(), cur.getTleLine1(), cur.getTleLine2() });
+			TLE tle = tleDao.findById(cur.getId());
+			if (tle == null) {
+				LOG.error("unable to find tle for: " + cur.getName());
+				continue;
+			}
 			Satellite satellite = SatelliteFactory.createSatellite(tle);
 			schedule(cur, satellite);
 		}
