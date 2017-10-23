@@ -6,13 +6,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.TLE;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
@@ -35,6 +35,7 @@ public class TLEDao implements ConfigListener {
 	private final Configuration config;
 	private final SatelliteDao satelliteDao;
 	private final File basepath;
+	private final CelestrakClient celestrak;
 
 	private ScheduledExecutorService executor = null;
 
@@ -43,6 +44,7 @@ public class TLEDao implements ConfigListener {
 		this.config.subscribe(this, "satellites.enabled");
 		this.satelliteDao = satelliteDao;
 		this.basepath = Util.initDirectory(config.getProperty("satellites.basepath.location"));
+		this.celestrak = new CelestrakClient("http://celestrak.com");
 	}
 
 	@Override
@@ -63,8 +65,8 @@ public class TLEDao implements ConfigListener {
 		if (executor != null) {
 			return;
 		}
-		//TODO check the last tle update time from config
-		//if more than 1 week, than update tle now
+		// TODO check the last tle update time from config
+		// if more than 1 week, than update tle now
 		for (Satellite cur : satelliteDao.findSupported()) {
 			File tle = new File(basepath, cur.getId() + File.separator + "tle.txt");
 			if (!tle.exists()) {
@@ -120,58 +122,33 @@ public class TLEDao implements ConfigListener {
 	}
 
 	private void reload() {
-		HttpURLConnection con = null;
-		try {
-			URL obj = new URL("http://celestrak.com/NORAD/elements/weather.txt");
-			con = (HttpURLConnection) obj.openConnection();
-			con.setRequestMethod("GET");
-			con.setRequestProperty("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
-			int responseCode = con.getResponseCode();
-			if (responseCode != 200) {
-				LOG.error("unable to get weather tle. response code: " + responseCode + ". See logs for details");
-				Util.toLog(LOG, con.getInputStream());
-			} else {
-				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-					// only first line matters
-					String curLine = null;
-					while ((curLine = in.readLine()) != null) {
-						Satellite satellite = satelliteDao.findByName(curLine.trim());
-						String line1 = in.readLine();
-						if (line1 == null) {
-							break;
-						}
-						String line2 = in.readLine();
-						if (line2 == null) {
-							break;
-						}
-						if (satellite == null) {
-							continue;
-						}
-						File output = new File(basepath, satellite.getId() + File.separator + "tle.txt");
-						if (!output.getParentFile().exists() && !output.getParentFile().mkdirs()) {
-							LOG.error("unable to create directory for satellite: " + satellite.getName());
-							continue;
-						}
-						satellite.setTleLine1(line1);
-						satellite.setTleLine2(line2);
-						try (BufferedWriter w = new BufferedWriter(new FileWriter(output))) {
-							w.append(line1);
-							w.newLine();
-							w.append(line2);
-							w.newLine();
-						}
-					}
-				}
-				config.setProperty("satellites.tle.lastupdateAtMillis", System.currentTimeMillis());
-				config.update();
+		Map<String, TLE> tle = celestrak.getWeatherTLE();
+		if (tle.isEmpty()) {
+			return;
+		}
+		for (Entry<String, TLE> cur : tle.entrySet()) {
+			Satellite satellite = satelliteDao.findByName(cur.getKey());
+			if (satellite == null) {
+				continue;
 			}
-		} catch (Exception e) {
-			LOG.error("unable to get weather tle", e);
-		} finally {
-			if (con != null) {
-				con.disconnect();
+			File output = new File(basepath, satellite.getId() + File.separator + "tle.txt");
+			if (!output.getParentFile().exists() && !output.getParentFile().mkdirs()) {
+				LOG.error("unable to create directory for satellite: " + satellite.getName());
+				continue;
+			}
+			satellite.setTleLine1(cur.getValue().getRaw()[1]);
+			satellite.setTleLine2(cur.getValue().getRaw()[2]);
+			try (BufferedWriter w = new BufferedWriter(new FileWriter(output))) {
+				w.append(satellite.getTleLine1());
+				w.newLine();
+				w.append(satellite.getTleLine2());
+				w.newLine();
+			} catch (IOException e) {
+				LOG.error("unable to write tle for: " + cur.getKey(), e);
 			}
 		}
+		config.setProperty("satellites.tle.lastupdateAtMillis", System.currentTimeMillis());
+		config.update();
 	}
 
 	public synchronized void stop() {
