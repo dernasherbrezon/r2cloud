@@ -66,6 +66,7 @@ public class TLEReloaderTest {
 	@Before
 	public void start() throws Exception {
 		config = new TestConfiguration();
+		config.setProperty("satellites.enabled", true);
 		tleDao = mock(TLEDao.class);
 		clock = mock(Clock.class);
 		threadPool = mock(ThreadPoolFactory.class);
