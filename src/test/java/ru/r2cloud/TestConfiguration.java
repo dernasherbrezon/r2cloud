@@ -9,7 +9,7 @@ public class TestConfiguration extends Configuration {
 	private static final File userSettings = new File("./target/user.properties");
 
 	public TestConfiguration() {
-		super("./src/test/resources/test.properties", userSettings.getAbsolutePath());
+		super("./src/main/resources/config-dev.properties", userSettings.getAbsolutePath());
 	}
 
 	public void stop() {

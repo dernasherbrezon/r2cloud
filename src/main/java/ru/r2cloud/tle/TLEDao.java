@@ -6,15 +6,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -25,8 +20,6 @@ import ru.r2cloud.model.TLE;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.NamingThreadFactory;
-import ru.r2cloud.util.SafeRunnable;
 import ru.r2cloud.util.Util;
 
 public class TLEDao implements ConfigListener {
@@ -39,7 +32,6 @@ public class TLEDao implements ConfigListener {
 	private final CelestrakClient celestrak;
 
 	private Map<String, TLE> tle;
-	private ScheduledExecutorService executor = null;
 
 	public TLEDao(Configuration config, SatelliteDao satelliteDao) {
 		this.config = config;
@@ -51,10 +43,9 @@ public class TLEDao implements ConfigListener {
 
 	@Override
 	public void onConfigUpdated() {
-		boolean enabled = config.getBoolean("satellites.enabled");
-		if (executor == null && enabled) {
+		if (config.getBoolean("satellites.enabled")) {
 			start();
-		} else if (executor != null && !enabled) {
+		} else {
 			stop();
 		}
 	}
@@ -62,9 +53,6 @@ public class TLEDao implements ConfigListener {
 	public synchronized void start() {
 		if (!config.getBoolean("satellites.enabled")) {
 			LOG.info("tle tracking is disabled");
-			return;
-		}
-		if (executor != null) {
 			return;
 		}
 		this.tle = new HashMap<String, TLE>();
@@ -99,49 +87,22 @@ public class TLEDao implements ConfigListener {
 			}
 		}
 		// load as much as possible, because celestrak might be unavailable
-		// do it on the same thread, as other services might depend on the tle data
+		// do it on the same thread, as other services might depend on the tle
+		// data
 		if (reload) {
 			reload();
-		}
-		executor = Executors.newScheduledThreadPool(1, new NamingThreadFactory("tle-updater"));
-		SimpleDateFormat sdf = new SimpleDateFormat("u HH:mm");
-		try {
-			Date date = sdf.parse(config.getProperty("tle.update.timeUTC"));
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(date);
-			Calendar executeAt = Calendar.getInstance();
-			executeAt.set(Calendar.DAY_OF_WEEK, cal.get(Calendar.DAY_OF_WEEK));
-			executeAt.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY));
-			executeAt.set(Calendar.MINUTE, cal.get(Calendar.MINUTE));
-			executeAt.set(Calendar.SECOND, 0);
-			executeAt.set(Calendar.MILLISECOND, 0);
-			long current = System.currentTimeMillis();
-			if (executeAt.getTimeInMillis() < current) {
-				executeAt.add(Calendar.WEEK_OF_YEAR, 1);
-			}
-			LOG.info("next tle update at: " + executeAt.getTime());
-			executor.scheduleAtFixedRate(new SafeRunnable() {
-
-				@Override
-				public void doRun() {
-					reload();
-				}
-			}, executeAt.getTimeInMillis() - current, TimeUnit.DAYS.toMillis(7), TimeUnit.MILLISECONDS);
-
-		} catch (ParseException e) {
-			LOG.info("invalid time. tle will be disabled", e);
 		}
 	}
 
 	public TLE findById(String id) {
 		return tle.get(id);
 	}
-	
+
 	public Map<String, TLE> findAll() {
 		return tle;
 	}
 
-	private void reload() {
+	void reload() {
 		Map<String, TLE> tle = celestrak.getWeatherTLE();
 		if (tle.isEmpty()) {
 			return;
@@ -173,7 +134,8 @@ public class TLEDao implements ConfigListener {
 	}
 
 	public synchronized void stop() {
-		Util.shutdown(executor, config.getThreadPoolShutdownMillis());
-		executor = null;
+		if (tle != null) {
+			tle.clear();
+		}
 	}
 }

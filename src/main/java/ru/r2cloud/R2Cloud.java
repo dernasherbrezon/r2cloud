@@ -17,8 +17,13 @@ import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.Scheduler;
 import ru.r2cloud.ssl.AcmeClient;
 import ru.r2cloud.tle.TLEDao;
+import ru.r2cloud.tle.TLEReloader;
+import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.DefaultClock;
 import ru.r2cloud.util.ShutdownLoggingManager;
+import ru.r2cloud.util.ThreadPoolFactory;
+import ru.r2cloud.util.ThreadPoolFactoryImpl;
 import ru.r2cloud.web.Authenticator;
 import ru.r2cloud.web.HttpContoller;
 import ru.r2cloud.web.WebServer;
@@ -60,18 +65,23 @@ public class R2Cloud {
 	private final AcmeClient acmeClient;
 	private final SatelliteDao satelliteDao;
 	private final TLEDao tleDao;
+	private final TLEReloader tleReloader;
 	private final Scheduler scheduler;
 	private final RtlSdrLock rtlsdrLock;
 	private final Predict predict;
+	private final ThreadPoolFactory threadFactory;
+	private final Clock clock;
 
 	public R2Cloud(String propertiesLocation) {
 		props = new Configuration(propertiesLocation, System.getProperty("user.home") + File.separator + ".r2cloud");
-		
+		threadFactory = new ThreadPoolFactoryImpl();
+		clock = new DefaultClock();
+
 		rtlsdrLock = new RtlSdrLock();
 		rtlsdrLock.register(Scheduler.class, 3);
 		rtlsdrLock.register(RtlSdrStatusDao.class, 2);
 		rtlsdrLock.register(ADSB.class, 1);
-		
+
 		predict = new Predict(props);
 		dao = new ADSBDao(props);
 		adsb = new ADSB(props, dao, rtlsdrLock);
@@ -83,6 +93,7 @@ public class R2Cloud {
 		acmeClient = new AcmeClient(props);
 		satelliteDao = new SatelliteDao(props);
 		tleDao = new TLEDao(props, satelliteDao);
+		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
 		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, predict, tleDao);
 
 		// setup web server
@@ -113,7 +124,9 @@ public class R2Cloud {
 		ddnsClient.start();
 		rtlsdrStatusDao.start();
 		tleDao.start();
-		//scheduler should start after tle (it uses TLE to schedule observations)
+		tleReloader.start();
+		// scheduler should start after tle (it uses TLE to schedule
+		// observations)
 		scheduler.start();
 		webServer.start();
 		LOG.info("=================================");
@@ -124,6 +137,7 @@ public class R2Cloud {
 	public void stop() {
 		webServer.stop();
 		scheduler.stop();
+		tleReloader.stop();
 		tleDao.stop();
 		rtlsdrStatusDao.stop();
 		ddnsClient.stop();
