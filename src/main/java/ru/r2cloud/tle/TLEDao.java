@@ -7,9 +7,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -31,14 +31,14 @@ public class TLEDao implements ConfigListener {
 	private final File basepath;
 	private final CelestrakClient celestrak;
 
-	private Map<String, TLE> tle;
+	private final Map<String, TLE> tle = new ConcurrentHashMap<String, TLE>();
 
-	public TLEDao(Configuration config, SatelliteDao satelliteDao) {
+	public TLEDao(Configuration config, SatelliteDao satelliteDao, CelestrakClient celestrak) {
 		this.config = config;
 		this.config.subscribe(this, "satellites.enabled");
 		this.satelliteDao = satelliteDao;
 		this.basepath = Util.initDirectory(config.getProperty("satellites.basepath.location"));
-		this.celestrak = new CelestrakClient("http://celestrak.com");
+		this.celestrak = celestrak;
 	}
 
 	@Override
@@ -55,7 +55,6 @@ public class TLEDao implements ConfigListener {
 			LOG.info("tle tracking is disabled");
 			return;
 		}
-		this.tle = new HashMap<String, TLE>();
 		boolean reload = false;
 		for (Satellite cur : satelliteDao.findSupported()) {
 			File tleFile = new File(basepath, cur.getId() + File.separator + "tle.txt");
@@ -107,13 +106,12 @@ public class TLEDao implements ConfigListener {
 		if (tle.isEmpty()) {
 			return;
 		}
-		Map<String, TLE> reKeyed = new HashMap<String, TLE>(tle.size());
 		for (Entry<String, TLE> cur : tle.entrySet()) {
 			Satellite satellite = satelliteDao.findByName(cur.getKey());
 			if (satellite == null) {
 				continue;
 			}
-			reKeyed.put(satellite.getId(), cur.getValue());
+			this.tle.put(satellite.getId(), cur.getValue());
 			File output = new File(basepath, satellite.getId() + File.separator + "tle.txt");
 			if (!output.getParentFile().exists() && !output.getParentFile().mkdirs()) {
 				LOG.error("unable to create directory for satellite: " + satellite.getName());
@@ -128,7 +126,6 @@ public class TLEDao implements ConfigListener {
 				LOG.error("unable to write tle for: " + cur.getKey(), e);
 			}
 		}
-		this.tle = reKeyed;
 		config.setProperty("satellites.tle.lastupdateAtMillis", System.currentTimeMillis());
 		config.update();
 	}

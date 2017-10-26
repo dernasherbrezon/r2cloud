@@ -16,6 +16,7 @@ import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.Scheduler;
 import ru.r2cloud.ssl.AcmeClient;
+import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.tle.TLEDao;
 import ru.r2cloud.tle.TLEReloader;
 import ru.r2cloud.util.Clock;
@@ -92,7 +93,7 @@ public class R2Cloud {
 		ddnsClient = new DDNSClient(props);
 		acmeClient = new AcmeClient(props);
 		satelliteDao = new SatelliteDao(props);
-		tleDao = new TLEDao(props, satelliteDao);
+		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient("http://celestrak.com"));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
 		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, predict, tleDao);
 

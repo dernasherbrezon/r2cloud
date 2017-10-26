@@ -13,16 +13,16 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.model.TLE;
 import ru.r2cloud.util.Util;
 
-class CelestrakClient {
+public class CelestrakClient {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CelestrakClient.class);
 	private final String host;
 
-	CelestrakClient(String host) {
+	public CelestrakClient(String host) {
 		this.host = host;
 	}
 
-	Map<String, TLE> getWeatherTLE() {
+	public Map<String, TLE> getWeatherTLE() {
 		HttpURLConnection con = null;
 		Map<String, TLE> result = new HashMap<String, TLE>();
 		try {
