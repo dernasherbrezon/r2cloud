@@ -2,6 +2,8 @@ package ru.r2cloud.satellite;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -26,6 +28,8 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private final SatelliteDao satellites;
 	private final Configuration config;
 	private final RtlSdrLock lock;
+
+	private final Map<String, Date> scheduledObservations = new ConcurrentHashMap<String, Date>();
 
 	private ScheduledExecutorService scheduler = null;
 	private ScheduledExecutorService reaper = null;
@@ -75,6 +79,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			return;
 		}
 		LOG.info("scheduled next pass for " + cur.getName() + ": " + observation.getNextPass());
+		scheduledObservations.put(cur.getId(), observation.getNextPass().getStart().getTime());
 		Future<?> future = scheduler.schedule(new SafeRunnable() {
 
 			@Override
@@ -99,6 +104,10 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				schedule(cur);
 			}
 		}, observation.getNextPass().getEnd().getTime().getTime() - current, TimeUnit.MILLISECONDS);
+	}
+
+	public Date getNextObservation(String id) {
+		return scheduledObservations.get(id);
 	}
 
 	// protection from calling stop 2 times and more

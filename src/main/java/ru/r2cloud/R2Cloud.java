@@ -115,7 +115,7 @@ public class R2Cloud {
 		index(new SaveConfiguration(props, autoUpdate, ddnsClient, acmeClient));
 		index(new GetAcmeLog(acmeClient));
 		index(new LoadTLE(props, tleDao));
-		index(new LoadWeatherSatellites(props, satelliteDao));
+		index(new LoadWeatherSatellites(props, satelliteDao, scheduler));
 		index(new EnableWeather(props));
 		webServer = new WebServer(props, controllers, auth);
 	}

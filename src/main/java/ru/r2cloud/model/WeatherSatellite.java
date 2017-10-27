@@ -1,11 +1,21 @@
 package ru.r2cloud.model;
 
+import java.util.Date;
 import java.util.List;
 
 public class WeatherSatellite {
 
 	private Satellite satellite;
 	private List<ObservationResult> data;
+	private Date next;
+	
+	public Date getNext() {
+		return next;
+	}
+	
+	public void setNext(Date next) {
+		this.next = next;
+	}
 
 	public Satellite getSatellite() {
 		return satellite;
