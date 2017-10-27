@@ -5,7 +5,7 @@ import java.util.List;
 public class WeatherSatellite {
 
 	private Satellite satellite;
-	private List<WeatherObservation> data;
+	private List<ObservationResult> data;
 
 	public Satellite getSatellite() {
 		return satellite;
@@ -15,11 +15,11 @@ public class WeatherSatellite {
 		this.satellite = satellite;
 	}
 
-	public List<WeatherObservation> getData() {
+	public List<ObservationResult> getData() {
 		return data;
 	}
 
-	public void setData(List<WeatherObservation> data) {
+	public void setData(List<ObservationResult> data) {
 		this.data = data;
 	}
 

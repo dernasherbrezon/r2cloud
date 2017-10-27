@@ -2,7 +2,7 @@ package ru.r2cloud.model;
 
 import java.util.Date;
 
-public class WeatherObservation {
+public class ObservationResult {
 
 	private String aPath;
 	private String bPath;

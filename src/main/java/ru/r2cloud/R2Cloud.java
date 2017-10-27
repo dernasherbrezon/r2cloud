@@ -12,6 +12,7 @@ import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.rx.ADSB;
 import ru.r2cloud.rx.ADSBDao;
+import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.Scheduler;
@@ -71,6 +72,7 @@ public class R2Cloud {
 	private final RtlSdrLock rtlsdrLock;
 	private final Predict predict;
 	private final ThreadPoolFactory threadFactory;
+	private final ObservationFactory observationFactory;
 	private final Clock clock;
 
 	public R2Cloud(String propertiesLocation) {
@@ -95,7 +97,8 @@ public class R2Cloud {
 		satelliteDao = new SatelliteDao(props);
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient("http://celestrak.com"));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
-		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, predict, tleDao);
+		observationFactory = new ObservationFactory(props, predict, tleDao);
+		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, observationFactory);
 
 		// setup web server
 		index(new ru.r2cloud.web.controller.ADSB(props));
