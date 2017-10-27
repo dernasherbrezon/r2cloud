@@ -23,6 +23,7 @@ import ru.r2cloud.tle.TLEReloader;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.DefaultClock;
+import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ShutdownLoggingManager;
 import ru.r2cloud.util.ThreadPoolFactory;
 import ru.r2cloud.util.ThreadPoolFactoryImpl;
@@ -74,10 +75,12 @@ public class R2Cloud {
 	private final ThreadPoolFactory threadFactory;
 	private final ObservationFactory observationFactory;
 	private final Clock clock;
+	private final ProcessFactory processFactory;
 
 	public R2Cloud(String propertiesLocation) {
 		props = new Configuration(propertiesLocation, System.getProperty("user.home") + File.separator + ".r2cloud");
 		threadFactory = new ThreadPoolFactoryImpl();
+		processFactory = new ProcessFactory();
 		clock = new DefaultClock();
 
 		rtlsdrLock = new RtlSdrLock();
@@ -97,7 +100,7 @@ public class R2Cloud {
 		satelliteDao = new SatelliteDao(props);
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient("http://celestrak.com"));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
-		observationFactory = new ObservationFactory(props, predict, tleDao);
+		observationFactory = new ObservationFactory(props, predict, tleDao, processFactory);
 		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock);
 
 		// setup web server

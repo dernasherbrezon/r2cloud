@@ -9,6 +9,7 @@ import ru.r2cloud.model.SatPass;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.tle.TLEDao;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.ProcessFactory;
 import uk.me.g4dpz.satellite.SatelliteFactory;
 import uk.me.g4dpz.satellite.TLE;
 
@@ -19,11 +20,13 @@ public class ObservationFactory {
 	private final TLEDao tleDao;
 	private final Predict predict;
 	private final Configuration config;
+	private final ProcessFactory factory;
 
-	public ObservationFactory(Configuration config, Predict predict, TLEDao tleDao) {
+	public ObservationFactory(Configuration config, Predict predict, TLEDao tleDao, ProcessFactory factory) {
 		this.config = config;
 		this.predict = predict;
 		this.tleDao = tleDao;
+		this.factory = factory;
 	}
 
 	public Observation create(Date date, Satellite satellite) {
@@ -38,7 +41,7 @@ public class ObservationFactory {
 			LOG.info("can't find next pass for " + satellite.getName());
 			return null;
 		}
-		return new Observation(config, satellite, nextPass);
+		return new Observation(config, satellite, nextPass, factory);
 	}
 
 }
