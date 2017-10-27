@@ -98,7 +98,7 @@ public class R2Cloud {
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient("http://celestrak.com"));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
 		observationFactory = new ObservationFactory(props, predict, tleDao);
-		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, observationFactory);
+		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock);
 
 		// setup web server
 		index(new ru.r2cloud.web.controller.ADSB(props));
