@@ -4,40 +4,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
 
-public class ProcessWrapper {
+public interface ProcessWrapper {
 
-	private Process impl;
+	int waitFor() throws InterruptedException;
 
-	public ProcessWrapper(Process impl) {
-		this.impl = impl;
-	}
+	boolean isAlive();
 
-	public int waitFor() throws InterruptedException {
-		return impl.waitFor();
-	}
+	void destroy();
 
-	public boolean isAlive() {
-		return impl.isAlive();
-	}
+	boolean waitFor(long timeout, TimeUnit unit) throws InterruptedException;
 
-	public void destroy() {
-		impl.destroy();
-	}
+	ProcessWrapper destroyForcibly();
 
-	public boolean waitFor(long timeout, TimeUnit unit) throws InterruptedException {
-		return impl.waitFor(timeout, unit);
-	}
+	OutputStream getOutputStream();
 
-	public ProcessWrapper destroyForcibly() {
-		impl = impl.destroyForcibly();
-		return this;
-	}
+	InputStream getInputStream();
 
-	public OutputStream getOutputStream() {
-		return impl.getOutputStream();
-	}
-	
-	public InputStream getInputStream() {
-		return impl.getInputStream();
-	}
 }

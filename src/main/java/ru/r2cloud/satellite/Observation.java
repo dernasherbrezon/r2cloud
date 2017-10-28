@@ -12,8 +12,8 @@ import ru.r2cloud.FilenameComparator;
 import ru.r2cloud.model.SatPass;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ProcessWrapper;
+import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.Util;
 
 public class Observation {

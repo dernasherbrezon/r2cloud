@@ -16,7 +16,7 @@ public class ProcessFactory {
 		if (inheritIO) {
 			processBuilder.inheritIO();
 		}
-		return new ProcessWrapper(processBuilder.start());
+		return new ProcessWrapperImpl(processBuilder.start());
 	}
 
 }
