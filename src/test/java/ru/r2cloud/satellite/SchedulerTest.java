@@ -51,8 +51,8 @@ public class SchedulerTest {
 		Scheduler s = new Scheduler(config, satelliteDao, new RtlSdrLock(), factory, threadPool, clock);
 		s.start();
 
-		verify(executor).schedule(any(), eq(TimeUnit.HOURS.toMillis(7)), eq(TimeUnit.MILLISECONDS));
-		verify(executor).schedule(any(), eq(TimeUnit.HOURS.toMillis(8)), eq(TimeUnit.MILLISECONDS));
+		verify(executor).schedule(any(Runnable.class), eq(TimeUnit.HOURS.toMillis(7)), eq(TimeUnit.MILLISECONDS));
+		verify(executor).schedule(any(Runnable.class), eq(TimeUnit.HOURS.toMillis(8)), eq(TimeUnit.MILLISECONDS));
 	}
 
 	@Test
@@ -61,12 +61,12 @@ public class SchedulerTest {
 		Scheduler s = new Scheduler(config, satelliteDao, new RtlSdrLock(), factory, threadPool, clock);
 		s.start();
 
-		verify(executor, never()).schedule(any(), anyLong(), any());
+		verify(executor, never()).schedule(any(Runnable.class), anyLong(), any());
 
 		config.setProperty("satellites.enabled", true);
 		config.update();
 
-		verify(executor, times(2)).schedule(any(), anyLong(), any());
+		verify(executor, times(2)).schedule(any(Runnable.class), anyLong(), any());
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class SchedulerTest {
 		s.start();
 		s.start();
 
-		verify(executor, times(2)).schedule(any(), anyLong(), any());
+		verify(executor, times(2)).schedule(any(Runnable.class), anyLong(), any());
 		assertNotNull(s.getNextObservation(id));
 
 		s.stop();
