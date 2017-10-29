@@ -1,4 +1,4 @@
-# About [![Build Status](https://travis-ci.org/dernasherbrezon/r2cloud.svg?branch=master)](https://travis-ci.org/dernasherbrezon/r2cloud)
+# About [![Build Status](https://travis-ci.org/dernasherbrezon/r2cloud.svg?branch=master)](https://travis-ci.org/dernasherbrezon/r2cloud) [![codecov](https://codecov.io/gh/dernasherbrezon/r2cloud/branch/master/graph/badge.svg)](https://codecov.io/gh/dernasherbrezon/r2cloud)
 
 r2cloud converts Raspberry PI into the base station which supports various radio signals, such as:
 
