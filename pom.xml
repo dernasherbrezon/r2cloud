@@ -330,7 +330,6 @@
 					<osDependencies>
 						<ejdk-8-compact1></ejdk-8-compact1>
 						<nginx-light></nginx-light>
-						<logrotate>>=3.7.8</logrotate>
 						<dump1090-mutability></dump1090-mutability>
 						<libhyperic-sigar-java></libhyperic-sigar-java>
 						<rtl-sdr></rtl-sdr>
