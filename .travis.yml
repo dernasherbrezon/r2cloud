@@ -1,6 +1,13 @@
 language: java
 bundler_args: --retry 1
 
+services:
+  - docker
+  
+before_install:
+  - docker bulid -t r2cloud .
+  - docker run r2cloud
+
 script: "mvn cobertura:cobertura"
 
 after_success:
