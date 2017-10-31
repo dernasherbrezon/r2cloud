@@ -7,6 +7,7 @@ services:
 script:
   - mvn cobertura:cobertura
   - cp ./target/*.deb ./Dockerbuild
+  - docker run --rm --privileged multiarch/qemu-user-static:register
   - docker build -t r2cloud ./Dockerbuild
   - docker run r2cloud
   
