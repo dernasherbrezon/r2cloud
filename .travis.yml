@@ -6,7 +6,7 @@ services:
   
 script: "mvn cobertura:cobertura"
 
-before_install:
+after_script:
   - docker build -t r2cloud ./Dockerbuild
   - docker run r2cloud
 
