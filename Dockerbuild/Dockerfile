@@ -1,4 +1,4 @@
-FROM docker pull resin/rpi-raspbian:stretch
+FROM resin/armv7hf-debian:stretch
 
 MAINTAINER info@r2cloud.ru
 
