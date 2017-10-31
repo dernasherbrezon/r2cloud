@@ -4,11 +4,10 @@ bundler_args: --retry 1
 services:
   - docker
   
-script: "mvn cobertura:cobertura"
-
-after_script:
+script:
+  - mvn cobertura:cobertura
   - docker build -t r2cloud ./Dockerbuild
   - docker run r2cloud
-
+  
 after_success:
   - bash <(curl -s https://codecov.io/bash)
