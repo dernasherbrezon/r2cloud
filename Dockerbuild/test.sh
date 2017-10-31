@@ -1,6 +1,9 @@
 #!/bin/bash
 
+set -e
+set -o pipefail
+
 apt-get update 
-apt-get install *.deb
+dpkg -i *.deb
 
 echo "test success"

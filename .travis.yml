@@ -6,6 +6,7 @@ services:
   
 script:
   - mvn cobertura:cobertura
+  - cp ./target/*.deb ./Dockerbuild
   - docker build -t r2cloud ./Dockerbuild
   - docker run r2cloud
   

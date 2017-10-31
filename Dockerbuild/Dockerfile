@@ -2,9 +2,10 @@ FROM resin/armv7hf-debian:stretch
 
 MAINTAINER info@r2cloud.ru
 
-COPY test.sh /home/pi
-COPY ../target/*.deb /home/pi
+COPY test.sh /usr/share
+COPY *.deb /usr/share
+RUN chmod +x /usr/share/test.sh
 
-WORKDIR /home/pi
+WORKDIR /usr/share
 
-ENTRYPOINT /home/pi/test.sh
+ENTRYPOINT /usr/share/test.sh
