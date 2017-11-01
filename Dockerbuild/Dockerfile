@@ -1,8 +1,8 @@
 FROM resin/armv7hf-debian:stretch
 
 ENV INITSYSTEM=on
-COPY *.sh /usr/share
-COPY *.deb /usr/share
+COPY *.sh /usr/share/
+COPY *.deb /usr/share/
 RUN chmod +x /usr/share/*.sh \
     && gpg --keyserver keyserver.ubuntu.com --recv-keys 129E7CDE \
     && gpg --armor --export 129E7CDE | sudo apt-key add - \
