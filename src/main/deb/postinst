@@ -4,7 +4,9 @@ chmod 640 ${config.installDir}/lib/*.jar
 cp ${config.installDir}/etc/r2cloud.service /etc/systemd/system/r2cloud.service;
 
 systemctl enable r2cloud.service
-systemctl start r2cloud.service
+if [ -d /run/systemd/system ]; then
+	systemctl start r2cloud.service
+fi
 
 cp ${config.installDir}/etc/r2cloud-prod.conf /etc/nginx/nginx.conf;
 

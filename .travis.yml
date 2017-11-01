@@ -9,7 +9,7 @@ script:
   - cp ./target/*.deb ./Dockerbuild
   - docker run --rm --privileged multiarch/qemu-user-static:register
   - docker build -t r2cloud ./Dockerbuild
-  - docker run r2cloud
+  - docker run --privileged=true --tty r2cloud
   
 after_success:
   - bash <(curl -s https://codecov.io/bash)
