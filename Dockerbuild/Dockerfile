@@ -1,9 +1,9 @@
 FROM resin/armv7hf-debian:stretch
 
 ENV INITSYSTEM=on
-COPY test.sh /usr/share
+COPY *.sh /usr/share
 COPY *.deb /usr/share
-RUN chmod +x /usr/share/test.sh \
+RUN chmod +x /usr/share/*.sh \
     && gpg --keyserver keyserver.ubuntu.com --recv-keys 129E7CDE \
     && gpg --armor --export 129E7CDE | sudo apt-key add - \
     && bash -c "echo 'deb [arch=armhf] http://s3.amazonaws.com/r2cloud r2cloud main' > /etc/apt/sources.list.d/r2cloud.list" \
@@ -12,3 +12,5 @@ RUN chmod +x /usr/share/test.sh \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/share
+
+CMD ["bash", "/usr/share/start-all.sh"]
