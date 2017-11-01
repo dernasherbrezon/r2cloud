@@ -1,9 +1,9 @@
 FROM resin/armv7hf-debian:stretch
 
 ENV INITSYSTEM=on
-ENV RESIN_DEVICE_UUID=r2cloud
-ENV RESIN=on
-ENV RESIN_DEVICE_TYPE=generic
+#ENV RESIN_DEVICE_UUID=r2cloud
+#ENV RESIN=on
+#ENV RESIN_DEVICE_TYPE=generic
 COPY test.sh /usr/share
 COPY *.deb /usr/share
 RUN chmod +x /usr/share/test.sh \
