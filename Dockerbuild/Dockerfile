@@ -14,7 +14,8 @@ RUN gpg --keyserver keyserver.ubuntu.com --recv-keys 129E7CDE \
 
 COPY *.sh /home/pi/r2cloud/bin/
 COPY *.jar /home/pi/r2cloud/lib/
-COPY .wxtoimglic /home/pi/
+# tests are running from root, thus need to put license file for root user
+COPY .wxtoimglic /root/
 
 RUN chmod +x /home/pi/r2cloud/bin/*.sh
 
