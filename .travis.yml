@@ -8,7 +8,7 @@ script:
   - mvn cobertura:cobertura
   - cp ./target/*.deb ./target/it-tests
   - docker run --rm --privileged multiarch/qemu-user-static:register
-  - docker build -t r2cloud ./it-tests
+  - docker build -t r2cloud ./target/it-tests
   - docker run --privileged=true --name r2cloud -d --tty r2cloud
   - docker exec r2cloud /home/pi/r2cloud/bin/start-tests.sh
   
