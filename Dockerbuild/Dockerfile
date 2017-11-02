@@ -1,4 +1,4 @@
-FROM resin/armv7hf-debian:stretch
+FROM resin/raspberry-pi3-openjdk:openjdk-8u40-b04-jre-20170825
 
 ENV INITSYSTEM=on
 
