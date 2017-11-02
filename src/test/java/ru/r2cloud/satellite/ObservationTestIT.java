@@ -8,8 +8,10 @@ import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -50,7 +52,7 @@ public class ObservationTestIT {
 		Observation o = new Observation(config, satellite, nextPass, factory);
 		o.start();
 		o.stop();
-		
+
 		File a = new File(tempFolder.getRoot(), satellite.getId() + File.separator + "data" + File.separator + nextPass.getStart().getTime().getTime() + File.separator + "a.jpg");
 		File b = new File(tempFolder.getRoot(), satellite.getId() + File.separator + "data" + File.separator + nextPass.getStart().getTime().getTime() + File.separator + "b.jpg");
 
@@ -60,7 +62,7 @@ public class ObservationTestIT {
 		try (FileInputStream fis = new FileInputStream(b)) {
 			assertStreamsEqual(ObservationTestIT.class.getClassLoader().getResourceAsStream("b.jpg"), fis);
 		}
-		
+
 	}
 
 	private static void assertStreamsEqual(InputStream expected, InputStream actual) {
@@ -78,7 +80,14 @@ public class ObservationTestIT {
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("satellites.enabled", true);
 		config.setProperty("satellites.basepath.location", tempFolder.getRoot().getAbsolutePath());
+		config.setProperty("satellites.wxtoimg.license.path", "/home/pi/.wxtoimglic");
 		config.update();
+
+		try (BufferedWriter w = new BufferedWriter(new FileWriter(config.getProperty("satellites.wxtoimg.license.path")))) {
+			w.append("2.11.2 beta\n");
+		} catch (Exception e) {
+			throw new RuntimeException("unable to setup wxtoimg", e);
+		}
 
 		satellite = new Satellite();
 		satellite.setId(UUID.randomUUID().toString());
