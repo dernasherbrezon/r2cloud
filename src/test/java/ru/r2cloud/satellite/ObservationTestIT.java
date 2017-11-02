@@ -8,10 +8,8 @@ import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -80,14 +78,7 @@ public class ObservationTestIT {
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("satellites.enabled", true);
 		config.setProperty("satellites.basepath.location", tempFolder.getRoot().getAbsolutePath());
-		config.setProperty("satellites.wxtoimg.license.path", "/home/pi/.wxtoimglic");
 		config.update();
-
-		try (BufferedWriter w = new BufferedWriter(new FileWriter(config.getProperty("satellites.wxtoimg.license.path")))) {
-			w.append("2.11.2 beta\n");
-		} catch (Exception e) {
-			throw new RuntimeException("unable to setup wxtoimg", e);
-		}
 
 		satellite = new Satellite();
 		satellite.setId(UUID.randomUUID().toString());

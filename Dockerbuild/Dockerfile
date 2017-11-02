@@ -14,6 +14,7 @@ RUN gpg --keyserver keyserver.ubuntu.com --recv-keys 129E7CDE \
 
 COPY *.sh /home/pi/r2cloud/bin/
 COPY *.jar /home/pi/r2cloud/lib/
+COPY .wxtoimglic /home/pi/
 
 RUN chmod +x /home/pi/r2cloud/bin/*.sh
 
