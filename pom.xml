@@ -371,6 +371,7 @@
 						<rtl-sdr></rtl-sdr>
 						<coreutils></coreutils>
 						<wxtoimg></wxtoimg>
+						<!-- required by wxtoimg -->
 						<libxft2></libxft2>
 						<sox></sox>
 					</osDependencies>

@@ -5,10 +5,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import ru.r2cloud.satellite.SimpleTestIT;
+import ru.r2cloud.satellite.ObservationTestIT;
 
 @RunWith(Suite.class)
-@SuiteClasses({SimpleTestIT.class})
+@SuiteClasses({ObservationTestIT.class})
 public class IntegrationalTests {
 
 	public static void main(String[] args) throws Exception {

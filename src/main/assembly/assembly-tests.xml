@@ -22,6 +22,7 @@
 			<outputDirectory></outputDirectory>
 			<includes>
 				<include>junit:*</include>
+				<include>org.mockito:*</include>
 			</includes>
 			<scope>test</scope>
 		</dependencySet>
