@@ -38,7 +38,9 @@ public class ObservationTestIT {
 	@Test
 	public void testSuccess() throws Exception {
 		String rtlfm = UUID.randomUUID().toString();
+		config.setProperty("satellites.sox.path", "sox");
 		config.setProperty("satellites.rtlsdr.path", rtlfm);
+		config.setProperty("satellites.wxtoimg.path", "wxtoimg");
 
 		when(factory.create(contains("sox"), any(), anyBoolean())).thenCallRealMethod();
 		when(factory.create(contains("wxtoimg"), any(), anyBoolean())).thenCallRealMethod();
