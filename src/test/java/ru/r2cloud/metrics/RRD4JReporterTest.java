@@ -7,12 +7,12 @@ import java.io.File;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
-import ru.r2cloud.util.Util;
 
 import com.aerse.core.RrdDb;
 import com.codahale.metrics.Counter;
@@ -27,23 +27,26 @@ public class RRD4JReporterTest {
 	private MetricRegistry registry;
 	private RRD4JReporter reporter;
 	private TestConfiguration config;
-	private File basepath = new File("./target/rrd4jtest");
-	
+	private File basepath;
+
+	@Rule
+	public TemporaryFolder tempFolder = new TemporaryFolder();
+
 	@Test
 	public void testCounterResumeFromLast() throws Exception {
 		String name = UUID.randomUUID().toString();
 		Counter c = registry.counter(name);
 		c.inc(2);
 		report(name, c);
-		//simulate restart
+		// simulate restart
 		reporter.close();
 		registry.remove(name);
-		
+
 		c = registry.counter(name);
 		c.inc(1);
 		Thread.sleep(1000);
 		report(name, c);
-		
+
 		File f = new File(basepath, name + ".rrd");
 		assertTrue(f.exists());
 		RrdDb db = new RrdDb(f.getAbsolutePath());
@@ -52,7 +55,7 @@ public class RRD4JReporterTest {
 		c.inc(1);
 		Thread.sleep(1000);
 		report(name, c);
-		
+
 		db = new RrdDb(f.getAbsolutePath());
 		assertEquals(4.0, db.getLastDatasourceValue("data"), 0.0);
 		db.close();
@@ -73,19 +76,12 @@ public class RRD4JReporterTest {
 	}
 
 	@Before
-	public void start() {
+	public void start() throws Exception {
 		registry = new MetricRegistry();
-		config = new TestConfiguration();
-		config.setProperty("metrics.basepath.location", "./target/rrd4jtest");
+		config = new TestConfiguration(tempFolder);
+		basepath = new File(tempFolder.getRoot().getAbsolutePath(), "rrd4jtest");
+		config.setProperty("metrics.basepath.location", basepath.getAbsolutePath());
 		reporter = new RRD4JReporter(config, registry);
-	}
-
-	@After
-	public void stop() {
-		config.stop();
-		if (basepath.exists()) {
-			Util.deleteDirectory(basepath);
-		}
 	}
 
 	@SuppressWarnings("rawtypes")

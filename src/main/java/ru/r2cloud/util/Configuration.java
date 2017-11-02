@@ -41,6 +41,12 @@ public class Configuration {
 		MODE600.add(PosixFilePermission.OWNER_WRITE);
 	}
 
+	public Configuration(InputStream systemSettingsLocation, String userSettingsLocation) throws IOException {
+		systemSettings.load(systemSettingsLocation);
+		this.userSettingsLocation = userSettingsLocation;
+		loadUserSettings(userSettingsLocation);
+	}
+
 	public Configuration(String systemSettingsLocation, String userSettingsLocation) {
 		try (InputStream is = new FileInputStream(systemSettingsLocation)) {
 			systemSettings.load(is);
@@ -48,6 +54,10 @@ public class Configuration {
 			throw new RuntimeException("Unable to load properties", e);
 		}
 		this.userSettingsLocation = userSettingsLocation;
+		loadUserSettings(userSettingsLocation);
+	}
+
+	private void loadUserSettings(String userSettingsLocation) {
 		if (new File(userSettingsLocation).exists()) {
 			try (InputStream is = new FileInputStream(userSettingsLocation)) {
 				userSettings.load(is);

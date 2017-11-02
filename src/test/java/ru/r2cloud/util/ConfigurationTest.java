@@ -9,13 +9,17 @@ import static org.mockito.Mockito.verify;
 import java.util.Random;
 import java.util.UUID;
 
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
 
 public class ConfigurationTest {
+
+	@Rule
+	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private TestConfiguration config;
 
@@ -60,13 +64,8 @@ public class ConfigurationTest {
 	}
 
 	@Before
-	public void start() {
-		config = new TestConfiguration();
-	}
-
-	@After
-	public void stop() {
-		config.stop();
+	public void start() throws Exception {
+		config = new TestConfiguration(tempFolder);
 	}
 
 }

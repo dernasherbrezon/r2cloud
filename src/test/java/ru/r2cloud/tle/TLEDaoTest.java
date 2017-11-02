@@ -79,7 +79,7 @@ public class TLEDaoTest {
 
 	@Before
 	public void start() throws Exception {
-		config = new TestConfiguration();
+		config = new TestConfiguration(tempFolder);
 		config.setProperty("satellites.enabled", true);
 		config.setProperty("satellites.basepath.location", tempFolder.getRoot().getAbsolutePath());
 		config.update();

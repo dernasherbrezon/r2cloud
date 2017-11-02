@@ -6,9 +6,10 @@ import static org.junit.Assert.assertNull;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.model.SatPass;
@@ -17,6 +18,9 @@ import uk.me.g4dpz.satellite.SatelliteFactory;
 import uk.me.g4dpz.satellite.TLE;
 
 public class PredictTest {
+
+	@Rule
+	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private TestConfiguration config;
 
@@ -52,15 +56,10 @@ public class PredictTest {
 	}
 
 	@Before
-	public void start() {
-		config = new TestConfiguration();
+	public void start() throws Exception {
+		config = new TestConfiguration(tempFolder);
 		config.setProperty("locaiton.lat", "51.49");
 		config.setProperty("locaiton.lon", "0.01");
-	}
-
-	@After
-	public void stop() {
-		config.stop();
 	}
 
 }

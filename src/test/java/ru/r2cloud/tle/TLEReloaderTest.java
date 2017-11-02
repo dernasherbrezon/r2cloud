@@ -15,7 +15,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.util.Clock;
@@ -24,6 +26,9 @@ import ru.r2cloud.util.ThreadPoolFactory;
 public class TLEReloaderTest {
 
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss, SSS");
+	
+	@Rule
+	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private TLEDao tleDao;
 	private Clock clock;
@@ -65,7 +70,7 @@ public class TLEReloaderTest {
 
 	@Before
 	public void start() throws Exception {
-		config = new TestConfiguration();
+		config = new TestConfiguration(tempFolder);
 		config.setProperty("satellites.enabled", true);
 		tleDao = mock(TLEDao.class);
 		clock = mock(Clock.class);

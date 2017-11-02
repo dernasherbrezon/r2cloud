@@ -19,7 +19,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.RtlSdrLock;
 import ru.r2cloud.TestConfiguration;
@@ -30,6 +32,9 @@ import ru.r2cloud.util.ThreadPoolFactory;
 import uk.me.g4dpz.satellite.SatPos;
 
 public class SchedulerTest {
+
+	@Rule
+	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private TestConfiguration config;
 	private SatelliteDao satelliteDao;
@@ -84,7 +89,7 @@ public class SchedulerTest {
 
 	@Before
 	public void start() throws Exception {
-		config = new TestConfiguration();
+		config = new TestConfiguration(tempFolder);
 		config.setProperty("satellites.enabled", true);
 
 		clock = mock(Clock.class);
