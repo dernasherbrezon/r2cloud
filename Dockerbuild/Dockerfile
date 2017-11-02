@@ -1,4 +1,4 @@
-FROM resin/raspberry-pi-openjdk:openjdk-8u40-b04-jre-20170825
+FROM resin/armv7hf-debian:stretch
 
 ENV INITSYSTEM=on
 
@@ -7,7 +7,7 @@ COPY *.deb /usr/share/
 RUN gpg --keyserver keyserver.ubuntu.com --recv-keys 129E7CDE \
     && gpg --armor --export 129E7CDE | sudo apt-key add - \
     && bash -c "echo 'deb [arch=armhf] http://s3.amazonaws.com/r2cloud r2cloud main' > /etc/apt/sources.list.d/r2cloud.list" \
-    && apt-get update && apt install /usr/share/*.deb \
+    && apt-get update && apt install /usr/share/*.deb openjdk-8-jdk \
     && apt clean \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /home/pi/r2cloud/bin
