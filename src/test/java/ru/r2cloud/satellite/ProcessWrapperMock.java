@@ -1,0 +1,83 @@
+package ru.r2cloud.satellite;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ru.r2cloud.util.ProcessWrapper;
+
+public class ProcessWrapperMock implements ProcessWrapper {
+
+	private static final Logger LOG = LoggerFactory.getLogger(ProcessWrapperMock.class);
+
+	private final InputStream is;
+	private final OutputStream os;
+
+	private boolean alive;
+
+	public ProcessWrapperMock(InputStream is, OutputStream os) {
+		this.is = is;
+		this.os = os;
+		alive = true;
+	}
+
+	@Override
+	public int waitFor() throws InterruptedException {
+		stop();
+		return 0;
+	}
+
+	@Override
+	public boolean isAlive() {
+		return alive;
+	}
+
+	@Override
+	public void destroy() {
+		stop();
+	}
+
+	@Override
+	public boolean waitFor(long timeout, TimeUnit unit) throws InterruptedException {
+		stop();
+		return true;
+	}
+
+	@Override
+	public ProcessWrapper destroyForcibly() {
+		stop();
+		return this;
+	}
+
+	@Override
+	public OutputStream getOutputStream() {
+		return os;
+	}
+
+	@Override
+	public InputStream getInputStream() {
+		return is;
+	}
+
+	private void stop() {
+		alive = false;
+		if (is != null) {
+			try {
+				is.close();
+			} catch (IOException e) {
+				LOG.error("unable to close", e);
+			}
+		}
+		if (os != null) {
+			try {
+				os.close();
+			} catch (IOException e) {
+				LOG.error("unable to close", e);
+			}
+		}
+	}
+}

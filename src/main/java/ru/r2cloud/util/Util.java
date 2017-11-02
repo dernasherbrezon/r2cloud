@@ -66,7 +66,7 @@ public final class Util {
 		}
 	}
 
-	public static void shutdown(String name, Process process, long timeoutMillis) {
+	public static void shutdown(String name, ProcessWrapper process, long timeoutMillis) {
 		if (process == null || !process.isAlive()) {
 			return;
 		}
@@ -85,6 +85,26 @@ public final class Util {
 		}
 	}
 
+	//TODO migrate to ProcessWrapper
+	public static void shutdown(String name, Process process, long timeoutMillis) {
+		if (process == null || !process.isAlive()) {
+			return;
+		}
+		try {
+			process.destroy();
+			if (!process.waitFor(timeoutMillis, TimeUnit.MILLISECONDS)) {
+				LOG.info("unable to cleanly shutdown. kill process: " + name);
+				int statusCode = process.destroyForcibly().waitFor();
+				if (statusCode != 0 && statusCode != 137) {
+					LOG.info("invalid status code while stopping: " + statusCode);
+				}
+			}
+
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+	}
+	
 	public static boolean deleteDirectory(File f) {
 		if (f.isDirectory()) {
 			for (File c : f.listFiles()) {

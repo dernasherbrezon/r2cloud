@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 import ru.r2cloud.FilenameComparator;
 import ru.r2cloud.model.Satellite;
-import ru.r2cloud.model.WeatherObservation;
+import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -54,16 +54,16 @@ public class SatelliteDao {
 		satelliteByName.put(satellite.getName(), satellite);
 	}
 
-	public List<WeatherObservation> findWeatherObservations(Satellite satellite) {
+	public List<ObservationResult> findWeatherObservations(Satellite satellite) {
 		File dataRoot = new File(basepath, satellite.getId() + File.separator + "data");
 		if (!dataRoot.exists()) {
 			return Collections.emptyList();
 		}
 		File[] observations = dataRoot.listFiles();
 		Arrays.sort(observations, FilenameComparator.INSTANCE_DESC);
-		List<WeatherObservation> result = new ArrayList<WeatherObservation>(observations.length);
+		List<ObservationResult> result = new ArrayList<ObservationResult>(observations.length);
 		for (File curDirectory : observations) {
-			WeatherObservation cur = new WeatherObservation();
+			ObservationResult cur = new ObservationResult();
 			cur.setDate(new Date(Long.valueOf(curDirectory.getName())));
 			File a = new File(curDirectory, "a.jpg");
 			if (a.exists()) {
