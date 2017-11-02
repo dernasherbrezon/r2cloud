@@ -6,11 +6,11 @@ services:
   
 script:
   - mvn cobertura:cobertura
-  - cp ./target/*.deb ./Dockerbuild
+  - cp ./target/*.deb ./target/it-tests
   - docker run --rm --privileged multiarch/qemu-user-static:register
-  - docker build -t r2cloud ./Dockerbuild
+  - docker build -t r2cloud ./it-tests
   - docker run --privileged=true --name r2cloud -d --tty r2cloud
-  - docker exec r2cloud /usr/share/test.sh
+  - docker exec r2cloud /home/pi/r2cloud/bin/start-tests.sh
   
 after_success:
   - bash <(curl -s https://codecov.io/bash)
