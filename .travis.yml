@@ -6,7 +6,7 @@ cache:
   - $HOME/.m2
 
 before_cache:
-  - rm -f $HOME/.m2/repository/ru/r2cloud/
+  - rm -rf $HOME/.m2/repository/ru/r2cloud/
   
 services:
   - docker
