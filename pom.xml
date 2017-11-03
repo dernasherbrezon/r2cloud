@@ -6,7 +6,7 @@
 	<groupId>ru.r2cloud</groupId>
 	<artifactId>r2cloud</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<description>Base station</description>
+	<description>Decode satellite signals on Raspberry PI</description>
 
 	<developers>
 		<developer>
@@ -348,7 +348,7 @@
 			<plugin>
 				<groupId>com.aerse.maven</groupId>
 				<artifactId>deb-maven-plugin</artifactId>
-				<version>1.3</version>
+				<version>1.4</version>
 				<executions>
 					<execution>
 						<id>package</id>
@@ -364,16 +364,17 @@
 					<arch>armhf</arch>
 					<section>embedded</section>
 					<osDependencies>
-						<ejdk-8-compact1></ejdk-8-compact1>
-						<nginx-light></nginx-light>
-						<dump1090-mutability></dump1090-mutability>
-						<libhyperic-sigar-java></libhyperic-sigar-java>
-						<rtl-sdr></rtl-sdr>
-						<coreutils></coreutils>
-						<wxtoimg></wxtoimg>
+						<ejdk-8-compact1>=20170825153602</ejdk-8-compact1>
+						<nginx-light>=1.10.3-1+deb9u1</nginx-light>
+						<dump1090-mutability>=1.15~dev</dump1090-mutability>
+						<libhyperic-sigar-java>=1.6.4+dfsg-2.1</libhyperic-sigar-java>
+						<rtl-sdr>=0.5.3-11+b2</rtl-sdr>
+						<!-- required for stdbuf to force stderr flushing -->
+						<coreutils>=8.26-3</coreutils>
+						<wxtoimg>=2.11.2</wxtoimg>
 						<!-- required by wxtoimg -->
-						<libxft2></libxft2>
-						<sox></sox>
+						<libxft2>=2.3.2-1+b2</libxft2>
+						<sox>=14.4.1-5+b2</sox>
 					</osDependencies>
 					<javaServiceWrapper>false</javaServiceWrapper>
 					<fileSets>
