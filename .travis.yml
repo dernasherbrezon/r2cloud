@@ -4,6 +4,9 @@ bundler_args: --retry 1
 cache:
   directories:
   - $HOME/.m2
+
+before_cache:
+  - rm -f $HOME/.m2/repository/ru/r2cloud/
   
 services:
   - docker
