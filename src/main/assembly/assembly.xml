@@ -11,6 +11,9 @@
 
 	<dependencySets>
 		<dependencySet>
+			<includes>
+				<include>${project.groupId}:*</include>
+			</includes>
 			<outputDirectory>lib</outputDirectory>
 			<useProjectArtifact>true</useProjectArtifact>
 		</dependencySet>

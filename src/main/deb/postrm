@@ -3,8 +3,12 @@ if [ -e /etc/nginx/sites-enabled/instaseller ]; then
 	nginx -s reload
 fi
 
-systemctl stop r2cloud.service
-systemctl disable r2cloud.service
+if systemctl is-active r2cloud; then
+	systemctl stop r2cloud.service
+fi
+if systemctl is-enabled r2cloud; then
+	systemctl disable r2cloud.service
+fi
 
-rm /etc/systemd/system/r2cloud.service;
+rm -f /etc/systemd/system/r2cloud.service;
 

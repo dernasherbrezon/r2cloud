@@ -307,6 +307,25 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>com.aerse.maven</groupId>
+				<artifactId>deps-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<id>deps</id>
+						<phase>package</phase>
+						<goals>
+							<goal>extract</goal>
+						</goals>
+						<configuration>
+							<repositories>${project.build.directory}/deps/repositories.txt</repositories>
+							<dependencies>${project.build.directory}/deps/dependencies.txt</dependencies>
+							<script>${project.build.directory}/deps/download.sh</script>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>3.0.0</version>
@@ -368,13 +387,13 @@
 						<nginx-light>=1.10.3-1+deb9u1</nginx-light>
 						<dump1090-mutability>=1.15~dev</dump1090-mutability>
 						<libhyperic-sigar-java>=1.6.4+dfsg-2.1</libhyperic-sigar-java>
-						<rtl-sdr>=0.5.3-11+b2</rtl-sdr>
+						<rtl-sdr>=0.5.3-11</rtl-sdr>
 						<!-- required for stdbuf to force stderr flushing -->
 						<coreutils>=8.26-3</coreutils>
 						<wxtoimg>=2.11.2</wxtoimg>
 						<!-- required by wxtoimg -->
-						<libxft2>=2.3.2-1+b2</libxft2>
-						<sox>=14.4.1-5+b2</sox>
+						<libxft2>=2.3.2-1</libxft2>
+						<sox>=14.4.1-5</sox>
 					</osDependencies>
 					<javaServiceWrapper>false</javaServiceWrapper>
 					<fileSets>
@@ -388,6 +407,10 @@
 						</fileSet>
 						<fileSet>
 							<source>${project.build.directory}/assembly-lib/lib</source>
+							<target>lib</target>
+						</fileSet>
+						<fileSet>
+							<source>${project.build.directory}/deps</source>
 							<target>lib</target>
 						</fileSet>
 						<fileSet>
