@@ -383,17 +383,17 @@
 					<arch>armhf</arch>
 					<section>embedded</section>
 					<osDependencies>
-						<ejdk-8-compact1>=20170825153602</ejdk-8-compact1>
-						<nginx-light>=1.10.3-1+deb9u1</nginx-light>
-						<dump1090-mutability>=1.15~dev</dump1090-mutability>
-						<libhyperic-sigar-java>=1.6.4+dfsg-2.1</libhyperic-sigar-java>
-						<rtl-sdr>=0.5.3-11</rtl-sdr>
+						<ejdk-8-compact1>>=20170825153602</ejdk-8-compact1>
+						<nginx-light>>=1.10.3</nginx-light>
+						<dump1090-mutability>>=1.15</dump1090-mutability>
+						<libhyperic-sigar-java>>=1.6.4</libhyperic-sigar-java>
+						<rtl-sdr>=0.5.3</rtl-sdr>
 						<!-- required for stdbuf to force stderr flushing -->
-						<coreutils>=8.26-3</coreutils>
-						<wxtoimg>=2.11.2</wxtoimg>
+						<coreutils>>=8.26</coreutils>
+						<wxtoimg>>=2.11.2</wxtoimg>
 						<!-- required by wxtoimg -->
-						<libxft2>=2.3.2-1</libxft2>
-						<sox>=14.4.1-5</sox>
+						<libxft2>>=2.3.2</libxft2>
+						<sox>>=14.4.1</sox>
 					</osDependencies>
 					<javaServiceWrapper>false</javaServiceWrapper>
 					<fileSets>
