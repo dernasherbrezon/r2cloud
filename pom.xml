@@ -394,6 +394,8 @@
 						<!-- required by wxtoimg -->
 						<libxft2>>=2.3.2</libxft2>
 						<sox>>=14.4.1</sox>
+						<!-- required by deps-maven-plugin -->
+						<wget></wget>
 					</osDependencies>
 					<javaServiceWrapper>false</javaServiceWrapper>
 					<fileSets>
