@@ -9,8 +9,7 @@ public class ModelAndView extends HashMap<String, Object> {
 
 	private static final long serialVersionUID = 7663044288968287447L;
 
-	private String view;
-	private MimeType type = MimeType.HTML;
+	private String data;
 	private Map<String, String> headers;
 	private IStatus status;
 
@@ -18,14 +17,14 @@ public class ModelAndView extends HashMap<String, Object> {
 		// do nothing
 	}
 
-	public ModelAndView(String view) {
-		this.view = view;
+	public ModelAndView(String data) {
+		this.data = data;
 	}
-	
+
 	public IStatus getStatus() {
 		return status;
 	}
-	
+
 	public void setStatus(IStatus status) {
 		this.status = status;
 	}
@@ -45,20 +44,12 @@ public class ModelAndView extends HashMap<String, Object> {
 		headers.put(name, value);
 	}
 
-	public MimeType getType() {
-		return type;
+	public String getData() {
+		return data;
 	}
 
-	public void setType(MimeType type) {
-		this.type = type;
-	}
-
-	public String getView() {
-		return view;
-	}
-
-	public void setView(String view) {
-		this.view = view;
+	public void setData(String data) {
+		this.data = data;
 	}
 
 }

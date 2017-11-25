@@ -25,7 +25,8 @@ public class GetAcmeLog extends AbstractHttpController {
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
 		ModelAndView result = new ModelAndView();
-		result.setType(MimeType.JSON);
+		//FIXME
+		//result.setType(MimeType.JSON);
 		if (client.isRunning()) {
 			result.setStatus(Response.Status.PARTIAL_CONTENT);
 		}

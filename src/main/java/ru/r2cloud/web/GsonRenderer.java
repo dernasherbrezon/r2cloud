@@ -18,7 +18,7 @@ public class GsonRenderer {
 		} else {
 			status = Status.OK;
 		}
-		return NanoHTTPD.newFixedLengthResponse(status, MimeType.JSON.getType(), (String) model.get("entity"));
+		return NanoHTTPD.newFixedLengthResponse(status, MimeType.JSON.getType(), model.getData());
 	}
 
 }

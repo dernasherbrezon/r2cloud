@@ -18,7 +18,8 @@ public class StatusData extends AbstractHttpController {
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
 		ModelAndView result = new ModelAndView();
-		result.setType(MimeType.JSON);
+		//FIXME
+//		result.setType(MimeType.JSON);
 		JsonObject entity = Json.object();
 		for (Entry<String, Result> cur : Metrics.HEALTH_REGISTRY.runHealthChecks().entrySet()) {
 			JsonObject value = Json.object().add("status", cur.getValue().getDetails().get("status").toString());

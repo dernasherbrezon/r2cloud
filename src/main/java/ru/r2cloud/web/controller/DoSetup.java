@@ -12,6 +12,7 @@ import ru.r2cloud.web.Authenticator;
 import ru.r2cloud.web.ModelAndView;
 import ru.r2cloud.web.ValidationResult;
 import ru.r2cloud.web.WebServer;
+import ru.r2cloud.web.api.AccessToken;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
 public class DoSetup extends AbstractHttpController {
@@ -71,7 +72,7 @@ public class DoSetup extends AbstractHttpController {
 
 		auth.setPassword(username, password);
 
-		return DoLogin.doLogin(auth, username, password);
+		return AccessToken.doLogin(auth, username, password);
 	}
 
 	private static ModelAndView returnErrors(String username, ValidationResult errors) {

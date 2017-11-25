@@ -5,7 +5,6 @@ import org.opensky.libadsb.Position;
 import ru.r2cloud.model.Airplane;
 import ru.r2cloud.rx.ADSBDao;
 import ru.r2cloud.web.AbstractHttpController;
-import ru.r2cloud.web.MimeType;
 import ru.r2cloud.web.ModelAndView;
 
 import com.eclipsesource.json.Json;
@@ -24,7 +23,6 @@ public class ADSBData extends AbstractHttpController {
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
 		ModelAndView result = new ModelAndView();
-		result.setType(MimeType.JSON);
 		JsonArray array = (JsonArray) Json.array();
 		for (Airplane cur : dao.getAirplanes()) {
 			JsonArray positions = (JsonArray) Json.array();
@@ -35,7 +33,7 @@ public class ADSBData extends AbstractHttpController {
 			}
 			array.add(Json.object().add("icao24", cur.getIcao24()).add("positions", positions));
 		}
-		result.put("entity", array.toString());
+		result.setData(array.toString());
 		return result;
 	}
 

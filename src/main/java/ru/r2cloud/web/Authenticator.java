@@ -10,12 +10,11 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.Hex;
-
 import com.google.common.base.Splitter;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
+import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Hex;
 
 public class Authenticator {
 
@@ -24,10 +23,9 @@ public class Authenticator {
 	private final SecureRandom random = new SecureRandom();
 
 	private final Configuration props;
-	private final Splitter semicolonSplitter = Splitter.on(';').trimResults().omitEmptyStrings();
-	private final Splitter equalsSplitter = Splitter.on('=').trimResults().omitEmptyStrings();
+	private final Splitter spaceSplitter = Splitter.on(' ').trimResults().omitEmptyStrings();
 
-	private String authenticatedJSessionId;
+	private String authenticatedToken;
 	private long authenticatedAt;
 
 	private String login;
@@ -44,38 +42,27 @@ public class Authenticator {
 	}
 
 	public boolean isAuthenticated(IHTTPSession session) {
-		if (authenticatedJSessionId == null) {
+		if (authenticatedToken == null) {
 			return false;
 		}
 		if (System.currentTimeMillis() - authenticatedAt > maxAgeMillis) {
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("session expired");
 			}
-			authenticatedJSessionId = null;
+			authenticatedToken = null;
 			return false;
 		}
-		String values = session.getHeaders().get("cookie");
+		String values = session.getHeaders().get("Authorization");
 		if (values == null) {
 			return false;
 		}
-		Iterator<String> it = semicolonSplitter.split(values).iterator();
-		while (it.hasNext()) {
-			Iterator<String> cookie = equalsSplitter.split(it.next()).iterator();
-			if (cookie.hasNext()) {
-				String name = cookie.next();
-				if (!name.equals("JSESSIONID")) {
-					continue;
-				}
-				if (!cookie.hasNext()) {
-					continue;
-				}
-				String value = cookie.next();
-				if (value.equals(authenticatedJSessionId)) {
-					return true;
-				} else {
-					return false;
-				}
-			}
+		Iterator<String> it = spaceSplitter.split(values).iterator();
+		// skip Bearer
+		if (it.hasNext()) {
+			it.next();
+		}
+		if (it.hasNext()) {
+			return it.next().equals(authenticatedToken);
 		}
 		return false;
 	}
@@ -111,12 +98,12 @@ public class Authenticator {
 			return null;
 		}
 
-		byte[] cookie = new byte[12];
-		random.nextBytes(cookie);
+		byte[] token = new byte[12];
+		random.nextBytes(token);
 
-		this.authenticatedJSessionId = new String(Hex.encode(cookie));
+		this.authenticatedToken = new String(Hex.encode(token));
 		this.authenticatedAt = System.currentTimeMillis();
-		return authenticatedJSessionId;
+		return authenticatedToken;
 	}
 
 	private static String getPasswordToCheck(String salted) {
@@ -179,7 +166,7 @@ public class Authenticator {
 		this.salt = null;
 		this.password = null;
 		this.login = null;
-		this.authenticatedJSessionId = null;
+		this.authenticatedToken = null;
 		this.authenticatedAt = 0L;
 
 		reloadProps();

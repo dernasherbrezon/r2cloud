@@ -2,7 +2,7 @@ package ru.r2cloud.web;
 
 public enum MimeType {
 	
-	HTML("text/html"), JSON("application/json");
+	JSON("application/json");
 	
 	private String type;
 	
