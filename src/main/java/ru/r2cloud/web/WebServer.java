@@ -54,6 +54,7 @@ public class WebServer extends NanoHTTPD {
 		if (session.getMethod().equals(Method.OPTIONS)) {
 			Response result = NanoHTTPD.newFixedLengthResponse(Response.Status.NO_CONTENT, "text/plain; charset=utf-8", "");
 			result.addHeader("Access-Control-Allow-Origin", "*");
+			result.addHeader("Access-Control-Max-Age", "1728000");
 			result.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
 			result.addHeader("Access-Control-Allow-Headers", ALLOW_HEADERS);
 			result.addHeader("Access-Control-Expose-Headers", ALLOW_HEADERS);
@@ -65,14 +66,13 @@ public class WebServer extends NanoHTTPD {
 			return newRedirectResponse("/");
 		}
 		if (auth.isAuthenticationRequired(session) && !auth.isAuthenticated(session)) {
-			String accept = session.getHeaders().get("accept");
-			if (accept != null && accept.contains("application/json")) {
-				ModelAndView model = new ModelAndView();
-				model.setStatus(Response.Status.UNAUTHORIZED);
-				model.put("entity", "{ \"error\": \"UNAUTHORIZED\"}");
-				return jsonRenderer.render(model);
-			}
-			return newRedirectResponse("/");
+			Response result = NanoHTTPD.newFixedLengthResponse(Response.Status.UNAUTHORIZED, MimeType.JSON.getType(), "{}");
+			result.addHeader("Access-Control-Allow-Origin", "*");
+			result.addHeader("Access-Control-Max-Age", "1728000");
+			result.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+			result.addHeader("Access-Control-Allow-Headers", ALLOW_HEADERS);
+			result.addHeader("Access-Control-Expose-Headers", ALLOW_HEADERS);
+			return result;
 		}
 		if (session.getUri().startsWith(staticController.getRequestMappingURL())) {
 			return staticController.doGet(session);
@@ -115,6 +115,7 @@ public class WebServer extends NanoHTTPD {
 			}
 		}
 		result.addHeader("Access-Control-Allow-Origin", "*");
+		result.addHeader("Access-Control-Max-Age", "1728000");
 		result.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
 		result.addHeader("Access-Control-Allow-Headers", ALLOW_HEADERS);
 		result.addHeader("Access-Control-Expose-Headers", ALLOW_HEADERS);

@@ -1,25 +1,21 @@
-package ru.r2cloud.web.controller;
+package ru.r2cloud.web.api.status;
 
 import java.util.Map.Entry;
-
-import ru.r2cloud.metrics.Metrics;
-import ru.r2cloud.web.AbstractHttpController;
-import ru.r2cloud.web.MimeType;
-import ru.r2cloud.web.ModelAndView;
 
 import com.codahale.metrics.health.HealthCheck.Result;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
+import ru.r2cloud.metrics.Metrics;
+import ru.r2cloud.web.AbstractHttpController;
+import ru.r2cloud.web.ModelAndView;
 
-public class StatusData extends AbstractHttpController {
+public class Overview extends AbstractHttpController {
 
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
 		ModelAndView result = new ModelAndView();
-		//FIXME
-//		result.setType(MimeType.JSON);
 		JsonObject entity = Json.object();
 		for (Entry<String, Result> cur : Metrics.HEALTH_REGISTRY.runHealthChecks().entrySet()) {
 			JsonObject value = Json.object().add("status", cur.getValue().getDetails().get("status").toString());
@@ -28,13 +24,13 @@ public class StatusData extends AbstractHttpController {
 			}
 			entity.add(cur.getKey(), value);
 		}
-		result.put("entity", entity.toString());
+		result.setData(entity.toString());
 		return result;
 	}
 
 	@Override
 	public String getRequestMappingURL() {
-		return "/admin/status/data.json";
+		return "/api/v1/admin/status/overview";
 	}
 
 }

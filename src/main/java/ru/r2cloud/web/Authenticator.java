@@ -52,7 +52,7 @@ public class Authenticator {
 			authenticatedToken = null;
 			return false;
 		}
-		String values = session.getHeaders().get("Authorization");
+		String values = session.getHeaders().get("authorization");
 		if (values == null) {
 			return false;
 		}
@@ -75,7 +75,7 @@ public class Authenticator {
 	}
 
 	public boolean isAuthenticationRequired(IHTTPSession session) {
-		if (session.getUri().startsWith("/admin/")) {
+		if (session.getUri().startsWith("/api/v1/admin/")) {
 			return true;
 		}
 		return false;

@@ -31,6 +31,7 @@ import ru.r2cloud.web.Authenticator;
 import ru.r2cloud.web.HttpContoller;
 import ru.r2cloud.web.WebServer;
 import ru.r2cloud.web.api.AccessToken;
+import ru.r2cloud.web.api.status.Overview;
 import ru.r2cloud.web.controller.ADSBData;
 import ru.r2cloud.web.controller.DoRestore;
 import ru.r2cloud.web.controller.DoSetup;
@@ -40,7 +41,6 @@ import ru.r2cloud.web.controller.Restore;
 import ru.r2cloud.web.controller.SaveConfiguration;
 import ru.r2cloud.web.controller.Setup;
 import ru.r2cloud.web.controller.Status;
-import ru.r2cloud.web.controller.StatusData;
 import ru.r2cloud.web.controller.weather.EnableWeather;
 import ru.r2cloud.web.controller.weather.LoadWeatherSatellites;
 
@@ -111,7 +111,7 @@ public class R2Cloud {
 		index(new Restore());
 		index(new DoRestore(auth));
 		index(new Status());
-		index(new StatusData());
+		index(new Overview());
 		index(new ru.r2cloud.web.controller.Configuration(props, autoUpdate, acmeClient));
 		index(new SaveConfiguration(props, autoUpdate, ddnsClient, acmeClient));
 		index(new GetAcmeLog(acmeClient));
