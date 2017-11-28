@@ -67,7 +67,7 @@ public class StaticController {
 	}
 
 	public String getRequestMappingURL() {
-		return "/admin/static/";
+		return "/api/v1/admin/static/";
 	}
 
 }

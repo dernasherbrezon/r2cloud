@@ -17,6 +17,7 @@ public class ModelAndView extends HashMap<String, Object> {
 		// do nothing
 	}
 
+	@Deprecated
 	public ModelAndView(String data) {
 		this.data = data;
 	}

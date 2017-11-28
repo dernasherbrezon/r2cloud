@@ -40,7 +40,6 @@ import ru.r2cloud.web.controller.LoadTLE;
 import ru.r2cloud.web.controller.Restore;
 import ru.r2cloud.web.controller.SaveConfiguration;
 import ru.r2cloud.web.controller.Setup;
-import ru.r2cloud.web.controller.Status;
 import ru.r2cloud.web.controller.weather.EnableWeather;
 import ru.r2cloud.web.controller.weather.LoadWeatherSatellites;
 
@@ -110,7 +109,7 @@ public class R2Cloud {
 		index(new DoSetup(auth, props));
 		index(new Restore());
 		index(new DoRestore(auth));
-		index(new Status());
+		index(new ru.r2cloud.web.api.status.Metrics());
 		index(new Overview());
 		index(new ru.r2cloud.web.controller.Configuration(props, autoUpdate, acmeClient));
 		index(new SaveConfiguration(props, autoUpdate, ddnsClient, acmeClient));
