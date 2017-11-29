@@ -2,6 +2,7 @@ package ru.r2cloud.model;
 
 import ru.r2cloud.util.Configuration;
 
+@Deprecated
 public class ConfigurationBean {
 
 	private String lat;

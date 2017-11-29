@@ -11,7 +11,11 @@ public class BadRequest extends ModelAndView {
 	}
 
 	public BadRequest(String generalError) {
-		setData(new ValidationResult(generalError).toJson());
+		this(new ValidationResult(generalError));
+	}
+
+	public BadRequest(ValidationResult validationResult) {
+		setData(validationResult.toJson());
 		setStatus(Response.Status.BAD_REQUEST);
 	}
 

@@ -11,6 +11,9 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+
 import fi.iki.elonen.NanoHTTPD;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.controller.StaticController;
@@ -158,6 +161,14 @@ public class WebServer extends NanoHTTPD {
 		return map.get("postData");
 	}
 
+	public static Double getDouble(JsonValue value, String name) {
+		JsonValue result = ((JsonObject) value).get(name);
+		if (result == null) {
+			return null;
+		}
+		return result.asDouble();
+	}
+
 	public static Double getDouble(IHTTPSession session, String name) {
 		String param = getParameter(session, name);
 		if (param == null || param.trim().length() == 0) {
@@ -182,4 +193,11 @@ public class WebServer extends NanoHTTPD {
 		return Boolean.valueOf(param);
 	}
 
+	public static boolean getBoolean(JsonValue value, String name) {
+		JsonValue result = ((JsonObject) value).get(name);
+		if (result == null) {
+			return false;
+		}
+		return result.asBoolean();
+	}
 }

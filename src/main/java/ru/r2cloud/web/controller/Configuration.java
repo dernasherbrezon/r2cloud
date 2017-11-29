@@ -11,6 +11,7 @@ import ru.r2cloud.web.ModelAndView;
 import ru.r2cloud.web.WebServer;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
+@Deprecated
 public class Configuration extends AbstractHttpController {
 
 	private final ru.r2cloud.util.Configuration props;

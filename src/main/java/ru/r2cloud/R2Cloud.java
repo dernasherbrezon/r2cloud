@@ -31,6 +31,7 @@ import ru.r2cloud.web.Authenticator;
 import ru.r2cloud.web.HttpContoller;
 import ru.r2cloud.web.WebServer;
 import ru.r2cloud.web.api.AccessToken;
+import ru.r2cloud.web.api.configuration.General;
 import ru.r2cloud.web.api.status.Overview;
 import ru.r2cloud.web.controller.ADSBData;
 import ru.r2cloud.web.controller.DoRestore;
@@ -111,6 +112,7 @@ public class R2Cloud {
 		index(new DoRestore(auth));
 		index(new ru.r2cloud.web.api.status.Metrics());
 		index(new Overview());
+		index(new General(props, autoUpdate));
 		index(new ru.r2cloud.web.controller.Configuration(props, autoUpdate, acmeClient));
 		index(new SaveConfiguration(props, autoUpdate, ddnsClient, acmeClient));
 		index(new GetAcmeLog(acmeClient));
