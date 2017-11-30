@@ -6,6 +6,7 @@ import ru.r2cloud.web.ValidationResult;
 import ru.r2cloud.web.WebServer;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
+@Deprecated
 public class DDNSBean {
 
 	private DDNSType type;
