@@ -58,6 +58,9 @@ public class WebServer extends NanoHTTPD {
 			result.addHeader("Access-Control-Expose-Headers", ALLOW_HEADERS);
 			return result;
 		}
+		if (session.getUri().startsWith(staticController.getRequestMappingURL())) {
+			return staticController.doGet(session);
+		}
 		if (isAuthenticationRequired(session) && !auth.isAuthenticated(session)) {
 			Response result = NanoHTTPD.newFixedLengthResponse(Response.Status.UNAUTHORIZED, MimeType.JSON.getType(), "{}");
 			result.addHeader("Access-Control-Allow-Origin", "*");
@@ -66,9 +69,6 @@ public class WebServer extends NanoHTTPD {
 			result.addHeader("Access-Control-Allow-Headers", ALLOW_HEADERS);
 			result.addHeader("Access-Control-Expose-Headers", ALLOW_HEADERS);
 			return result;
-		}
-		if (session.getUri().startsWith(staticController.getRequestMappingURL())) {
-			return staticController.doGet(session);
 		}
 		HttpContoller controller = controllers.get(session.getUri());
 		ModelAndView model = null;

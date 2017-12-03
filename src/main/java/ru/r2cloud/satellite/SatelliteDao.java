@@ -65,11 +65,11 @@ public class SatelliteDao {
 			cur.setDate(new Date(Long.valueOf(curDirectory.getName())));
 			File a = new File(curDirectory, "a.jpg");
 			if (a.exists()) {
-				cur.setaPath("/admin/static/satellites/" + satellite.getId() + "/data/" + curDirectory.getName() + "/a.jpg");
+				cur.setaPath("/api/v1/admin/static/satellites/" + satellite.getId() + "/data/" + curDirectory.getName() + "/a.jpg");
 			}
 			File b = new File(curDirectory, "b.jpg");
 			if (b.exists()) {
-				cur.setbPath("/admin/static/satellites/" + satellite.getId() + "/data/" + curDirectory.getName() + "/b.jpg");
+				cur.setbPath("/api/v1/admin/static/satellites/" + satellite.getId() + "/data/" + curDirectory.getName() + "/b.jpg");
 			}
 			result.add(cur);
 		}
