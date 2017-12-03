@@ -78,7 +78,7 @@ public class Authenticator {
 		if (login == null || password == null) {
 			return null;
 		}
-		if (!this.login.equals(login)) {
+		if (this.login == null || !this.login.equals(login)) {
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("login mismatched: " + login);
 			}

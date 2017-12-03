@@ -33,6 +33,7 @@ import ru.r2cloud.web.WebServer;
 import ru.r2cloud.web.api.AccessToken;
 import ru.r2cloud.web.api.TLE;
 import ru.r2cloud.web.api.Weather;
+import ru.r2cloud.web.api.configuration.Configured;
 import ru.r2cloud.web.api.configuration.DDNS;
 import ru.r2cloud.web.api.configuration.General;
 import ru.r2cloud.web.api.configuration.SSL;
@@ -104,6 +105,7 @@ public class R2Cloud {
 		index(new ru.r2cloud.web.api.ADSB(dao));
 		index(new AccessToken(auth));
 		index(new Setup(auth, props));
+		index(new Configured(auth));
 		index(new Restore(auth));
 		index(new ru.r2cloud.web.api.status.Metrics());
 		index(new Overview());
