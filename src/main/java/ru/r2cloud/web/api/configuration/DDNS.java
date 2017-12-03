@@ -20,7 +20,7 @@ import ru.r2cloud.web.WebServer;
 
 public class DDNS extends AbstractHttpController {
 
-	private static final Logger LOG = LoggerFactory.getLogger(General.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DDNS.class);
 
 	private final Configuration config;
 	private final DDNSClient ddnsClient;

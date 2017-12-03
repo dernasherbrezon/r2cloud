@@ -32,17 +32,17 @@ import ru.r2cloud.web.HttpContoller;
 import ru.r2cloud.web.WebServer;
 import ru.r2cloud.web.api.AccessToken;
 import ru.r2cloud.web.api.TLE;
+import ru.r2cloud.web.api.Weather;
 import ru.r2cloud.web.api.configuration.DDNS;
 import ru.r2cloud.web.api.configuration.General;
 import ru.r2cloud.web.api.configuration.SSL;
 import ru.r2cloud.web.api.configuration.SSLLog;
+import ru.r2cloud.web.api.configuration.WeatherConfig;
 import ru.r2cloud.web.api.status.Overview;
 import ru.r2cloud.web.controller.DoRestore;
 import ru.r2cloud.web.controller.DoSetup;
 import ru.r2cloud.web.controller.Restore;
 import ru.r2cloud.web.controller.Setup;
-import ru.r2cloud.web.controller.weather.EnableWeather;
-import ru.r2cloud.web.controller.weather.LoadWeatherSatellites;
 
 public class R2Cloud {
 
@@ -116,8 +116,8 @@ public class R2Cloud {
 		index(new SSL(props, acmeClient));
 		index(new SSLLog(acmeClient));
 		index(new TLE(props, tleDao));
-		index(new LoadWeatherSatellites(props, satelliteDao, scheduler));
-		index(new EnableWeather(props));
+		index(new WeatherConfig(props));
+		index(new Weather(props, satelliteDao, scheduler));
 		webServer = new WebServer(props, controllers, auth);
 	}
 
