@@ -74,13 +74,6 @@ public class Authenticator {
 		return false;
 	}
 
-	public boolean isAuthenticationRequired(IHTTPSession session) {
-		if (session.getUri().startsWith("/api/v1/admin/")) {
-			return true;
-		}
-		return false;
-	}
-
 	public String authenticate(String login, String password) {
 		if (login == null || password == null) {
 			return null;
@@ -125,6 +118,9 @@ public class Authenticator {
 	}
 
 	public void setPassword(String login, String password) {
+		if (this.login != null) {
+			return;
+		}
 		this.login = login;
 		this.salt = UUID.randomUUID().toString();
 		this.password = getPasswordToCheck(salt(password, salt));
@@ -156,6 +152,7 @@ public class Authenticator {
 	}
 
 	public void resetPassword(String username) {
+		LOG.info("reset password for: " + username);
 		if (username == null || username.trim().length() == 0) {
 			return;
 		}

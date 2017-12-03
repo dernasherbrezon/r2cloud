@@ -5,9 +5,7 @@ import java.util.Map;
 
 import fi.iki.elonen.NanoHTTPD.Response.IStatus;
 
-public class ModelAndView extends HashMap<String, Object> {
-
-	private static final long serialVersionUID = 7663044288968287447L;
+public class ModelAndView {
 
 	private String data;
 	private Map<String, String> headers;
@@ -15,11 +13,6 @@ public class ModelAndView extends HashMap<String, Object> {
 
 	public ModelAndView() {
 		// do nothing
-	}
-
-	@Deprecated
-	public ModelAndView(String data) {
-		this.data = data;
 	}
 
 	public IStatus getStatus() {

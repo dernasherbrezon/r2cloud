@@ -2,11 +2,9 @@ package ru.r2cloud.web;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +24,6 @@ public class WebServer extends NanoHTTPD {
 	private final GsonRenderer jsonRenderer;
 	private final Map<String, HttpContoller> controllers;
 	private final Authenticator auth;
-	private final Set<String> urlsAccessibleOnFirstStart = new HashSet<>();
 
 	private final StaticController staticController;
 
@@ -38,8 +35,6 @@ public class WebServer extends NanoHTTPD {
 
 		staticController = new StaticController(props);
 
-		urlsAccessibleOnFirstStart.add("/setup");
-		urlsAccessibleOnFirstStart.add("/doSetup");
 	}
 
 	@Override
@@ -63,12 +58,7 @@ public class WebServer extends NanoHTTPD {
 			result.addHeader("Access-Control-Expose-Headers", ALLOW_HEADERS);
 			return result;
 		}
-		if (auth.isFirstStart() && !urlsAccessibleOnFirstStart.contains(session.getUri())) {
-			return newRedirectResponse("/setup");
-		} else if (!auth.isFirstStart() && urlsAccessibleOnFirstStart.contains(session.getUri())) {
-			return newRedirectResponse("/");
-		}
-		if (auth.isAuthenticationRequired(session) && !auth.isAuthenticated(session)) {
+		if (isAuthenticationRequired(session) && !auth.isAuthenticated(session)) {
 			Response result = NanoHTTPD.newFixedLengthResponse(Response.Status.UNAUTHORIZED, MimeType.JSON.getType(), "{}");
 			result.addHeader("Access-Control-Allow-Origin", "*");
 			result.addHeader("Access-Control-Max-Age", "1728000");
@@ -83,7 +73,7 @@ public class WebServer extends NanoHTTPD {
 		HttpContoller controller = controllers.get(session.getUri());
 		ModelAndView model = null;
 		if (controller == null) {
-			model = new ModelAndView("404");
+			model = new ModelAndView();
 			model.setStatus(Response.Status.NOT_FOUND);
 		} else {
 			try {
@@ -99,14 +89,13 @@ public class WebServer extends NanoHTTPD {
 				}
 			} catch (Exception e) {
 				LOG.error("unable to handle request", e);
-				model = new ModelAndView();
-				model.setStatus(Response.Status.INTERNAL_ERROR);
+				model = new InternalServerError();
 			}
 		}
 
 		if (model == null) {
-			model = new ModelAndView("503");
-			model.setStatus(Response.Status.BAD_REQUEST);
+			model = new ModelAndView();
+			model.setStatus(Response.Status.INTERNAL_ERROR);
 		}
 		Response result = jsonRenderer.render(model);
 		if (model.getStatus() != null) {
@@ -123,6 +112,13 @@ public class WebServer extends NanoHTTPD {
 		result.addHeader("Access-Control-Allow-Headers", ALLOW_HEADERS);
 		result.addHeader("Access-Control-Expose-Headers", ALLOW_HEADERS);
 		return result;
+	}
+
+	public boolean isAuthenticationRequired(IHTTPSession session) {
+		if (session.getUri().startsWith("/api/v1/admin/")) {
+			return true;
+		}
+		return false;
 	}
 
 	public static Response newRedirectResponse(String location) {

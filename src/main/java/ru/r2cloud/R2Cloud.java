@@ -38,8 +38,6 @@ import ru.r2cloud.web.api.configuration.General;
 import ru.r2cloud.web.api.configuration.SSL;
 import ru.r2cloud.web.api.configuration.SSLLog;
 import ru.r2cloud.web.api.configuration.WeatherConfig;
-import ru.r2cloud.web.api.setup.DoRestore;
-import ru.r2cloud.web.api.setup.DoSetup;
 import ru.r2cloud.web.api.setup.Restore;
 import ru.r2cloud.web.api.setup.Setup;
 import ru.r2cloud.web.api.status.Overview;
@@ -105,10 +103,8 @@ public class R2Cloud {
 		// setup web server
 		index(new ru.r2cloud.web.api.ADSB(dao));
 		index(new AccessToken(auth));
-		index(new Setup());
-		index(new DoSetup(auth, props));
-		index(new Restore());
-		index(new DoRestore(auth));
+		index(new Setup(auth, props));
+		index(new Restore(auth));
 		index(new ru.r2cloud.web.api.status.Metrics());
 		index(new Overview());
 		index(new General(props, autoUpdate));

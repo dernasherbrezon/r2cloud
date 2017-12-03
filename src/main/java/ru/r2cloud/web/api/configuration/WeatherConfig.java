@@ -15,8 +15,8 @@ import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
+import ru.r2cloud.web.InternalServerError;
 import ru.r2cloud.web.ModelAndView;
-import ru.r2cloud.web.Redirect;
 import ru.r2cloud.web.Success;
 import ru.r2cloud.web.ValidationResult;
 import ru.r2cloud.web.WebServer;
@@ -56,7 +56,7 @@ public class WeatherConfig extends AbstractHttpController {
 			w.append("2.11.2 beta\n");
 		} catch (Exception e) {
 			LOG.error("unable to write license file", e);
-			return new Redirect("/admin/weather?errors=UnknownServerError");
+			return new InternalServerError();
 		}
 		config.setProperty("satellites.enabled", true);
 		config.update();
