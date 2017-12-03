@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +25,6 @@ import org.junit.Test;
 
 import ru.r2cloud.model.TLE;
 
-import com.google.common.io.CharStreams;
-
 public class CelestrakClientTest {
 
 	private final LocalTestServer server = new LocalTestServer(null, null);
@@ -35,9 +34,11 @@ public class CelestrakClientTest {
 		StringBuilder expectedStr = new StringBuilder();
 		Map<String, TLE> expected;
 		try (BufferedReader r = new BufferedReader(new InputStreamReader(CelestrakClientTest.class.getClassLoader().getResourceAsStream("sample-tle.txt")))) {
-			List<String> lines = CharStreams.readLines(r);
-			for (String cur : lines) {
-				expectedStr.append(cur).append("\n");
+			String curLine = null;
+			List<String> lines = new ArrayList<>();
+			while( (curLine = r.readLine()) != null ) {
+				lines.add(curLine);
+				expectedStr.append(curLine).append("\n");
 			}
 			expected = convert(lines);
 		} catch (Exception e) {

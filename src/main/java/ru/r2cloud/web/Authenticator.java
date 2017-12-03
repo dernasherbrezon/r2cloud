@@ -4,13 +4,10 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Iterator;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Splitter;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.util.Configuration;
@@ -23,7 +20,6 @@ public class Authenticator {
 	private final SecureRandom random = new SecureRandom();
 
 	private final Configuration props;
-	private final Splitter spaceSplitter = Splitter.on(' ').trimResults().omitEmptyStrings();
 
 	private String authenticatedToken;
 	private long authenticatedAt;
@@ -56,15 +52,11 @@ public class Authenticator {
 		if (values == null) {
 			return false;
 		}
-		Iterator<String> it = spaceSplitter.split(values).iterator();
-		// skip Bearer
-		if (it.hasNext()) {
-			it.next();
+		int index = values.indexOf(' ');
+		if (index == -1) {
+			return false;
 		}
-		if (it.hasNext()) {
-			return it.next().equals(authenticatedToken);
-		}
-		return false;
+		return values.substring(index + 1).equals(authenticatedToken);
 	}
 
 	public boolean isFirstStart() {

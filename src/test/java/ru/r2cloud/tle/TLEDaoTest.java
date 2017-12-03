@@ -25,8 +25,6 @@ import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.TLE;
 import ru.r2cloud.satellite.SatelliteDao;
 
-import com.google.common.io.CharStreams;
-
 public class TLEDaoTest {
 
 	@Rule
@@ -63,14 +61,14 @@ public class TLEDaoTest {
 		dao.stop();
 
 		celestrak = mock(CelestrakClient.class);
-		//return tle for completely different satellites
+		// return tle for completely different satellites
 		HashMap<String, TLE> brokenTleData = new HashMap<String, TLE>();
 		brokenTleData.put(UUID.randomUUID().toString(), tleData.get(supported.get(0).getName()));
 		when(celestrak.getWeatherTLE()).thenReturn(brokenTleData);
-		//trigger last modified 
+		// trigger last modified
 		File tle = new File(tempFolder.getRoot(), supported.get(0).getId() + File.separator + "tle.txt");
 		tle.setLastModified(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(17));
-		
+
 		dao = new TLEDao(config, satelliteDao, celestrak);
 		dao.start();
 		assertNotNull(dao.findById(supported.get(0).getId()));
@@ -91,7 +89,11 @@ public class TLEDaoTest {
 	private void setupMocks() {
 		tleData = new HashMap<String, TLE>();
 		try (BufferedReader r = new BufferedReader(new InputStreamReader(TLEDaoTest.class.getClassLoader().getResourceAsStream("sample-tle.txt")))) {
-			List<String> lines = CharStreams.readLines(r);
+			String curLine = null;
+			List<String> lines = new ArrayList<>();
+			while ((curLine = r.readLine()) != null) {
+				lines.add(curLine);
+			}
 			for (int i = 0; i < lines.size(); i += 3) {
 				tleData.put(lines.get(i), new TLE(new String[] { lines.get(i), lines.get(i + 1), lines.get(i + 2) }));
 			}

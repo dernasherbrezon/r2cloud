@@ -5,10 +5,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +19,7 @@ import org.slf4j.LoggerFactory;
 public final class Util {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Util.class);
+	private static final Pattern COMMA = Pattern.compile(",");
 
 	public static File initDirectory(String path) {
 		File result = new File(path);
@@ -85,7 +89,7 @@ public final class Util {
 		}
 	}
 
-	//TODO migrate to ProcessWrapper
+	// TODO migrate to ProcessWrapper
 	public static void shutdown(String name, Process process, long timeoutMillis) {
 		if (process == null || !process.isAlive()) {
 			return;
@@ -104,7 +108,7 @@ public final class Util {
 			Thread.currentThread().interrupt();
 		}
 	}
-	
+
 	public static boolean deleteDirectory(File f) {
 		if (f.isDirectory()) {
 			for (File c : f.listFiles()) {
@@ -120,6 +124,19 @@ public final class Util {
 			return false;
 		}
 		return true;
+	}
+
+	public static List<String> splitComma(String str) {
+		String[] values = COMMA.split(str);
+		List<String> result = new ArrayList<>();
+		for (String cur : values) {
+			cur = cur.trim();
+			if (cur.length() == 0) {
+				continue;
+			}
+			result.add(cur);
+		}
+		return result;
 	}
 
 	private Util() {

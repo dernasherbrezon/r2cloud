@@ -21,9 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.ddns.DDNSType;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-
 public class Configuration {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Configuration.class);
@@ -182,7 +179,7 @@ public class Configuration {
 		if (str == null) {
 			return Collections.emptyList();
 		}
-		return Lists.newArrayList(Splitter.on(',').trimResults().omitEmptyStrings().split(str));
+		return Util.splitComma(str);
 	}
 
 	public void subscribe(ConfigListener listener, String... names) {

@@ -12,12 +12,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ru.r2cloud.FilenameComparator;
-import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.model.Satellite;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
-
-import com.google.common.base.Splitter;
 
 public class SatelliteDao {
 
@@ -29,7 +27,7 @@ public class SatelliteDao {
 	public SatelliteDao(Configuration config) {
 		this.basepath = Util.initDirectory(config.getProperty("satellites.basepath.location"));
 		satellites = new ArrayList<Satellite>();
-		for (String cur : Splitter.on(",").trimResults().omitEmptyStrings().split(config.getProperty("satellites.supported"))) {
+		for (String cur : Util.splitComma(config.getProperty("satellites.supported"))) {
 			Matcher m = SATELLITE_ID.matcher(cur);
 			if (m.find()) {
 				Satellite curSatellite = new Satellite();

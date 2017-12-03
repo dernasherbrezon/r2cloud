@@ -90,11 +90,6 @@
 			<version>3.2.3</version>
 		</dependency>
 		<dependency>
-			<groupId>org.jtwig</groupId>
-			<artifactId>jtwig-core</artifactId>
-			<version>5.86.0.RELEASE</version>
-		</dependency>
-		<dependency>
 			<groupId>org.nanohttpd</groupId>
 			<artifactId>nanohttpd</artifactId>
 			<version>2.3.1</version>
@@ -259,35 +254,6 @@
 			</plugin>
 			<plugin>
 				<groupId>com.aerse.maven</groupId>
-				<artifactId>fingerprint-maven-plugin</artifactId>
-				<version>3.4</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<extensionsToFilter>
-						<extensionToFilter>jtwig</extensionToFilter>
-						<extensionToFilter>css</extensionToFilter>
-						<extensionToFilter>html</extensionToFilter>
-					</extensionsToFilter>
-					<excludeResources>
-						<excludeResource>search.xml</excludeResource>
-						<excludeResource>//</excludeResource>
-						<excludeResource>data:</excludeResource>
-					</excludeResources>
-					<htmlExtensions>
-						<htmlExtension>jtwig</htmlExtension>
-						<htmlExtension>html</htmlExtension>
-					</htmlExtensions>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.aerse.maven</groupId>
 				<artifactId>deps-maven-plugin</artifactId>
 				<version>1.0</version>
 				<executions>
@@ -384,7 +350,7 @@
 							<target>/</target>
 						</fileSet>
 						<fileSet>
-							<source>${project.build.directory}/optimized-webapp</source>
+							<source>${basedir}/src/main/webapp</source>
 							<target>webapp</target>
 						</fileSet>
 						<fileSet>
