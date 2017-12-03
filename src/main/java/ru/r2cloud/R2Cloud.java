@@ -37,7 +37,6 @@ import ru.r2cloud.web.api.configuration.General;
 import ru.r2cloud.web.api.configuration.SSL;
 import ru.r2cloud.web.api.configuration.SSLLog;
 import ru.r2cloud.web.api.status.Overview;
-import ru.r2cloud.web.controller.ADSBData;
 import ru.r2cloud.web.controller.DoRestore;
 import ru.r2cloud.web.controller.DoSetup;
 import ru.r2cloud.web.controller.Restore;
@@ -104,8 +103,7 @@ public class R2Cloud {
 		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock);
 
 		// setup web server
-		index(new ru.r2cloud.web.controller.ADSB(props));
-		index(new ADSBData(dao));
+		index(new ru.r2cloud.web.api.ADSB(dao));
 		index(new AccessToken(auth));
 		index(new Setup());
 		index(new DoSetup(auth, props));

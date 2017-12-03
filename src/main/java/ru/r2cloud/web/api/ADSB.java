@@ -1,4 +1,4 @@
-package ru.r2cloud.web.controller;
+package ru.r2cloud.web.api;
 
 import org.opensky.libadsb.Position;
 
@@ -12,11 +12,11 @@ import com.eclipsesource.json.JsonArray;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
-public class ADSBData extends AbstractHttpController {
+public class ADSB extends AbstractHttpController {
 
 	private final ADSBDao dao;
 
-	public ADSBData(ADSBDao dao) {
+	public ADSB(ADSBDao dao) {
 		this.dao = dao;
 	}
 
@@ -28,7 +28,7 @@ public class ADSBData extends AbstractHttpController {
 			JsonArray positions = (JsonArray) Json.array();
 			if (cur.getPositions() != null) {
 				for (Position curPosition : cur.getPositions()) {
-					positions.add(Json.object().add("longitude", curPosition.getLongitude()).add("latitude", curPosition.getLatitude()).add("altitude", curPosition.getAltitude()));
+					positions.add(Json.object().add("lng", curPosition.getLongitude()).add("lat", curPosition.getLatitude()));
 				}
 			}
 			array.add(Json.object().add("icao24", cur.getIcao24()).add("positions", positions));
@@ -39,7 +39,7 @@ public class ADSBData extends AbstractHttpController {
 
 	@Override
 	public String getRequestMappingURL() {
-		return "/admin/adsb/data.json";
+		return "/api/v1/admin/adsb";
 	}
 
 }

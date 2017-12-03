@@ -287,26 +287,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>net.alchim31.maven</groupId>
-				<artifactId>yuicompressor-maven-plugin</artifactId>
-				<version>1.5.1</version>
-				<executions>
-					<execution>
-						<id>compress</id>
-						<phase>package</phase>
-						<goals>
-							<goal>compress</goal>
-						</goals>
-						<configuration>
-							<warSourceDirectory>${project.build.directory}/optimized-webapp</warSourceDirectory>
-							<sourceDirectory>${project.build.directory}/optimized-webapp</sourceDirectory>
-							<webappDirectory>${project.build.directory}/optimized-webapp</webappDirectory>
-							<nosuffix>true</nosuffix>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>com.aerse.maven</groupId>
 				<artifactId>deps-maven-plugin</artifactId>
 				<version>1.0</version>
