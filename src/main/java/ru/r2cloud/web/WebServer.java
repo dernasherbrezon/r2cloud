@@ -16,7 +16,7 @@ import com.eclipsesource.json.JsonValue;
 
 import fi.iki.elonen.NanoHTTPD;
 import ru.r2cloud.util.Configuration;
-import ru.r2cloud.web.controller.StaticController;
+import ru.r2cloud.web.api.StaticController;
 
 public class WebServer extends NanoHTTPD {
 

@@ -38,11 +38,11 @@ import ru.r2cloud.web.api.configuration.General;
 import ru.r2cloud.web.api.configuration.SSL;
 import ru.r2cloud.web.api.configuration.SSLLog;
 import ru.r2cloud.web.api.configuration.WeatherConfig;
+import ru.r2cloud.web.api.setup.DoRestore;
+import ru.r2cloud.web.api.setup.DoSetup;
+import ru.r2cloud.web.api.setup.Restore;
+import ru.r2cloud.web.api.setup.Setup;
 import ru.r2cloud.web.api.status.Overview;
-import ru.r2cloud.web.controller.DoRestore;
-import ru.r2cloud.web.controller.DoSetup;
-import ru.r2cloud.web.controller.Restore;
-import ru.r2cloud.web.controller.Setup;
 
 public class R2Cloud {
 

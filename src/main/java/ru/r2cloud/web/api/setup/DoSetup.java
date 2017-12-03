@@ -1,4 +1,4 @@
-package ru.r2cloud.web.controller;
+package ru.r2cloud.web.api.setup;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

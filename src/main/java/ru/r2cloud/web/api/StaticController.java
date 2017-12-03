@@ -1,4 +1,4 @@
-package ru.r2cloud.web.controller;
+package ru.r2cloud.web.api;
 
 import java.io.File;
 import java.io.FileInputStream;
