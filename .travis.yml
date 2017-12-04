@@ -7,10 +7,13 @@ cache:
 
 before_cache:
   - rm -rf $HOME/.m2/repository/ru/r2cloud/
-  
+
 services:
   - docker
-  
+
+before_install:
+  - gem install package_cloud
+    
 script:
   - mvn cobertura:cobertura
   - cp ./target/*.deb ./target/it-tests
@@ -18,6 +21,7 @@ script:
   - docker build -t r2cloud ./target/it-tests
   - docker run --privileged=true --name r2cloud -d --tty r2cloud
   - docker exec r2cloud /home/pi/r2cloud/bin/start-tests.sh
+  - package_cloud push dernasherbrezon/r2cloud/debian/stretch target/*.deb
   
 after_success:
   - bash <(curl -s https://codecov.io/bash)
