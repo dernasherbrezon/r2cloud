@@ -4,7 +4,10 @@ r2cloud converts Raspberry PI into the base station which supports various radio
 
  - ADS-B (airplane)
  - APT (weather satellite)
- - 2FSK telemetry demodulation for various cubesats
+ 
+# Screenshots ([r2cloud-ui](https://github.com/dernasherbrezon/r2cloud-ui))
+
+<img src="https://github.com/dernasherbrezon/r2cloud/raw/master/docs/screen1.jpg" width="25%">&nbsp;<img src="https://github.com/dernasherbrezon/r2cloud/raw/master/docs/screen2.jpg" width="25%">&nbsp;<img src="https://github.com/dernasherbrezon/r2cloud/raw/master/docs/screen3.jpg" width="25%">
  
 # Principal diagram
 
@@ -22,10 +25,7 @@ There are 2 ways to install r2cloud:
 2. From repository binaries. Use this way if you have something already installed on SD card.
   - Login via SSH and execute the following commands:
 ```
-sudo gpg --keyserver keyserver.ubuntu.com --recv-keys 129E7CDE
-sudo gpg --armor --export 129E7CDE | sudo apt-key add -
-sudo bash -c "echo 'deb [arch=armhf] http://s3.amazonaws.com/r2cloud r2cloud main' > /etc/apt/sources.list.d/r2cloud.list"
-sudo apt-get update
+curl -s https://packagecloud.io/install/repositories/dernasherbrezon/r2cloud/script.deb.sh | sudo bash
 sudo apt-get install r2cloud
 ```
 
