@@ -21,7 +21,7 @@ script:
   - docker build -t r2cloud ./target/it-tests
   - docker run --privileged=true --name r2cloud -d --tty r2cloud
   - docker exec r2cloud /home/pi/r2cloud/bin/start-tests.sh
-  - package_cloud push dernasherbrezon/r2cloud/debian/stretch target/*.deb
+  - package_cloud push dernasherbrezon/r2cloud/raspbian/stretch target/*.deb
   
 after_success:
   - bash <(curl -s https://codecov.io/bash)
