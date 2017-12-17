@@ -82,10 +82,10 @@ public class Observation {
 
 		processSource(wavPath, "a");
 		processSource(wavPath, "b");
-
-		if (!wavPath.delete()) {
-			LOG.error("unable to delete source .wav: " + wavPath.getAbsolutePath());
-		}
+		
+//		if (!wavPath.delete()) {
+//			LOG.error("unable to delete source .wav: " + wavPath.getAbsolutePath());
+//		}
 
 		File[] dataDirs = outputDirectory.getParentFile().listFiles();
 		Integer maxCount = config.getInteger("scheduler.data.retention.count");

@@ -181,6 +181,14 @@ public class WebServer extends NanoHTTPD {
 		return Integer.valueOf(param);
 	}
 
+	public static Long getLong(JsonValue value, String name) {
+		JsonValue result = ((JsonObject) value).get(name);
+		if (result == null) {
+			return null;
+		}
+		return result.asLong();
+	}
+
 	public static boolean getBoolean(IHTTPSession session, String name) {
 		String param = getParameter(session, name);
 		if (param == null || param.trim().length() == 0) {

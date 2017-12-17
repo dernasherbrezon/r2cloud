@@ -33,6 +33,7 @@ import ru.r2cloud.web.WebServer;
 import ru.r2cloud.web.api.AccessToken;
 import ru.r2cloud.web.api.TLE;
 import ru.r2cloud.web.api.Weather;
+import ru.r2cloud.web.api.WeatherDebug;
 import ru.r2cloud.web.api.configuration.Configured;
 import ru.r2cloud.web.api.configuration.DDNS;
 import ru.r2cloud.web.api.configuration.General;
@@ -116,6 +117,7 @@ public class R2Cloud {
 		index(new TLE(props, tleDao));
 		index(new WeatherConfig(props));
 		index(new Weather(props, satelliteDao, scheduler));
+		index(new WeatherDebug(props, satelliteDao));
 		webServer = new WebServer(props, controllers, auth);
 	}
 

@@ -51,6 +51,7 @@ public class Weather extends AbstractHttpController {
 					curObservationObject.add("date", curObservation.getDate().getTime());
 					curObservationObject.add("aPath", curObservation.getaPath());
 					curObservationObject.add("bPath", curObservation.getbPath());
+					curObservationObject.add("waterfall", curObservation.getWaterfall());
 					data.add(curObservationObject);
 				}
 				satellite.add("data", data);

@@ -7,6 +7,15 @@ public class ObservationResult {
 	private String aPath;
 	private String bPath;
 	private Date date;
+	private String waterfall;
+	
+	public String getWaterfall() {
+		return waterfall;
+	}
+	
+	public void setWaterfall(String waterfall) {
+		this.waterfall = waterfall;
+	}
 	
 	public String getaPath() {
 		return aPath;

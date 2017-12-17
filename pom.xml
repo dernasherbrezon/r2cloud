@@ -40,6 +40,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>ru.r2cloud</groupId>
+			<artifactId>jradio</artifactId>
+			<version>1.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>4.3.6</version>
@@ -329,7 +334,7 @@
 					<arch>armhf</arch>
 					<section>embedded</section>
 					<osDependencies>
-						<ejdk-8-compact1>>=20170825153602</ejdk-8-compact1>
+						<ejdk-8-full>>=20171217161916</ejdk-8-full>
 						<nginx-light>>=1.10.3</nginx-light>
 						<dump1090-mutability>>=1.15~dev</dump1090-mutability>
 						<libhyperic-sigar-java>>=1.6.4</libhyperic-sigar-java>

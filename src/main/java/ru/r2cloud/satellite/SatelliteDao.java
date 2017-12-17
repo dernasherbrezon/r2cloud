@@ -52,6 +52,21 @@ public class SatelliteDao {
 		satelliteByName.put(satellite.getName(), satellite);
 	}
 
+	public ObservationResult findWeatherObservation(String id, Long date) {
+		File dataRoot = new File(basepath, id + File.separator + "data");
+		if (!dataRoot.exists()) {
+			return null;
+		}
+		File[] observations = dataRoot.listFiles();
+		for (File curDirectory : observations) {
+			if (curDirectory.getName().equals(String.valueOf(date))) {
+				return createObservation(id, curDirectory);
+			}
+		}
+		return null;
+	}
+
+	// FIXME refactor to String id
 	public List<ObservationResult> findWeatherObservations(Satellite satellite) {
 		File dataRoot = new File(basepath, satellite.getId() + File.separator + "data");
 		if (!dataRoot.exists()) {
@@ -61,19 +76,27 @@ public class SatelliteDao {
 		Arrays.sort(observations, FilenameComparator.INSTANCE_DESC);
 		List<ObservationResult> result = new ArrayList<ObservationResult>(observations.length);
 		for (File curDirectory : observations) {
-			ObservationResult cur = new ObservationResult();
-			cur.setDate(new Date(Long.valueOf(curDirectory.getName())));
-			File a = new File(curDirectory, "a.jpg");
-			if (a.exists()) {
-				cur.setaPath("/api/v1/admin/static/satellites/" + satellite.getId() + "/data/" + curDirectory.getName() + "/a.jpg");
-			}
-			File b = new File(curDirectory, "b.jpg");
-			if (b.exists()) {
-				cur.setbPath("/api/v1/admin/static/satellites/" + satellite.getId() + "/data/" + curDirectory.getName() + "/b.jpg");
-			}
-			result.add(cur);
+			result.add(createObservation(satellite.getId(), curDirectory));
 		}
 		return result;
+	}
+
+	private static ObservationResult createObservation(String id, File baseDirectory) {
+		ObservationResult cur = new ObservationResult();
+		cur.setDate(new Date(Long.valueOf(baseDirectory.getName())));
+		File a = new File(baseDirectory, "a.jpg");
+		if (a.exists()) {
+			cur.setaPath("/api/v1/admin/static/satellites/" + id + "/data/" + baseDirectory.getName() + "/a.jpg");
+		}
+		File b = new File(baseDirectory, "b.jpg");
+		if (b.exists()) {
+			cur.setbPath("/api/v1/admin/static/satellites/" + id + "/data/" + baseDirectory.getName() + "/b.jpg");
+		}
+		File waterfall = new File(baseDirectory, "waterfall.png");
+		if (waterfall.exists()) {
+			cur.setWaterfall("/api/v1/admin/static/satellites/" + id + "/data/" + baseDirectory.getName() + "/waterfall.png");
+		}
+		return cur;
 	}
 
 }
