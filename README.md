@@ -33,7 +33,7 @@ Insert SD card into the card reader and create file ```r2cloud.txt``` in the roo
 
 Insert SD card into the RPi and open [http://raspberrypi](http://raspberrypi) address.
 
-# Design guidelines
+# Design guidelines 
 
  - Autonomous:
    * Ability to operate without internet connection
