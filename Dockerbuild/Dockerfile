@@ -2,7 +2,7 @@ FROM r2cloud/it:latest
 
 COPY *.deb /usr/share/
 
-RUN apt-get update && apt install /usr/share/*.deb \
+RUN apt-get update && apt install /usr/share/*.deb r2cloud-ui \
     && apt clean \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /home/pi/r2cloud/bin
