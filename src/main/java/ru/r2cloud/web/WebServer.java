@@ -121,13 +121,6 @@ public class WebServer extends NanoHTTPD {
 		return false;
 	}
 
-	public static Response newRedirectResponse(String location) {
-		@SuppressWarnings("deprecation")
-		Response r = NanoHTTPD.newFixedLengthResponse(Response.Status.FOUND, MIME_HTML, "");
-		r.addHeader("Location", location);
-		return r;
-	}
-
 	public static String getParameter(IHTTPSession session, String name) {
 		Map<String, List<String>> parameters = session.getParameters();
 		if (parameters.isEmpty()) {

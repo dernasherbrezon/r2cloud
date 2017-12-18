@@ -170,7 +170,7 @@
 								</fail>
 								<unzip
 									src="${sigar.download.path}/hyperic-sigar-${sigar.version}.zip"
-									dest="${project.build.directory}/classes/resources">
+									dest="${project.build.directory}/sigar-lib">
 									<patternset>
 										<include name="**/lib/libsigar-*" />
 										<include name="**/lib/sigar-*" />
@@ -329,6 +329,7 @@
 					<arch>armhf</arch>
 					<section>embedded</section>
 					<osDependencies>
+						<r2cloud-ui>>=1513613469</r2cloud-ui>
 						<ejdk-8-compact1>>=20170825153602</ejdk-8-compact1>
 						<nginx-light>>=1.10.3</nginx-light>
 						<dump1090-mutability>>=1.15~dev</dump1090-mutability>
@@ -348,10 +349,6 @@
 						<fileSet>
 							<source>${basedir}/src/main/deb</source>
 							<target>/</target>
-						</fileSet>
-						<fileSet>
-							<source>${basedir}/src/main/webapp</source>
-							<target>webapp</target>
 						</fileSet>
 						<fileSet>
 							<source>${project.build.directory}/assembly-lib/lib</source>

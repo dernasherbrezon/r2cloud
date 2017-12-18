@@ -6,4 +6,4 @@ if [ -f /home/pi/r2cloud/DO_NOT_UPDATE ]; then
 fi
 
 sudo apt-get update
-sudo apt-get install r2cloud
+sudo apt-get install r2cloud r2cloud-ui
