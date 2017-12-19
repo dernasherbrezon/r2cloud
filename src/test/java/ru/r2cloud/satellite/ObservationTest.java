@@ -55,10 +55,14 @@ public class ObservationTest {
 		when(factory.create(contains(rtlfm), any(), anyBoolean())).thenReturn(new ProcessWrapperMock(bais, null));
 
 		SatPass nextPass = create(new Date(), new Date());
-		Observation o = new Observation(config, satellite, nextPass, factory);
+		Observation o = new Observation(config, satellite, nextPass, factory, new SatelliteDao(config), new APTDecoder(config, factory));
 		o.start();
 
-		try (FileOutputStream fos = new FileOutputStream(new File(tempFolder.getRoot(), satellite.getId() + File.separator + "data" + File.separator + nextPass.getStart().getTime().getTime()) + File.separator + "output.wav")) {
+		File passRoot = new File(tempFolder.getRoot(), satellite.getId() + File.separator + "data" + File.separator + nextPass.getStart().getTime().getTime());
+		if (!passRoot.exists() && !passRoot.mkdirs()) {
+			throw new IllegalStateException("unable to create: " + passRoot.getAbsolutePath());
+		}
+		try (FileOutputStream fos = new FileOutputStream(passRoot + File.separator + "output.wav")) {
 			fos.write(0);
 		}
 
@@ -67,7 +71,7 @@ public class ObservationTest {
 		when(factory.create(contains(wxtoimg), any(), anyBoolean())).thenReturn(new ProcessWrapperMock(null, null));
 		o.stop();
 
-		verify(factory, times(4)).create(any(), any(), anyBoolean());
+		verify(factory, times(2)).create(any(), any(), anyBoolean());
 
 	}
 

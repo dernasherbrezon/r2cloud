@@ -12,6 +12,7 @@ import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.rx.ADSB;
 import ru.r2cloud.rx.ADSBDao;
+import ru.r2cloud.satellite.APTDecoder;
 import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.satellite.SatelliteDao;
@@ -74,6 +75,7 @@ public class R2Cloud {
 	private final ObservationFactory observationFactory;
 	private final Clock clock;
 	private final ProcessFactory processFactory;
+	private final APTDecoder aptDecoder;
 
 	public R2Cloud(String propertiesLocation) {
 		props = new Configuration(propertiesLocation, System.getProperty("user.home") + File.separator + ".r2cloud");
@@ -96,9 +98,10 @@ public class R2Cloud {
 		ddnsClient = new DDNSClient(props);
 		acmeClient = new AcmeClient(props);
 		satelliteDao = new SatelliteDao(props);
+		aptDecoder = new APTDecoder(props, processFactory);
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient("http://celestrak.com"));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
-		observationFactory = new ObservationFactory(props, predict, tleDao, processFactory);
+		observationFactory = new ObservationFactory(props, predict, tleDao, processFactory, satelliteDao, aptDecoder);
 		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock);
 
 		// setup web server

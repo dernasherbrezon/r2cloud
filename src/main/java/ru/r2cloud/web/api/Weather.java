@@ -44,7 +44,7 @@ public class Weather extends AbstractHttpController {
 					satellite.add("nextPass", nextPass.getTime());
 				}
 				satellite.add("name", cur.getName());
-				List<ObservationResult> observations = dao.findWeatherObservations(cur);
+				List<ObservationResult> observations = dao.findWeatherObservations(cur.getId());
 				JsonArray data = new JsonArray();
 				for (ObservationResult curObservation : observations) {
 					JsonObject curObservationObject = new JsonObject();
