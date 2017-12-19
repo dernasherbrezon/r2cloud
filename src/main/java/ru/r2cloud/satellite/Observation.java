@@ -44,7 +44,7 @@ public class Observation {
 
 	public void start() {
 		try {
-			this.wavPath = File.createTempFile(satellite.getId(), "wav");
+			this.wavPath = File.createTempFile(satellite.getId() + "-", ".wav");
 		} catch (IOException e) {
 			LOG.error("unable to create temp file", e);
 			return;
