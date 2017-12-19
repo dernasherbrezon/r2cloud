@@ -7,8 +7,6 @@ import java.lang.ProcessBuilder.Redirect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.eclipsesource.json.JsonObject;
-
 import ru.r2cloud.model.APTResult;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.model.SatPass;
@@ -96,32 +94,21 @@ public class Observation {
 		}
 
 		APTResult result = aptDecoder.decode(wavPath, "a");
-		boolean decoded = false;
 		if (result.getImage() != null) {
-			if (dao.saveChannel(satellite.getId(), observationId, result.getImage(), "a")) {
-				decoded = true;
-			}
+			dao.saveChannel(satellite.getId(), observationId, result.getImage(), "a");
 			// decode b channel only if a was successfully decoded
 			result = aptDecoder.decode(wavPath, "b");
 			if (result.getImage() != null) {
 				dao.saveChannel(satellite.getId(), observationId, result.getImage(), "b");
 			}
 		}
-
-		JsonObject meta = new JsonObject();
-		meta.add("Start", nextPass.getStart().getTime().getTime());
-		meta.add("End", nextPass.getEnd().getTime().getTime());
-		if (result.getGain() != null) {
-			meta.add("Gain", result.getGain());
-		}
-		if (result.getChannelA() != null) {
-			meta.add("Channel A", result.getChannelA());
-		}
-		if (result.getChannelB() != null) {
-			meta.add("Channel B", result.getChannelB());
-		}
-		meta.add("decoded", decoded);
-		dao.saveMeta(satellite.getId(), observationId, meta);
+		
+		cur.setStart(nextPass.getStart().getTime());
+		cur.setEnd(nextPass.getEnd().getTime());
+		cur.setGain(result.getGain());
+		cur.setChannelA(result.getChannelA());
+		cur.setChannelB(result.getChannelB());
+		dao.saveMeta(satellite.getId(), cur);
 	}
 
 	public SatPass getNextPass() {

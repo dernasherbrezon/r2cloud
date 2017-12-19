@@ -7,48 +7,84 @@ public class ObservationResult {
 
 	private String id;
 	private File wavPath;
-	private String aPath;
-	private String bPath;
-	private Date date;
-	
+	private String gain;
+	private String channelA;
+	private String channelB;
+	private String aURL;
+	private String bURL;
+	private Date start;
+	private Date end;
+
+	public String getGain() {
+		return gain;
+	}
+
+	public void setGain(String gain) {
+		this.gain = gain;
+	}
+
+	public String getChannelA() {
+		return channelA;
+	}
+
+	public void setChannelA(String channelA) {
+		this.channelA = channelA;
+	}
+
+	public String getChannelB() {
+		return channelB;
+	}
+
+	public void setChannelB(String channelB) {
+		this.channelB = channelB;
+	}
+
+	public String getaURL() {
+		return aURL;
+	}
+
+	public void setaURL(String aURL) {
+		this.aURL = aURL;
+	}
+
+	public String getbURL() {
+		return bURL;
+	}
+
+	public void setbURL(String bURL) {
+		this.bURL = bURL;
+	}
+
 	public String getId() {
 		return id;
 	}
-	
+
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 	public File getWavPath() {
 		return wavPath;
 	}
-	
+
 	public void setWavPath(File wavPath) {
 		this.wavPath = wavPath;
 	}
-	
-	public String getaPath() {
-		return aPath;
+
+	public Date getStart() {
+		return start;
 	}
 
-	public void setaPath(String aPath) {
-		this.aPath = aPath;
+	public void setStart(Date start) {
+		this.start = start;
 	}
 
-	public String getbPath() {
-		return bPath;
+	public Date getEnd() {
+		return end;
 	}
 
-	public void setbPath(String bPath) {
-		this.bPath = bPath;
-	}
-
-	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
+	public void setEnd(Date end) {
+		this.end = end;
 	}
 
 }

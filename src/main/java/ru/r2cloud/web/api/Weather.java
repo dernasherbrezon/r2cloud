@@ -48,9 +48,10 @@ public class Weather extends AbstractHttpController {
 				JsonArray data = new JsonArray();
 				for (ObservationResult curObservation : observations) {
 					JsonObject curObservationObject = new JsonObject();
-					curObservationObject.add("date", curObservation.getDate().getTime());
-					curObservationObject.add("aPath", curObservation.getaPath());
-					curObservationObject.add("bPath", curObservation.getbPath());
+					curObservationObject.add("id", curObservation.getId());
+					curObservationObject.add("start", curObservation.getStart().getTime());
+					curObservationObject.add("aURL", curObservation.getaURL());
+					curObservationObject.add("bURL", curObservation.getbURL());
 					data.add(curObservationObject);
 				}
 				satellite.add("data", data);
