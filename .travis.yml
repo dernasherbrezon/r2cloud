@@ -1,5 +1,5 @@
 language: java
-bundler_args: --retry 1
+bundler_args: --retry 2
 
 cache:
   directories:
