@@ -14,6 +14,15 @@ public class ObservationResult {
 	private String bURL;
 	private Date start;
 	private Date end;
+	private String spectogramURL;
+
+	public String getSpectogramURL() {
+		return spectogramURL;
+	}
+
+	public void setSpectogramURL(String spectogramURL) {
+		this.spectogramURL = spectogramURL;
+	}
 
 	public String getGain() {
 		return gain;

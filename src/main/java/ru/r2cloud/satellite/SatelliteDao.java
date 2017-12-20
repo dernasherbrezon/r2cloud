@@ -90,21 +90,25 @@ public class SatelliteDao {
 		return load(satelliteId, baseDirectory);
 	}
 
-	private static ObservationResult load(String id, File curDirectory) {
+	private static ObservationResult load(String satelliteId, File curDirectory) {
 		ObservationResult cur = new ObservationResult();
 		cur.setId(curDirectory.getName());
 		cur.setStart(new Date(Long.valueOf(curDirectory.getName())));
 		File a = new File(curDirectory, "a.jpg");
 		if (a.exists()) {
-			cur.setaURL("/api/v1/admin/static/satellites/" + id + "/data/" + curDirectory.getName() + "/a.jpg");
+			cur.setaURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + cur.getId() + "/a.jpg");
 		}
 		File b = new File(curDirectory, "b.jpg");
 		if (b.exists()) {
-			cur.setbURL("/api/v1/admin/static/satellites/" + id + "/data/" + curDirectory.getName() + "/b.jpg");
+			cur.setbURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + cur.getId() + "/b.jpg");
 		}
 		File wav = new File(curDirectory, "output.wav");
 		if (wav.exists()) {
 			cur.setWavPath(wav);
+		}
+		File spectogram = new File(curDirectory, "spectogram.png");
+		if (spectogram.exists()) {
+			cur.setSpectogramURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + cur.getId() + "/spectogram.png");
 		}
 		return cur;
 	}
@@ -133,6 +137,15 @@ public class SatelliteDao {
 
 	public boolean saveChannel(String id, String observationId, File a, String type) {
 		File dest = new File(basepath, id + File.separator + "data" + File.separator + observationId + File.separator + type + ".jpg");
+		if (dest.exists()) {
+			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
+			return false;
+		}
+		return a.renameTo(dest);
+	}
+
+	public boolean saveSpectogram(String id, String observationId, File a) {
+		File dest = new File(basepath, id + File.separator + "data" + File.separator + observationId + File.separator + "spectogram.png");
 		if (dest.exists()) {
 			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
 			return false;
