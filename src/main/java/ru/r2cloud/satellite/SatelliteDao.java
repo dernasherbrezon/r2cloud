@@ -172,7 +172,7 @@ public class SatelliteDao {
 			meta.add("channelA", cur.getChannelA());
 		}
 		if (cur.getChannelB() != null) {
-			meta.add("Channel B", cur.getChannelB());
+			meta.add("channelB", cur.getChannelB());
 		}
 		File dest = new File(basepath, id + File.separator + "data" + File.separator + cur.getId() + File.separator + "meta.json");
 		try (BufferedWriter w = new BufferedWriter(new FileWriter(dest))) {

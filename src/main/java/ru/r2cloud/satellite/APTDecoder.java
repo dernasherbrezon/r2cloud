@@ -97,7 +97,7 @@ public class APTDecoder {
 			}
 			String name = cur.substring(0, index).trim();
 			String value = cur.substring(index + 1).trim();
-			if (name.equalsIgnoreCase("wxtoimg") && (value.equalsIgnoreCase("warning: couldn't find telemetry data") || value.contains("purchase upgrade key"))) {
+			if (name.equalsIgnoreCase("wxtoimg") && (value.equalsIgnoreCase("warning: couldn't find telemetry data") || value.contains("purchase upgrade key") || value.startsWith("error:"))) {
 				success = false;
 				continue;
 			}
