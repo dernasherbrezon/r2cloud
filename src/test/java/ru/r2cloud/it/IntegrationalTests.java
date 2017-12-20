@@ -6,7 +6,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ObservationIT.class, WebIT.class})
+@SuiteClasses({APTDecoderIT.class, WebIT.class})
 public class IntegrationalTests {
 
 	public static void main(String[] args) throws Exception {

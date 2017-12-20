@@ -3,17 +3,17 @@ package ru.r2cloud.satellite;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
-import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.r2cloud.FilenameComparator;
+import ru.r2cloud.model.APTResult;
+import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.model.SatPass;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.ProcessWrapper;
 import ru.r2cloud.util.ProcessFactory;
+import ru.r2cloud.util.ProcessWrapper;
 import ru.r2cloud.util.Util;
 
 public class Observation {
@@ -22,26 +22,29 @@ public class Observation {
 	private static final int BUF_SIZE = 0x1000; // 4K
 
 	private ProcessWrapper rtlfm = null;
+	private File wavPath;
 
-	private final File outputDirectory;
-	private final File wavPath;
 	private final Satellite satellite;
 	private final Configuration config;
 	private final SatPass nextPass;
 	private final ProcessFactory factory;
+	private final SatelliteDao dao;
+	private final APTDecoder aptDecoder;
 
-	public Observation(Configuration config, Satellite satellite, SatPass nextPass, ProcessFactory factory) {
+	public Observation(Configuration config, Satellite satellite, SatPass nextPass, ProcessFactory factory, SatelliteDao dao, APTDecoder aptDecoder) {
 		this.config = config;
 		this.satellite = satellite;
 		this.nextPass = nextPass;
-		this.outputDirectory = new File(Util.initDirectory(config.getProperty("satellites.basepath.location")), satellite.getId() + File.separator + "data" + File.separator + nextPass.getStart().getTime().getTime());
-		this.wavPath = new File(outputDirectory, "output.wav");
 		this.factory = factory;
+		this.dao = dao;
+		this.aptDecoder = aptDecoder;
 	}
 
 	public void start() {
-		if (!outputDirectory.mkdirs()) {
-			LOG.info("unable to create output directory: " + outputDirectory.getAbsolutePath());
+		try {
+			this.wavPath = File.createTempFile(satellite.getId() + "-", ".wav");
+		} catch (IOException e) {
+			LOG.error("unable to create temp file", e);
 			return;
 		}
 		ProcessWrapper sox = null;
@@ -75,40 +78,37 @@ public class Observation {
 		rtlfm = null;
 
 		if (!wavPath.exists()) {
-			LOG.info("nothing saved. cleanup current directory: " + outputDirectory.getAbsolutePath());
-			Util.deleteDirectory(outputDirectory);
+			LOG.info("nothing saved");
 			return;
 		}
 
-		processSource(wavPath, "a");
-		processSource(wavPath, "b");
+		String observationId = String.valueOf(nextPass.getStart().getTime().getTime());
 
-		if (!wavPath.delete()) {
-			LOG.error("unable to delete source .wav: " + wavPath.getAbsolutePath());
+		if (!dao.createObservation(satellite.getId(), observationId, wavPath)) {
+			return;
 		}
 
-		File[] dataDirs = outputDirectory.getParentFile().listFiles();
-		Integer maxCount = config.getInteger("scheduler.data.retention.count");
-		if (dataDirs.length > maxCount) {
-			Arrays.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
-			for (int i = 0; i < (dataDirs.length - maxCount); i++) {
-				Util.deleteDirectory(dataDirs[i]);
+		ObservationResult cur = dao.find(satellite.getId(), observationId);
+		if (cur == null) {
+			return;
+		}
+
+		APTResult result = aptDecoder.decode(cur.getWavPath(), "a");
+		if (result.getImage() != null) {
+			dao.saveChannel(satellite.getId(), observationId, result.getImage(), "a");
+			// decode b channel only if a was successfully decoded
+			result = aptDecoder.decode(cur.getWavPath(), "b");
+			if (result.getImage() != null) {
+				dao.saveChannel(satellite.getId(), observationId, result.getImage(), "b");
 			}
 		}
-	}
-
-	private void processSource(final File wavFile, String type) {
-		File result = new File(wavFile.getParentFile(), type + ".jpg");
-		ProcessWrapper process = null;
-		try {
-			process = factory.create(config.getProperty("satellites.wxtoimg.path") + " -t n -" + type + " -c -o " + wavFile.getAbsolutePath() + " " + result.getAbsolutePath(), null, true);
-			process.waitFor();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			Util.shutdown("wxtoimg", process, 10000);
-		} catch (IOException e) {
-			LOG.error("unable to run", e);
-		}
+		
+		cur.setStart(nextPass.getStart().getTime());
+		cur.setEnd(nextPass.getEnd().getTime());
+		cur.setGain(result.getGain());
+		cur.setChannelA(result.getChannelA());
+		cur.setChannelB(result.getChannelB());
+		dao.saveMeta(satellite.getId(), cur);
 	}
 
 	public SatPass getNextPass() {

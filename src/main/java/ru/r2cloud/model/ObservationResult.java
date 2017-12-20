@@ -1,35 +1,90 @@
 package ru.r2cloud.model;
 
+import java.io.File;
 import java.util.Date;
 
 public class ObservationResult {
 
-	private String aPath;
-	private String bPath;
-	private Date date;
-	
-	public String getaPath() {
-		return aPath;
+	private String id;
+	private File wavPath;
+	private String gain;
+	private String channelA;
+	private String channelB;
+	private String aURL;
+	private String bURL;
+	private Date start;
+	private Date end;
+
+	public String getGain() {
+		return gain;
 	}
 
-	public void setaPath(String aPath) {
-		this.aPath = aPath;
+	public void setGain(String gain) {
+		this.gain = gain;
 	}
 
-	public String getbPath() {
-		return bPath;
+	public String getChannelA() {
+		return channelA;
 	}
 
-	public void setbPath(String bPath) {
-		this.bPath = bPath;
+	public void setChannelA(String channelA) {
+		this.channelA = channelA;
 	}
 
-	public Date getDate() {
-		return date;
+	public String getChannelB() {
+		return channelB;
 	}
 
-	public void setDate(Date date) {
-		this.date = date;
+	public void setChannelB(String channelB) {
+		this.channelB = channelB;
+	}
+
+	public String getaURL() {
+		return aURL;
+	}
+
+	public void setaURL(String aURL) {
+		this.aURL = aURL;
+	}
+
+	public String getbURL() {
+		return bURL;
+	}
+
+	public void setbURL(String bURL) {
+		this.bURL = bURL;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public File getWavPath() {
+		return wavPath;
+	}
+
+	public void setWavPath(File wavPath) {
+		this.wavPath = wavPath;
+	}
+
+	public Date getStart() {
+		return start;
+	}
+
+	public void setStart(Date start) {
+		this.start = start;
+	}
+
+	public Date getEnd() {
+		return end;
+	}
+
+	public void setEnd(Date end) {
+		this.end = end;
 	}
 
 }

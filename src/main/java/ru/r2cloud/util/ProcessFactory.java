@@ -18,5 +18,14 @@ public class ProcessFactory {
 		}
 		return new ProcessWrapperImpl(processBuilder.start());
 	}
+	
+	public ProcessWrapper create(String commandLine, boolean redirectErrorStream, boolean inheritIO) throws IOException {
+		ProcessBuilder processBuilder = new ProcessBuilder(SPACE.split(commandLine));
+		processBuilder.redirectErrorStream(redirectErrorStream);
+		if (inheritIO) {
+			processBuilder.inheritIO();
+		}
+		return new ProcessWrapperImpl(processBuilder.start());
+	}
 
 }

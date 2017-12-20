@@ -21,12 +21,16 @@ public class ObservationFactory {
 	private final Predict predict;
 	private final Configuration config;
 	private final ProcessFactory factory;
+	private final SatelliteDao dao;
+	private final APTDecoder aptDecoder;
 
-	public ObservationFactory(Configuration config, Predict predict, TLEDao tleDao, ProcessFactory factory) {
+	public ObservationFactory(Configuration config, Predict predict, TLEDao tleDao, ProcessFactory factory, SatelliteDao dao, APTDecoder aptDecoder) {
 		this.config = config;
 		this.predict = predict;
 		this.tleDao = tleDao;
 		this.factory = factory;
+		this.dao = dao;
+		this.aptDecoder = aptDecoder;
 	}
 
 	public Observation create(Date date, Satellite satellite) {
@@ -41,7 +45,7 @@ public class ObservationFactory {
 			LOG.info("can't find next pass for " + satellite.getName());
 			return null;
 		}
-		return new Observation(config, satellite, nextPass, factory);
+		return new Observation(config, satellite, nextPass, factory, dao, aptDecoder);
 	}
 
 }
