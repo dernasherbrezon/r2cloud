@@ -27,6 +27,8 @@ public class StaticController {
 			throw new RuntimeException("unable to get canonical path", e);
 		}
 		mimeTypes.put("rrd", "application/octet-stream");
+		mimeTypes.put("jpg", "image/jpeg");
+		mimeTypes.put("png", "image/png");
 	}
 
 	public Response doGet(IHTTPSession session) {
