@@ -206,7 +206,7 @@
 					<component>main</component>
 					<codename>r2cloud</codename>
 					<sign>true</sign>
-					<keyname>129E7CDE</keyname>
+					<keyname>27679FBF</keyname>
 					<passphraseServerId>r2cloud</passphraseServerId>
 				</configuration>
 			</plugin>
@@ -334,7 +334,7 @@
 					<arch>armhf</arch>
 					<section>embedded</section>
 					<osDependencies>
-						<r2cloud-ui>>=1513803062</r2cloud-ui>
+						<r2cloud-ui>>=1513613469</r2cloud-ui>
 						<ejdk-8-full>>=20171217161916</ejdk-8-full>
 						<nginx-light>>=1.10.3</nginx-light>
 						<dump1090-mutability>>=1.15~dev</dump1090-mutability>

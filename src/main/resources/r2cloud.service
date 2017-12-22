@@ -5,7 +5,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/home/pi/r2cloud/
-ExecStart=/home/pi/ejdk-8-compact1/bin/java -cp /home/pi/r2cloud/etc:/home/pi/r2cloud/lib/*:/usr/share/java/r2cloud/* -Djava.library.path=/usr/lib/jni -Duser.timezone=UTC -Djava.util.logging.config.file=/home/pi/r2cloud/etc/logging-prod.properties ru.r2cloud.R2Cloud etc/config-prod.properties
+ExecStart=/home/pi/ejdk-8-full/bin/java -cp /home/pi/r2cloud/etc:/home/pi/r2cloud/lib/*:/usr/share/java/r2cloud/* -Djava.library.path=/usr/lib/jni -Duser.timezone=UTC -Djava.util.logging.config.file=/home/pi/r2cloud/etc/logging-prod.properties ru.r2cloud.R2Cloud etc/config-prod.properties
 SuccessExitStatus=143
 Restart=always
 User=pi
