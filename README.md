@@ -19,13 +19,16 @@ There are 2 ways to install r2cloud:
 
 1. From the image. This is simpliest way and require brand new SD card
 
-  - Download the [latest](https://s3.amazonaws.com/r2cloud/dist/image_2017-09-09-r2cloud-lite.zip) official image
+  - Download the [latest](https://s3.amazonaws.com/r2cloud/dist/image_2017-12-24-r2cloud-lite.zip) official image
   - Insert SD card into the card reader and flash it. You could use [Etcher](https://etcher.io) to do this
   
 2. From repository binaries. Use this way if you have something already installed on SD card.
   - Login via SSH and execute the following commands:
 ```
-curl -s https://packagecloud.io/install/repositories/dernasherbrezon/r2cloud/script.deb.sh | sudo bash
+sudo gpg --keyserver keyserver.ubuntu.com --recv-keys A5A70917
+sudo gpg --armor --export A5A70917 | sudo apt-key add -
+sudo bash -c "echo 'deb [arch=armhf] http://s3.amazonaws.com/r2cloud r2cloud main' > /etc/apt/sources.list.d/r2cloud.list"
+sudo apt-get update
 sudo apt-get install r2cloud
 ```
 
