@@ -32,9 +32,11 @@ sudo apt-get update
 sudo apt-get install r2cloud
 ```
 
-Insert SD card into the card reader and create file ```r2cloud.txt``` in the root directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
+3. Insert SD card into the card reader and create file ```r2cloud.txt``` in the root directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
 
-Insert SD card into the RPi and open [http://raspberrypi](http://raspberrypi) address.
+4. Insert SD card into the RPi and open [https://raspberrypi.local](https://raspberrypi.local) address.
+
+5. Accept self-signed certificate. This is unique certificate that was generated during installation. Once setup is complete, you could enable proper SSL using [Letsencrypt](https://letsencrypt.org). 
 
 # Design guidelines
 
