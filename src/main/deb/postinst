@@ -22,7 +22,7 @@ if [ ! -f ${config.installDir}/ssl/domain-chain.crt ]; then
     openssl genrsa -passout pass:x -out ${config.installDir}/ssl/server.pass.key 2048
     openssl rsa -passin pass:x -in ${config.installDir}/ssl/server.pass.key -out ${config.installDir}/ssl/domain.key
     rm ${config.installDir}/ssl/server.pass.key
-    openssl req -new -key ${config.installDir}/ssl/domain.key -out ${config.installDir}/ssl/domain.csr -subj "/C=RU/ST=Moscow/L=Moscow/O=r2cloud/OU=r2cloud/CN=localhost"
+    openssl req -new -key ${config.installDir}/ssl/domain.key -out ${config.installDir}/ssl/domain.csr -subj "/C=RU/ST=Moscow/L=Moscow/O=r2cloud/OU=r2cloud/CN=raspberrypi.local"
     openssl x509 -req -days 365 -in ${config.installDir}/ssl/domain.csr -signkey ${config.installDir}/ssl/domain.key -out ${config.installDir}/ssl/domain-chain.crt
     rm ${config.installDir}/ssl/domain.csr
 fi
