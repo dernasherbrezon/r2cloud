@@ -153,10 +153,14 @@ public class Configuration {
 
 	public String getProperty(String name) {
 		String result = userSettings.getProperty(name);
-		if (result != null) {
+		if (result != null && result.trim().length() != 0) {
 			return result;
 		}
-		return systemSettings.getProperty(name);
+		result = systemSettings.getProperty(name);
+		if (result == null || result.trim().length() == 0) {
+			return null;
+		}
+		return result;
 	}
 
 	public DDNSType getDdnsType(String name) {
