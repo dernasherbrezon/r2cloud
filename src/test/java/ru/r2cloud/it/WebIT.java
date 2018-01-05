@@ -1,17 +1,6 @@
 package ru.r2cloud.it;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import static org.junit.Assert.fail;
 
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -21,9 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(Suite.class)
-@SuiteClasses({ LoginPageIT.class })
+@SuiteClasses({ SetupIT.class })
 public class WebIT {
 
+	private static final int RETRY_INTERVAL_MS = 5000;
+	private static final int MAX_RETRIES = 5;
 	private static final Logger LOG = LoggerFactory.getLogger(WebIT.class);
 
 	@BeforeClass
@@ -33,86 +24,29 @@ public class WebIT {
 
 	static void assertStarted() {
 		int currentRetry = 0;
-		int maxRetries = 5;
-		while (currentRetry < maxRetries) {
-			if (isLoaded()) {
-				break;
+		while (currentRetry < MAX_RETRIES) {
+			if (healthy()) {
+				LOG.info("healthy");
+				return;
 			}
+			LOG.info("not healthy yet");
 			currentRetry++;
 			try {
-				Thread.sleep(5000);
+				Thread.sleep(RETRY_INTERVAL_MS);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 				break;
 			}
 		}
+		fail("not healthy within timeout " + RETRY_INTERVAL_MS + " and max retries " + MAX_RETRIES);
 	}
 
-	private static boolean isLoaded() {
-		HttpURLConnection con = null;
-		try {
-			disableSslVerification();
-			URL obj = new URL("https://localhost");
-			con = (HttpURLConnection) obj.openConnection();
-			con.setRequestMethod("GET");
-			con.setRequestProperty("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
-			boolean result = con.getResponseCode() == 200;
-			if (result) {
-				LOG.info("loaded");
-			} else {
-				LOG.info("not loaded: " + con.getResponseCode());
-			}
-			return result;
+	private static boolean healthy() {
+		try (RestClient client = new RestClient(System.getProperty("r2cloud.baseurl"))) {
+			return client.healthy();
 		} catch (Exception e) {
-			e.printStackTrace();
-			LOG.info("not loaded: " + e.getMessage());
+			LOG.error("unable to get status", e);
 			return false;
-		} finally {
-			if (con != null) {
-				con.disconnect();
-			}
-		}
-	}
-
-	private static void disableSslVerification() {
-		try {
-			// Create a trust manager that does not validate certificate chains
-			TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-				@Override
-				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-					return null;
-				}
-
-				@Override
-				public void checkClientTrusted(X509Certificate[] certs, String authType) {
-					// do nothing
-				}
-
-				@Override
-				public void checkServerTrusted(X509Certificate[] certs, String authType) {
-					// do nothing
-				}
-			} };
-
-			// Install the all-trusting trust manager
-			SSLContext sc = SSLContext.getInstance("SSL");
-			sc.init(null, trustAllCerts, new java.security.SecureRandom());
-			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
-			// Create all-trusting host name verifier
-			HostnameVerifier allHostsValid = new HostnameVerifier() {
-				@Override
-				public boolean verify(String hostname, SSLSession session) {
-					return true;
-				}
-			};
-
-			// Install the all-trusting host verifier
-			HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (KeyManagementException e) {
-			e.printStackTrace();
 		}
 	}
 

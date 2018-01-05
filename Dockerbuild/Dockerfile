@@ -11,6 +11,7 @@ COPY *.sh /home/pi/r2cloud/bin/
 COPY *.jar /home/pi/r2cloud/lib/
 # tests are running under root, thus need to put license file for the root user
 COPY .wxtoimglic /root/
+COPY r2cloud.txt /boot/
 
 RUN chmod +x /home/pi/r2cloud/bin/*.sh
 

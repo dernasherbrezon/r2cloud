@@ -32,6 +32,7 @@ import ru.r2cloud.web.Authenticator;
 import ru.r2cloud.web.HttpContoller;
 import ru.r2cloud.web.WebServer;
 import ru.r2cloud.web.api.AccessToken;
+import ru.r2cloud.web.api.Health;
 import ru.r2cloud.web.api.TLE;
 import ru.r2cloud.web.api.Weather;
 import ru.r2cloud.web.api.WeatherObservation;
@@ -107,6 +108,7 @@ public class R2Cloud {
 		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock);
 
 		// setup web server
+		index(new Health());
 		index(new ru.r2cloud.web.api.ADSB(dao));
 		index(new AccessToken(auth));
 		index(new Setup(auth, props));
