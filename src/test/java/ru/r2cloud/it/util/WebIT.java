@@ -1,4 +1,4 @@
-package ru.r2cloud.it;
+package ru.r2cloud.it.util;
 
 import static org.junit.Assert.fail;
 
@@ -9,8 +9,11 @@ import org.junit.runners.Suite.SuiteClasses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.it.SetupIT;
+import ru.r2cloud.it.TleIT;
+
 @RunWith(Suite.class)
-@SuiteClasses({ SetupIT.class })
+@SuiteClasses({ SetupIT.class, TleIT.class })
 public class WebIT {
 
 	private static final int RETRY_INTERVAL_MS = 5000;

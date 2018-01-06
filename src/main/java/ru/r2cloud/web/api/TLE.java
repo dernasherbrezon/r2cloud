@@ -25,7 +25,10 @@ public class TLE extends AbstractHttpController {
 	public ModelAndView doGet(IHTTPSession session) {
 		ModelAndView result = new ModelAndView();
 		JsonObject entity = new JsonObject();
-		entity.add("lastUpdated", config.getLong("satellites.tle.lastupdateAtMillis"));
+		Long lastUpdateMillis = config.getLong("satellites.tle.lastupdateAtMillis");
+		if (lastUpdateMillis != null) {
+			entity.add("lastUpdated", lastUpdateMillis);
+		}
 		JsonArray tle = new JsonArray();
 		for (Entry<String, ru.r2cloud.model.TLE> cur : service.findAll().entrySet()) {
 			JsonObject curTle = new JsonObject();

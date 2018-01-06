@@ -1,4 +1,4 @@
-package ru.r2cloud.it;
+package ru.r2cloud.it.util;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -27,6 +27,7 @@ public class RestClient implements Closeable {
 
 	private CloseableHttpClient httpclient;
 	private final String baseUrl;
+	private String accessToken;
 
 	public RestClient(String baseUrl) throws Exception {
 		this.baseUrl = baseUrl;
@@ -63,8 +64,36 @@ public class RestClient implements Closeable {
 			httpclient.close();
 		}
 	}
+	
+	public void login(String username, String password) {
+		LOG.info("login");
+		HttpPost m = new HttpPost(baseUrl + "/api/v1/accessToken");
+		JsonObject json = Json.object();
+		json.add("username", username);
+		json.add("password", password);
+		m.setEntity(new StringEntity(json.toString(), ContentType.APPLICATION_JSON));
+		HttpResponse response = null;
+		try {
+			response = httpclient.execute(m);
+			int statusCode = response.getStatusLine().getStatusCode();
+			String responseBody = EntityUtils.toString(response.getEntity());
+			if (statusCode != HttpStatus.SC_OK) {
+				LOG.info("response: " + responseBody);
+				throw new RuntimeException("invalid status code: " + statusCode);
+			}
+			JsonObject object = (JsonObject)Json.parse(responseBody);
+			accessToken = object.get("access_token").asString();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (response != null) {
+				EntityUtils.consumeQuietly(response.getEntity());
+			}
+		}
+	}
 
 	public void setup(String keyword, String username, String password) {
+		LOG.info("setup: " + username);
 		HttpPost m = new HttpPost(baseUrl + "/api/v1/setup/setup");
 		JsonObject json = Json.object();
 		json.add("keyword", keyword);
@@ -79,6 +108,29 @@ public class RestClient implements Closeable {
 				LOG.info("response: " + EntityUtils.toString(response.getEntity()));
 				throw new RuntimeException("invalid status code: " + statusCode);
 			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (response != null) {
+				EntityUtils.consumeQuietly(response.getEntity());
+			}
+		}
+	}
+
+	public JsonObject getTle() {
+		LOG.info("get tle");
+		HttpGet m = new HttpGet(baseUrl + "/api/v1/admin/tle");
+		m.addHeader("Authorization", "Bearer " + accessToken);
+		HttpResponse response = null;
+		try {
+			response = httpclient.execute(m);
+			int statusCode = response.getStatusLine().getStatusCode();
+			String responseBody = EntityUtils.toString(response.getEntity());
+			if (statusCode != HttpStatus.SC_OK) {
+				LOG.info("response: " + responseBody);
+				throw new RuntimeException("invalid status code: " + statusCode);
+			}
+			return (JsonObject) Json.parse(responseBody);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		} finally {
