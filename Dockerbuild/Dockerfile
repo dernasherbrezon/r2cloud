@@ -15,7 +15,7 @@ COPY r2cloud.txt /boot/
 
 RUN chmod +x /home/pi/r2cloud/bin/*.sh \
     && echo "127.0.0.1 raspberrypi.local" >> /etc/hosts \
-    && cat /etc/hosts
+    && ps aux | grep avahi && ping -c 3 raspberrypi.local
 
 WORKDIR /usr/share
 
