@@ -32,7 +32,7 @@ public class RestClient implements Closeable {
 		this.baseUrl = baseUrl;
 		SSLContextBuilder builder = new SSLContextBuilder();
 		builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-		SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build());
+		SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 		this.httpclient = HttpClients.custom().setUserAgent("r2cloud/0.1 info@r2cloud.ru").setSSLSocketFactory(sslsf).build();
 	}
 
