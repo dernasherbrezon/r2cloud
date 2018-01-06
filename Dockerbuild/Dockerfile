@@ -14,7 +14,7 @@ COPY .wxtoimglic /root/
 COPY r2cloud.txt /boot/
 
 RUN chmod +x /home/pi/r2cloud/bin/*.sh \
-    && cp /etc/hosts ~/hosts.new && sed -i -e '/127.0.0.1/ s/\(localhost\)/'raspberrypi.local' \1/' ~/hosts.new && mv ~/hosts.new /etc/hosts \
+    && cp /etc/hosts ~/hosts.new && sed -i -e '/127.0.0.1/ s/\(localhost\)/'raspberrypi.local' \1/' ~/hosts.new && cp -f ~/hosts.new /etc/hosts \
     && cat /etc/hosts
 
 WORKDIR /usr/share
