@@ -9,7 +9,7 @@ r2cloud converts Raspberry PI into the base station which supports various radio
 
 <img src="https://github.com/dernasherbrezon/r2cloud/raw/master/docs/screen1.jpg" width="20%">&nbsp;<img src="https://github.com/dernasherbrezon/r2cloud/raw/master/docs/screen2.jpg" width="20%">&nbsp;<img src="https://github.com/dernasherbrezon/r2cloud/raw/master/docs/screen3.jpg" width="20%">&nbsp;<img src="https://github.com/dernasherbrezon/r2cloud/raw/master/docs/screen4.jpg" width="20%">
  
-# Principal diagram 
+# Principal diagram
 
 ![diagram](docs/diagram.png)
 
