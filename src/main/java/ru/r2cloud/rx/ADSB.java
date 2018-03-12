@@ -4,11 +4,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 import org.opensky.libadsb.Decoder;
 import org.opensky.libadsb.msgs.ModeSReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry.MetricSupplier;
+import com.codahale.metrics.health.HealthCheck;
 
 import ru.r2cloud.Lifecycle;
 import ru.r2cloud.RtlSdrLock;
@@ -20,10 +28,6 @@ import ru.r2cloud.util.ResultUtil;
 import ru.r2cloud.util.SafeRunnable;
 import ru.r2cloud.util.Util;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.MetricRegistry.MetricSupplier;
-import com.codahale.metrics.health.HealthCheck;
-
 public class ADSB implements Lifecycle {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ADSB.class);
@@ -33,6 +37,7 @@ public class ADSB implements Lifecycle {
 	private final boolean enabled;
 	private final long throttleIntervalMillis;
 	private final RtlSdrLock lock;
+	private final List<String> additionalCommandArgs;
 
 	private Socket socket;
 	private volatile boolean started = false;
@@ -47,6 +52,18 @@ public class ADSB implements Lifecycle {
 		this.lock = lock;
 		this.enabled = props.getBoolean("rx.adsb.enabled");
 		this.throttleIntervalMillis = props.getLong("rx.adsb.reconnect.interval");
+		
+		Option modeac = new Option("modeac", "modeac", false, "Enable decoding of SSR Modes 3/A & 3/C");
+		Option fix = new Option("fix", "fix", false, "Enable single-bits error correction using CRC");
+		Option mlat = new Option("mlat", "mlat", false, "display raw messages in Beast ascii mode");
+		Option netRoSize = new Option("netRoSize", "net-ro-size", true, "TCP output minimum size (default: 0)");
+		Options options = new Options();
+		options.addOption(modeac);
+		options.addOption(fix);
+		options.addOption(mlat);
+		options.addOption(netRoSize);
+		
+		this.additionalCommandArgs = props.getOptions("rx.adsb.additional.args", options);
 	}
 
 	@Override
@@ -154,8 +171,16 @@ public class ADSB implements Lifecycle {
 			if (ppm == null) {
 				ppm = 0;
 			}
-			dump1090 = new ProcessBuilder().inheritIO().command(new String[] { props.getProperty("rx.adsb.dump1090"), "--raw", "--net", "--quiet", "--ppm", String.valueOf(ppm) }).start();
-			LOG.info("dump1090 started..");
+			List<String> args = new ArrayList<>();
+			args.add(props.getProperty("rx.adsb.dump1090"));
+			args.add("--raw");
+			args.add("--net");
+			args.add("--quiet");
+			args.add("--ppm");
+			args.add(String.valueOf(ppm));
+			args.addAll(additionalCommandArgs);
+			dump1090 = new ProcessBuilder().inheritIO().command(args).start();
+			LOG.info("dump1090 started with arguments: " + args);
 		} catch (IOException e1) {
 			LOG.error("unable to start dump1090", e1);
 		}
@@ -193,8 +218,8 @@ public class ADSB implements Lifecycle {
 		Util.shutdown("dump1090", dump1090, throttleIntervalMillis);
 		LOG.info("stopped");
 
-		//never call unlock. it should be always subscribed
-//		lock.unlock(this);
+		// never call unlock. it should be always subscribed
+		// lock.unlock(this);
 	}
 
 	private void closeSocket() {
