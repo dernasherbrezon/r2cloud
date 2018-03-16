@@ -13,8 +13,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +30,6 @@ public class SatelliteDao {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SatelliteDao.class);
 
-	private static final Pattern SATELLITE_ID = Pattern.compile("(\\d+)\\((.*?)\\)");
 	private final List<Satellite> satellites;
 	private final File basepath;
 	private final Integer maxCount;
@@ -43,15 +40,12 @@ public class SatelliteDao {
 		this.maxCount = config.getInteger("scheduler.data.retention.count");
 		satellites = new ArrayList<Satellite>();
 		for (String cur : Util.splitComma(config.getProperty("satellites.supported"))) {
-			Matcher m = SATELLITE_ID.matcher(cur);
-			if (m.find()) {
-				Satellite curSatellite = new Satellite();
-				curSatellite.setName(m.group(2));
-				curSatellite.setId(m.group(1));
-				curSatellite.setFrequency(config.getLong("satellites." + curSatellite.getId() + ".freq"));
-				curSatellite.setDecoder(config.getProperty("satellites." + curSatellite.getId() + ".decoder"));
-				index(curSatellite);
-			}
+			Satellite curSatellite = new Satellite();
+			curSatellite.setId(cur);
+			curSatellite.setName(config.getProperty("satellites." + curSatellite.getId() + ".name"));
+			curSatellite.setFrequency(config.getLong("satellites." + curSatellite.getId() + ".freq"));
+			curSatellite.setDecoder(config.getProperty("satellites." + curSatellite.getId() + ".decoder"));
+			index(curSatellite);
 		}
 	}
 

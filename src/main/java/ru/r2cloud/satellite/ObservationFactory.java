@@ -49,7 +49,7 @@ public class ObservationFactory {
 		if (decoder == null) {
 			throw new IllegalArgumentException("unknown decoder for: " + satellite.getId());
 		}
-		if (decoder.equals("wxtoimg")) {
+		if (decoder.equals("apt")) {
 			return new APTObservation(config, satellite, nextPass, factory, dao, aptDecoder);
 		} else if (decoder.equals("lrpt")) {
 			return new LRPTObservation();
