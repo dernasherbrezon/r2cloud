@@ -16,7 +16,7 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
-import ru.r2cloud.jradio.sink.Waterfall;
+import ru.r2cloud.jradio.sink.Spectogram;
 import ru.r2cloud.jradio.source.WavFileSource;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.satellite.SatelliteDao;
@@ -32,7 +32,7 @@ public class WeatherSpectrogram extends AbstractHttpController {
 	private static final Logger LOG = LoggerFactory.getLogger(WeatherSpectrogram.class);
 
 	private final SatelliteDao dao;
-	private final Waterfall waterfall = new Waterfall(2, 1024);
+	private final Spectogram spectogram = new Spectogram(2, 1024);
 
 	public WeatherSpectrogram(SatelliteDao dao) {
 		this.dao = dao;
@@ -63,7 +63,7 @@ public class WeatherSpectrogram extends AbstractHttpController {
 
 		try (InputStream is = new BufferedInputStream(new FileInputStream(observation.getWavPath()))) {
 			WavFileSource source = new WavFileSource(is);
-			BufferedImage image = waterfall.process(source);
+			BufferedImage image = spectogram.process(source);
 			File tmp = File.createTempFile(observation.getId() + "-", "-spectogram.png");
 			ImageIO.write(image, "png", tmp);
 			if (!dao.saveSpectogram(satelliteId, id, tmp)) {
