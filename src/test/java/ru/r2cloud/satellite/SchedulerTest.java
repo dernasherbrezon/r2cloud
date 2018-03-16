@@ -41,7 +41,7 @@ public class SchedulerTest {
 	private ObservationFactory factory;
 	private ThreadPoolFactory threadPool;
 	private ScheduledExecutorService executor;
-	private Observation observation;
+	private APTObservation observation;
 	private Clock clock;
 	private String id;
 
@@ -96,7 +96,7 @@ public class SchedulerTest {
 		id = UUID.randomUUID().toString();
 		satelliteDao = mock(SatelliteDao.class);
 		factory = mock(ObservationFactory.class);
-		observation = mock(Observation.class);
+		observation = mock(APTObservation.class);
 		threadPool = mock(ThreadPoolFactory.class);
 		executor = mock(ScheduledExecutorService.class);
 		when(threadPool.newScheduledThreadPool(anyInt(), any())).thenReturn(executor);

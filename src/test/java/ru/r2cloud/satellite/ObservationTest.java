@@ -55,7 +55,7 @@ public class ObservationTest {
 		when(factory.create(contains(rtlfm), any(), anyBoolean())).thenReturn(new ProcessWrapperMock(bais, null));
 
 		SatPass nextPass = create(new Date(), new Date());
-		Observation o = new Observation(config, satellite, nextPass, factory, new SatelliteDao(config), new APTDecoder(config, factory));
+		APTObservation o = new APTObservation(config, satellite, nextPass, factory, new SatelliteDao(config), new APTDecoder(config, factory));
 		o.start();
 
 		File passRoot = new File(tempFolder.getRoot(), satellite.getId() + File.separator + "data" + File.separator + nextPass.getStart().getTime().getTime());

@@ -5,7 +5,16 @@ public class Satellite {
 
 	private String id;
 	private String name;
+	private String decoder;
 	private long frequency;
+	
+	public String getDecoder() {
+		return decoder;
+	}
+	
+	public void setDecoder(String decoder) {
+		this.decoder = decoder;
+	}
 	
 	public long getFrequency() {
 		return frequency;

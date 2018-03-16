@@ -49,6 +49,7 @@ public class SatelliteDao {
 				curSatellite.setName(m.group(2));
 				curSatellite.setId(m.group(1));
 				curSatellite.setFrequency(config.getLong("satellites." + curSatellite.getId() + ".freq"));
+				curSatellite.setDecoder(config.getProperty("satellites." + curSatellite.getId() + ".decoder"));
 				index(curSatellite);
 			}
 		}

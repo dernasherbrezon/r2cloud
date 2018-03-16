@@ -80,7 +80,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private void schedule(ru.r2cloud.model.Satellite cur) {
 		long current = clock.millis();
 		Observation observation = factory.create(new Date(current), cur);
-		if (observation == null) {
+		if (observation == null || observation.getNextPass() == null) {
 			return;
 		}
 		LOG.info("scheduled next pass for " + cur.getName() + ": " + observation.getNextPass());

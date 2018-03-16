@@ -45,7 +45,17 @@ public class ObservationFactory {
 			LOG.info("can't find next pass for " + satellite.getName());
 			return null;
 		}
-		return new Observation(config, satellite, nextPass, factory, dao, aptDecoder);
+		String decoder = satellite.getDecoder();
+		if (decoder == null) {
+			throw new IllegalArgumentException("unknown decoder for: " + satellite.getId());
+		}
+		if (decoder.equals("wxtoimg")) {
+			return new APTObservation(config, satellite, nextPass, factory, dao, aptDecoder);
+		} else if (decoder.equals("lrpt")) {
+			return new LRPTObservation();
+		} else {
+			throw new IllegalArgumentException("unsupported decoder: " + decoder);
+		}
 	}
 
 }
