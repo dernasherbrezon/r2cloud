@@ -52,7 +52,7 @@ public class ObservationFactory {
 		if (decoder.equals("apt")) {
 			return new APTObservation(config, satellite, nextPass, factory, dao, aptDecoder);
 		} else if (decoder.equals("lrpt")) {
-			return new LRPTObservation();
+			return new LRPTObservation(config, satellite, nextPass, factory, dao);
 		} else {
 			throw new IllegalArgumentException("unsupported decoder: " + decoder);
 		}

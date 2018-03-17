@@ -43,7 +43,7 @@ public class ObservationTest {
 		String rtlfm = UUID.randomUUID().toString();
 		String wxtoimg = UUID.randomUUID().toString();
 		config.setProperty("satellites.sox.path", sox);
-		config.setProperty("satellites.rtlsdr.path", rtlfm);
+		config.setProperty("satellites.rtlfm.path", rtlfm);
 		config.setProperty("satellites.wxtoimg.path", wxtoimg);
 
 		String data = UUID.randomUUID().toString();
