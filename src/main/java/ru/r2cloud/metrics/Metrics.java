@@ -40,6 +40,10 @@ public class Metrics {
 		} else {
 			LOG.info("temperature metric is not available");
 		}
+		
+		LOG.info("max memory: {}", Runtime.getRuntime().maxMemory());
+		LOG.info("total memory: {}", Runtime.getRuntime().totalMemory());
+		LOG.info("CPU count: {}", Runtime.getRuntime().availableProcessors());
 
 		REGISTRY.gauge("heap", new MetricSupplier<Gauge>() {
 			@Override
