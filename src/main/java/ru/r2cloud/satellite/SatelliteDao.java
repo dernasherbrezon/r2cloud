@@ -150,7 +150,7 @@ public class SatelliteDao {
 
 	public boolean createObservation(String id, String observationId, File wavPath) {
 		File[] dataDirs = new File(basepath, id + File.separator + "data").listFiles();
-		if (dataDirs.length > maxCount) {
+		if (dataDirs != null && dataDirs.length > maxCount) {
 			Arrays.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
 			for (int i = 0; i < (dataDirs.length - maxCount); i++) {
 				Util.deleteDirectory(dataDirs[i]);
