@@ -28,7 +28,7 @@ import ru.r2cloud.model.Satellite;
 import ru.r2cloud.util.ProcessFactory;
 import uk.me.g4dpz.satellite.SatPos;
 
-public class ObservationTest {
+public class APTObservationTest {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
