@@ -80,7 +80,7 @@ public class AcmeClient {
 	}
 
 	private void scheduleRenew(X509Certificate certificate) {
-		long delay = certificate.getNotAfter().getTime() - System.currentTimeMillis() - TimeUnit.DAYS.toMillis(14);
+		long delay = certificate.getNotAfter().getTime() - System.currentTimeMillis() - TimeUnit.DAYS.toMillis(21);
 		messages.add("Schedule certificate renewal. NotAfter: " + certificate.getNotAfter() + " Renew at: " + new Date(certificate.getNotAfter().getTime() - TimeUnit.DAYS.toMillis(7)), LOG);
 		executor.schedule(new SafeRunnable() {
 
