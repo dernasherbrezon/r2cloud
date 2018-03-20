@@ -48,6 +48,7 @@ public class AcmeClient {
 
 	private final static Logger LOG = LoggerFactory.getLogger(AcmeClient.class);
 	private final static long INITIAL_RETRY = 3000L;
+	private final static int DAYS_BEFORE_EXPIRATION = 21;
 
 	private ScheduledExecutorService executor;
 
@@ -80,8 +81,8 @@ public class AcmeClient {
 	}
 
 	private void scheduleRenew(X509Certificate certificate) {
-		long delay = certificate.getNotAfter().getTime() - System.currentTimeMillis() - TimeUnit.DAYS.toMillis(21);
-		messages.add("Schedule certificate renewal. NotAfter: " + certificate.getNotAfter() + " Renew at: " + new Date(certificate.getNotAfter().getTime() - TimeUnit.DAYS.toMillis(7)), LOG);
+		long delay = certificate.getNotAfter().getTime() - System.currentTimeMillis() - TimeUnit.DAYS.toMillis(DAYS_BEFORE_EXPIRATION);
+		messages.add("Schedule certificate renewal. NotAfter: " + certificate.getNotAfter() + " Renew at: " + new Date(certificate.getNotAfter().getTime() - TimeUnit.DAYS.toMillis(DAYS_BEFORE_EXPIRATION)), LOG);
 		executor.schedule(new SafeRunnable() {
 
 			@Override
