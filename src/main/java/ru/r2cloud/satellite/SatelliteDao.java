@@ -148,7 +148,7 @@ public class SatelliteDao {
 		return a.renameTo(dest);
 	}
 
-	public boolean createObservation(String id, String observationId, File wavPath) {
+	public boolean createObservation(String id, String observationId, File file) {
 		File[] dataDirs = new File(basepath, id + File.separator + "data").listFiles();
 		if (dataDirs != null && dataDirs.length > maxCount) {
 			Arrays.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
@@ -166,7 +166,7 @@ public class SatelliteDao {
 			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
 			return false;
 		}
-		return wavPath.renameTo(dest);
+		return file.renameTo(dest);
 	}
 
 	public void saveMeta(String id, ObservationResult cur) {

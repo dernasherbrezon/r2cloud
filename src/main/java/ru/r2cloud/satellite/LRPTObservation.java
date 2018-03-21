@@ -32,7 +32,7 @@ import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
 import ru.r2cloud.jradio.blocks.Window;
 import ru.r2cloud.jradio.lrpt.LRPT;
 import ru.r2cloud.jradio.meteor.MeteorImage;
-import ru.r2cloud.jradio.source.RtlSdr;
+import ru.r2cloud.jradio.source.WavFileSource;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.model.SatPass;
 import ru.r2cloud.model.Satellite;
@@ -44,10 +44,12 @@ import ru.r2cloud.util.Util;
 public class LRPTObservation implements Observation {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LRPTObservation.class);
-	private static final float SAMPLE_RATE = 226000.0f;
+	private static final float INPUT_SAMPLE_RATE = 226000.0f;
+	private static final float OUTPUT_SAMPLE_RATE = 135000.0f;
+	private static final int BUF_SIZE = 0x1000; // 4K
 
 	private ProcessWrapper rtlSdr = null;
-	private File iqPath;
+	private File wavPath;
 
 	private final Satellite satellite;
 	private final Configuration config;
@@ -66,22 +68,34 @@ public class LRPTObservation implements Observation {
 	@Override
 	public void start() {
 		try {
-			this.iqPath = File.createTempFile(satellite.getId() + "-", ".bin");
+			this.wavPath = File.createTempFile(satellite.getId() + "-", ".wav");
 		} catch (IOException e) {
 			LOG.error("unable to create temp file", e);
 			return;
 		}
+		ProcessWrapper sox = null;
 		try {
 			Integer ppm = config.getInteger("ppm.current");
 			if (ppm == null) {
 				ppm = 0;
 			}
-			rtlSdr = factory.create(config.getProperty("satellites.rtlsdr.path") + " -f " + String.valueOf(satellite.getFrequency()) + " -s " + SAMPLE_RATE + " -g 45 -p " + String.valueOf(ppm) + " " + iqPath.getAbsolutePath(), Redirect.INHERIT, false);
+			sox = factory.create(config.getProperty("satellites.sox.path") + " -t raw -r " + INPUT_SAMPLE_RATE + " -es -b 8 --channels 2 - " + wavPath.getAbsolutePath() + " rate " + OUTPUT_SAMPLE_RATE, Redirect.INHERIT, false);
+			rtlSdr = factory.create(config.getProperty("satellites.rtlsdr.path") + " -f " + String.valueOf(satellite.getFrequency()) + " -s " + INPUT_SAMPLE_RATE + " -g 45 -p " + String.valueOf(ppm) + " - ", Redirect.INHERIT, false);
+			byte[] buf = new byte[BUF_SIZE];
+			while (!Thread.currentThread().isInterrupted()) {
+				int r = rtlSdr.getInputStream().read(buf);
+				if (r == -1) {
+					break;
+				}
+				sox.getOutputStream().write(buf, 0, r);
+			}
+			sox.getOutputStream().flush();
 		} catch (IOException e) {
 			LOG.error("unable to run", e);
 		} finally {
 			LOG.info("stopping pipe thread");
 			Util.shutdown("rtl_sdr for satellites", rtlSdr, 10000);
+			Util.shutdown("sox", sox, 10000);
 		}
 	}
 
@@ -90,14 +104,14 @@ public class LRPTObservation implements Observation {
 		Util.shutdown("rtl_sdr for satellites", rtlSdr, 10000);
 		rtlSdr = null;
 
-		if (!iqPath.exists()) {
+		if (!wavPath.exists()) {
 			LOG.info("nothing saved");
 			return;
 		}
 
 		String observationId = String.valueOf(nextPass.getStart().getTime().getTime());
 
-		if (!dao.createObservation(satellite.getId(), observationId, iqPath)) {
+		if (!dao.createObservation(satellite.getId(), observationId, wavPath)) {
 			return;
 		}
 
@@ -111,13 +125,13 @@ public class LRPTObservation implements Observation {
 		LOG.info("started");
 		LRPT lrpt = null;
 		try {
-			RtlSdr source = new RtlSdr(new BufferedInputStream(new FileInputStream(iqPath)));
-			LowPassFilter lowPass = new LowPassFilter(source, 1.0, SAMPLE_RATE, 50000.0, 1000.0, Window.WIN_HAMMING, 6.76);
+			WavFileSource source = new WavFileSource(new BufferedInputStream(new FileInputStream(wavPath)));
+			LowPassFilter lowPass = new LowPassFilter(source, 1.0, OUTPUT_SAMPLE_RATE, 50000.0, 1000.0, Window.WIN_HAMMING, 6.76);
 			AGC agc = new AGC(lowPass, 1000e-4f, 0.5f, 1.0f, 4000.0f);
-			RootRaisedCosineFilter rrcf = new RootRaisedCosineFilter(agc, 1.0f, SAMPLE_RATE, symbolRate, 0.6f, 361);
+			RootRaisedCosineFilter rrcf = new RootRaisedCosineFilter(agc, 1.0f, OUTPUT_SAMPLE_RATE, symbolRate, 0.6f, 361);
 
 			CostasLoop costas = new CostasLoop(rrcf, 0.020f, 4, false);
-			float omega = (float) ((SAMPLE_RATE * 1.0) / (symbolRate * 1.0));
+			float omega = (float) ((OUTPUT_SAMPLE_RATE * 1.0) / (symbolRate * 1.0));
 			ClockRecoveryMMComplex clockmm = new ClockRecoveryMMComplex(costas, omega, clockAlpha * clockAlpha / 4, 0.5f, clockAlpha, 0.005f);
 			Constellation constel = new Constellation(new float[] { -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f }, new int[] { 0, 1, 3, 2 }, 4, 1);
 			ConstellationSoftDecoder constelDecoder = new ConstellationSoftDecoder(clockmm, constel);
@@ -142,8 +156,8 @@ public class LRPTObservation implements Observation {
 				ImageIO.write(actual, "jpg", imageFile);
 				dao.saveChannel(satellite.getId(), observationId, imageFile, "a");
 			}
-		} catch (IOException e) {
-			LOG.error("unable to process: " + iqPath.getAbsolutePath(), e);
+		} catch (Exception e) {
+			LOG.error("unable to process: " + wavPath.getAbsolutePath(), e);
 		} finally {
 			if (lrpt != null) {
 				try {
