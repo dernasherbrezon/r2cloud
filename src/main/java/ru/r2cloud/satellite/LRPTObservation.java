@@ -125,7 +125,7 @@ public class LRPTObservation implements Observation {
 		LOG.info("started");
 		LRPT lrpt = null;
 		try {
-			WavFileSource source = new WavFileSource(new BufferedInputStream(new FileInputStream(wavPath)));
+			WavFileSource source = new WavFileSource(new BufferedInputStream(new FileInputStream(cur.getWavPath())));
 			LowPassFilter lowPass = new LowPassFilter(source, 1.0, OUTPUT_SAMPLE_RATE, 50000.0, 1000.0, Window.WIN_HAMMING, 6.76);
 			AGC agc = new AGC(lowPass, 1000e-4f, 0.5f, 1.0f, 4000.0f);
 			RootRaisedCosineFilter rrcf = new RootRaisedCosineFilter(agc, 1.0f, OUTPUT_SAMPLE_RATE, symbolRate, 0.6f, 361);
@@ -157,7 +157,7 @@ public class LRPTObservation implements Observation {
 				dao.saveChannel(satellite.getId(), observationId, imageFile, "a");
 			}
 		} catch (Exception e) {
-			LOG.error("unable to process: " + wavPath.getAbsolutePath(), e);
+			LOG.error("unable to process: " + cur.getWavPath(), e);
 		} finally {
 			if (lrpt != null) {
 				try {
