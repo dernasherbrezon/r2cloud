@@ -36,6 +36,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	private ScheduledExecutorService scheduler = null;
 	private ScheduledExecutorService reaper = null;
+	private ScheduledExecutorService decoder = null;
 
 	public Scheduler(Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock) {
 		this.config = config;
@@ -70,6 +71,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		List<ru.r2cloud.model.Satellite> supportedSatellites = satellites.findSupported();
 		scheduler = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("scheduler"));
 		reaper = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("reaper"));
+		decoder = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("decoder"));
 		for (ru.r2cloud.model.Satellite cur : supportedSatellites) {
 			schedule(cur);
 		}
@@ -111,6 +113,14 @@ public class Scheduler implements Lifecycle, ConfigListener {
 					scheduledObservations.remove(cur.getId());
 				}
 				schedule(cur);
+				decoder.execute(new SafeRunnable() {
+
+					@Override
+					public void doRun() {
+						LOG.info("decoding: {}", cur.getName());
+						observation.decode();
+					}
+				});
 			}
 		}, observation.getNextPass().getEnd().getTime().getTime() - current, TimeUnit.MILLISECONDS);
 	}

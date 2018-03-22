@@ -30,6 +30,7 @@ public class APTObservation implements Observation {
 	private final ProcessFactory factory;
 	private final SatelliteDao dao;
 	private final APTDecoder aptDecoder;
+	private final String observationId;
 
 	public APTObservation(Configuration config, Satellite satellite, SatPass nextPass, ProcessFactory factory, SatelliteDao dao, APTDecoder aptDecoder) {
 		this.config = config;
@@ -38,6 +39,7 @@ public class APTObservation implements Observation {
 		this.factory = factory;
 		this.dao = dao;
 		this.aptDecoder = aptDecoder;
+		this.observationId = String.valueOf(nextPass.getStart().getTime().getTime());
 	}
 
 	@Override
@@ -84,12 +86,13 @@ public class APTObservation implements Observation {
 			return;
 		}
 
-		String observationId = String.valueOf(nextPass.getStart().getTime().getTime());
-
 		if (!dao.createObservation(satellite.getId(), observationId, wavPath)) {
 			return;
 		}
+	}
 
+	@Override
+	public void decode() {
 		ObservationResult cur = dao.find(satellite.getId(), observationId);
 		if (cur == null) {
 			return;
@@ -104,7 +107,7 @@ public class APTObservation implements Observation {
 				dao.saveChannel(satellite.getId(), observationId, result.getImage(), "b");
 			}
 		}
-		
+
 		cur.setStart(nextPass.getStart().getTime());
 		cur.setEnd(nextPass.getEnd().getTime());
 		cur.setGain(result.getGain());

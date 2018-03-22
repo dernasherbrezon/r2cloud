@@ -7,6 +7,8 @@ public interface Observation {
 	void start();
 
 	void stop();
+	
+	void decode();
 
 	SatPass getNextPass();
 }

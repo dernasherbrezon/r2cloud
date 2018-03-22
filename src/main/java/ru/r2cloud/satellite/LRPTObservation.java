@@ -56,6 +56,7 @@ public class LRPTObservation implements Observation {
 	private final SatPass nextPass;
 	private final ProcessFactory factory;
 	private final SatelliteDao dao;
+	private final String observationId;
 
 	public LRPTObservation(Configuration config, Satellite satellite, SatPass nextPass, ProcessFactory factory, SatelliteDao dao) {
 		this.config = config;
@@ -63,6 +64,7 @@ public class LRPTObservation implements Observation {
 		this.nextPass = nextPass;
 		this.factory = factory;
 		this.dao = dao;
+		this.observationId = String.valueOf(nextPass.getStart().getTime().getTime());
 	}
 
 	@Override
@@ -109,12 +111,14 @@ public class LRPTObservation implements Observation {
 			return;
 		}
 
-		String observationId = String.valueOf(nextPass.getStart().getTime().getTime());
-
 		if (!dao.createObservation(satellite.getId(), observationId, wavPath)) {
 			return;
 		}
 
+	}
+
+	@Override
+	public void decode() {
 		ObservationResult cur = dao.find(satellite.getId(), observationId);
 		if (cur == null) {
 			return;
