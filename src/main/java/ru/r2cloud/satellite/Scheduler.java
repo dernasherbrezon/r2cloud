@@ -119,6 +119,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 					public void doRun() {
 						LOG.info("decoding: {}", cur.getName());
 						observation.decode();
+						LOG.info("decoded: {}", cur.getName());
 					}
 				});
 			}

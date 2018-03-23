@@ -126,7 +126,6 @@ public class LRPTObservation implements Observation {
 
 		float symbolRate = 72000f;
 		float clockAlpha = 0.010f;
-		LOG.info("started");
 		LRPT lrpt = null;
 		try {
 			WavFileSource source = new WavFileSource(new BufferedInputStream(new FileInputStream(cur.getWavPath())));
@@ -153,7 +152,6 @@ public class LRPTObservation implements Observation {
 			TaggedStreamToPdu tag = new TaggedStreamToPdu(context, new FixedLengthTagger(context, correlate, 8160 * 2 + 8 * 2));
 			lrpt = new LRPT(context, tag, buffer);
 			MeteorImage image = new MeteorImage(lrpt);
-			LOG.info("decoded");
 			BufferedImage actual = image.toBufferedImage();
 			if (actual != null) {
 				File imageFile = File.createTempFile(satellite.getId() + "-", ".jpg");
