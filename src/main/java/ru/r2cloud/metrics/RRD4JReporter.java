@@ -17,6 +17,7 @@ import ru.r2cloud.util.Util;
 
 import com.aerse.ConsolFun;
 import com.aerse.DsType;
+import com.aerse.core.RrdBackendFactory;
 import com.aerse.core.RrdDb;
 import com.aerse.core.RrdDef;
 import com.aerse.core.Sample;
@@ -149,7 +150,7 @@ public class RRD4JReporter extends ScheduledReporter {
 			}
 		} else {
 			try {
-				result = new RrdDb(path.getAbsolutePath());
+				result = new RrdDb(path.getAbsolutePath(), RrdBackendFactory.getFactory("FILE"));
 			} catch (IOException e) {
 				LOG.error("unable to load database: " + path.getAbsolutePath(), e);
 				return null;
