@@ -24,6 +24,8 @@ import ru.r2cloud.metrics.FormattedCounter;
 import ru.r2cloud.metrics.MetricFormat;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.ProcessFactory;
+import ru.r2cloud.util.ProcessWrapper;
 import ru.r2cloud.util.ResultUtil;
 import ru.r2cloud.util.SafeRunnable;
 import ru.r2cloud.util.Util;
@@ -38,21 +40,23 @@ public class ADSB implements Lifecycle {
 	private final long throttleIntervalMillis;
 	private final RtlSdrLock lock;
 	private final List<String> additionalCommandArgs;
+	private final ProcessFactory processFactory;
 
 	private Socket socket;
 	private volatile boolean started = false;
 	private volatile String connectionError = "Unknown status";
 	private Counter counter;
 	private Thread thread;
-	private Process dump1090;
+	private ProcessWrapper dump1090;
 
-	public ADSB(Configuration props, ADSBDao dao, RtlSdrLock lock) {
+	public ADSB(Configuration props, ADSBDao dao, RtlSdrLock lock, ProcessFactory processFactory) {
 		this.props = props;
 		this.dao = dao;
 		this.lock = lock;
 		this.enabled = props.getBoolean("rx.adsb.enabled");
 		this.throttleIntervalMillis = props.getLong("rx.adsb.reconnect.interval");
-		
+		this.processFactory = processFactory;
+
 		Option modeac = new Option("modeac", "modeac", false, "Enable decoding of SSR Modes 3/A & 3/C");
 		Option fix = new Option("fix", "fix", false, "Enable single-bits error correction using CRC");
 		Option mlat = new Option("mlat", "mlat", false, "display raw messages in Beast ascii mode");
@@ -179,8 +183,7 @@ public class ADSB implements Lifecycle {
 			args.add("--ppm");
 			args.add(String.valueOf(ppm));
 			args.addAll(additionalCommandArgs);
-			dump1090 = new ProcessBuilder().inheritIO().command(args).start();
-			LOG.info("dump1090 started with arguments: " + args);
+			dump1090 = processFactory.create(args, false, true);
 		} catch (IOException e1) {
 			LOG.error("unable to start dump1090", e1);
 		}

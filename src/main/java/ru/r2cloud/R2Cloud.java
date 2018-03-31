@@ -93,7 +93,7 @@ public class R2Cloud {
 
 		predict = new Predict(props);
 		dao = new ADSBDao(props);
-		adsb = new ADSB(props, dao, rtlsdrLock);
+		adsb = new ADSB(props, dao, rtlsdrLock, processFactory);
 		auth = new Authenticator(props);
 		metrics = new Metrics(props);
 		rtlsdrStatusDao = new RtlSdrStatusDao(props, rtlsdrLock);
