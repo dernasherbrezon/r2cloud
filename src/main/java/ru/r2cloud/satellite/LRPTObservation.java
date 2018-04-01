@@ -44,8 +44,8 @@ import ru.r2cloud.util.Util;
 public class LRPTObservation implements Observation {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LRPTObservation.class);
-	private static final float INPUT_SAMPLE_RATE = 226000.0f;
-	private static final float OUTPUT_SAMPLE_RATE = 135000.0f;
+	private static final float INPUT_SAMPLE_RATE = 1440000.0f;
+	private static final float OUTPUT_SAMPLE_RATE = 150000.0f;
 	private static final int BUF_SIZE = 0x1000; // 4K
 
 	private ProcessWrapper rtlSdr = null;
@@ -81,7 +81,7 @@ public class LRPTObservation implements Observation {
 			if (ppm == null) {
 				ppm = 0;
 			}
-			sox = factory.create(config.getProperty("satellites.sox.path") + " -t raw -r " + INPUT_SAMPLE_RATE + " -es -b 8 --channels 2 - " + wavPath.getAbsolutePath() + " rate " + OUTPUT_SAMPLE_RATE, Redirect.INHERIT, false);
+			sox = factory.create(config.getProperty("satellites.sox.path") + " --type raw --rate " + INPUT_SAMPLE_RATE + " --encoding unsigned-integer --bits 8 --channels 2 - " + wavPath.getAbsolutePath() + " rate " + OUTPUT_SAMPLE_RATE, Redirect.INHERIT, false);
 			rtlSdr = factory.create(config.getProperty("satellites.rtlsdr.path") + " -f " + String.valueOf(satellite.getFrequency()) + " -s " + INPUT_SAMPLE_RATE + " -g 45 -p " + String.valueOf(ppm) + " - ", Redirect.INHERIT, false);
 			byte[] buf = new byte[BUF_SIZE];
 			while (!Thread.currentThread().isInterrupted()) {
