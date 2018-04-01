@@ -2,8 +2,11 @@
 
 # r2cloud is executed under user pi, thus unable to change cron.daily.
 if [ -f /home/pi/r2cloud/DO_NOT_UPDATE ]; then
+    printf "auto update is disabled" | systemd-cat -t r2cloud
 	exit 0
 fi
+
+printf "updating r2cloud" | systemd-cat -t r2cloud
 
 sudo apt-get update
 sudo apt-get install r2cloud r2cloud-ui
