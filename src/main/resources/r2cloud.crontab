@@ -6,7 +6,9 @@ if [ -f /home/pi/r2cloud/DO_NOT_UPDATE ]; then
 	exit 0
 fi
 
+MAILTO=""
+
 printf "updating r2cloud" | systemd-cat -t r2cloud
 
-sudo apt-get update
-sudo apt-get install r2cloud r2cloud-ui
+systemd-cat -t r2cloud apt-get update
+systemd-cat -t r2cloud apt-get install r2cloud r2cloud-ui
