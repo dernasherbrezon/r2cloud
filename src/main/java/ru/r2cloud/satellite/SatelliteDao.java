@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.FilenameComparator;
 import ru.r2cloud.model.ObservationResult;
@@ -124,6 +125,10 @@ public class SatelliteDao {
 			result.setGain(meta.getString("gain", null));
 			result.setChannelA(meta.getString("channelA", null));
 			result.setChannelB(meta.getString("channelB", null));
+			JsonValue numberOfPacketsDecodedStr = meta.get("numberOfDecodedPackets");
+			if (numberOfPacketsDecodedStr != null) {
+				result.setNumberOfDecodedPackets(numberOfPacketsDecodedStr.asLong());
+			}
 		} catch (Exception e) {
 			LOG.error("unable to load meta", e);
 		}
