@@ -15,6 +15,15 @@ public class ObservationResult {
 	private Date start;
 	private Date end;
 	private String spectogramURL;
+	private Long numberOfDecodedPackets;
+	
+	public Long getNumberOfDecodedPackets() {
+		return numberOfDecodedPackets;
+	}
+	
+	public void setNumberOfDecodedPackets(Long numberOfDecodedPackets) {
+		this.numberOfDecodedPackets = numberOfDecodedPackets;
+	}
 
 	public String getSpectogramURL() {
 		return spectogramURL;

@@ -15,6 +15,9 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+
 import ru.r2cloud.jradio.BufferedByteInput;
 import ru.r2cloud.jradio.Context;
 import ru.r2cloud.jradio.blocks.AGC;
@@ -33,6 +36,7 @@ import ru.r2cloud.jradio.blocks.Window;
 import ru.r2cloud.jradio.lrpt.LRPT;
 import ru.r2cloud.jradio.meteor.MeteorImage;
 import ru.r2cloud.jradio.source.WavFileSource;
+import ru.r2cloud.jradio.util.Metrics;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.model.SatPass;
 import ru.r2cloud.model.Satellite;
@@ -51,6 +55,7 @@ public class LRPTObservation implements Observation {
 	private ProcessWrapper rtlSdr = null;
 	private File wavPath;
 
+	private final MetricRegistry r2cloudRegistry = Metrics.getRegistry();
 	private final Satellite satellite;
 	private final Configuration config;
 	private final SatPass nextPass;
@@ -170,9 +175,15 @@ public class LRPTObservation implements Observation {
 			}
 		}
 
+		Counter numberOfDecodedPackets = r2cloudRegistry.counter(LRPT.class.getName());
+		
 		cur.setStart(nextPass.getStart().getTime());
 		cur.setEnd(nextPass.getEnd().getTime());
+		cur.setNumberOfDecodedPackets(numberOfDecodedPackets.getCount());
 		dao.saveMeta(satellite.getId(), cur);
+		
+		//reset counter
+		numberOfDecodedPackets.dec(numberOfDecodedPackets.getCount());
 	}
 
 	@Override
