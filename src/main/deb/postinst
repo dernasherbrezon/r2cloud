@@ -35,3 +35,9 @@ cp ${config.installDir}/etc/sudoers-nginx.conf /etc/sudoers.d/nginx
 chmod 440 /etc/sudoers.d/nginx
 
 usermod -a -G systemd-journal pi
+if [ ! -d /var/log/journal ]; then
+    echo "enable persistent journald logs"
+    mkdir -p /var/log/journal
+    #fix group permissions for the folder
+    systemd-tmpfiles --create --prefix /var/log/journal
+fi
