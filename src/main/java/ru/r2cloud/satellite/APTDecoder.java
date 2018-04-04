@@ -29,17 +29,17 @@ public class APTDecoder {
 		this.factory = factory;
 	}
 
-	public APTResult decode(final File wavFile, String type) {
+	public APTResult decode(final File wavFile) {
 		File image;
 		try {
-			image = File.createTempFile("apt", type);
+			image = File.createTempFile("apt", "a");
 		} catch (IOException e1) {
 			LOG.error("unable to create temp file", e1);
 			return new APTResult();
 		}
 		ProcessWrapper process = null;
 		try {
-			process = factory.create(config.getProperty("satellites.wxtoimg.path") + " -t n -" + type + " -c -o " + wavFile.getAbsolutePath() + " " + image.getAbsolutePath(), true, false);
+			process = factory.create(config.getProperty("satellites.wxtoimg.path") + " -t n -c -o " + wavFile.getAbsolutePath() + " " + image.getAbsolutePath(), true, false);
 			final InputStream is = process.getInputStream();
 			final List<String> output = new ArrayList<>();
 			Thread tis = new Thread(new Runnable() {

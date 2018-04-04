@@ -98,14 +98,9 @@ public class APTObservation implements Observation {
 			return;
 		}
 
-		APTResult result = aptDecoder.decode(cur.getWavPath(), "a");
+		APTResult result = aptDecoder.decode(cur.getWavPath());
 		if (result.getImage() != null) {
 			dao.saveChannel(satellite.getId(), observationId, result.getImage(), "a");
-			// decode b channel only if a was successfully decoded
-			result = aptDecoder.decode(cur.getWavPath(), "b");
-			if (result.getImage() != null) {
-				dao.saveChannel(satellite.getId(), observationId, result.getImage(), "b");
-			}
 		}
 
 		cur.setStart(nextPass.getStart().getTime());
