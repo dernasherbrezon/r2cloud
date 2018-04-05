@@ -49,7 +49,7 @@ public class LRPTObservation implements Observation {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LRPTObservation.class);
 	private static final float INPUT_SAMPLE_RATE = 1440000.0f;
-	private static final float OUTPUT_SAMPLE_RATE = 150000.0f;
+	private static final float OUTPUT_SAMPLE_RATE = 130000.0f;
 	private static final int BUF_SIZE = 0x1000; // 4K
 
 	private ProcessWrapper rtlSdr = null;
