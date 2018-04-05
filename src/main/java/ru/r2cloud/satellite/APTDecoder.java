@@ -39,7 +39,7 @@ public class APTDecoder {
 		}
 		ProcessWrapper process = null;
 		try {
-			process = factory.create(config.getProperty("satellites.wxtoimg.path") + " -t n -c -o " + wavFile.getAbsolutePath() + " " + image.getAbsolutePath(), true, false);
+			process = factory.create(config.getProperty("satellites.wxtoimg.path") + " -e HVC -t n -c -o " + wavFile.getAbsolutePath() + " " + image.getAbsolutePath(), true, false);
 			final InputStream is = process.getInputStream();
 			final List<String> output = new ArrayList<>();
 			Thread tis = new Thread(new Runnable() {
