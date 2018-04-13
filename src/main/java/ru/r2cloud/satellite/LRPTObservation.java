@@ -6,20 +6,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 
-import ru.r2cloud.jradio.BufferedByteInput;
 import ru.r2cloud.jradio.Context;
+import ru.r2cloud.jradio.PhaseAmbiguityResolver;
 import ru.r2cloud.jradio.blocks.AGC;
 import ru.r2cloud.jradio.blocks.ClockRecoveryMMComplex;
 import ru.r2cloud.jradio.blocks.Constellation;
@@ -146,16 +143,12 @@ public class LRPTObservation implements Observation {
 			Rail rail = new Rail(constelDecoder, -1.0f, 1.0f);
 			FloatToChar f2char = new FloatToChar(rail, 127.0f);
 
-			Set<String> accessCodes = new HashSet<>(LRPT.SYNCHRONIZATION_MARKERS.length);
-			for (long curMarker : LRPT.SYNCHRONIZATION_MARKERS) {
-				accessCodes.add(StringUtils.leftPad(Long.toBinaryString(curMarker), 64, '0'));
-			}
+			PhaseAmbiguityResolver phaseAmbiguityResolver = new PhaseAmbiguityResolver(0x035d49c24ff2686bL);
 
 			Context context = new Context();
-			BufferedByteInput buffer = new BufferedByteInput(f2char, 8160 * 2, 8 * 2);
-			CorrelateAccessCodeTag correlate = new CorrelateAccessCodeTag(context, buffer, 12, accessCodes, true);
+			CorrelateAccessCodeTag correlate = new CorrelateAccessCodeTag(context, f2char, 12, phaseAmbiguityResolver.getSynchronizationMarkers(), true);
 			TaggedStreamToPdu tag = new TaggedStreamToPdu(context, new FixedLengthTagger(context, correlate, 8160 * 2 + 8 * 2));
-			lrpt = new LRPT(context, tag, buffer);
+			lrpt = new LRPT(context, tag, phaseAmbiguityResolver);
 			MeteorImage image = new MeteorImage(lrpt);
 			BufferedImage actual = image.toBufferedImage();
 			if (actual != null) {
