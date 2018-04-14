@@ -10,5 +10,5 @@ MAILTO=""
 
 printf "updating r2cloud" | systemd-cat -t r2cloud
 
-systemd-cat -t r2cloud apt-get update
-systemd-cat -t r2cloud apt-get install r2cloud r2cloud-ui
+systemd-cat -t r2cloud apt-get -y update
+systemd-cat -t r2cloud apt-get -y install r2cloud r2cloud-ui
