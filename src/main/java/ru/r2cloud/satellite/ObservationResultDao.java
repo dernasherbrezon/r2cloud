@@ -61,10 +61,12 @@ public class ObservationResultDao {
 
 	private static ObservationResult find(String satelliteId, File curDirectory) {
 		ObservationResult cur = new ObservationResult();
+		cur.setSatelliteId(satelliteId);
 		cur.setId(curDirectory.getName());
 		cur.setStart(new Date(Long.valueOf(curDirectory.getName())));
 		File a = new File(curDirectory, "a.jpg");
 		if (a.exists()) {
+			cur.setaPath(a);
 			cur.setaURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + cur.getId() + "/a.jpg");
 		}
 		File b = new File(curDirectory, "b.jpg");
@@ -77,35 +79,26 @@ public class ObservationResultDao {
 		}
 		File spectogram = new File(curDirectory, "spectogram.png");
 		if (spectogram.exists()) {
+			cur.setSpectogramPath(spectogram);
 			cur.setSpectogramURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + cur.getId() + "/spectogram.png");
 		}
-		return cur;
-	}
-
-	public ObservationResult findMeta(String satelliteId, String id) {
-		ObservationResult result = find(satelliteId, id);
-		if (result == null) {
-			return null;
-		}
-		File dest = new File(basepath, satelliteId + File.separator + "data" + File.separator + id + File.separator + "meta.json");
-		if (!dest.exists()) {
-			return result;
-		}
-		try (BufferedReader r = new BufferedReader(new FileReader(dest))) {
-			JsonObject meta = Json.parse(r).asObject();
-			result.setStart(new Date(meta.getLong("start", -1L)));
-			result.setEnd(new Date(meta.getLong("end", -1L)));
-			result.setGain(meta.getString("gain", null));
-			result.setChannelA(meta.getString("channelA", null));
-			result.setChannelB(meta.getString("channelB", null));
-			JsonValue numberOfPacketsDecodedStr = meta.get("numberOfDecodedPackets");
-			if (numberOfPacketsDecodedStr != null) {
-				result.setNumberOfDecodedPackets(numberOfPacketsDecodedStr.asLong());
+		File dest = new File(curDirectory, "meta.json");
+		if (dest.exists()) {
+			try (BufferedReader r = new BufferedReader(new FileReader(dest))) {
+				JsonObject meta = Json.parse(r).asObject();
+				cur.setEnd(new Date(meta.getLong("end", -1L)));
+				cur.setGain(meta.getString("gain", null));
+				cur.setChannelA(meta.getString("channelA", null));
+				cur.setChannelB(meta.getString("channelB", null));
+				JsonValue numberOfPacketsDecodedStr = meta.get("numberOfDecodedPackets");
+				if (numberOfPacketsDecodedStr != null) {
+					cur.setNumberOfDecodedPackets(numberOfPacketsDecodedStr.asLong());
+				}
+			} catch (Exception e) {
+				LOG.error("unable to load meta", e);
 			}
-		} catch (Exception e) {
-			LOG.error("unable to load meta", e);
 		}
-		return result;
+		return cur;
 	}
 
 	public boolean saveChannel(String satelliteId, String observationId, File a, String type) {

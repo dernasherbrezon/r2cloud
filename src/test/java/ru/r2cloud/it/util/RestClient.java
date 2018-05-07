@@ -172,6 +172,31 @@ public class RestClient implements Closeable {
 			}
 		}
 	}
+	
+	public void triggerUpload(String satelliteId, String observationId) {
+		LOG.info("trigger uploading");
+		HttpPost m = new HttpPost(baseUrl + "/api/v1/admin/weather/observation/upload");
+		m.addHeader("Authorization", "Bearer " + accessToken);
+		JsonObject json = Json.object();
+		json.add("satelliteId", satelliteId);
+		json.add("observationId", observationId);
+		m.setEntity(new StringEntity(json.toString(), ContentType.APPLICATION_JSON));
+		HttpResponse response = null;
+		try {
+			response = httpclient.execute(m);
+			int statusCode = response.getStatusLine().getStatusCode();
+			if (statusCode != HttpStatus.SC_OK) {
+				LOG.info("response: " + EntityUtils.toString(response.getEntity()));
+				throw new RuntimeException("invalid status code: " + statusCode);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (response != null) {
+				EntityUtils.consumeQuietly(response.getEntity());
+			}
+		}
+	}
 
 	public JsonObject getR2CloudConfiguration() {
 		LOG.info("get r2cloud configuration");

@@ -32,7 +32,7 @@ public class WeatherObservation extends AbstractHttpController {
 			LOG.info("missing parameters");
 			return new BadRequest("missing parameters");
 		}
-		ObservationResult entity = resultDao.findMeta(satelliteId, id);
+		ObservationResult entity = resultDao.find(satelliteId, id);
 		if (entity == null) {
 			LOG.info("not found: " + satelliteId + " id: " + id);
 			return new NotFound();
