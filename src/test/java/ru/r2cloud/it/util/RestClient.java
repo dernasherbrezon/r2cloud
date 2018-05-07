@@ -30,7 +30,11 @@ public class RestClient implements Closeable {
 	private String accessToken;
 
 	public RestClient(String baseUrl) throws Exception {
-		this.baseUrl = baseUrl;
+		if (baseUrl == null) {
+			this.baseUrl = "https://r2.localhost";
+		} else {
+			this.baseUrl = baseUrl;
+		}
 		SSLContextBuilder builder = new SSLContextBuilder();
 		builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
 		SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
@@ -64,7 +68,7 @@ public class RestClient implements Closeable {
 			httpclient.close();
 		}
 	}
-	
+
 	public void login(String username, String password) {
 		LOG.info("login");
 		HttpPost m = new HttpPost(baseUrl + "/api/v1/accessToken");
@@ -81,7 +85,7 @@ public class RestClient implements Closeable {
 				LOG.info("response: " + responseBody);
 				throw new RuntimeException("invalid status code: " + statusCode);
 			}
-			JsonObject object = (JsonObject)Json.parse(responseBody);
+			JsonObject object = (JsonObject) Json.parse(responseBody);
 			accessToken = object.get("access_token").asString();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -119,7 +123,11 @@ public class RestClient implements Closeable {
 
 	public JsonObject getTle() {
 		LOG.info("get tle");
-		HttpGet m = new HttpGet(baseUrl + "/api/v1/admin/tle");
+		return getData("/api/v1/admin/tle");
+	}
+
+	private JsonObject getData(String url) {
+		HttpGet m = new HttpGet(baseUrl + url);
 		m.addHeader("Authorization", "Bearer " + accessToken);
 		HttpResponse response = null;
 		try {
@@ -138,6 +146,36 @@ public class RestClient implements Closeable {
 				EntityUtils.consumeQuietly(response.getEntity());
 			}
 		}
+	}
+
+	public void saveR2CloudConfiguration(String apiKey, boolean syncSpectogram) {
+		LOG.info("save r2cloud configuration");
+		HttpPost m = new HttpPost(baseUrl + "/api/v1/admin/config/r2cloud");
+		m.addHeader("Authorization", "Bearer " + accessToken);
+		JsonObject json = Json.object();
+		json.add("apiKey", apiKey);
+		json.add("syncSpectogram", syncSpectogram);
+		m.setEntity(new StringEntity(json.toString(), ContentType.APPLICATION_JSON));
+		HttpResponse response = null;
+		try {
+			response = httpclient.execute(m);
+			int statusCode = response.getStatusLine().getStatusCode();
+			if (statusCode != HttpStatus.SC_OK) {
+				LOG.info("response: " + EntityUtils.toString(response.getEntity()));
+				throw new RuntimeException("invalid status code: " + statusCode);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (response != null) {
+				EntityUtils.consumeQuietly(response.getEntity());
+			}
+		}
+	}
+
+	public JsonObject getR2CloudConfiguration() {
+		LOG.info("get r2cloud configuration");
+		return getData("/api/v1/admin/config/r2cloud");
 	}
 
 }
