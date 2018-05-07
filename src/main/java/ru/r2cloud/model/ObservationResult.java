@@ -16,11 +16,39 @@ public class ObservationResult {
 	private Date end;
 	private String spectogramURL;
 	private Long numberOfDecodedPackets;
+	private String satelliteId;
+
+	private File aPath;
+	private File spectogramPath;
 	
+	public String getSatelliteId() {
+		return satelliteId;
+	}
+	
+	public void setSatelliteId(String satelliteId) {
+		this.satelliteId = satelliteId;
+	}
+
+	public File getaPath() {
+		return aPath;
+	}
+
+	public void setaPath(File aPath) {
+		this.aPath = aPath;
+	}
+
+	public File getSpectogramPath() {
+		return spectogramPath;
+	}
+
+	public void setSpectogramPath(File spectogramPath) {
+		this.spectogramPath = spectogramPath;
+	}
+
 	public Long getNumberOfDecodedPackets() {
 		return numberOfDecodedPackets;
 	}
-	
+
 	public void setNumberOfDecodedPackets(Long numberOfDecodedPackets) {
 		this.numberOfDecodedPackets = numberOfDecodedPackets;
 	}

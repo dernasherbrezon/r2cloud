@@ -5,9 +5,7 @@ import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -20,6 +18,7 @@ import ru.r2cloud.model.APTResult;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.satellite.APTDecoder;
 import ru.r2cloud.util.ProcessFactory;
+import ru.r2cloud.util.Util;
 
 public class APTDecoderIT {
 
@@ -35,7 +34,7 @@ public class APTDecoderIT {
 		config.setProperty("satellites.wxtoimg.path", "wxtoimg");
 		File wav = new File(tempFolder.getRoot(), "output.wav");
 		try (FileOutputStream fos = new FileOutputStream(wav); InputStream is = APTDecoderIT.class.getClassLoader().getResourceAsStream("8bit.wav")) {
-			copy(is, fos);
+			Util.copy(is, fos);
 		}
 		APTDecoder decoder = new APTDecoder(config, factory);
 		APTResult result = decoder.decode(wav);
@@ -60,11 +59,4 @@ public class APTDecoderIT {
 		factory = new ProcessFactory();
 	}
 
-	public static void copy(InputStream input, OutputStream output) throws IOException {
-		byte[] buffer = new byte[1024 * 4];
-		int n = 0;
-		while (-1 != (n = input.read(buffer))) {
-			output.write(buffer, 0, n);
-		}
-	}
 }

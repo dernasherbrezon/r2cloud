@@ -25,6 +25,7 @@ import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.RtlSdrLock;
 import ru.r2cloud.TestConfiguration;
+import ru.r2cloud.cloud.R2CloudService;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.ThreadPoolFactory;
@@ -38,6 +39,7 @@ public class SchedulerTest {
 	private SatelliteDao satelliteDao;
 	private ObservationFactory factory;
 	private ThreadPoolFactory threadPool;
+	private R2CloudService r2cloudService;
 	private ScheduledExecutorService executor;
 	private APTObservation observation;
 	private Clock clock;
@@ -52,7 +54,7 @@ public class SchedulerTest {
 		when(observation.getStart()).thenReturn(start);
 		when(observation.getEnd()).thenReturn(end);
 		when(clock.millis()).thenReturn(current.getTime());
-		Scheduler s = new Scheduler(config, satelliteDao, new RtlSdrLock(), factory, threadPool, clock);
+		Scheduler s = new Scheduler(config, satelliteDao, new RtlSdrLock(), factory, threadPool, clock, r2cloudService);
 		s.start();
 
 		verify(executor).schedule(any(Runnable.class), eq(TimeUnit.HOURS.toMillis(7)), eq(TimeUnit.MILLISECONDS));
@@ -62,7 +64,7 @@ public class SchedulerTest {
 	@Test
 	public void testListenToConfiguration() throws Exception {
 		config.setProperty("satellites.enabled", false);
-		Scheduler s = new Scheduler(config, satelliteDao, new RtlSdrLock(), factory, threadPool, clock);
+		Scheduler s = new Scheduler(config, satelliteDao, new RtlSdrLock(), factory, threadPool, clock, r2cloudService);
 		s.start();
 
 		verify(executor, never()).schedule(any(Runnable.class), anyLong(), any());
@@ -75,7 +77,7 @@ public class SchedulerTest {
 
 	@Test
 	public void testLifecycle() {
-		Scheduler s = new Scheduler(config, satelliteDao, new RtlSdrLock(), factory, threadPool, clock);
+		Scheduler s = new Scheduler(config, satelliteDao, new RtlSdrLock(), factory, threadPool, clock, r2cloudService);
 		s.start();
 		s.start();
 
@@ -98,6 +100,7 @@ public class SchedulerTest {
 		observation = mock(APTObservation.class);
 		threadPool = mock(ThreadPoolFactory.class);
 		executor = mock(ScheduledExecutorService.class);
+		r2cloudService = mock(R2CloudService.class);
 		when(threadPool.newScheduledThreadPool(anyInt(), any())).thenReturn(executor);
 		when(factory.create(any(), any())).thenReturn(observation);
 		when(observation.getStart()).thenReturn(new Date());

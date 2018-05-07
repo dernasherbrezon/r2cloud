@@ -8,6 +8,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.cloud.R2CloudClient;
+import ru.r2cloud.cloud.R2CloudService;
 import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.rx.ADSB;
@@ -82,6 +84,9 @@ public class R2Cloud {
 	private final ProcessFactory processFactory;
 	private final APTDecoder aptDecoder;
 	private final ObservationResultDao resultDao;
+	private final R2CloudService r2cloudService;
+	private final R2CloudClient r2cloudClient;
+	private final SpectogramService spectogramService = new SpectogramService();
 
 	public R2Cloud(String propertiesLocation) {
 		props = new Configuration(propertiesLocation, System.getProperty("user.home") + File.separator + ".r2cloud");
@@ -109,7 +114,9 @@ public class R2Cloud {
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient("http://celestrak.com"));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
 		observationFactory = new ObservationFactory(props, predict, tleDao, processFactory, resultDao, aptDecoder);
-		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock);
+		r2cloudClient = new R2CloudClient(props);
+		r2cloudService = new R2CloudService(props, resultDao, r2cloudClient, spectogramService);
+		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, r2cloudService);
 
 		// setup web server
 		index(new Health());
@@ -129,7 +136,7 @@ public class R2Cloud {
 		index(new R2CloudSave(props));
 		index(new Weather(props, satelliteDao, scheduler, resultDao));
 		index(new WeatherObservation(resultDao));
-		index(new WeatherSpectrogram(resultDao));
+		index(new WeatherSpectrogram(resultDao, spectogramService));
 		webServer = new WebServer(props, controllers, auth);
 	}
 

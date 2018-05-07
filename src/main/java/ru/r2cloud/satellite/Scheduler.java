@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.Lifecycle;
 import ru.r2cloud.RtlSdrLock;
+import ru.r2cloud.cloud.R2CloudService;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
@@ -31,6 +32,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private final RtlSdrLock lock;
 	private final ThreadPoolFactory threadpoolFactory;
 	private final Clock clock;
+	private final R2CloudService r2cloudService;
 
 	private final Map<String, Date> scheduledObservations = new ConcurrentHashMap<String, Date>();
 
@@ -38,7 +40,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private ScheduledExecutorService reaper = null;
 	private ScheduledExecutorService decoder = null;
 
-	public Scheduler(Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock) {
+	public Scheduler(Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, R2CloudService r2cloudService) {
 		this.config = config;
 		this.config.subscribe(this, "satellites.enabled");
 		this.satellites = satellites;
@@ -46,6 +48,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		this.factory = factory;
 		this.threadpoolFactory = threadpoolFactory;
 		this.clock = clock;
+		this.r2cloudService = r2cloudService;
 	}
 
 	@Override
@@ -120,6 +123,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 						LOG.info("decoding: {}", cur.getName());
 						observation.decode();
 						LOG.info("decoded: {}", cur.getName());
+						r2cloudService.uploadObservation(cur.getId(), observation.getId());
 					}
 				});
 			}

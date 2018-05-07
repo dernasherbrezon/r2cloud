@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -137,6 +138,14 @@ public final class Util {
 			result.add(cur);
 		}
 		return result;
+	}
+	
+	public static void copy(InputStream input, OutputStream output) throws IOException {
+		byte[] buffer = new byte[1024 * 4];
+		int n = 0;
+		while (-1 != (n = input.read(buffer))) {
+			output.write(buffer, 0, n);
+		}
 	}
 
 	private Util() {

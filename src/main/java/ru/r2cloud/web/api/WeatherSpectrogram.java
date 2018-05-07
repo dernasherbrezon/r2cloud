@@ -1,12 +1,6 @@
 package ru.r2cloud.web.api;
 
-import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-
-import javax.imageio.ImageIO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +10,7 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
-import ru.r2cloud.jradio.sink.Spectogram;
-import ru.r2cloud.jradio.source.WavFileSource;
+import ru.r2cloud.SpectogramService;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.satellite.ObservationResultDao;
 import ru.r2cloud.web.AbstractHttpController;
@@ -32,10 +25,11 @@ public class WeatherSpectrogram extends AbstractHttpController {
 	private static final Logger LOG = LoggerFactory.getLogger(WeatherSpectrogram.class);
 
 	private final ObservationResultDao dao;
-	private final Spectogram spectogram = new Spectogram(2, 1024);
+	private final SpectogramService spectogramService;
 
-	public WeatherSpectrogram(ObservationResultDao dao) {
+	public WeatherSpectrogram(ObservationResultDao dao, SpectogramService spectogramService) {
 		this.dao = dao;
+		this.spectogramService = spectogramService;
 	}
 
 	@Override
@@ -61,19 +55,16 @@ public class WeatherSpectrogram extends AbstractHttpController {
 			return new NotFound();
 		}
 
-		try (InputStream is = new BufferedInputStream(new FileInputStream(observation.getWavPath()))) {
-			WavFileSource source = new WavFileSource(is);
-			BufferedImage image = spectogram.process(source);
-			File tmp = File.createTempFile(observation.getId() + "-", "-spectogram.png");
-			ImageIO.write(image, "png", tmp);
-			if (!dao.saveSpectogram(satelliteId, id, tmp)) {
-				LOG.info("unable to save spectogram");
-				return new InternalServerError();
-			}
-		} catch (Exception e) {
-			LOG.error("unable to create waterfall", e);
+		File spectogram = spectogramService.create(observation.getWavPath());
+		if (spectogram == null) {
 			return new InternalServerError();
 		}
+
+		if (!dao.saveSpectogram(satelliteId, id, spectogram)) {
+			LOG.info("unable to save spectogram");
+			return new InternalServerError();
+		}
+
 		observation = dao.find(satelliteId, id);
 		JsonObject entity = new JsonObject();
 		entity.add("spectogramURL", observation.getSpectogramURL());
