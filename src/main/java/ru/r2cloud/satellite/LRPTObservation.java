@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
+import java.util.Date;
 
 import javax.imageio.ImageIO;
 
@@ -169,19 +170,29 @@ public class LRPTObservation implements Observation {
 		}
 
 		Counter numberOfDecodedPackets = r2cloudRegistry.counter(LRPT.class.getName());
-		
+
 		cur.setStart(nextPass.getStart().getTime());
 		cur.setEnd(nextPass.getEnd().getTime());
 		cur.setNumberOfDecodedPackets(numberOfDecodedPackets.getCount());
 		dao.saveMeta(satellite.getId(), cur);
-		
-		//reset counter
+
+		// reset counter
 		numberOfDecodedPackets.dec(numberOfDecodedPackets.getCount());
 	}
 
 	@Override
-	public SatPass getNextPass() {
-		return nextPass;
+	public Date getStart() {
+		return nextPass.getStart().getTime();
+	}
+
+	@Override
+	public Date getEnd() {
+		return nextPass.getEnd().getTime();
+	}
+
+	@Override
+	public String getId() {
+		return observationId;
 	}
 
 }

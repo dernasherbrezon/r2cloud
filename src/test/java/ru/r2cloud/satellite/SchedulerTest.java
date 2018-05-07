@@ -25,11 +25,9 @@ import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.RtlSdrLock;
 import ru.r2cloud.TestConfiguration;
-import ru.r2cloud.model.SatPass;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.ThreadPoolFactory;
-import uk.me.g4dpz.satellite.SatPos;
 
 public class SchedulerTest {
 
@@ -51,7 +49,8 @@ public class SchedulerTest {
 		Date current = sdf.parse("2017-10-23 00:00:00, 000");
 		Date start = sdf.parse("2017-10-23 07:00:00, 000");
 		Date end = sdf.parse("2017-10-23 08:00:00, 000");
-		when(observation.getNextPass()).thenReturn(create(start, end));
+		when(observation.getStart()).thenReturn(start);
+		when(observation.getEnd()).thenReturn(end);
 		when(clock.millis()).thenReturn(current.getTime());
 		Scheduler s = new Scheduler(config, satelliteDao, new RtlSdrLock(), factory, threadPool, clock);
 		s.start();
@@ -101,20 +100,10 @@ public class SchedulerTest {
 		executor = mock(ScheduledExecutorService.class);
 		when(threadPool.newScheduledThreadPool(anyInt(), any())).thenReturn(executor);
 		when(factory.create(any(), any())).thenReturn(observation);
-		when(observation.getNextPass()).thenReturn(create(new Date(), new Date()));
-		when(satelliteDao.findSupported()).thenReturn(Collections.singletonList(createSatellite(id)));
+		when(observation.getStart()).thenReturn(new Date());
+		when(observation.getEnd()).thenReturn(new Date());
+		when(satelliteDao.findAll()).thenReturn(Collections.singletonList(createSatellite(id)));
 		when(executor.awaitTermination(anyLong(), any())).thenReturn(true);
-	}
-
-	private static SatPass create(Date start, Date end) {
-		SatPos startPos = new SatPos();
-		startPos.setTime(start);
-		SatPos endPos = new SatPos();
-		endPos.setTime(end);
-		SatPass result = new SatPass();
-		result.setStart(startPos);
-		result.setEnd(endPos);
-		return result;
 	}
 
 	private static Satellite createSatellite(String id) {

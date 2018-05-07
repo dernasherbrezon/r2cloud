@@ -56,7 +56,7 @@ public class TLEDao implements ConfigListener {
 			return;
 		}
 		boolean reload = false;
-		for (Satellite cur : satelliteDao.findSupported()) {
+		for (Satellite cur : satelliteDao.findAll()) {
 			File tleFile = new File(basepath, cur.getId() + File.separator + "tle.txt");
 			if (!tleFile.exists()) {
 				LOG.info("missing tle for " + cur.getName() + ". schedule reloading");

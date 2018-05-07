@@ -30,7 +30,7 @@ public class SatelliteDao {
 		return satelliteByName.get(name);
 	}
 
-	public List<Satellite> findSupported() {
+	public List<Satellite> findAll() {
 		return satellites;
 	}
 

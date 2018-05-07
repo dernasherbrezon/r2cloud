@@ -1,6 +1,6 @@
 package ru.r2cloud.satellite;
 
-import ru.r2cloud.model.SatPass;
+import java.util.Date;
 
 public interface Observation {
 
@@ -10,5 +10,9 @@ public interface Observation {
 	
 	void decode();
 
-	SatPass getNextPass();
+	Date getStart();
+	
+	Date getEnd();
+	
+	String getId();
 }

@@ -68,7 +68,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		if (scheduler != null) {
 			return;
 		}
-		List<ru.r2cloud.model.Satellite> supportedSatellites = satellites.findSupported();
+		List<ru.r2cloud.model.Satellite> supportedSatellites = satellites.findAll();
 		scheduler = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("scheduler"));
 		reaper = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("reaper"));
 		decoder = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("decoder"));
@@ -82,11 +82,11 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private void schedule(ru.r2cloud.model.Satellite cur) {
 		long current = clock.millis();
 		Observation observation = factory.create(new Date(current), cur);
-		if (observation == null || observation.getNextPass() == null) {
+		if (observation == null) {
 			return;
 		}
-		LOG.info("scheduled next pass for " + cur.getName() + ": " + observation.getNextPass());
-		scheduledObservations.put(cur.getId(), observation.getNextPass().getStart().getTime());
+		LOG.info("scheduled next pass for " + cur.getName() + ": " + observation.getStart());
+		scheduledObservations.put(cur.getId(), observation.getStart());
 		Future<?> future = scheduler.schedule(new SafeRunnable() {
 
 			@Override
@@ -101,7 +101,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 					lock.unlock(Scheduler.this);
 				}
 			}
-		}, observation.getNextPass().getStart().getTime().getTime() - current, TimeUnit.MILLISECONDS);
+		}, observation.getStart().getTime() - current, TimeUnit.MILLISECONDS);
 		reaper.schedule(new SafeRunnable() {
 
 			@Override
@@ -123,7 +123,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 					}
 				});
 			}
-		}, observation.getNextPass().getEnd().getTime().getTime() - current, TimeUnit.MILLISECONDS);
+		}, observation.getEnd().getTime() - current, TimeUnit.MILLISECONDS);
 	}
 
 	public Date getNextObservation(String id) {

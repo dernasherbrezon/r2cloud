@@ -115,7 +115,7 @@ public class TLEDaoTest {
 		for (Satellite cur : supported) {
 			when(satelliteDao.findByName(cur.getName())).thenReturn(cur);
 		}
-		when(satelliteDao.findSupported()).thenReturn(supported);
+		when(satelliteDao.findAll()).thenReturn(supported);
 
 	}
 }

@@ -3,6 +3,7 @@ package ru.r2cloud.satellite;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,8 +113,18 @@ public class APTObservation implements Observation {
 	}
 
 	@Override
-	public SatPass getNextPass() {
-		return nextPass;
+	public Date getStart() {
+		return nextPass.getStart().getTime();
+	}
+	
+	@Override
+	public Date getEnd() {
+		return nextPass.getEnd().getTime();
+	}
+
+	@Override
+	public String getId() {
+		return observationId;
 	}
 
 }

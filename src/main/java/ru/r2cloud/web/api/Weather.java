@@ -38,7 +38,7 @@ public class Weather extends AbstractHttpController {
 		entity.add("enabled", isEnabled);
 		if (isEnabled) {
 			JsonArray satellites = new JsonArray();
-			List<Satellite> supported = dao.findSupported();
+			List<Satellite> supported = dao.findAll();
 			for (Satellite cur : supported) {
 				JsonObject satellite = new JsonObject();
 				satellite.add("id", cur.getId());
