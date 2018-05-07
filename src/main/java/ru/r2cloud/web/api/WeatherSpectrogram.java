@@ -19,7 +19,7 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.jradio.sink.Spectogram;
 import ru.r2cloud.jradio.source.WavFileSource;
 import ru.r2cloud.model.ObservationResult;
-import ru.r2cloud.satellite.SatelliteDao;
+import ru.r2cloud.satellite.ObservationResultDao;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
 import ru.r2cloud.web.InternalServerError;
@@ -31,10 +31,10 @@ public class WeatherSpectrogram extends AbstractHttpController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WeatherSpectrogram.class);
 
-	private final SatelliteDao dao;
+	private final ObservationResultDao dao;
 	private final Spectogram spectogram = new Spectogram(2, 1024);
 
-	public WeatherSpectrogram(SatelliteDao dao) {
+	public WeatherSpectrogram(ObservationResultDao dao) {
 		this.dao = dao;
 	}
 

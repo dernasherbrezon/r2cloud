@@ -57,10 +57,10 @@ public class LRPTObservation implements Observation {
 	private final Configuration config;
 	private final SatPass nextPass;
 	private final ProcessFactory factory;
-	private final SatelliteDao dao;
+	private final ObservationResultDao dao;
 	private final String observationId;
 
-	public LRPTObservation(Configuration config, Satellite satellite, SatPass nextPass, ProcessFactory factory, SatelliteDao dao) {
+	public LRPTObservation(Configuration config, Satellite satellite, SatPass nextPass, ProcessFactory factory, ObservationResultDao dao) {
 		this.config = config;
 		this.satellite = satellite;
 		this.nextPass = nextPass;

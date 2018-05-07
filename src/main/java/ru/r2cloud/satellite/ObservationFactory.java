@@ -21,10 +21,10 @@ public class ObservationFactory {
 	private final Predict predict;
 	private final Configuration config;
 	private final ProcessFactory factory;
-	private final SatelliteDao dao;
+	private final ObservationResultDao dao;
 	private final APTDecoder aptDecoder;
 
-	public ObservationFactory(Configuration config, Predict predict, TLEDao tleDao, ProcessFactory factory, SatelliteDao dao, APTDecoder aptDecoder) {
+	public ObservationFactory(Configuration config, Predict predict, TLEDao tleDao, ProcessFactory factory, ObservationResultDao dao, APTDecoder aptDecoder) {
 		this.config = config;
 		this.predict = predict;
 		this.tleDao = tleDao;

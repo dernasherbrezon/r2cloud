@@ -28,11 +28,11 @@ public class APTObservation implements Observation {
 	private final Configuration config;
 	private final SatPass nextPass;
 	private final ProcessFactory factory;
-	private final SatelliteDao dao;
+	private final ObservationResultDao dao;
 	private final APTDecoder aptDecoder;
 	private final String observationId;
 
-	public APTObservation(Configuration config, Satellite satellite, SatPass nextPass, ProcessFactory factory, SatelliteDao dao, APTDecoder aptDecoder) {
+	public APTObservation(Configuration config, Satellite satellite, SatPass nextPass, ProcessFactory factory, ObservationResultDao dao, APTDecoder aptDecoder) {
 		this.config = config;
 		this.satellite = satellite;
 		this.nextPass = nextPass;

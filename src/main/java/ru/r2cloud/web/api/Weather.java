@@ -9,6 +9,7 @@ import com.eclipsesource.json.JsonObject;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.satellite.ObservationResultDao;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.Scheduler;
 import ru.r2cloud.util.Configuration;
@@ -19,11 +20,13 @@ public class Weather extends AbstractHttpController {
 
 	private final Configuration config;
 	private final SatelliteDao dao;
+	private final ObservationResultDao resultDao;
 	private final Scheduler scheduler;
 
-	public Weather(Configuration config, SatelliteDao dao, Scheduler scheduler) {
+	public Weather(Configuration config, SatelliteDao dao, Scheduler scheduler, ObservationResultDao resultDao) {
 		this.config = config;
 		this.dao = dao;
+		this.resultDao = resultDao;
 		this.scheduler = scheduler;
 	}
 
@@ -44,7 +47,7 @@ public class Weather extends AbstractHttpController {
 					satellite.add("nextPass", nextPass.getTime());
 				}
 				satellite.add("name", cur.getName());
-				List<ObservationResult> observations = dao.findWeatherObservations(cur.getId());
+				List<ObservationResult> observations = resultDao.findWeatherObservations(cur.getId());
 				JsonArray data = new JsonArray();
 				for (ObservationResult curObservation : observations) {
 					JsonObject curObservationObject = new JsonObject();

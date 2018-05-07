@@ -7,7 +7,7 @@ import com.eclipsesource.json.JsonObject;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.model.ObservationResult;
-import ru.r2cloud.satellite.SatelliteDao;
+import ru.r2cloud.satellite.ObservationResultDao;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
 import ru.r2cloud.web.ModelAndView;
@@ -18,10 +18,10 @@ public class WeatherObservation extends AbstractHttpController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WeatherObservation.class);
 
-	private final SatelliteDao dao;
+	private final ObservationResultDao resultDao;
 
-	public WeatherObservation(SatelliteDao dao) {
-		this.dao = dao;
+	public WeatherObservation(ObservationResultDao resultDao) {
+		this.resultDao = resultDao;
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class WeatherObservation extends AbstractHttpController {
 			LOG.info("missing parameters");
 			return new BadRequest("missing parameters");
 		}
-		ObservationResult entity = dao.findMeta(satelliteId, id);
+		ObservationResult entity = resultDao.findMeta(satelliteId, id);
 		if (entity == null) {
 			LOG.info("not found: " + satelliteId + " id: " + id);
 			return new NotFound();
