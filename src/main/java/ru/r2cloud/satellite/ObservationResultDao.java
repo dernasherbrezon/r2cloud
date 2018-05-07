@@ -36,8 +36,8 @@ public class ObservationResultDao {
 		this.maxCount = config.getInteger("scheduler.data.retention.count");
 	}
 
-	public List<ObservationResult> findWeatherObservations(String id) {
-		File dataRoot = new File(basepath, id + File.separator + "data");
+	public List<ObservationResult> findAllBySatelliteId(String satelliteId) {
+		File dataRoot = new File(basepath, satelliteId + File.separator + "data");
 		if (!dataRoot.exists()) {
 			return Collections.emptyList();
 		}
@@ -45,21 +45,21 @@ public class ObservationResultDao {
 		Arrays.sort(observations, FilenameComparator.INSTANCE_DESC);
 		List<ObservationResult> result = new ArrayList<ObservationResult>(observations.length);
 		for (File curDirectory : observations) {
-			ObservationResult cur = load(id, curDirectory);
+			ObservationResult cur = find(satelliteId, curDirectory);
 			result.add(cur);
 		}
 		return result;
 	}
 
-	public ObservationResult find(String satelliteId, String id) {
-		File baseDirectory = new File(basepath, satelliteId + File.separator + "data" + File.separator + id);
+	public ObservationResult find(String satelliteId, String observationId) {
+		File baseDirectory = new File(basepath, satelliteId + File.separator + "data" + File.separator + observationId);
 		if (!baseDirectory.exists()) {
 			return null;
 		}
-		return load(satelliteId, baseDirectory);
+		return find(satelliteId, baseDirectory);
 	}
 
-	private static ObservationResult load(String satelliteId, File curDirectory) {
+	private static ObservationResult find(String satelliteId, File curDirectory) {
 		ObservationResult cur = new ObservationResult();
 		cur.setId(curDirectory.getName());
 		cur.setStart(new Date(Long.valueOf(curDirectory.getName())));
@@ -108,8 +108,8 @@ public class ObservationResultDao {
 		return result;
 	}
 
-	public boolean saveChannel(String id, String observationId, File a, String type) {
-		File dest = new File(basepath, id + File.separator + "data" + File.separator + observationId + File.separator + type + ".jpg");
+	public boolean saveChannel(String satelliteId, String observationId, File a, String type) {
+		File dest = new File(basepath, satelliteId + File.separator + "data" + File.separator + observationId + File.separator + type + ".jpg");
 		if (dest.exists()) {
 			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
 			return false;
@@ -117,8 +117,8 @@ public class ObservationResultDao {
 		return a.renameTo(dest);
 	}
 
-	public boolean saveSpectogram(String id, String observationId, File a) {
-		File dest = new File(basepath, id + File.separator + "data" + File.separator + observationId + File.separator + "spectogram.png");
+	public boolean saveSpectogram(String satelliteId, String observationId, File a) {
+		File dest = new File(basepath, satelliteId + File.separator + "data" + File.separator + observationId + File.separator + "spectogram.png");
 		if (dest.exists()) {
 			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
 			return false;
@@ -126,8 +126,8 @@ public class ObservationResultDao {
 		return a.renameTo(dest);
 	}
 
-	public boolean createObservation(String id, String observationId, File file) {
-		File[] dataDirs = new File(basepath, id + File.separator + "data").listFiles();
+	public boolean createObservation(String satelliteId, String observationId, File wavPath) {
+		File[] dataDirs = new File(basepath, satelliteId + File.separator + "data").listFiles();
 		if (dataDirs != null && dataDirs.length > maxCount) {
 			Arrays.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
 			for (int i = 0; i < (dataDirs.length - maxCount); i++) {
@@ -135,7 +135,7 @@ public class ObservationResultDao {
 			}
 		}
 
-		File dest = new File(basepath, id + File.separator + "data" + File.separator + observationId + File.separator + "output.wav");
+		File dest = new File(basepath, satelliteId + File.separator + "data" + File.separator + observationId + File.separator + "output.wav");
 		if (!dest.getParentFile().exists() && !dest.getParentFile().mkdirs()) {
 			LOG.info("unable to create parent dir:" + dest.getParentFile().getAbsolutePath());
 			return false;
@@ -144,7 +144,7 @@ public class ObservationResultDao {
 			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
 			return false;
 		}
-		return file.renameTo(dest);
+		return wavPath.renameTo(dest);
 	}
 
 	public void saveMeta(String id, ObservationResult cur) {
