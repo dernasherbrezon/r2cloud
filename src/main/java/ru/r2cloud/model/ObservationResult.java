@@ -11,7 +11,6 @@ public class ObservationResult {
 	private String channelA;
 	private String channelB;
 	private String aURL;
-	private String bURL;
 	private String dataURL;
 	private Date start;
 	private Date end;
@@ -22,27 +21,27 @@ public class ObservationResult {
 	private File aPath;
 	private File spectogramPath;
 	private File dataPath;
-	
+
 	public File getDataPath() {
 		return dataPath;
 	}
-	
+
 	public void setDataPath(File dataPath) {
 		this.dataPath = dataPath;
 	}
-	
+
 	public String getDataURL() {
 		return dataURL;
 	}
-	
+
 	public void setDataURL(String dataURL) {
 		this.dataURL = dataURL;
 	}
-	
+
 	public String getSatelliteId() {
 		return satelliteId;
 	}
-	
+
 	public void setSatelliteId(String satelliteId) {
 		this.satelliteId = satelliteId;
 	}
@@ -109,14 +108,6 @@ public class ObservationResult {
 
 	public void setaURL(String aURL) {
 		this.aURL = aURL;
-	}
-
-	public String getbURL() {
-		return bURL;
-	}
-
-	public void setbURL(String bURL) {
-		this.bURL = bURL;
 	}
 
 	public String getId() {

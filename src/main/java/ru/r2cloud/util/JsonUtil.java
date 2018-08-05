@@ -31,7 +31,6 @@ public class JsonUtil {
 				curObservationObject.add("id", curObservation.getId());
 				curObservationObject.add("start", curObservation.getStart().getTime());
 				curObservationObject.add("aURL", curObservation.getaURL());
-				curObservationObject.add("bURL", curObservation.getbURL());
 				curObservationObject.add("data", curObservation.getDataURL());
 				data.add(curObservationObject);
 			}

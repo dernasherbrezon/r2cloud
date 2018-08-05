@@ -43,7 +43,6 @@ public class WeatherObservation extends AbstractHttpController {
 			json.add("end", entity.getEnd().getTime());
 		}
 		json.add("aURL", entity.getaURL());
-		json.add("bURL", entity.getbURL());
 		json.add("gain", entity.getGain());
 		json.add("channelA", entity.getChannelA());
 		json.add("channelB", entity.getChannelB());

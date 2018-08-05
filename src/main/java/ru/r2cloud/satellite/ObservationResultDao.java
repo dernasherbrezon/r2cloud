@@ -69,10 +69,6 @@ public class ObservationResultDao {
 			cur.setaPath(a);
 			cur.setaURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + cur.getId() + "/a.jpg");
 		}
-		File b = new File(curDirectory, "b.jpg");
-		if (b.exists()) {
-			cur.setbURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + cur.getId() + "/b.jpg");
-		}
 		File data = new File(curDirectory, "data.bin");
 		if (data.exists()) {
 			cur.setDataPath(data);
