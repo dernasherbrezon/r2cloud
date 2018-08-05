@@ -103,6 +103,7 @@ public class TLEDao implements ConfigListener {
 
 	void reload() {
 		Map<String, TLE> tle = celestrak.getWeatherTLE();
+		tle.putAll(celestrak.getAmateurTLE());
 		if (tle.isEmpty()) {
 			return;
 		}

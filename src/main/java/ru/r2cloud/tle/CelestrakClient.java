@@ -23,10 +23,18 @@ public class CelestrakClient {
 	}
 
 	public Map<String, TLE> getWeatherTLE() {
+		return loadTle("/NORAD/elements/weather.txt");
+	}
+
+	public Map<String, TLE> getAmateurTLE() {
+		return loadTle("/NORAD/elements/amateur.txt");
+	}
+
+	private Map<String, TLE> loadTle(String location) {
 		HttpURLConnection con = null;
 		Map<String, TLE> result = new HashMap<String, TLE>();
 		try {
-			URL obj = new URL(host + "/NORAD/elements/weather.txt");
+			URL obj = new URL(host + location);
 			con = (HttpURLConnection) obj.openConnection();
 			con.setRequestMethod("GET");
 			con.setRequestProperty("User-Agent", "r2cloud/0.1 info@r2cloud.ru");

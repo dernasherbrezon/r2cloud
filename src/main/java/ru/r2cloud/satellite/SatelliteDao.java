@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SatelliteType;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -22,6 +23,11 @@ public class SatelliteDao {
 			curSatellite.setName(config.getProperty("satellites." + curSatellite.getId() + ".name"));
 			curSatellite.setFrequency(config.getLong("satellites." + curSatellite.getId() + ".freq"));
 			curSatellite.setDecoder(config.getProperty("satellites." + curSatellite.getId() + ".decoder"));
+			if (curSatellite.getDecoder().equals("aausat4")) {
+				curSatellite.setType(SatelliteType.AMATEUR);
+			} else {
+				curSatellite.setType(SatelliteType.WEATHER);
+			}
 			index(curSatellite);
 		}
 	}
@@ -32,6 +38,16 @@ public class SatelliteDao {
 
 	public List<Satellite> findAll() {
 		return satellites;
+	}
+
+	public List<Satellite> findAll(SatelliteType type) {
+		List<Satellite> result = new ArrayList<>();
+		for (Satellite cur : satellites) {
+			if (cur.getType().equals(type)) {
+				result.add(cur);
+			}
+		}
+		return result;
 	}
 
 	private void index(Satellite satellite) {

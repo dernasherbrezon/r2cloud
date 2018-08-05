@@ -9,6 +9,7 @@ import com.eclipsesource.json.JsonObject;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SatelliteType;
 import ru.r2cloud.satellite.ObservationResultDao;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.Scheduler;
@@ -38,7 +39,7 @@ public class Weather extends AbstractHttpController {
 		entity.add("enabled", isEnabled);
 		if (isEnabled) {
 			JsonArray satellites = new JsonArray();
-			List<Satellite> supported = dao.findAll();
+			List<Satellite> supported = dao.findAll(SatelliteType.WEATHER);
 			for (Satellite cur : supported) {
 				JsonObject satellite = new JsonObject();
 				satellite.add("id", cur.getId());

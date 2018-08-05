@@ -7,6 +7,15 @@ public class Satellite {
 	private String name;
 	private String decoder;
 	private long frequency;
+	private SatelliteType type;
+	
+	public SatelliteType getType() {
+		return type;
+	}
+	
+	public void setType(SatelliteType type) {
+		this.type = type;
+	}
 	
 	public String getDecoder() {
 		return decoder;
