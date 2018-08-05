@@ -21,6 +21,15 @@ public class ObservationResult {
 
 	private File aPath;
 	private File spectogramPath;
+	private File dataPath;
+	
+	public File getDataPath() {
+		return dataPath;
+	}
+	
+	public void setDataPath(File dataPath) {
+		this.dataPath = dataPath;
+	}
 	
 	public String getDataURL() {
 		return dataURL;

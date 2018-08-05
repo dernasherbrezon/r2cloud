@@ -72,7 +72,7 @@ public class R2CloudClient {
 		}
 	}
 
-	public void saveChannel(Long id, File getaPath) {
+	public void saveData(Long id, File getaPath) {
 		upload("/api/v1/observation/" + id + "/data", getaPath);
 	}
 

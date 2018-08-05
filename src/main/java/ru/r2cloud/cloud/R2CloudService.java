@@ -42,7 +42,9 @@ public class R2CloudService {
 			return;
 		}
 		if (observation.getaPath() != null) {
-			client.saveChannel(id, observation.getaPath());
+			client.saveData(id, observation.getaPath());
+		} else if (observation.getDataPath() != null) {
+			client.saveData(id, observation.getDataPath());
 		}
 		if (config.getBoolean("r2cloud.syncSpectogram")) {
 			if (observation.getSpectogramPath() == null) {

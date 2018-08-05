@@ -75,6 +75,7 @@ public class ObservationResultDao {
 		}
 		File data = new File(curDirectory, "data.bin");
 		if (data.exists()) {
+			cur.setDataPath(data);
 			cur.setDataURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + cur.getId() + "/data.bin");
 		}
 		File wav = new File(curDirectory, "output.wav");
