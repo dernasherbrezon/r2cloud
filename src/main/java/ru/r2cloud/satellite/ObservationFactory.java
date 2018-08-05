@@ -53,6 +53,8 @@ public class ObservationFactory {
 			return new APTObservation(config, satellite, nextPass, factory, dao, aptDecoder);
 		} else if (decoder.equals("lrpt")) {
 			return new LRPTObservation(config, satellite, nextPass, factory, dao);
+		} else if (decoder.equals("aausat4")) {
+			return new Aausat4Observation(config, satellite, nextPass, factory, dao);
 		} else {
 			throw new IllegalArgumentException("unsupported decoder: " + decoder);
 		}

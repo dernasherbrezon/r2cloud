@@ -12,6 +12,7 @@ public class ObservationResult {
 	private String channelB;
 	private String aURL;
 	private String bURL;
+	private String dataURL;
 	private Date start;
 	private Date end;
 	private String spectogramURL;
@@ -20,6 +21,14 @@ public class ObservationResult {
 
 	private File aPath;
 	private File spectogramPath;
+	
+	public String getDataURL() {
+		return dataURL;
+	}
+	
+	public void setDataURL(String dataURL) {
+		this.dataURL = dataURL;
+	}
 	
 	public String getSatelliteId() {
 		return satelliteId;

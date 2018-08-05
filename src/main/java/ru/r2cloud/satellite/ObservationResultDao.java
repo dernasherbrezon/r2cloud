@@ -73,6 +73,10 @@ public class ObservationResultDao {
 		if (b.exists()) {
 			cur.setbURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + cur.getId() + "/b.jpg");
 		}
+		File data = new File(curDirectory, "data.bin");
+		if (data.exists()) {
+			cur.setDataURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + cur.getId() + "/data.bin");
+		}
 		File wav = new File(curDirectory, "output.wav");
 		if (wav.exists()) {
 			cur.setWavPath(wav);
@@ -103,6 +107,15 @@ public class ObservationResultDao {
 
 	public boolean saveChannel(String satelliteId, String observationId, File a, String type) {
 		File dest = new File(basepath, satelliteId + File.separator + "data" + File.separator + observationId + File.separator + type + ".jpg");
+		if (dest.exists()) {
+			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
+			return false;
+		}
+		return a.renameTo(dest);
+	}
+
+	public boolean saveData(String satelliteId, String observationId, File a) {
+		File dest = new File(basepath, satelliteId + File.separator + "data" + File.separator + observationId + File.separator + "data.bin");
 		if (dest.exists()) {
 			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
 			return false;
