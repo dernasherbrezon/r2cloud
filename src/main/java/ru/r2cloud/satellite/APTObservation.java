@@ -1,9 +1,16 @@
 package ru.r2cloud.satellite;
 
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.Date;
+
+import javax.imageio.ImageIO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,6 +108,11 @@ public class APTObservation implements Observation {
 
 		APTResult result = aptDecoder.decode(cur.getWavPath());
 		if (result.getImage() != null) {
+			// the image will be upside down if satellites pass 
+			// from south to north
+			if (nextPass.getStart().getLatitude() < nextPass.getEnd().getLatitude()) {
+				rotateImage(result.getImage());
+			}
 			dao.saveChannel(satellite.getId(), observationId, result.getImage(), "a");
 		}
 
@@ -112,11 +124,29 @@ public class APTObservation implements Observation {
 		dao.saveMeta(satellite.getId(), cur);
 	}
 
+	private static void rotateImage(File result) {
+		try {
+			BufferedImage image;
+			try (FileInputStream fis = new FileInputStream(result)) {
+				image = ImageIO.read(fis);
+			}
+			AffineTransform tx = AffineTransform.getScaleInstance(-1, -1);
+			tx.translate(-image.getWidth(null), -image.getHeight(null));
+			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+			image = op.filter(image, null);
+			try (FileOutputStream fos = new FileOutputStream(result)) {
+				ImageIO.write(image, "jpg", fos);
+			}
+		} catch (Exception e) {
+			LOG.error("unable to rotate image", e);
+		}
+	}
+
 	@Override
 	public Date getStart() {
 		return nextPass.getStart().getTime();
 	}
-	
+
 	@Override
 	public Date getEnd() {
 		return nextPass.getEnd().getTime();
