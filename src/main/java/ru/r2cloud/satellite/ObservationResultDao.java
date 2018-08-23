@@ -91,6 +91,8 @@ public class ObservationResultDao {
 				cur.setGain(meta.getString("gain", null));
 				cur.setChannelA(meta.getString("channelA", null));
 				cur.setChannelB(meta.getString("channelB", null));
+				cur.setSampleRate(meta.getInt("sampleRate", -1));
+				cur.setFrequency(meta.getLong("frequency", -1L));
 				JsonValue numberOfPacketsDecodedStr = meta.get("numberOfDecodedPackets");
 				if (numberOfPacketsDecodedStr != null) {
 					cur.setNumberOfDecodedPackets(numberOfPacketsDecodedStr.asLong());
@@ -154,6 +156,8 @@ public class ObservationResultDao {
 		JsonObject meta = new JsonObject();
 		meta.add("start", cur.getStart().getTime());
 		meta.add("end", cur.getEnd().getTime());
+		meta.add("sampleRate", cur.getSampleRate());
+		meta.add("frequency", cur.getFrequency());
 		if (cur.getGain() != null) {
 			meta.add("gain", cur.getGain());
 		}

@@ -33,6 +33,7 @@ public class Aausat4Observation implements Observation {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Aausat4Observation.class);
 	private static final int BUF_SIZE = 0x1000; // 4K
+	private static final int SAMPLE_RATE = 32000;
 
 	private ProcessWrapper rtlfm = null;
 	private File wavPath;
@@ -67,7 +68,7 @@ public class Aausat4Observation implements Observation {
 			if (ppm == null) {
 				ppm = 0;
 			}
-			sox = factory.create(config.getProperty("satellites.sox.path") + " -t raw -r 60000 -es -b 16 - " + wavPath.getAbsolutePath() + " rate 11025", Redirect.INHERIT, false);
+			sox = factory.create(config.getProperty("satellites.sox.path") + " -t raw -r 60000 -es -b 16 - " + wavPath.getAbsolutePath() + " rate " + SAMPLE_RATE, Redirect.INHERIT, false);
 			rtlfm = factory.create(config.getProperty("satellites.rtlfm.path") + " -f " + String.valueOf(satellite.getFrequency()) + " -s 60k -g 45 -p " + String.valueOf(ppm) + " -E deemp -F 9 -", Redirect.INHERIT, false);
 			byte[] buf = new byte[BUF_SIZE];
 			while (!Thread.currentThread().isInterrupted()) {
@@ -132,6 +133,8 @@ public class Aausat4Observation implements Observation {
 		cur.setStart(nextPass.getStart().getTime());
 		cur.setEnd(nextPass.getEnd().getTime());
 		cur.setNumberOfDecodedPackets(numberOfDecodedPackets);
+		cur.setSampleRate(SAMPLE_RATE);
+		cur.setFrequency(satellite.getFrequency());
 		dao.saveMeta(satellite.getId(), cur);
 	}
 

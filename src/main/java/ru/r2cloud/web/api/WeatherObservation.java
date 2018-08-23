@@ -46,6 +46,8 @@ public class WeatherObservation extends AbstractHttpController {
 		json.add("gain", entity.getGain());
 		json.add("channelA", entity.getChannelA());
 		json.add("channelB", entity.getChannelB());
+		json.add("frequency", entity.getFrequency());
+		json.add("sampleRate", entity.getSampleRate());
 		if (entity.getNumberOfDecodedPackets() != null) {
 			json.add("numberOfDecodedPackets", entity.getNumberOfDecodedPackets());
 		}

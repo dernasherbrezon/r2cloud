@@ -28,6 +28,7 @@ public class APTObservation implements Observation {
 
 	private static final Logger LOG = LoggerFactory.getLogger(APTObservation.class);
 	private static final int BUF_SIZE = 0x1000; // 4K
+	private static final int SAMPLE_RATE = 11025;
 
 	private ProcessWrapper rtlfm = null;
 	private File wavPath;
@@ -64,7 +65,7 @@ public class APTObservation implements Observation {
 			if (ppm == null) {
 				ppm = 0;
 			}
-			sox = factory.create(config.getProperty("satellites.sox.path") + " -t raw -r 60000 -es -b 16 - " + wavPath.getAbsolutePath() + " rate 35000", Redirect.INHERIT, false);
+			sox = factory.create(config.getProperty("satellites.sox.path") + " -t raw -r 60000 -es -b 16 - " + wavPath.getAbsolutePath() + " rate " + SAMPLE_RATE, Redirect.INHERIT, false);
 			rtlfm = factory.create(config.getProperty("satellites.rtlfm.path") + " -f " + String.valueOf(satellite.getFrequency()) + " -s 60k -g 45 -p " + String.valueOf(ppm) + " -E deemp -F 9 -", Redirect.INHERIT, false);
 			byte[] buf = new byte[BUF_SIZE];
 			while (!Thread.currentThread().isInterrupted()) {
@@ -121,6 +122,8 @@ public class APTObservation implements Observation {
 		cur.setGain(result.getGain());
 		cur.setChannelA(result.getChannelA());
 		cur.setChannelB(result.getChannelB());
+		cur.setSampleRate(SAMPLE_RATE);
+		cur.setFrequency(satellite.getFrequency());
 		dao.saveMeta(satellite.getId(), cur);
 	}
 

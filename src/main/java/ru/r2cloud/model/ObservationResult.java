@@ -17,10 +17,28 @@ public class ObservationResult {
 	private String spectogramURL;
 	private Long numberOfDecodedPackets;
 	private String satelliteId;
+	private int sampleRate;
+	private long frequency;
 
 	private File aPath;
 	private File spectogramPath;
 	private File dataPath;
+
+	public long getFrequency() {
+		return frequency;
+	}
+
+	public void setFrequency(long frequency) {
+		this.frequency = frequency;
+	}
+
+	public int getSampleRate() {
+		return sampleRate;
+	}
+
+	public void setSampleRate(int sampleRate) {
+		this.sampleRate = sampleRate;
+	}
 
 	public File getDataPath() {
 		return dataPath;

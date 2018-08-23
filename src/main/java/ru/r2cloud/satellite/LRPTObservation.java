@@ -174,6 +174,8 @@ public class LRPTObservation implements Observation {
 		cur.setStart(nextPass.getStart().getTime());
 		cur.setEnd(nextPass.getEnd().getTime());
 		cur.setNumberOfDecodedPackets(numberOfDecodedPackets.getCount());
+		cur.setSampleRate((int) OUTPUT_SAMPLE_RATE);
+		cur.setFrequency(satellite.getFrequency());
 		dao.saveMeta(satellite.getId(), cur);
 
 		// reset counter
