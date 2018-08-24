@@ -80,7 +80,10 @@ public class Aausat4Observation implements Observation {
 			}
 			sox.getOutputStream().flush();
 		} catch (IOException e) {
-			LOG.error("unable to run", e);
+			//there is no way to know if IOException was caused by closed stream
+			if (e.getMessage() == null || !e.getMessage().equals("Stream closed")) {
+				LOG.error("unable to run", e);
+			}
 		} finally {
 			LOG.info("stopping pipe thread");
 			Util.shutdown("rtl_fm for satellites", rtlfm, 10000);

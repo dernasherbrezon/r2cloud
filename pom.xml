@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <project
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ru.r2cloud</groupId>
 	<artifactId>r2cloud</artifactId>
@@ -42,7 +43,7 @@
 		<dependency>
 			<groupId>ru.r2cloud</groupId>
 			<artifactId>jradio</artifactId>
-			<version>1.4</version>
+			<version>1.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -172,20 +173,27 @@
 						<phase>validate</phase>
 						<configuration>
 							<target>
-								<echo message="Downloading sigar native binaries..."/>
-								<get src="${sigar.download.url}" dest="${sigar.download.path}/" skipExisting="true"/>
-								<checksum file="${sigar.download.path}/hyperic-sigar-${sigar.version}.zip" algorithm="SHA1" property="${sigar.SHA1}" verifyProperty="validChecksum"/>
-								<fail message="Checksum validation failed for hyperic-sigar-${sigar.version}.zip">
+								<echo message="Downloading sigar native binaries..." />
+								<get src="${sigar.download.url}"
+									dest="${sigar.download.path}/" skipExisting="true" />
+								<checksum
+									file="${sigar.download.path}/hyperic-sigar-${sigar.version}.zip"
+									algorithm="SHA1" property="${sigar.SHA1}"
+									verifyProperty="validChecksum" />
+								<fail
+									message="Checksum validation failed for hyperic-sigar-${sigar.version}.zip">
 									<condition>
-										<isfalse value="${validChecksum}"/>
+										<isfalse value="${validChecksum}" />
 									</condition>
 								</fail>
-								<unzip src="${sigar.download.path}/hyperic-sigar-${sigar.version}.zip" dest="${project.build.directory}/sigar-lib">
+								<unzip
+									src="${sigar.download.path}/hyperic-sigar-${sigar.version}.zip"
+									dest="${project.build.directory}/sigar-lib">
 									<patternset>
-										<include name="**/lib/libsigar-*"/>
-										<include name="**/lib/sigar-*"/>
+										<include name="**/lib/libsigar-*" />
+										<include name="**/lib/sigar-*" />
 									</patternset>
-									<mapper type="flatten"/>
+									<mapper type="flatten" />
 								</unzip>
 							</target>
 						</configuration>
@@ -259,7 +267,7 @@
 						<format>html</format>
 						<format>xml</format>
 					</formats>
-					<check/>
+					<check />
 				</configuration>
 			</plugin>
 			<plugin>
@@ -352,7 +360,7 @@
 						<libxft2>>=2.3.2</libxft2>
 						<sox>>=14.4.1</sox>
 						<!-- required by deps-maven-plugin -->
-						<wget/>
+						<wget />
 					</osDependencies>
 					<javaServiceWrapper>false</javaServiceWrapper>
 					<fileSets>

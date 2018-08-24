@@ -18,12 +18,13 @@ public class SpectogramService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SpectogramService.class);
 
-	private final Spectogram spectogram = new Spectogram(2, 1024);
+	private static final int OPTIMAL_WIDTH = 1024;
 
 	public File create(File wavFile) {
 		LOG.info("generating spectogram");
 		try (InputStream is = new BufferedInputStream(new FileInputStream(wavFile))) {
 			WavFileSource source = new WavFileSource(is);
+			Spectogram spectogram = new Spectogram((int) (source.getFormat().getSampleRate() / OPTIMAL_WIDTH));
 			BufferedImage image = spectogram.process(source);
 			File tmp = File.createTempFile("spectogram", ".png");
 			ImageIO.write(image, "png", tmp);
