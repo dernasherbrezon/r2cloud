@@ -14,12 +14,40 @@ public class FilenameComparator implements Comparator<File> {
 		this.asc = asc;
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public int compare(File o1, File o2) {
+		Long n1 = convert(o1);
+		Long n2 = convert(o2);
+		if( n1 == null && n2 != null ) {
+			if( asc ) {
+				return 1;
+			} else {
+				return -1;
+			}
+		}
+		if( n1 != null && n2 == null ) {
+			if( asc ) {
+				return -1;
+			} else {
+				return 1;
+			}
+		}
+		if( n1 == null && n2 == null ) {
+			return 0;
+		}
 		if (asc) {
-			return Long.valueOf(o1.getName()).compareTo(Long.valueOf(o2.getName()));
+			return n1.compareTo(n2);
 		} else {
-			return Long.valueOf(o2.getName()).compareTo(Long.valueOf(o1.getName()));
+			return n2.compareTo(n1);
+		}
+	}
+
+	private static Long convert(File file) {
+		try {
+			return Long.valueOf(file.getName());
+		} catch (Exception e) {
+			return null;
 		}
 	}
 

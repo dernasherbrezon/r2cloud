@@ -46,6 +46,9 @@ public class ObservationResultDao {
 		List<ObservationResult> result = new ArrayList<ObservationResult>(observations.length);
 		for (File curDirectory : observations) {
 			ObservationResult cur = find(satelliteId, curDirectory);
+			if (cur == null) {
+				continue;
+			}
 			result.add(cur);
 		}
 		return result;
@@ -60,10 +63,16 @@ public class ObservationResultDao {
 	}
 
 	private static ObservationResult find(String satelliteId, File curDirectory) {
+		long startTime;
+		try {
+			startTime = Long.valueOf(curDirectory.getName());
+		} catch (Exception e) {
+			return null;
+		}
 		ObservationResult cur = new ObservationResult();
 		cur.setSatelliteId(satelliteId);
 		cur.setId(curDirectory.getName());
-		cur.setStart(new Date(Long.valueOf(curDirectory.getName())));
+		cur.setStart(new Date(startTime));
 		File a = new File(curDirectory, "a.jpg");
 		if (a.exists()) {
 			cur.setaPath(a);
