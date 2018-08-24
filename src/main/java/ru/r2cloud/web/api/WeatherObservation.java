@@ -37,23 +37,7 @@ public class WeatherObservation extends AbstractHttpController {
 			LOG.info("not found: " + satelliteId + " id: " + id);
 			return new NotFound();
 		}
-		JsonObject json = new JsonObject();
-		json.add("start", entity.getStart().getTime());
-		if (entity.getEnd() != null) {
-			json.add("end", entity.getEnd().getTime());
-		}
-		json.add("aURL", entity.getaURL());
-		json.add("gain", entity.getGain());
-		json.add("channelA", entity.getChannelA());
-		json.add("channelB", entity.getChannelB());
-		json.add("frequency", entity.getFrequency());
-		json.add("sampleRate", entity.getSampleRate());
-		if (entity.getNumberOfDecodedPackets() != null) {
-			json.add("numberOfDecodedPackets", entity.getNumberOfDecodedPackets());
-		}
-		if (entity.getSpectogramURL() != null) {
-			json.add("spectogramURL", entity.getSpectogramURL());
-		}
+		JsonObject json = entity.toJson();
 		ModelAndView result = new ModelAndView();
 		result.setData(json.toString());
 		return result;

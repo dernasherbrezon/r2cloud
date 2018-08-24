@@ -3,6 +3,8 @@ package ru.r2cloud.model;
 import java.io.File;
 import java.util.Date;
 
+import com.eclipsesource.json.JsonObject;
+
 public class ObservationResult {
 
 	private String id;
@@ -158,6 +160,32 @@ public class ObservationResult {
 
 	public void setEnd(Date end) {
 		this.end = end;
+	}
+
+	public JsonObject toJson() {
+		JsonObject json = new JsonObject();
+		json.add("start", getStart().getTime());
+		if (getEnd() != null) {
+			json.add("end", getEnd().getTime());
+		}
+		json.add("aURL", getaURL());
+		json.add("gain", getGain());
+		json.add("satellite", getSatelliteId());
+		json.add("channelA", getChannelA());
+		json.add("channelB", getChannelB());
+		if (getFrequency() > 0) {
+			json.add("frequency", getFrequency());
+		}
+		if (getSampleRate() > 0) {
+			json.add("sampleRate", getSampleRate());
+		}
+		if (getNumberOfDecodedPackets() != null) {
+			json.add("numberOfDecodedPackets", getNumberOfDecodedPackets());
+		}
+		if (getSpectogramURL() != null) {
+			json.add("spectogramURL", getSpectogramURL());
+		}
+		return json;
 	}
 
 }

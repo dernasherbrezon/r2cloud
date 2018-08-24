@@ -50,7 +50,7 @@ public class R2CloudClient {
 			con.setRequestProperty("Authorization", config.getProperty("r2cloud.apiKey"));
 			con.setDoOutput(true);
 
-			JsonObject json = convert(observation);
+			JsonObject json = observation.toJson();
 			Writer w = new OutputStreamWriter(con.getOutputStream(), StandardCharsets.UTF_8);
 			json.writeTo(w);
 			w.close();
@@ -148,17 +148,4 @@ public class R2CloudClient {
 		return id;
 	}
 
-	private static JsonObject convert(ObservationResult observation) {
-		JsonObject json = new JsonObject();
-		json.add("satellite", observation.getSatelliteId());
-		json.add("start", observation.getStart().getTime());
-		json.add("end", observation.getEnd().getTime());
-		json.add("gain", observation.getGain());
-		json.add("channelA", observation.getChannelA());
-		json.add("channelB", observation.getChannelB());
-		if (observation.getNumberOfDecodedPackets() != null) {
-			json.add("numberOfDecodedPackets", observation.getNumberOfDecodedPackets());
-		}
-		return json;
-	}
 }
