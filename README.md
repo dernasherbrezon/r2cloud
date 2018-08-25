@@ -26,6 +26,7 @@ There are 2 ways to install r2cloud:
 2. From repository binaries. Use this way if you have something already installed on SD card.
   - Login via SSH and execute the following commands:
 ```
+sudo apt-get install dirmngr
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A5A70917
 sudo bash -c "echo 'deb [arch=armhf] http://s3.amazonaws.com/r2cloud r2cloud main' > /etc/apt/sources.list.d/r2cloud.list"
 sudo apt-get update
