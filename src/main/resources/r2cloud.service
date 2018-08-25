@@ -1,7 +1,8 @@
 [Unit]
 Description=R2Cloud Service
 Requires=nginx.service
-After=network.target
+Wants=network-online.target
+After=network.target network-online.target
 
 [Service]
 WorkingDirectory=/home/pi/r2cloud/
