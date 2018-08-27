@@ -138,7 +138,7 @@ public class R2Cloud {
 		index(new R2CloudSave(props));
 		index(new R2CloudUpload(r2cloudService));
 		index(new Weather(props, satelliteDao, scheduler, resultDao));
-		index(new Amateur(props, satelliteDao, scheduler, resultDao));
+		index(new Amateur(satelliteDao, scheduler, resultDao));
 		index(new WeatherObservation(resultDao));
 		index(new WeatherSpectrogram(resultDao, spectogramService));
 		webServer = new WebServer(props, controllers, auth);
