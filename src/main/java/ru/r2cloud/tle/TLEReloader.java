@@ -11,14 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.util.Clock;
-import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
 import ru.r2cloud.util.SafeRunnable;
 import ru.r2cloud.util.ThreadPoolFactory;
 import ru.r2cloud.util.Util;
 
-public class TLEReloader implements ConfigListener {
+public class TLEReloader {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TLEReloader.class);
 	private final ThreadPoolFactory threadFactory;
@@ -33,24 +32,9 @@ public class TLEReloader implements ConfigListener {
 		this.threadFactory = threadFactory;
 		this.clock = clock;
 		this.dao = dao;
-		this.config.subscribe(this, "satellites.enabled");
-	}
-
-	@Override
-	public synchronized void onConfigUpdated() {
-		boolean enabled = config.getBoolean("satellites.enabled");
-		if (executor == null && enabled) {
-			start();
-		} else if (executor != null && !enabled) {
-			stop();
-		}
 	}
 
 	public synchronized void start() {
-		if( !config.getBoolean("satellites.enabled") ) {
-			LOG.info("tle tracking is disabled");
-			return;
-		}
 		if (executor != null) {
 			return;
 		}

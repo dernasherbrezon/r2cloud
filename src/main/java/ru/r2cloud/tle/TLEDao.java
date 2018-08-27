@@ -18,11 +18,10 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.TLE;
 import ru.r2cloud.satellite.SatelliteDao;
-import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
-public class TLEDao implements ConfigListener {
+public class TLEDao {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TLEDao.class);
 
@@ -35,26 +34,12 @@ public class TLEDao implements ConfigListener {
 
 	public TLEDao(Configuration config, SatelliteDao satelliteDao, CelestrakClient celestrak) {
 		this.config = config;
-		this.config.subscribe(this, "satellites.enabled");
 		this.satelliteDao = satelliteDao;
 		this.basepath = Util.initDirectory(config.getProperty("satellites.basepath.location"));
 		this.celestrak = celestrak;
 	}
 
-	@Override
-	public void onConfigUpdated() {
-		if (config.getBoolean("satellites.enabled")) {
-			start();
-		} else {
-			stop();
-		}
-	}
-
 	public synchronized void start() {
-		if (!config.getBoolean("satellites.enabled")) {
-			LOG.info("tle tracking is disabled");
-			return;
-		}
 		boolean reload = false;
 		for (Satellite cur : satelliteDao.findAll()) {
 			File tleFile = new File(basepath, cur.getId() + File.separator + "tle.txt");

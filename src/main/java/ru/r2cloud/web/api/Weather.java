@@ -29,12 +29,14 @@ public class Weather extends AbstractHttpController {
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
 		ModelAndView result = new ModelAndView();
-		JsonObject entity = new JsonObject();
+		JsonObject entity;
 		boolean isEnabled = config.getBoolean("satellites.enabled");
-		entity.add("enabled", isEnabled);
 		if (isEnabled) {
 			entity = JsonUtil.serialize(scheduler, resultDao, dao.findAll(SatelliteType.WEATHER));
+		} else {
+			entity = new JsonObject();
 		}
+		entity.add("enabled", isEnabled);
 		result.setData(entity.toString());
 		return result;
 	}
