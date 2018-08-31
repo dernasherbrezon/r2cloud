@@ -112,7 +112,7 @@ public class LRPTObservation implements Observation {
 		Util.shutdown("rtl_sdr for satellites", rtlSdr, 10000);
 		rtlSdr = null;
 
-		if (!wavPath.exists()) {
+		if (wavPath == null || !wavPath.exists()) {
 			LOG.info("nothing saved");
 			return;
 		}

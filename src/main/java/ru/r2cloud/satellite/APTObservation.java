@@ -93,7 +93,7 @@ public class APTObservation implements Observation {
 		Util.shutdown("rtl_sdr for satellites", rtlfm, 10000);
 		rtlfm = null;
 
-		if (!wavPath.exists()) {
+		if (wavPath == null || !wavPath.exists()) {
 			LOG.info("nothing saved");
 			return;
 		}

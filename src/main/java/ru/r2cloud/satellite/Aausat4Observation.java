@@ -96,7 +96,7 @@ public class Aausat4Observation implements Observation {
 		Util.shutdown("rtlfm for satellites", rtlfm, 10000);
 		rtlfm = null;
 
-		if (!wavPath.exists()) {
+		if (wavPath == null || !wavPath.exists()) {
 			LOG.info("nothing saved");
 			return;
 		}
