@@ -152,7 +152,7 @@ public class LRPTObservation implements Observation {
 			Context context = new Context();
 			CorrelateAccessCodeTag correlate = new CorrelateAccessCodeTag(context, f2char, 12, phaseAmbiguityResolver.getSynchronizationMarkers(), true);
 			TaggedStreamToPdu tag = new TaggedStreamToPdu(context, new FixedLengthTagger(context, correlate, 8160 * 2 + 8 * 2));
-			lrpt = new LRPT(context, tag, phaseAmbiguityResolver);
+			lrpt = new LRPT(context, tag, phaseAmbiguityResolver, MeteorImage.METEOR_SPACECRAFT_ID);
 			MeteorImage image = new MeteorImage(lrpt);
 			BufferedImage actual = image.toBufferedImage();
 			if (actual != null) {
