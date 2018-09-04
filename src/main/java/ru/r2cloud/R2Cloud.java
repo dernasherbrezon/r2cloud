@@ -125,7 +125,7 @@ public class R2Cloud {
 		index(new ru.r2cloud.web.api.ADSB(dao));
 		index(new AccessToken(auth));
 		index(new Setup(auth, props));
-		index(new Configured(auth));
+		index(new Configured(auth, props));
 		index(new Restore(auth));
 		index(new ru.r2cloud.web.api.status.Metrics());
 		index(new Overview());

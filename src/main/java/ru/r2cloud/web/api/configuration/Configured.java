@@ -3,6 +3,7 @@ package ru.r2cloud.web.api.configuration;
 import com.eclipsesource.json.JsonObject;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
+import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.Authenticator;
 import ru.r2cloud.web.ModelAndView;
@@ -10,9 +11,11 @@ import ru.r2cloud.web.ModelAndView;
 public class Configured extends AbstractHttpController {
 
 	private final Authenticator auth;
+	private final Configuration config;
 
-	public Configured(Authenticator auth) {
+	public Configured(Authenticator auth, Configuration config) {
 		this.auth = auth;
+		this.config = config;
 	}
 
 	@Override
@@ -20,8 +23,13 @@ public class Configured extends AbstractHttpController {
 		ModelAndView result = new ModelAndView();
 		JsonObject entity = new JsonObject();
 		entity.add("configured", !auth.isFirstStart());
+		entity.add("generalSetup", isGenerallyConfigured());
 		result.setData(entity.toString());
 		return result;
+	}
+	
+	private boolean isGenerallyConfigured() {
+		return config.getProperty("locaiton.lat") != null && config.getProperty("locaiton.lon") != null;
 	}
 
 	@Override
