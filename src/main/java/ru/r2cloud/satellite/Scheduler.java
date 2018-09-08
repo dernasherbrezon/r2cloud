@@ -34,7 +34,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private final Clock clock;
 	private final R2CloudService r2cloudService;
 
-	private final Map<String, Date> scheduledObservations = new ConcurrentHashMap<String, Date>();
+	private final Map<String, ScheduledObservation> scheduledObservations = new ConcurrentHashMap<String, ScheduledObservation>();
 
 	private ScheduledExecutorService scheduler = null;
 	private ScheduledExecutorService reaper = null;
@@ -43,6 +43,8 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	public Scheduler(Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, R2CloudService r2cloudService) {
 		this.config = config;
 		this.config.subscribe(this, "satellites.enabled");
+		this.config.subscribe(this, "locaiton.lat");
+		this.config.subscribe(this, "locaiton.lon");
 		this.satellites = satellites;
 		this.lock = lock;
 		this.factory = factory;
@@ -53,31 +55,45 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	@Override
 	public void onConfigUpdated() {
-		boolean satellitesEnabled = config.getBoolean("satellites.enabled");
-		if (scheduler == null && satellitesEnabled) {
-			start();
-		} else if (scheduler != null && !satellitesEnabled) {
-			stop();
+		List<ru.r2cloud.model.Satellite> supportedSatellites = satellites.findAll();
+		for (ru.r2cloud.model.Satellite cur : supportedSatellites) {
+			boolean schedule = false;
+			switch (cur.getType()) {
+			case WEATHER:
+				if (config.getBoolean("satellites.enabled")) {
+					schedule = true;
+				}
+				break;
+			case AMATEUR:
+				if (config.getProperty("locaiton.lat") != null && config.getProperty("locaiton.lon") != null) {
+					schedule = true;
+				}
+				break;
+
+			default:
+				throw new IllegalArgumentException("type is not supported: " + cur.getType());
+			}
+			if (schedule) {
+				schedule(cur);
+			} else {
+				ScheduledObservation previousObservation = scheduledObservations.get(cur.getId());
+				if (previousObservation != null) {
+					previousObservation.cancel();
+				}
+			}
 		}
 	}
 
 	// protection from calling start 2 times and more
 	@Override
 	public synchronized void start() {
-		if (!config.getBoolean("satellites.enabled")) {
-			LOG.info("satellite scheduler is disabled");
-			return;
-		}
 		if (scheduler != null) {
 			return;
 		}
-		List<ru.r2cloud.model.Satellite> supportedSatellites = satellites.findAll();
 		scheduler = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("scheduler"));
 		reaper = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("reaper"));
 		decoder = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("decoder"));
-		for (ru.r2cloud.model.Satellite cur : supportedSatellites) {
-			schedule(cur);
-		}
+		onConfigUpdated();
 
 		LOG.info("started");
 	}
@@ -89,7 +105,6 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			return;
 		}
 		LOG.info("scheduled next pass for " + cur.getName() + ": " + observation.getStart());
-		scheduledObservations.put(cur.getId(), observation.getStart());
 		Future<?> future = scheduler.schedule(new SafeRunnable() {
 
 			@Override
@@ -105,7 +120,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				}
 			}
 		}, observation.getStart().getTime() - current, TimeUnit.MILLISECONDS);
-		reaper.schedule(new SafeRunnable() {
+		Future<?> reaperFuture = reaper.schedule(new SafeRunnable() {
 
 			@Override
 			public void doRun() {
@@ -128,10 +143,19 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				});
 			}
 		}, observation.getEnd().getTime() - current, TimeUnit.MILLISECONDS);
+		ScheduledObservation previous = scheduledObservations.put(cur.getId(), new ScheduledObservation(observation, future, reaperFuture));
+		if (previous != null) {
+			LOG.info("cancelling previous: {}", previous.getObservation().getStart());
+			previous.cancel();
+		}
 	}
 
 	public Date getNextObservation(String id) {
-		return scheduledObservations.get(id);
+		ScheduledObservation result = scheduledObservations.get(id);
+		if (result == null) {
+			return null;
+		}
+		return result.getObservation().getStart();
 	}
 
 	// protection from calling stop 2 times and more
