@@ -37,7 +37,7 @@ public class Configuration {
 	private static Set<PosixFilePermission> MODE600 = new HashSet<PosixFilePermission>();
 
 	private final Properties systemSettings = new Properties();
-	private final Map<String, ConfigListener> listeners = new ConcurrentHashMap<String, ConfigListener>();
+	private final Map<String, List<ConfigListener>> listeners = new ConcurrentHashMap<String, List<ConfigListener>>();
 	private final Set<String> changedProperties = new HashSet<String>();
 
 	static {
@@ -104,11 +104,11 @@ public class Configuration {
 		Set<ConfigListener> toNotify = new HashSet<ConfigListener>();
 		synchronized (changedProperties) {
 			for (String cur : changedProperties) {
-				ConfigListener curListener = listeners.get(cur);
+				List<ConfigListener> curListener = listeners.get(cur);
 				if (curListener == null) {
 					continue;
 				}
-				toNotify.add(curListener);
+				toNotify.addAll(curListener);
 			}
 			changedProperties.clear();
 		}
@@ -229,7 +229,12 @@ public class Configuration {
 
 	public void subscribe(ConfigListener listener, String... names) {
 		for (String cur : names) {
-			this.listeners.put(cur, listener);
+			List<ConfigListener> previous = this.listeners.get(cur);
+			if (previous == null) {
+				previous = new ArrayList<>();
+				this.listeners.put(cur, previous);
+			}
+			previous.add(listener);
 		}
 	}
 

@@ -48,6 +48,23 @@ public class ConfigurationTest {
 
 		verify(listener, atLeast(1)).onConfigUpdated();
 	}
+	
+	@Test
+	public void twoListenersUpdated() {
+		ConfigListener listener1 = mock(ConfigListener.class);
+		ConfigListener listener2 = mock(ConfigListener.class);
+		String propName = UUID.randomUUID().toString();
+		Integer value = new Random().nextInt();
+
+		config.subscribe(listener1, propName);
+		config.subscribe(listener2, propName);
+		config.setProperty(propName, value);
+		config.setProperty(UUID.randomUUID().toString(), value);
+		config.update();
+
+		verify(listener1, atLeast(1)).onConfigUpdated();
+		verify(listener2, atLeast(1)).onConfigUpdated();
+	}
 
 	@Test
 	public void update() {
