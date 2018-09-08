@@ -8,7 +8,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.never;
 
 import java.text.SimpleDateFormat;
 import java.util.concurrent.ScheduledExecutorService;
@@ -44,20 +43,6 @@ public class TLEReloaderTest {
 
 		verify(clock).millis();
 		verify(executor).scheduleAtFixedRate(any(), eq(TimeUnit.DAYS.toMillis(6)), eq(TimeUnit.DAYS.toMillis(7)), eq(TimeUnit.MILLISECONDS));
-	}
-	
-	@Test
-	public void testListenToConfiguration() throws Exception {
-		config.setProperty("satellites.enabled", false);
-		TLEReloader reloader = new TLEReloader(config, tleDao, threadPool, clock);
-		reloader.start();
-		
-		verify(executor, never()).scheduleAtFixedRate(any(), anyLong(), anyLong(), any());
-
-		config.setProperty("satellites.enabled", true);
-		config.update();
-		
-		verify(executor).scheduleAtFixedRate(any(), anyLong(), anyLong(), any());
 	}
 	
 	@Test

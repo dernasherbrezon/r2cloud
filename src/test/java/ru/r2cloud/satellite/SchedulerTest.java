@@ -27,6 +27,7 @@ import ru.r2cloud.RtlSdrLock;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.cloud.R2CloudService;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SatelliteType;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.ThreadPoolFactory;
 
@@ -112,6 +113,7 @@ public class SchedulerTest {
 	private static Satellite createSatellite(String id) {
 		Satellite result = new Satellite();
 		result.setId(id);
+		result.setType(SatelliteType.WEATHER);
 		return result;
 	}
 

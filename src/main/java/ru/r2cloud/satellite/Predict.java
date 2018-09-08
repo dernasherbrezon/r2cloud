@@ -23,7 +23,12 @@ public class Predict {
 	}
 
 	public SatPass calculateNext(Date current, Satellite satellite) {
-		GroundStationPosition currentLocation = new GroundStationPosition(config.getDouble("locaiton.lat"), config.getDouble("locaiton.lon"), 0.0);
+		Double lat = config.getDouble("locaiton.lat");
+		Double lon = config.getDouble("locaiton.lon");
+		if (lat == null || lon == null) {
+			return null;
+		}
+		GroundStationPosition currentLocation = new GroundStationPosition(lat, lon, 0.0);
 		if (!satellite.willBeSeen(currentLocation)) {
 			return null;
 		}
