@@ -30,7 +30,7 @@ public class APTDecoder {
 	}
 
 	public APTResult decode(final File wavFile) {
-		File image;
+		File image = null;
 		try {
 			image = File.createTempFile("apt", "a");
 		} catch (IOException e1) {
@@ -63,12 +63,21 @@ public class APTDecoder {
 			tis.setDaemon(true);
 			tis.start();
 			process.waitFor();
-			return convert(image, output);
+			APTResult result = convert(image, output);
+			if (result.getImage() == null) {
+				if (!image.delete()) {
+					LOG.info("unable to delete temp file: {}", image.getAbsolutePath());
+				}
+			}
+			return result;
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			Util.shutdown("wxtoimg", process, 10000);
 		} catch (IOException e) {
 			LOG.error("unable to run", e);
+		}
+		if (!image.delete()) {
+			LOG.info("unable to delete temp file: {}", image.getAbsolutePath());
 		}
 		return new APTResult();
 	}
