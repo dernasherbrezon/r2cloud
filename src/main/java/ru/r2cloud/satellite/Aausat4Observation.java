@@ -80,7 +80,7 @@ public class Aausat4Observation implements Observation {
 			}
 			sox.getOutputStream().flush();
 		} catch (IOException e) {
-			//there is no way to know if IOException was caused by closed stream
+			// there is no way to know if IOException was caused by closed stream
 			if (e.getMessage() == null || !e.getMessage().equals("Stream closed")) {
 				LOG.error("unable to run", e);
 			}
@@ -113,7 +113,7 @@ public class Aausat4Observation implements Observation {
 			return;
 		}
 		Context context = new Context();
-		File file;
+		File file = null;
 		try {
 			file = File.createTempFile(satellite.getId() + "-", ".bin");
 		} catch (IOException e) {
@@ -129,9 +129,18 @@ public class Aausat4Observation implements Observation {
 			}
 		} catch (Exception e) {
 			LOG.error("unable to decode", e);
+			if (!file.delete()) {
+				LOG.info("unable to delete temp file: {}", file.getAbsolutePath());
+			}
 			return;
 		}
-		dao.saveData(satellite.getId(), observationId, file);
+		if (numberOfDecodedPackets > 0) {
+			dao.saveData(satellite.getId(), observationId, file);
+		} else {
+			if (!file.delete()) {
+				LOG.info("unable to delete temp file: {}", file.getAbsolutePath());
+			}
+		}
 
 		cur.setStart(nextPass.getStart().getTime());
 		cur.setEnd(nextPass.getEnd().getTime());
