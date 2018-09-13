@@ -26,11 +26,9 @@ import ru.r2cloud.jradio.blocks.CorrelateAccessCodeTag;
 import ru.r2cloud.jradio.blocks.CostasLoop;
 import ru.r2cloud.jradio.blocks.FixedLengthTagger;
 import ru.r2cloud.jradio.blocks.FloatToChar;
-import ru.r2cloud.jradio.blocks.LowPassFilter;
 import ru.r2cloud.jradio.blocks.Rail;
 import ru.r2cloud.jradio.blocks.RootRaisedCosineFilter;
 import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
-import ru.r2cloud.jradio.blocks.Window;
 import ru.r2cloud.jradio.lrpt.LRPT;
 import ru.r2cloud.jradio.meteor.MeteorImage;
 import ru.r2cloud.jradio.source.WavFileSource;
@@ -135,15 +133,13 @@ public class LRPTObservation implements Observation {
 		LRPT lrpt = null;
 		try {
 			WavFileSource source = new WavFileSource(new BufferedInputStream(new FileInputStream(cur.getWavPath())));
-			LowPassFilter lowPass = new LowPassFilter(source, 1.0, OUTPUT_SAMPLE_RATE, 50000.0, 1000.0, Window.WIN_HAMMING, 6.76);
-			AGC agc = new AGC(lowPass, 1000e-4f, 0.5f, 1.0f, 4000.0f);
+			AGC agc = new AGC(source, 1000e-4f, 0.5f, 2.0f, 4000.0f);
 			RootRaisedCosineFilter rrcf = new RootRaisedCosineFilter(agc, 1.0f, OUTPUT_SAMPLE_RATE, symbolRate, 0.6f, 361);
-
-			CostasLoop costas = new CostasLoop(rrcf, 0.020f, 4, false);
 			float omega = (float) ((OUTPUT_SAMPLE_RATE * 1.0) / (symbolRate * 1.0));
-			ClockRecoveryMMComplex clockmm = new ClockRecoveryMMComplex(costas, omega, clockAlpha * clockAlpha / 4, 0.5f, clockAlpha, 0.005f);
+			ClockRecoveryMMComplex clockmm = new ClockRecoveryMMComplex(rrcf, omega, clockAlpha * clockAlpha / 4, 0.5f, clockAlpha, 0.005f);
+			CostasLoop costas = new CostasLoop(clockmm, 0.008f, 4, false);
 			Constellation constel = new Constellation(new float[] { -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f }, new int[] { 0, 1, 3, 2 }, 4, 1);
-			ConstellationSoftDecoder constelDecoder = new ConstellationSoftDecoder(clockmm, constel);
+			ConstellationSoftDecoder constelDecoder = new ConstellationSoftDecoder(costas, constel);
 			Rail rail = new Rail(constelDecoder, -1.0f, 1.0f);
 			FloatToChar f2char = new FloatToChar(rail, 127.0f);
 
