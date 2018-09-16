@@ -41,10 +41,10 @@ public class R2CloudService {
 		if (id == null) {
 			return;
 		}
-		if (observation.getaPath() != null) {
-			client.saveData(id, observation.getaPath());
-		} else if (observation.getDataPath() != null) {
+		if (observation.getDataPath() != null) {
 			client.saveData(id, observation.getDataPath());
+		} else if (observation.getaPath() != null) {
+			client.saveData(id, observation.getaPath());
 		}
 		if (config.getBoolean("r2cloud.syncSpectogram")) {
 			if (observation.getSpectogramPath() == null) {
