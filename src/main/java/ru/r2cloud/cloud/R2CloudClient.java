@@ -48,6 +48,7 @@ public class R2CloudClient {
 			con.setRequestProperty("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Authorization", config.getProperty("r2cloud.apiKey"));
+			con.setRequestProperty("Content-Type", "application/json");
 			con.setDoOutput(true);
 
 			JsonObject json = observation.toJson();
@@ -72,15 +73,19 @@ public class R2CloudClient {
 		}
 	}
 
-	public void saveData(Long id, File getaPath) {
-		upload("/api/v1/observation/" + id + "/data", getaPath);
+	public void saveJpeg(Long id, File getaPath) {
+		upload("/api/v1/observation/" + id + "/data", getaPath, "image/jpeg");
 	}
 
+	public void saveBinary(Long id, File getaPath) {
+		upload("/api/v1/observation/" + id + "/data", getaPath, "application/octet-stream");
+	}
+	
 	public void saveSpectogram(Long id, File spectogramPath) {
-		upload("/api/v1/observation/" + id + "/spectogram", spectogramPath);
+		upload("/api/v1/observation/" + id + "/spectogram", spectogramPath, "image/png");
 	}
 
-	private void upload(String url, File file) {
+	private void upload(String url, File file, String contentType) {
 		HttpURLConnection con = null;
 		FileInputStream fis = null;
 		try {
@@ -92,6 +97,7 @@ public class R2CloudClient {
 			con.setRequestMethod("PUT");
 			con.setRequestProperty("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
 			con.setRequestProperty("Authorization", config.getProperty("r2cloud.apiKey"));
+			con.setRequestProperty("Content-Type", contentType);
 			Util.copy(fis, con.getOutputStream());
 			con.getOutputStream().flush();
 
