@@ -1,38 +1,14 @@
 package ru.r2cloud.satellite;
 
-import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.Date;
 
-import javax.imageio.ImageIO;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.MetricRegistry;
-
-import ru.r2cloud.jradio.Context;
-import ru.r2cloud.jradio.PhaseAmbiguityResolver;
-import ru.r2cloud.jradio.blocks.AGC;
-import ru.r2cloud.jradio.blocks.ClockRecoveryMMComplex;
-import ru.r2cloud.jradio.blocks.Constellation;
-import ru.r2cloud.jradio.blocks.ConstellationSoftDecoder;
-import ru.r2cloud.jradio.blocks.CorrelateAccessCodeTag;
-import ru.r2cloud.jradio.blocks.CostasLoop;
-import ru.r2cloud.jradio.blocks.FixedLengthTagger;
-import ru.r2cloud.jradio.blocks.FloatToChar;
-import ru.r2cloud.jradio.blocks.Rail;
-import ru.r2cloud.jradio.blocks.RootRaisedCosineFilter;
-import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
-import ru.r2cloud.jradio.lrpt.LRPT;
-import ru.r2cloud.jradio.meteor.MeteorImage;
-import ru.r2cloud.jradio.source.WavFileSource;
-import ru.r2cloud.jradio.util.Metrics;
+import ru.r2cloud.model.LRPTResult;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.model.SatPass;
 import ru.r2cloud.model.Satellite;
@@ -51,7 +27,6 @@ public class LRPTObservation implements Observation {
 	private ProcessWrapper rtlSdr = null;
 	private File wavPath;
 
-	private final MetricRegistry r2cloudRegistry = Metrics.getRegistry();
 	private final Satellite satellite;
 	private final Configuration config;
 	private final SatPass nextPass;
@@ -94,7 +69,7 @@ public class LRPTObservation implements Observation {
 			}
 			sox.getOutputStream().flush();
 		} catch (IOException e) {
-			//there is no way to know if IOException was caused by closed stream
+			// there is no way to know if IOException was caused by closed stream
 			if (e.getMessage() == null || !e.getMessage().equals("Stream closed")) {
 				LOG.error("unable to run", e);
 			}
@@ -128,57 +103,20 @@ public class LRPTObservation implements Observation {
 			return;
 		}
 
-		float symbolRate = 72000f;
-		float clockAlpha = 0.010f;
-		LRPT lrpt = null;
-		try {
-			WavFileSource source = new WavFileSource(new BufferedInputStream(new FileInputStream(cur.getWavPath())));
-			AGC agc = new AGC(source, 1000e-4f, 0.5f, 2.0f, 4000.0f);
-			RootRaisedCosineFilter rrcf = new RootRaisedCosineFilter(agc, 1.0f, OUTPUT_SAMPLE_RATE, symbolRate, 0.6f, 361);
-			float omega = (float) ((OUTPUT_SAMPLE_RATE * 1.0) / (symbolRate * 1.0));
-			ClockRecoveryMMComplex clockmm = new ClockRecoveryMMComplex(rrcf, omega, clockAlpha * clockAlpha / 4, 0.5f, clockAlpha, 0.005f);
-			CostasLoop costas = new CostasLoop(clockmm, 0.008f, 4, false);
-			Constellation constel = new Constellation(new float[] { -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f }, new int[] { 0, 1, 3, 2 }, 4, 1);
-			ConstellationSoftDecoder constelDecoder = new ConstellationSoftDecoder(costas, constel);
-			Rail rail = new Rail(constelDecoder, -1.0f, 1.0f);
-			FloatToChar f2char = new FloatToChar(rail, 127.0f);
-
-			PhaseAmbiguityResolver phaseAmbiguityResolver = new PhaseAmbiguityResolver(0x035d49c24ff2686bL);
-
-			Context context = new Context();
-			CorrelateAccessCodeTag correlate = new CorrelateAccessCodeTag(context, f2char, 12, phaseAmbiguityResolver.getSynchronizationMarkers(), true);
-			TaggedStreamToPdu tag = new TaggedStreamToPdu(context, new FixedLengthTagger(context, correlate, 8160 * 2 + 8 * 2));
-			lrpt = new LRPT(context, tag, phaseAmbiguityResolver, MeteorImage.METEOR_SPACECRAFT_ID);
-			MeteorImage image = new MeteorImage(lrpt);
-			BufferedImage actual = image.toBufferedImage();
-			if (actual != null) {
-				File imageFile = File.createTempFile(satellite.getId() + "-", ".jpg");
-				ImageIO.write(actual, "jpg", imageFile);
-				dao.saveChannel(satellite.getId(), observationId, imageFile, "a");
-			}
-		} catch (Exception e) {
-			LOG.error("unable to process: " + cur.getWavPath(), e);
-		} finally {
-			if (lrpt != null) {
-				try {
-					lrpt.close();
-				} catch (IOException e) {
-					LOG.info("unable to close", e);
-				}
-			}
+		LRPTResult result = LRPTDecoder.decode(OUTPUT_SAMPLE_RATE, cur.getWavPath());
+		if (result.getData() != null) {
+			dao.saveData(satellite.getId(), observationId, result.getData());
 		}
-
-		Counter numberOfDecodedPackets = r2cloudRegistry.counter(LRPT.class.getName());
+		if (result.getImage() != null) {
+			dao.saveChannel(satellite.getId(), observationId, result.getImage(), "a");
+		}
 
 		cur.setStart(nextPass.getStart().getTime());
 		cur.setEnd(nextPass.getEnd().getTime());
-		cur.setNumberOfDecodedPackets(numberOfDecodedPackets.getCount());
+		cur.setNumberOfDecodedPackets(result.getNumberOfDecodedPackets());
 		cur.setSampleRate((int) OUTPUT_SAMPLE_RATE);
 		cur.setFrequency(satellite.getFrequency());
 		dao.saveMeta(satellite.getId(), cur);
-
-		// reset counter
-		numberOfDecodedPackets.dec(numberOfDecodedPackets.getCount());
 	}
 
 	@Override
