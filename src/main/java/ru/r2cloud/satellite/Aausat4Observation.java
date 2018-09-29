@@ -34,6 +34,7 @@ public class Aausat4Observation implements Observation {
 	private static final Logger LOG = LoggerFactory.getLogger(Aausat4Observation.class);
 	private static final int BUF_SIZE = 0x1000; // 4K
 	private static final int SAMPLE_RATE = 32000;
+	private static final int FREQUENCY_OFFSET = 10000; //fix dc offset by offsetting
 
 	private ProcessWrapper rtlfm = null;
 	private File wavPath;
@@ -69,7 +70,7 @@ public class Aausat4Observation implements Observation {
 				ppm = 0;
 			}
 			sox = factory.create(config.getProperty("satellites.sox.path") + " -t raw -r 60000 -es -b 16 - " + wavPath.getAbsolutePath() + " rate " + SAMPLE_RATE, Redirect.INHERIT, false);
-			rtlfm = factory.create(config.getProperty("satellites.rtlfm.path") + " -f " + String.valueOf(satellite.getFrequency()) + " -s 60k -g 45 -p " + String.valueOf(ppm) + " -E deemp -F 9 -", Redirect.INHERIT, false);
+			rtlfm = factory.create(config.getProperty("satellites.rtlfm.path") + " -f " + String.valueOf(satellite.getFrequency() + FREQUENCY_OFFSET) + " -s 60k -g 45 -p " + String.valueOf(ppm) + " -E deemp -F 9 -", Redirect.INHERIT, false);
 			byte[] buf = new byte[BUF_SIZE];
 			while (!Thread.currentThread().isInterrupted()) {
 				int r = rtlfm.getInputStream().read(buf);
