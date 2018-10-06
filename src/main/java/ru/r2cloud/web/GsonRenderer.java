@@ -7,10 +7,6 @@ import fi.iki.elonen.NanoHTTPD.Response.Status;
 
 public class GsonRenderer {
 
-	public GsonRenderer() {
-		// do nothing
-	}
-
 	public Response render(ModelAndView model) {
 		IStatus status;
 		if (model.getStatus() != null) {

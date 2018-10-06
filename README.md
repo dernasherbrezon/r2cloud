@@ -1,20 +1,20 @@
-# About [![Build Status](https://travis-ci.org/dernasherbrezon/r2cloud.svg?branch=master)](https://travis-ci.org/dernasherbrezon/r2cloud) [![codecov](https://codecov.io/gh/dernasherbrezon/r2cloud/branch/master/graph/badge.svg)](https://codecov.io/gh/dernasherbrezon/r2cloud) [![Known Vulnerabilities](https://snyk.io/test/github/dernasherbrezon/r2cloud/badge.svg)](https://snyk.io/test/github/dernasherbrezon/r2cloud) [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/r2cloud/Lobby)
+## About [![Build Status](https://travis-ci.org/dernasherbrezon/r2cloud.svg?branch=master)](https://travis-ci.org/dernasherbrezon/r2cloud) [![codecov](https://codecov.io/gh/dernasherbrezon/r2cloud/branch/master/graph/badge.svg)](https://codecov.io/gh/dernasherbrezon/r2cloud) [![Known Vulnerabilities](https://snyk.io/test/github/dernasherbrezon/r2cloud/badge.svg)](https://snyk.io/test/github/dernasherbrezon/r2cloud) [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/r2cloud/Lobby)
 
 r2cloud converts Raspberry PI into the base station which supports various radio signals, such as:
 
- - ADS-B (airplane)
- - APT (weather satellite)
- - LRPT (weather satellite)
+  - ADS-B (airplane)
+  - APT (weather satellite)
+  - LRPT (weather satellite)
  
-# Screenshots ([r2cloud-ui](https://github.com/dernasherbrezon/r2cloud-ui)) 
+## Screenshots ([r2cloud-ui](https://github.com/dernasherbrezon/r2cloud-ui)) 
 
 <img src="https://github.com/dernasherbrezon/r2cloud/raw/master/docs/screen1.jpg" width="20%">&nbsp;<img src="https://github.com/dernasherbrezon/r2cloud/raw/master/docs/screen2.jpg" width="20%">&nbsp;<img src="https://github.com/dernasherbrezon/r2cloud/raw/master/docs/screen3.jpg" width="20%">&nbsp;<img src="https://github.com/dernasherbrezon/r2cloud/raw/master/docs/screen4.jpg" width="20%">
  
-# Principal diagram
+## Principal diagram
 
 ![diagram](docs/diagram.png)
 
-# Installation 
+## Installation 
 
 There are 2 ways to install r2cloud:
 
@@ -39,33 +39,33 @@ sudo apt-get install r2cloud
 
 5. Accept self-signed certificate. This is unique certificate that was generated during installation. Once setup is complete, you could enable proper SSL using [Letsencrypt](https://letsencrypt.org). 
 
-# Design guidelines
+## Design guidelines
 
- - Autonomous:
-   * Ability to operate without internet connection
-   * synchronize state once connection restored
-   * automatically calibrate average absolute error
-   * configure base station location based on coordinates from GPS receiver
-   * new decoders could be added after auto-update
- - Integration with external systems:
-   * share as much as possible data with external systems
-   * re-use libraries
- - Single stack
-   * focus on single hardware and software stack
-   * optimize it
- - Stability
-   * housekeeping logs and data based on available hard disk
-   * auto-update
-   * backward compatibility
- - Security
-   * safe to expose administration UI to the internet
+  - Autonomous:
+    - Ability to operate without internet connection
+    - synchronize state once connection restored
+    - automatically calibrate average absolute error
+    - configure base station location based on coordinates from GPS receiver
+    - new decoders could be added after auto-update
+  - Integration with external systems:
+    - share as much as possible data with external systems
+    - re-use libraries
+  - Single stack
+    - focus on single hardware and software stack
+    - optimize it
+  - Stability
+    - housekeeping logs and data based on available hard disk
+    - auto-update
+    - backward compatibility
+  - Security
+    - safe to expose administration UI to the internet
    
 Details could be found in official [documentation](https://github.com/dernasherbrezon/r2cloud/wiki/Features).
 
-# Contribution
+## Contribution
 
 Please read our [guidelines](https://github.com/dernasherbrezon/r2cloud/wiki/Contribution).
 
-# Contact
+## Contact
 
 Please use [gitter](https://gitter.im/r2cloud/Lobby)

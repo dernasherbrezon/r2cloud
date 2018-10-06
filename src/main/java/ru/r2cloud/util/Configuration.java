@@ -55,7 +55,7 @@ public class Configuration {
 		try (InputStream is = new FileInputStream(systemSettingsLocation)) {
 			systemSettings.load(is);
 		} catch (Exception e) {
-			throw new RuntimeException("Unable to load properties", e);
+			throw new IllegalArgumentException("Unable to load properties", e);
 		}
 		this.userSettingsLocation = userSettingsLocation;
 		loadUserSettings(userSettingsLocation);
@@ -66,7 +66,7 @@ public class Configuration {
 			try (InputStream is = new FileInputStream(userSettingsLocation)) {
 				userSettings.load(is);
 			} catch (Exception e) {
-				throw new RuntimeException("Unable to load user properties", e);
+				throw new IllegalArgumentException("Unable to load user properties", e);
 			}
 		}
 	}
@@ -94,7 +94,7 @@ public class Configuration {
 		try (FileWriter fos = new FileWriter(userSettingsLocation)) {
 			userSettings.store(fos, "updated");
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new IllegalArgumentException(e);
 		}
 		try {
 			Files.setPosixFilePermissions(Paths.get(userSettingsLocation), MODE600);
@@ -150,7 +150,7 @@ public class Configuration {
 				for (Object cur : line.getArgList()) {
 					notFound.append(cur).append(" ");
 				}
-				throw new RuntimeException(notFound.toString());
+				throw new IllegalArgumentException(notFound.toString());
 			}
 			for (Option cur : line.getOptions()) {
 				if (cur.getLongOpt() != null) {

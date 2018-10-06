@@ -11,10 +11,6 @@ public class ModelAndView {
 	private Map<String, String> headers;
 	private IStatus status;
 
-	public ModelAndView() {
-		// do nothing
-	}
-
 	public IStatus getStatus() {
 		return status;
 	}

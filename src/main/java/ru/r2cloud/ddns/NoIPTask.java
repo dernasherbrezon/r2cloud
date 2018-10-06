@@ -81,10 +81,10 @@ public class NoIPTask extends SafeRunnable {
 							config.setProperty("ddns.ip", currentExternalIp);
 							config.update();
 						}
-					} else if (response.equals("nohost") || response.equals("badauth") || response.equals("badagent") || response.equals("!donator") || response.equals("abuse")) {
+					} else if ("nohost".equals(response) || "badauth".equals(response) || "badagent".equals(response) || "!donator".equals(response) || "abuse".equals(response)) {
 						LOG.error("fatal error detected: " + response + ". Please check ddns settings");
 						fatalError = true;
-					} else if (response.equals("911")) {
+					} else if ("911".equals(response)) {
 						LOG.error("ddns provider returned internal server error. Will retry update after " + RETRY_TIMEOUT + " millis");
 						retryAfter = System.currentTimeMillis() + RETRY_TIMEOUT;
 						// save it to show in UI
@@ -106,7 +106,7 @@ public class NoIPTask extends SafeRunnable {
 	private static String getAndValidate(Configuration config, String name) throws Exception {
 		String username = config.getProperty(name);
 		if (username == null || username.trim().length() == 0) {
-			throw new Exception(name + " cannot be empty");
+			throw new IllegalArgumentException(name + " cannot be empty");
 		}
 		return username;
 	}

@@ -33,10 +33,11 @@ public class Aausat4Observation implements Observation {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Aausat4Observation.class);
 	private static final int BUF_SIZE = 0x1000; // 4K
-	private static final int SAMPLE_RATE = 32000;
-	private static final int FREQUENCY_OFFSET = 10000; //fix dc offset by offsetting
+	private static final int INPUT_SAMPLE_RATE = 60_000;
+	private static final int OUTPUT_SAMPLE_RATE = 32_000;
+	private static final int FREQUENCY_OFFSET = 10_000; //fix dc offset by offsetting
 
-	private ProcessWrapper rtlfm = null;
+	private ProcessWrapper rtlSdr = null;
 	private File wavPath;
 
 	private final Satellite satellite;
@@ -69,11 +70,11 @@ public class Aausat4Observation implements Observation {
 			if (ppm == null) {
 				ppm = 0;
 			}
-			sox = factory.create(config.getProperty("satellites.sox.path") + " -t raw -r 60000 -es -b 16 - " + wavPath.getAbsolutePath() + " rate " + SAMPLE_RATE, Redirect.INHERIT, false);
-			rtlfm = factory.create(config.getProperty("satellites.rtlfm.path") + " -f " + String.valueOf(satellite.getFrequency() + FREQUENCY_OFFSET) + " -s 60k -g 45 -p " + String.valueOf(ppm) + " -E deemp -F 9 -", Redirect.INHERIT, false);
+			sox = factory.create(config.getProperty("satellites.sox.path") + " --type raw --rate " + INPUT_SAMPLE_RATE + " --encoding unsigned-integer --bits 8 --channels 2 - " + wavPath.getAbsolutePath() + " rate " + OUTPUT_SAMPLE_RATE, Redirect.INHERIT, false);
+			rtlSdr = factory.create(config.getProperty("satellites.rtlsdr.path") + " -f " + String.valueOf(satellite.getFrequency() + FREQUENCY_OFFSET) + " -s " + INPUT_SAMPLE_RATE + " -g 45 -p " + String.valueOf(ppm) + " - ", Redirect.INHERIT, false);
 			byte[] buf = new byte[BUF_SIZE];
 			while (!Thread.currentThread().isInterrupted()) {
-				int r = rtlfm.getInputStream().read(buf);
+				int r = rtlSdr.getInputStream().read(buf);
 				if (r == -1) {
 					break;
 				}
@@ -87,15 +88,15 @@ public class Aausat4Observation implements Observation {
 			}
 		} finally {
 			LOG.info("stopping pipe thread");
-			Util.shutdown("rtl_fm for satellites", rtlfm, 10000);
+			Util.shutdown("rtl_sdr for satellites", rtlSdr, 10000);
 			Util.shutdown("sox", sox, 10000);
 		}
 	}
 
 	@Override
 	public void stop() {
-		Util.shutdown("rtlfm for satellites", rtlfm, 10000);
-		rtlfm = null;
+		Util.shutdown("rtl_sdr for satellites", rtlSdr, 10000);
+		rtlSdr = null;
 
 		if (wavPath == null || !wavPath.exists()) {
 			LOG.info("nothing saved");
@@ -146,7 +147,7 @@ public class Aausat4Observation implements Observation {
 		cur.setStart(nextPass.getStart().getTime());
 		cur.setEnd(nextPass.getEnd().getTime());
 		cur.setNumberOfDecodedPackets(numberOfDecodedPackets);
-		cur.setSampleRate(SAMPLE_RATE);
+		cur.setSampleRate(OUTPUT_SAMPLE_RATE);
 		cur.setFrequency(satellite.getFrequency());
 		dao.saveMeta(satellite.getId(), cur);
 	}

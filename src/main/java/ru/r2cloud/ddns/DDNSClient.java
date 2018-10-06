@@ -18,7 +18,6 @@ public class DDNSClient {
 	private final Configuration config;
 
 	private ScheduledExecutorService executor;
-	private Runnable task;
 
 	public DDNSClient(Configuration config) {
 		this.config = config;
@@ -32,6 +31,7 @@ public class DDNSClient {
 		if (typeStr == null || typeStr.trim().length() == 0) {
 			return;
 		}
+		Runnable task;
 		try {
 			DDNSType type = DDNSType.valueOf(typeStr);
 			switch (type) {

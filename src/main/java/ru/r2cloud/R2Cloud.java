@@ -62,8 +62,6 @@ public class R2Cloud {
 
 	private static final Logger LOG = LoggerFactory.getLogger(R2Cloud.class);
 
-	private final Configuration props;
-
 	private final Map<String, HttpContoller> controllers = new HashMap<String, HttpContoller>();
 	private final WebServer webServer;
 	private final ADSB adsb;
@@ -91,7 +89,7 @@ public class R2Cloud {
 	private final SpectogramService spectogramService = new SpectogramService();
 
 	public R2Cloud(String propertiesLocation) {
-		props = new Configuration(propertiesLocation, System.getProperty("user.home") + File.separator + ".r2cloud");
+		Configuration props = new Configuration(propertiesLocation, System.getProperty("user.home") + File.separator + ".r2cloud");
 		threadFactory = new ThreadPoolFactoryImpl();
 		processFactory = new ProcessFactory();
 		clock = new DefaultClock();

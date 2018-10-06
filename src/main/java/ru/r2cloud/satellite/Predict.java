@@ -56,13 +56,11 @@ public class Predict {
 					}
 					matched = true;
 				} else {
-					if (matched) {
-						if (maxElevation >= guaranteedElevation) {
-							SatPass result = new SatPass();
-							result.setStart(start);
-							result.setEnd(findPrecise(currentLocation, previous, position, satellite));
-							return result;
-						}
+					if (matched && maxElevation >= guaranteedElevation) {
+						SatPass result = new SatPass();
+						result.setStart(start);
+						result.setEnd(findPrecise(currentLocation, previous, position, satellite));
+						return result;
 					}
 					matched = false;
 				}

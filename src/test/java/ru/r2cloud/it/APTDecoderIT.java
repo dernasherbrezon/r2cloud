@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNull;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -15,7 +14,6 @@ import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.model.APTResult;
-import ru.r2cloud.model.Satellite;
 import ru.r2cloud.satellite.APTDecoder;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.Util;
@@ -26,7 +24,6 @@ public class APTDecoderIT {
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private TestConfiguration config;
-	private Satellite satellite;
 	private ProcessFactory factory;
 
 	@Test
@@ -50,11 +47,6 @@ public class APTDecoderIT {
 		config.setProperty("satellites.enabled", true);
 		config.setProperty("satellites.basepath.location", tempFolder.getRoot().getAbsolutePath());
 		config.update();
-
-		satellite = new Satellite();
-		satellite.setId(UUID.randomUUID().toString());
-		satellite.setFrequency(10);
-		satellite.setName(UUID.randomUUID().toString());
 
 		factory = new ProcessFactory();
 	}

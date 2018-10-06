@@ -2,7 +2,7 @@
 
 set -e
 
-DATE=`date +%s`
+DATE=$(date +%s)
 
 openssl aes-256-cbc -K $encrypted_0efec95fe1a5_key -iv $encrypted_0efec95fe1a5_iv -in codesigning.asc.enc -out codesigning.asc -d
 gpg --fast-import codesigning.asc

@@ -26,7 +26,6 @@ public class RRD4JReporterTest {
 
 	private MetricRegistry registry;
 	private RRD4JReporter reporter;
-	private TestConfiguration config;
 	private File basepath;
 
 	@Rule
@@ -78,7 +77,7 @@ public class RRD4JReporterTest {
 	@Before
 	public void start() throws Exception {
 		registry = new MetricRegistry();
-		config = new TestConfiguration(tempFolder);
+		TestConfiguration config = new TestConfiguration(tempFolder);
 		basepath = new File(tempFolder.getRoot().getAbsolutePath(), "rrd4jtest");
 		config.setProperty("metrics.basepath.location", basepath.getAbsolutePath());
 		reporter = new RRD4JReporter(config, registry);

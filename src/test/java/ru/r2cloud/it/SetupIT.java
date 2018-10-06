@@ -7,7 +7,7 @@ import ru.r2cloud.it.util.BaseIT;
 public class SetupIT extends BaseIT {
 
 	@Test
-	public void setup() {
+	public void testSetup() {
 		client.setup("ittests", "info@r2cloud.ru", "1");
 	}
 

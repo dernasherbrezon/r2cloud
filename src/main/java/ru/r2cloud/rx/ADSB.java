@@ -140,7 +140,7 @@ public class ADSB implements Lifecycle {
 						LOG.info("listening for adsb data from " + host + ":" + port);
 						while ((curLine = in.readLine()) != null) {
 							String messageStr = curLine.substring(1, curLine.length() - 1);
-							if (messageStr.equals("0000")) {
+							if ("0000".equals(messageStr)) {
 								// sometimes dump1090 returns this message
 								continue;
 							}
