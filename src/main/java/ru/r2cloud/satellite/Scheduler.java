@@ -104,13 +104,13 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		if (observation == null) {
 			return;
 		}
-		LOG.info("scheduled next pass for " + cur.getName() + ": " + observation.getStart());
+		LOG.info("scheduled next pass for {}: {}", cur.getName(), observation.getStart());
 		Future<?> future = scheduler.schedule(new SafeRunnable() {
 
 			@Override
 			public void doRun() {
 				if (!lock.tryLock(Scheduler.this)) {
-					LOG.info("unable to acquire lock for " + cur.getName());
+					LOG.info("unable to acquire lock for {}", cur.getName());
 					return;
 				}
 				try {
