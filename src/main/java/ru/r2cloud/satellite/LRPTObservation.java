@@ -26,6 +26,8 @@ public class LRPTObservation implements Observation {
 
 	private ProcessWrapper rtlSdr = null;
 	private File wavPath;
+	private Long start = null;
+	private Long end = null;
 
 	private final Satellite satellite;
 	private final Configuration config;
@@ -65,6 +67,9 @@ public class LRPTObservation implements Observation {
 				if (r == -1) {
 					break;
 				}
+				if (start == null) {
+					start = System.currentTimeMillis();
+				}
 				sox.getOutputStream().write(buf, 0, r);
 			}
 			sox.getOutputStream().flush();
@@ -77,6 +82,7 @@ public class LRPTObservation implements Observation {
 			LOG.info("stopping pipe thread");
 			Util.shutdown("rtl_sdr for satellites", rtlSdr, 10000);
 			Util.shutdown("sox", sox, 10000);
+			end = System.currentTimeMillis();
 		}
 	}
 
@@ -111,8 +117,12 @@ public class LRPTObservation implements Observation {
 			dao.saveChannel(satellite.getId(), observationId, result.getImage(), "a");
 		}
 
-		cur.setStart(nextPass.getStart().getTime());
-		cur.setEnd(nextPass.getEnd().getTime());
+		if (start != null) {
+			cur.setStart(new Date(start));
+		}
+		if (end != null) {
+			cur.setEnd(new Date(end));
+		}
 		cur.setNumberOfDecodedPackets(result.getNumberOfDecodedPackets());
 		cur.setSampleRate((int) OUTPUT_SAMPLE_RATE);
 		cur.setFrequency(satellite.getFrequency());
