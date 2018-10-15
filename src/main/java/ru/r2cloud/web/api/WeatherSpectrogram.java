@@ -11,7 +11,7 @@ import com.eclipsesource.json.JsonValue;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.SpectogramService;
-import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.satellite.ObservationResultDao;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
@@ -44,18 +44,18 @@ public class WeatherSpectrogram extends AbstractHttpController {
 			LOG.info("missing parameters");
 			return new BadRequest("missing parameters");
 		}
-		ObservationResult observation = dao.find(satelliteId, id);
+		ObservationFull observation = dao.find(satelliteId, id);
 		if (observation == null) {
 			LOG.info("not found: " + satelliteId + " id: " + id);
 			return new NotFound();
 		}
 
-		if (observation.getWavPath() == null || !observation.getWavPath().exists()) {
+		if (observation.getResult().getWavPath() == null || !observation.getResult().getWavPath().exists()) {
 			LOG.info("wav file not found");
 			return new NotFound();
 		}
 
-		File spectogram = spectogramService.create(observation.getWavPath());
+		File spectogram = spectogramService.create(observation.getResult().getWavPath());
 		if (spectogram == null) {
 			return new InternalServerError();
 		}
@@ -67,7 +67,7 @@ public class WeatherSpectrogram extends AbstractHttpController {
 
 		observation = dao.find(satelliteId, id);
 		JsonObject entity = new JsonObject();
-		entity.add("spectogramURL", observation.getSpectogramURL());
+		entity.add("spectogramURL", observation.getResult().getSpectogramURL());
 		ModelAndView result = new ModelAndView();
 		result.setData(entity.toString());
 		return result;

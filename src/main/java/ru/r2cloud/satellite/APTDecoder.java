@@ -1,23 +1,31 @@
 package ru.r2cloud.satellite;
 
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.r2cloud.model.APTResult;
+import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ProcessWrapper;
 import ru.r2cloud.util.Util;
 
-public class APTDecoder {
+public class APTDecoder implements Decoder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(APTDecoder.class);
 
@@ -29,19 +37,22 @@ public class APTDecoder {
 		this.factory = factory;
 	}
 
-	public APTResult decode(final File wavFile) {
+	@Override
+	public ObservationResult decode(final File wavFile, final ObservationRequest request) {
+		ObservationResult result = new ObservationResult();
+		result.setWavPath(wavFile);
 		File image = null;
 		try {
 			image = File.createTempFile("apt", "a");
 		} catch (IOException e1) {
 			LOG.error("unable to create temp file", e1);
-			return new APTResult();
+			return result;
 		}
 		ProcessWrapper process = null;
 		try {
 			process = factory.create(config.getProperty("satellites.wxtoimg.path") + " -e HVC -t n -c -o " + wavFile.getAbsolutePath() + " " + image.getAbsolutePath(), true, false);
 			final InputStream is = process.getInputStream();
-			final List<String> output = new ArrayList<>();
+			final List<String> lines = new ArrayList<>();
 			Thread tis = new Thread(new Runnable() {
 				@Override
 				public void run() {
@@ -49,9 +60,9 @@ public class APTDecoder {
 						BufferedReader r = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 						String curLine = null;
 						while ((curLine = r.readLine()) != null) {
-							synchronized (output) {
+							synchronized (lines) {
 								LOG.info(curLine);
-								output.add(curLine);
+								lines.add(curLine);
 							}
 						}
 						r.close();
@@ -63,23 +74,41 @@ public class APTDecoder {
 			tis.setDaemon(true);
 			tis.start();
 			process.waitFor();
-			APTResult result = convert(image, output);
-			if (result.getImage() == null) {
+			if (convert(result, lines)) {
+				if (request.getStart().getLatitude() < request.getEnd().getLatitude()) {
+					rotateImage(image);
+				}
+				result.setaPath(image);
+			} else {
 				if (!image.delete()) {
 					LOG.info("unable to delete temp file: {}", image.getAbsolutePath());
 				}
 			}
-			return result;
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			Util.shutdown("wxtoimg", process, 10000);
 		} catch (IOException e) {
 			LOG.error("unable to run", e);
 		}
-		if (!image.delete()) {
-			LOG.info("unable to delete temp file: {}", image.getAbsolutePath());
+		return result;
+	}
+
+	private static void rotateImage(File result) {
+		try {
+			BufferedImage image;
+			try (FileInputStream fis = new FileInputStream(result)) {
+				image = ImageIO.read(fis);
+			}
+			AffineTransform tx = AffineTransform.getScaleInstance(-1, -1);
+			tx.translate(-image.getWidth(null), -image.getHeight(null));
+			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+			image = op.filter(image, null);
+			try (FileOutputStream fos = new FileOutputStream(result)) {
+				ImageIO.write(image, "jpg", fos);
+			}
+		} catch (Exception e) {
+			LOG.error("unable to rotate image", e);
 		}
-		return new APTResult();
 	}
 
 	// success
@@ -96,8 +125,7 @@ public class APTDecoder {
 	// Gain: 12.6
 	// Channel A: 3/3B (mid infrared)
 	// Channel B: 4 (thermal infrared)
-	private static APTResult convert(File image, List<String> lines) {
-		APTResult result = new APTResult();
+	private static boolean convert(ObservationResult observation, List<String> lines) {
 		boolean success = true;
 		for (String cur : lines) {
 			int index = cur.indexOf(":");
@@ -111,22 +139,19 @@ public class APTDecoder {
 				continue;
 			}
 			if (name.equalsIgnoreCase("gain")) {
-				result.setGain(value);
+				observation.setGain(value);
 				continue;
 			}
 			if (name.equalsIgnoreCase("Channel A")) {
-				result.setChannelA(value);
+				observation.setChannelA(value);
 				continue;
 			}
 			if (name.equalsIgnoreCase("Channel B")) {
-				result.setChannelB(value);
+				observation.setChannelB(value);
 				continue;
 			}
 		}
-		if (success) {
-			result.setImage(image);
-		}
-		return result;
+		return success;
 	}
 
 }

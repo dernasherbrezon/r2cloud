@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.TimeZone;
 
 import org.junit.Before;
@@ -23,6 +24,23 @@ public class PredictTest {
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private TestConfiguration config;
+	
+	@Test
+	public void test() throws Exception {
+		config = new TestConfiguration(tempFolder);
+		config.setProperty("locaiton.lat", "56.189713");
+		config.setProperty("locaiton.lon", "38.17431");
+
+		Satellite noaa15 = SatelliteFactory.createSatellite(new TLE(new String[] { "AAUSAT4", "1 41460U 16025E   18286.48591319  .00003726  00000-0  19222-3 0  9991", "2 41460  98.1207 356.1041 0161873 106.7501 255.1584 15.06318446135298" }));
+		Predict s = new Predict(config);
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+		Date date = sdf.parse("14-10-2018 07:39:04");
+		System.out.println(date.getTime());
+		SatPass next = s.calculateNext(date, noaa15);
+		assertNull(next);
+
+	}
 
 	// happens on initial startup
 	@Test

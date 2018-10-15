@@ -12,6 +12,8 @@ import uk.me.g4dpz.satellite.Satellite;
 
 public class Predict {
 
+	private static final double SPEED_OF_LIGHT = 2.99792458E8;
+
 	private final double minElevation;
 	private final double guaranteedElevation;
 	private final Configuration config;
@@ -20,6 +22,14 @@ public class Predict {
 		this.minElevation = config.getDouble("scheduler.elevation.min");
 		this.guaranteedElevation = config.getDouble("scheduler.elevation.guaranteed");
 		this.config = config;
+	}
+
+	public Long getDownlinkFreq(final Long freq, final long utcTimeMillis, final Satellite satellite) {
+		// get the current position
+		// FIXME cache ground station posisiotn object and reload when config changes
+		final SatPos satPos = satellite.getPosition((GroundStationPosition) null, new Date(utcTimeMillis));
+		final double rangeRate = satPos.getRangeRate();
+		return (long) ((double) freq * (SPEED_OF_LIGHT - rangeRate * 1000.0) / SPEED_OF_LIGHT);
 	}
 
 	public SatPass calculateNext(Date current, Satellite satellite) {

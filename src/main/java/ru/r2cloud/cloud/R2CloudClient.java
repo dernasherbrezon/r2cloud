@@ -23,7 +23,7 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.DefaultTrustManager;
-import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -38,7 +38,7 @@ public class R2CloudClient {
 		setupTrustAll();
 	}
 
-	public Long saveMeta(ObservationResult observation) {
+	public Long saveMeta(ObservationFull observation) {
 		HttpURLConnection con = null;
 		try {
 			URL obj = new URL(config.getProperty("r2cloud.hostname") + "/api/v1/observation");

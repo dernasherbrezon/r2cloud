@@ -24,7 +24,7 @@ public class SpectogramService {
 		LOG.info("generating spectogram");
 		try (InputStream is = new BufferedInputStream(new FileInputStream(wavFile))) {
 			WavFileSource source = new WavFileSource(is);
-			Spectogram spectogram = new Spectogram((int) (source.getFormat().getSampleRate() / OPTIMAL_WIDTH));
+			Spectogram spectogram = new Spectogram((int) (source.getContext().getSampleRate() / OPTIMAL_WIDTH));
 			BufferedImage image = spectogram.process(source);
 			File tmp = File.createTempFile("spectogram", ".png");
 			ImageIO.write(image, "png", tmp);

@@ -2,20 +2,22 @@ package ru.r2cloud.satellite;
 
 import java.util.concurrent.Future;
 
+import ru.r2cloud.model.ObservationRequest;
+
 public class ScheduledObservation {
 
-	private final Observation observation;
+	private final ObservationRequest req;
 	private final Future<?> future;
 	private final Future<?> reaperFuture;
 
-	public ScheduledObservation(Observation observation, Future<?> future, Future<?> reaperFuture) {
-		this.observation = observation;
+	public ScheduledObservation(ObservationRequest req, Future<?> future, Future<?> reaperFuture) {
+		this.req = req;
 		this.future = future;
 		this.reaperFuture = reaperFuture;
 	}
 
-	public Observation getObservation() {
-		return observation;
+	public ObservationRequest getReq() {
+		return req;
 	}
 
 	public Future<?> getFuture() {

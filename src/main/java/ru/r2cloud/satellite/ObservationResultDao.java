@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -17,9 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.FilenameComparator;
+import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
@@ -36,16 +35,17 @@ public class ObservationResultDao {
 		this.maxCount = config.getInteger("scheduler.data.retention.count");
 	}
 
-	public List<ObservationResult> findAllBySatelliteId(String satelliteId) {
+	public List<ObservationFull> findAllBySatelliteId(String satelliteId) {
 		File dataRoot = new File(basepath, satelliteId + File.separator + "data");
 		if (!dataRoot.exists()) {
 			return Collections.emptyList();
 		}
 		File[] observations = dataRoot.listFiles();
 		Arrays.sort(observations, FilenameComparator.INSTANCE_DESC);
-		List<ObservationResult> result = new ArrayList<ObservationResult>(observations.length);
+		List<ObservationFull> result = new ArrayList<ObservationFull>(observations.length);
 		for (File curDirectory : observations) {
-			ObservationResult cur = find(satelliteId, curDirectory);
+			ObservationFull cur = find(satelliteId, curDirectory);
+			// some directories might be corrupted
 			if (cur == null) {
 				continue;
 			}
@@ -54,7 +54,7 @@ public class ObservationResultDao {
 		return result;
 	}
 
-	public ObservationResult find(String satelliteId, String observationId) {
+	public ObservationFull find(String satelliteId, String observationId) {
 		File baseDirectory = new File(basepath, satelliteId + File.separator + "data" + File.separator + observationId);
 		if (!baseDirectory.exists()) {
 			return null;
@@ -62,58 +62,46 @@ public class ObservationResultDao {
 		return find(satelliteId, baseDirectory);
 	}
 
-	private static ObservationResult find(String satelliteId, File curDirectory) {
-		long startTime;
-		try {
-			startTime = Long.valueOf(curDirectory.getName());
-		} catch (Exception e) {
+	private static ObservationFull find(String satelliteId, File curDirectory) {
+		File dest = new File(curDirectory, "meta.json");
+		if (!dest.exists()) {
 			return null;
 		}
-		ObservationResult cur = new ObservationResult();
-		cur.setSatelliteId(satelliteId);
-		cur.setId(curDirectory.getName());
-		cur.setStart(new Date(startTime));
+		ObservationFull full = new ObservationFull();
+		try (BufferedReader r = new BufferedReader(new FileReader(dest))) {
+			JsonObject meta = Json.parse(r).asObject();
+			full.fromJson(meta);
+		} catch (Exception e) {
+			LOG.error("unable to load meta", e);
+			return null;
+		}
+
+		ObservationResult result = full.getResult();
+
 		File a = new File(curDirectory, "a.jpg");
 		if (a.exists()) {
-			cur.setaPath(a);
-			cur.setaURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + cur.getId() + "/a.jpg");
+			result.setaPath(a);
+			result.setaURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getReq().getId() + "/a.jpg");
 		}
 		File data = new File(curDirectory, "data.bin");
 		if (data.exists()) {
-			cur.setDataPath(data);
-			cur.setDataURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + cur.getId() + "/data.bin");
+			result.setDataPath(data);
+			result.setDataURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getReq().getId() + "/data.bin");
 		}
 		File wav = new File(curDirectory, "output.wav");
 		if (wav.exists()) {
-			cur.setWavPath(wav);
+			result.setWavPath(wav);
 		}
 		File spectogram = new File(curDirectory, "spectogram.png");
 		if (spectogram.exists()) {
-			cur.setSpectogramPath(spectogram);
-			cur.setSpectogramURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + cur.getId() + "/spectogram.png");
+			result.setSpectogramPath(spectogram);
+			result.setSpectogramURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getReq().getId() + "/spectogram.png");
 		}
-		File dest = new File(curDirectory, "meta.json");
-		if (dest.exists()) {
-			try (BufferedReader r = new BufferedReader(new FileReader(dest))) {
-				JsonObject meta = Json.parse(r).asObject();
-				cur.setEnd(new Date(meta.getLong("end", -1L)));
-				cur.setGain(meta.getString("gain", null));
-				cur.setChannelA(meta.getString("channelA", null));
-				cur.setChannelB(meta.getString("channelB", null));
-				cur.setSampleRate(meta.getInt("sampleRate", -1));
-				cur.setFrequency(meta.getLong("frequency", -1L));
-				JsonValue numberOfPacketsDecodedStr = meta.get("numberOfDecodedPackets");
-				if (numberOfPacketsDecodedStr != null) {
-					cur.setNumberOfDecodedPackets(numberOfPacketsDecodedStr.asLong());
-				}
-			} catch (Exception e) {
-				LOG.error("unable to load meta", e);
-			}
-		}
-		return cur;
+
+		return full;
 	}
 
-	public boolean saveChannel(String satelliteId, String observationId, File a, String type) {
+	public boolean saveImage(String satelliteId, String observationId, File a, String type) {
 		File dest = new File(basepath, satelliteId + File.separator + "data" + File.separator + observationId + File.separator + type + ".jpg");
 		if (dest.exists()) {
 			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
@@ -140,8 +128,8 @@ public class ObservationResultDao {
 		return a.renameTo(dest);
 	}
 
-	public boolean createObservation(String satelliteId, String observationId, File wavPath) {
-		File[] dataDirs = new File(basepath, satelliteId + File.separator + "data").listFiles();
+	public boolean insert(ObservationFull observation, File wavPath) {
+		File[] dataDirs = new File(basepath, observation.getReq().getSatelliteId() + File.separator + "data").listFiles();
 		if (dataDirs != null && dataDirs.length > maxCount) {
 			Arrays.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
 			for (int i = 0; i < (dataDirs.length - maxCount); i++) {
@@ -149,7 +137,15 @@ public class ObservationResultDao {
 			}
 		}
 
-		File dest = new File(basepath, satelliteId + File.separator + "data" + File.separator + observationId + File.separator + "output.wav");
+		if (!update(observation)) {
+			return false;
+		}
+
+		return insertIQData(observation, wavPath);
+	}
+
+	private boolean insertIQData(ObservationFull observation, File wavPath) {
+		File dest = new File(basepath, observation.getReq().getSatelliteId() + File.separator + "data" + File.separator + observation.getReq().getId() + File.separator + "output.wav");
 		if (!dest.getParentFile().exists() && !dest.getParentFile().mkdirs()) {
 			LOG.info("unable to create parent dir:" + dest.getParentFile().getAbsolutePath());
 			return false;
@@ -161,29 +157,15 @@ public class ObservationResultDao {
 		return wavPath.renameTo(dest);
 	}
 
-	public void saveMeta(String id, ObservationResult cur) {
-		JsonObject meta = new JsonObject();
-		meta.add("start", cur.getStart().getTime());
-		meta.add("end", cur.getEnd().getTime());
-		meta.add("sampleRate", cur.getSampleRate());
-		meta.add("frequency", cur.getFrequency());
-		if (cur.getGain() != null) {
-			meta.add("gain", cur.getGain());
-		}
-		if (cur.getChannelA() != null) {
-			meta.add("channelA", cur.getChannelA());
-		}
-		if (cur.getChannelB() != null) {
-			meta.add("channelB", cur.getChannelB());
-		}
-		if (cur.getNumberOfDecodedPackets() != null) {
-			meta.add("numberOfDecodedPackets", cur.getNumberOfDecodedPackets());
-		}
-		File dest = new File(basepath, id + File.separator + "data" + File.separator + cur.getId() + File.separator + "meta.json");
+	public boolean update(ObservationFull cur) {
+		JsonObject meta = cur.toJson();
+		File dest = new File(basepath, cur.getReq().getSatelliteId() + File.separator + "data" + File.separator + cur.getReq().getId() + File.separator + "meta.json");
 		try (BufferedWriter w = new BufferedWriter(new FileWriter(dest))) {
 			w.append(meta.toString());
+			return true;
 		} catch (IOException e) {
 			LOG.error("unable to write meta", e);
+			return false;
 		}
 	}
 }

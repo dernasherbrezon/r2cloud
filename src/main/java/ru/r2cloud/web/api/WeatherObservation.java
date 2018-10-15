@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.eclipsesource.json.JsonObject;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
-import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.satellite.ObservationResultDao;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
@@ -32,7 +32,7 @@ public class WeatherObservation extends AbstractHttpController {
 			LOG.info("missing parameters");
 			return new BadRequest("missing parameters");
 		}
-		ObservationResult entity = resultDao.find(satelliteId, id);
+		ObservationFull entity = resultDao.find(satelliteId, id);
 		if (entity == null) {
 			LOG.info("not found: " + satelliteId + " id: " + id);
 			return new NotFound();

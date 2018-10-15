@@ -42,7 +42,7 @@ public class SchedulerTest {
 	private ThreadPoolFactory threadPool;
 	private R2CloudService r2cloudService;
 	private ScheduledExecutorService executor;
-	private APTObservation observation;
+	private RtlFmReader observation;
 	private Clock clock;
 	private String id;
 
@@ -98,7 +98,7 @@ public class SchedulerTest {
 		id = UUID.randomUUID().toString();
 		satelliteDao = mock(SatelliteDao.class);
 		factory = mock(ObservationFactory.class);
-		observation = mock(APTObservation.class);
+		observation = mock(RtlFmReader.class);
 		threadPool = mock(ThreadPoolFactory.class);
 		executor = mock(ScheduledExecutorService.class);
 		r2cloudService = mock(R2CloudService.class);

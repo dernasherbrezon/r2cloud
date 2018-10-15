@@ -1,101 +1,31 @@
 package ru.r2cloud.model;
 
 import java.io.File;
-import java.util.Date;
-
-import com.eclipsesource.json.JsonObject;
 
 public class ObservationResult {
 
-	private String id;
 	private File wavPath;
+
 	private String gain;
 	private String channelA;
 	private String channelB;
-	private String aURL;
-	private String dataURL;
-	private Date start;
-	private Date end;
-	private String spectogramURL;
 	private Long numberOfDecodedPackets;
-	private String satelliteId;
-	private int sampleRate;
-	private long frequency;
 
+	private String aURL;
 	private File aPath;
+
+	private String spectogramURL;
 	private File spectogramPath;
+
+	private String dataURL;
 	private File dataPath;
 
-	public long getFrequency() {
-		return frequency;
+	public File getWavPath() {
+		return wavPath;
 	}
 
-	public void setFrequency(long frequency) {
-		this.frequency = frequency;
-	}
-
-	public int getSampleRate() {
-		return sampleRate;
-	}
-
-	public void setSampleRate(int sampleRate) {
-		this.sampleRate = sampleRate;
-	}
-
-	public File getDataPath() {
-		return dataPath;
-	}
-
-	public void setDataPath(File dataPath) {
-		this.dataPath = dataPath;
-	}
-
-	public String getDataURL() {
-		return dataURL;
-	}
-
-	public void setDataURL(String dataURL) {
-		this.dataURL = dataURL;
-	}
-
-	public String getSatelliteId() {
-		return satelliteId;
-	}
-
-	public void setSatelliteId(String satelliteId) {
-		this.satelliteId = satelliteId;
-	}
-
-	public File getaPath() {
-		return aPath;
-	}
-
-	public void setaPath(File aPath) {
-		this.aPath = aPath;
-	}
-
-	public File getSpectogramPath() {
-		return spectogramPath;
-	}
-
-	public void setSpectogramPath(File spectogramPath) {
-		this.spectogramPath = spectogramPath;
-	}
-
-	public Long getNumberOfDecodedPackets() {
-		return numberOfDecodedPackets;
-	}
-
-	public void setNumberOfDecodedPackets(Long numberOfDecodedPackets) {
-		this.numberOfDecodedPackets = numberOfDecodedPackets;
-	}
-
-	public String getSpectogramURL() {
-		return spectogramURL;
-	}
-
-	public void setSpectogramURL(String spectogramURL) {
-		this.spectogramURL = spectogramURL;
+	public void setWavPath(File wavPath) {
+		this.wavPath = wavPath;
 	}
 
 	public String getGain() {
@@ -122,6 +52,14 @@ public class ObservationResult {
 		this.channelB = channelB;
 	}
 
+	public Long getNumberOfDecodedPackets() {
+		return numberOfDecodedPackets;
+	}
+
+	public void setNumberOfDecodedPackets(Long numberOfDecodedPackets) {
+		this.numberOfDecodedPackets = numberOfDecodedPackets;
+	}
+
 	public String getaURL() {
 		return aURL;
 	}
@@ -130,62 +68,44 @@ public class ObservationResult {
 		this.aURL = aURL;
 	}
 
-	public String getId() {
-		return id;
+	public File getaPath() {
+		return aPath;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setaPath(File aPath) {
+		this.aPath = aPath;
 	}
 
-	public File getWavPath() {
-		return wavPath;
+	public String getSpectogramURL() {
+		return spectogramURL;
 	}
 
-	public void setWavPath(File wavPath) {
-		this.wavPath = wavPath;
+	public void setSpectogramURL(String spectogramURL) {
+		this.spectogramURL = spectogramURL;
 	}
 
-	public Date getStart() {
-		return start;
+	public File getSpectogramPath() {
+		return spectogramPath;
 	}
 
-	public void setStart(Date start) {
-		this.start = start;
+	public void setSpectogramPath(File spectogramPath) {
+		this.spectogramPath = spectogramPath;
 	}
 
-	public Date getEnd() {
-		return end;
+	public String getDataURL() {
+		return dataURL;
 	}
 
-	public void setEnd(Date end) {
-		this.end = end;
+	public void setDataURL(String dataURL) {
+		this.dataURL = dataURL;
 	}
 
-	public JsonObject toJson() {
-		JsonObject json = new JsonObject();
-		json.add("start", getStart().getTime());
-		if (getEnd() != null) {
-			json.add("end", getEnd().getTime());
-		}
-		json.add("aURL", getaURL());
-		json.add("gain", getGain());
-		json.add("satellite", getSatelliteId());
-		json.add("channelA", getChannelA());
-		json.add("channelB", getChannelB());
-		if (getFrequency() > 0) {
-			json.add("frequency", getFrequency());
-		}
-		if (getSampleRate() > 0) {
-			json.add("sampleRate", getSampleRate());
-		}
-		if (getNumberOfDecodedPackets() != null) {
-			json.add("numberOfDecodedPackets", getNumberOfDecodedPackets());
-		}
-		if (getSpectogramURL() != null) {
-			json.add("spectogramURL", getSpectogramURL());
-		}
-		return json;
+	public File getDataPath() {
+		return dataPath;
+	}
+
+	public void setDataPath(File dataPath) {
+		this.dataPath = dataPath;
 	}
 
 }

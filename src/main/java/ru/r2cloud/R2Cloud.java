@@ -15,6 +15,9 @@ import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.rx.ADSB;
 import ru.r2cloud.rx.ADSBDao;
 import ru.r2cloud.satellite.APTDecoder;
+import ru.r2cloud.satellite.Aausat4Decoder;
+import ru.r2cloud.satellite.Decoder;
+import ru.r2cloud.satellite.LRPTDecoder;
 import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.ObservationResultDao;
 import ru.r2cloud.satellite.Predict;
@@ -45,7 +48,6 @@ import ru.r2cloud.web.api.configuration.Configured;
 import ru.r2cloud.web.api.configuration.DDNS;
 import ru.r2cloud.web.api.configuration.General;
 import ru.r2cloud.web.api.configuration.R2CloudSave;
-import ru.r2cloud.web.api.configuration.R2CloudUpload;
 import ru.r2cloud.web.api.configuration.SSL;
 import ru.r2cloud.web.api.configuration.SSLLog;
 import ru.r2cloud.web.api.configuration.WeatherConfig;
@@ -82,11 +84,11 @@ public class R2Cloud {
 	private final ObservationFactory observationFactory;
 	private final Clock clock;
 	private final ProcessFactory processFactory;
-	private final APTDecoder aptDecoder;
 	private final ObservationResultDao resultDao;
 	private final R2CloudService r2cloudService;
 	private final R2CloudClient r2cloudClient;
 	private final SpectogramService spectogramService = new SpectogramService();
+	private final Map<String, Decoder> decoders = new HashMap<>();
 
 	public R2Cloud(String propertiesLocation) {
 		Configuration props = new Configuration(propertiesLocation, System.getProperty("user.home") + File.separator + ".r2cloud");
@@ -110,13 +112,17 @@ public class R2Cloud {
 		acmeClient = new AcmeClient(props);
 		satelliteDao = new SatelliteDao(props);
 		resultDao = new ObservationResultDao(props);
-		aptDecoder = new APTDecoder(props, processFactory);
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient("http://celestrak.com"));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
-		observationFactory = new ObservationFactory(props, predict, tleDao, processFactory, resultDao, aptDecoder);
+		
+		decoders.put("apt", new APTDecoder(props, processFactory));
+		decoders.put("lrpt", new LRPTDecoder(predict));
+		decoders.put("aausat4", new Aausat4Decoder(predict));
+		
+		observationFactory = new ObservationFactory(predict, tleDao);
 		r2cloudClient = new R2CloudClient(props);
 		r2cloudService = new R2CloudService(props, resultDao, r2cloudClient, spectogramService);
-		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, r2cloudService);
+		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, r2cloudService, processFactory, resultDao, decoders);
 
 		// setup web server
 		index(new Health());
@@ -134,7 +140,6 @@ public class R2Cloud {
 		index(new TLE(props, tleDao));
 		index(new WeatherConfig(props));
 		index(new R2CloudSave(props));
-		index(new R2CloudUpload(r2cloudService));
 		index(new Weather(props, satelliteDao, scheduler, resultDao));
 		index(new Amateur(satelliteDao, scheduler, resultDao));
 		index(new WeatherObservation(resultDao));

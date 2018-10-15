@@ -14,10 +14,16 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.Lifecycle;
 import ru.r2cloud.RtlSdrLock;
 import ru.r2cloud.cloud.R2CloudService;
+import ru.r2cloud.model.IQData;
+import ru.r2cloud.model.ObservationFull;
+import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.model.Satellite;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
+import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.SafeRunnable;
 import ru.r2cloud.util.ThreadPoolFactory;
 import ru.r2cloud.util.Util;
@@ -33,6 +39,9 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private final ThreadPoolFactory threadpoolFactory;
 	private final Clock clock;
 	private final R2CloudService r2cloudService;
+	private final ProcessFactory processFactory;
+	private final ObservationResultDao dao;
+	private final Map<String, Decoder> decoders;
 
 	private final Map<String, ScheduledObservation> scheduledObservations = new ConcurrentHashMap<String, ScheduledObservation>();
 
@@ -40,7 +49,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private ScheduledExecutorService reaper = null;
 	private ScheduledExecutorService decoder = null;
 
-	public Scheduler(Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, R2CloudService r2cloudService) {
+	public Scheduler(Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, R2CloudService r2cloudService, ProcessFactory processFactory, ObservationResultDao dao, Map<String, Decoder> decoders) {
 		this.config = config;
 		this.config.subscribe(this, "satellites.enabled");
 		this.config.subscribe(this, "locaiton.lat");
@@ -51,12 +60,15 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		this.threadpoolFactory = threadpoolFactory;
 		this.clock = clock;
 		this.r2cloudService = r2cloudService;
+		this.processFactory = processFactory;
+		this.dao = dao;
+		this.decoders = decoders;
 	}
 
 	@Override
 	public void onConfigUpdated() {
-		List<ru.r2cloud.model.Satellite> supportedSatellites = satellites.findAll();
-		for (ru.r2cloud.model.Satellite cur : supportedSatellites) {
+		List<Satellite> supportedSatellites = satellites.findAll();
+		for (Satellite cur : supportedSatellites) {
 			boolean schedule = false;
 			switch (cur.getType()) {
 			case WEATHER:
@@ -98,13 +110,14 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		LOG.info("started");
 	}
 
-	private void schedule(ru.r2cloud.model.Satellite cur) {
+	private void schedule(Satellite cur) {
 		long current = clock.millis();
-		Observation observation = factory.create(new Date(current), cur);
+		ObservationRequest observation = factory.create(new Date(current), cur);
 		if (observation == null) {
 			return;
 		}
-		LOG.info("scheduled next pass for {}: {}", cur.getName(), observation.getStart());
+		LOG.info("scheduled next pass for {}: {}", cur.getName(), observation.getStart().getTime());
+		IQReader reader = createReader(observation);
 		Future<?> future = scheduler.schedule(new SafeRunnable() {
 
 			@Override
@@ -114,48 +127,89 @@ public class Scheduler implements Lifecycle, ConfigListener {
 					return;
 				}
 				try {
-					observation.start();
+					reader.start();
 				} finally {
 					lock.unlock(Scheduler.this);
 				}
 			}
-		}, observation.getStart().getTime() - current, TimeUnit.MILLISECONDS);
+		}, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
 		Future<?> reaperFuture = reaper.schedule(new SafeRunnable() {
 
 			@Override
 			public void doRun() {
+				IQData data;
 				future.cancel(true);
 				try {
-					observation.stop();
+					data = reader.stop();
 				} finally {
 					scheduledObservations.remove(cur.getId());
 				}
 				schedule(cur);
+
+				if (data == null || data.getWavFile() == null || !data.getWavFile().exists()) {
+					return;
+				}
+
+				ObservationFull full = new ObservationFull();
+				full.setReq(observation);
+
+				if (!dao.insert(full, data.getWavFile())) {
+					return;
+				}
+
+				observation.setStartTimeMillis(data.getActualStart());
+				observation.setEndTimeMillis(data.getActualEnd());
+
 				decoder.execute(new SafeRunnable() {
 
 					@Override
 					public void doRun() {
+						Decoder decoder = decoders.get(observation.getDecoder());
+						if (decoder == null) {
+							LOG.error("unknown decoder: {}", decoder);
+							return;
+						}
 						LOG.info("decoding: {}", cur.getName());
-						observation.decode();
+						ObservationResult result = decoder.decode(data.getWavFile(), observation);
 						LOG.info("decoded: {}", cur.getName());
-						r2cloudService.uploadObservation(cur.getId(), observation.getId());
+
+						if (result.getDataPath() != null) {
+							dao.saveData(observation.getSatelliteId(), observation.getId(), result.getDataPath());
+						}
+						if (result.getaPath() != null) {
+							dao.saveImage(observation.getSatelliteId(), observation.getId(), result.getaPath(), "a");
+						}
+						full.setResult(result);
+						dao.update(full);
+						r2cloudService.uploadObservation(full);
 					}
 				});
 			}
-		}, observation.getEnd().getTime() - current, TimeUnit.MILLISECONDS);
+		}, observation.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
 		ScheduledObservation previous = scheduledObservations.put(cur.getId(), new ScheduledObservation(observation, future, reaperFuture));
 		if (previous != null) {
-			LOG.info("cancelling previous: {}", previous.getObservation().getStart());
+			LOG.info("cancelling previous: {}", previous.getReq().getStart().getTime());
 			previous.cancel();
 		}
 	}
 
-	public Date getNextObservation(String id) {
+	private IQReader createReader(ObservationRequest req) {
+		String decoder = req.getDecoder();
+		if (decoder.equals("apt")) {
+			return new RtlFmReader(config, processFactory, req);
+		} else if (decoder.equals("lrpt") || decoder.equals("aausat4")) {
+			return new RtlSdrReader(config, processFactory, req);
+		} else {
+			throw new IllegalArgumentException("unsupported decoder: " + decoder);
+		}
+	}
+
+	public Long getNextObservation(String id) {
 		ScheduledObservation result = scheduledObservations.get(id);
 		if (result == null) {
 			return null;
 		}
-		return result.getObservation().getStart();
+		return result.getReq().getStartTimeMillis();
 	}
 
 	// protection from calling stop 2 times and more

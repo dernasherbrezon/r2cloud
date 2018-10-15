@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.SpectogramService;
-import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.satellite.ObservationResultDao;
 import ru.r2cloud.util.Configuration;
 
@@ -26,40 +26,35 @@ public class R2CloudService {
 		this.spectogramService = spectogramService;
 	}
 
-	public void uploadObservation(String satelliteId, String observationId) {
+	public void uploadObservation(ObservationFull observation) {
 		String apiKey = config.getProperty("r2cloud.apiKey");
 		if (apiKey == null) {
 			return;
 		}
-		LOG.info("uploading observation: " + observationId);
-		ObservationResult observation = dao.find(satelliteId, observationId);
-		if (observation == null) {
-			LOG.info("observation not found");
-			return;
-		}
+		LOG.info("uploading observation: " + observation.getReq().getId());
 		Long id = client.saveMeta(observation);
 		if (id == null) {
 			return;
 		}
-		if (observation.getDataPath() != null) {
-			client.saveBinary(id, observation.getDataPath());
-		} else if (observation.getaPath() != null) {
-			client.saveJpeg(id, observation.getaPath());
+		if (observation.getResult().getDataPath() != null) {
+			client.saveBinary(id, observation.getResult().getDataPath());
+		} else if (observation.getResult().getaPath() != null) {
+			client.saveJpeg(id, observation.getResult().getaPath());
 		}
 		if (config.getBoolean("r2cloud.syncSpectogram")) {
-			if (observation.getSpectogramPath() == null) {
-				File spectogram = spectogramService.create(observation.getWavPath());
+			if (observation.getResult().getSpectogramPath() == null) {
+				File spectogram = spectogramService.create(observation.getResult().getWavPath());
 				if (spectogram != null) {
 					client.saveSpectogram(id, spectogram);
-					if (!dao.saveSpectogram(satelliteId, observationId, spectogram)) {
+					if (!dao.saveSpectogram(observation.getReq().getSatelliteId(), observation.getReq().getId(), spectogram)) {
 						LOG.info("unable to save spectogram");
 					}
 				}
 			} else {
-				client.saveSpectogram(id, observation.getSpectogramPath());
+				client.saveSpectogram(id, observation.getResult().getSpectogramPath());
 			}
 		}
-		LOG.info("observation uploaded: " + observationId);
+		LOG.info("observation uploaded: " + observation.getReq().getId());
 	}
 
 }

@@ -5,11 +5,10 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.SatPass;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.tle.TLEDao;
-import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.ProcessFactory;
 import uk.me.g4dpz.satellite.SatelliteFactory;
 import uk.me.g4dpz.satellite.TLE;
 
@@ -19,21 +18,13 @@ public class ObservationFactory {
 
 	private final TLEDao tleDao;
 	private final Predict predict;
-	private final Configuration config;
-	private final ProcessFactory factory;
-	private final ObservationResultDao dao;
-	private final APTDecoder aptDecoder;
 
-	public ObservationFactory(Configuration config, Predict predict, TLEDao tleDao, ProcessFactory factory, ObservationResultDao dao, APTDecoder aptDecoder) {
-		this.config = config;
+	public ObservationFactory(Predict predict, TLEDao tleDao) {
 		this.predict = predict;
 		this.tleDao = tleDao;
-		this.factory = factory;
-		this.dao = dao;
-		this.aptDecoder = aptDecoder;
 	}
 
-	public Observation create(Date date, Satellite satellite) {
+	public ObservationRequest create(Date date, Satellite satellite) {
 		TLE tle = tleDao.findById(satellite.getId());
 		if (tle == null) {
 			LOG.error("unable to find tle for: " + satellite.getName());
@@ -45,19 +36,39 @@ public class ObservationFactory {
 			LOG.info("can't find next pass for " + satellite.getName());
 			return null;
 		}
+		ObservationRequest result = new ObservationRequest();
+		result.setOrigin(libSatellite);
+		result.setSatelliteFrequency(satellite.getFrequency());
+		result.setSatelliteId(satellite.getId());
+		result.setDecoder(satellite.getDecoder());
+		result.setStart(nextPass.getStart());
+		result.setStartTimeMillis(nextPass.getStart().getTime().getTime());
+		result.setId(String.valueOf(result.getStartTimeMillis()));
+		result.setEnd(nextPass.getEnd());
+		result.setEndTimeMillis(nextPass.getEnd().getTime().getTime());
 		String decoder = satellite.getDecoder();
 		if (decoder == null) {
 			throw new IllegalArgumentException("unknown decoder for: " + satellite.getId());
 		}
 		if (decoder.equals("apt")) {
-			return new APTObservation(config, satellite, nextPass, factory, dao, aptDecoder);
+			result.setActualFrequency(satellite.getFrequency());
+			result.setInputSampleRate(60_000);
+			result.setOutputSampleRate(11_025);
 		} else if (decoder.equals("lrpt")) {
-			return new LRPTObservation(config, satellite, nextPass, factory, dao);
+			result.setInputSampleRate(1_440_000);
+			result.setOutputSampleRate(150_000);
+			// TODO should be doppler corrected
+			result.setActualFrequency(satellite.getFrequency());
 		} else if (decoder.equals("aausat4")) {
-			return new Aausat4Observation(config, satellite, nextPass, factory, dao);
+			result.setInputSampleRate(240_000);
+			result.setOutputSampleRate(32_000);
+			// TODO should be doppler corrected
+			result.setActualFrequency(satellite.getFrequency() + 10_000);
 		} else {
 			throw new IllegalArgumentException("unsupported decoder: " + decoder);
 		}
+
+		return result;
 	}
 
 }
