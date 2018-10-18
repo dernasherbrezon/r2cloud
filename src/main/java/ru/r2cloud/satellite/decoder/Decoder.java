@@ -1,4 +1,4 @@
-package ru.r2cloud.satellite;
+package ru.r2cloud.satellite.decoder;
 
 import java.io.File;
 

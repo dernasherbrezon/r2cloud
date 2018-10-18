@@ -19,6 +19,7 @@ import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.satellite.decoder.Decoder;
 import ru.r2cloud.satellite.reader.IQReader;
 import ru.r2cloud.satellite.reader.RtlFmReader;
 import ru.r2cloud.satellite.reader.RtlSdrReader;
