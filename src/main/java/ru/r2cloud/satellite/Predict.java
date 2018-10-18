@@ -25,20 +25,20 @@ public class Predict {
 	}
 
 	public Long getDownlinkFreq(final Long freq, final long utcTimeMillis, final Satellite satellite) {
-		// get the current position
-		// FIXME cache ground station posisiotn object and reload when config changes
-		final SatPos satPos = satellite.getPosition((GroundStationPosition) null, new Date(utcTimeMillis));
+		GroundStationPosition currentLocation = getPosition();
+		if (currentLocation == null) {
+			return null;
+		}
+		final SatPos satPos = satellite.getPosition(currentLocation, new Date(utcTimeMillis));
 		final double rangeRate = satPos.getRangeRate();
 		return (long) ((double) freq * (SPEED_OF_LIGHT - rangeRate * 1000.0) / SPEED_OF_LIGHT);
 	}
 
 	public SatPass calculateNext(Date current, Satellite satellite) {
-		Double lat = config.getDouble("locaiton.lat");
-		Double lon = config.getDouble("locaiton.lon");
-		if (lat == null || lon == null) {
+		GroundStationPosition currentLocation = getPosition();
+		if (currentLocation == null) {
 			return null;
 		}
-		GroundStationPosition currentLocation = new GroundStationPosition(lat, lon, 0.0);
 		if (!satellite.willBeSeen(currentLocation)) {
 			return null;
 		}
@@ -106,6 +106,17 @@ public class Predict {
 				return findPrecise(currentLocation, start, newEnd, satellite);
 			}
 		}
+	}
+
+	private GroundStationPosition getPosition() {
+		// get the current position
+		// FIXME cache ground station posisiotn object and reload when config changes
+		Double lat = config.getDouble("locaiton.lat");
+		Double lon = config.getDouble("locaiton.lon");
+		if (lat == null || lon == null) {
+			return null;
+		}
+		return new GroundStationPosition(lat, lon, 0.0);
 	}
 
 	private static double elevation(SatPos sat) {

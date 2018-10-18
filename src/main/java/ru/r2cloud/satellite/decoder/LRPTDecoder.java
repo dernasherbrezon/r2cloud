@@ -1,4 +1,4 @@
-package ru.r2cloud.satellite;
+package ru.r2cloud.satellite.decoder;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
@@ -37,6 +37,8 @@ import ru.r2cloud.jradio.source.WavFileSource;
 import ru.r2cloud.jradio.source.Waveform;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.satellite.Decoder;
+import ru.r2cloud.satellite.Predict;
 
 public class LRPTDecoder implements Decoder {
 

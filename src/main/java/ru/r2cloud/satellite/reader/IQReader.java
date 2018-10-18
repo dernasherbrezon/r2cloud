@@ -1,4 +1,4 @@
-package ru.r2cloud.satellite;
+package ru.r2cloud.satellite.reader;
 
 import ru.r2cloud.model.IQData;
 

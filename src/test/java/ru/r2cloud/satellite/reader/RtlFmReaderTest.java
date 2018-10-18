@@ -1,6 +1,7 @@
-package ru.r2cloud.satellite;
+package ru.r2cloud.satellite.reader;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.contains;
@@ -11,24 +12,27 @@ import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.TestConfiguration;
-import ru.r2cloud.model.SatPass;
+import ru.r2cloud.model.IQData;
+import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.satellite.ProcessWrapperMock;
+import ru.r2cloud.satellite.reader.RtlFmReader;
 import ru.r2cloud.util.ProcessFactory;
-import uk.me.g4dpz.satellite.SatPos;
 
-public class APTObservationTest {
+public class RtlFmReaderTest {
+
+	private static final Logger LOG = LoggerFactory.getLogger(RtlFmReaderTest.class);
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -41,10 +45,8 @@ public class APTObservationTest {
 	public void testSuccess() throws Exception {
 		String sox = UUID.randomUUID().toString();
 		String rtlfm = UUID.randomUUID().toString();
-		String wxtoimg = UUID.randomUUID().toString();
 		config.setProperty("satellites.sox.path", sox);
 		config.setProperty("satellites.rtlfm.path", rtlfm);
-		config.setProperty("satellites.wxtoimg.path", wxtoimg);
 
 		String data = UUID.randomUUID().toString();
 
@@ -54,25 +56,18 @@ public class APTObservationTest {
 		when(factory.create(contains(sox), any(), anyBoolean())).thenReturn(new ProcessWrapperMock(null, baos));
 		when(factory.create(contains(rtlfm), any(), anyBoolean())).thenReturn(new ProcessWrapperMock(bais, null));
 
-		SatPass nextPass = create(new Date(), new Date());
-		RtlFmReader o = new RtlFmReader(config, satellite, nextPass, factory, new ObservationResultDao(config), new APTDecoder(config, factory));
+		ObservationRequest req = new ObservationRequest();
+
+		RtlFmReader o = new RtlFmReader(config, factory, req);
 		o.start();
-
-		File passRoot = new File(tempFolder.getRoot(), satellite.getId() + File.separator + "data" + File.separator + nextPass.getStart().getTime().getTime());
-		if (!passRoot.exists() && !passRoot.mkdirs()) {
-			throw new IllegalStateException("unable to create: " + passRoot.getAbsolutePath());
+		IQData result = o.stop();
+		assertNotNull(result.getWavFile());
+		assertTrue(result.getWavFile().exists());
+		if (!result.getWavFile().delete()) {
+			LOG.error("unable to delete temp file: " + result.getWavFile().getAbsolutePath());
 		}
-		try (FileOutputStream fos = new FileOutputStream(passRoot + File.separator + "output.wav")) {
-			fos.write(0);
-		}
-
-		assertEquals(data, new String(baos.toByteArray(), StandardCharsets.UTF_8));
-
-		when(factory.create(contains(wxtoimg), any(), anyBoolean())).thenReturn(new ProcessWrapperMock(null, null));
-		o.stop();
 
 		verify(factory, times(2)).create(any(), any(), anyBoolean());
-
 	}
 
 	@Before
@@ -90,14 +85,4 @@ public class APTObservationTest {
 		factory = mock(ProcessFactory.class);
 	}
 
-	private static SatPass create(Date start, Date end) {
-		SatPos startPos = new SatPos();
-		startPos.setTime(start);
-		SatPos endPos = new SatPos();
-		endPos.setTime(end);
-		SatPass result = new SatPass();
-		result.setStart(startPos);
-		result.setEnd(endPos);
-		return result;
-	}
 }

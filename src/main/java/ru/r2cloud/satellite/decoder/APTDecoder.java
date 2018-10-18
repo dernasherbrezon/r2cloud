@@ -1,4 +1,4 @@
-package ru.r2cloud.satellite;
+package ru.r2cloud.satellite.decoder;
 
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.satellite.Decoder;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ProcessWrapper;

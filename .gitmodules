@@ -1,0 +1,3 @@
+[submodule "src/test/resources/data"]
+	path = src/test/resources/data
+	url = https://github.com/dernasherbrezon/r2cloud-data.git
