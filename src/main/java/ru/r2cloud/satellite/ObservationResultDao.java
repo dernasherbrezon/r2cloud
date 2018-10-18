@@ -67,10 +67,10 @@ public class ObservationResultDao {
 		if (!dest.exists()) {
 			return null;
 		}
-		ObservationFull full = new ObservationFull();
+		ObservationFull full;
 		try (BufferedReader r = new BufferedReader(new FileReader(dest))) {
 			JsonObject meta = Json.parse(r).asObject();
-			full.fromJson(meta);
+			full = ObservationFull.fromJson(meta);
 		} catch (Exception e) {
 			LOG.error("unable to load meta", e);
 			return null;
@@ -102,7 +102,7 @@ public class ObservationResultDao {
 	}
 
 	public boolean saveImage(String satelliteId, String observationId, File a, String type) {
-		File dest = new File(basepath, satelliteId + File.separator + "data" + File.separator + observationId + File.separator + type + ".jpg");
+		File dest = new File(getObservationBasepath(satelliteId, observationId), type + ".jpg");
 		if (dest.exists()) {
 			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
 			return false;
@@ -111,7 +111,7 @@ public class ObservationResultDao {
 	}
 
 	public boolean saveData(String satelliteId, String observationId, File a) {
-		File dest = new File(basepath, satelliteId + File.separator + "data" + File.separator + observationId + File.separator + "data.bin");
+		File dest = new File(getObservationBasepath(satelliteId, observationId), "data.bin");
 		if (dest.exists()) {
 			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
 			return false;
@@ -120,7 +120,7 @@ public class ObservationResultDao {
 	}
 
 	public boolean saveSpectogram(String satelliteId, String observationId, File a) {
-		File dest = new File(basepath, satelliteId + File.separator + "data" + File.separator + observationId + File.separator + "spectogram.png");
+		File dest = new File(getObservationBasepath(satelliteId, observationId), "spectogram.png");
 		if (dest.exists()) {
 			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
 			return false;
@@ -137,6 +137,12 @@ public class ObservationResultDao {
 			}
 		}
 
+		File observationBasePath = getObservationBasepath(observation);
+		if (!observationBasePath.exists() && !observationBasePath.mkdirs()) {
+			LOG.info("unable to create parent dir:" + observationBasePath.getAbsolutePath());
+			return false;
+		}
+
 		if (!update(observation)) {
 			return false;
 		}
@@ -145,7 +151,7 @@ public class ObservationResultDao {
 	}
 
 	private boolean insertIQData(ObservationFull observation, File wavPath) {
-		File dest = new File(basepath, observation.getReq().getSatelliteId() + File.separator + "data" + File.separator + observation.getReq().getId() + File.separator + "output.wav");
+		File dest = new File(getObservationBasepath(observation), "output.wav");
 		if (!dest.getParentFile().exists() && !dest.getParentFile().mkdirs()) {
 			LOG.info("unable to create parent dir:" + dest.getParentFile().getAbsolutePath());
 			return false;
@@ -159,7 +165,7 @@ public class ObservationResultDao {
 
 	public boolean update(ObservationFull cur) {
 		JsonObject meta = cur.toJson();
-		File dest = new File(basepath, cur.getReq().getSatelliteId() + File.separator + "data" + File.separator + cur.getReq().getId() + File.separator + "meta.json");
+		File dest = new File(getObservationBasepath(cur), "meta.json");
 		try (BufferedWriter w = new BufferedWriter(new FileWriter(dest))) {
 			w.append(meta.toString());
 			return true;
@@ -167,5 +173,13 @@ public class ObservationResultDao {
 			LOG.error("unable to write meta", e);
 			return false;
 		}
+	}
+
+	private File getObservationBasepath(ObservationFull observation) {
+		return getObservationBasepath(observation.getReq().getSatelliteId(), observation.getReq().getId());
+	}
+
+	private File getObservationBasepath(String satelliteId, String observationId) {
+		return new File(basepath, satelliteId + File.separator + "data" + File.separator + observationId);
 	}
 }

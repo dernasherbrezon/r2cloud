@@ -152,16 +152,15 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				if (data == null || data.getWavFile() == null || !data.getWavFile().exists()) {
 					return;
 				}
+				//actual start/end might be different 
+				observation.setStartTimeMillis(data.getActualStart());
+				observation.setEndTimeMillis(data.getActualEnd());
 
-				ObservationFull full = new ObservationFull();
-				full.setReq(observation);
+				ObservationFull full = new ObservationFull(observation);
 
 				if (!dao.insert(full, data.getWavFile())) {
 					return;
 				}
-
-				observation.setStartTimeMillis(data.getActualStart());
-				observation.setEndTimeMillis(data.getActualEnd());
 
 				decoder.execute(new SafeRunnable() {
 

@@ -57,7 +57,6 @@ public class ObservationFactory {
 		} else if (decoder.equals("lrpt")) {
 			result.setInputSampleRate(1_440_000);
 			result.setOutputSampleRate(150_000);
-			// TODO should be doppler corrected
 			result.setActualFrequency(satellite.getFrequency());
 		} else if (decoder.equals("aausat4")) {
 			result.setInputSampleRate(240_000);

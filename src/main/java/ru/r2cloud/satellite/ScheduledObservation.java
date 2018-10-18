@@ -4,13 +4,13 @@ import java.util.concurrent.Future;
 
 import ru.r2cloud.model.ObservationRequest;
 
-public class ScheduledObservation {
+class ScheduledObservation {
 
 	private final ObservationRequest req;
 	private final Future<?> future;
 	private final Future<?> reaperFuture;
 
-	public ScheduledObservation(ObservationRequest req, Future<?> future, Future<?> reaperFuture) {
+	ScheduledObservation(ObservationRequest req, Future<?> future, Future<?> reaperFuture) {
 		this.req = req;
 		this.future = future;
 		this.reaperFuture = reaperFuture;

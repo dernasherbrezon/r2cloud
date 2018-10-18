@@ -1,18 +1,20 @@
 package ru.r2cloud.model;
 
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 public class ObservationFull {
 
-	private ObservationRequest req;
+	private final ObservationRequest req;
+
 	private ObservationResult result;
+
+	public ObservationFull(ObservationRequest req) {
+		this.req = req;
+	}
 
 	public ObservationRequest getReq() {
 		return req;
-	}
-
-	public void setReq(ObservationRequest req) {
-		this.req = req;
 	}
 
 	public ObservationResult getResult() {
@@ -23,8 +25,8 @@ public class ObservationFull {
 		this.result = result;
 	}
 
-	public void fromJson(JsonObject meta) {
-		req = new ObservationRequest();
+	public static ObservationFull fromJson(JsonObject meta) {
+		ObservationRequest req = new ObservationRequest();
 		req.setId(meta.getString("id", null));
 		req.setStartTimeMillis(meta.getLong("start", -1L));
 		req.setEndTimeMillis(meta.getLong("end", -1L));
@@ -34,17 +36,21 @@ public class ObservationFull {
 		req.setDecoder(meta.getString("decoder", null));
 		req.setSatelliteId(meta.getString("satellite", null));
 
-		result = new ObservationResult();
+		ObservationResult result = new ObservationResult();
 		result.setGain(meta.getString("gain", null));
 		result.setChannelA(meta.getString("channelA", null));
 		result.setChannelB(meta.getString("channelB", null));
-		String decodedPackets = meta.getString("numberOfDecodedPackets", null);
+		JsonValue decodedPackets = meta.get("numberOfDecodedPackets");
 		if (decodedPackets != null) {
-			result.setNumberOfDecodedPackets(Long.valueOf(decodedPackets));
+			result.setNumberOfDecodedPackets(decodedPackets.asLong());
 		}
 		result.setaURL(meta.getString("aURL", null));
 		result.setDataURL(meta.getString("data", null));
 		result.setSpectogramURL(meta.getString("spectogramURL", null));
+
+		ObservationFull full = new ObservationFull(req);
+		full.setResult(result);
+		return full;
 	}
 
 	public JsonObject toJson() {
@@ -57,6 +63,10 @@ public class ObservationFull {
 		json.add("frequency", req.getSatelliteFrequency());
 		json.add("decoder", req.getDecoder());
 		json.add("satellite", req.getSatelliteId());
+
+		if (result == null) {
+			return json;
+		}
 
 		if (result.getGain() != null) {
 			json.add("gain", result.getGain());
