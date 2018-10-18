@@ -13,12 +13,18 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.jradio.sink.Spectogram;
 import ru.r2cloud.jradio.source.WavFileSource;
+import ru.r2cloud.util.Configuration;
 
 public class SpectogramService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SpectogramService.class);
-
 	private static final int OPTIMAL_WIDTH = 1024;
+
+	private final Configuration config;
+
+	public SpectogramService(Configuration config) {
+		this.config = config;
+	}
 
 	public File create(File wavFile) {
 		LOG.info("generating spectogram");
@@ -26,7 +32,7 @@ public class SpectogramService {
 			WavFileSource source = new WavFileSource(is);
 			Spectogram spectogram = new Spectogram((int) (source.getContext().getSampleRate() / OPTIMAL_WIDTH));
 			BufferedImage image = spectogram.process(source);
-			File tmp = File.createTempFile("spectogram", ".png");
+			File tmp = new File(config.getTempDirectory(), "spectogram-" + wavFile.getName() + ".png");
 			ImageIO.write(image, "png", tmp);
 			LOG.info("spectogram created");
 			return tmp;

@@ -39,14 +39,17 @@ import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.satellite.Decoder;
 import ru.r2cloud.satellite.Predict;
+import ru.r2cloud.util.Configuration;
 
 public class LRPTDecoder implements Decoder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LRPTDecoder.class);
 
 	private final Predict predict;
+	private final Configuration config;
 
-	public LRPTDecoder(Predict predict) {
+	public LRPTDecoder(Configuration config, Predict predict) {
+		this.config = config;
 		this.predict = predict;
 	}
 
@@ -58,13 +61,7 @@ public class LRPTDecoder implements Decoder {
 		ObservationResult result = new ObservationResult();
 		result.setWavPath(wavFile);
 		long numberOfDecodedPackets = 0;
-		File binFile;
-		try {
-			binFile = File.createTempFile("lrpt", ".bin");
-		} catch (IOException e1) {
-			LOG.error("unable to create temp file", e1);
-			return result;
-		}
+		File binFile = new File(config.getTempDirectory(), "lrpt-" + req.getId() + ".bin");
 		try {
 			WavFileSource source = new WavFileSource(new BufferedInputStream(new FileInputStream(wavFile)));
 			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) source.getContext().getSampleRate(), new DopplerValueSource(source.getContext().getSampleRate(), req.getActualFrequency(), 1000L, req.getStartTimeMillis()) {
@@ -119,7 +116,7 @@ public class LRPTDecoder implements Decoder {
 				MeteorImage image = new MeteorImage(lrptFile);
 				BufferedImage actual = image.toBufferedImage();
 				if (actual != null) {
-					File imageFile = File.createTempFile("lrpt", ".jpg");
+					File imageFile = new File(config.getTempDirectory(), "lrpt-" + req.getId() + ".jpg");
 					ImageIO.write(actual, "jpg", imageFile);
 					result.setaPath(imageFile);
 				}

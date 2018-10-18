@@ -42,13 +42,7 @@ public class APTDecoder implements Decoder {
 	public ObservationResult decode(final File wavFile, final ObservationRequest request) {
 		ObservationResult result = new ObservationResult();
 		result.setWavPath(wavFile);
-		File image = null;
-		try {
-			image = File.createTempFile("apt", "a");
-		} catch (IOException e1) {
-			LOG.error("unable to create temp file", e1);
-			return result;
-		}
+		File image = new File(config.getTempDirectory(), "apt-" + request.getId() + ".jpg");
 		ProcessWrapper process = null;
 		try {
 			process = factory.create(config.getProperty("satellites.wxtoimg.path") + " -e HVC -t n -c -o " + wavFile.getAbsolutePath() + " " + image.getAbsolutePath(), true, false);

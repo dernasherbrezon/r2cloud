@@ -87,7 +87,7 @@ public class R2Cloud {
 	private final ObservationResultDao resultDao;
 	private final R2CloudService r2cloudService;
 	private final R2CloudClient r2cloudClient;
-	private final SpectogramService spectogramService = new SpectogramService();
+	private final SpectogramService spectogramService;
 	private final Map<String, Decoder> decoders = new HashMap<>();
 
 	public R2Cloud(String propertiesLocation) {
@@ -101,6 +101,7 @@ public class R2Cloud {
 		rtlsdrLock.register(RtlSdrStatusDao.class, 2);
 		rtlsdrLock.register(ADSB.class, 1);
 
+		spectogramService = new SpectogramService(props);
 		predict = new Predict(props);
 		dao = new ADSBDao(props);
 		adsb = new ADSB(props, dao, rtlsdrLock, processFactory);
@@ -116,8 +117,8 @@ public class R2Cloud {
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
 		
 		decoders.put("apt", new APTDecoder(props, processFactory));
-		decoders.put("lrpt", new LRPTDecoder(predict));
-		decoders.put("aausat4", new Aausat4Decoder(predict));
+		decoders.put("lrpt", new LRPTDecoder(props, predict));
+		decoders.put("aausat4", new Aausat4Decoder(props, predict));
 		
 		observationFactory = new ObservationFactory(predict, tleDao);
 		r2cloudClient = new R2CloudClient(props);

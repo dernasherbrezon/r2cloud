@@ -28,13 +28,17 @@ import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.satellite.Decoder;
 import ru.r2cloud.satellite.Predict;
+import ru.r2cloud.util.Configuration;
 
 public class Aausat4Decoder implements Decoder {
 
 	private final static Logger LOG = LoggerFactory.getLogger(Aausat4Decoder.class);
+
+	private final Configuration config;
 	private final Predict predict;
 
-	public Aausat4Decoder(Predict predict) {
+	public Aausat4Decoder(Configuration config, Predict predict) {
+		this.config = config;
 		this.predict = predict;
 	}
 
@@ -43,14 +47,7 @@ public class Aausat4Decoder implements Decoder {
 		ObservationResult result = new ObservationResult();
 		result.setWavPath(wavFile);
 		long numberOfDecodedPackets = 0;
-		File binFile;
-		try {
-			binFile = File.createTempFile("aausat4", ".bin");
-		} catch (IOException e1) {
-			LOG.error("unable to create temp file", e1);
-			return result;
-		}
-
+		File binFile = new File(config.getTempDirectory(), "aausat4-" + req.getId() + ".bin");
 		AAUSAT4 input = null;
 		try {
 			WavFileSource source = new WavFileSource(new BufferedInputStream(new FileInputStream(wavFile)));

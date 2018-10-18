@@ -238,4 +238,12 @@ public class Configuration {
 		}
 	}
 
+	public File getTempDirectory() {
+		String tmpDirectory = getProperty("server.tmp.directory");
+		if (tmpDirectory != null) {
+			return new File(tmpDirectory);
+		}
+		return new File(System.getProperty("java.io.tmpdir"));
+	}
+
 }

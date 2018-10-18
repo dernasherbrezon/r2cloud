@@ -36,7 +36,7 @@ public class LRPTDecoderTest {
 		try (FileOutputStream fos = new FileOutputStream(wav); InputStream is = LRPTDecoderTest.class.getClassLoader().getResourceAsStream("data/meteor.wav")) {
 			Util.copy(is, fos);
 		}
-		LRPTDecoder decoder = new LRPTDecoder(new Predict(config));
+		LRPTDecoder decoder = new LRPTDecoder(config, new Predict(config));
 		ObservationResult result = decoder.decode(wav, create());
 		assertEquals(3, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
@@ -49,7 +49,7 @@ public class LRPTDecoderTest {
 		try (FileOutputStream fos = new FileOutputStream(wav); InputStream is = LRPTDecoderTest.class.getClassLoader().getResourceAsStream("8bit.wav")) {
 			Util.copy(is, fos);
 		}
-		LRPTDecoder decoder = new LRPTDecoder(new Predict(config));
+		LRPTDecoder decoder = new LRPTDecoder(config, new Predict(config));
 		ObservationResult result = decoder.decode(wav, create());
 		assertEquals(0, result.getNumberOfDecodedPackets().longValue());
 		assertNull(result.getDataPath());
@@ -73,8 +73,7 @@ public class LRPTDecoderTest {
 		config.setProperty("locaiton.lon", "38.174");
 		
 		config.setProperty("satellites.enabled", true);
-		config.setProperty("satellites.wxtoimg.path", "wxtoimg");
-		config.setProperty("satellites.basepath.location", tempFolder.getRoot().getAbsolutePath());
+		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
 		config.update();
 	}
 }

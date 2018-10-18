@@ -1,7 +1,6 @@
 package ru.r2cloud.satellite.reader;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.contains;
@@ -19,35 +18,24 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.TestConfiguration;
-import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.Satellite;
 import ru.r2cloud.satellite.ProcessWrapperMock;
-import ru.r2cloud.satellite.reader.RtlFmReader;
 import ru.r2cloud.util.ProcessFactory;
 
 public class RtlFmReaderTest {
-
-	private static final Logger LOG = LoggerFactory.getLogger(RtlFmReaderTest.class);
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private TestConfiguration config;
-	private Satellite satellite;
 	private ProcessFactory factory;
+	private String sox;
+	private String rtlfm;
 
 	@Test
 	public void testSuccess() throws Exception {
-		String sox = UUID.randomUUID().toString();
-		String rtlfm = UUID.randomUUID().toString();
-		config.setProperty("satellites.sox.path", sox);
-		config.setProperty("satellites.rtlfm.path", rtlfm);
-
 		String data = UUID.randomUUID().toString();
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -60,27 +48,23 @@ public class RtlFmReaderTest {
 
 		RtlFmReader o = new RtlFmReader(config, factory, req);
 		o.start();
-		IQData result = o.stop();
-		assertNotNull(result.getWavFile());
-		assertTrue(result.getWavFile().exists());
-		if (!result.getWavFile().delete()) {
-			LOG.error("unable to delete temp file: " + result.getWavFile().getAbsolutePath());
-		}
+		o.stop();
+		assertEquals(data, new String(baos.toByteArray(), StandardCharsets.UTF_8));
 
 		verify(factory, times(2)).create(any(), any(), anyBoolean());
 	}
 
 	@Before
 	public void start() throws Exception {
-		config = new TestConfiguration(tempFolder);
-		config.setProperty("satellites.enabled", true);
-		config.setProperty("satellites.basepath.location", tempFolder.getRoot().getAbsolutePath());
-		config.update();
+		sox = UUID.randomUUID().toString();
+		rtlfm = UUID.randomUUID().toString();
 
-		satellite = new Satellite();
-		satellite.setId(UUID.randomUUID().toString());
-		satellite.setFrequency(10);
-		satellite.setName(UUID.randomUUID().toString());
+		config = new TestConfiguration(tempFolder);
+		config.setProperty("satellites.sox.path", sox);
+		config.setProperty("satellites.rtlfm.path", rtlfm);
+		config.setProperty("satellites.enabled", true);
+		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
+		config.update();
 
 		factory = mock(ProcessFactory.class);
 	}

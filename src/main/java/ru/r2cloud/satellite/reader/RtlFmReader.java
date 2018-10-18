@@ -36,12 +36,7 @@ public class RtlFmReader implements IQReader {
 
 	@Override
 	public void start() {
-		try {
-			this.wavPath = File.createTempFile(req.getSatelliteId() + "-", ".wav");
-		} catch (IOException e) {
-			LOG.error("unable to create temp file", e);
-			return;
-		}
+		this.wavPath = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".wav");
 		ProcessWrapper sox = null;
 		try {
 			Integer ppm = config.getInteger("ppm.current");
