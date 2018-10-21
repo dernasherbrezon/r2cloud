@@ -181,7 +181,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 							dao.saveData(observation.getSatelliteId(), observation.getId(), result.getDataPath());
 						}
 						if (result.getaPath() != null) {
-							dao.saveImage(observation.getSatelliteId(), observation.getId(), result.getaPath(), "a");
+							dao.saveImage(observation.getSatelliteId(), observation.getId(), result.getaPath());
 						}
 						toDecode.setResult(result);
 						dao.update(toDecode);

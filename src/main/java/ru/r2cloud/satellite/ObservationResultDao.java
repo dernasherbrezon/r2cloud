@@ -101,8 +101,8 @@ public class ObservationResultDao {
 		return full;
 	}
 
-	public boolean saveImage(String satelliteId, String observationId, File a, String type) {
-		File dest = new File(getObservationBasepath(satelliteId, observationId), type + ".jpg");
+	public boolean saveImage(String satelliteId, String observationId, File a) {
+		File dest = new File(getObservationBasepath(satelliteId, observationId), "a.jpg");
 		if (dest.exists()) {
 			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
 			return false;

@@ -65,7 +65,7 @@ public class ObservationResultDaoTest {
 		actual = dao.find(req.getSatelliteId(), req.getId());
 		assertNotNull(actual.getResult().getDataPath());
 
-		assertTrue(dao.saveImage(req.getSatelliteId(), req.getId(), createTempFile("image"), "a"));
+		assertTrue(dao.saveImage(req.getSatelliteId(), req.getId(), createTempFile("image")));
 		actual = dao.find(req.getSatelliteId(), req.getId());
 		assertNotNull(actual.getResult().getaPath());
 
