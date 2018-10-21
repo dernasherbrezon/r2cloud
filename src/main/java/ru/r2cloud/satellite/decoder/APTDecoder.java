@@ -74,7 +74,7 @@ public class APTDecoder implements Decoder {
 				}
 				result.setaPath(image);
 			} else {
-				if (!image.delete()) {
+				if (image.exists() && !image.delete()) {
 					LOG.info("unable to delete temp file: {}", image.getAbsolutePath());
 				}
 			}

@@ -59,7 +59,7 @@ public class R2CloudClient {
 			int responseCode = con.getResponseCode();
 			if (responseCode != 200) {
 				LOG.error("unable to save meta. response code: " + responseCode + ". See logs for details");
-				Util.toLog(LOG, con.getInputStream());
+				Util.toLog(LOG, con.getErrorStream());
 				return null;
 			}
 			return readObservationId(con);
@@ -104,7 +104,7 @@ public class R2CloudClient {
 			int responseCode = con.getResponseCode();
 			if (responseCode != 200) {
 				LOG.error("unable to upload. response code: " + responseCode + ". See logs for details");
-				Util.toLog(LOG, con.getInputStream());
+				Util.toLog(LOG, con.getErrorStream());
 			}
 		} catch (Exception e) {
 			LOG.error("unable to save meta", e);

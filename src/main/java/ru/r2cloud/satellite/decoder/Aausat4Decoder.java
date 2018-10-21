@@ -83,7 +83,7 @@ public class Aausat4Decoder implements Decoder {
 		}
 		result.setNumberOfDecodedPackets(numberOfDecodedPackets);
 		if (numberOfDecodedPackets <= 0) {
-			if (!binFile.delete()) {
+			if (binFile.exists() && !binFile.delete()) {
 				LOG.error("unable to delete temp file: {}", binFile.getAbsolutePath());
 			}
 		} else {

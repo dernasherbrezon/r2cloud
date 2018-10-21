@@ -162,18 +162,19 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				if (!dao.insert(full, data.getWavFile())) {
 					return;
 				}
-
+				
 				decoder.execute(new SafeRunnable() {
 
 					@Override
 					public void doRun() {
+						ObservationFull toDecode = dao.find(full.getReq().getSatelliteId(), full.getReq().getId());
 						Decoder decoder = decoders.get(observation.getDecoder());
 						if (decoder == null) {
 							LOG.error("unknown decoder: {}", decoder);
 							return;
 						}
 						LOG.info("decoding: {}", cur.getName());
-						ObservationResult result = decoder.decode(data.getWavFile(), observation);
+						ObservationResult result = decoder.decode(toDecode.getResult().getWavPath(), observation);
 						LOG.info("decoded: {}", cur.getName());
 
 						if (result.getDataPath() != null) {
@@ -182,9 +183,9 @@ public class Scheduler implements Lifecycle, ConfigListener {
 						if (result.getaPath() != null) {
 							dao.saveImage(observation.getSatelliteId(), observation.getId(), result.getaPath(), "a");
 						}
-						full.setResult(result);
-						dao.update(full);
-						r2cloudService.uploadObservation(full);
+						toDecode.setResult(result);
+						dao.update(toDecode);
+						r2cloudService.uploadObservation(toDecode);
 					}
 				});
 			}
