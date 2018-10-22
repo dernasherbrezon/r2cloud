@@ -19,6 +19,7 @@ import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.FilenameComparator;
 import ru.r2cloud.model.ObservationFull;
+import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
@@ -101,22 +102,28 @@ public class ObservationResultDao {
 		return full;
 	}
 
-	public boolean saveImage(String satelliteId, String observationId, File a) {
+	public File saveImage(String satelliteId, String observationId, File a) {
 		File dest = new File(getObservationBasepath(satelliteId, observationId), "a.jpg");
 		if (dest.exists()) {
 			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
-			return false;
+			return null;
 		}
-		return a.renameTo(dest);
+		if (!a.renameTo(dest)) {
+			return null;
+		}
+		return dest;
 	}
 
-	public boolean saveData(String satelliteId, String observationId, File a) {
+	public File saveData(String satelliteId, String observationId, File a) {
 		File dest = new File(getObservationBasepath(satelliteId, observationId), "data.bin");
 		if (dest.exists()) {
 			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
-			return false;
+			return null;
 		}
-		return a.renameTo(dest);
+		if (!a.renameTo(dest)) {
+			return null;
+		}
+		return dest;
 	}
 
 	public boolean saveSpectogram(String satelliteId, String observationId, File a) {
@@ -128,8 +135,8 @@ public class ObservationResultDao {
 		return a.renameTo(dest);
 	}
 
-	public File insert(ObservationFull observation, File wavPath) {
-		File[] dataDirs = new File(basepath, observation.getReq().getSatelliteId() + File.separator + "data").listFiles();
+	public File insert(ObservationRequest observation, File wavPath) {
+		File[] dataDirs = new File(basepath, observation.getSatelliteId() + File.separator + "data").listFiles();
 		if (dataDirs != null && dataDirs.length > maxCount) {
 			Arrays.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
 			for (int i = 0; i < (dataDirs.length - maxCount); i++) {
@@ -143,14 +150,15 @@ public class ObservationResultDao {
 			return null;
 		}
 
-		if (!update(observation)) {
+		ObservationFull full = new ObservationFull(observation);
+		if (!update(full)) {
 			return null;
 		}
 
 		return insertIQData(observation, wavPath);
 	}
 
-	private File insertIQData(ObservationFull observation, File wavPath) {
+	private File insertIQData(ObservationRequest observation, File wavPath) {
 		File dest = new File(getObservationBasepath(observation), "output.wav");
 		if (!dest.getParentFile().exists() && !dest.getParentFile().mkdirs()) {
 			LOG.info("unable to create parent dir:" + dest.getParentFile().getAbsolutePath());
@@ -168,7 +176,7 @@ public class ObservationResultDao {
 
 	public boolean update(ObservationFull cur) {
 		JsonObject meta = cur.toJson();
-		File dest = new File(getObservationBasepath(cur), "meta.json");
+		File dest = new File(getObservationBasepath(cur.getReq()), "meta.json");
 		try (BufferedWriter w = new BufferedWriter(new FileWriter(dest))) {
 			w.append(meta.toString());
 			return true;
@@ -178,8 +186,8 @@ public class ObservationResultDao {
 		}
 	}
 
-	private File getObservationBasepath(ObservationFull observation) {
-		return getObservationBasepath(observation.getReq().getSatelliteId(), observation.getReq().getId());
+	private File getObservationBasepath(ObservationRequest observation) {
+		return getObservationBasepath(observation.getSatelliteId(), observation.getId());
 	}
 
 	private File getObservationBasepath(String satelliteId, String observationId) {

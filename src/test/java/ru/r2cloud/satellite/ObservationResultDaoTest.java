@@ -51,9 +51,7 @@ public class ObservationResultDaoTest {
 		req.setSatelliteId(UUID.randomUUID().toString());
 		req.setStartTimeMillis(System.currentTimeMillis());
 		req.setStart(create(req.getStartTimeMillis()));
-		ObservationFull full = new ObservationFull(req);
-
-		assertNotNull(dao.insert(full, createTempFile("wav")));
+		assertNotNull(dao.insert(req, createTempFile("wav")));
 		ObservationFull actual = dao.find(req.getSatelliteId(), req.getId());
 		assertNotNull(actual.getResult().getWavPath());
 		assertEquals(req.getDecoder(), actual.getReq().getDecoder());
@@ -61,13 +59,9 @@ public class ObservationResultDaoTest {
 		assertNull(actual.getResult().getaPath());
 		assertNull(actual.getResult().getSpectogramPath());
 
-		assertTrue(dao.saveData(req.getSatelliteId(), req.getId(), createTempFile("data")));
-		actual = dao.find(req.getSatelliteId(), req.getId());
-		assertNotNull(actual.getResult().getDataPath());
+		assertNotNull(dao.saveData(req.getSatelliteId(), req.getId(), createTempFile("data")));
 
-		assertTrue(dao.saveImage(req.getSatelliteId(), req.getId(), createTempFile("image")));
-		actual = dao.find(req.getSatelliteId(), req.getId());
-		assertNotNull(actual.getResult().getaPath());
+		assertNotNull(dao.saveImage(req.getSatelliteId(), req.getId(), createTempFile("image")));
 
 		assertTrue(dao.saveSpectogram(req.getSatelliteId(), req.getId(), createTempFile("spectogram")));
 		actual = dao.find(req.getSatelliteId(), req.getId());
@@ -78,7 +72,8 @@ public class ObservationResultDaoTest {
 		res.setChannelB(UUID.randomUUID().toString());
 		res.setGain(UUID.randomUUID().toString());
 		res.setNumberOfDecodedPackets(1L);
-
+		
+		ObservationFull full = new ObservationFull(req);
 		full.setResult(res);
 		assertTrue(dao.update(full));
 		actual = dao.find(req.getSatelliteId(), req.getId());
