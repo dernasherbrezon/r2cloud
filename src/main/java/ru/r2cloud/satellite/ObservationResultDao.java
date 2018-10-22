@@ -128,7 +128,7 @@ public class ObservationResultDao {
 		return a.renameTo(dest);
 	}
 
-	public boolean insert(ObservationFull observation, File wavPath) {
+	public File insert(ObservationFull observation, File wavPath) {
 		File[] dataDirs = new File(basepath, observation.getReq().getSatelliteId() + File.separator + "data").listFiles();
 		if (dataDirs != null && dataDirs.length > maxCount) {
 			Arrays.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
@@ -140,27 +140,30 @@ public class ObservationResultDao {
 		File observationBasePath = getObservationBasepath(observation);
 		if (!observationBasePath.exists() && !observationBasePath.mkdirs()) {
 			LOG.info("unable to create parent dir:" + observationBasePath.getAbsolutePath());
-			return false;
+			return null;
 		}
 
 		if (!update(observation)) {
-			return false;
+			return null;
 		}
 
 		return insertIQData(observation, wavPath);
 	}
 
-	private boolean insertIQData(ObservationFull observation, File wavPath) {
+	private File insertIQData(ObservationFull observation, File wavPath) {
 		File dest = new File(getObservationBasepath(observation), "output.wav");
 		if (!dest.getParentFile().exists() && !dest.getParentFile().mkdirs()) {
 			LOG.info("unable to create parent dir:" + dest.getParentFile().getAbsolutePath());
-			return false;
+			return null;
 		}
 		if (dest.exists()) {
 			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
-			return false;
+			return null;
 		}
-		return wavPath.renameTo(dest);
+		if (!wavPath.renameTo(dest)) {
+			return null;
+		}
+		return dest;
 	}
 
 	public boolean update(ObservationFull cur) {

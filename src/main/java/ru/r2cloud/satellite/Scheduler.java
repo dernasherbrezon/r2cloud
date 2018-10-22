@@ -1,5 +1,6 @@
 package ru.r2cloud.satellite;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -157,9 +158,8 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				observation.setStartTimeMillis(data.getActualStart());
 				observation.setEndTimeMillis(data.getActualEnd());
 
-				ObservationFull full = new ObservationFull(observation);
-
-				if (!dao.insert(full, data.getWavFile())) {
+				File wavFile = dao.insert(new ObservationFull(observation), data.getWavFile()); 
+				if (wavFile == null) {
 					return;
 				}
 				
@@ -167,14 +167,13 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 					@Override
 					public void doRun() {
-						ObservationFull toDecode = dao.find(full.getReq().getSatelliteId(), full.getReq().getId());
 						Decoder decoder = decoders.get(observation.getDecoder());
 						if (decoder == null) {
 							LOG.error("unknown decoder: {}", decoder);
 							return;
 						}
 						LOG.info("decoding: {}", cur.getName());
-						ObservationResult result = decoder.decode(toDecode.getResult().getWavPath(), observation);
+						ObservationResult result = decoder.decode(wavFile, observation);
 						LOG.info("decoded: {}", cur.getName());
 
 						if (result.getDataPath() != null) {
@@ -183,9 +182,11 @@ public class Scheduler implements Lifecycle, ConfigListener {
 						if (result.getaPath() != null) {
 							dao.saveImage(observation.getSatelliteId(), observation.getId(), result.getaPath());
 						}
-						toDecode.setResult(result);
-						dao.update(toDecode);
-						r2cloudService.uploadObservation(toDecode);
+						
+						ObservationFull full = dao.find(observation.getSatelliteId(), observation.getId());
+						full.setResult(result);
+						dao.update(full);
+						r2cloudService.uploadObservation(full);
 					}
 				});
 			}

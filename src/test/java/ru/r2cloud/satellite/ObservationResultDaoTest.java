@@ -53,7 +53,7 @@ public class ObservationResultDaoTest {
 		req.setStart(create(req.getStartTimeMillis()));
 		ObservationFull full = new ObservationFull(req);
 
-		assertTrue(dao.insert(full, createTempFile("wav")));
+		assertNotNull(dao.insert(full, createTempFile("wav")));
 		ObservationFull actual = dao.find(req.getSatelliteId(), req.getId());
 		assertNotNull(actual.getResult().getWavPath());
 		assertEquals(req.getDecoder(), actual.getReq().getDecoder());
