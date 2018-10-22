@@ -46,7 +46,6 @@ public class R2CloudClient {
 			con.setConnectTimeout(config.getInteger("r2cloud.connectionTimeout"));
 			con.setRequestMethod("POST");
 			con.setRequestProperty("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
-			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Authorization", config.getProperty("r2cloud.apiKey"));
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setDoOutput(true);
