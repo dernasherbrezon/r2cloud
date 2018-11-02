@@ -7,7 +7,16 @@ public class Satellite {
 	private String name;
 	private String decoder;
 	private long frequency;
+	private long bandwidth;
 	private SatelliteType type;
+	
+	public long getBandwidth() {
+		return bandwidth;
+	}
+	
+	public void setBandwidth(long bandwidth) {
+		this.bandwidth = bandwidth;
+	}
 	
 	public SatelliteType getType() {
 		return type;

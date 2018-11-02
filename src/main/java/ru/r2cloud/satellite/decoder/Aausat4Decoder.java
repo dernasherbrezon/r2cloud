@@ -16,11 +16,16 @@ import ru.r2cloud.jradio.aausat4.AAUSAT4;
 import ru.r2cloud.jradio.aausat4.AAUSAT4Beacon;
 import ru.r2cloud.jradio.blocks.ClockRecoveryMM;
 import ru.r2cloud.jradio.blocks.CorrelateAccessCodeTag;
+import ru.r2cloud.jradio.blocks.Firdes;
 import ru.r2cloud.jradio.blocks.FixedLengthTagger;
 import ru.r2cloud.jradio.blocks.FloatToChar;
+import ru.r2cloud.jradio.blocks.FrequencyXlatingFIRFilter;
 import ru.r2cloud.jradio.blocks.Multiply;
+import ru.r2cloud.jradio.blocks.MultiplyConst;
+import ru.r2cloud.jradio.blocks.QuadratureDemodulation;
 import ru.r2cloud.jradio.blocks.Rail;
 import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
+import ru.r2cloud.jradio.blocks.Window;
 import ru.r2cloud.jradio.source.SigSource;
 import ru.r2cloud.jradio.source.WavFileSource;
 import ru.r2cloud.jradio.source.Waveform;
@@ -50,7 +55,7 @@ public class Aausat4Decoder implements Decoder {
 		AAUSAT4 input = null;
 		try {
 			WavFileSource source = new WavFileSource(new BufferedInputStream(new FileInputStream(wavFile)));
-			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) source.getContext().getSampleRate(), new DopplerValueSource(source.getContext().getSampleRate(), req.getActualFrequency(), 1000L, req.getStartTimeMillis()) {
+			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) source.getContext().getSampleRate(), new DopplerValueSource(source.getContext().getSampleRate(), req.getSatelliteFrequency(), 1000L, req.getStartTimeMillis()) {
 
 				@Override
 				public long getDopplerFrequency(long satelliteFrequency, long currentTimeMillis) {
@@ -58,7 +63,11 @@ public class Aausat4Decoder implements Decoder {
 				}
 			}, 1.0);
 			Multiply mul = new Multiply(source, source2, true);
-			ClockRecoveryMM clockRecovery = new ClockRecoveryMM(mul, 20.0f, (float) (0.25 * 0.175 * 0.175), 0.005f, 0.175f, 0.005f);
+			float[] taps = Firdes.lowPass(1.0, mul.getContext().getSampleRate(), 2600, 1000, Window.WIN_HAMMING, 6.76);
+			FrequencyXlatingFIRFilter filter = new FrequencyXlatingFIRFilter(mul, taps, 5, -req.getBandwidth() / 2);
+			QuadratureDemodulation qd = new QuadratureDemodulation(filter, 0.4f);
+			MultiplyConst mc = new MultiplyConst(qd, -1.0f);
+			ClockRecoveryMM clockRecovery = new ClockRecoveryMM(mc, mc.getContext().getSampleRate() / 2400, (float) (0.25 * 0.175 * 0.175), 0.005f, 0.175f, 0.005f);
 			Rail rail = new Rail(clockRecovery, -1.0f, 1.0f);
 			FloatToChar f2char = new FloatToChar(rail, 127.0f);
 			CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(f2char, 10, "010011110101101000110100010000110101010101000010", true);

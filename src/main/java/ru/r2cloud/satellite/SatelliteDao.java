@@ -23,6 +23,7 @@ public class SatelliteDao {
 			curSatellite.setName(config.getProperty("satellites." + curSatellite.getId() + ".name"));
 			curSatellite.setFrequency(config.getLong("satellites." + curSatellite.getId() + ".freq"));
 			curSatellite.setDecoder(config.getProperty("satellites." + curSatellite.getId() + ".decoder"));
+			curSatellite.setBandwidth(config.getLong("satellites." + curSatellite.getId() + ".bandwidth"));
 			if (curSatellite.getDecoder().equals("aausat4")) {
 				curSatellite.setType(SatelliteType.AMATEUR);
 			} else {

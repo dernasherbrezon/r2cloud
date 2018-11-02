@@ -63,7 +63,7 @@ public class LRPTDecoder implements Decoder {
 		File binFile = new File(config.getTempDirectory(), "lrpt-" + req.getId() + ".bin");
 		try {
 			WavFileSource source = new WavFileSource(new BufferedInputStream(new FileInputStream(wavFile)));
-			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) source.getContext().getSampleRate(), new DopplerValueSource(source.getContext().getSampleRate(), req.getActualFrequency(), 1000L, req.getStartTimeMillis()) {
+			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) source.getContext().getSampleRate(), new DopplerValueSource(source.getContext().getSampleRate(), req.getSatelliteFrequency(), 1000L, req.getStartTimeMillis()) {
 
 				@Override
 				public long getDopplerFrequency(long satelliteFrequency, long currentTimeMillis) {

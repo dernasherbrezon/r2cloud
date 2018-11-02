@@ -39,6 +39,7 @@ public class ObservationFactory {
 		ObservationRequest result = new ObservationRequest();
 		result.setOrigin(libSatellite);
 		result.setSatelliteFrequency(satellite.getFrequency());
+		result.setBandwidth(satellite.getBandwidth());
 		result.setSatelliteId(satellite.getId());
 		result.setDecoder(satellite.getDecoder());
 		result.setStart(nextPass.getStart());
@@ -61,8 +62,9 @@ public class ObservationFactory {
 		} else if (decoder.equals("aausat4")) {
 			result.setInputSampleRate(240_000);
 			result.setOutputSampleRate(32_000);
-			// TODO should be doppler corrected
-			result.setActualFrequency(satellite.getFrequency() + 10_000);
+			// at the beginning doppler freq is the max
+			long initialDopplerFrequency = predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStart().getTime().getTime(), libSatellite);
+			result.setActualFrequency(initialDopplerFrequency + satellite.getBandwidth() / 2);
 		} else {
 			throw new IllegalArgumentException("unsupported decoder: " + decoder);
 		}

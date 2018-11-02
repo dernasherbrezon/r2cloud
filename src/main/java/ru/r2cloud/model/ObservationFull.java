@@ -33,6 +33,7 @@ public class ObservationFull {
 		req.setOutputSampleRate(meta.getInt("sampleRate", -1));
 		req.setInputSampleRate(meta.getInt("inputSampleRate", -1));
 		req.setSatelliteFrequency(meta.getLong("frequency", -1));
+		req.setBandwidth(meta.getLong("bandwidth", -1));
 		req.setDecoder(meta.getString("decoder", null));
 		req.setSatelliteId(meta.getString("satellite", null));
 
@@ -61,6 +62,7 @@ public class ObservationFull {
 		json.add("sampleRate", req.getOutputSampleRate());
 		json.add("inputSampleRate", req.getInputSampleRate());
 		json.add("frequency", req.getSatelliteFrequency());
+		json.add("bandwidth", req.getBandwidth());
 		json.add("decoder", req.getDecoder());
 		json.add("satellite", req.getSatelliteId());
 
