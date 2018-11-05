@@ -61,7 +61,7 @@ public class ObservationFactory {
 			result.setActualFrequency(satellite.getFrequency());
 		} else if (decoder.equals("aausat4")) {
 			result.setInputSampleRate(240_000);
-			result.setOutputSampleRate(32_000);
+			result.setOutputSampleRate(48_000);
 			// at the beginning doppler freq is the max
 			long initialDopplerFrequency = predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStart().getTime().getTime(), libSatellite);
 			result.setActualFrequency(initialDopplerFrequency + satellite.getBandwidth() / 2);

@@ -20,6 +20,7 @@ import ru.r2cloud.jradio.blocks.Firdes;
 import ru.r2cloud.jradio.blocks.FixedLengthTagger;
 import ru.r2cloud.jradio.blocks.FloatToChar;
 import ru.r2cloud.jradio.blocks.FrequencyXlatingFIRFilter;
+import ru.r2cloud.jradio.blocks.LowPassFilter;
 import ru.r2cloud.jradio.blocks.Multiply;
 import ru.r2cloud.jradio.blocks.MultiplyConst;
 import ru.r2cloud.jradio.blocks.QuadratureDemodulation;
@@ -63,10 +64,11 @@ public class Aausat4Decoder implements Decoder {
 				}
 			}, 1.0);
 			Multiply mul = new Multiply(source, source2, true);
-			float[] taps = Firdes.lowPass(1.0, mul.getContext().getSampleRate(), 2600, 1000, Window.WIN_HAMMING, 6.76);
+			float[] taps = Firdes.lowPass(1.0, mul.getContext().getSampleRate(), 3000, 1000, Window.WIN_HAMMING, 6.76);
 			FrequencyXlatingFIRFilter filter = new FrequencyXlatingFIRFilter(mul, taps, 5, -req.getBandwidth() / 2);
 			QuadratureDemodulation qd = new QuadratureDemodulation(filter, 0.4f);
-			MultiplyConst mc = new MultiplyConst(qd, -1.0f);
+			LowPassFilter lpf = new LowPassFilter(qd, 1.0, 1500.0f, 100, Window.WIN_HAMMING, 6.76);
+			MultiplyConst mc = new MultiplyConst(lpf, 1.0f);
 			ClockRecoveryMM clockRecovery = new ClockRecoveryMM(mc, mc.getContext().getSampleRate() / 2400, (float) (0.25 * 0.175 * 0.175), 0.005f, 0.175f, 0.005f);
 			Rail rail = new Rail(clockRecovery, -1.0f, 1.0f);
 			FloatToChar f2char = new FloatToChar(rail, 127.0f);
