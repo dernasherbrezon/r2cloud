@@ -44,12 +44,11 @@ public class Aausat4DecoderTest {
 		// tle at the time of recording
 		TLE tle = new TLE(new String[] { "AAUSAT4", "1 41460U 16025E   18307.40997805  .00001852  00000-0  98049-4 0  9990", "2 41460  98.1158  18.1483 0160661  36.7969 324.4163 15.06405681138443" });
 		ObservationRequest result = new ObservationRequest();
-		result.setActualFrequency(437425000L);
+		//observation was taken with 8300hz offset
+		result.setActualFrequency(437433300L);
 		result.setSatelliteFrequency(437425000L);
 		result.setOrigin(SatelliteFactory.createSatellite(tle));
 		result.setStartTimeMillis(1541360007667L);
-		// bandwidth is 2400, however sample file was taken when transmittion freq was 6khz off
-		result.setBandwidth(8300 * 2);
 		return result;
 	}
 
