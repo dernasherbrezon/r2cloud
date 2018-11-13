@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.jradio.DopplerValueSource;
 import ru.r2cloud.jradio.aausat4.AAUSAT4;
 import ru.r2cloud.jradio.aausat4.AAUSAT4Beacon;
+import ru.r2cloud.jradio.aausat4.AAUSAT4OutputStream;
 import ru.r2cloud.jradio.blocks.ClockRecoveryMM;
 import ru.r2cloud.jradio.blocks.CorrelateAccessCodeTag;
 import ru.r2cloud.jradio.blocks.Firdes;
@@ -73,7 +74,7 @@ public class Aausat4Decoder implements Decoder {
 				}
 			}, 1.0);
 			Multiply mul = new Multiply(source, source2, true);
-			float[] taps = Firdes.lowPass(1.0, mul.getContext().getSampleRate(), 3000, 1000, Window.WIN_HAMMING, 6.76);
+			float[] taps = Firdes.lowPass(1.0, mul.getContext().getSampleRate(), 5000, 1000, Window.WIN_HAMMING, 6.76);
 			FrequencyXlatingFIRFilter filter = new FrequencyXlatingFIRFilter(mul, taps, 5, -(req.getActualFrequency() - req.getSatelliteFrequency()));
 			tempWav = new WavFileSink(filter, 16);
 			fos = new BufferedOutputStream(new FileOutputStream(tempFile));
@@ -100,6 +101,7 @@ public class Aausat4Decoder implements Decoder {
 		}
 		// 3 stage. correct peaks and decode
 		AAUSAT4 input = null;
+		AAUSAT4OutputStream aos = null;
 		try {
 			source = new WavFileSource(new BufferedInputStream(new FileInputStream(tempFile)));
 			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) source.getContext().getSampleRate(), new PeakValueSource(peaks, new GmskFrequencyCorrection(2400, 10)), 1.0f);
@@ -112,10 +114,10 @@ public class Aausat4Decoder implements Decoder {
 			FloatToChar f2char = new FloatToChar(rail, 127.0f);
 			CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(f2char, 10, "010011110101101000110100010000110101010101000010", true);
 			input = new AAUSAT4(new TaggedStreamToPdu(new FixedLengthTagger(correlateTag, AAUSAT4.VITERBI_TAIL_SIZE + 8))); // 8 for fsm
-			fos = new BufferedOutputStream(new FileOutputStream(binFile));
+			aos = new AAUSAT4OutputStream(new FileOutputStream(binFile));
 			while (input.hasNext()) {
 				AAUSAT4Beacon next = input.next();
-				fos.write(next.getData());
+				aos.write(next);
 				numberOfDecodedPackets++;
 			}
 		} catch (Exception e) {
@@ -123,7 +125,7 @@ public class Aausat4Decoder implements Decoder {
 			return result;
 		} finally {
 			closeQuietly(input);
-			closeQuietly(fos);
+			closeQuietly(aos);
 			if (!tempFile.delete()) {
 				LOG.error("unable to delete temp file: " + tempFile.getAbsolutePath());
 			}
