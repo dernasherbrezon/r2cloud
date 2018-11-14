@@ -48,6 +48,7 @@ public class ObservationResultDaoTest {
 		req.setOrigin(create());
 		req.setOutputSampleRate(1);
 		req.setSatelliteFrequency(1);
+		req.setActualFrequency(2);
 		req.setSatelliteId(UUID.randomUUID().toString());
 		req.setStartTimeMillis(System.currentTimeMillis());
 		req.setStart(create(req.getStartTimeMillis()));
@@ -58,6 +59,8 @@ public class ObservationResultDaoTest {
 		assertNull(actual.getResult().getDataPath());
 		assertNull(actual.getResult().getaPath());
 		assertNull(actual.getResult().getSpectogramPath());
+		assertEquals(1, actual.getReq().getSatelliteFrequency());
+		assertEquals(2, actual.getReq().getActualFrequency());
 
 		assertNotNull(dao.saveData(req.getSatelliteId(), req.getId(), createTempFile("data")));
 
