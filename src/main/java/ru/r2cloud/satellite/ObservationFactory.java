@@ -15,6 +15,8 @@ import uk.me.g4dpz.satellite.TLE;
 public class ObservationFactory {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationFactory.class);
+	//aausat4 signal deviates by 9khz. round it to 10khz
+	private static final int AAUSAT4_DEVIATION = 10_000;
 
 	private final TLEDao tleDao;
 	private final Predict predict;
@@ -64,7 +66,7 @@ public class ObservationFactory {
 			result.setOutputSampleRate(64_000);
 			// at the beginning doppler freq is the max
 			long initialDopplerFrequency = predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStart().getTime().getTime(), libSatellite);
-			result.setActualFrequency(initialDopplerFrequency + satellite.getBandwidth() / 2);
+			result.setActualFrequency(initialDopplerFrequency + satellite.getBandwidth() / 2 + AAUSAT4_DEVIATION / 2);
 		} else {
 			throw new IllegalArgumentException("unsupported decoder: " + decoder);
 		}
