@@ -12,14 +12,14 @@
 	<dependencySets>
 		<dependencySet>
 			<includes>
-				<include>${project.groupId}:*</include>
+				<include>${project.groupId}:${project.artifactId}:*</include>
 			</includes>
 			<outputDirectory>lib</outputDirectory>
 			<useProjectArtifact>true</useProjectArtifact>
 		</dependencySet>
 		<dependencySet>
 			<includes>
-				<include>${project.groupId}:*</include>
+				<include>${project.groupId}:${project.artifactId}:*</include>
 			</includes>
 			<useProjectArtifact>true</useProjectArtifact>
 			<outputDirectory>etc</outputDirectory>

@@ -7,7 +7,12 @@
 	<groupId>ru.r2cloud</groupId>
 	<artifactId>r2cloud</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<description>Decode satellite signals on Raspberry PI</description>
+	<name>Decode satellite signals on Raspberry PI</name>
+	<description>This is a server-side component automatically recording satellite signals</description>
+	<inceptionYear>2014</inceptionYear>
+	<organization>
+		<name>r2cloud</name>
+	</organization>
 
 	<developers>
 		<developer>
@@ -273,7 +278,7 @@
 			<plugin>
 				<groupId>com.aerse.maven</groupId>
 				<artifactId>deps-maven-plugin</artifactId>
-				<version>1.0</version>
+				<version>1.1</version>
 				<executions>
 					<execution>
 						<id>deps</id>
@@ -339,7 +344,7 @@
 			<plugin>
 				<groupId>com.aerse.maven</groupId>
 				<artifactId>deb-maven-plugin</artifactId>
-				<version>1.4</version>
+				<version>1.6</version>
 				<executions>
 					<execution>
 						<id>package</id>
@@ -394,5 +399,18 @@
 		</plugins>
 	</build>
 
+	<scm>
+		<url>https://github.com/dernasherbrezon/r2cloud</url>
+		<connection>scm:git:git@github.com/dernasherbrezon/r2cloud.git</connection>
+		<developerConnection>scm:git:https://github.com/dernasherbrezon/r2cloud.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+	
+	<licenses>
+		<license>
+			<name>Apache-2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
 
 </project>
