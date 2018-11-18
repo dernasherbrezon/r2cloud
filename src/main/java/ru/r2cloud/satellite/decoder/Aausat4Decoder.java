@@ -74,7 +74,7 @@ public class Aausat4Decoder implements Decoder {
 				}
 			}, 1.0);
 			Multiply mul = new Multiply(source, source2, true);
-			float[] taps = Firdes.lowPass(1.0, mul.getContext().getSampleRate(), 5000, 1000, Window.WIN_HAMMING, 6.76);
+			float[] taps = Firdes.lowPass(1.0, mul.getContext().getSampleRate(), 6400, 1000, Window.WIN_HAMMING, 6.76);
 			FrequencyXlatingFIRFilter filter = new FrequencyXlatingFIRFilter(mul, taps, 5, -(req.getActualFrequency() - req.getSatelliteFrequency()));
 			tempWav = new WavFileSink(filter, 16);
 			fos = new BufferedOutputStream(new FileOutputStream(tempFile));
