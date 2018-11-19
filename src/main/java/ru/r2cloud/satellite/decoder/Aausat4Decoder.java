@@ -117,6 +117,7 @@ public class Aausat4Decoder implements Decoder {
 			aos = new AAUSAT4OutputStream(new FileOutputStream(binFile));
 			while (input.hasNext()) {
 				AAUSAT4Beacon next = input.next();
+				next.setBeginMillis(req.getStartTimeMillis() + (long) ((next.getBeginSample() * 1000) / source.getContext().getSampleRate()));
 				aos.write(next);
 				numberOfDecodedPackets++;
 			}
