@@ -224,7 +224,7 @@
 					<component>main</component>
 					<codename>r2cloud</codename>
 					<sign>true</sign>
-					<keyname>27679FBF</keyname>
+					<keyname>A5A70917</keyname>
 					<passphraseServerId>r2cloud</passphraseServerId>
 				</configuration>
 			</plugin>
