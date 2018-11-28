@@ -211,7 +211,7 @@
 			<plugin>
 				<groupId>com.aerse.maven</groupId>
 				<artifactId>apt-maven-plugin</artifactId>
-				<version>1.9</version>
+				<version>1.11</version>
 				<executions>
 					<execution>
 						<id>deploy</id>
