@@ -5,6 +5,8 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.eclipsesource.json.JsonArray;
+
 import ru.r2cloud.SpectogramService;
 import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.satellite.ObservationResultDao;
@@ -55,6 +57,14 @@ public class R2CloudService {
 			}
 		}
 		LOG.info("observation uploaded: " + observation.getReq().getId());
+	}
+
+	public void saveMetrics(JsonArray metrics) {
+		String apiKey = config.getProperty("r2cloud.apiKey");
+		if (apiKey == null) {
+			return;
+		}
+		client.saveMetrics(metrics);
 	}
 
 }

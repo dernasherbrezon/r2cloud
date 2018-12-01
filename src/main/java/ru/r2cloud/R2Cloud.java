@@ -101,18 +101,20 @@ public class R2Cloud {
 		rtlsdrLock.register(RtlSdrStatusDao.class, 2);
 		rtlsdrLock.register(ADSB.class, 1);
 
+		r2cloudClient = new R2CloudClient(props);
 		spectogramService = new SpectogramService(props);
+		resultDao = new ObservationResultDao(props);
+		r2cloudService = new R2CloudService(props, resultDao, r2cloudClient, spectogramService);
 		predict = new Predict(props);
 		dao = new ADSBDao(props);
 		adsb = new ADSB(props, dao, rtlsdrLock, processFactory);
 		auth = new Authenticator(props);
-		metrics = new Metrics(props);
+		metrics = new Metrics(props, r2cloudService);
 		rtlsdrStatusDao = new RtlSdrStatusDao(props, rtlsdrLock);
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
 		acmeClient = new AcmeClient(props);
 		satelliteDao = new SatelliteDao(props);
-		resultDao = new ObservationResultDao(props);
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient("http://celestrak.com"));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
 		
@@ -121,8 +123,6 @@ public class R2Cloud {
 		decoders.put("aausat4", new Aausat4Decoder(props, predict));
 		
 		observationFactory = new ObservationFactory(predict, tleDao);
-		r2cloudClient = new R2CloudClient(props);
-		r2cloudService = new R2CloudService(props, resultDao, r2cloudClient, spectogramService);
 		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, r2cloudService, processFactory, resultDao, decoders);
 
 		// setup web server
