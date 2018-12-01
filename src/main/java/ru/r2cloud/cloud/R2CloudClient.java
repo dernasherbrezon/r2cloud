@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
@@ -151,6 +152,37 @@ public class R2CloudClient {
 			return null;
 		}
 		return id;
+	}
+
+	public void saveMetrics(JsonArray o) {
+		HttpURLConnection con = null;
+		try {
+			URL obj = new URL(config.getProperty("r2cloud.hostname") + "/api/v1/metrics");
+			con = (HttpURLConnection) obj.openConnection();
+			con.setConnectTimeout(config.getInteger("r2cloud.connectionTimeout"));
+			con.setRequestMethod("POST");
+			con.setRequestProperty("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
+			con.setRequestProperty("Authorization", config.getProperty("r2cloud.apiKey"));
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setDoOutput(true);
+
+			Writer w = new OutputStreamWriter(con.getOutputStream(), StandardCharsets.UTF_8);
+			o.writeTo(w);
+			w.close();
+
+			int responseCode = con.getResponseCode();
+			if (responseCode != 200) {
+				LOG.error("unable to save meta. response code: " + responseCode + ". See logs for details");
+				Util.toLog(LOG, con.getErrorStream());
+				return;
+			}
+		} catch (Exception e) {
+			LOG.error("unable to save metrics", e);
+		} finally {
+			if (con != null) {
+				con.disconnect();
+			}
+		}		
 	}
 
 }

@@ -8,15 +8,16 @@ import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.r2cloud.R2Cloud;
-import ru.r2cloud.util.Configuration;
-
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.MetricRegistry.MetricSupplier;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.codahale.metrics.health.SharedHealthCheckRegistries;
+
+import ru.r2cloud.R2Cloud;
+import ru.r2cloud.cloud.R2CloudService;
+import ru.r2cloud.util.Configuration;
 
 public class Metrics {
 
@@ -27,9 +28,11 @@ public class Metrics {
 	private RRD4JReporter reporter;
 	private Sigar sigar;
 	private final Configuration config;
-
-	public Metrics(Configuration config) {
+	private final R2CloudService cloudService;
+	
+	public Metrics(Configuration config, R2CloudService cloudService) {
 		this.config = config;
+		this.cloudService = cloudService;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -117,7 +120,7 @@ public class Metrics {
 			LOG.info("Could not initialize SIGAR library: " + linkError.getMessage());
 		}
 
-		reporter = new RRD4JReporter(config, REGISTRY);
+		reporter = new RRD4JReporter(config, REGISTRY, cloudService);
 		reporter.start();
 		LOG.info("metrics started");
 	}

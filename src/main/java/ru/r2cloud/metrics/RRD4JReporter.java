@@ -11,10 +11,6 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.r2cloud.R2Cloud;
-import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.Util;
-
 import com.aerse.ConsolFun;
 import com.aerse.DsType;
 import com.aerse.core.RrdBackendFactory;
@@ -29,6 +25,13 @@ import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.ScheduledReporter;
 import com.codahale.metrics.Timer;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+
+import ru.r2cloud.R2Cloud;
+import ru.r2cloud.cloud.R2CloudService;
+import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 
 public class RRD4JReporter extends ScheduledReporter {
 
@@ -38,10 +41,12 @@ public class RRD4JReporter extends ScheduledReporter {
 	private final File basepath;
 	private final Map<String, RrdDb> dbPerMetric = new HashMap<String, RrdDb>();
 	private final Map<String, Double> lastValueForCounter = new HashMap<String, Double>();
+	private final R2CloudService cloudService;
 
-	RRD4JReporter(Configuration config, MetricRegistry registry) {
+	RRD4JReporter(Configuration config, MetricRegistry registry, R2CloudService cloudService) {
 		super(registry, "rrd4j-reporter", MetricFilter.ALL, TimeUnit.SECONDS, TimeUnit.MILLISECONDS);
 		basepath = Util.initDirectory(config.getProperty("metrics.basepath.location"));
+		this.cloudService = cloudService;
 	}
 
 	// never change the step. this will break previously created rrd files
@@ -52,12 +57,17 @@ public class RRD4JReporter extends ScheduledReporter {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void report(SortedMap<String, Gauge> gauges, SortedMap<String, Counter> counters, SortedMap<String, Histogram> histograms, SortedMap<String, Meter> meters, SortedMap<String, Timer> timers) {
+		JsonArray metricsToShare = new JsonArray();
 		for (Entry<String, Gauge> cur : gauges.entrySet()) {
 			Object value = cur.getValue().getValue();
 			if (value == null) {
 				continue;
 			}
 			update(getOrCreate(cur.getKey(), DsType.GAUGE), convertToDouble(value));
+			JsonObject metric = new JsonObject();
+			metric.add("name", cur.getKey());
+			metric.add("value", convertToDouble(value));
+			metricsToShare.add(metric);
 		}
 		for (Entry<String, Counter> cur : counters.entrySet()) {
 			long newValue = cur.getValue().getCount();
@@ -83,7 +93,12 @@ public class RRD4JReporter extends ScheduledReporter {
 				newValue += lastValue;
 			}
 			update(result, newValue);
+			JsonObject metric = new JsonObject();
+			metric.add("name", cur.getKey());
+			metric.add("value", newValue);
+			metricsToShare.add(metric);
 		}
+		cloudService.saveMetrics(metricsToShare);
 	}
 
 	private static double convertToDouble(Object value) {
