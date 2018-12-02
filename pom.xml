@@ -365,7 +365,7 @@
 						<nginx-light>>=1.10.3</nginx-light>
 						<dump1090-mutability>>=1.15~dev</dump1090-mutability>
 						<libhyperic-sigar-java>>=1.6.4</libhyperic-sigar-java>
-						<rtl-sdr>>=0.5.3</rtl-sdr>
+						<rtl-sdr>>=0.6git</rtl-sdr>
 						<!-- required for stdbuf to force stderr flushing -->
 						<coreutils>>=8.26</coreutils>
 						<wxtoimg>>=2.11.2</wxtoimg>
