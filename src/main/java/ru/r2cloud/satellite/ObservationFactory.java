@@ -58,7 +58,7 @@ public class ObservationFactory {
 			result.setInputSampleRate(60_000);
 			result.setOutputSampleRate(11_025);
 		} else if (decoder.equals("lrpt")) {
-			result.setInputSampleRate(1_440_000);
+			result.setInputSampleRate(240_000);
 			result.setOutputSampleRate(150_000);
 			result.setActualFrequency(satellite.getFrequency());
 		} else if (decoder.equals("aausat4")) {

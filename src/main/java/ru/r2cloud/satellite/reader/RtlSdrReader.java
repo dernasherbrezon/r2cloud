@@ -17,10 +17,9 @@ import ru.r2cloud.util.Util;
 public class RtlSdrReader implements IQReader {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RtlSdrReader.class);
-	private static final int BUF_SIZE = 0x1000; // 4K
 
 	private ProcessWrapper rtlSdr = null;
-	private File wavPath;
+	private File rawFile;
 	private Long startTimeMillis = null;
 	private Long endTimeMillis = null;
 
@@ -36,36 +35,25 @@ public class RtlSdrReader implements IQReader {
 
 	@Override
 	public void start() {
-		this.wavPath = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".wav");
-		ProcessWrapper sox = null;
+		this.rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw");
 		try {
 			Integer ppm = config.getInteger("ppm.current");
 			if (ppm == null) {
 				ppm = 0;
 			}
-			sox = factory.create(config.getProperty("satellites.sox.path") + " --type raw --rate " + req.getInputSampleRate() + " --encoding unsigned-integer --bits 8 --channels 2 - " + wavPath.getAbsolutePath() + " rate " + req.getOutputSampleRate(), Redirect.INHERIT, false);
-			rtlSdr = factory.create(config.getProperty("satellites.rtlsdr.path") + " -f " + String.valueOf(req.getActualFrequency()) + " -s " + req.getInputSampleRate() + " -g 45 -p " + String.valueOf(ppm) + " - ", Redirect.INHERIT, false);
-			byte[] buf = new byte[BUF_SIZE];
-			while (!Thread.currentThread().isInterrupted()) {
-				int r = rtlSdr.getInputStream().read(buf);
-				if (r == -1) {
-					break;
-				}
-				if (startTimeMillis == null) {
-					startTimeMillis = System.currentTimeMillis();
-				}
-				sox.getOutputStream().write(buf, 0, r);
+			if (startTimeMillis == null) {
+				startTimeMillis = System.currentTimeMillis();
 			}
-			sox.getOutputStream().flush();
+			rtlSdr = factory.create(config.getProperty("satellites.rtlsdr.path") + " -f " + String.valueOf(req.getActualFrequency()) + " -s " + req.getInputSampleRate() + " -g 45 -p " + String.valueOf(ppm) + " " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
+			int responseCode = rtlSdr.waitFor();
+			LOG.info("rtl_sdr stopped: {}", responseCode);
 		} catch (IOException e) {
-			// there is no way to know if IOException was caused by closed stream
-			if (e.getMessage() == null || !e.getMessage().equals("Stream closed")) {
-				LOG.error("unable to run", e);
-			}
+			LOG.error("unable to run", e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		} finally {
 			LOG.info("stopping pipe thread");
 			Util.shutdown("rtl_sdr for satellites", rtlSdr, 10000);
-			Util.shutdown("sox", sox, 10000);
 			endTimeMillis = System.currentTimeMillis();
 		}
 	}
@@ -77,8 +65,26 @@ public class RtlSdrReader implements IQReader {
 
 		IQData result = new IQData();
 
-		if (wavPath != null && wavPath.exists()) {
-			result.setWavFile(wavPath);
+		if (rawFile != null && rawFile.exists()) {
+			ProcessWrapper sox = null;
+			File wavPath = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".wav");
+			try {
+				sox = factory.create(config.getProperty("satellites.sox.path") + " --type raw --rate " + req.getInputSampleRate() + " --encoding unsigned-integer --bits 8 --channels 2 " + rawFile.getAbsolutePath() + " " + wavPath.getAbsolutePath() + " rate " + req.getOutputSampleRate(), Redirect.INHERIT, false);
+				int responseCode = sox.waitFor();
+				LOG.info("sox stopped: {}", responseCode);
+			} catch (IOException e) {
+				LOG.error("unable to run", e);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			} finally {
+				Util.shutdown("sox", sox, 10000);
+				if (!rawFile.delete()) {
+					LOG.error("unable to delete temp file: {}", rawFile.getAbsolutePath());
+				}
+			}
+			if (wavPath.exists()) {
+				result.setWavFile(wavPath);
+			}
 		}
 		if (startTimeMillis != null) {
 			result.setActualStart(startTimeMillis);
