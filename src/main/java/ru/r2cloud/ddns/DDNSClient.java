@@ -13,7 +13,7 @@ import ru.r2cloud.util.Util;
 
 public class DDNSClient {
 
-	private final static Logger LOG = LoggerFactory.getLogger(DDNSClient.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DDNSClient.class);
 
 	private final Configuration config;
 

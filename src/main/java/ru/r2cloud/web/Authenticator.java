@@ -79,7 +79,7 @@ public class Authenticator {
 
 		String salted = salt(password, salt);
 		String passwordToCheck = getPasswordToCheck(salted);
-		if (!passwordToCheck.equals(this.password)) {
+		if (passwordToCheck == null || !passwordToCheck.equals(this.password)) {
 			return null;
 		}
 

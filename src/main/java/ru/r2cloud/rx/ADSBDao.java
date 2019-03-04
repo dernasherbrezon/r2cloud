@@ -91,7 +91,7 @@ public class ADSBDao {
 			plane = latestMessages.get(icao24);
 			if (plane == null) {
 				PositionDecoder dec = new PositionDecoder();
-				position = dec.decodePosition(System.currentTimeMillis() / 1000, airpos);
+				position = dec.decodePosition(System.currentTimeMillis() / 1000.0, airpos);
 
 				plane = new Airplane();
 				plane.setPositions(new CopyOnWriteArrayList<Position>());
@@ -101,7 +101,7 @@ public class ADSBDao {
 				latestMessages.put(icao24, plane);
 			} else {
 				airpos.setNICSupplementA(plane.getDecoder().getNICSupplementA());
-				position = plane.getDecoder().decodePosition(System.currentTimeMillis() / 1000, airpos);
+				position = plane.getDecoder().decodePosition(System.currentTimeMillis() / 1000.0, airpos);
 			}
 		}
 

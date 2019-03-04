@@ -79,6 +79,8 @@ public class RRD4JReporter extends ScheduledReporter {
 			RrdDb result = dbPerMetric.get(cur.getKey());
 			if (result == null) {
 				result = create(cur.getKey(), DsType.COUNTER);
+			}
+			if (result != null) {
 				try {
 					double lastValue = result.getLastDatasourceValue("data");
 					if (!Double.isNaN(lastValue)) {

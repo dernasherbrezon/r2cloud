@@ -64,7 +64,7 @@ public class R2Cloud {
 
 	private static final Logger LOG = LoggerFactory.getLogger(R2Cloud.class);
 
-	private final Map<String, HttpContoller> controllers = new HashMap<String, HttpContoller>();
+	private final Map<String, HttpContoller> controllers = new HashMap<>();
 	private final WebServer webServer;
 	private final ADSB adsb;
 	private final ADSBDao dao;

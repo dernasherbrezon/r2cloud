@@ -33,7 +33,7 @@ public class R2CloudService {
 		if (apiKey == null) {
 			return;
 		}
-		LOG.info("uploading observation: " + observation.getReq().getId());
+		LOG.info("uploading observation: {}", observation.getReq().getId());
 		Long id = client.saveMeta(observation);
 		if (id == null) {
 			return;
@@ -56,7 +56,7 @@ public class R2CloudService {
 				client.saveSpectogram(id, observation.getResult().getSpectogramPath());
 			}
 		}
-		LOG.info("observation uploaded: " + observation.getReq().getId());
+		LOG.info("observation uploaded: {}", observation.getReq().getId());
 	}
 
 	public void saveMetrics(JsonArray metrics) {

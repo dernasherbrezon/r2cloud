@@ -12,7 +12,7 @@ import ru.r2cloud.util.Util;
 
 final class ExternalIpUtil {
 
-	private final static Logger LOG = LoggerFactory.getLogger(ExternalIpUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ExternalIpUtil.class);
 
 	public static String getExternalIp() {
 		HttpURLConnection con = null;
@@ -24,7 +24,7 @@ final class ExternalIpUtil {
 			int responseCode = con.getResponseCode();
 			String result = null;
 			if (responseCode != 200) {
-				LOG.error("unable to get external ip. response code: " + responseCode + ". See logs for details");
+				LOG.error("unable to get external ip. response code: {}. See logs for details", responseCode);
 				Util.toLog(LOG, con.getInputStream());
 			} else {
 				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
@@ -44,4 +44,7 @@ final class ExternalIpUtil {
 		}
 	}
 
+	private ExternalIpUtil() {
+		//do nothing
+	}
 }

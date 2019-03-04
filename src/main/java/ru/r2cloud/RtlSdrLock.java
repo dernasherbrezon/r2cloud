@@ -9,8 +9,8 @@ public class RtlSdrLock {
 
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(RtlSdrLock.class);
 
-	private final Map<Class<?>, Integer> priorities = new HashMap<Class<?>, Integer>();
-	private final Map<Class<?>, Lifecycle> listeners = new HashMap<Class<?>, Lifecycle>();
+	private final Map<Class<?>, Integer> priorities = new HashMap<>();
+	private final Map<Class<?>, Lifecycle> listeners = new HashMap<>();
 	private Lifecycle lockedBy = null;
 
 	public void register(Class<?> clazz, int priority) {
@@ -20,7 +20,7 @@ public class RtlSdrLock {
 	public synchronized boolean tryLock(Lifecycle listener) {
 		Integer newPriority = priorities.get(listener.getClass());
 		if (newPriority == null) {
-			LOG.error("not registered: " + listener.getClass());
+			LOG.error("not registered: {}", listener.getClass());
 			return false;
 		}
 

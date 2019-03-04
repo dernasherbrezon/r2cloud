@@ -32,9 +32,9 @@ import com.codahale.metrics.health.HealthCheck;
 
 public class RtlSdrStatusDao implements Lifecycle {
 
-	private final static Logger LOG = LoggerFactory.getLogger(RtlSdrStatusDao.class);
-	private final static Pattern DEVICEPATTERN = Pattern.compile("^  0:  (.*?), (.*?), SN: (.*?)$");
-	private final static Pattern PPMPATTERN = Pattern.compile("real sample rate: \\d+ current PPM: \\d+ cumulative PPM: (\\d+)");
+	private static final Logger LOG = LoggerFactory.getLogger(RtlSdrStatusDao.class);
+	private static final Pattern DEVICEPATTERN = Pattern.compile("^  0:  (.*?), (.*?), SN: (.*?)$");
+	private static final Pattern PPMPATTERN = Pattern.compile("real sample rate: \\d+ current PPM: \\d+ cumulative PPM: (\\d+)");
 
 	private final Configuration config;
 	private final RtlSdrLock lock;
@@ -155,7 +155,7 @@ public class RtlSdrStatusDao implements Lifecycle {
 
 		Process rtlTest = null;
 		try {
-			rtlTest = new ProcessBuilder().command(new String[] { config.getProperty("stdbuf.path"), "-i0", "-o0", "-e0", config.getProperty("rtltest.path"), "-p2" }).redirectErrorStream(true).start();
+			rtlTest = new ProcessBuilder().command(config.getProperty("stdbuf.path"), "-i0", "-o0", "-e0", config.getProperty("rtltest.path"), "-p2").redirectErrorStream(true).start();
 			BufferedReader r = new BufferedReader(new InputStreamReader(rtlTest.getInputStream()));
 			String curLine = null;
 			int numberOfSamples = 0;
