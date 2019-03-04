@@ -79,15 +79,15 @@ public class RRD4JReporter extends ScheduledReporter {
 			RrdDb result = dbPerMetric.get(cur.getKey());
 			if (result == null) {
 				result = create(cur.getKey(), DsType.COUNTER);
-			}
-			if (result != null) {
-				try {
-					double lastValue = result.getLastDatasourceValue("data");
-					if (!Double.isNaN(lastValue)) {
-						lastValueForCounter.put(cur.getKey(), lastValue);
+				if (result != null) {
+					try {
+						double lastValue = result.getLastDatasourceValue("data");
+						if (!Double.isNaN(lastValue)) {
+							lastValueForCounter.put(cur.getKey(), lastValue);
+						}
+					} catch (IOException e) {
+						LOG.error("unable to load last value", e);
 					}
-				} catch (IOException e) {
-					LOG.error("unable to load last value", e);
 				}
 			}
 			Double lastValue = lastValueForCounter.get(cur.getKey());
