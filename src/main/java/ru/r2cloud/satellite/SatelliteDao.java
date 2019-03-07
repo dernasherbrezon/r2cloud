@@ -13,7 +13,8 @@ import ru.r2cloud.util.Util;
 public class SatelliteDao {
 
 	private final List<Satellite> satellites;
-	private final Map<String, Satellite> satelliteByName = new HashMap<String, Satellite>();
+	private final Map<String, Satellite> satelliteByName = new HashMap<>();
+	private final Map<String, Satellite> satelliteById = new HashMap<>();
 
 	public SatelliteDao(Configuration config) {
 		satellites = new ArrayList<Satellite>();
@@ -37,6 +38,10 @@ public class SatelliteDao {
 		return satelliteByName.get(name);
 	}
 
+	public Satellite findById(String id) {
+		return satelliteById.get(id);
+	}
+
 	public List<Satellite> findAll() {
 		return satellites;
 	}
@@ -54,6 +59,7 @@ public class SatelliteDao {
 	private void index(Satellite satellite) {
 		satellites.add(satellite);
 		satelliteByName.put(satellite.getName(), satellite);
+		satelliteById.put(satellite.getId(), satellite);
 	}
 
 }

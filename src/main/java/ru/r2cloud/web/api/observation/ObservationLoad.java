@@ -1,4 +1,4 @@
-package ru.r2cloud.web.api;
+package ru.r2cloud.web.api.observation;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -20,16 +20,16 @@ import ru.r2cloud.web.ModelAndView;
 import ru.r2cloud.web.NotFound;
 import ru.r2cloud.web.WebServer;
 
-public class WeatherObservation extends AbstractHttpController {
-
-	private static final Logger LOG = LoggerFactory.getLogger(WeatherObservation.class);
+public class ObservationLoad extends AbstractHttpController {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ObservationLoad.class);
 
 	private final ObservationResultDao resultDao;
 
-	public WeatherObservation(ObservationResultDao resultDao) {
+	public ObservationLoad(ObservationResultDao resultDao) {
 		this.resultDao = resultDao;
 	}
-
+	
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
 		String satelliteId = WebServer.getParameter(session, "satelliteId");
@@ -142,7 +142,7 @@ public class WeatherObservation extends AbstractHttpController {
 
 	@Override
 	public String getRequestMappingURL() {
-		return "/api/v1/admin/weather/observation";
+		return "/api/v1/admin/observation/load";
 	}
-
+	
 }

@@ -1,4 +1,4 @@
-package ru.r2cloud.web.api;
+package ru.r2cloud.web.api.observation;
 
 import java.io.File;
 
@@ -20,14 +20,14 @@ import ru.r2cloud.web.ModelAndView;
 import ru.r2cloud.web.NotFound;
 import ru.r2cloud.web.WebServer;
 
-public class WeatherSpectrogram extends AbstractHttpController {
+public class ObservationSpectrogram extends AbstractHttpController {
 
-	private static final Logger LOG = LoggerFactory.getLogger(WeatherSpectrogram.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ObservationSpectrogram.class);
 
 	private final ObservationResultDao dao;
 	private final SpectogramService spectogramService;
 
-	public WeatherSpectrogram(ObservationResultDao dao, SpectogramService spectogramService) {
+	public ObservationSpectrogram(ObservationResultDao dao, SpectogramService spectogramService) {
 		this.dao = dao;
 		this.spectogramService = spectogramService;
 	}
@@ -75,6 +75,6 @@ public class WeatherSpectrogram extends AbstractHttpController {
 
 	@Override
 	public String getRequestMappingURL() {
-		return "/api/v1/admin/weather/spectogram";
+		return "/api/v1/admin/observation/spectogram";
 	}
 }

@@ -36,12 +36,18 @@ public class ObservationList extends AbstractHttpController {
 		Collections.sort(observations, ObservationFullComparator.INSTANCE);
 		JsonArray satellites = new JsonArray();
 		for (ObservationFull cur : observations) {
-			JsonObject satellite = new JsonObject();
-			satellite.add("id", cur.getReq().getId());
-			satellite.add("name", "tst");
-			satellite.add("start", cur.getReq().getStartTimeMillis());
-			satellite.add("hasData", cur.getResult().hasData());
-			satellites.add(satellite);
+			JsonObject curObservation = new JsonObject();
+			curObservation.add("id", cur.getReq().getId());
+			curObservation.add("satelliteId", cur.getReq().getSatelliteId());
+			Satellite curSatellite = dao.findById(cur.getReq().getSatelliteId());
+			if (curSatellite != null) {
+				curObservation.add("name", curSatellite.getName());
+			} else {
+				curObservation.add("name", cur.getReq().getSatelliteId());
+			}
+			curObservation.add("start", cur.getReq().getStartTimeMillis());
+			curObservation.add("hasData", cur.getResult().hasData());
+			satellites.add(curObservation);
 		}
 
 		ModelAndView result = new ModelAndView();

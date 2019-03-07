@@ -10,7 +10,7 @@ public class ObservationFullComparator implements Comparator<ObservationFull> {
 
 	@Override
 	public int compare(ObservationFull o1, ObservationFull o2) {
-		return Long.compare(o1.getReq().getStartTimeMillis(), o2.getReq().getStartTimeMillis());
+		return Long.compare(o2.getReq().getStartTimeMillis(), o1.getReq().getStartTimeMillis());
 	}
 
 }
