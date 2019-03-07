@@ -6,75 +6,79 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.localserver.LocalTestServer;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpRequestHandler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 
 import ru.r2cloud.model.TLE;
 
 public class CelestrakClientTest {
 
-	private final LocalTestServer server = new LocalTestServer(null, null);
-	
+	private HttpServer server;
+
 	@Test
 	public void testSuccess() {
-		StringBuilder expectedStr = new StringBuilder();
-		Map<String, TLE> expected;
-		try (BufferedReader r = new BufferedReader(new InputStreamReader(CelestrakClientTest.class.getClassLoader().getResourceAsStream("sample-tle.txt")))) {
-			String curLine = null;
-			List<String> lines = new ArrayList<>();
-			while( (curLine = r.readLine()) != null ) {
-				lines.add(curLine);
-				expectedStr.append(curLine).append("\n");
-			}
-			expected = convert(lines);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		
-		server.register("/*", new HttpRequestHandler() {
+		String expectedBody = loadExpected();
+		Map<String, TLE> expected = convert(expectedBody);
+		server.createContext("/NORAD/elements/weather.txt", new HttpHandler() {
 
 			@Override
-			public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
-				response.setEntity(new StringEntity(expectedStr.toString(), StandardCharsets.UTF_8));
+			public void handle(HttpExchange exchange) throws IOException {
+				exchange.sendResponseHeaders(200, expectedBody.length());
+				OutputStream os = exchange.getResponseBody();
+				os.write(expectedBody.getBytes(StandardCharsets.UTF_8));
+				os.close();
 			}
 		});
+
 		// one slash is important here
-		CelestrakClient client = new CelestrakClient("http:/" + server.getServiceAddress());
+		CelestrakClient client = new CelestrakClient("http://" + server.getAddress().getHostName() + ":" + server.getAddress().getPort());
 		Map<String, TLE> actual = client.getWeatherTLE();
 		assertEquals(expected.size(), actual.size());
 		assertTrue(expected.equals(actual));
 	}
 
-	private static Map<String, TLE> convert(List<String> lines) {
+	private static String loadExpected() {
+		StringBuilder expectedStr = new StringBuilder();
+		try (BufferedReader r = new BufferedReader(new InputStreamReader(CelestrakClientTest.class.getClassLoader().getResourceAsStream("sample-tle.txt")))) {
+			String curLine = null;
+			while ((curLine = r.readLine()) != null) {
+				expectedStr.append(curLine).append("\n");
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return expectedStr.toString();
+	}
+
+	private static Map<String, TLE> convert(String body) {
 		Map<String, TLE> result = new HashMap<String, TLE>();
-		for (int i = 0; i < lines.size(); i += 3) {
-			result.put(lines.get(i), new TLE(new String[] { lines.get(i), lines.get(i + 1), lines.get(i + 2) }));
+		String[] lines = body.split("\n");
+		for (int i = 0; i < lines.length; i += 3) {
+			result.put(lines[i], new TLE(new String[] { lines[i], lines[i + 1], lines[i + 2] }));
 		}
 		return result;
 	}
 
 	@Before
 	public void start() throws Exception {
+		server = HttpServer.create(new InetSocketAddress("localhost", 8000), 0);
 		server.start();
 	}
 
 	@After
 	public void stop() throws Exception {
-		server.stop();
+		server.stop(0);
 	}
 
 }

@@ -108,4 +108,8 @@ public class ObservationResult {
 		this.dataPath = dataPath;
 	}
 
+	public boolean hasData() {
+		return aURL != null || dataURL != null;
+	}
+
 }

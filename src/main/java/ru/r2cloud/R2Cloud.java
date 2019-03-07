@@ -51,6 +51,7 @@ import ru.r2cloud.web.api.configuration.R2CloudSave;
 import ru.r2cloud.web.api.configuration.SSL;
 import ru.r2cloud.web.api.configuration.SSLLog;
 import ru.r2cloud.web.api.configuration.WeatherConfig;
+import ru.r2cloud.web.api.observation.ObservationList;
 import ru.r2cloud.web.api.setup.Restore;
 import ru.r2cloud.web.api.setup.Setup;
 import ru.r2cloud.web.api.status.Overview;
@@ -145,6 +146,7 @@ public class R2Cloud {
 		index(new Amateur(satelliteDao, scheduler, resultDao));
 		index(new WeatherObservation(resultDao));
 		index(new WeatherSpectrogram(resultDao, spectogramService));
+		index(new ObservationList(satelliteDao, resultDao));
 		webServer = new WebServer(props, controllers, auth);
 	}
 

@@ -77,7 +77,7 @@ public class ConfigurationTest {
 
 	@Test
 	public void testLoad() {
-		assertEquals(new Integer(8), config.getInteger("scheduler.elevation.min"));
+		assertEquals(Integer.valueOf(8), config.getInteger("scheduler.elevation.min"));
 	}
 
 	@Before

@@ -1,123 +1,95 @@
 package ru.r2cloud.it.util;
 
-import java.io.Closeable;
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpClient.Redirect;
+import java.net.http.HttpClient.Version;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContextBuilder;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
-public class RestClient implements Closeable {
+public class RestClient {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RestClient.class);
 
-	private CloseableHttpClient httpclient;
+	private HttpClient httpclient;
 	private final String baseUrl;
 	private String accessToken;
 
 	public RestClient(String baseUrl) throws Exception {
 		if (baseUrl == null) {
-			this.baseUrl = "https://r2.localhost";
+			this.baseUrl = "http://localhost:8097";
 		} else {
 			this.baseUrl = baseUrl;
 		}
-		SSLContextBuilder builder = new SSLContextBuilder();
-		builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-		SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-		this.httpclient = HttpClients.custom().setUserAgent("r2cloud/0.1 info@r2cloud.ru").setSSLSocketFactory(sslsf).build();
+		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMinutes(1L)).build();
 	}
 
 	public boolean healthy() {
-		HttpGet m = new HttpGet(baseUrl + "/api/v1/health");
-		HttpResponse response = null;
+		HttpRequest request = createDefaultRequest("/api/v1/health").GET().build();
 		try {
-			response = httpclient.execute(m);
-			int statusCode = response.getStatusLine().getStatusCode();
-			boolean result = statusCode == HttpStatus.SC_OK;
+			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			boolean result = response.statusCode() == 200;
 			if (!result) {
-				LOG.info("status code: " + statusCode);
+				LOG.info("status code: {}", response.statusCode());
 			}
 			return result;
-		} catch (Exception e) {
-			LOG.error("unable to get", e);
+		} catch (IOException e) {
+			LOG.error("unable to get status", e);
 			return false;
-		} finally {
-			if (response != null) {
-				EntityUtils.consumeQuietly(response.getEntity());
-			}
-		}
-	}
-
-	@Override
-	public void close() throws IOException {
-		if (httpclient != null) {
-			httpclient.close();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return false;
 		}
 	}
 
 	public void login(String username, String password) {
-		LOG.info("login");
-		HttpPost m = new HttpPost(baseUrl + "/api/v1/accessToken");
 		JsonObject json = Json.object();
 		json.add("username", username);
 		json.add("password", password);
-		m.setEntity(new StringEntity(json.toString(), ContentType.APPLICATION_JSON));
-		HttpResponse response = null;
+		HttpRequest request = createDefaultRequest("/api/v1/accessToken").header("Content-Type", "application/json").POST(BodyPublishers.ofString(json.toString())).build();
 		try {
-			response = httpclient.execute(m);
-			int statusCode = response.getStatusLine().getStatusCode();
-			String responseBody = EntityUtils.toString(response.getEntity());
-			if (statusCode != HttpStatus.SC_OK) {
-				LOG.info("response: " + responseBody);
-				throw new RuntimeException("invalid status code: " + statusCode);
+			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				throw new RuntimeException("unable to login");
 			}
-			JsonObject object = (JsonObject) Json.parse(responseBody);
+			JsonObject object = (JsonObject) Json.parse(response.body());
 			accessToken = object.get("access_token").asString();
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
-		} finally {
-			if (response != null) {
-				EntityUtils.consumeQuietly(response.getEntity());
-			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		}
 	}
 
 	public void setup(String keyword, String username, String password) {
-		LOG.info("setup: " + username);
-		HttpPost m = new HttpPost(baseUrl + "/api/v1/setup/setup");
+		LOG.info("setup: {}", username);
 		JsonObject json = Json.object();
 		json.add("keyword", keyword);
 		json.add("username", username);
 		json.add("password", password);
-		m.setEntity(new StringEntity(json.toString(), ContentType.APPLICATION_JSON));
-		HttpResponse response = null;
+		HttpRequest request = createDefaultRequest("/api/v1/setup/setup").header("Content-Type", "application/json").POST(BodyPublishers.ofString(json.toString())).build();
 		try {
-			response = httpclient.execute(m);
-			int statusCode = response.getStatusLine().getStatusCode();
-			if (statusCode != HttpStatus.SC_OK) {
-				LOG.info("response: " + EntityUtils.toString(response.getEntity()));
-				throw new RuntimeException("invalid status code: " + statusCode);
+			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				LOG.info("response: {}", response.body());
+				throw new RuntimeException("invalid status code: " + response.statusCode());
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
-		} finally {
-			if (response != null) {
-				EntityUtils.consumeQuietly(response.getEntity());
-			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
 		}
 	}
 
@@ -127,55 +99,54 @@ public class RestClient implements Closeable {
 	}
 
 	private JsonObject getData(String url) {
-		HttpGet m = new HttpGet(baseUrl + url);
-		m.addHeader("Authorization", "Bearer " + accessToken);
-		HttpResponse response = null;
+		HttpRequest request = createAuthRequest(url).GET().build();
 		try {
-			response = httpclient.execute(m);
-			int statusCode = response.getStatusLine().getStatusCode();
-			String responseBody = EntityUtils.toString(response.getEntity());
-			if (statusCode != HttpStatus.SC_OK) {
-				LOG.info("response: " + responseBody);
-				throw new RuntimeException("invalid status code: " + statusCode);
+			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				LOG.info("response: {}", response.body());
+				throw new RuntimeException("invalid status code: " + response.statusCode());
 			}
-			return (JsonObject) Json.parse(responseBody);
-		} catch (Exception e) {
+			return (JsonObject) Json.parse(response.body());
+		} catch (IOException e) {
 			throw new RuntimeException(e);
-		} finally {
-			if (response != null) {
-				EntityUtils.consumeQuietly(response.getEntity());
-			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
 		}
 	}
 
 	public void saveR2CloudConfiguration(String apiKey, boolean syncSpectogram) {
 		LOG.info("save r2cloud configuration");
-		HttpPost m = new HttpPost(baseUrl + "/api/v1/admin/config/r2cloud");
-		m.addHeader("Authorization", "Bearer " + accessToken);
 		JsonObject json = Json.object();
 		json.add("apiKey", apiKey);
 		json.add("syncSpectogram", syncSpectogram);
-		m.setEntity(new StringEntity(json.toString(), ContentType.APPLICATION_JSON));
-		HttpResponse response = null;
+		HttpRequest request = createJsonPost("/api/v1/admin/config/r2cloud", json).build();
 		try {
-			response = httpclient.execute(m);
-			int statusCode = response.getStatusLine().getStatusCode();
-			if (statusCode != HttpStatus.SC_OK) {
-				LOG.info("response: " + EntityUtils.toString(response.getEntity()));
-				throw new RuntimeException("invalid status code: " + statusCode);
+			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				LOG.info("status code: {}", response.statusCode());
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
-		} finally {
-			if (response != null) {
-				EntityUtils.consumeQuietly(response.getEntity());
-			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		}
 	}
-	
+
 	public JsonObject getR2CloudConfiguration() {
 		LOG.info("get r2cloud configuration");
 		return getData("/api/v1/admin/config/r2cloud");
 	}
 
+	private HttpRequest.Builder createJsonPost(String path, JsonObject obj) {
+		return createAuthRequest(path).header("Content-Type", "application/json").POST(BodyPublishers.ofString(obj.toString(), StandardCharsets.UTF_8));
+	}
+
+	private HttpRequest.Builder createAuthRequest(String path) {
+		return createDefaultRequest(path).header("Authorization", "Bearer " + accessToken);
+	}
+
+	private HttpRequest.Builder createDefaultRequest(String path) {
+		return HttpRequest.newBuilder().uri(URI.create(baseUrl + path)).timeout(Duration.ofMinutes(1L)).header("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
+	}
 }

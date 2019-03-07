@@ -46,12 +46,14 @@ public class WebIT {
 	}
 
 	private static boolean healthy() {
-		try (RestClient client = new RestClient(System.getProperty("r2cloud.baseurl"))) {
+		RestClient client;
+		try {
+			client = new RestClient(System.getProperty("r2cloud.baseurl"));
 			return client.healthy();
 		} catch (Exception e) {
-			LOG.error("unable to get status", e);
 			return false;
 		}
+
 	}
 
 }
