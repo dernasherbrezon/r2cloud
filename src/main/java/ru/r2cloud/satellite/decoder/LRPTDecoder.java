@@ -70,7 +70,7 @@ public class LRPTDecoder implements Decoder {
 					return predict.getDownlinkFreq(satelliteFrequency, currentTimeMillis, req.getOrigin());
 				}
 			}, 1.0);
-			Multiply mul = new Multiply(source, source2, true);
+			Multiply mul = new Multiply(source, source2);
 			AGC agc = new AGC(mul, 1000e-4f, 0.5f, 2.0f, 4000.0f);
 			RootRaisedCosineFilter rrcf = new RootRaisedCosineFilter(agc, 1.0f, symbolRate, 0.6f, 361);
 			float omega = (float) ((source.getContext().getSampleRate() * 1.0) / (symbolRate * 1.0));

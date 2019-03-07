@@ -10,8 +10,9 @@ import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
+import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.jradio.aausat4.AAUSAT4Beacon;
-import ru.r2cloud.jradio.aausat4.AAUSAT4InputStream;
+import ru.r2cloud.jradio.csp.Header;
 import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.satellite.ObservationResultDao;
 import ru.r2cloud.web.AbstractHttpController;
@@ -46,7 +47,7 @@ public class ObservationLoad extends AbstractHttpController {
 		JsonObject json = entity.toJson();
 		if (entity.getResult().getDataPath() != null) {
 			if (entity.getReq().getSatelliteId().equals("41460")) {
-				try (AAUSAT4InputStream ais = new AAUSAT4InputStream(new BufferedInputStream(new FileInputStream(entity.getResult().getDataPath())))) {
+				try (BeaconInputStream<AAUSAT4Beacon> ais = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(entity.getResult().getDataPath())), AAUSAT4Beacon.class)) {
 					JsonArray data = new JsonArray();
 					while (ais.hasNext()) {
 						data.add(convert(ais.next()));
@@ -69,12 +70,13 @@ public class ObservationLoad extends AbstractHttpController {
 		result.add("body", body);
 
 		body.add("length", beacon.getLength());
-		body.add("priority", beacon.getPriority().name());
-		body.add("ffrag", beacon.isFfrag());
-		body.add("fhmac", beacon.isFhmac());
-		body.add("fxtea", beacon.isFxtea());
-		body.add("frdp", beacon.isFrdp());
-		body.add("fcrc32", beacon.isFcrc32());
+		Header header = beacon.getHeader();
+		body.add("priority", header.getPriority().name());
+		body.add("ffrag", header.isFfrag());
+		body.add("fhmac", header.isFhmac());
+		body.add("fxtea", header.isFxtea());
+		body.add("frdp", header.isFrdp());
+		body.add("fcrc32", header.isFcrc32());
 
 		JsonObject eps = new JsonObject();
 		body.add("eps", eps);
