@@ -1,3 +1,4 @@
+jdk: openjdk11
 language: java
 bundler_args: --retry 2
 
