@@ -127,7 +127,7 @@ public class R2CloudClient {
 			return;
 		}
 		try {
-			SSLContext ctx = SSLContext.getInstance("TLS");
+			SSLContext ctx = SSLContext.getInstance("TLSv1.2");
 			ctx.init(new KeyManager[0], new TrustManager[] { new DefaultTrustManager() }, new SecureRandom());
 			SSLContext.setDefault(ctx);
 		} catch (Exception e) {

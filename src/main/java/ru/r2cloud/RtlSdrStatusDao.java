@@ -80,7 +80,7 @@ public class RtlSdrStatusDao implements Lifecycle {
 				if (executeAt.getTimeInMillis() < current) {
 					executeAt.add(Calendar.DAY_OF_MONTH, 1);
 				}
-				LOG.info("next ppm execution at: " + executeAt.getTime());
+				LOG.info("next ppm execution at: {}", executeAt.getTime());
 				executor.scheduleAtFixedRate(new SafeRunnable() {
 
 					@Override
@@ -189,7 +189,7 @@ public class RtlSdrStatusDao implements Lifecycle {
 
 	private void reload() {
 		try {
-			Process rtlTest = new ProcessBuilder().command(new String[] { config.getProperty("rtltest.path"), "-t" }).start();
+			Process rtlTest = new ProcessBuilder().command(config.getProperty("rtltest.path"), "-t").start();
 			BufferedReader r = new BufferedReader(new InputStreamReader(rtlTest.getErrorStream()));
 			String curLine = null;
 			while ((curLine = r.readLine()) != null) {
