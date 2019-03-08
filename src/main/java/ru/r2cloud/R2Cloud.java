@@ -22,6 +22,7 @@ import ru.r2cloud.satellite.Scheduler;
 import ru.r2cloud.satellite.decoder.APTDecoder;
 import ru.r2cloud.satellite.decoder.Aausat4Decoder;
 import ru.r2cloud.satellite.decoder.Decoder;
+import ru.r2cloud.satellite.decoder.KunsPfDecoder;
 import ru.r2cloud.satellite.decoder.LRPTDecoder;
 import ru.r2cloud.ssl.AcmeClient;
 import ru.r2cloud.tle.CelestrakClient;
@@ -120,6 +121,7 @@ public class R2Cloud {
 		decoders.put("apt", new APTDecoder(props, processFactory));
 		decoders.put("lrpt", new LRPTDecoder(props, predict));
 		decoders.put("aausat4", new Aausat4Decoder(props, predict));
+		decoders.put("kunspf", new KunsPfDecoder(props, predict));
 		
 		observationFactory = new ObservationFactory(predict, tleDao);
 		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, r2cloudService, processFactory, resultDao, decoders);

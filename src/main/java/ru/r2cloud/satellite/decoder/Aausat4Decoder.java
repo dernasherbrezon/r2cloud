@@ -2,11 +2,9 @@ package ru.r2cloud.satellite.decoder;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -41,6 +39,7 @@ import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 
 public class Aausat4Decoder implements Decoder {
 
@@ -83,8 +82,8 @@ public class Aausat4Decoder implements Decoder {
 			LOG.error("unable to correct doppler: " + wavFile, e);
 			return result;
 		} finally {
-			closeQuietly(tempWav);
-			closeQuietly(fos);
+			Util.closeQuietly(tempWav);
+			Util.closeQuietly(fos);
 		}
 		// 2 stage. detect peaks
 		List<PeakInterval> peaks;
@@ -97,7 +96,7 @@ public class Aausat4Decoder implements Decoder {
 			LOG.error("unable to detect peaks: " + tempFile.getAbsolutePath(), e);
 			return result;
 		} finally {
-			closeQuietly(source);
+			Util.closeQuietly(source);
 		}
 		// 3 stage. correct peaks and decode
 		AAUSAT4 input = null;
@@ -125,8 +124,8 @@ public class Aausat4Decoder implements Decoder {
 			LOG.error("unable to process: " + wavFile, e);
 			return result;
 		} finally {
-			closeQuietly(input);
-			closeQuietly(aos);
+			Util.closeQuietly(input);
+			Util.closeQuietly(aos);
 			if (!tempFile.delete()) {
 				LOG.error("unable to delete temp file: " + tempFile.getAbsolutePath());
 			}
@@ -140,17 +139,6 @@ public class Aausat4Decoder implements Decoder {
 			result.setDataPath(binFile);
 		}
 		return result;
-	}
-
-	private static void closeQuietly(Closeable c) {
-		if (c == null) {
-			return;
-		}
-		try {
-			c.close();
-		} catch (IOException e) {
-			LOG.info("unable to close", e);
-		}
 	}
 
 }

@@ -29,6 +29,10 @@ public class CelestrakClient {
 	public Map<String, TLE> getAmateurTLE() {
 		return loadTle("/NORAD/elements/amateur.txt");
 	}
+	
+	public Map<String, TLE> getCubesatTLE() {
+		return loadTle("/NORAD/elements/cubesat.txt");
+	}
 
 	private Map<String, TLE> loadTle(String location) {
 		HttpURLConnection con = null;
