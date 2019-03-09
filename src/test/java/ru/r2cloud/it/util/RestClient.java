@@ -12,6 +12,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
+import org.bouncycastle.crypto.RuntimeCryptoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +55,13 @@ public class RestClient {
 	}
 
 	public void login(String username, String password) {
+		HttpResponse<String> response = loginWithResponse(username, password);
+		if (response.statusCode() != 200) {
+			throw new RuntimeException("unable to login");
+		}
+	}
+
+	public HttpResponse<String> loginWithResponse(String username, String password) {
 		JsonObject json = Json.object();
 		json.add("username", username);
 		json.add("password", password);
@@ -61,18 +69,28 @@ public class RestClient {
 		try {
 			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
 			if (response.statusCode() != 200) {
-				throw new RuntimeException("unable to login");
+				return response;
 			}
 			JsonObject object = (JsonObject) Json.parse(response.body());
 			accessToken = object.get("access_token").asString();
+			return response;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
+			throw new RuntimeCryptoException();
 		}
 	}
 
 	public void setup(String keyword, String username, String password) {
+		HttpResponse<String> response = setupWithResponse(keyword, username, password);
+		if (response.statusCode() != 200) {
+			LOG.info("response: {}", response.body());
+			throw new RuntimeException("invalid status code: " + response.statusCode());
+		}
+	}
+
+	public HttpResponse<String> setupWithResponse(String keyword, String username, String password) {
 		LOG.info("setup: {}", username);
 		JsonObject json = Json.object();
 		json.add("keyword", keyword);
@@ -80,22 +98,13 @@ public class RestClient {
 		json.add("password", password);
 		HttpRequest request = createDefaultRequest("/api/v1/setup/setup").header("Content-Type", "application/json").POST(BodyPublishers.ofString(json.toString())).build();
 		try {
-			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
-			if (response.statusCode() != 200) {
-				LOG.info("response: {}", response.body());
-				throw new RuntimeException("invalid status code: " + response.statusCode());
-			}
+			return httpclient.send(request, BodyHandlers.ofString());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new RuntimeException("unable to send request");
 		}
-	}
-
-	public JsonObject getTle() {
-		LOG.info("get tle");
-		return getData("/api/v1/admin/tle");
 	}
 
 	private JsonObject getData(String url) {

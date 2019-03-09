@@ -9,9 +9,9 @@ import org.junit.Test;
 
 import com.eclipsesource.json.JsonObject;
 
-import ru.r2cloud.it.util.RegisteredIT;
+import ru.r2cloud.it.util.RegisteredTest;
 
-public class R2CloudConfigurationIT extends RegisteredIT {
+public class R2CloudConfigurationIT extends RegisteredTest {
 
 	@Test
 	public void testSaveAndLoad() {

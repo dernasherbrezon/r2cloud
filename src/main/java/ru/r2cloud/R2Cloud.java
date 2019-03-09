@@ -1,6 +1,9 @@
 package ru.r2cloud;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,7 +93,7 @@ public class R2Cloud {
 	private final SpectogramService spectogramService;
 	private final Map<String, Decoder> decoders = new HashMap<>();
 
-	public R2Cloud(String propertiesLocation) {
+	public R2Cloud(InputStream propertiesLocation) throws IOException {
 		Configuration props = new Configuration(propertiesLocation, System.getProperty("user.home") + File.separator + ".r2cloud");
 		threadFactory = new ThreadPoolFactoryImpl();
 		processFactory = new ProcessFactory();
@@ -117,12 +120,12 @@ public class R2Cloud {
 		satelliteDao = new SatelliteDao(props);
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient("http://celestrak.com"));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
-		
+
 		decoders.put("apt", new APTDecoder(props, processFactory));
 		decoders.put("lrpt", new LRPTDecoder(props, predict));
 		decoders.put("aausat4", new Aausat4Decoder(props, predict));
 		decoders.put("kunspf", new KunsPfDecoder(props, predict));
-		
+
 		observationFactory = new ObservationFactory(predict, tleDao);
 		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, r2cloudService, processFactory, resultDao, decoders);
 
@@ -184,7 +187,12 @@ public class R2Cloud {
 			LOG.info("invalid arguments. expected: config.properties");
 			return;
 		}
-		R2Cloud app = new R2Cloud(args[0]);
+		R2Cloud app;
+		try (InputStream is = new FileInputStream(args[0])) {
+			app = new R2Cloud(is);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {

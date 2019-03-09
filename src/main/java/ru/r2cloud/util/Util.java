@@ -18,6 +18,9 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+
 public final class Util {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Util.class);
@@ -140,7 +143,7 @@ public final class Util {
 		}
 		return result;
 	}
-	
+
 	public static void copy(InputStream input, OutputStream output) throws IOException {
 		byte[] buffer = new byte[1024 * 4];
 		int n = 0;
@@ -159,7 +162,18 @@ public final class Util {
 			LOG.info("unable to close", e);
 		}
 	}
-	
+
+	public static String getString(String fieldName, JsonValue value) {
+		JsonValue field = ((JsonObject) value).get(fieldName);
+		if (field.isNull()) {
+			return null;
+		}
+		if (!field.isString()) {
+			return null;
+		}
+		return field.asString();
+	}
+
 	private Util() {
 		// do nothing
 	}

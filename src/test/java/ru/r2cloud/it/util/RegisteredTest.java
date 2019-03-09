@@ -2,7 +2,7 @@ package ru.r2cloud.it.util;
 
 import org.junit.Before;
 
-public abstract class RegisteredIT extends BaseIT {
+public abstract class RegisteredTest extends BaseTest {
 	
 	@Before
 	@Override

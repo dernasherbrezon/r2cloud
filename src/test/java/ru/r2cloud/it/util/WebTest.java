@@ -2,6 +2,10 @@ package ru.r2cloud.it.util;
 
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -9,21 +13,34 @@ import org.junit.runners.Suite.SuiteClasses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.R2Cloud;
 import ru.r2cloud.it.R2CloudConfigurationIT;
 import ru.r2cloud.it.SetupIT;
-import ru.r2cloud.it.TleIT;
 
 @RunWith(Suite.class)
-@SuiteClasses({ SetupIT.class, TleIT.class, R2CloudConfigurationIT.class })
-public class WebIT {
+@SuiteClasses({ SetupIT.class, R2CloudConfigurationIT.class })
+public class WebTest {
 
 	private static final int RETRY_INTERVAL_MS = 5000;
 	private static final int MAX_RETRIES = 5;
-	private static final Logger LOG = LoggerFactory.getLogger(WebIT.class);
+	private static final Logger LOG = LoggerFactory.getLogger(WebTest.class);
+
+	private static R2Cloud server;
 
 	@BeforeClass
-	public static void start() {
+	public static void start() throws IOException {
+		try (InputStream is = WebTest.class.getClassLoader().getResourceAsStream("config-dev.properties")) {
+			server = new R2Cloud(is);
+		}
+		server.start();
 		assertStarted();
+	}
+
+	@AfterClass
+	public static void stop() {
+		if (server != null) {
+			server.stop();
+		}
 	}
 
 	static void assertStarted() {
