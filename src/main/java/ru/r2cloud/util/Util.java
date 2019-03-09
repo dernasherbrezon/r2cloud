@@ -1,6 +1,7 @@
 package ru.r2cloud.util;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -148,6 +149,17 @@ public final class Util {
 		}
 	}
 
+	public static void closeQuietly(Closeable c) {
+		if (c == null) {
+			return;
+		}
+		try {
+			c.close();
+		} catch (IOException e) {
+			LOG.info("unable to close", e);
+		}
+	}
+	
 	private Util() {
 		// do nothing
 	}

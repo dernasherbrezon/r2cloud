@@ -67,6 +67,12 @@ public class ObservationFactory {
 			// at the beginning doppler freq is the max
 			long initialDopplerFrequency = predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStart().getTime().getTime(), libSatellite);
 			result.setActualFrequency(initialDopplerFrequency + satellite.getBandwidth() / 2 + AAUSAT4_DEVIATION / 2);
+		} else if( decoder.equals("kunspf") ) {
+			result.setInputSampleRate(240_000);
+			result.setOutputSampleRate(64_000);
+			// at the beginning doppler freq is the max
+			long initialDopplerFrequency = predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStart().getTime().getTime(), libSatellite);
+			result.setActualFrequency(initialDopplerFrequency + satellite.getBandwidth() / 2);
 		} else {
 			throw new IllegalArgumentException("unsupported decoder: " + decoder);
 		}

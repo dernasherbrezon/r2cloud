@@ -202,7 +202,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		String decoder = req.getDecoder();
 		if (decoder.equals("apt")) {
 			return new RtlFmReader(config, processFactory, req);
-		} else if (decoder.equals("lrpt") || decoder.equals("aausat4")) {
+		} else if (decoder.equals("lrpt") || decoder.equals("aausat4") || decoder.equals("kunspf")) {
 			return new RtlSdrReader(config, processFactory, req);
 		} else {
 			throw new IllegalArgumentException("unsupported decoder: " + decoder);

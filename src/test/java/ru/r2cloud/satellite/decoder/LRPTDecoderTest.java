@@ -38,7 +38,7 @@ public class LRPTDecoderTest {
 		}
 		LRPTDecoder decoder = new LRPTDecoder(config, new Predict(config));
 		ObservationResult result = decoder.decode(wav, create());
-		assertEquals(3, result.getNumberOfDecodedPackets().longValue());
+		assertEquals(15, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
 		assertNotNull(result.getaPath());
 	}
