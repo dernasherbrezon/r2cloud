@@ -18,9 +18,6 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
-
 public final class Util {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Util.class);
@@ -161,17 +158,6 @@ public final class Util {
 		} catch (IOException e) {
 			LOG.info("unable to close", e);
 		}
-	}
-
-	public static String getString(String fieldName, JsonValue value) {
-		JsonValue field = ((JsonObject) value).get(fieldName);
-		if (field.isNull()) {
-			return null;
-		}
-		if (!field.isString()) {
-			return null;
-		}
-		return field.asString();
 	}
 
 	private Util() {

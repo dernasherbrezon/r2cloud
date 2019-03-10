@@ -3,6 +3,7 @@ package ru.r2cloud.it;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.net.http.HttpResponse;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -21,6 +22,13 @@ public class R2CloudConfigurationIT extends RegisteredTest {
 		JsonObject config = client.getR2CloudConfiguration();
 		assertEquals(apiKey, config.getString("apiKey", null));
 		assertTrue(config.getBoolean("syncSpectogram", false));
+	}
+
+	@Test
+	public void testSaveWithInvalidApiKey() {
+		HttpResponse<String> response = client.saveR2CloudConfigurationWithResponse(null, true);
+		assertEquals(400, response.statusCode());
+		assertErrorInField("apiKey", response);
 	}
 
 }

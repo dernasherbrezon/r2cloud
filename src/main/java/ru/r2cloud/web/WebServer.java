@@ -150,9 +150,20 @@ public class WebServer extends NanoHTTPD {
 		return map.get("postData");
 	}
 
+	public static String getString(JsonValue value, String name) {
+		JsonValue field = ((JsonObject) value).get(name);
+		if (field == null || field.isNull()) {
+			return null;
+		}
+		if (!field.isString()) {
+			return null;
+		}
+		return field.asString();
+	}
+	
 	public static Double getDouble(JsonValue value, String name) {
 		JsonValue result = ((JsonObject) value).get(name);
-		if (result == null) {
+		if (result == null || result.isNull()) {
 			return null;
 		}
 		return result.asDouble();
@@ -176,7 +187,7 @@ public class WebServer extends NanoHTTPD {
 
 	public static Long getLong(JsonValue value, String name) {
 		JsonValue result = ((JsonObject) value).get(name);
-		if (result == null) {
+		if (result == null || result.isNull()) {
 			return null;
 		}
 		return result.asLong();
@@ -192,7 +203,7 @@ public class WebServer extends NanoHTTPD {
 
 	public static boolean getBoolean(JsonValue value, String name) {
 		JsonValue result = ((JsonObject) value).get(name);
-		if (result == null) {
+		if (result == null || result.isNull()) {
 			return false;
 		}
 		return result.asBoolean();

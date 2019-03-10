@@ -11,7 +11,6 @@ import com.eclipsesource.json.JsonValue;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.Util;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.Authenticator;
 import ru.r2cloud.web.BadRequest;
@@ -39,9 +38,9 @@ public class Setup extends AbstractHttpController {
 			return new BadRequest("expected object");
 		}
 		ValidationResult errors = new ValidationResult();
-		String username = Util.getString("username", request);
-		String password = Util.getString("password", request);
-		String keyword = Util.getString("keyword", request);
+		String username = WebServer.getString(request, "username");
+		String password = WebServer.getString(request, "password");
+		String keyword = WebServer.getString(request, "keyword");
 
 		if (username == null || username.trim().length() == 0) {
 			errors.put("username", "Cannot be empty");

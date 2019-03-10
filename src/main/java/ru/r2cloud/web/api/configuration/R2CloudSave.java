@@ -43,7 +43,7 @@ public class R2CloudSave extends AbstractHttpController {
 			return new BadRequest("expected object");
 		}
 		ValidationResult errors = new ValidationResult();
-		String apiKey = ((JsonObject) request).getString("apiKey", null);
+		String apiKey = WebServer.getString(request, "apiKey");
 		boolean syncSpectogram = WebServer.getBoolean(request, "syncSpectogram");
 		if (apiKey == null || apiKey.trim().length() == 0) {
 			errors.put("apiKey", "Cannot be empty");
