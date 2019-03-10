@@ -94,8 +94,8 @@ public class R2Cloud {
 	private final SpectogramService spectogramService;
 	private final Map<String, Decoder> decoders = new HashMap<>();
 
-	public R2Cloud(InputStream propertiesLocation) throws IOException {
-		Configuration props = new Configuration(propertiesLocation, System.getProperty("user.home") + File.separator + ".r2cloud");
+	public R2Cloud(InputStream systemProperties, String userProperties) throws IOException {
+		Configuration props = new Configuration(systemProperties, userProperties);
 		threadFactory = new ThreadPoolFactoryImpl();
 		processFactory = new ProcessFactory();
 		clock = new DefaultClock();
@@ -190,8 +190,9 @@ public class R2Cloud {
 			return;
 		}
 		R2Cloud app;
+		String userPropertiesFilename = System.getProperty("user.home") + File.separator + ".r2cloud";
 		try (InputStream is = new FileInputStream(args[0])) {
-			app = new R2Cloud(is);
+			app = new R2Cloud(is, userPropertiesFilename);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
