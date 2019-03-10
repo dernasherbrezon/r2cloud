@@ -48,7 +48,6 @@ public class APTDecoderIT {
 	@Before
 	public void start() throws Exception {
 		config = new TestConfiguration(tempFolder);
-		config.setProperty("satellites.enabled", true);
 		config.setProperty("satellites.wxtoimg.path", "wxtoimg");
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
 		config.update();

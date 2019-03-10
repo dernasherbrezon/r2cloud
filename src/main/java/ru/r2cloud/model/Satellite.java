@@ -7,7 +7,6 @@ public class Satellite {
 	private String decoder;
 	private long frequency;
 	private long bandwidth;
-	private SatelliteType type;
 	private boolean enabled;
 
 	public boolean isEnabled() {
@@ -24,14 +23,6 @@ public class Satellite {
 
 	public void setBandwidth(long bandwidth) {
 		this.bandwidth = bandwidth;
-	}
-
-	public SatelliteType getType() {
-		return type;
-	}
-
-	public void setType(SatelliteType type) {
-		this.type = type;
 	}
 
 	public String getDecoder() {

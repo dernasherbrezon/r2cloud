@@ -5,6 +5,7 @@ chown ${config.user}:${config.group} ${config.installDir}/lib/*.jar /usr/share/j
 chmod 640 ${config.installDir}/lib/*.jar /usr/share/java/r2cloud/*.jar
 
 cp ${config.installDir}/etc/r2cloud.service /etc/systemd/system/r2cloud.service;
+cp ${config.installDir}/etc/.wxtoimglic /home/pi/
 
 systemctl enable r2cloud.service
 if [ -d /run/systemd/system ]; then

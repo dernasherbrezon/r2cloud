@@ -8,7 +8,6 @@ import java.util.Map;
 
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteComparator;
-import ru.r2cloud.model.SatelliteType;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -30,11 +29,6 @@ public class SatelliteDao {
 			curSatellite.setDecoder(config.getProperty("satellites." + curSatellite.getId() + ".decoder"));
 			curSatellite.setBandwidth(config.getLong("satellites." + curSatellite.getId() + ".bandwidth"));
 			curSatellite.setEnabled(config.getBoolean("satellites." + curSatellite.getId() + ".enabled"));
-			if (curSatellite.getDecoder().equals("aausat4")) {
-				curSatellite.setType(SatelliteType.AMATEUR);
-			} else {
-				curSatellite.setType(SatelliteType.WEATHER);
-			}
 			index(curSatellite);
 		}
 		Collections.sort(satellites, SatelliteComparator.INSTANCE);
@@ -50,16 +44,6 @@ public class SatelliteDao {
 
 	public List<Satellite> findAll() {
 		return satellites;
-	}
-
-	public List<Satellite> findAll(SatelliteType type) {
-		List<Satellite> result = new ArrayList<>();
-		for (Satellite cur : satellites) {
-			if (cur.getType().equals(type)) {
-				result.add(cur);
-			}
-		}
-		return result;
 	}
 
 	private void index(Satellite satellite) {

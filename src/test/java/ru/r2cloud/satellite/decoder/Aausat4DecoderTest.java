@@ -58,7 +58,6 @@ public class Aausat4DecoderTest {
 		config.setProperty("locaiton.lat", "56.189");
 		config.setProperty("locaiton.lon", "38.174");
 
-		config.setProperty("satellites.enabled", true);
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
 		config.update();
 	}

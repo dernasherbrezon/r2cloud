@@ -56,7 +56,6 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	public Scheduler(Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, R2CloudService r2cloudService, ProcessFactory processFactory, ObservationResultDao dao, Map<String, Decoder> decoders) {
 		this.config = config;
-		this.config.subscribe(this, "satellites.enabled");
 		this.config.subscribe(this, "locaiton.lat");
 		this.config.subscribe(this, "locaiton.lon");
 		this.satellites = satellites;
@@ -72,34 +71,21 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	@Override
 	public void onConfigUpdated() {
+		boolean schedule;
+		if (config.getProperty("locaiton.lat") != null && config.getProperty("locaiton.lon") != null) {
+			schedule = true;
+		} else {
+			schedule = false;
+		}
 		List<Satellite> supportedSatellites = satellites.findAll();
 		for (Satellite cur : supportedSatellites) {
 			if (!cur.isEnabled()) {
 				continue;
 			}
-			boolean schedule = false;
-			switch (cur.getType()) {
-			case WEATHER:
-				if (config.getBoolean("satellites.enabled")) {
-					schedule = true;
-				}
-				break;
-			case AMATEUR:
-				if (config.getProperty("locaiton.lat") != null && config.getProperty("locaiton.lon") != null) {
-					schedule = true;
-				}
-				break;
-
-			default:
-				throw new IllegalArgumentException("type is not supported: " + cur.getType());
-			}
 			if (schedule) {
 				schedule(cur);
 			} else {
-				ScheduledObservation previousObservation = scheduledObservations.get(cur.getId());
-				if (previousObservation != null) {
-					previousObservation.cancel();
-				}
+				cancel(cur);
 			}
 		}
 	}

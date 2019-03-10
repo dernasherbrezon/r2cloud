@@ -50,7 +50,6 @@ import ru.r2cloud.web.api.configuration.General;
 import ru.r2cloud.web.api.configuration.R2CloudSave;
 import ru.r2cloud.web.api.configuration.SSL;
 import ru.r2cloud.web.api.configuration.SSLLog;
-import ru.r2cloud.web.api.configuration.WeatherConfig;
 import ru.r2cloud.web.api.observation.ObservationList;
 import ru.r2cloud.web.api.observation.ObservationLoad;
 import ru.r2cloud.web.api.observation.ObservationSpectrogram;
@@ -145,7 +144,6 @@ public class R2Cloud {
 		index(new SSL(props, acmeClient));
 		index(new SSLLog(acmeClient));
 		index(new TLE(props, tleDao));
-		index(new WeatherConfig(props));
 		index(new R2CloudSave(props));
 		index(new ObservationSpectrogram(resultDao, spectogramService));
 		index(new ObservationList(satelliteDao, resultDao));
