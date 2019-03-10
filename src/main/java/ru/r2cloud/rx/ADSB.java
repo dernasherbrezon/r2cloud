@@ -44,7 +44,7 @@ public class ADSB implements Lifecycle {
 
 	private Socket socket;
 	private volatile boolean started = false;
-	private String connectionError = "Unknown status";
+	private volatile String connectionError = "Unknown status"; //NOSONAR
 	private Counter counter;
 	private Thread thread;
 	private ProcessWrapper dump1090;
@@ -88,14 +88,12 @@ public class ADSB implements Lifecycle {
 
 			@Override
 			protected Result check() throws Exception {
-				synchronized (connectionError) {
-					if (!started) {
-						return ResultUtil.unknown();
-					} else if (connectionError == null) {
-						return ResultUtil.healthy();
-					} else {
-						return ResultUtil.unhealthy(connectionError);
-					}
+				if (!started) {
+					return ResultUtil.unknown();
+				} else if (connectionError == null) {
+					return ResultUtil.healthy();
+				} else {
+					return ResultUtil.unhealthy(connectionError);
 				}
 			}
 		});
@@ -122,10 +120,8 @@ public class ADSB implements Lifecycle {
 						socket.setKeepAlive(true);
 						socket.setSoTimeout(0);
 					} catch (Exception e) {
-						synchronized (connectionError) {
-							connectionError = "unable to connect to the dump1090: " + host + ":" + port;
-							LOG.error(connectionError + ". check stdout log", e);
-						}
+						connectionError = "unable to connect to the dump1090: " + host + ":" + port;
+						LOG.error(connectionError + ". check stdout log", e);
 						throttle();
 						continue;
 					}
@@ -133,16 +129,12 @@ public class ADSB implements Lifecycle {
 					try {
 						in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 					} catch (IOException e) {
-						synchronized (connectionError) {
-							connectionError = "cannot get input stream";
-							LOG.error(connectionError, e);
-						}
+						connectionError = "cannot get input stream";
+						LOG.error(connectionError, e);
 						throttle();
 						continue;
 					}
-					synchronized (connectionError) {
-						connectionError = null;
-					}
+					connectionError = null;
 					String curLine = null;
 					try {
 						LOG.info("listening for adsb data from " + host + ":" + port);
@@ -165,9 +157,7 @@ public class ADSB implements Lifecycle {
 						if (!socket.isClosed()) {
 							LOG.error("unable to read data", e);
 						} else {
-							synchronized (connectionError) {
-								connectionError = "connection was closed remotely: " + e.getMessage();
-							}
+							connectionError = "connection was closed remotely: " + e.getMessage();
 						}
 						closeSocket();
 						throttle();
