@@ -115,7 +115,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		LOG.info("started");
 	}
 
-	private void schedule(Satellite cur) {
+	public void schedule(Satellite cur) {
 		long current = clock.millis();
 		ObservationRequest observation = factory.create(new Date(current), cur);
 		if (observation == null) {
@@ -224,6 +224,15 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		Util.shutdown(reaper, config.getThreadPoolShutdownMillis());
 		scheduler = null;
 		LOG.info("stopped");
+	}
+
+	public void cancel(Satellite satelliteToEdit) {
+		ScheduledObservation previous = scheduledObservations.remove(satelliteToEdit.getId());
+		if (previous == null) {
+			return;
+		}
+		LOG.info("cancelling {}: {}", satelliteToEdit.getName(), previous.getReq().getStart().getTime());
+		previous.cancel();
 	}
 
 }

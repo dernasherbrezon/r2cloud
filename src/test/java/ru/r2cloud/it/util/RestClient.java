@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
 public class RestClient {
@@ -213,6 +214,43 @@ public class RestClient {
 		HttpRequest request = createJsonPost("/api/v1/admin/config/general", json).build();
 		try {
 			return httpclient.send(request, BodyHandlers.ofString());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
+
+	public JsonArray getSchedule() {
+		HttpRequest request = createAuthRequest("/api/v1/admin/schedule/list").GET().build();
+		try {
+			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				LOG.info("response: {}", response.body());
+				throw new RuntimeException("invalid status code: " + response.statusCode());
+			}
+			return (JsonArray) Json.parse(response.body());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
+
+	public JsonObject updateSchedule(String id, boolean enabled) {
+		JsonObject entity = new JsonObject();
+		entity.add("id", id);
+		entity.add("enabled", enabled);
+		HttpRequest request = createJsonPost("/api/v1/admin/schedule/save", entity).build();
+		try {
+			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				LOG.info("response: {}", response.body());
+				throw new RuntimeException("invalid status code: " + response.statusCode());
+			}
+			return (JsonObject) Json.parse(response.body());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} catch (InterruptedException e) {

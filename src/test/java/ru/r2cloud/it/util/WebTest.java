@@ -19,10 +19,12 @@ import ru.r2cloud.it.ConfiguredIT;
 import ru.r2cloud.it.GeneralConfigurationIT;
 import ru.r2cloud.it.R2CloudSaveIT;
 import ru.r2cloud.it.RestoreIT;
+import ru.r2cloud.it.ScheduleListIT;
+import ru.r2cloud.it.ScheduleSaveIT;
 import ru.r2cloud.it.SetupIT;
 
 @RunWith(Suite.class)
-@SuiteClasses({ SetupIT.class, R2CloudSaveIT.class, RestoreIT.class, AccessTokenIT.class, ConfiguredIT.class, GeneralConfigurationIT.class })
+@SuiteClasses({ SetupIT.class, ScheduleSaveIT.class, ScheduleListIT.class, R2CloudSaveIT.class, RestoreIT.class, AccessTokenIT.class, ConfiguredIT.class, GeneralConfigurationIT.class })
 public class WebTest {
 
 	private static final int RETRY_INTERVAL_MS = 5000;

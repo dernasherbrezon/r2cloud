@@ -56,6 +56,12 @@ public class ScheduleSave extends AbstractHttpController {
 		satelliteToEdit.setEnabled(enabled);
 		dao.update(satelliteToEdit);
 
+		if (enabled) {
+			scheduler.schedule(satelliteToEdit);
+		} else {
+			scheduler.cancel(satelliteToEdit);
+		}
+
 		JsonObject entity = new JsonObject();
 		entity.add("id", satelliteToEdit.getId());
 		entity.add("name", satelliteToEdit.getName());
