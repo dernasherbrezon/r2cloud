@@ -33,8 +33,8 @@ public class General extends AbstractHttpController {
 	public ModelAndView doGet(IHTTPSession session) {
 		ModelAndView result = new ModelAndView();
 		JsonObject entity = new JsonObject();
-		entity.add("lat", config.getProperty("locaiton.lat"));
-		entity.add("lng", config.getProperty("locaiton.lon"));
+		entity.add("lat", config.getDouble("locaiton.lat"));
+		entity.add("lng", config.getDouble("locaiton.lon"));
 		entity.add("autoUpdate", autoUpdate.isEnabled());
 		result.setData(entity.toString());
 		return result;

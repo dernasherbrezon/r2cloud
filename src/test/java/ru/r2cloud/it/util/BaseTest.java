@@ -13,6 +13,10 @@ public abstract class BaseTest {
 
 	protected RestClient client;
 
+	protected String username = "info@r2cloud.ru";
+	protected String password = "1";
+	protected String keyword = "ittests";
+	
 	@Before
 	public void start() throws Exception {
 		client = new RestClient(System.getProperty("r2cloud.baseurl"));

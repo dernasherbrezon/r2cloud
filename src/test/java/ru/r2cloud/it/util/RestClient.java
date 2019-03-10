@@ -185,4 +185,39 @@ public class RestClient {
 			throw new RuntimeException("invalid status code: " + response.statusCode());
 		}
 	}
+
+	public JsonObject getConfigured() {
+		return getData("/api/v1/configured");
+	}
+
+	public JsonObject getGeneralConfiguration() {
+		return getData("/api/v1/admin/config/general");
+	}
+
+	public void setGeneralConfiguration(Double lat, Double lng, boolean autoUpdate) {
+		HttpResponse<String> response = setGeneralConfigurationWithResponse(lat, lng, autoUpdate);
+		if (response.statusCode() != 200) {
+			throw new RuntimeException("invalid status code: " + response.statusCode());
+		}
+	}
+
+	public HttpResponse<String> setGeneralConfigurationWithResponse(Double lat, Double lng, boolean autoUpdate) {
+		JsonObject json = Json.object();
+		if (lat != null) {
+			json.add("lat", lat);
+		}
+		if (lng != null) {
+			json.add("lng", lng);
+		}
+		json.add("autoUpdate", autoUpdate);
+		HttpRequest request = createJsonPost("/api/v1/admin/config/general", json).build();
+		try {
+			return httpclient.send(request, BodyHandlers.ofString());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
 }

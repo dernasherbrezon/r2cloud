@@ -4,9 +4,6 @@ import org.junit.Before;
 
 public abstract class RegisteredTest extends BaseTest {
 	
-	protected String username = "info@r2cloud.ru";
-	protected String password = "1";
-
 	@Before
 	@Override
 	public void start() throws Exception {

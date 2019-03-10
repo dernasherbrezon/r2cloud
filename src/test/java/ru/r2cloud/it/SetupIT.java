@@ -11,10 +11,6 @@ import ru.r2cloud.it.util.BaseTest;
 
 public class SetupIT extends BaseTest {
 
-	private String username = "info@r2cloud.ru";
-	private String password = "1";
-	private String keyword = "ittests";
-
 	@Test
 	public void testSetup() {
 		client.setup(keyword, username, password);
