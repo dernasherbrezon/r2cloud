@@ -36,6 +36,7 @@
 					<include>**/*.sh</include>
 					<include>**/*.j2</include>
 					<include>**/*.crontab</include>
+					<include>**/.wxtoimglic</include>
 				</includes>
 				<excludes>
 					<exclude>**/META-INF/**</exclude>
