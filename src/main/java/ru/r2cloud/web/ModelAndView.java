@@ -3,6 +3,8 @@ package ru.r2cloud.web;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.eclipsesource.json.JsonValue;
+
 import fi.iki.elonen.NanoHTTPD.Response.IStatus;
 
 public class ModelAndView {
@@ -40,6 +42,10 @@ public class ModelAndView {
 
 	public void setData(String data) {
 		this.data = data;
+	}
+
+	public void setData(JsonValue data) {
+		this.data = data.toString();
 	}
 
 }

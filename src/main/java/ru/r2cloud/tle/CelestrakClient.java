@@ -51,8 +51,6 @@ public class CelestrakClient {
 					// only first line matters
 					String curLine = null;
 					while ((curLine = in.readLine()) != null) {
-						// Satellite satellite =
-						// satelliteDao.findByName(curLine.trim());
 						String line1 = in.readLine();
 						if (line1 == null) {
 							break;

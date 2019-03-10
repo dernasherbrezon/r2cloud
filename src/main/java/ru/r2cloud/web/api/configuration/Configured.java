@@ -20,11 +20,12 @@ public class Configured extends AbstractHttpController {
 
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
-		ModelAndView result = new ModelAndView();
 		JsonObject entity = new JsonObject();
 		entity.add("configured", !auth.isFirstStart());
 		entity.add("generalSetup", isGenerallyConfigured());
-		result.setData(entity.toString());
+		
+		ModelAndView result = new ModelAndView();
+		result.setData(entity);
 		return result;
 	}
 	
