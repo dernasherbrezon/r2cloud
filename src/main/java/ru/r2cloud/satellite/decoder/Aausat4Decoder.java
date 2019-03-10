@@ -64,7 +64,7 @@ public class Aausat4Decoder implements Decoder {
 		BufferedOutputStream fos = null;
 		try {
 			// 1 stage. correct doppler & remove DC offset
-			WavFileSource source = new WavFileSource(new BufferedInputStream(new FileInputStream(wavFile)));
+			WavFileSource source = new WavFileSource(new BufferedInputStream(new FileInputStream(wavFile))); //NOSONAR
 			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) source.getContext().getSampleRate(), new DopplerValueSource(source.getContext().getSampleRate(), req.getSatelliteFrequency(), 1000L, req.getStartTimeMillis()) {
 
 				@Override

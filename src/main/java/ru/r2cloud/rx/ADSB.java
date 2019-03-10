@@ -44,7 +44,7 @@ public class ADSB implements Lifecycle {
 
 	private Socket socket;
 	private volatile boolean started = false;
-	private volatile String connectionError = "Unknown status";
+	private String connectionError = "Unknown status";
 	private Counter counter;
 	private Thread thread;
 	private ProcessWrapper dump1090;
@@ -66,7 +66,7 @@ public class ADSB implements Lifecycle {
 		options.addOption(fix);
 		options.addOption(mlat);
 		options.addOption(netRoSize);
-		
+
 		this.additionalCommandArgs = props.getOptions("rx.adsb.additional.args", options);
 	}
 
@@ -88,12 +88,14 @@ public class ADSB implements Lifecycle {
 
 			@Override
 			protected Result check() throws Exception {
-				if (!started) {
-					return ResultUtil.unknown();
-				} else if (connectionError == null) {
-					return ResultUtil.healthy();
-				} else {
-					return ResultUtil.unhealthy(connectionError);
+				synchronized (connectionError) {
+					if (!started) {
+						return ResultUtil.unknown();
+					} else if (connectionError == null) {
+						return ResultUtil.healthy();
+					} else {
+						return ResultUtil.unhealthy(connectionError);
+					}
 				}
 			}
 		});
@@ -120,8 +122,10 @@ public class ADSB implements Lifecycle {
 						socket.setKeepAlive(true);
 						socket.setSoTimeout(0);
 					} catch (Exception e) {
-						connectionError = "unable to connect to the dump1090: " + host + ":" + port;
-						LOG.error(connectionError + ". check stdout log", e);
+						synchronized (connectionError) {
+							connectionError = "unable to connect to the dump1090: " + host + ":" + port;
+							LOG.error(connectionError + ". check stdout log", e);
+						}
 						throttle();
 						continue;
 					}
@@ -129,12 +133,16 @@ public class ADSB implements Lifecycle {
 					try {
 						in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 					} catch (IOException e) {
-						connectionError = "cannot get input stream";
-						LOG.error(connectionError, e);
+						synchronized (connectionError) {
+							connectionError = "cannot get input stream";
+							LOG.error(connectionError, e);
+						}
 						throttle();
 						continue;
 					}
-					connectionError = null;
+					synchronized (connectionError) {
+						connectionError = null;
+					}
 					String curLine = null;
 					try {
 						LOG.info("listening for adsb data from " + host + ":" + port);
@@ -157,7 +165,9 @@ public class ADSB implements Lifecycle {
 						if (!socket.isClosed()) {
 							LOG.error("unable to read data", e);
 						} else {
-							connectionError = "connection was closed remotely: " + e.getMessage();
+							synchronized (connectionError) {
+								connectionError = "connection was closed remotely: " + e.getMessage();
+							}
 						}
 						closeSocket();
 						throttle();
