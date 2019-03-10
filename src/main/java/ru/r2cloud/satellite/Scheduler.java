@@ -83,6 +83,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				continue;
 			}
 			if (schedule) {
+				cancel(cur);
 				schedule(cur);
 			} else {
 				cancel(cur);
