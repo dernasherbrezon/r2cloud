@@ -74,6 +74,9 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	public void onConfigUpdated() {
 		List<Satellite> supportedSatellites = satellites.findAll();
 		for (Satellite cur : supportedSatellites) {
+			if (!cur.isEnabled()) {
+				continue;
+			}
 			boolean schedule = false;
 			switch (cur.getType()) {
 			case WEATHER:
