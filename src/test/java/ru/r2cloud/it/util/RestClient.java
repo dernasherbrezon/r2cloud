@@ -163,4 +163,26 @@ public class RestClient {
 	private HttpRequest.Builder createDefaultRequest(String path) {
 		return HttpRequest.newBuilder().uri(URI.create(baseUrl + path)).timeout(Duration.ofMinutes(1L)).header("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
 	}
+
+	public HttpResponse<String> resetPasswordWithResponse(String username) {
+		LOG.info("setup: {}", username);
+		JsonObject json = Json.object();
+		json.add("username", username);
+		HttpRequest request = createDefaultRequest("/api/v1/setup/restore").header("Content-Type", "application/json").POST(BodyPublishers.ofString(json.toString())).build();
+		try {
+			return httpclient.send(request, BodyHandlers.ofString());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
+
+	public void resetPassword(String username) {
+		HttpResponse<String> response = resetPasswordWithResponse(username);
+		if (response.statusCode() != 200) {
+			throw new RuntimeException("invalid status code: " + response.statusCode());
+		}
+	}
 }

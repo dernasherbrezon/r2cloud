@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
@@ -33,7 +32,7 @@ public class Restore extends AbstractHttpController {
 			return new BadRequest("expected object");
 		}
 		ValidationResult errors = new ValidationResult();
-		String username = ((JsonObject) request).getString("username", null);
+		String username = WebServer.getString(request, "username");
 		if (username == null || username.trim().length() == 0) {
 			errors.put("username", "Cannot be empty");
 		}
