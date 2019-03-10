@@ -27,8 +27,8 @@ public class AccessToken extends AbstractHttpController {
 		if (!request.isObject()) {
 			return new BadRequest("expected object");
 		}
-		String username = ((JsonObject) request).getString("username", null);
-		String password = ((JsonObject) request).getString("password", null);
+		String username = WebServer.getString(request, "username");
+		String password = WebServer.getString(request, "password");
 		return doLogin(auth, username, password);
 	}
 

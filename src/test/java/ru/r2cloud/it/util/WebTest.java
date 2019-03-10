@@ -14,12 +14,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.R2Cloud;
+import ru.r2cloud.it.AccessTokenIT;
 import ru.r2cloud.it.R2CloudConfigurationIT;
 import ru.r2cloud.it.RestoreIT;
 import ru.r2cloud.it.SetupIT;
 
 @RunWith(Suite.class)
-@SuiteClasses({ SetupIT.class, R2CloudConfigurationIT.class, RestoreIT.class })
+@SuiteClasses({ SetupIT.class, R2CloudConfigurationIT.class, RestoreIT.class, AccessTokenIT.class })
 public class WebTest {
 
 	private static final int RETRY_INTERVAL_MS = 5000;
