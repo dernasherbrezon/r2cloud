@@ -194,7 +194,7 @@ public class R2Cloud {
 		try (InputStream is = new FileInputStream(args[0])) {
 			app = new R2Cloud(is, userPropertiesFilename);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new IllegalArgumentException(e);
 		}
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override

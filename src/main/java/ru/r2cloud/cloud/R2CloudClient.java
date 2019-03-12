@@ -32,22 +32,28 @@ public class R2CloudClient {
 
 	private static final Logger LOG = LoggerFactory.getLogger(R2CloudClient.class);
 
-	private final Configuration config;
+	private final String hostname;
+	private final int connectionTimeout;
+	private final String apiKey;
+	private final String env;
 
 	public R2CloudClient(Configuration config) {
-		this.config = config;
+		this.hostname = config.getProperty("r2cloud.hostname");
+		this.connectionTimeout = config.getInteger("r2cloud.connectionTimeout");
+		this.apiKey = config.getProperty("r2cloud.apiKey");
+		this.env = config.getProperty("server.env");
 		setupTrustAll();
 	}
 
 	public Long saveMeta(ObservationFull observation) {
 		HttpURLConnection con = null;
 		try {
-			URL obj = new URL(config.getProperty("r2cloud.hostname") + "/api/v1/observation");
+			URL obj = new URL(hostname + "/api/v1/observation");
 			con = (HttpURLConnection) obj.openConnection();
-			con.setConnectTimeout(config.getInteger("r2cloud.connectionTimeout"));
+			con.setConnectTimeout(connectionTimeout);
 			con.setRequestMethod("POST");
 			con.setRequestProperty("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
-			con.setRequestProperty("Authorization", config.getProperty("r2cloud.apiKey"));
+			con.setRequestProperty("Authorization", apiKey);
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setDoOutput(true);
 
@@ -80,7 +86,7 @@ public class R2CloudClient {
 	public void saveBinary(Long id, File getaPath) {
 		upload("/api/v1/observation/" + id + "/data", getaPath, "application/octet-stream");
 	}
-	
+
 	public void saveSpectogram(Long id, File spectogramPath) {
 		upload("/api/v1/observation/" + id + "/spectogram", spectogramPath, "image/png");
 	}
@@ -90,13 +96,13 @@ public class R2CloudClient {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(file);
-			URL obj = new URL(config.getProperty("r2cloud.hostname") + url);
+			URL obj = new URL(hostname + url);
 			con = (HttpURLConnection) obj.openConnection();
 			con.setDoOutput(true);
-			con.setConnectTimeout(config.getInteger("r2cloud.connectionTimeout"));
+			con.setConnectTimeout(connectionTimeout);
 			con.setRequestMethod("PUT");
 			con.setRequestProperty("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
-			con.setRequestProperty("Authorization", config.getProperty("r2cloud.apiKey"));
+			con.setRequestProperty("Authorization", apiKey);
 			con.setRequestProperty("Content-Type", contentType);
 			Util.copy(fis, con.getOutputStream());
 			con.getOutputStream().flush();
@@ -123,7 +129,7 @@ public class R2CloudClient {
 	}
 
 	private void setupTrustAll() {
-		if (!config.getProperty("server.env").equalsIgnoreCase("dev")) {
+		if (!env.equalsIgnoreCase("dev")) {
 			return;
 		}
 		try {
@@ -157,12 +163,12 @@ public class R2CloudClient {
 	public void saveMetrics(JsonArray o) {
 		HttpURLConnection con = null;
 		try {
-			URL obj = new URL(config.getProperty("r2cloud.hostname") + "/api/v1/metrics");
+			URL obj = new URL(hostname + "/api/v1/metrics");
 			con = (HttpURLConnection) obj.openConnection();
-			con.setConnectTimeout(config.getInteger("r2cloud.connectionTimeout"));
+			con.setConnectTimeout(connectionTimeout);
 			con.setRequestMethod("POST");
 			con.setRequestProperty("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
-			con.setRequestProperty("Authorization", config.getProperty("r2cloud.apiKey"));
+			con.setRequestProperty("Authorization", apiKey);
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setDoOutput(true);
 
@@ -182,7 +188,7 @@ public class R2CloudClient {
 			if (con != null) {
 				con.disconnect();
 			}
-		}		
+		}
 	}
 
 }
