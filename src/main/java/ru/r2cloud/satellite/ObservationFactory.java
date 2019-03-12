@@ -16,7 +16,7 @@ public class ObservationFactory {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationFactory.class);
 	//aausat4 signal deviates by 9khz. round it to 10khz
-	private static final int AAUSAT4_DEVIATION = 10_000;
+	private static final int DC_OFFSET = 10_000;
 
 	private final TLEDao tleDao;
 	private final Predict predict;
@@ -66,13 +66,13 @@ public class ObservationFactory {
 			result.setOutputSampleRate(64_000);
 			// at the beginning doppler freq is the max
 			long initialDopplerFrequency = predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStart().getTime().getTime(), libSatellite);
-			result.setActualFrequency(initialDopplerFrequency + satellite.getBandwidth() / 2 + AAUSAT4_DEVIATION / 2);
+			result.setActualFrequency(initialDopplerFrequency + satellite.getBandwidth() / 2 + DC_OFFSET / 2);
 		} else if( decoder.equals("kunspf") ) {
 			result.setInputSampleRate(240_000);
 			result.setOutputSampleRate(64_000);
 			// at the beginning doppler freq is the max
 			long initialDopplerFrequency = predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStart().getTime().getTime(), libSatellite);
-			result.setActualFrequency(initialDopplerFrequency + satellite.getBandwidth() / 2);
+			result.setActualFrequency(initialDopplerFrequency + satellite.getBandwidth() + DC_OFFSET);
 		} else {
 			throw new IllegalArgumentException("unsupported decoder: " + decoder);
 		}
