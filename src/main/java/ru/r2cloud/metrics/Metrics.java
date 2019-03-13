@@ -29,7 +29,7 @@ public class Metrics {
 	private Sigar sigar;
 	private final Configuration config;
 	private final R2CloudService cloudService;
-	
+
 	public Metrics(Configuration config, R2CloudService cloudService) {
 		this.config = config;
 		this.cloudService = cloudService;
@@ -43,7 +43,7 @@ public class Metrics {
 		} else {
 			LOG.info("temperature metric is not available");
 		}
-		
+
 		LOG.info("max memory: {}", Runtime.getRuntime().maxMemory());
 		LOG.info("total memory: {}", Runtime.getRuntime().totalMemory());
 		LOG.info("CPU count: {}", Runtime.getRuntime().availableProcessors());
@@ -117,7 +117,7 @@ public class Metrics {
 				LOG.info("SIGAR library was loaded");
 			}
 		} catch (UnsatisfiedLinkError linkError) {
-			LOG.info("Could not initialize SIGAR library: " + linkError.getMessage());
+			LOG.info("Could not initialize SIGAR library: {}", linkError.getMessage());
 		}
 
 		reporter = new RRD4JReporter(config, REGISTRY, cloudService);

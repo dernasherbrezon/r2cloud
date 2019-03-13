@@ -180,7 +180,6 @@ public class R2CloudClient {
 			if (responseCode != 200) {
 				LOG.error("unable to save meta. response code: {}. See logs for details", responseCode);
 				Util.toLog(LOG, con.getErrorStream());
-				return;
 			}
 		} catch (Exception e) {
 			LOG.error("unable to save metrics", e);

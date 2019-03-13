@@ -76,7 +76,7 @@ public class NoIPTask extends SafeRunnable {
 					if (response.startsWith("good") || response.startsWith("nochg")) {
 						int index = response.indexOf(' ');
 						if (index != -1) {
-							LOG.info("ddns ip updated: " + currentExternalIp);
+							LOG.info("ddns ip updated: {}", currentExternalIp);
 							currentExternalIp = response.substring(index + 1);
 							config.setProperty("ddns.ip", currentExternalIp);
 							config.update();
