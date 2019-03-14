@@ -49,7 +49,7 @@ public class ScheduleSave extends AbstractHttpController {
 			}
 		}
 		if (!errors.isEmpty() || satelliteToEdit == null) {
-			LOG.info("unable to save: " + errors);
+			LOG.info("unable to save: {}", errors);
 			return new BadRequest(errors);
 		}
 

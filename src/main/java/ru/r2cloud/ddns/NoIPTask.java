@@ -92,7 +92,7 @@ public class NoIPTask extends SafeRunnable {
 						config.update();
 					} else {
 						if (LOG.isDebugEnabled()) {
-							LOG.debug("unknown response code: " + response);
+							LOG.debug("unknown response code: {}", response);
 						}
 					}
 				}
