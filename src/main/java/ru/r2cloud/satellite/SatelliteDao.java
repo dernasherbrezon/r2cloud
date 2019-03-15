@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteComparator;
 import ru.r2cloud.util.Configuration;
@@ -26,7 +27,7 @@ public class SatelliteDao {
 			curSatellite.setId(cur);
 			curSatellite.setName(config.getProperty("satellites." + curSatellite.getId() + ".name"));
 			curSatellite.setFrequency(config.getLong("satellites." + curSatellite.getId() + ".freq"));
-			curSatellite.setDecoder(config.getProperty("satellites." + curSatellite.getId() + ".decoder"));
+			curSatellite.setSource(FrequencySource.valueOf(config.getProperty("satellites." + curSatellite.getId() + ".source")));
 			curSatellite.setBandwidth(config.getLong("satellites." + curSatellite.getId() + ".bandwidth"));
 			curSatellite.setEnabled(config.getBoolean("satellites." + curSatellite.getId() + ".enabled"));
 			index(curSatellite);

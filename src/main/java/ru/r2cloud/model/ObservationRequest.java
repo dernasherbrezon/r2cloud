@@ -10,7 +10,7 @@ public class ObservationRequest {
 	private long endTimeMillis;
 	private SatPos end;
 	private String satelliteId;
-	private String decoder;
+	private FrequencySource source;
 	private long satelliteFrequency;
 	private long bandwidth;
 	private uk.me.g4dpz.satellite.Satellite origin;
@@ -107,12 +107,12 @@ public class ObservationRequest {
 		this.satelliteId = satelliteId;
 	}
 
-	public String getDecoder() {
-		return decoder;
+	public FrequencySource getSource() {
+		return source;
 	}
 
-	public void setDecoder(String decoder) {
-		this.decoder = decoder;
+	public void setSource(FrequencySource source) {
+		this.source = source;
 	}
 
 	public long getSatelliteFrequency() {

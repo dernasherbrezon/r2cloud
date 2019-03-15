@@ -17,9 +17,9 @@ public class GmskDemodulator implements ByteInput {
 
 	private final ByteInput source;
 
-	public GmskDemodulator(FloatInput source, double centerFreq, int baudRate, float gainMu) {
-		float[] taps = Firdes.lowPass(1.0, source.getContext().getSampleRate(), baudRate, 600, Window.WIN_HAMMING, 6.76);
-		FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(source, taps, 1, centerFreq);
+	public GmskDemodulator(FloatInput source, double centerFreq, int baudRate, double cutoffFreq, float gainMu) {
+		float[] taps = Firdes.lowPass(1.0, source.getContext().getSampleRate(), cutoffFreq, 600, Window.WIN_HAMMING, 6.76);
+		FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(source, taps, 2, centerFreq);
 
 		float samplesPerSymbol = xlating.getContext().getSampleRate() / baudRate;
 		float sensitivity = (float) ((Math.PI / 2) / samplesPerSymbol);

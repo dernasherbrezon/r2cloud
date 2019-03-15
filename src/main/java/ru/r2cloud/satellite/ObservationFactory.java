@@ -15,8 +15,7 @@ import uk.me.g4dpz.satellite.TLE;
 public class ObservationFactory {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationFactory.class);
-	//aausat4 signal deviates by 9khz. round it to 10khz
-	private static final int DC_OFFSET = 10_000;
+	public static final int DC_OFFSET = 10_000;
 
 	private final TLEDao tleDao;
 	private final Predict predict;
@@ -43,40 +42,33 @@ public class ObservationFactory {
 		result.setSatelliteFrequency(satellite.getFrequency());
 		result.setBandwidth(satellite.getBandwidth());
 		result.setSatelliteId(satellite.getId());
-		result.setDecoder(satellite.getDecoder());
+		result.setSource(satellite.getSource());
 		result.setStart(nextPass.getStart());
 		result.setStartTimeMillis(nextPass.getStart().getTime().getTime());
 		result.setId(String.valueOf(result.getStartTimeMillis()));
 		result.setEnd(nextPass.getEnd());
 		result.setEndTimeMillis(nextPass.getEnd().getTime().getTime());
-		String decoder = satellite.getDecoder();
-		if (decoder == null) {
-			throw new IllegalArgumentException("unknown decoder for: " + satellite.getId());
-		}
-		if (decoder.equals("apt")) {
+		switch (satellite.getSource()) {
+		case APT:
 			result.setActualFrequency(satellite.getFrequency());
 			result.setInputSampleRate(60_000);
 			result.setOutputSampleRate(11_025);
-		} else if (decoder.equals("lrpt")) {
+			break;
+		case LRPT:
 			result.setInputSampleRate(240_000);
 			result.setOutputSampleRate(150_000);
 			result.setActualFrequency(satellite.getFrequency());
-		} else if (decoder.equals("aausat4")) {
+			break;
+		case TELEMETRY:
 			result.setInputSampleRate(240_000);
-			result.setOutputSampleRate(64_000);
-			// at the beginning doppler freq is the max
-			long initialDopplerFrequency = predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStart().getTime().getTime(), libSatellite);
-			result.setActualFrequency(initialDopplerFrequency + satellite.getBandwidth() / 2 + DC_OFFSET / 2);
-		} else if( decoder.equals("kunspf") ) {
-			result.setInputSampleRate(240_000);
-			result.setOutputSampleRate(64_000);
+			result.setOutputSampleRate(96_000);
 			// at the beginning doppler freq is the max
 			long initialDopplerFrequency = predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStart().getTime().getTime(), libSatellite);
 			result.setActualFrequency(initialDopplerFrequency + satellite.getBandwidth() + DC_OFFSET);
-		} else {
-			throw new IllegalArgumentException("unsupported decoder: " + decoder);
+			break;
+		default:
+			throw new IllegalArgumentException("unsupported source: " + satellite.getSource());
 		}
-
 		return result;
 	}
 

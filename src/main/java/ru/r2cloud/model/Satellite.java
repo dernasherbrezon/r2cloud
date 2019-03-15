@@ -4,7 +4,7 @@ public class Satellite {
 
 	private String id;
 	private String name;
-	private String decoder;
+	private FrequencySource source;
 	private long frequency;
 	private long bandwidth;
 	private boolean enabled;
@@ -25,12 +25,12 @@ public class Satellite {
 		this.bandwidth = bandwidth;
 	}
 
-	public String getDecoder() {
-		return decoder;
+	public FrequencySource getSource() {
+		return source;
 	}
-
-	public void setDecoder(String decoder) {
-		this.decoder = decoder;
+	
+	public void setSource(FrequencySource source) {
+		this.source = source;
 	}
 
 	public long getFrequency() {

@@ -35,7 +35,7 @@ public class ObservationFull {
 		req.setSatelliteFrequency(meta.getLong("frequency", -1));
 		req.setActualFrequency(meta.getLong("actualFrequency", -1));
 		req.setBandwidth(meta.getLong("bandwidth", -1));
-		req.setDecoder(meta.getString("decoder", null));
+		req.setSource(FrequencySource.valueOf(meta.getString("decoder", null)));
 		req.setSatelliteId(meta.getString("satellite", null));
 
 		ObservationResult result = new ObservationResult();
@@ -65,7 +65,7 @@ public class ObservationFull {
 		json.add("frequency", req.getSatelliteFrequency());
 		json.add("actualFrequency", req.getActualFrequency());
 		json.add("bandwidth", req.getBandwidth());
-		json.add("decoder", req.getDecoder());
+		json.add("decoder", req.getSource().name());
 		json.add("satellite", req.getSatelliteId());
 
 		if (result == null) {

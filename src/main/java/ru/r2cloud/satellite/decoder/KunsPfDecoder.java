@@ -22,6 +22,7 @@ import ru.r2cloud.jradio.source.WavFileSource;
 import ru.r2cloud.jradio.source.Waveform;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
@@ -56,7 +57,7 @@ public class KunsPfDecoder implements Decoder {
 				}
 			}, 1.0);
 			Multiply mul = new Multiply(source, source2);
-			GmskDemodulator demodulator = new GmskDemodulator(mul, -(req.getActualFrequency() - req.getSatelliteFrequency()), 1200, 0.175f * 3);
+			GmskDemodulator demodulator = new GmskDemodulator(mul, -(req.getActualFrequency() - req.getSatelliteFrequency() + ObservationFactory.DC_OFFSET), 9600, 6000, 0.175f * 3);
 			CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(demodulator, 4, "10010011000010110101000111011110", true);
 			// 73 choosen as an estimated packet length in test.
 			// in real prod, it better to have max - 255

@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.Lifecycle;
 import ru.r2cloud.RtlSdrLock;
 import ru.r2cloud.cloud.R2CloudService;
+import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.model.ObservationRequest;
@@ -157,7 +158,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 					@Override
 					public void doRun() {
-						Decoder decoder = decoders.get(observation.getDecoder());
+						Decoder decoder = decoders.get(observation.getSatelliteId());
 						if (decoder == null) {
 							LOG.error("unknown decoder: {}", decoder);
 							return;
@@ -189,13 +190,15 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	}
 
 	private IQReader createReader(ObservationRequest req) {
-		String decoder = req.getDecoder();
-		if (decoder.equals("apt")) {
+		FrequencySource source = req.getSource();
+		switch (source) {
+		case APT:
 			return new RtlFmReader(config, processFactory, req);
-		} else if (decoder.equals("lrpt") || decoder.equals("aausat4") || decoder.equals("kunspf")) {
+		case LRPT:
+		case TELEMETRY:
 			return new RtlSdrReader(config, processFactory, req);
-		} else {
-			throw new IllegalArgumentException("unsupported decoder: " + decoder);
+		default:
+			throw new IllegalArgumentException("unsupported source: " + source);
 		}
 	}
 

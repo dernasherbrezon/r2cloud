@@ -15,6 +15,7 @@ import ru.r2cloud.cloud.R2CloudClient;
 import ru.r2cloud.cloud.R2CloudService;
 import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.metrics.Metrics;
+import ru.r2cloud.model.Satellite;
 import ru.r2cloud.rx.ADSB;
 import ru.r2cloud.rx.ADSBDao;
 import ru.r2cloud.satellite.ObservationFactory;
@@ -122,10 +123,14 @@ public class R2Cloud {
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient("http://celestrak.com"));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
 
-		decoders.put("apt", new APTDecoder(props, processFactory));
-		decoders.put("lrpt", new LRPTDecoder(props, predict));
-		decoders.put("aausat4", new Aausat4Decoder(props, predict));
-		decoders.put("kunspf", new KunsPfDecoder(props, predict));
+		APTDecoder aptDecoder = new APTDecoder(props, processFactory);
+		decoders.put("25338", aptDecoder);
+		decoders.put("28654", aptDecoder);
+		decoders.put("33591", aptDecoder);
+		decoders.put("40069", new LRPTDecoder(props, predict));
+		decoders.put("41460", new Aausat4Decoder(props, predict));
+		decoders.put("43466", new KunsPfDecoder(props, predict));
+		validateDecoders();
 
 		observationFactory = new ObservationFactory(predict, tleDao);
 		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, r2cloudService, processFactory, resultDao, decoders);
@@ -224,6 +229,14 @@ public class R2Cloud {
 		HttpContoller previous = controllers.put(controller.getRequestMappingURL(), controller);
 		if (previous != null) {
 			throw new IllegalArgumentException("duplicate controller has been registerd: " + controller.getClass().getSimpleName() + " previous: " + previous.getClass().getSimpleName());
+		}
+	}
+	
+	private void validateDecoders() {
+		for (Satellite cur : satelliteDao.findAll()) {
+			if (!decoders.containsKey(cur.getId())) {
+				throw new IllegalStateException("decoder is not defined for: " + cur.getId());
+			}
 		}
 	}
 }

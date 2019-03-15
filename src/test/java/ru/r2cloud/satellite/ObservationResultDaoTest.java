@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
+import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
@@ -40,7 +41,7 @@ public class ObservationResultDaoTest {
 	public void testCrud() throws Exception {
 		ObservationRequest req = new ObservationRequest();
 		req.setActualFrequency(1L);
-		req.setDecoder("apt");
+		req.setSource(FrequencySource.APT);
 		req.setEndTimeMillis(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5));
 		req.setEnd(create(req.getEndTimeMillis()));
 		req.setId(UUID.randomUUID().toString());
@@ -55,7 +56,7 @@ public class ObservationResultDaoTest {
 		assertNotNull(dao.insert(req, createTempFile("wav")));
 		ObservationFull actual = dao.find(req.getSatelliteId(), req.getId());
 		assertNotNull(actual.getResult().getWavPath());
-		assertEquals(req.getDecoder(), actual.getReq().getDecoder());
+		assertEquals(req.getSource(), actual.getReq().getSource());
 		assertNull(actual.getResult().getDataPath());
 		assertNull(actual.getResult().getaPath());
 		assertNull(actual.getResult().getSpectogramPath());
