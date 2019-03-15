@@ -63,44 +63,54 @@ public class RRD4JReporter extends ScheduledReporter {
 			if (value == null) {
 				continue;
 			}
-			update(getOrCreate(cur.getKey(), DsType.GAUGE), convertToDouble(value));
-			JsonObject metric = new JsonObject();
-			metric.add("name", cur.getKey());
-			metric.add("value", convertToDouble(value));
-			metricsToShare.add(metric);
+			metricsToShare.add(convertGauge(cur));
 		}
 		for (Entry<String, Counter> cur : counters.entrySet()) {
-			long newValue = cur.getValue().getCount();
-			// split method getOrCreate to retrive lastDatasourceValue only once
-			// if newvalue is less than lastDatasource value, then jvm was
-			// restarted
-			// add lastValue to avoid huge spikes in graphs after application
-			// restarts/upgrades
-			RrdDb result = dbPerMetric.get(cur.getKey());
-			if (result == null) {
-				result = create(cur.getKey(), DsType.COUNTER);
-				if (result != null) {
-					try {
-						double lastValue = result.getLastDatasourceValue("data");
-						if (!Double.isNaN(lastValue)) {
-							lastValueForCounter.put(cur.getKey(), lastValue);
-						}
-					} catch (IOException e) {
-						LOG.error("unable to load last value", e);
-					}
-				}
-			}
-			Double lastValue = lastValueForCounter.get(cur.getKey());
-			if (lastValue != null) {
-				newValue += lastValue;
-			}
-			update(result, newValue);
-			JsonObject metric = new JsonObject();
-			metric.add("name", cur.getKey());
-			metric.add("value", newValue);
-			metricsToShare.add(metric);
+			metricsToShare.add(convertCounter(cur));
 		}
 		cloudService.saveMetrics(metricsToShare);
+	}
+
+	private JsonObject convertCounter(Entry<String, Counter> cur) {
+		long newValue = cur.getValue().getCount();
+		// split method getOrCreate to retrive lastDatasourceValue only once
+		// if newvalue is less than lastDatasource value, then jvm was
+		// restarted
+		// add lastValue to avoid huge spikes in graphs after application
+		// restarts/upgrades
+		RrdDb result = dbPerMetric.get(cur.getKey());
+		if (result == null) {
+			result = create(cur.getKey(), DsType.COUNTER);
+			if (result != null) {
+				try {
+					double lastValue = result.getLastDatasourceValue("data");
+					if (!Double.isNaN(lastValue)) {
+						lastValueForCounter.put(cur.getKey(), lastValue);
+					}
+				} catch (IOException e) {
+					LOG.error("unable to load last value", e);
+				}
+			}
+		}
+		Double lastValue = lastValueForCounter.get(cur.getKey());
+		if (lastValue != null) {
+			newValue += lastValue;
+		}
+		update(result, newValue);
+		JsonObject metric = new JsonObject();
+		metric.add("name", cur.getKey());
+		metric.add("value", newValue);
+		return metric;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private JsonObject convertGauge(Entry<String, Gauge> cur) {
+		Object value = cur.getValue().getValue();
+		update(getOrCreate(cur.getKey(), DsType.GAUGE), convertToDouble(value));
+		JsonObject metric = new JsonObject();
+		metric.add("name", cur.getKey());
+		metric.add("value", convertToDouble(value));
+		return metric;
 	}
 
 	private static double convertToDouble(Object value) {
@@ -162,25 +172,25 @@ public class RRD4JReporter extends ScheduledReporter {
 			try {
 				result = new RrdDb(rrdDef);
 			} catch (IOException e) {
-				LOG.error("unable to create database: " + path.getAbsolutePath(), e);
+				LOG.error("unable to create database: {}", path.getAbsolutePath(), e);
 				return null;
 			}
 		} else {
 			try {
 				result = new RrdDb(path.getAbsolutePath(), RrdBackendFactory.getFactory("FILE"));
 			} catch (IOException e) {
-				LOG.error("unable to load database: " + path.getAbsolutePath(), e);
+				LOG.error("unable to load database: {}", path.getAbsolutePath(), e);
 				return null;
 			}
 		}
 
 		RrdDb old = dbPerMetric.put(metricName, result);
 		if (old != null) {
-			LOG.error("found duplicate rrddb: " + metricName);
+			LOG.error("found duplicate rrddb: {}", metricName);
 			try {
 				old.close();
 			} catch (IOException e) {
-				LOG.error("unable to close: " + old.getPath(), e);
+				LOG.error("unable to close: {}", old.getPath(), e);
 			}
 		}
 
@@ -194,7 +204,7 @@ public class RRD4JReporter extends ScheduledReporter {
 			try {
 				cur.close();
 			} catch (IOException e) {
-				LOG.error("unable to close: " + cur.getPath(), e);
+				LOG.error("unable to close: {}", cur.getPath(), e);
 			}
 		}
 		dbPerMetric.clear();
