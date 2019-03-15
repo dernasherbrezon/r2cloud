@@ -6,7 +6,6 @@ public class Satellite {
 	private String name;
 	private FrequencySource source;
 	private long frequency;
-	private long bandwidth;
 	private boolean enabled;
 
 	public boolean isEnabled() {
@@ -15,14 +14,6 @@ public class Satellite {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-	}
-
-	public long getBandwidth() {
-		return bandwidth;
-	}
-
-	public void setBandwidth(long bandwidth) {
-		this.bandwidth = bandwidth;
 	}
 
 	public FrequencySource getSource() {

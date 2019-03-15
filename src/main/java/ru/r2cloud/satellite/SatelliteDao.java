@@ -32,7 +32,6 @@ public class SatelliteDao {
 			curSatellite.setName(name);
 			curSatellite.setFrequency(config.getLong("satellites." + curSatellite.getId() + ".freq"));
 			curSatellite.setSource(FrequencySource.valueOf(config.getProperty("satellites." + curSatellite.getId() + ".source")));
-			curSatellite.setBandwidth(config.getLong("satellites." + curSatellite.getId() + ".bandwidth"));
 			curSatellite.setEnabled(config.getBoolean("satellites." + curSatellite.getId() + ".enabled"));
 			index(curSatellite);
 		}
