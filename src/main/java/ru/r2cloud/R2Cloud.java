@@ -25,9 +25,23 @@ import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.Scheduler;
 import ru.r2cloud.satellite.decoder.APTDecoder;
 import ru.r2cloud.satellite.decoder.Aausat4Decoder;
+import ru.r2cloud.satellite.decoder.Ao73Decoder;
+import ru.r2cloud.satellite.decoder.AstrocastDecoder;
 import ru.r2cloud.satellite.decoder.Decoder;
+import ru.r2cloud.satellite.decoder.Dstar1Decoder;
+import ru.r2cloud.satellite.decoder.EseoDecoder;
+import ru.r2cloud.satellite.decoder.Gomx1Decoder;
+import ru.r2cloud.satellite.decoder.Jy1satDecoder;
 import ru.r2cloud.satellite.decoder.KunsPfDecoder;
 import ru.r2cloud.satellite.decoder.LRPTDecoder;
+import ru.r2cloud.satellite.decoder.Lume1Decoder;
+import ru.r2cloud.satellite.decoder.Nayif1Decoder;
+import ru.r2cloud.satellite.decoder.PegasusDecoder;
+import ru.r2cloud.satellite.decoder.PwSat2Decoder;
+import ru.r2cloud.satellite.decoder.ReaktorHelloWorldDecoder;
+import ru.r2cloud.satellite.decoder.SnetDecoder;
+import ru.r2cloud.satellite.decoder.Suomi100Decoder;
+import ru.r2cloud.satellite.decoder.TechnosatDecoder;
 import ru.r2cloud.ssl.AcmeClient;
 import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.tle.TLEDao;
@@ -122,14 +136,31 @@ public class R2Cloud {
 		satelliteDao = new SatelliteDao(props);
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient("http://celestrak.com"));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
-
 		APTDecoder aptDecoder = new APTDecoder(props, processFactory);
 		decoders.put("25338", aptDecoder);
 		decoders.put("28654", aptDecoder);
 		decoders.put("33591", aptDecoder);
+		decoders.put("39430", new Gomx1Decoder());
+		decoders.put("39444", new Ao73Decoder());
 		decoders.put("40069", new LRPTDecoder(props, predict));
 		decoders.put("41460", new Aausat4Decoder(props, predict));
+		decoders.put("42017", new Nayif1Decoder());
+		decoders.put("42784", new PegasusDecoder());
+		decoders.put("42829", new TechnosatDecoder());
+		SnetDecoder snetDecoder = new SnetDecoder();
+		decoders.put("43186", snetDecoder);
+		decoders.put("43187", snetDecoder);
+		decoders.put("43188", snetDecoder);
+		decoders.put("43189", snetDecoder);
 		decoders.put("43466", new KunsPfDecoder(props, predict));
+		decoders.put("43743", new ReaktorHelloWorldDecoder());
+		decoders.put("43792", new EseoDecoder());
+		decoders.put("43798", new AstrocastDecoder());
+		decoders.put("43803", new Jy1satDecoder());
+		decoders.put("43804", new Suomi100Decoder());
+		decoders.put("43814", new PwSat2Decoder());
+		decoders.put("43881", new Dstar1Decoder());
+		decoders.put("43908", new Lume1Decoder());
 		validateDecoders();
 
 		observationFactory = new ObservationFactory(predict, tleDao);
@@ -231,11 +262,16 @@ public class R2Cloud {
 			throw new IllegalArgumentException("duplicate controller has been registerd: " + controller.getClass().getSimpleName() + " previous: " + previous.getClass().getSimpleName());
 		}
 	}
-	
+
 	private void validateDecoders() {
 		for (Satellite cur : satelliteDao.findAll()) {
 			if (!decoders.containsKey(cur.getId())) {
 				throw new IllegalStateException("decoder is not defined for: " + cur.getId());
+			}
+		}
+		for (String id : decoders.keySet()) {
+			if (satelliteDao.findById(id) == null) {
+				throw new IllegalStateException("missing satellite configuration for: " + id);
 			}
 		}
 	}

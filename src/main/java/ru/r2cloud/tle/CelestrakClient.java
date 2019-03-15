@@ -22,16 +22,8 @@ public class CelestrakClient {
 		this.host = host;
 	}
 
-	public Map<String, TLE> getWeatherTLE() {
-		return loadTle("/NORAD/elements/weather.txt");
-	}
-
-	public Map<String, TLE> getAmateurTLE() {
-		return loadTle("/NORAD/elements/amateur.txt");
-	}
-	
-	public Map<String, TLE> getCubesatTLE() {
-		return loadTle("/NORAD/elements/cubesat.txt");
+	public Map<String, TLE> getTleForActiveSatellites() {
+		return loadTle("/NORAD/elements/active.txt");
 	}
 
 	private Map<String, TLE> loadTle(String location) {

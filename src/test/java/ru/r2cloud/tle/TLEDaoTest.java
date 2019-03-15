@@ -64,7 +64,7 @@ public class TLEDaoTest {
 		// return tle for completely different satellites
 		HashMap<String, TLE> brokenTleData = new HashMap<String, TLE>();
 		brokenTleData.put(UUID.randomUUID().toString(), tleData.get(supported.get(0).getName()));
-		when(celestrak.getWeatherTLE()).thenReturn(brokenTleData);
+		when(celestrak.getTleForActiveSatellites()).thenReturn(brokenTleData);
 		// trigger last modified
 		File tle = new File(tempFolder.getRoot(), supported.get(0).getId() + File.separator + "tle.txt");
 		tle.setLastModified(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(17));
@@ -110,7 +110,7 @@ public class TLEDaoTest {
 
 		satelliteDao = mock(SatelliteDao.class);
 		celestrak = mock(CelestrakClient.class);
-		when(celestrak.getWeatherTLE()).thenReturn(tleData);
+		when(celestrak.getTleForActiveSatellites()).thenReturn(tleData);
 		for (Satellite cur : supported) {
 			when(satelliteDao.findByName(cur.getName())).thenReturn(cur);
 		}

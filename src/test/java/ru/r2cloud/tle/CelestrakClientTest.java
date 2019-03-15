@@ -43,7 +43,7 @@ public class CelestrakClientTest {
 
 		// one slash is important here
 		CelestrakClient client = new CelestrakClient("http://" + server.getAddress().getHostName() + ":" + server.getAddress().getPort());
-		Map<String, TLE> actual = client.getWeatherTLE();
+		Map<String, TLE> actual = client.getTleForActiveSatellites();
 		assertEquals(expected.size(), actual.size());
 		assertTrue(expected.equals(actual));
 	}

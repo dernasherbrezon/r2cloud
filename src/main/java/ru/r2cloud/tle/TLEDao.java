@@ -87,9 +87,7 @@ public class TLEDao {
 	}
 
 	void reload() {
-		Map<String, TLE> tle = celestrak.getWeatherTLE();
-		tle.putAll(celestrak.getAmateurTLE());
-		tle.putAll(celestrak.getCubesatTLE());
+		Map<String, TLE> tle = celestrak.getTleForActiveSatellites();
 		if (tle.isEmpty()) {
 			return;
 		}

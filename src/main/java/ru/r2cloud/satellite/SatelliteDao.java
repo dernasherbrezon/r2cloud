@@ -25,7 +25,11 @@ public class SatelliteDao {
 		for (String cur : Util.splitComma(config.getProperty("satellites.supported"))) {
 			Satellite curSatellite = new Satellite();
 			curSatellite.setId(cur);
-			curSatellite.setName(config.getProperty("satellites." + curSatellite.getId() + ".name"));
+			String name = config.getProperty("satellites." + curSatellite.getId() + ".name");
+			if (name == null) {
+				throw new IllegalStateException("unable to find satellite name for: " + cur);
+			}
+			curSatellite.setName(name);
 			curSatellite.setFrequency(config.getLong("satellites." + curSatellite.getId() + ".freq"));
 			curSatellite.setSource(FrequencySource.valueOf(config.getProperty("satellites." + curSatellite.getId() + ".source")));
 			curSatellite.setBandwidth(config.getLong("satellites." + curSatellite.getId() + ".bandwidth"));
