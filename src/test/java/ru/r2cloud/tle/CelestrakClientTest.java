@@ -30,7 +30,7 @@ public class CelestrakClientTest {
 	public void testSuccess() {
 		String expectedBody = loadExpected();
 		Map<String, TLE> expected = convert(expectedBody);
-		server.createContext("/NORAD/elements/weather.txt", new HttpHandler() {
+		server.createContext("/NORAD/elements/active.txt", new HttpHandler() {
 
 			@Override
 			public void handle(HttpExchange exchange) throws IOException {
