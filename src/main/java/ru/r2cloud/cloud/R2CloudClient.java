@@ -1,6 +1,7 @@
 package ru.r2cloud.cloud;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -41,8 +42,10 @@ public class R2CloudClient {
 	}
 
 	public Long saveMeta(ObservationFull observation) {
-		JsonObject json = observation.toJson();
-		HttpRequest request = createJsonRequest("/api/v1/observation", json).build();
+		if (observation == null) {
+			return null;
+		}
+		HttpRequest request = createJsonRequest("/api/v1/observation", observation.toJson()).build();
 		try {
 			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
 			if (response.statusCode() != 200) {
@@ -73,16 +76,19 @@ public class R2CloudClient {
 	}
 
 	private void upload(String url, File file, String contentType) {
+		HttpRequest request;
 		try {
-			HttpRequest request = createRequest(url).header("Content-Type", contentType).PUT(BodyPublishers.ofFile(file.toPath())).build();
-			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			request = createRequest(url).header("Content-Type", contentType).PUT(BodyPublishers.ofFile(file.toPath())).build();
+		} catch (FileNotFoundException e) {
+			LOG.error("unable to upload", e);
+			return;
+		}
+		httpclient.sendAsync(request, BodyHandlers.ofString()).thenAccept(response -> {
 			if (response.statusCode() != 200) {
 				LOG.error("unable to upload. response code: {}. See logs for details", response.statusCode());
 				LOG.info(response.body());
 			}
-		} catch (Exception e) {
-			LOG.error("unable to save meta", e);
-		}
+		});
 	}
 
 	private static Long readObservationId(String con) {
@@ -111,19 +117,16 @@ public class R2CloudClient {
 	}
 
 	public void saveMetrics(JsonArray o) {
+		if (o == null || o.size() == 0) {
+			return;
+		}
 		HttpRequest request = createJsonRequest("/api/v1/metrics", o).build();
-		try {
-			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+		httpclient.sendAsync(request, BodyHandlers.ofString()).thenAccept(response -> {
 			if (response.statusCode() != 200) {
 				LOG.error("unable to save meta. response code: {}. See logs for details", response.statusCode());
 				LOG.info(response.body());
 			}
-		} catch (IOException e) {
-			LOG.error("unable to save metrics", e);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new RuntimeException(e);
-		}
+		});
 	}
 
 	private HttpRequest.Builder createJsonRequest(String path, JsonValue json) {

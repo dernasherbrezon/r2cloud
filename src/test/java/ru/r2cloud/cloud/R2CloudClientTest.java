@@ -66,6 +66,11 @@ public class R2CloudClientTest {
 		assertNull(client.saveMeta(createRequest()));
 	}
 	
+	@Test
+	public void testInvalidRequest() {
+		assertNull(client.saveMeta(null));
+	}
+	
 	@Before
 	public void start() throws Exception {
 		server = HttpServer.create(new InetSocketAddress("localhost", 8001), 0);
