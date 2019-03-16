@@ -27,8 +27,11 @@ public class RestoreIT extends RegisteredTest {
 
 	@Test
 	public void testUnknownUsername() {
+		//attempts to reset with unknown usernames
+		//should silently discard
 		client.resetPassword(UUID.randomUUID().toString());
-		client.login(username, password);
+		HttpResponse<String> response = client.loginWithResponse(username, password);
+		assertEquals(200, response.statusCode());
 	}
 
 }
