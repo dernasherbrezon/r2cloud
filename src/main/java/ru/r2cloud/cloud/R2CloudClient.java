@@ -1,19 +1,18 @@
 package ru.r2cloud.cloud;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpClient.Redirect;
+import java.net.http.HttpClient.Version;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpRequest.Builder;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
-
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
+import java.time.Duration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,60 +21,42 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
+import com.eclipsesource.json.ParseException;
 
-import ru.r2cloud.DefaultTrustManager;
 import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.Util;
 
 public class R2CloudClient {
 
 	private static final Logger LOG = LoggerFactory.getLogger(R2CloudClient.class);
 
+	private HttpClient httpclient;
 	private final String hostname;
-	private final int connectionTimeout;
 	private final String apiKey;
-	private final String env;
 
 	public R2CloudClient(Configuration config) {
 		this.hostname = config.getProperty("r2cloud.hostname");
-		this.connectionTimeout = config.getInteger("r2cloud.connectionTimeout");
+		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMillis(config.getInteger("r2cloud.connectionTimeout"))).build();
 		this.apiKey = config.getProperty("r2cloud.apiKey");
-		this.env = config.getProperty("server.env");
-		setupTrustAll();
 	}
 
 	public Long saveMeta(ObservationFull observation) {
-		HttpURLConnection con = null;
+		JsonObject json = observation.toJson();
+		HttpRequest request = createJsonRequest("/api/v1/observation", json).build();
 		try {
-			URL obj = new URL(hostname + "/api/v1/observation");
-			con = (HttpURLConnection) obj.openConnection();
-			con.setConnectTimeout(connectionTimeout);
-			con.setRequestMethod("POST");
-			con.setRequestProperty("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
-			con.setRequestProperty("Authorization", apiKey);
-			con.setRequestProperty("Content-Type", "application/json");
-			con.setDoOutput(true);
-
-			JsonObject json = observation.toJson();
-			Writer w = new OutputStreamWriter(con.getOutputStream(), StandardCharsets.UTF_8);
-			json.writeTo(w);
-			w.close();
-
-			int responseCode = con.getResponseCode();
-			if (responseCode != 200) {
-				LOG.error("unable to save meta. response code: {}. See logs for details", responseCode);
-				Util.toLog(LOG, con.getErrorStream());
+			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				LOG.error("unable to save meta. response code: {}. See logs for details", response.statusCode());
+				LOG.info(response.body());
 				return null;
 			}
-			return readObservationId(con);
-		} catch (Exception e) {
+			return readObservationId(response.body());
+		} catch (IOException e) {
 			LOG.error("unable to save meta", e);
 			return null;
-		} finally {
-			if (con != null) {
-				con.disconnect();
-			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -92,57 +73,26 @@ public class R2CloudClient {
 	}
 
 	private void upload(String url, File file, String contentType) {
-		HttpURLConnection con = null;
-		FileInputStream fis = null;
 		try {
-			fis = new FileInputStream(file);
-			URL obj = new URL(hostname + url);
-			con = (HttpURLConnection) obj.openConnection();
-			con.setDoOutput(true);
-			con.setConnectTimeout(connectionTimeout);
-			con.setRequestMethod("PUT");
-			con.setRequestProperty("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
-			con.setRequestProperty("Authorization", apiKey);
-			con.setRequestProperty("Content-Type", contentType);
-			Util.copy(fis, con.getOutputStream());
-			con.getOutputStream().flush();
-
-			int responseCode = con.getResponseCode();
-			if (responseCode != 200) {
-				LOG.error("unable to upload. response code: {}. See logs for details", responseCode);
-				Util.toLog(LOG, con.getErrorStream());
+			HttpRequest request = createRequest(url).header("Content-Type", contentType).PUT(BodyPublishers.ofFile(file.toPath())).build();
+			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				LOG.error("unable to upload. response code: {}. See logs for details", response.statusCode());
+				LOG.info(response.body());
 			}
 		} catch (Exception e) {
 			LOG.error("unable to save meta", e);
-		} finally {
-			if (fis != null) {
-				try {
-					fis.close();
-				} catch (IOException e) {
-					LOG.error("unable to close", e);
-				}
-			}
-			if (con != null) {
-				con.disconnect();
-			}
 		}
 	}
 
-	private void setupTrustAll() {
-		if (!env.equalsIgnoreCase("dev")) {
-			return;
-		}
+	private static Long readObservationId(String con) {
+		JsonValue result;
 		try {
-			SSLContext ctx = SSLContext.getInstance("TLSv1.2");
-			ctx.init(new KeyManager[0], new TrustManager[] { new DefaultTrustManager() }, new SecureRandom());
-			SSLContext.setDefault(ctx);
-		} catch (Exception e) {
-			LOG.info("unable to setup trust all", e);
+			result = Json.parse(con);
+		} catch (ParseException e) {
+			LOG.info("malformed json");
+			return null;
 		}
-	}
-
-	private static Long readObservationId(HttpURLConnection con) throws IOException {
-		JsonValue result = Json.parse(new InputStreamReader(con.getInputStream()));
 		if (!result.isObject()) {
 			LOG.info("malformed json");
 			return null;
@@ -161,33 +111,31 @@ public class R2CloudClient {
 	}
 
 	public void saveMetrics(JsonArray o) {
-		HttpURLConnection con = null;
+		HttpRequest request = createJsonRequest("/api/v1/metrics", o).build();
 		try {
-			URL obj = new URL(hostname + "/api/v1/metrics");
-			con = (HttpURLConnection) obj.openConnection();
-			con.setConnectTimeout(connectionTimeout);
-			con.setRequestMethod("POST");
-			con.setRequestProperty("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
-			con.setRequestProperty("Authorization", apiKey);
-			con.setRequestProperty("Content-Type", "application/json");
-			con.setDoOutput(true);
-
-			Writer w = new OutputStreamWriter(con.getOutputStream(), StandardCharsets.UTF_8);
-			o.writeTo(w);
-			w.close();
-
-			int responseCode = con.getResponseCode();
-			if (responseCode != 200) {
-				LOG.error("unable to save meta. response code: {}. See logs for details", responseCode);
-				Util.toLog(LOG, con.getErrorStream());
+			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				LOG.error("unable to save meta. response code: {}. See logs for details", response.statusCode());
+				LOG.info(response.body());
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			LOG.error("unable to save metrics", e);
-		} finally {
-			if (con != null) {
-				con.disconnect();
-			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException(e);
 		}
+	}
+
+	private HttpRequest.Builder createJsonRequest(String path, JsonValue json) {
+		return createRequest(path).header("Content-Type", "application/json").POST(BodyPublishers.ofString(json.toString(), StandardCharsets.UTF_8));
+	}
+
+	private HttpRequest.Builder createRequest(String path) {
+		Builder result = HttpRequest.newBuilder().uri(URI.create(hostname + path));
+		result.timeout(Duration.ofMinutes(1L));
+		result.header("User-Agent", "r2cloud/0.2 info@r2cloud.ru");
+		result.header("Authorization", apiKey);
+		return result;
 	}
 
 }

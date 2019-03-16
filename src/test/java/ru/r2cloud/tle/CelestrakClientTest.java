@@ -3,9 +3,7 @@ package ru.r2cloud.tle;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
@@ -20,6 +18,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
+import ru.r2cloud.Util;
 import ru.r2cloud.model.TLE;
 
 public class CelestrakClientTest {
@@ -28,7 +27,7 @@ public class CelestrakClientTest {
 
 	@Test
 	public void testSuccess() {
-		String expectedBody = loadExpected();
+		String expectedBody = Util.loadExpected("sample-tle.txt");
 		Map<String, TLE> expected = convert(expectedBody);
 		server.createContext("/NORAD/elements/active.txt", new HttpHandler() {
 
@@ -46,19 +45,6 @@ public class CelestrakClientTest {
 		Map<String, TLE> actual = client.getTleForActiveSatellites();
 		assertEquals(expected.size(), actual.size());
 		assertTrue(expected.equals(actual));
-	}
-
-	private static String loadExpected() {
-		StringBuilder expectedStr = new StringBuilder();
-		try (BufferedReader r = new BufferedReader(new InputStreamReader(CelestrakClientTest.class.getClassLoader().getResourceAsStream("sample-tle.txt")))) {
-			String curLine = null;
-			while ((curLine = r.readLine()) != null) {
-				expectedStr.append(curLine).append("\n");
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		return expectedStr.toString();
 	}
 
 	private static Map<String, TLE> convert(String body) {
