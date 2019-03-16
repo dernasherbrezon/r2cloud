@@ -26,8 +26,7 @@ public class EseoDecoder extends TelemetryDecoder {
 		GmskDemodulator gmsk = new GmskDemodulator(source, 4800, gainMu);
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(gmsk, 1, EseoBeacon.FLAG, false);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new UnpackedToPacked(new FixedLengthTagger(correlateTag, 257 * 8), 1, Endianness.GR_MSB_FIRST, Byte.class));
-		Eseo input = new Eseo(pdu);
-		return input;
+		return new Eseo(pdu);
 	}
 
 }

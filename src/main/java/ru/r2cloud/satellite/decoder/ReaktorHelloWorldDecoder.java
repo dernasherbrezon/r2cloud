@@ -27,8 +27,7 @@ public class ReaktorHelloWorldDecoder extends TelemetryDecoder {
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(gmsk, 4, "00110101001011100011010100101110", false);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new UnpackedToPacked(new FixedLengthTagger(correlateTag, 120 * 8), 1, Endianness.GR_MSB_FIRST, Byte.class));
 		Cc11xxReceiver cc11 = new Cc11xxReceiver(pdu, true, true);
-		ReaktorHelloWorld input = new ReaktorHelloWorld(cc11);
-		return input;
+		return new ReaktorHelloWorld(cc11);
 	}
 
 }

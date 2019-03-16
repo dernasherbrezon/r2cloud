@@ -26,8 +26,7 @@ public class TechnosatDecoder extends TelemetryDecoder {
 		GmskDemodulator gmsk = new GmskDemodulator(source, 4800, gainMu);
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(gmsk, 4, "111011110000111011110000", false);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new UnpackedToPacked(new FixedLengthTagger(correlateTag, CMX909bBeacon.MAX_SIZE * 8), 1, Endianness.GR_MSB_FIRST, Byte.class));
-		Technosat input = new Technosat(pdu);
-		return input;
+		return new Technosat(pdu);
 	}
 
 }

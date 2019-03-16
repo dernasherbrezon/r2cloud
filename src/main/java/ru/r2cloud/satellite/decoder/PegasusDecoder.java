@@ -25,7 +25,6 @@ public class PegasusDecoder extends TelemetryDecoder {
 		GmskDemodulator gmsk = new GmskDemodulator(source, 9600, gainMu);
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(gmsk, 1, "0010110111010100", false);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new UnpackedToPacked(new FixedLengthTagger(correlateTag, 64 * 8), 1, Endianness.GR_MSB_FIRST, Byte.class));
-		At03 input = new At03(pdu);
-		return input;
+		return new At03(pdu);
 	}
 }

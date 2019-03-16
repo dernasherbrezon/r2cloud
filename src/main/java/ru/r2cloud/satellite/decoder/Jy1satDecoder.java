@@ -40,7 +40,6 @@ public class Jy1satDecoder extends TelemetryDecoder {
 		MultiplyConst mc = new MultiplyConst(complexToReal, 1.0f);
 		FloatToChar f2char = new FloatToChar(mc, 127.0f);
 		Ao40CorrelateAccessCodeTag tag = new Ao40CorrelateAccessCodeTag(f2char, 8);
-		Jy1sat input = new Jy1sat(tag);
-		return input;
+		return new Jy1sat(tag);
 	}
 }

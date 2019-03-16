@@ -40,7 +40,6 @@ public class PwSat2Decoder extends TelemetryDecoder {
 		NrziDecode nrzi = new NrziDecode(bs);
 		Descrambler descrambler = new Descrambler(nrzi, 0x21, 0, 16);
 		HdlcReceiver hdlc = new HdlcReceiver(descrambler, 10000);
-		PwSat2 input = new PwSat2(hdlc);
-		return input;
+		return new PwSat2(hdlc);
 	}
 }

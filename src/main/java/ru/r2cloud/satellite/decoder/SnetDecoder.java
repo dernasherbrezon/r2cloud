@@ -35,7 +35,6 @@ public class SnetDecoder extends TelemetryDecoder {
 		BinarySlicer bs = new BinarySlicer(clockRecovery);
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(bs, 4, "00000100110011110101111111001000", false);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new FixedLengthTagger(correlateTag, 512 * 8));
-		Snet input = new Snet(pdu);
-		return input;
+		return new Snet(pdu);
 	}
 }

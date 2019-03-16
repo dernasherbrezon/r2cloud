@@ -24,8 +24,7 @@ public class KunsPfDecoder extends TelemetryDecoder {
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(demodulator, 4, "10010011000010110101000111011110", true);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new FixedLengthTagger(correlateTag, 255 * 8));
 		AX100Decoder ax100 = new AX100Decoder(pdu, false, true, true);
-		KunsPf input = new KunsPf(ax100);
-		return input;
+		return new KunsPf(ax100);
 	}
 
 }

@@ -38,7 +38,6 @@ public class Nayif1Decoder extends TelemetryDecoder {
 		ComplexToReal complexToReal = new ComplexToReal(delay);
 		FloatToChar f2char = new FloatToChar(complexToReal, 127.0f);
 		Ao40CorrelateAccessCodeTag tag = new Ao40CorrelateAccessCodeTag(f2char, 8);
-		Nayif1 input = new Nayif1(tag);
-		return input;
+		return new Nayif1(tag);
 	}
 }

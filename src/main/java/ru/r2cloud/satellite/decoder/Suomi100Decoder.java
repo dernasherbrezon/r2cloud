@@ -25,7 +25,6 @@ public class Suomi100Decoder extends TelemetryDecoder {
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(gmsk, 4, "10010011000010110101000111011110", true);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new FixedLengthTagger(correlateTag, 255 * 8));
 		AX100Decoder ax100 = new AX100Decoder(pdu, false, true, true);
-		Suomi100 input = new Suomi100(ax100);
-		return input;
+		return new Suomi100(ax100);
 	}
 }

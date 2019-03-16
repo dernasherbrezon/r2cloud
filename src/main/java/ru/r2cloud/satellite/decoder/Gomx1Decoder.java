@@ -46,7 +46,6 @@ public class Gomx1Decoder extends TelemetryDecoder {
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(f2char, 4, "11000011101010100110011001010101", true);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new FixedLengthTagger(correlateTag, (255 + 3) * 8));
 		AX100Decoder ax100 = new AX100Decoder(pdu, false, false, false);
-		Gomx1 input = new Gomx1(ax100);
-		return input;
+		return new Gomx1(ax100);
 	}
 }

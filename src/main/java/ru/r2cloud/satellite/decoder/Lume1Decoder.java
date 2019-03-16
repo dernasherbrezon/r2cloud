@@ -25,8 +25,7 @@ public class Lume1Decoder extends TelemetryDecoder {
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(gmsk, 6, "10010011000010110101000111011110", true);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new FixedLengthTagger(correlateTag, 255 * 8));
 		AX100Decoder ax100 = new AX100Decoder(pdu, false, true, true);
-		Lume1 input = new Lume1(ax100);
-		return input;
+		return new Lume1(ax100);
 	}
 
 }

@@ -21,6 +21,10 @@ import ru.r2cloud.web.api.AccessToken;
 
 public class Setup extends AbstractHttpController {
 
+	private static final String PASSWORD_PARAMETER = "password";
+	private static final String USERNAME_PARAMETER = "username";
+	private static final String KEYWORD_PARAMETER = "keyword";
+
 	private final static Logger LOG = LoggerFactory.getLogger(Setup.class);
 
 	private final Authenticator auth;
@@ -38,18 +42,18 @@ public class Setup extends AbstractHttpController {
 			return new BadRequest("expected object");
 		}
 		ValidationResult errors = new ValidationResult();
-		String username = WebServer.getString(request, "username");
-		String password = WebServer.getString(request, "password");
-		String keyword = WebServer.getString(request, "keyword");
+		String username = WebServer.getString(request, USERNAME_PARAMETER);
+		String password = WebServer.getString(request, PASSWORD_PARAMETER);
+		String keyword = WebServer.getString(request, KEYWORD_PARAMETER);
 
 		if (username == null || username.trim().length() == 0) {
-			errors.put("username", "Cannot be empty");
+			errors.put(USERNAME_PARAMETER, "Cannot be empty");
 		}
 		if (password == null || password.trim().length() == 0) {
-			errors.put("password", "Cannot be empty");
+			errors.put(PASSWORD_PARAMETER, "Cannot be empty");
 		}
 		if (keyword == null || keyword.trim().length() == 0) {
-			errors.put("keyword", "Cannot be empty");
+			errors.put(KEYWORD_PARAMETER, "Cannot be empty");
 		}
 
 		if (!errors.isEmpty()) {
@@ -64,7 +68,7 @@ public class Setup extends AbstractHttpController {
 			// keyword should not be null here. However eclipse complains about
 			// potential npe.
 			if (keyword == null || !keyword.equals(actualKeyword)) {
-				errors.put("keyword", "Invalid keyword");
+				errors.put(KEYWORD_PARAMETER, "Invalid keyword");
 			}
 		} catch (Exception e) {
 			String message = "unable to read r2cloud file. ";

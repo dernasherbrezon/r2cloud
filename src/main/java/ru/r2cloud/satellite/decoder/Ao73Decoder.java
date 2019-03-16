@@ -38,8 +38,7 @@ public class Ao73Decoder extends TelemetryDecoder {
 		ComplexToReal complexToReal = new ComplexToReal(delay);
 		FloatToChar f2char = new FloatToChar(complexToReal, 127.0f);
 		Ao40CorrelateAccessCodeTag tag = new Ao40CorrelateAccessCodeTag(f2char, 8);
-		Ao73 input = new Ao73(tag);
-		return input;
+		return new Ao73(tag);
 	}
 
 }
