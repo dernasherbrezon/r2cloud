@@ -49,8 +49,7 @@ public class R2CloudClient {
 		try {
 			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
 			if (response.statusCode() != 200) {
-				LOG.error("unable to save meta. response code: {}. See logs for details", response.statusCode());
-				LOG.info(response.body());
+				LOG.error("unable to save meta. response code: {}. response: {}", response.statusCode(), response.body());
 				return null;
 			}
 			return readObservationId(response.body());
@@ -83,10 +82,12 @@ public class R2CloudClient {
 			LOG.error("unable to upload", e);
 			return;
 		}
-		httpclient.sendAsync(request, BodyHandlers.ofString()).thenAccept(response -> {
-			if (response.statusCode() != 200) {
-				LOG.error("unable to upload. response code: {}. See logs for details", response.statusCode());
-				LOG.info(response.body());
+		httpclient.sendAsync(request, BodyHandlers.ofString()).exceptionally(ex -> {
+			LOG.error("unable to upload", ex);
+			return null;
+		}).thenAccept(response -> {
+			if (response != null && response.statusCode() != 200) {
+				LOG.error("unable to upload. response code: {}. response: {}", response.statusCode(), response.body());
 			}
 		});
 	}
@@ -121,10 +122,12 @@ public class R2CloudClient {
 			return;
 		}
 		HttpRequest request = createJsonRequest("/api/v1/metrics", o).build();
-		httpclient.sendAsync(request, BodyHandlers.ofString()).thenAccept(response -> {
-			if (response.statusCode() != 200) {
-				LOG.error("unable to save metrics. response code: {}. See logs for details", response.statusCode());
-				LOG.info(response.body());
+		httpclient.sendAsync(request, BodyHandlers.ofString()).exceptionally(ex -> {
+			LOG.error("unable to save metrics", ex);
+			return null;
+		}).thenAccept(response -> {
+			if (response != null && response.statusCode() != 200) {
+				LOG.error("unable to save metrics. response code: {}. response: {}", response.statusCode(), response.body());
 			}
 		});
 	}
