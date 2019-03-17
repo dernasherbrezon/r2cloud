@@ -51,9 +51,9 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	private final Map<String, ScheduledObservation> scheduledObservations = new ConcurrentHashMap<String, ScheduledObservation>();
 
-	private ScheduledExecutorService scheduler = null;
-	private ScheduledExecutorService reaper = null;
-	private ScheduledExecutorService decoder = null;
+	private ScheduledExecutorService schedulerThread = null;
+	private ScheduledExecutorService reaperThread = null;
+	private ScheduledExecutorService decoderThread = null;
 
 	public Scheduler(Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, R2CloudService r2cloudService, ProcessFactory processFactory, ObservationResultDao dao, Map<String, Decoder> decoders) {
 		this.config = config;
@@ -95,12 +95,12 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	// protection from calling start 2 times and more
 	@Override
 	public synchronized void start() {
-		if (scheduler != null) {
+		if (schedulerThread != null) {
 			return;
 		}
-		scheduler = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("scheduler"));
-		reaper = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("reaper"));
-		decoder = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("decoder"));
+		schedulerThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("scheduler"));
+		reaperThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("reaper"));
+		decoderThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("decoder"));
 		onConfigUpdated();
 
 		LOG.info("started");
@@ -114,7 +114,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		}
 		LOG.info("scheduled next pass for {}: {}", cur.getName(), observation.getStart().getTime());
 		IQReader reader = createReader(observation);
-		Future<?> future = scheduler.schedule(new SafeRunnable() {
+		Future<?> future = schedulerThread.schedule(new SafeRunnable() {
 
 			@Override
 			public void doRun() {
@@ -129,7 +129,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				}
 			}
 		}, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
-		Future<?> reaperFuture = reaper.schedule(new SafeRunnable() {
+		Future<?> reaperFuture = reaperThread.schedule(new SafeRunnable() {
 
 			@Override
 			public void doRun() {
@@ -154,7 +154,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 					return;
 				}
 
-				decoder.execute(new SafeRunnable() {
+				decoderThread.execute(new SafeRunnable() {
 
 					@Override
 					public void doRun() {
@@ -213,9 +213,9 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	// protection from calling stop 2 times and more
 	@Override
 	public synchronized void stop() {
-		Util.shutdown(scheduler, config.getThreadPoolShutdownMillis());
-		Util.shutdown(reaper, config.getThreadPoolShutdownMillis());
-		scheduler = null;
+		Util.shutdown(schedulerThread, config.getThreadPoolShutdownMillis());
+		Util.shutdown(reaperThread, config.getThreadPoolShutdownMillis());
+		schedulerThread = null;
 		LOG.info("stopped");
 	}
 
