@@ -123,7 +123,7 @@ public class R2CloudClient {
 		HttpRequest request = createJsonRequest("/api/v1/metrics", o).build();
 		httpclient.sendAsync(request, BodyHandlers.ofString()).thenAccept(response -> {
 			if (response.statusCode() != 200) {
-				LOG.error("unable to save meta. response code: {}. See logs for details", response.statusCode());
+				LOG.error("unable to save metrics. response code: {}. See logs for details", response.statusCode());
 				LOG.info(response.body());
 			}
 		});

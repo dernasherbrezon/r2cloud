@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.UUID;
 
@@ -13,6 +16,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
 import com.sun.net.httpserver.HttpServer;
 
 import ru.r2cloud.JsonHttpResponse;
@@ -59,18 +64,75 @@ public class R2CloudClientTest {
 		server.createContext("/api/v1/observation", new JsonHttpResponse("r2cloudclienttest/malformed2-response.json", 200));
 		assertNull(client.saveMeta(createRequest()));
 	}
-	
+
 	@Test
 	public void testInternalFailure() {
 		server.createContext("/api/v1/observation", new JsonHttpResponse("r2cloudclienttest/internal-failure-response.json", 200));
 		assertNull(client.saveMeta(createRequest()));
 	}
-	
+
 	@Test
 	public void testInvalidRequest() {
 		assertNull(client.saveMeta(null));
 	}
-	
+
+	@Test
+	public void testSaveMetrics() throws InterruptedException {
+		JsonHttpResponse handler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
+		server.createContext("/api/v1/metrics", handler);
+		JsonObject metric = new JsonObject();
+		metric.add("temperature", 0.1d);
+		JsonArray metrics = new JsonArray();
+		metrics.add(metric);
+		client.saveMetrics(metrics);
+		handler.awaitRequest();
+		assertEquals("application/json", handler.getRequestContentType());
+		assertJson("r2cloudclienttest/metrics-request.json", handler.getRequest());
+	}
+
+	@Test
+	public void testSaveBinary() throws Exception {
+		long id = 1L;
+		JsonHttpResponse handler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
+		server.createContext("/api/v1/observation/" + id + "/data", handler);
+		client.saveBinary(id, createFile());
+		handler.awaitRequest();
+		assertEquals("application/octet-stream", handler.getRequestContentType());
+		assertEquals("test", handler.getRequest());
+	}
+
+	@Test
+	public void testSaveJpeg() throws Exception {
+		long id = 1L;
+		JsonHttpResponse handler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
+		server.createContext("/api/v1/observation/" + id + "/data", handler);
+		client.saveJpeg(id, createFile());
+		handler.awaitRequest();
+		assertEquals("image/jpeg", handler.getRequestContentType());
+		assertEquals("test", handler.getRequest());
+	}
+
+	@Test
+	public void testSaveSpectogram() throws Exception {
+		long id = 1L;
+		JsonHttpResponse handler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
+		server.createContext("/api/v1/observation/" + id + "/spectogram", handler);
+		client.saveSpectogram(id, createFile());
+		handler.awaitRequest();
+		assertEquals("image/png", handler.getRequestContentType());
+		assertEquals("test", handler.getRequest());
+	}
+
+	@Test
+	public void testSaveUnknownFile() throws Exception {
+		long id = 1L;
+		JsonHttpResponse handler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
+		server.createContext("/api/v1/observation/" + id + "/data", handler);
+		client.saveBinary(id, new File(tempFolder.getRoot(), UUID.randomUUID().toString()));
+		handler.awaitRequest();
+		assertNull(handler.getRequest());
+	}
+
 	@Before
 	public void start() throws Exception {
 		server = HttpServer.create(new InetSocketAddress("localhost", 8001), 0);
@@ -85,6 +147,14 @@ public class R2CloudClientTest {
 	@After
 	public void stop() throws Exception {
 		server.stop(0);
+	}
+
+	private File createFile() throws IOException {
+		File file = new File(tempFolder.getRoot(), "test");
+		try (FileWriter fw = new FileWriter(file)) {
+			fw.append("test");
+		}
+		return file;
 	}
 
 	private static ObservationFull createRequest() {
