@@ -30,7 +30,7 @@ public class Temperature extends FormattedGauge<Double> implements MetricSupplie
 			}
 			return ((double) Long.valueOf(line) / 1000);
 		} catch (Exception e) {
-			LOG.error("unable to get temp: " + e.getMessage());
+			LOG.error("unable to get temp", e);
 			return null;
 		}
 	}
