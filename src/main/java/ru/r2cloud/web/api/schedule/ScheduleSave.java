@@ -10,6 +10,7 @@ import com.eclipsesource.json.JsonValue;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.satellite.SatelliteDao;
+import ru.r2cloud.satellite.ScheduleEntry;
 import ru.r2cloud.satellite.Scheduler;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
@@ -67,9 +68,9 @@ public class ScheduleSave extends AbstractHttpController {
 		entity.add("name", satelliteToEdit.getName());
 		entity.add("enabled", satelliteToEdit.isEnabled());
 		entity.add("frequency", satelliteToEdit.getFrequency());
-		Long nextObservation = scheduler.getNextObservation(satelliteToEdit.getId());
+		ScheduleEntry nextObservation = scheduler.getNextObservation(satelliteToEdit.getId());
 		if (nextObservation != null) {
-			entity.add("nextPass", nextObservation);
+			entity.add("nextPass", nextObservation.getStartTimeMillis());
 		}
 
 		ModelAndView result = new ModelAndView();

@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -48,14 +47,14 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private final ProcessFactory processFactory;
 	private final ObservationResultDao dao;
 	private final Map<String, Decoder> decoders;
-
-	private final Map<String, ScheduledObservation> scheduledObservations = new ConcurrentHashMap<String, ScheduledObservation>();
+	private final Schedule<ScheduledObservation> schedule;
 
 	private ScheduledExecutorService schedulerThread = null;
 	private ScheduledExecutorService reaperThread = null;
 	private ScheduledExecutorService decoderThread = null;
 
-	public Scheduler(Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, R2CloudService r2cloudService, ProcessFactory processFactory, ObservationResultDao dao, Map<String, Decoder> decoders) {
+	public Scheduler(Schedule<ScheduledObservation> schedule, Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, R2CloudService r2cloudService, ProcessFactory processFactory, ObservationResultDao dao, Map<String, Decoder> decoders) {
+		this.schedule = schedule;
 		this.config = config;
 		this.config.subscribe(this, "locaiton.lat");
 		this.config.subscribe(this, "locaiton.lon");
@@ -108,7 +107,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	public void schedule(Satellite cur) {
 		long current = clock.millis();
-		ObservationRequest observation = factory.create(new Date(current), cur);
+		ObservationRequest observation = create(current, cur);
 		if (observation == null) {
 			return;
 		}
@@ -133,13 +132,8 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 			@Override
 			public void doRun() {
-				IQData data;
 				future.cancel(true);
-				try {
-					data = reader.stop();
-				} finally {
-					scheduledObservations.remove(cur.getId());
-				}
+				IQData data = reader.stop();
 				schedule(cur);
 
 				if (data == null || data.getWavFile() == null || !data.getWavFile().exists()) {
@@ -182,11 +176,25 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				});
 			}
 		}, observation.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
-		ScheduledObservation previous = scheduledObservations.put(cur.getId(), new ScheduledObservation(observation, future, reaperFuture));
-		if (previous != null) {
-			LOG.info("cancelling previous: {}", previous.getReq().getStart().getTime());
-			previous.cancel();
+		schedule.add(new ScheduledObservation(observation, future, reaperFuture));
+	}
+
+	private ObservationRequest create(long current, Satellite cur) {
+		long next = current;
+		while (!Thread.currentThread().isInterrupted()) {
+			ObservationRequest observation = factory.create(new Date(next), cur);
+			if (observation == null) {
+				return null;
+			}
+
+			if (!schedule.hasOverlap(observation.getStartTimeMillis(), observation.getEndTimeMillis())) {
+				return observation;
+			}
+
+			// find next
+			next = observation.getEndTimeMillis();
 		}
+		return null;
 	}
 
 	private IQReader createReader(ObservationRequest req) {
@@ -202,12 +210,8 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		}
 	}
 
-	public Long getNextObservation(String id) {
-		ScheduledObservation result = scheduledObservations.get(id);
-		if (result == null) {
-			return null;
-		}
-		return result.getReq().getStartTimeMillis();
+	public ScheduleEntry getNextObservation(String id) {
+		return schedule.get(id);
 	}
 
 	// protection from calling stop 2 times and more
@@ -220,12 +224,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	}
 
 	public void cancel(Satellite satelliteToEdit) {
-		ScheduledObservation previous = scheduledObservations.remove(satelliteToEdit.getId());
-		if (previous == null) {
-			return;
-		}
-		LOG.info("cancelling {}: {}", satelliteToEdit.getName(), previous.getReq().getStart().getTime());
-		previous.cancel();
+		schedule.cancel(satelliteToEdit.getId());
 	}
 
 }

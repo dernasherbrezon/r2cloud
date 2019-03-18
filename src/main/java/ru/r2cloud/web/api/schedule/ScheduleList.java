@@ -6,6 +6,7 @@ import com.eclipsesource.json.JsonObject;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.satellite.SatelliteDao;
+import ru.r2cloud.satellite.ScheduleEntry;
 import ru.r2cloud.satellite.Scheduler;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
@@ -29,9 +30,9 @@ public class ScheduleList extends AbstractHttpController {
 			curSatellite.add("name", cur.getName());
 			curSatellite.add("enabled", cur.isEnabled());
 			curSatellite.add("frequency", cur.getFrequency());
-			Long nextObservation = scheduler.getNextObservation(cur.getId());
+			ScheduleEntry nextObservation = scheduler.getNextObservation(cur.getId());
 			if (nextObservation != null) {
-				curSatellite.add("nextPass", nextObservation);
+				curSatellite.add("nextPass", nextObservation.getStartTimeMillis());
 			}
 			entity.add(curSatellite);
 		}

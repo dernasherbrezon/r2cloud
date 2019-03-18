@@ -4,7 +4,7 @@ import java.util.concurrent.Future;
 
 import ru.r2cloud.model.ObservationRequest;
 
-class ScheduledObservation {
+public class ScheduledObservation implements ScheduleEntry {
 
 	private final ObservationRequest req;
 	private final Future<?> future;
@@ -28,6 +28,22 @@ class ScheduledObservation {
 		return reaperFuture;
 	}
 
+	@Override
+	public String getId() {
+		return req.getSatelliteId();
+	}
+	
+	@Override
+	public long getStartTimeMillis() {
+		return req.getStartTimeMillis();
+	}
+	
+	@Override
+	public long getEndTimeMillis() {
+		return req.getEndTimeMillis();
+	}
+	
+	@Override
 	public void cancel() {
 		if (future != null) {
 			future.cancel(true);

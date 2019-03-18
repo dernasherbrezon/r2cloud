@@ -22,6 +22,7 @@ import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.ObservationResultDao;
 import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.satellite.SatelliteDao;
+import ru.r2cloud.satellite.Schedule;
 import ru.r2cloud.satellite.Scheduler;
 import ru.r2cloud.satellite.decoder.APTDecoder;
 import ru.r2cloud.satellite.decoder.Aausat4Decoder;
@@ -164,7 +165,7 @@ public class R2Cloud {
 		validateDecoders();
 
 		observationFactory = new ObservationFactory(predict, tleDao);
-		scheduler = new Scheduler(props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, r2cloudService, processFactory, resultDao, decoders);
+		scheduler = new Scheduler(new Schedule<>(), props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, r2cloudService, processFactory, resultDao, decoders);
 
 		// setup web server
 		index(new Health());
