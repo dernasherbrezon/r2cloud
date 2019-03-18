@@ -12,7 +12,7 @@ public class Schedule<T extends ScheduleEntry> {
 
 	private final Map<String, T> scheduledObservations = new ConcurrentHashMap<String, T>();
 
-	public void add(T entry) {
+	public synchronized void add(T entry) {
 		if (entry == null) {
 			return;
 		}
@@ -29,7 +29,7 @@ public class Schedule<T extends ScheduleEntry> {
 		}
 	}
 
-	public void cancel(String id) {
+	public synchronized void cancel(String id) {
 		if (id == null) {
 			return;
 		}
@@ -41,14 +41,14 @@ public class Schedule<T extends ScheduleEntry> {
 		previous.cancel();
 	}
 
-	public T get(String id) {
+	public synchronized T get(String id) {
 		if (id == null) {
 			return null;
 		}
 		return scheduledObservations.get(id);
 	}
 
-	public boolean hasOverlap(long start, long end) {
+	public synchronized boolean hasOverlap(long start, long end) {
 		if (end < start) {
 			throw new IllegalArgumentException("end is less than start: " + end + " start: " + start);
 		}
