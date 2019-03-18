@@ -71,18 +71,18 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	@Override
 	public void onConfigUpdated() {
-		boolean schedule;
+		boolean updateSchedule;
 		if (config.getProperty("locaiton.lat") != null && config.getProperty("locaiton.lon") != null) {
-			schedule = true;
+			updateSchedule = true;
 		} else {
-			schedule = false;
+			updateSchedule = false;
 		}
 		List<Satellite> supportedSatellites = satellites.findAll();
 		for (Satellite cur : supportedSatellites) {
 			if (!cur.isEnabled()) {
 				continue;
 			}
-			if (schedule) {
+			if (updateSchedule) {
 				cancel(cur);
 				schedule(cur);
 			} else {
