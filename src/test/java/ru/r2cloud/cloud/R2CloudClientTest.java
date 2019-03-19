@@ -81,7 +81,8 @@ public class R2CloudClientTest {
 		JsonHttpResponse handler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
 		server.createContext("/api/v1/metrics", handler);
 		JsonObject metric = new JsonObject();
-		metric.add("temperature", 0.1d);
+		metric.add("name", "temperature");
+		metric.add("value", 0.1d);
 		JsonArray metrics = new JsonArray();
 		metrics.add(metric);
 		client.saveMetrics(metrics);
