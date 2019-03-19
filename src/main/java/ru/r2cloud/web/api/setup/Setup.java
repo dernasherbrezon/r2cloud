@@ -18,6 +18,7 @@ import ru.r2cloud.web.ModelAndView;
 import ru.r2cloud.web.ValidationResult;
 import ru.r2cloud.web.WebServer;
 import ru.r2cloud.web.api.AccessToken;
+import ru.r2cloud.web.api.Messages;
 
 public class Setup extends AbstractHttpController {
 
@@ -47,13 +48,13 @@ public class Setup extends AbstractHttpController {
 		String keyword = WebServer.getString(request, KEYWORD_PARAMETER);
 
 		if (username == null || username.trim().length() == 0) {
-			errors.put(USERNAME_PARAMETER, "Cannot be empty");
+			errors.put(USERNAME_PARAMETER, Messages.CANNOT_BE_EMPTY);
 		}
 		if (password == null || password.trim().length() == 0) {
-			errors.put(PASSWORD_PARAMETER, "Cannot be empty");
+			errors.put(PASSWORD_PARAMETER, Messages.CANNOT_BE_EMPTY);
 		}
 		if (keyword == null || keyword.trim().length() == 0) {
-			errors.put(KEYWORD_PARAMETER, "Cannot be empty");
+			errors.put(KEYWORD_PARAMETER, Messages.CANNOT_BE_EMPTY);
 		}
 
 		if (!errors.isEmpty()) {

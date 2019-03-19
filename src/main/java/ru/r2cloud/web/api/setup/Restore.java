@@ -14,6 +14,7 @@ import ru.r2cloud.web.ModelAndView;
 import ru.r2cloud.web.Success;
 import ru.r2cloud.web.ValidationResult;
 import ru.r2cloud.web.WebServer;
+import ru.r2cloud.web.api.Messages;
 
 public class Restore extends AbstractHttpController {
 
@@ -34,7 +35,7 @@ public class Restore extends AbstractHttpController {
 		ValidationResult errors = new ValidationResult();
 		String username = WebServer.getString(request, "username");
 		if (username == null || username.trim().length() == 0) {
-			errors.put("username", "Cannot be empty");
+			errors.put("username", Messages.CANNOT_BE_EMPTY);
 		}
 		if (!errors.isEmpty()) {
 			LOG.info("unable to save: " + errors);

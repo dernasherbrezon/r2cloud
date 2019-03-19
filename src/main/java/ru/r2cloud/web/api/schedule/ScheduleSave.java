@@ -17,6 +17,7 @@ import ru.r2cloud.web.BadRequest;
 import ru.r2cloud.web.ModelAndView;
 import ru.r2cloud.web.ValidationResult;
 import ru.r2cloud.web.WebServer;
+import ru.r2cloud.web.api.Messages;
 
 public class ScheduleSave extends AbstractHttpController {
 
@@ -40,7 +41,7 @@ public class ScheduleSave extends AbstractHttpController {
 		String id = WebServer.getString(request, "id");
 		ValidationResult errors = new ValidationResult();
 		if (id == null || id.trim().length() == 0) {
-			errors.put("id", "Cannot be empty");
+			errors.put("id", Messages.CANNOT_BE_EMPTY);
 		}
 		Satellite satelliteToEdit = null;
 		if (errors.isEmpty()) {
