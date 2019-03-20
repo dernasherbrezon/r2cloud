@@ -1,7 +1,7 @@
-if [ -e /etc/nginx/sites-enabled/instaseller ]; then
-	rm /etc/nginx/sites-enabled/instaseller
-	nginx -s reload
-fi
+rm -f /etc/modprobe.d/r2cloud-blacklist.conf
+rm -f /etc/cron.daily/r2cloud
+rm -f /etc/sudoers.d/nginx
+rm -f /home/pi/.wxtoimglic
 
 if systemctl is-active r2cloud; then
 	systemctl stop r2cloud.service
