@@ -8,7 +8,7 @@ public class TLE extends uk.me.g4dpz.satellite.TLE {
 
 	private final String[] raw;
 
-	public TLE(String[] tle) throws IllegalArgumentException {
+	public TLE(String[] tle) {
 		super(tle);
 		this.raw = tle;
 	}
@@ -34,9 +34,7 @@ public class TLE extends uk.me.g4dpz.satellite.TLE {
 		if (getClass() != obj.getClass())
 			return false;
 		TLE other = (TLE) obj;
-		if (!Arrays.equals(raw, other.raw))
-			return false;
-		return true;
+		return Arrays.equals(raw, other.raw);
 	}
 	
 }
