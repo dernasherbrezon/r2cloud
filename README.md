@@ -2,9 +2,9 @@
 
 r2cloud converts Raspberry PI into the base station which supports various radio signals, such as:
 
-  - ADS-B (airplane)
   - APT (weather satellite)
   - LRPT (weather satellite)
+  - Cubesats
  
 ## Screenshots ([r2cloud-ui](https://github.com/dernasherbrezon/r2cloud-ui)) 
 

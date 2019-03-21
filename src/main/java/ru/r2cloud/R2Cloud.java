@@ -16,8 +16,6 @@ import ru.r2cloud.cloud.R2CloudService;
 import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.Satellite;
-import ru.r2cloud.rx.ADSB;
-import ru.r2cloud.rx.ADSBDao;
 import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.ObservationResultDao;
 import ru.r2cloud.satellite.Predict;
@@ -86,8 +84,6 @@ public class R2Cloud {
 
 	private final Map<String, HttpContoller> controllers = new HashMap<>();
 	private final WebServer webServer;
-	private final ADSB adsb;
-	private final ADSBDao dao;
 	private final Authenticator auth;
 	private final Metrics metrics;
 	private final RtlSdrStatusDao rtlsdrStatusDao;
@@ -119,15 +115,12 @@ public class R2Cloud {
 		rtlsdrLock = new RtlSdrLock();
 		rtlsdrLock.register(Scheduler.class, 3);
 		rtlsdrLock.register(RtlSdrStatusDao.class, 2);
-		rtlsdrLock.register(ADSB.class, 1);
 
 		r2cloudClient = new R2CloudClient(props);
 		spectogramService = new SpectogramService(props);
 		resultDao = new ObservationResultDao(props);
 		r2cloudService = new R2CloudService(props, resultDao, r2cloudClient, spectogramService);
 		predict = new Predict(props);
-		dao = new ADSBDao(props);
-		adsb = new ADSB(props, dao, rtlsdrLock, processFactory);
 		auth = new Authenticator(props);
 		metrics = new Metrics(props, r2cloudService);
 		rtlsdrStatusDao = new RtlSdrStatusDao(props, rtlsdrLock);
@@ -169,7 +162,6 @@ public class R2Cloud {
 
 		// setup web server
 		index(new Health());
-		index(new ru.r2cloud.web.api.ADSB(dao));
 		index(new AccessToken(auth));
 		index(new Setup(auth, props));
 		index(new Configured(auth, props));
@@ -192,8 +184,6 @@ public class R2Cloud {
 
 	public void start() {
 		metrics.start();
-		dao.start();
-		adsb.start();
 		acmeClient.start();
 		ddnsClient.start();
 		rtlsdrStatusDao.start();
@@ -216,8 +206,6 @@ public class R2Cloud {
 		rtlsdrStatusDao.stop();
 		ddnsClient.stop();
 		acmeClient.stop();
-		adsb.stop();
-		dao.stop();
 		metrics.stop();
 	}
 
