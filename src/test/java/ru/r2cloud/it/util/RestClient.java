@@ -194,6 +194,10 @@ public class RestClient {
 	public JsonObject getGeneralConfiguration() {
 		return getData("/api/v1/admin/config/general");
 	}
+	
+	public JsonObject getTle() {
+		return getData("/api/v1/admin/tle");
+	}
 
 	public void setGeneralConfiguration(Double lat, Double lng, boolean autoUpdate) {
 		HttpResponse<String> response = setGeneralConfigurationWithResponse(lat, lng, autoUpdate);
@@ -239,24 +243,30 @@ public class RestClient {
 		}
 	}
 
-	public JsonObject updateSchedule(String id, boolean enabled) {
+	public HttpResponse<String> updateScheduleWithResponse(String id, boolean enabled) {
 		JsonObject entity = new JsonObject();
-		entity.add("id", id);
+		if (id != null) {
+			entity.add("id", id);
+		}
 		entity.add("enabled", enabled);
 		HttpRequest request = createJsonPost("/api/v1/admin/schedule/save", entity).build();
 		try {
-			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
-			if (response.statusCode() != 200) {
-				LOG.info("response: {}", response.body());
-				throw new RuntimeException("invalid status code: " + response.statusCode());
-			}
-			return (JsonObject) Json.parse(response.body());
+			return httpclient.send(request, BodyHandlers.ofString());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new RuntimeException("unable to send request");
 		}
+	}
+
+	public JsonObject updateSchedule(String id, boolean enabled) {
+		HttpResponse<String> response = updateScheduleWithResponse(id, enabled);
+		if (response.statusCode() != 200) {
+			LOG.info("response: {}", response.body());
+			throw new RuntimeException("invalid status code: " + response.statusCode());
+		}
+		return (JsonObject) Json.parse(response.body());
 	}
 
 	public HttpResponse<String> getFileUnauth(String url) {

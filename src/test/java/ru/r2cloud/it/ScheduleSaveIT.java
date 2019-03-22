@@ -1,8 +1,11 @@
 package ru.r2cloud.it;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.net.http.HttpResponse;
 
 import org.junit.Test;
 
@@ -20,6 +23,20 @@ public class ScheduleSaveIT extends RegisteredTest {
 		assertTrue(result.getBoolean("enabled", false));
 		result = client.updateSchedule(satelliteId, false);
 		assertNull(result.get("nextPass"));
+	}
+
+	@Test
+	public void testSaveUnknownSatellite() {
+		HttpResponse<String> response = client.updateScheduleWithResponse("-1", true);
+		assertEquals(400, response.statusCode());
+		assertErrorInField("id", response);
+	}
+	
+	@Test
+	public void testSaveUnknownSatellite2() {
+		HttpResponse<String> response = client.updateScheduleWithResponse(null, true);
+		assertEquals(400, response.statusCode());
+		assertErrorInField("id", response);
 	}
 
 }
