@@ -2,7 +2,6 @@ package ru.r2cloud;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.HashMap;
@@ -106,8 +105,7 @@ public class R2Cloud {
 	private final SpectogramService spectogramService;
 	private final Map<String, Decoder> decoders = new HashMap<>();
 
-	public R2Cloud(InputStream systemProperties, String userProperties) throws IOException {
-		Configuration props = new Configuration(systemProperties, userProperties);
+	public R2Cloud(Configuration props) {
 		threadFactory = new ThreadPoolFactoryImpl();
 		processFactory = new ProcessFactory();
 		clock = new DefaultClock();
@@ -128,7 +126,7 @@ public class R2Cloud {
 		ddnsClient = new DDNSClient(props);
 		acmeClient = new AcmeClient(props);
 		satelliteDao = new SatelliteDao(props);
-		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient("http://celestrak.com"));
+		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient(props.getProperty("celestrak.hostname")));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
 		APTDecoder aptDecoder = new APTDecoder(props, processFactory);
 		decoders.put("25338", aptDecoder);
@@ -217,7 +215,8 @@ public class R2Cloud {
 		R2Cloud app;
 		String userPropertiesFilename = System.getProperty("user.home") + File.separator + ".r2cloud";
 		try (InputStream is = new FileInputStream(args[0])) {
-			app = new R2Cloud(is, userPropertiesFilename);
+			Configuration props = new Configuration(is, userPropertiesFilename);
+			app = new R2Cloud(props);
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e);
 		}

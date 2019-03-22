@@ -258,4 +258,38 @@ public class RestClient {
 			throw new RuntimeException("unable to send request");
 		}
 	}
+
+	public HttpResponse<String> getFileUnauth(String url) {
+		HttpRequest request = createDefaultRequest(url).GET().build();
+		try {
+			return httpclient.send(request, BodyHandlers.ofString());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
+
+	public HttpResponse<String> getFileResponse(String url) {
+		HttpRequest request = createAuthRequest(url).GET().build();
+		try {
+			return httpclient.send(request, BodyHandlers.ofString());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
+
+	public String getFile(String url) {
+		HttpResponse<String> response = getFileResponse(url);
+		if (response.statusCode() != 200) {
+			LOG.info("response: {}", response.body());
+			throw new RuntimeException("invalid status code: " + response.statusCode());
+		}
+		return response.body();
+	}
+
 }
