@@ -79,15 +79,15 @@ public class R2CloudClient {
 		try {
 			request = createRequest(url).header("Content-Type", contentType).PUT(BodyPublishers.ofFile(file.toPath())).build();
 		} catch (FileNotFoundException e) {
-			LOG.error("unable to upload", e);
+			LOG.error("unable to upload: " + url, e);
 			return;
 		}
 		httpclient.sendAsync(request, BodyHandlers.ofString()).exceptionally(ex -> {
-			LOG.error("unable to upload", ex);
+			LOG.error("unable to upload: " + url, ex);
 			return null;
 		}).thenAccept(response -> {
 			if (response != null && response.statusCode() != 200 && LOG.isErrorEnabled()) {
-				LOG.error("unable to upload. response code: {}. response: {}", response.statusCode(), response.body());
+				LOG.error("unable to upload: {} response code: {}. response: {}", url, response.statusCode(), response.body());
 			}
 		});
 	}
