@@ -33,14 +33,14 @@ public class R2CloudClient {
 
 	private HttpClient httpclient;
 	private final String hostname;
-	private final String apiKey;
+	private final Configuration config;
 
 	public R2CloudClient(Configuration config) {
+		this.config = config;
 		this.hostname = config.getProperty("r2cloud.hostname");
 		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMillis(config.getInteger("r2cloud.connectionTimeout"))).build();
-		this.apiKey = config.getProperty("r2cloud.apiKey");
 	}
-
+	
 	public Long saveMeta(ObservationFull observation) {
 		if (observation == null) {
 			return null;
@@ -140,7 +140,7 @@ public class R2CloudClient {
 		Builder result = HttpRequest.newBuilder().uri(URI.create(hostname + path));
 		result.timeout(Duration.ofMinutes(1L));
 		result.header("User-Agent", "r2cloud/0.2 info@r2cloud.ru");
-		result.header("Authorization", apiKey);
+		result.header("Authorization", config.getProperty("r2cloud.apiKey"));
 		return result;
 	}
 
