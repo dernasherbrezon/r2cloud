@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo "command line: $@"
-
 POSITIONAL=()
 while [[ $# -gt 0 ]]
 do

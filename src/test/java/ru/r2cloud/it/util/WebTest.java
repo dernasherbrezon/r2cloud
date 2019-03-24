@@ -48,6 +48,7 @@ public class WebTest {
 	private static CelestrakServer celestrak;
 	private static String userSettingsLocation;
 	private static File rtlSdrMock;
+	private static File rtlTestMock;
 
 	@BeforeClass
 	public static void start() throws IOException {
@@ -55,7 +56,8 @@ public class WebTest {
 		celestrak.start();
 		celestrak.mockResponse(Util.loadExpected("sample-tle.txt"));
 
-		rtlSdrMock = setupRtlSdrMock();
+		rtlSdrMock = setupScriptMock("rtl_sdr_mock.sh");
+		rtlTestMock = setupScriptMock("rtl_test_mock.sh");
 
 		userSettingsLocation = System.getProperty("java.io.tmpdir") + File.separator + ".r2cloud-" + UUID.randomUUID().toString();
 		Configuration config;
@@ -66,23 +68,23 @@ public class WebTest {
 		config.setProperty("locaiton.lat", "56.189");
 		config.setProperty("locaiton.lon", "38.174");
 		config.setProperty("satellites.rtlsdr.path", rtlSdrMock.getAbsolutePath());
+		config.setProperty("rtltest.path", rtlTestMock.getAbsolutePath());
 
 		server = new R2Cloud(config);
 		server.start();
 		assertStarted();
 	}
 
-	private static File setupRtlSdrMock() throws IOException {
-		String rtlSdrMock = "rtl_sdr_mock.sh";
-		File rtlSdrMockFile = new File(System.getProperty("java.io.tmpdir") + File.separator + rtlSdrMock);
-		try (BufferedReader r = new BufferedReader(new InputStreamReader(WebTest.class.getClassLoader().getResourceAsStream(rtlSdrMock), StandardCharsets.UTF_8)); BufferedWriter w = new BufferedWriter(new FileWriter(rtlSdrMockFile))) {
+	private static File setupScriptMock(String filename) throws IOException {
+		File result = new File(System.getProperty("java.io.tmpdir") + File.separator + filename);
+		try (BufferedReader r = new BufferedReader(new InputStreamReader(WebTest.class.getClassLoader().getResourceAsStream(filename), StandardCharsets.UTF_8)); BufferedWriter w = new BufferedWriter(new FileWriter(result))) {
 			String curLine = null;
 			while ((curLine = r.readLine()) != null) {
 				w.append(curLine).append("\n");
 			}
 		}
-		rtlSdrMockFile.setExecutable(true);
-		return rtlSdrMockFile;
+		result.setExecutable(true);
+		return result;
 	}
 
 	@AfterClass
@@ -97,6 +99,9 @@ public class WebTest {
 		}
 		if (rtlSdrMock != null && rtlSdrMock.exists() && !rtlSdrMock.delete()) {
 			LOG.error("unable to delete rtlsdr mock at: {}", rtlSdrMock.getAbsolutePath());
+		}
+		if (rtlTestMock != null && rtlTestMock.exists() && !rtlTestMock.delete()) {
+			LOG.error("unable to delete rtltest mock at: {}", rtlTestMock.getAbsolutePath());
 		}
 		if (celestrak != null) {
 			celestrak.stop();
