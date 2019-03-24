@@ -7,7 +7,6 @@ import static org.junit.Assert.assertNull;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.util.UUID;
 
 import org.junit.After;
@@ -18,9 +17,9 @@ import org.junit.rules.TemporaryFolder;
 
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
-import com.sun.net.httpserver.HttpServer;
 
 import ru.r2cloud.JsonHttpResponse;
+import ru.r2cloud.R2CloudServer;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.Util;
 import ru.r2cloud.model.FrequencySource;
@@ -30,7 +29,7 @@ import ru.r2cloud.model.ObservationResult;
 
 public class R2CloudClientTest {
 
-	private HttpServer server;
+	private R2CloudServer server;
 	private R2CloudClient client;
 
 	@Rule
@@ -39,7 +38,7 @@ public class R2CloudClientTest {
 	@Test
 	public void testSaveMeta() {
 		JsonHttpResponse handler = new JsonHttpResponse("r2cloudclienttest/save-meta-response.json", 200);
-		server.createContext("/api/v1/observation", handler);
+		server.setObservationMock(handler);
 		Long result = client.saveMeta(createRequest());
 		assertNotNull(result);
 		assertEquals(1L, result.longValue());
@@ -49,25 +48,25 @@ public class R2CloudClientTest {
 
 	@Test
 	public void testAuthFailure() {
-		server.createContext("/api/v1/observation", new JsonHttpResponse("r2cloudclienttest/auth-failure-response.json", 403));
+		server.setObservationMock(new JsonHttpResponse("r2cloudclienttest/auth-failure-response.json", 403));
 		assertNull(client.saveMeta(createRequest()));
 	}
 
 	@Test
 	public void testMalformedJsonInResponse() {
-		server.createContext("/api/v1/observation", new JsonHttpResponse("r2cloudclienttest/malformed-response.json", 200));
+		server.setObservationMock(new JsonHttpResponse("r2cloudclienttest/malformed-response.json", 200));
 		assertNull(client.saveMeta(createRequest()));
 	}
 
 	@Test
 	public void testMalformedJsonInResponse2() {
-		server.createContext("/api/v1/observation", new JsonHttpResponse("r2cloudclienttest/malformed2-response.json", 200));
+		server.setObservationMock(new JsonHttpResponse("r2cloudclienttest/malformed2-response.json", 200));
 		assertNull(client.saveMeta(createRequest()));
 	}
 
 	@Test
 	public void testInternalFailure() {
-		server.createContext("/api/v1/observation", new JsonHttpResponse("r2cloudclienttest/internal-failure-response.json", 200));
+		server.setObservationMock(new JsonHttpResponse("r2cloudclienttest/internal-failure-response.json", 200));
 		assertNull(client.saveMeta(createRequest()));
 	}
 
@@ -79,7 +78,7 @@ public class R2CloudClientTest {
 	@Test
 	public void testSaveMetrics() throws InterruptedException {
 		JsonHttpResponse handler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
-		server.createContext("/api/v1/metrics", handler);
+		server.setMetricsMock(handler);
 		JsonObject metric = new JsonObject();
 		metric.add("name", "temperature");
 		metric.add("value", 0.1d);
@@ -95,7 +94,7 @@ public class R2CloudClientTest {
 	public void testSaveBinary() throws Exception {
 		long id = 1L;
 		JsonHttpResponse handler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
-		server.createContext("/api/v1/observation/" + id + "/data", handler);
+		server.setDataMock(id, handler);
 		client.saveBinary(id, createFile());
 		handler.awaitRequest();
 		assertEquals("application/octet-stream", handler.getRequestContentType());
@@ -106,7 +105,7 @@ public class R2CloudClientTest {
 	public void testSaveJpeg() throws Exception {
 		long id = 1L;
 		JsonHttpResponse handler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
-		server.createContext("/api/v1/observation/" + id + "/data", handler);
+		server.setDataMock(id, handler);
 		client.saveJpeg(id, createFile());
 		handler.awaitRequest();
 		assertEquals("image/jpeg", handler.getRequestContentType());
@@ -117,7 +116,7 @@ public class R2CloudClientTest {
 	public void testSaveSpectogram() throws Exception {
 		long id = 1L;
 		JsonHttpResponse handler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
-		server.createContext("/api/v1/observation/" + id + "/spectogram", handler);
+		server.setSpectogramMock(id, handler);
 		client.saveSpectogram(id, createFile());
 		handler.awaitRequest();
 		assertEquals("image/png", handler.getRequestContentType());
@@ -128,7 +127,7 @@ public class R2CloudClientTest {
 	public void testSaveUnknownFile() throws Exception {
 		long id = 1L;
 		JsonHttpResponse handler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
-		server.createContext("/api/v1/observation/" + id + "/data", handler);
+		server.setDataMock(id, handler);
 		client.saveBinary(id, new File(tempFolder.getRoot(), UUID.randomUUID().toString()));
 		handler.awaitRequest();
 		assertNull(handler.getRequest());
@@ -136,10 +135,10 @@ public class R2CloudClientTest {
 
 	@Before
 	public void start() throws Exception {
-		server = HttpServer.create(new InetSocketAddress("localhost", 8001), 0);
+		server = new R2CloudServer();
 		server.start();
 		TestConfiguration config = new TestConfiguration(tempFolder);
-		config.setProperty("r2cloud.hostname", "http://localhost:8001");
+		config.setProperty("r2cloud.hostname", server.getUrl());
 		config.setProperty("r2cloud.connectionTimeout", "1000");
 		config.setProperty("r2cloud.apiKey", UUID.randomUUID().toString());
 		client = new R2CloudClient(config);
@@ -147,7 +146,9 @@ public class R2CloudClientTest {
 
 	@After
 	public void stop() throws Exception {
-		server.stop(0);
+		if (server != null) {
+			server.stop();
+		}
 	}
 
 	private File createFile() throws IOException {

@@ -70,6 +70,7 @@ public class WebTest {
 		config.setProperty("satellites.rtlsdr.path", rtlSdrMock.getAbsolutePath());
 		config.setProperty("rtltest.path", rtlTestMock.getAbsolutePath());
 		config.setProperty("satellites.sox.path", "sox");
+		config.setProperty("r2cloud.hostname", "http://localhost:8001");
 
 		server = new R2Cloud(config);
 		server.start();

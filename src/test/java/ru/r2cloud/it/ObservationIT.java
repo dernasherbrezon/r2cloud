@@ -3,32 +3,54 @@ package ru.r2cloud.it;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.UUID;
+
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
+import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
+import ru.r2cloud.JsonHttpResponse;
+import ru.r2cloud.R2CloudServer;
 import ru.r2cloud.RtlSdrDataServer;
 import ru.r2cloud.it.util.RegisteredTest;
 
 public class ObservationIT extends RegisteredTest {
 
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
-
 	private RtlSdrDataServer rtlSdrMock;
+	private R2CloudServer server;
 
 	@Test
 	public void testMeteorObservation() throws Exception {
 		rtlSdrMock.mockResponse("/data/40069-1553411549943.raw");
+		JsonHttpResponse metaHandler = new JsonHttpResponse("r2cloudclienttest/save-meta-response.json", 200);
+		server.setObservationMock(metaHandler);
+		JsonHttpResponse spectogramHandler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
+		server.setSpectogramMock(1L, spectogramHandler);
+
+		//start observation
 		String observationId = client.scheduleStart("40069");
 		assertNotNull(observationId);
 		Thread.sleep(1000);
+		//complete observation
 		client.scheduleComplete("40069");
-		JsonObject observation = awaitObservation(observationId);
+		
+		//get observation and assert
+		assertObservation(awaitObservation(observationId));
+
+		//wait for r2cloud meta upload and assert
+		metaHandler.awaitRequest();
+		assertObservation((JsonObject) Json.parse(metaHandler.getRequest()));
+		
+		//TODO
+//		//wait for spectogram upload and assert
+//		spectogramHandler.awaitRequest();
+//		System.out.println(spectogramHandler.getRequestContentType());
+	}
+
+	private static void assertObservation(JsonObject observation) {
 		assertNotNull(observation);
 		assertEquals(150000, observation.getInt("sampleRate", 0));
 		assertEquals(240000, observation.getInt("inputSampleRate", 0));
@@ -43,12 +65,18 @@ public class ObservationIT extends RegisteredTest {
 	@Override
 	public void start() throws Exception {
 		super.start();
+		client.saveR2CloudConfiguration(UUID.randomUUID().toString(), true);
 		rtlSdrMock = new RtlSdrDataServer();
 		rtlSdrMock.start();
+		server = new R2CloudServer();
+		server.start();
 	}
 
 	@After
 	public void stop() {
+		if (server != null) {
+			server.stop();
+		}
 		if (rtlSdrMock != null) {
 			rtlSdrMock.stop();
 		}
