@@ -66,8 +66,10 @@ import ru.r2cloud.web.api.configuration.SSLLog;
 import ru.r2cloud.web.api.observation.ObservationList;
 import ru.r2cloud.web.api.observation.ObservationLoad;
 import ru.r2cloud.web.api.observation.ObservationSpectrogram;
+import ru.r2cloud.web.api.schedule.ScheduleComplete;
 import ru.r2cloud.web.api.schedule.ScheduleList;
 import ru.r2cloud.web.api.schedule.ScheduleSave;
+import ru.r2cloud.web.api.schedule.ScheduleStart;
 import ru.r2cloud.web.api.setup.Restore;
 import ru.r2cloud.web.api.setup.Setup;
 import ru.r2cloud.web.api.status.Overview;
@@ -177,6 +179,8 @@ public class R2Cloud {
 		index(new ObservationLoad(resultDao));
 		index(new ScheduleList(satelliteDao, scheduler));
 		index(new ScheduleSave(satelliteDao, scheduler));
+		index(new ScheduleStart(satelliteDao, scheduler));
+		index(new ScheduleComplete(scheduler));
 		webServer = new WebServer(props, controllers, auth);
 	}
 

@@ -18,7 +18,6 @@ import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.satellite.decoder.APTDecoder;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.Util;
-import uk.me.g4dpz.satellite.SatPos;
 
 public class APTDecoderIT {
 
@@ -35,8 +34,8 @@ public class APTDecoderIT {
 			Util.copy(is, fos);
 		}
 		ObservationRequest request = new ObservationRequest();
-		request.setStart(new SatPos());
-		request.setEnd(new SatPos());
+		request.setStartLatitude(0.0);
+		request.setEndLatitude(0.0);
 		APTDecoder decoder = new APTDecoder(config, factory);
 		ObservationResult result = decoder.decode(wav, request);
 		assertNull(result.getaPath());

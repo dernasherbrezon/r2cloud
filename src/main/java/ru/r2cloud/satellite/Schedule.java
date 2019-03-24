@@ -29,16 +29,17 @@ public class Schedule<T extends ScheduleEntry> {
 		}
 	}
 
-	public synchronized void cancel(String id) {
+	public synchronized T cancel(String id) {
 		if (id == null) {
-			return;
+			return null;
 		}
 		T previous = scheduledObservations.remove(id);
 		if (previous == null) {
-			return;
+			return null;
 		}
 		LOG.info("cancelling {}: {}", id, previous.getStartTimeMillis());
 		previous.cancel();
+		return previous;
 	}
 
 	public synchronized T get(String id) {
@@ -48,18 +49,18 @@ public class Schedule<T extends ScheduleEntry> {
 		return scheduledObservations.get(id);
 	}
 
-	public synchronized boolean hasOverlap(long start, long end) {
+	public synchronized T getOverlap(long start, long end) {
 		if (end < start) {
 			throw new IllegalArgumentException("end is less than start: " + end + " start: " + start);
 		}
 		for (T cur : scheduledObservations.values()) {
 			if (cur.getStartTimeMillis() < start && start < cur.getEndTimeMillis()) {
-				return true;
+				return cur;
 			}
 			if (cur.getStartTimeMillis() < end && end < cur.getEndTimeMillis()) {
-				return true;
+				return cur;
 			}
 		}
-		return false;
+		return null;
 	}
 }

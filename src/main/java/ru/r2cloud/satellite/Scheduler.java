@@ -84,7 +84,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			}
 			if (updateSchedule) {
 				cancel(cur);
-				schedule(cur);
+				schedule(cur, false);
 			} else {
 				cancel(cur);
 			}
@@ -105,15 +105,15 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		LOG.info("started");
 	}
 
-	public void schedule(Satellite cur) {
+	public ObservationRequest schedule(Satellite cur, boolean immediately) {
 		long current = clock.millis();
-		ObservationRequest observation = create(current, cur);
+		ObservationRequest observation = create(current, cur, immediately);
 		if (observation == null) {
-			return;
+			return null;
 		}
-		LOG.info("scheduled next pass for {}: {}", cur.getName(), observation.getStart().getTime());
+		LOG.info("scheduled next pass for {}: {}", cur.getName(), new Date(observation.getStartTimeMillis()));
 		IQReader reader = createReader(observation);
-		Future<?> future = schedulerThread.schedule(new SafeRunnable() {
+		SafeRunnable readTask = new SafeRunnable() {
 
 			@Override
 			public void doRun() {
@@ -127,14 +127,15 @@ public class Scheduler implements Lifecycle, ConfigListener {
 					lock.unlock(Scheduler.this);
 				}
 			}
-		}, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
-		Future<?> reaperFuture = reaperThread.schedule(new SafeRunnable() {
+		};
+		Future<?> future = schedulerThread.schedule(readTask, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
+		SafeRunnable completeTask = new SafeRunnable() {
 
 			@Override
 			public void doRun() {
 				future.cancel(true);
-				IQData data = reader.stop();
-				schedule(cur);
+				IQData data = reader.complete();
+				schedule(cur, false);
 
 				if (data == null || data.getWavFile() == null || !data.getWavFile().exists()) {
 					return;
@@ -175,19 +176,27 @@ public class Scheduler implements Lifecycle, ConfigListener {
 					}
 				});
 			}
-		}, observation.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
-		schedule.add(new ScheduledObservation(observation, future, reaperFuture));
+		};
+		Future<?> reaperFuture = reaperThread.schedule(completeTask, observation.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
+		schedule.add(new ScheduledObservation(observation, future, reaperFuture, readTask, completeTask));
+		return observation;
 	}
 
-	private ObservationRequest create(long current, Satellite cur) {
+	private ObservationRequest create(long current, Satellite cur, boolean immediately) {
 		long next = current;
 		while (!Thread.currentThread().isInterrupted()) {
-			ObservationRequest observation = factory.create(new Date(next), cur);
+			ObservationRequest observation = factory.create(new Date(next), cur, immediately);
 			if (observation == null) {
 				return null;
 			}
 
-			if (!schedule.hasOverlap(observation.getStartTimeMillis(), observation.getEndTimeMillis())) {
+			ScheduledObservation overlapped = schedule.getOverlap(observation.getStartTimeMillis(), observation.getEndTimeMillis());
+			if (overlapped == null) {
+				return observation;
+			}
+
+			if (immediately) {
+				overlapped.cancel();
 				return observation;
 			}
 
@@ -225,6 +234,19 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	public void cancel(Satellite satelliteToEdit) {
 		schedule.cancel(satelliteToEdit.getId());
+	}
+
+	public ObservationRequest startImmediately(Satellite cur) {
+		schedule.cancel(cur.getId());
+		return schedule(cur, true);
+	}
+
+	public void completeImmediately(String id) {
+		ScheduledObservation previous = schedule.cancel(id);
+		if (previous == null) {
+			return;
+		}
+		reaperThread.submit(previous.getCompleteTask());
 	}
 
 }

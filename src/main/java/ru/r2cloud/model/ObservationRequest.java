@@ -1,14 +1,12 @@
 package ru.r2cloud.model;
 
-import uk.me.g4dpz.satellite.SatPos;
-
 public class ObservationRequest {
 
 	private String id;
 	private long startTimeMillis;
-	private SatPos start;
+	private double startLatitude;
 	private long endTimeMillis;
-	private SatPos end;
+	private double endLatitude;
 	private String satelliteId;
 	private FrequencySource source;
 	private long satelliteFrequency;
@@ -17,7 +15,7 @@ public class ObservationRequest {
 	private int inputSampleRate;
 	private int outputSampleRate;
 	private long actualFrequency;
-	
+
 	public String getId() {
 		return id;
 	}
@@ -50,20 +48,20 @@ public class ObservationRequest {
 		this.endTimeMillis = endTimeMillis;
 	}
 
-	public SatPos getStart() {
-		return start;
+	public double getStartLatitude() {
+		return startLatitude;
 	}
 
-	public void setStart(SatPos start) {
-		this.start = start;
+	public void setStartLatitude(double startLatitude) {
+		this.startLatitude = startLatitude;
 	}
 
-	public SatPos getEnd() {
-		return end;
+	public double getEndLatitude() {
+		return endLatitude;
 	}
 
-	public void setEnd(SatPos end) {
-		this.end = end;
+	public void setEndLatitude(double endLatitude) {
+		this.endLatitude = endLatitude;
 	}
 
 	public int getInputSampleRate() {

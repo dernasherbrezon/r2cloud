@@ -6,6 +6,6 @@ public interface IQReader {
 
 	void start();
 
-	IQData stop();
+	IQData complete();
 	
 }

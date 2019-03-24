@@ -26,7 +26,7 @@ public class ObservationFactory {
 		this.tleDao = tleDao;
 	}
 
-	public ObservationRequest create(Date date, Satellite satellite) {
+	public ObservationRequest create(Date date, Satellite satellite, boolean immediately) {
 		TLE tle = tleDao.findById(satellite.getId());
 		if (tle == null) {
 			LOG.error("unable to find tle for: " + satellite.getName());
@@ -43,11 +43,17 @@ public class ObservationFactory {
 		result.setSatelliteFrequency(satellite.getFrequency());
 		result.setSatelliteId(satellite.getId());
 		result.setSource(satellite.getSource());
-		result.setStart(nextPass.getStart());
-		result.setStartTimeMillis(nextPass.getStart().getTime().getTime());
+		result.setStartLatitude(nextPass.getStart().getLatitude());
+		result.setEndLatitude(nextPass.getEnd().getLatitude());
+		if (immediately) {
+			result.setStartTimeMillis(date.getTime());
+			result.setEndTimeMillis(result.getStartTimeMillis() + (nextPass.getEnd().getTime().getTime() - nextPass.getStart().getTime().getTime()));
+		} else {
+			result.setStartTimeMillis(nextPass.getStart().getTime().getTime());
+			result.setEndTimeMillis(nextPass.getEnd().getTime().getTime());
+		}
 		result.setId(String.valueOf(result.getStartTimeMillis()));
-		result.setEnd(nextPass.getEnd());
-		result.setEndTimeMillis(nextPass.getEnd().getTime().getTime());
+
 		switch (satellite.getSource()) {
 		case APT:
 			result.setActualFrequency(satellite.getFrequency());

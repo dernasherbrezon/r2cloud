@@ -48,7 +48,7 @@ public class RtlFmReaderTest {
 
 		RtlFmReader o = new RtlFmReader(config, factory, req);
 		o.start();
-		o.stop();
+		o.complete();
 		assertEquals(data, new String(baos.toByteArray(), StandardCharsets.UTF_8));
 
 		verify(factory, times(2)).create(any(), any(), anyBoolean());

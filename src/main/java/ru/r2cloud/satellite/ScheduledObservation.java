@@ -9,11 +9,15 @@ public class ScheduledObservation implements ScheduleEntry {
 	private final ObservationRequest req;
 	private final Future<?> future;
 	private final Future<?> reaperFuture;
+	private final Runnable readTask;
+	private final Runnable completeTask;
 
-	ScheduledObservation(ObservationRequest req, Future<?> future, Future<?> reaperFuture) {
+	ScheduledObservation(ObservationRequest req, Future<?> future, Future<?> reaperFuture, Runnable readTask, Runnable completeTask) {
 		this.req = req;
 		this.future = future;
 		this.reaperFuture = reaperFuture;
+		this.readTask = readTask;
+		this.completeTask = completeTask;
 	}
 
 	public ObservationRequest getReq() {
@@ -41,6 +45,14 @@ public class ScheduledObservation implements ScheduleEntry {
 	@Override
 	public long getEndTimeMillis() {
 		return req.getEndTimeMillis();
+	}
+	
+	public Runnable getReadTask() {
+		return readTask;
+	}
+	
+	public Runnable getCompleteTask() {
+		return completeTask;
 	}
 	
 	@Override

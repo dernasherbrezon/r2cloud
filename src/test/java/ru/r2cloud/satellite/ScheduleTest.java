@@ -2,6 +2,7 @@ package ru.r2cloud.satellite;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -33,7 +34,7 @@ public class ScheduleTest {
 		assertTrue(entry1.isCancelled());
 		assertFalse(entry2.isCancelled());
 	}
-	
+
 	@Test
 	public void testAddingTheSameIsNoOp() {
 		DefaultScheduleEntry entry = create();
@@ -84,37 +85,37 @@ public class ScheduleTest {
 		entry.setStartTimeMillis(1);
 		schedule.add(entry);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testValidateInput3() {
-		schedule.hasOverlap(1, 0);
+		schedule.getOverlap(1, 0);
 	}
-	
+
 	@Test
 	public void testPartialOverlap() {
 		DefaultScheduleEntry entry = create();
 		entry.setStartTimeMillis(0);
 		entry.setEndTimeMillis(2);
 		schedule.add(entry);
-		assertTrue(schedule.hasOverlap(1, 3));
+		assertNotNull(schedule.getOverlap(1, 3));
 	}
-	
+
 	@Test
 	public void testPartialOverlap2() {
 		DefaultScheduleEntry entry = create();
 		entry.setStartTimeMillis(1);
 		entry.setEndTimeMillis(3);
 		schedule.add(entry);
-		assertTrue(schedule.hasOverlap(0, 2));
+		assertNotNull(schedule.getOverlap(0, 2));
 	}
-	
+
 	@Test
 	public void testFullOverlap() {
 		DefaultScheduleEntry entry = create();
 		entry.setStartTimeMillis(0);
 		entry.setEndTimeMillis(4);
 		schedule.add(entry);
-		assertTrue(schedule.hasOverlap(1, 3));
+		assertNotNull(schedule.getOverlap(1, 3));
 	}
 
 	private static DefaultScheduleEntry create() {

@@ -69,7 +69,7 @@ public class APTDecoder implements Decoder {
 			tis.start();
 			process.waitFor();
 			if (convert(result, lines)) {
-				if (request.getStart().getLatitude() < request.getEnd().getLatitude()) {
+				if (request.getStartLatitude() < request.getEndLatitude()) {
 					rotateImage(image);
 				}
 				result.setaPath(image);

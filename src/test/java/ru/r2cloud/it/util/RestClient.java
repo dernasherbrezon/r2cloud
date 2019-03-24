@@ -194,7 +194,7 @@ public class RestClient {
 	public JsonObject getGeneralConfiguration() {
 		return getData("/api/v1/admin/config/general");
 	}
-	
+
 	public JsonObject getTle() {
 		return getData("/api/v1/admin/tle");
 	}
@@ -300,6 +300,68 @@ public class RestClient {
 			throw new RuntimeException("invalid status code: " + response.statusCode());
 		}
 		return response.body();
+	}
+
+	public String scheduleStart(String satelliteId) {
+		JsonObject entity = new JsonObject();
+		if (satelliteId != null) {
+			entity.add("id", satelliteId);
+		}
+		HttpRequest request = createJsonPost("/api/v1/admin/schedule/immediately/start", entity).build();
+		try {
+			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				LOG.info("response: {}", response.body());
+				throw new RuntimeException("invalid status code: " + response.statusCode());
+			}
+			JsonObject json = (JsonObject) Json.parse(response.body());
+			return json.getString("id", null);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
+
+	public void scheduleComplete(String satelliteId) {
+		JsonObject entity = new JsonObject();
+		if (satelliteId != null) {
+			entity.add("id", satelliteId);
+		}
+		HttpRequest request = createJsonPost("/api/v1/admin/schedule/immediately/complete", entity).build();
+		try {
+			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				LOG.info("response: {}", response.body());
+				throw new RuntimeException("invalid status code: " + response.statusCode());
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
+
+	public JsonObject getObservation(String satelliteId, String observationId) {
+		HttpRequest request = createAuthRequest("/api/v1/admin/observation/load?satelliteId=" + satelliteId + "&id=" + observationId).GET().build();
+		try {
+			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			if (response.statusCode() == 404) {
+				return null;
+			}
+			if (response.statusCode() != 200) {
+				LOG.info("response: {}", response.body());
+				throw new RuntimeException("invalid status code: " + response.statusCode());
+			}
+			return (JsonObject) Json.parse(response.body());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
 	}
 
 }

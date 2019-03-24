@@ -71,7 +71,7 @@ public class RtlFmReader implements IQReader {
 	}
 
 	@Override
-	public IQData stop() {
+	public IQData complete() {
 		Util.shutdown("rtl_sdr for satellites", rtlfm, 10000);
 		rtlfm = null;
 

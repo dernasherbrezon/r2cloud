@@ -9,7 +9,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +23,6 @@ import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
-import uk.me.g4dpz.satellite.SatPos;
 import uk.me.g4dpz.satellite.Satellite;
 import uk.me.g4dpz.satellite.SatelliteFactory;
 import uk.me.g4dpz.satellite.TLE;
@@ -43,7 +41,7 @@ public class ObservationResultDaoTest {
 		req.setActualFrequency(1L);
 		req.setSource(FrequencySource.APT);
 		req.setEndTimeMillis(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5));
-		req.setEnd(create(req.getEndTimeMillis()));
+		req.setEndLatitude(0.2);
 		req.setId(UUID.randomUUID().toString());
 		req.setInputSampleRate(1);
 		req.setOrigin(create());
@@ -52,7 +50,7 @@ public class ObservationResultDaoTest {
 		req.setActualFrequency(2);
 		req.setSatelliteId(UUID.randomUUID().toString());
 		req.setStartTimeMillis(System.currentTimeMillis());
-		req.setStart(create(req.getStartTimeMillis()));
+		req.setStartLatitude(0.1);
 		assertNotNull(dao.insert(req, createTempFile("wav")));
 		ObservationFull actual = dao.find(req.getSatelliteId(), req.getId());
 		assertNotNull(actual.getResult().getWavPath());
@@ -91,12 +89,6 @@ public class ObservationResultDaoTest {
 	private static Satellite create() {
 		TLE tle = new TLE(new String[] { "meteor", "1 40069U 14037A   18286.52491495 -.00000023  00000-0  92613-5 0  9990", "2 40069  98.5901 334.4030 0004544 256.4188 103.6490 14.20654800221188" });
 		return SatelliteFactory.createSatellite(tle);
-	}
-
-	private static SatPos create(long millis) {
-		SatPos result = new SatPos();
-		result.setTime(new Date(millis));
-		return result;
 	}
 
 	private File createTempFile(String data) throws IOException {
