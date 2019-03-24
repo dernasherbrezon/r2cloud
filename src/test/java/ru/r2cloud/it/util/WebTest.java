@@ -69,6 +69,7 @@ public class WebTest {
 		config.setProperty("locaiton.lon", "38.174");
 		config.setProperty("satellites.rtlsdr.path", rtlSdrMock.getAbsolutePath());
 		config.setProperty("rtltest.path", rtlTestMock.getAbsolutePath());
+		config.setProperty("satellites.sox.path", "sox");
 
 		server = new R2Cloud(config);
 		server.start();

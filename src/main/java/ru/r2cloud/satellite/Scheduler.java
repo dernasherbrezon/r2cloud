@@ -71,6 +71,10 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	@Override
 	public void onConfigUpdated() {
+		if (schedulerThread == null) {
+			return;
+		}
+		
 		boolean updateSchedule;
 		if (config.getProperty("locaiton.lat") != null && config.getProperty("locaiton.lon") != null) {
 			updateSchedule = true;
