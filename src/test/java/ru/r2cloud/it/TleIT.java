@@ -26,8 +26,8 @@ public class TleIT extends RegisteredTest {
 		JsonArray dataArray = data.asArray();
 		List<String> expected = new ArrayList<>();
 		expected.add("METEOR-M 2");
-		expected.add("1 40069U 14037A   19080.27371803 -.00000039  00000-0  16472-5 0  9991");
-		expected.add("2 40069  98.5639 128.4368 0006113 145.8142 214.3430 14.20659718243727");
+		expected.add("1 40069U 14037A   18286.52491495 -.00000023  00000-0  92613-5 0  9990");
+		expected.add("2 40069  98.5901 334.4030 0004544 256.4188 103.6490 14.20654800221188");
 		assertEquals(expected, findData("40069", dataArray));
 	}
 
