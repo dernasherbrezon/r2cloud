@@ -29,13 +29,13 @@ public class ObservationFactory {
 	public ObservationRequest create(Date date, Satellite satellite, boolean immediately) {
 		TLE tle = tleDao.findById(satellite.getId());
 		if (tle == null) {
-			LOG.error("unable to find tle for: " + satellite.getName());
+			LOG.error("unable to find tle for: {}", satellite.getName());
 			return null;
 		}
 		uk.me.g4dpz.satellite.Satellite libSatellite = SatelliteFactory.createSatellite(tle);
 		SatPass nextPass = predict.calculateNext(date, libSatellite);
 		if (nextPass == null) {
-			LOG.info("can't find next pass for " + satellite.getName());
+			LOG.info("can't find next pass for {}", satellite.getName());
 			return null;
 		}
 		ObservationRequest result = new ObservationRequest();
