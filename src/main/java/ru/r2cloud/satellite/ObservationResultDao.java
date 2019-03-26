@@ -105,7 +105,7 @@ public class ObservationResultDao {
 	public File saveImage(String satelliteId, String observationId, File a) {
 		File dest = new File(getObservationBasepath(satelliteId, observationId), "a.jpg");
 		if (dest.exists()) {
-			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
+			LOG.info("unable to save. dest already exist: {}", dest.getAbsolutePath());
 			return null;
 		}
 		if (!a.renameTo(dest)) {
@@ -117,7 +117,7 @@ public class ObservationResultDao {
 	public File saveData(String satelliteId, String observationId, File a) {
 		File dest = new File(getObservationBasepath(satelliteId, observationId), "data.bin");
 		if (dest.exists()) {
-			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
+			LOG.info("unable to save. dest already exist: {}", dest.getAbsolutePath());
 			return null;
 		}
 		if (!a.renameTo(dest)) {
@@ -129,7 +129,7 @@ public class ObservationResultDao {
 	public boolean saveSpectogram(String satelliteId, String observationId, File a) {
 		File dest = new File(getObservationBasepath(satelliteId, observationId), "spectogram.png");
 		if (dest.exists()) {
-			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
+			LOG.info("unable to save. dest already exist: {}", dest.getAbsolutePath());
 			return false;
 		}
 		return a.renameTo(dest);
@@ -146,7 +146,7 @@ public class ObservationResultDao {
 
 		File observationBasePath = getObservationBasepath(observation);
 		if (!observationBasePath.exists() && !observationBasePath.mkdirs()) {
-			LOG.info("unable to create parent dir:" + observationBasePath.getAbsolutePath());
+			LOG.info("unable to create parent dir: {}", observationBasePath.getAbsolutePath());
 			return null;
 		}
 
@@ -161,11 +161,11 @@ public class ObservationResultDao {
 	private File insertIQData(ObservationRequest observation, File wavPath) {
 		File dest = new File(getObservationBasepath(observation), "output.wav");
 		if (!dest.getParentFile().exists() && !dest.getParentFile().mkdirs()) {
-			LOG.info("unable to create parent dir:" + dest.getParentFile().getAbsolutePath());
+			LOG.info("unable to create parent dir: {}", dest.getParentFile().getAbsolutePath());
 			return null;
 		}
 		if (dest.exists()) {
-			LOG.info("unable to save. dest already exist: " + dest.getAbsolutePath());
+			LOG.info("unable to save. dest already exist: {}", dest.getAbsolutePath());
 			return null;
 		}
 		if (!wavPath.renameTo(dest)) {
