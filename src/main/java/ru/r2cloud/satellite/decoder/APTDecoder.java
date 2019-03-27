@@ -122,7 +122,7 @@ public class APTDecoder implements Decoder {
 	private static boolean convert(ObservationResult observation, List<String> lines) {
 		boolean success = true;
 		for (String cur : lines) {
-			int index = cur.indexOf(":");
+			int index = cur.indexOf(':');
 			if (index == -1) {
 				continue;
 			}
