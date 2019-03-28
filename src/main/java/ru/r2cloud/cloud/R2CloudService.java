@@ -46,14 +46,14 @@ public class R2CloudService {
 		if (config.getBoolean("r2cloud.syncSpectogram")) {
 			if (observation.getResult().getSpectogramPath() == null) {
 				File spectogram = spectogramService.create(observation.getResult().getWavPath());
-				if (spectogram != null) {
-					client.saveSpectogram(id, spectogram);
-					if (!dao.saveSpectogram(observation.getReq().getSatelliteId(), observation.getReq().getId(), spectogram)) {
-						LOG.info("unable to save spectogram");
-					}
+				if (spectogram != null && !dao.saveSpectogram(observation.getReq().getSatelliteId(), observation.getReq().getId(), spectogram)) {
+					LOG.info("unable to save spectogram");
 				}
-			} else {
-				client.saveSpectogram(id, observation.getResult().getSpectogramPath());
+			}
+
+			ObservationFull reloadedObservation = dao.find(observation.getReq().getSatelliteId(), observation.getReq().getId());
+			if (reloadedObservation.getResult().getSpectogramPath() != null) {
+				client.saveSpectogram(id, reloadedObservation.getResult().getSpectogramPath());
 			}
 		}
 		LOG.info("observation uploaded: {}", observation.getReq().getId());

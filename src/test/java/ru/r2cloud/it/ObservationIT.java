@@ -68,7 +68,6 @@ public class ObservationIT extends RegisteredTest {
 	}
 
 	private static void assertSpectogram(String expectedFilename, byte[] actualBytes) throws IOException {
-		System.out.println(actualBytes.length);
 		try (InputStream is1 = ObservationIT.class.getClassLoader().getResourceAsStream(expectedFilename); ByteArrayInputStream bais = new ByteArrayInputStream(actualBytes)) {
 			BufferedImage expected = ImageIO.read(is1);
 			BufferedImage actual = ImageIO.read(bais);
