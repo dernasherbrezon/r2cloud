@@ -42,6 +42,9 @@ public class JsonHttpResponse implements HttpHandler {
 	}
 
 	public String getRequest() {
+		if (request == null) {
+			return null;
+		}
 		return new String(request, StandardCharsets.UTF_8);
 	}
 
