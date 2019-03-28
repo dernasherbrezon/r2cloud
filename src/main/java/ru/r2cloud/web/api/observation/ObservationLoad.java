@@ -19,10 +19,12 @@ import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
 import ru.r2cloud.web.ModelAndView;
 import ru.r2cloud.web.NotFound;
+import ru.r2cloud.web.ValidationResult;
 import ru.r2cloud.web.WebServer;
+import ru.r2cloud.web.api.Messages;
 
 public class ObservationLoad extends AbstractHttpController {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationLoad.class);
 
 	private final ObservationResultDao resultDao;
@@ -30,15 +32,23 @@ public class ObservationLoad extends AbstractHttpController {
 	public ObservationLoad(ObservationResultDao resultDao) {
 		this.resultDao = resultDao;
 	}
-	
+
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
-		String satelliteId = WebServer.getParameter(session, "satelliteId");
+		ValidationResult errors = new ValidationResult();
 		String id = WebServer.getParameter(session, "id");
-		if (satelliteId == null || id == null) {
-			LOG.info("missing parameters");
-			return new BadRequest("missing parameters");
+		if (id == null) {
+			errors.put("id", Messages.CANNOT_BE_EMPTY);
 		}
+		String satelliteId = WebServer.getParameter(session, "satelliteId");
+		if (satelliteId == null) {
+			errors.put("satelliteId", Messages.CANNOT_BE_EMPTY);
+		}
+
+		if (!errors.isEmpty()) {
+			return new BadRequest(errors);
+		}
+
 		ObservationFull entity = resultDao.find(satelliteId, id);
 		if (entity == null) {
 			LOG.info("not found: " + satelliteId + " id: " + id);
@@ -146,5 +156,5 @@ public class ObservationLoad extends AbstractHttpController {
 	public String getRequestMappingURL() {
 		return "/api/v1/admin/observation/load";
 	}
-	
+
 }

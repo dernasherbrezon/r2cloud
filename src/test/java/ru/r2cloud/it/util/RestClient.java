@@ -2,6 +2,7 @@ package ru.r2cloud.it.util;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpClient.Version;
@@ -11,6 +12,9 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bouncycastle.crypto.RuntimeCryptoException;
 import org.slf4j.Logger;
@@ -344,24 +348,52 @@ public class RestClient {
 		}
 	}
 
-	public JsonObject getObservation(String satelliteId, String observationId) {
-		HttpRequest request = createAuthRequest("/api/v1/admin/observation/load?satelliteId=" + satelliteId + "&id=" + observationId).GET().build();
+	public HttpResponse<String> getObservationResponse(String satelliteId, String observationId) {
+		Map<String, String> params = new HashMap<String, String>();
+		if (satelliteId != null) {
+			params.put("satelliteId", satelliteId);
+		}
+		if (observationId != null) {
+			params.put("id", observationId);
+		}
+		HttpRequest request = createAuthRequest("/api/v1/admin/observation/load" + createQuery(params)).GET().build();
 		try {
-			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
-			if (response.statusCode() == 404) {
-				return null;
-			}
-			if (response.statusCode() != 200) {
-				LOG.info("response: {}", response.body());
-				throw new RuntimeException("invalid status code: " + response.statusCode());
-			}
-			return (JsonObject) Json.parse(response.body());
+			return httpclient.send(request, BodyHandlers.ofString());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new RuntimeException("unable to send request");
 		}
+	}
+
+	public JsonObject getObservation(String satelliteId, String observationId) {
+		HttpResponse<String> response = getObservationResponse(satelliteId, observationId);
+		if (response.statusCode() == 404) {
+			return null;
+		}
+		if (response.statusCode() != 200) {
+			LOG.info("response: {}", response.body());
+			throw new RuntimeException("invalid status code: " + response.statusCode());
+		}
+		return (JsonObject) Json.parse(response.body());
+	}
+
+	private static String createQuery(Map<String, String> params) {
+		StringBuilder result = new StringBuilder();
+		if (params == null || params.isEmpty()) {
+			return result.toString();
+		}
+		result.append("?");
+		boolean first = true;
+		for (Entry<String, String> cur : params.entrySet()) {
+			if (!first) {
+				result.append("&");
+			}
+			result.append(cur.getKey()).append('=').append(URLEncoder.encode(cur.getValue(), StandardCharsets.UTF_8));
+			first = false;
+		}
+		return result.toString();
 	}
 
 }
