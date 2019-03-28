@@ -46,9 +46,10 @@ import ru.r2cloud.util.Util;
 
 public class AcmeClient {
 
-	private final static Logger LOG = LoggerFactory.getLogger(AcmeClient.class);
-	private final static long INITIAL_RETRY = 3000L;
-	private final static int DAYS_BEFORE_EXPIRATION = 21;
+	private static final String DOMAIN_CSR_FILENAME = "domain.csr";
+	private static final Logger LOG = LoggerFactory.getLogger(AcmeClient.class);
+	private static final long INITIAL_RETRY = 3000L;
+	private static final int DAYS_BEFORE_EXPIRATION = 21;
 
 	private ScheduledExecutorService executor;
 
@@ -107,7 +108,7 @@ public class AcmeClient {
 			return;
 		}
 		byte[] csr;
-		try (FileInputStream fis = new FileInputStream(new File(basepath, "domain.csr"))) {
+		try (FileInputStream fis = new FileInputStream(new File(basepath, DOMAIN_CSR_FILENAME))) {
 			csr = CertificateUtils.readCSR(fis).getEncoded();
 		} catch (Exception e) {
 			LOG.error("unable to load csr. trying to create new", e);
@@ -261,7 +262,7 @@ public class AcmeClient {
 			File domainKeyFile = new File(basepath, "domain.key");
 			// if domain.csr doesn't exist then this is first time execution
 			// and domain.key contains self-signed private key stored in git
-			if (new File(basepath, "domain.csr").exists()) {
+			if (new File(basepath, DOMAIN_CSR_FILENAME).exists()) {
 				domainKeyPair = loadOrCreateKeyPair(domainKeyFile);
 			} else {
 				domainKeyPair = createKeyPair(domainKeyFile);
@@ -286,7 +287,7 @@ public class AcmeClient {
 		}
 
 		messages.add("saving csr for future use", LOG);
-		try (Writer out = new FileWriter(new File(basepath, "domain.csr"))) {
+		try (Writer out = new FileWriter(new File(basepath, DOMAIN_CSR_FILENAME))) {
 			csrb.write(out);
 		} catch (IOException e) {
 			String message = "unable to save csr";

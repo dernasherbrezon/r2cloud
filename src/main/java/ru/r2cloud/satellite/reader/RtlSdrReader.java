@@ -44,7 +44,7 @@ public class RtlSdrReader implements IQReader {
 			if (startTimeMillis == null) {
 				startTimeMillis = System.currentTimeMillis();
 			}
-			rtlSdr = factory.create(config.getProperty("satellites.rtlsdr.path") + " -f " + String.valueOf(req.getActualFrequency()) + " -s " + req.getInputSampleRate() + " -g 45 -p " + String.valueOf(ppm) + " " + rawFile.getAbsolutePath(), Redirect.INHERIT, true);
+			rtlSdr = factory.create(config.getProperty("satellites.rtlsdr.path") + " -f " + req.getActualFrequency() + " -s " + req.getInputSampleRate() + " -g 45 -p " + ppm + " " + rawFile.getAbsolutePath(), Redirect.INHERIT, true);
 			int responseCode = rtlSdr.waitFor();
 			LOG.info("rtl_sdr stopped: {}", responseCode);
 		} catch (IOException e) {
