@@ -1,6 +1,8 @@
 package ru.r2cloud;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
@@ -16,7 +18,7 @@ public class JsonHttpResponse implements HttpHandler {
 	private final CountDownLatch latch = new CountDownLatch(1);
 
 	private String requestContentType;
-	private String request;
+	private byte[] request;
 
 	public JsonHttpResponse(String name, int statusCode) {
 		this.responseBody = Util.loadExpected(name);
@@ -26,7 +28,11 @@ public class JsonHttpResponse implements HttpHandler {
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
 		requestContentType = exchange.getRequestHeaders().getFirst("Content-Type");
-		request = Util.convert(exchange.getRequestBody());
+		try (InputStream is = exchange.getRequestBody(); ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+			ru.r2cloud.util.Util.copy(is, baos);
+			baos.close();
+			request = baos.toByteArray();
+		}
 		exchange.getResponseHeaders().add("Content-Type", "application/json");
 		exchange.sendResponseHeaders(statusCode, responseBody.length());
 		OutputStream os = exchange.getResponseBody();
@@ -36,6 +42,10 @@ public class JsonHttpResponse implements HttpHandler {
 	}
 
 	public String getRequest() {
+		return new String(request, StandardCharsets.UTF_8);
+	}
+
+	public byte[] getRequestBytes() {
 		return request;
 	}
 

@@ -69,7 +69,7 @@ public class RtlSdrReader implements IQReader {
 			ProcessWrapper sox = null;
 			File wavPath = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".wav");
 			try {
-				sox = factory.create(config.getProperty("satellites.sox.path") + " --type raw --rate " + req.getInputSampleRate() + " --encoding unsigned-integer --bits 8 --channels 2 " + rawFile.getAbsolutePath() + " " + wavPath.getAbsolutePath() + " rate " + req.getOutputSampleRate(), Redirect.INHERIT, false);
+				sox = factory.create(config.getProperty("satellites.sox.path") + " --no-dither --type raw --rate " + req.getInputSampleRate() + " --encoding unsigned-integer --bits 8 --channels 2 " + rawFile.getAbsolutePath() + " " + wavPath.getAbsolutePath() + " rate " + req.getOutputSampleRate(), Redirect.INHERIT, false);
 				int responseCode = sox.waitFor();
 				LOG.info("sox stopped: {}", responseCode);
 			} catch (IOException e) {

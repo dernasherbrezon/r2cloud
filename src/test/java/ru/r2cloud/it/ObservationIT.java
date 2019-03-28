@@ -3,7 +3,13 @@ package ru.r2cloud.it;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
+
+import javax.imageio.ImageIO;
 
 import org.junit.After;
 import org.junit.Before;
@@ -30,24 +36,24 @@ public class ObservationIT extends RegisteredTest {
 		JsonHttpResponse spectogramHandler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
 		server.setSpectogramMock(1L, spectogramHandler);
 
-		//start observation
+		// start observation
 		String observationId = client.scheduleStart("40069");
 		assertNotNull(observationId);
 		Thread.sleep(1000);
-		//complete observation
+		// complete observation
 		client.scheduleComplete("40069");
-		
-		//get observation and assert
+
+		// get observation and assert
 		assertObservation(awaitObservation(observationId));
 
-		//wait for r2cloud meta upload and assert
+		// wait for r2cloud meta upload and assert
 		metaHandler.awaitRequest();
 		assertObservation((JsonObject) Json.parse(metaHandler.getRequest()));
-		
-		//TODO
-//		//wait for spectogram upload and assert
-//		spectogramHandler.awaitRequest();
-//		System.out.println(spectogramHandler.getRequestContentType());
+
+		// wait for spectogram upload and assert
+		spectogramHandler.awaitRequest();
+		assertEquals("image/png", spectogramHandler.getRequestContentType());
+		assertSpectogram("meteor.spectogram.png", spectogramHandler.getRequestBytes());
 	}
 
 	private static void assertObservation(JsonObject observation) {
@@ -59,6 +65,19 @@ public class ObservationIT extends RegisteredTest {
 		assertEquals(0, observation.getInt("numberOfDecodedPackets", -1));
 		assertEquals("LRPT", observation.getString("decoder", null));
 		assertEquals("40069", observation.getString("satellite", null));
+	}
+
+	private static void assertSpectogram(String expectedFilename, byte[] actualBytes) throws IOException {
+		System.out.println(actualBytes.length);
+		try (InputStream is1 = ObservationIT.class.getClassLoader().getResourceAsStream(expectedFilename); ByteArrayInputStream bais = new ByteArrayInputStream(actualBytes)) {
+			BufferedImage expected = ImageIO.read(is1);
+			BufferedImage actual = ImageIO.read(bais);
+			for (int i = 0; i < expected.getWidth(); i++) {
+				for (int j = 0; j < expected.getHeight(); j++) {
+					assertEquals(expected.getRGB(i, j), actual.getRGB(i, j));
+				}
+			}
+		}
 	}
 
 	@Before
