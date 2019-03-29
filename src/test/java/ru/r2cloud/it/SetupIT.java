@@ -14,7 +14,8 @@ public class SetupIT extends BaseTest {
 	@Test
 	public void testSetup() {
 		client.setup(keyword, username, password);
-		client.login(username, password);
+		HttpResponse<String> response = client.loginWithResponse(username, password);
+		assertEquals(200, response.statusCode());
 	}
 
 	@Test
@@ -33,7 +34,7 @@ public class SetupIT extends BaseTest {
 		assertEquals(400, response.statusCode());
 		assertErrorInField("username", response);
 	}
-	
+
 	@Test
 	public void testInvalidPassword() {
 		HttpResponse<String> response = client.setupWithResponse(keyword, username, null);
