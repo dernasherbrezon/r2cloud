@@ -51,7 +51,7 @@ public class ObservationLoad extends AbstractHttpController {
 
 		ObservationFull entity = resultDao.find(satelliteId, id);
 		if (entity == null) {
-			LOG.info("not found: " + satelliteId + " id: " + id);
+			LOG.info("not found: {} id: {}", satelliteId, id);
 			return new NotFound();
 		}
 		JsonObject json = entity.toJson();
