@@ -13,16 +13,12 @@ import ru.r2cloud.jradio.BeaconOutputStream;
 import ru.r2cloud.jradio.BeaconSource;
 import ru.r2cloud.jradio.DopplerValueSource;
 import ru.r2cloud.jradio.FloatInput;
-import ru.r2cloud.jradio.blocks.Firdes;
-import ru.r2cloud.jradio.blocks.FrequencyXlatingFIRFilter;
 import ru.r2cloud.jradio.blocks.Multiply;
-import ru.r2cloud.jradio.blocks.Window;
 import ru.r2cloud.jradio.source.SigSource;
 import ru.r2cloud.jradio.source.WavFileSource;
 import ru.r2cloud.jradio.source.Waveform;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
-import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
@@ -57,12 +53,7 @@ public abstract class TelemetryDecoder implements Decoder {
 				}
 			}, 1.0);
 			Multiply mul = new Multiply(source, source2);
-
-			float[] taps = Firdes.lowPass(1.0, source.getContext().getSampleRate(), source.getContext().getSampleRate() / 2 - ObservationFactory.DC_OFFSET, 600, Window.WIN_HAMMING, 6.76);
-			FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(mul, taps, 2, -(req.getActualFrequency() - req.getSatelliteFrequency() + ObservationFactory.DC_OFFSET));
-			//xlating is a doppler corrected and dc filtered complex signal
-			
-			input = createBeaconSource(xlating, req);
+			input = createBeaconSource(mul, req);
 			aos = new BeaconOutputStream(new FileOutputStream(binFile));
 			while (input.hasNext()) {
 				Beacon next = input.next();

@@ -61,13 +61,13 @@ public class ObservationFactory {
 			result.setOutputSampleRate(11_025);
 			break;
 		case LRPT:
-			result.setInputSampleRate(240_000);
+			result.setInputSampleRate(300_000);
 			result.setOutputSampleRate(150_000);
 			result.setActualFrequency(satellite.getFrequency());
 			break;
 		case TELEMETRY:
 			result.setInputSampleRate(240_000);
-			result.setOutputSampleRate(96_000);
+			result.setOutputSampleRate(48_000);
 			// at the beginning doppler freq is the max
 			long initialDopplerFrequency = predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStart().getTime().getTime(), libSatellite);
 			result.setActualFrequency(initialDopplerFrequency + BANDWIDTH + DC_OFFSET);

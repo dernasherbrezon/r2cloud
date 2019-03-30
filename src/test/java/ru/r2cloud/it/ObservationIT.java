@@ -51,16 +51,15 @@ public class ObservationIT extends RegisteredTest {
 		assertObservation((JsonObject) Json.parse(metaHandler.getRequest()));
 
 		// wait for spectogram upload and assert
-		//FIXME test
-//		spectogramHandler.awaitRequest();
-//		assertEquals("image/png", spectogramHandler.getRequestContentType());
-//		assertSpectogram("meteor.spectogram.png", spectogramHandler.getRequestBytes());
+		spectogramHandler.awaitRequest();
+		assertEquals("image/png", spectogramHandler.getRequestContentType());
+		assertSpectogram("meteor.spectogram.png", spectogramHandler.getRequestBytes());
 	}
 
 	private static void assertObservation(JsonObject observation) {
 		assertNotNull(observation);
 		assertEquals(150000, observation.getInt("sampleRate", 0));
-		assertEquals(240000, observation.getInt("inputSampleRate", 0));
+		assertEquals(300000, observation.getInt("inputSampleRate", 0));
 		assertEquals(137900000, observation.getInt("frequency", 0));
 		assertEquals(137900000, observation.getInt("actualFrequency", 0));
 		assertEquals(0, observation.getInt("numberOfDecodedPackets", -1));

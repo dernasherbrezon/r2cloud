@@ -1,12 +1,18 @@
 package ru.r2cloud.satellite.reader;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.jradio.blocks.Firdes;
+import ru.r2cloud.jradio.blocks.FrequencyXlatingFIRFilter;
+import ru.r2cloud.jradio.blocks.Window;
+import ru.r2cloud.jradio.sink.WavFileSink;
+import ru.r2cloud.jradio.source.RtlSdr;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.util.Configuration;
@@ -66,24 +72,35 @@ public class RtlSdrReader implements IQReader {
 		IQData result = new IQData();
 
 		if (rawFile != null && rawFile.exists()) {
-			ProcessWrapper sox = null;
 			File wavPath = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".wav");
+			WavFileSink sink = null;
+			FileOutputStream fos = null;
 			try {
-				sox = factory.create(config.getProperty("satellites.sox.path") + " --no-dither --type raw --rate " + req.getInputSampleRate() + " --encoding unsigned-integer --bits 8 --channels 2 " + rawFile.getAbsolutePath() + " " + wavPath.getAbsolutePath() + " rate " + req.getOutputSampleRate(), Redirect.INHERIT, false);
-				int responseCode = sox.waitFor();
-				LOG.info("sox stopped: {}", responseCode);
-			} catch (IOException e) {
-				LOG.error("unable to run", e);
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			} finally {
-				Util.shutdown("sox", sox, 10000);
-				if (!rawFile.delete()) {
-					LOG.error("unable to delete temp file: {}", rawFile.getAbsolutePath());
-				}
-			}
-			if (wavPath.exists()) {
+				RtlSdr sdr = new RtlSdr(rawFile, req.getInputSampleRate());
+				float[] taps = Firdes.lowPass(1.0, sdr.getContext().getSampleRate(), sdr.getContext().getSampleRate() / 2, 600, Window.WIN_HAMMING, 6.76);
+				FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(sdr, taps, req.getInputSampleRate() / req.getOutputSampleRate(), req.getSatelliteFrequency() - req.getActualFrequency());
+				sink = new WavFileSink(xlating);
+				fos = new FileOutputStream(wavPath);
+				sink.process(fos);
+				LOG.info("post procesed: {} to {}", rawFile.getAbsolutePath(), wavPath.getAbsolutePath());
 				result.setWavFile(wavPath);
+			} catch (Exception e) {
+				LOG.error("unable to run", e);
+			} finally {
+				if (sink != null) {
+					try {
+						sink.close();
+					} catch (IOException e) {
+						LOG.error("unable to close", e);
+					}
+				}
+				if (fos != null) {
+					try {
+						fos.close();
+					} catch (IOException e) {
+						LOG.error("unable to close", e);
+					}
+				}
 			}
 		}
 		if (startTimeMillis != null) {
