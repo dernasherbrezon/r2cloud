@@ -16,7 +16,6 @@ public class ObservationFactory {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationFactory.class);
 	public static final int DC_OFFSET = 10_000;
-	private static final int BANDWIDTH = 10_000;
 
 	private final TLEDao tleDao;
 	private final Predict predict;
@@ -70,7 +69,7 @@ public class ObservationFactory {
 			result.setOutputSampleRate(48_000);
 			// at the beginning doppler freq is the max
 			long initialDopplerFrequency = predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStart().getTime().getTime(), libSatellite);
-			result.setActualFrequency(initialDopplerFrequency + BANDWIDTH + DC_OFFSET);
+			result.setActualFrequency(initialDopplerFrequency + DC_OFFSET);
 			break;
 		default:
 			throw new IllegalArgumentException("unsupported source: " + satellite.getSource());
