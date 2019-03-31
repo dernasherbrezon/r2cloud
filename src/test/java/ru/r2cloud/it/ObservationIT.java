@@ -54,6 +54,7 @@ public class ObservationIT extends RegisteredTest {
 		spectogramHandler.awaitRequest();
 		assertEquals("image/png", spectogramHandler.getRequestContentType());
 		assertSpectogram("meteor.spectogram.png", spectogramHandler.getRequestBytes());
+		assertTempEmpty();
 	}
 
 	private static void assertObservation(JsonObject observation) {

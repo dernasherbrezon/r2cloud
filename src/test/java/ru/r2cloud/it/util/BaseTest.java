@@ -1,7 +1,10 @@
 package ru.r2cloud.it.util;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.http.HttpResponse;
 import java.util.Properties;
@@ -35,6 +38,16 @@ public abstract class BaseTest {
 		JsonObject errors = (JsonObject) result.get("errors");
 		assertNotNull(errors);
 		assertNotNull(errors.get(field));
+	}
+	
+	public static void assertTempEmpty() {
+		File temp = new File(WebTest.TEMP_DIRECTORY);
+		if( !temp.exists() ) {
+			return;
+		}
+		assertTrue(temp.isDirectory());
+		File[] contents = temp.listFiles();
+		assertEquals("expected empty, but got: " + contents.length, 0, contents.length);
 	}
 
 }

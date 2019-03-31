@@ -87,6 +87,9 @@ public class RtlSdrReader implements IQReader {
 			} catch (Exception e) {
 				LOG.error("unable to run", e);
 			} finally {
+				if (!rawFile.delete()) {
+					LOG.error("unable to delete raw file at: {}", rawFile.getAbsolutePath());
+				}
 				if (sink != null) {
 					try {
 						sink.close();

@@ -44,6 +44,7 @@ public class WebTest {
 	private static final int RETRY_INTERVAL_MS = 5000;
 	private static final int MAX_RETRIES = 5;
 	private static final Logger LOG = LoggerFactory.getLogger(WebTest.class);
+	public static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir") + File.separator + "r2cloud-temp-" + UUID.randomUUID().toString();
 
 	private static R2Cloud server;
 	private static CelestrakServer celestrak;
@@ -53,6 +54,10 @@ public class WebTest {
 
 	@BeforeClass
 	public static void start() throws IOException {
+		File f = new File(TEMP_DIRECTORY);
+		if (!f.exists() && !f.mkdirs()) {
+			throw new IOException("unable to create temp directory: " + f.getAbsolutePath());
+		}
 		celestrak = new CelestrakServer();
 		celestrak.start();
 		celestrak.mockResponse(Util.loadExpected("sample-tle.txt"));
@@ -72,6 +77,7 @@ public class WebTest {
 		config.setProperty("rtltest.path", rtlTestMock.getAbsolutePath());
 		config.setProperty("satellites.sox.path", "sox");
 		config.setProperty("r2cloud.hostname", "http://localhost:8001");
+		config.setProperty("server.tmp.directory", TEMP_DIRECTORY);
 
 		server = new R2Cloud(config);
 		server.start();
@@ -109,6 +115,7 @@ public class WebTest {
 		if (celestrak != null) {
 			celestrak.stop();
 		}
+		ru.r2cloud.util.Util.deleteDirectory(new File(TEMP_DIRECTORY));
 	}
 
 	static void assertStarted() {
