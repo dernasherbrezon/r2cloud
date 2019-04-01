@@ -52,26 +52,25 @@ public class RtlSdrReader implements IQReader {
 			}
 			rtlSdr = factory.create(config.getProperty("satellites.rtlsdr.path") + " -f " + req.getActualFrequency() + " -s " + req.getInputSampleRate() + " -g 45 -p " + ppm + " " + rawFile.getAbsolutePath(), Redirect.INHERIT, true);
 			int responseCode = rtlSdr.waitFor();
-			LOG.info("rtl_sdr stopped: {}", responseCode);
+			LOG.info("[{}] rtl_sdr stopped: {}", req.getId(), responseCode);
 		} catch (IOException e) {
-			LOG.error("unable to run", e);
+			LOG.error("[" + req.getId() + "] unable to run", e);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		} finally {
-			LOG.info("stopping pipe thread");
-			Util.shutdown("rtl_sdr for satellites", rtlSdr, 10000);
 			endTimeMillis = System.currentTimeMillis();
 		}
 	}
 
 	@Override
 	public IQData complete() {
-		Util.shutdown("rtl_sdr for satellites", rtlSdr, 10000);
+		Util.shutdown("rtl_sdr for " + req.getId(), rtlSdr, 10000);
 		rtlSdr = null;
 
 		IQData result = new IQData();
 
 		if (rawFile != null && rawFile.exists()) {
+			LOG.info("[{}] decimating the data", req.getId());
 			File wavPath = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".wav");
 			WavFileSink sink = null;
 			FileOutputStream fos = null;
@@ -82,28 +81,16 @@ public class RtlSdrReader implements IQReader {
 				sink = new WavFileSink(xlating);
 				fos = new FileOutputStream(wavPath);
 				sink.process(fos);
-				LOG.info("post procesed: {} to {}", rawFile.getAbsolutePath(), wavPath.getAbsolutePath());
+				LOG.info("[{}] decimation completed. from: {} to {}", req.getId(), rawFile.getAbsolutePath(), wavPath.getAbsolutePath());
 				result.setWavFile(wavPath);
 			} catch (Exception e) {
 				LOG.error("unable to run", e);
 			} finally {
 				if (!rawFile.delete()) {
-					LOG.error("unable to delete raw file at: {}", rawFile.getAbsolutePath());
+					LOG.error("[{}] unable to delete raw file at: {}", req.getId(), rawFile.getAbsolutePath());
 				}
-				if (sink != null) {
-					try {
-						sink.close();
-					} catch (IOException e) {
-						LOG.error("unable to close", e);
-					}
-				}
-				if (fos != null) {
-					try {
-						fos.close();
-					} catch (IOException e) {
-						LOG.error("unable to close", e);
-					}
-				}
+				Util.closeQuietly(sink);
+				Util.closeQuietly(fos);
 			}
 		}
 		if (startTimeMillis != null) {
