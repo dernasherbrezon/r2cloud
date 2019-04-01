@@ -162,9 +162,9 @@ public class Scheduler implements Lifecycle, ConfigListener {
 							LOG.error("unknown decoder: {}", decoder);
 							return;
 						}
-						LOG.info("decoding: {}", cur.getName());
+						LOG.info("[{}] decoding", observation.getId());
 						ObservationResult result = decoder.decode(wavFile, observation);
-						LOG.info("decoded: {}", cur.getName());
+						LOG.info("[{}] decoded", observation.getId());
 
 						if (result.getDataPath() != null) {
 							result.setDataPath(dao.saveData(observation.getSatelliteId(), observation.getId(), result.getDataPath()));
