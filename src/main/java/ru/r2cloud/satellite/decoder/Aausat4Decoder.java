@@ -43,7 +43,7 @@ import ru.r2cloud.util.Util;
 
 public class Aausat4Decoder implements Decoder {
 
-	private final static Logger LOG = LoggerFactory.getLogger(Aausat4Decoder.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Aausat4Decoder.class);
 
 	private final Configuration config;
 	private final Predict predict;
@@ -127,7 +127,7 @@ public class Aausat4Decoder implements Decoder {
 			Util.closeQuietly(input);
 			Util.closeQuietly(aos);
 			if (!tempFile.delete()) {
-				LOG.error("unable to delete temp file: " + tempFile.getAbsolutePath());
+				LOG.error("unable to delete temp file: {}", tempFile.getAbsolutePath());
 			}
 		}
 		result.setNumberOfDecodedPackets(numberOfDecodedPackets);
