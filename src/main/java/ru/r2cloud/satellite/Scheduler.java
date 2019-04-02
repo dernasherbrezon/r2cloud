@@ -49,8 +49,8 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private final Map<String, Decoder> decoders;
 	private final Schedule<ScheduledObservation> schedule;
 
-	private ScheduledExecutorService schedulerThread = null;
-	private ScheduledExecutorService reaperThread = null;
+	private ScheduledExecutorService startThread = null;
+	private ScheduledExecutorService stopThread = null;
 	private ScheduledExecutorService decoderThread = null;
 
 	public Scheduler(Schedule<ScheduledObservation> schedule, Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, R2CloudService r2cloudService, ProcessFactory processFactory, ObservationResultDao dao, Map<String, Decoder> decoders) {
@@ -71,7 +71,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	@Override
 	public void onConfigUpdated() {
-		if (schedulerThread == null) {
+		if (startThread == null) {
 			return;
 		}
 		
@@ -98,11 +98,11 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	// protection from calling start 2 times and more
 	@Override
 	public synchronized void start() {
-		if (schedulerThread != null) {
+		if (startThread != null) {
 			return;
 		}
-		schedulerThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("scheduler"));
-		reaperThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("reaper"));
+		startThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("sch-start"));
+		stopThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("sch-stop"));
 		decoderThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("decoder"));
 		onConfigUpdated();
 
@@ -125,20 +125,13 @@ public class Scheduler implements Lifecycle, ConfigListener {
 					LOG.info("unable to acquire lock for {}", cur.getName());
 					return;
 				}
+				IQData data;
 				try {
-					reader.start();
+					data = reader.start();
 				} finally {
 					lock.unlock(Scheduler.this);
 				}
-			}
-		};
-		Future<?> future = schedulerThread.schedule(readTask, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
-		SafeRunnable completeTask = new SafeRunnable() {
-
-			@Override
-			public void doRun() {
-				future.cancel(true);
-				IQData data = reader.complete();
+				
 				schedule(cur, false);
 
 				if (data == null || data.getWavFile() == null || !data.getWavFile().exists()) {
@@ -181,7 +174,15 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				});
 			}
 		};
-		Future<?> reaperFuture = reaperThread.schedule(completeTask, observation.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
+		Future<?> future = startThread.schedule(readTask, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
+		SafeRunnable completeTask = new SafeRunnable() {
+
+			@Override
+			public void doRun() {
+				reader.complete();
+			}
+		};
+		Future<?> reaperFuture = stopThread.schedule(completeTask, observation.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
 		schedule.add(new ScheduledObservation(observation, future, reaperFuture, readTask, completeTask));
 		return observation;
 	}
@@ -230,9 +231,9 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	// protection from calling stop 2 times and more
 	@Override
 	public synchronized void stop() {
-		Util.shutdown(schedulerThread, config.getThreadPoolShutdownMillis());
-		Util.shutdown(reaperThread, config.getThreadPoolShutdownMillis());
-		schedulerThread = null;
+		Util.shutdown(startThread, config.getThreadPoolShutdownMillis());
+		Util.shutdown(stopThread, config.getThreadPoolShutdownMillis());
+		startThread = null;
 		LOG.info("stopped");
 	}
 
@@ -250,7 +251,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		if (previous == null) {
 			return;
 		}
-		reaperThread.submit(previous.getCompleteTask());
+		stopThread.submit(previous.getCompleteTask());
 	}
 
 }

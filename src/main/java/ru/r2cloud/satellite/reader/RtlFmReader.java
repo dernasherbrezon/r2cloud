@@ -20,9 +20,6 @@ public class RtlFmReader implements IQReader {
 	private static final int BUF_SIZE = 0x1000; // 4K
 
 	private ProcessWrapper rtlfm = null;
-	private File wavPath;
-	private Long startTimeMillis = null;
-	private Long endTimeMillis = null;
 
 	private final ObservationRequest req;
 	private final Configuration config;
@@ -35,9 +32,11 @@ public class RtlFmReader implements IQReader {
 	}
 
 	@Override
-	public void start() {
-		this.wavPath = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".wav");
+	public IQData start() {
+		File wavPath = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".wav");
 		ProcessWrapper sox = null;
+		Long startTimeMillis = null;
+		Long endTimeMillis = null;
 		try {
 			Integer ppm = config.getInteger("ppm.current");
 			if (ppm == null) {
@@ -68,16 +67,10 @@ public class RtlFmReader implements IQReader {
 			Util.shutdown("sox", sox, 10000);
 			endTimeMillis = System.currentTimeMillis();
 		}
-	}
-
-	@Override
-	public IQData complete() {
-		Util.shutdown("rtl_sdr for satellites", rtlfm, 10000);
-		rtlfm = null;
 
 		IQData result = new IQData();
 
-		if (wavPath != null && wavPath.exists()) {
+		if (wavPath.exists()) {
 			result.setWavFile(wavPath);
 		}
 		if (startTimeMillis != null) {
@@ -86,13 +79,15 @@ public class RtlFmReader implements IQReader {
 			// just to be on the safe side
 			result.setActualStart(req.getStartTimeMillis());
 		}
-		if (endTimeMillis != null) {
-			result.setActualEnd(endTimeMillis);
-		} else {
-			result.setActualEnd(req.getEndTimeMillis());
-		}
+		result.setActualEnd(endTimeMillis);
 
 		return result;
+	}
+
+	@Override
+	public void complete() {
+		Util.shutdown("rtl_sdr for satellites", rtlfm, 10000);
+		rtlfm = null;
 	}
 
 }

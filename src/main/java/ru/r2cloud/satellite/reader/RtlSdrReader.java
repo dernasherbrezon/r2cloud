@@ -25,9 +25,6 @@ public class RtlSdrReader implements IQReader {
 	private static final Logger LOG = LoggerFactory.getLogger(RtlSdrReader.class);
 
 	private ProcessWrapper rtlSdr = null;
-	private File rawFile;
-	private Long startTimeMillis = null;
-	private Long endTimeMillis = null;
 
 	private final Configuration config;
 	private final ProcessFactory factory;
@@ -40,16 +37,16 @@ public class RtlSdrReader implements IQReader {
 	}
 
 	@Override
-	public void start() {
-		this.rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw");
+	public IQData start() {
+		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw");
+		Long startTimeMillis = null;
+		Long endTimeMillis = null;
 		try {
 			Integer ppm = config.getInteger("ppm.current");
 			if (ppm == null) {
 				ppm = 0;
 			}
-			if (startTimeMillis == null) {
-				startTimeMillis = System.currentTimeMillis();
-			}
+			startTimeMillis = System.currentTimeMillis();
 			rtlSdr = factory.create(config.getProperty("satellites.rtlsdr.path") + " -f " + req.getActualFrequency() + " -s " + req.getInputSampleRate() + " -g 45 -p " + ppm + " " + rawFile.getAbsolutePath(), Redirect.INHERIT, true);
 			int responseCode = rtlSdr.waitFor();
 			LOG.info("[{}] rtl_sdr stopped: {}", req.getId(), responseCode);
@@ -60,16 +57,11 @@ public class RtlSdrReader implements IQReader {
 		} finally {
 			endTimeMillis = System.currentTimeMillis();
 		}
-	}
-
-	@Override
-	public IQData complete() {
-		Util.shutdown("rtl_sdr for " + req.getId(), rtlSdr, 10000);
-		rtlSdr = null;
-
 		IQData result = new IQData();
+		result.setActualStart(startTimeMillis);
+		result.setActualEnd(endTimeMillis);
 
-		if (rawFile != null && rawFile.exists()) {
+		if (rawFile.exists()) {
 			LOG.info("[{}] decimating the data", req.getId());
 			File wavPath = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".wav");
 			WavFileSink sink = null;
@@ -93,19 +85,13 @@ public class RtlSdrReader implements IQReader {
 				Util.closeQuietly(fos);
 			}
 		}
-		if (startTimeMillis != null) {
-			result.setActualStart(startTimeMillis);
-		} else {
-			// just to be on the safe side
-			result.setActualStart(req.getStartTimeMillis());
-		}
-		if (endTimeMillis != null) {
-			result.setActualEnd(endTimeMillis);
-		} else {
-			result.setActualEnd(req.getEndTimeMillis());
-		}
-
 		return result;
+	}
+
+	@Override
+	public void complete() {
+		Util.shutdown("rtl_sdr for " + req.getId(), rtlSdr, 10000);
+		rtlSdr = null;
 	}
 
 }

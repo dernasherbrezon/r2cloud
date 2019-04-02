@@ -4,8 +4,8 @@ import ru.r2cloud.model.IQData;
 
 public interface IQReader {
 
-	void start();
+	IQData start();
 
-	IQData complete();
+	void complete();
 	
 }
