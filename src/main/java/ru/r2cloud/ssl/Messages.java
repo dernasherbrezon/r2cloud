@@ -7,23 +7,23 @@ import org.slf4j.Logger;
 
 class Messages {
 	
-	private final List<String> messages = new ArrayList<String>();
+	private final List<String> entries = new ArrayList<String>();
 	
 	public synchronized void add(String message) {
-		messages.add(message);
+		entries.add(message);
 	}
 
 	public synchronized void add(String message, Logger log) {
 		log.info(message);
-		messages.add(message);
+		entries.add(message);
 	}
 
 	public synchronized void clear() {
-		messages.clear();
+		entries.clear();
 	}
 	
 	public synchronized List<String> get() {
-		return new ArrayList<String>(messages);
+		return new ArrayList<String>(entries);
 	}
 
 }
