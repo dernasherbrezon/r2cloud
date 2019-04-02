@@ -252,7 +252,7 @@ public class AcmeClient {
 			messages.add("cleanup challenge data", LOG);
 			for (File cur : challengePath.listFiles()) {
 				if (cur.isFile() && !cur.delete()) {
-					LOG.info("unable to cleanup: " + cur.getAbsolutePath());
+					LOG.info("unable to cleanup: {}", cur.getAbsolutePath());
 				}
 			}
 		}
@@ -385,27 +385,28 @@ public class AcmeClient {
 		challenge.trigger();
 
 		// Poll for the challenge to complete.
-		try {
-			long retryTimeout = INITIAL_RETRY;
-			while (challenge.getStatus() != Status.VALID) {
-				// Did the authorization fail?
-				if (challenge.getStatus() == Status.INVALID) {
-					messages.add("Authorization failed: " + challenge.getError().getDetail());
-					throw new AcmeException("Challenge failed...");
-				}
-
-				Thread.sleep(retryTimeout);
-
-				try {
-					messages.add("update challenge", LOG);
-					challenge.update();
-				} catch (AcmeRetryAfterException e) {
-					retryTimeout = e.getRetryAfter().toEpochMilli() - System.currentTimeMillis();
-					messages.add("not ready. retry after: " + retryTimeout + " millis", LOG);
-				}
+		long retryTimeout = INITIAL_RETRY;
+		while (challenge.getStatus() != Status.VALID && !Thread.currentThread().isInterrupted()) {
+			// Did the authorization fail?
+			if (challenge.getStatus() == Status.INVALID) {
+				messages.add("Authorization failed: " + challenge.getError().getDetail());
+				throw new AcmeException("Challenge failed...");
 			}
-		} catch (InterruptedException ex) {
-			Thread.currentThread().interrupt();
+
+			try {
+				Thread.sleep(retryTimeout);
+			} catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+				break;
+			}
+
+			try {
+				messages.add("update challenge", LOG);
+				challenge.update();
+			} catch (AcmeRetryAfterException e) {
+				retryTimeout = e.getRetryAfter().toEpochMilli() - System.currentTimeMillis();
+				messages.add("not ready. retry after: " + retryTimeout + " millis", LOG);
+			}
 		}
 
 		// All reattempts are used up and there is still no valid authorization?
