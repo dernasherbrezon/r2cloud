@@ -77,6 +77,7 @@ public final class Util {
 			return;
 		}
 		try {
+			LOG.info("stopping: {}", name);
 			process.destroy();
 			if (!process.waitFor(timeoutMillis, TimeUnit.MILLISECONDS)) {
 				LOG.info("unable to cleanly shutdown. kill process: " + name);
