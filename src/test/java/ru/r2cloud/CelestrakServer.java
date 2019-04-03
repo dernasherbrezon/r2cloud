@@ -26,6 +26,7 @@ public class CelestrakServer {
 			@Override
 			public void handle(HttpExchange exchange) throws IOException {
 				if (data == null) {
+					exchange.sendResponseHeaders(404, 0);
 					return;
 				}
 				exchange.sendResponseHeaders(200, data.length());

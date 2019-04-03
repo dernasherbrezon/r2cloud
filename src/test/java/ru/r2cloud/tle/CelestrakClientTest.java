@@ -31,6 +31,12 @@ public class CelestrakClientTest {
 		assertTrue(expected.equals(actual));
 	}
 
+	@Test
+	public void testFailure() {
+		CelestrakClient client = new CelestrakClient(server.getUrl());
+		assertEquals(0, client.getTleForActiveSatellites().size());
+	}
+
 	private static Map<String, TLE> convert(String body) {
 		Map<String, TLE> result = new HashMap<String, TLE>();
 		String[] lines = body.split("\n");
