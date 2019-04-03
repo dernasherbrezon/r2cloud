@@ -44,12 +44,12 @@ public class TLEDao {
 		for (Satellite cur : satelliteDao.findAll()) {
 			File tleFile = new File(basepath, cur.getId() + File.separator + "tle.txt");
 			if (!tleFile.exists()) {
-				LOG.info("missing tle for " + cur.getName() + ". schedule reloading");
+				LOG.info("missing tle for {}. schedule reloading", cur.getName());
 				reload = true;
 				continue;
 			}
 			if (System.currentTimeMillis() - tleFile.lastModified() > TimeUnit.DAYS.toMillis(7)) {
-				LOG.info("tle file: " + tleFile.getAbsolutePath() + " stale. Last updated at: " + new Date(tleFile.lastModified()) + ". schedule reloading");
+				LOG.info("tle file: {} stale. Last updated at: {}. schedule reloading", tleFile.getAbsolutePath(), new Date(tleFile.lastModified()));
 				reload = true;
 				// shcedule reload, but read it anyway in case celestrak is not
 				// available. better to get stale results, rather than none
@@ -99,7 +99,7 @@ public class TLEDao {
 			this.tle.put(satellite.getId(), cur.getValue());
 			File output = new File(basepath, satellite.getId() + File.separator + "tle.txt");
 			if (!output.getParentFile().exists() && !output.getParentFile().mkdirs()) {
-				LOG.error("unable to create directory for satellite: " + satellite.getName());
+				LOG.error("unable to create directory for satellite: {}", satellite.getName());
 				continue;
 			}
 			try (BufferedWriter w = new BufferedWriter(new FileWriter(output))) {
