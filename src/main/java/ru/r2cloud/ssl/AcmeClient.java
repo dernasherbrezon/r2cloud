@@ -217,7 +217,10 @@ public class AcmeClient {
 		}
 		messages.add("saving certificate", LOG);
 		try (FileWriter fw = new FileWriter(new File(basepath, "domain-chain.crt"))) {
-			CertificateUtils.writeX509CertificateChain(fw, cert, chain);
+			X509Certificate[] certs = new X509Certificate[chain.length + 1];
+	        certs[0] = cert;
+	        System.arraycopy(chain, 0, certs, 1, chain.length);
+			CertificateUtils.writeX509Certificates(fw, certs);
 		} catch (IOException e) {
 			String message = "unable to save certificate";
 			messages.add(message);
