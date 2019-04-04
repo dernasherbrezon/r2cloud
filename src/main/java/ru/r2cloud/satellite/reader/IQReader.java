@@ -4,7 +4,7 @@ import ru.r2cloud.model.IQData;
 
 public interface IQReader {
 
-	IQData start();
+	IQData start() throws InterruptedException;
 
 	void complete();
 	

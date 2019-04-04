@@ -74,7 +74,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		if (startThread == null) {
 			return;
 		}
-		
+
 		boolean updateSchedule;
 		if (config.getProperty("locaiton.lat") != null && config.getProperty("locaiton.lon") != null) {
 			updateSchedule = true;
@@ -128,10 +128,13 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				IQData data;
 				try {
 					data = reader.start();
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					return;
 				} finally {
 					lock.unlock(Scheduler.this);
 				}
-				
+
 				schedule(cur, false);
 
 				if (data == null || data.getWavFile() == null || !data.getWavFile().exists()) {

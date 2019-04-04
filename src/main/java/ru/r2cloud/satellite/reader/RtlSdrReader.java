@@ -37,7 +37,7 @@ public class RtlSdrReader implements IQReader {
 	}
 
 	@Override
-	public IQData start() {
+	public IQData start() throws InterruptedException {
 		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw");
 		Long startTimeMillis = null;
 		Long endTimeMillis = null;
@@ -52,8 +52,6 @@ public class RtlSdrReader implements IQReader {
 			LOG.info("[{}] rtl_sdr stopped: {}", req.getId(), responseCode);
 		} catch (IOException e) {
 			LOG.error("[" + req.getId() + "] unable to run", e);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
 		} finally {
 			endTimeMillis = System.currentTimeMillis();
 		}
@@ -75,8 +73,11 @@ public class RtlSdrReader implements IQReader {
 				sink.process(fos);
 				LOG.info("[{}] decimation completed. from: {} to {}", req.getId(), rawFile.getAbsolutePath(), wavPath.getAbsolutePath());
 				result.setWavFile(wavPath);
-			} catch (Exception e) {
-				LOG.error("unable to run", e);
+			} catch (IOException e) {
+				LOG.error("[" + req.getId() + "] unable to run", e);
+				if (wavPath.exists() && !wavPath.delete()) {
+					LOG.error("[{}] unable to delete wav file at: {}", req.getId(), wavPath.getAbsolutePath());
+				}
 			} finally {
 				if (!rawFile.delete()) {
 					LOG.error("[{}] unable to delete raw file at: {}", req.getId(), rawFile.getAbsolutePath());
