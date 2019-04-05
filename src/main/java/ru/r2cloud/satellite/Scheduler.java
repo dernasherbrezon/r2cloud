@@ -121,8 +121,12 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 			@Override
 			public void doRun() {
+				if (clock.millis() > observation.getEndTimeMillis()) {
+					LOG.info("[{}] observation time passed. skip {}", observation.getId(), cur.getName());
+					return;
+				}
 				if (!lock.tryLock(Scheduler.this)) {
-					LOG.info("unable to acquire lock for {}", cur.getName());
+					LOG.info("[{}] unable to acquire lock for {}", observation.getId(), cur.getName());
 					return;
 				}
 				IQData data;
@@ -155,7 +159,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 					public void doRun() {
 						Decoder decoder = decoders.get(observation.getSatelliteId());
 						if (decoder == null) {
-							LOG.error("unknown decoder: {}", decoder);
+							LOG.error("[{}] unknown decoder for {}", observation.getId(), observation.getSatelliteId());
 							return;
 						}
 						LOG.info("[{}] decoding", observation.getId());
