@@ -55,7 +55,7 @@ public class TLEReloader {
 			if (executeAt.getTimeInMillis() < current) {
 				executeAt.add(Calendar.WEEK_OF_YEAR, 1);
 			}
-			LOG.info("next tle update at: " + executeAt.getTime());
+			LOG.info("next tle update at: {}", executeAt.getTime());
 			executor.scheduleAtFixedRate(new SafeRunnable() {
 
 				@Override

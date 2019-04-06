@@ -116,8 +116,6 @@ public class TLEDao {
 	}
 
 	public synchronized void stop() {
-		if (tle != null) {
-			tle.clear();
-		}
+		tle.clear();
 	}
 }
