@@ -34,7 +34,7 @@ public class Configuration {
 
 	private final Properties userSettings = new Properties();
 	private final String userSettingsLocation;
-	private static Set<PosixFilePermission> MODE600 = new HashSet<PosixFilePermission>();
+	private static final Set<PosixFilePermission> MODE600 = new HashSet<PosixFilePermission>();
 
 	private final Properties systemSettings = new Properties();
 	private final Map<String, List<ConfigListener>> listeners = new ConcurrentHashMap<String, List<ConfigListener>>();
