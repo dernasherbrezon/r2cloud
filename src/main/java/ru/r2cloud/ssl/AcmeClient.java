@@ -2,7 +2,6 @@ package ru.r2cloud.ssl;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -230,7 +229,7 @@ public class AcmeClient {
 
 		messages.add("reloading nginx configuration", LOG);
 		try {
-			new ProcessBuilder().inheritIO().command(new String[] { "sudo", config.getProperty("nginx.location"), "-s", "reload" }).start();
+			new ProcessBuilder().inheritIO().command("sudo", config.getProperty("nginx.location"), "-s", "reload").start();
 		} catch (IOException e) {
 			String message = "unable to reload configuration";
 			messages.add(message);
@@ -366,7 +365,7 @@ public class AcmeClient {
 		return reg;
 	}
 
-	private void authorize(Registration reg, String domain) throws AcmeException, FileNotFoundException, IOException {
+	private void authorize(Registration reg, String domain) throws AcmeException, IOException {
 		messages.add("authorizing domain: " + domain, LOG);
 		Authorization auth = reg.authorizeDomain(domain);
 		messages.add("find http challenge", LOG);

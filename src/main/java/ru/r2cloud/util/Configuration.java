@@ -99,7 +99,7 @@ public class Configuration {
 		try {
 			Files.setPosixFilePermissions(Paths.get(userSettingsLocation), MODE600);
 		} catch (IOException e) {
-			LOG.info("unable to setup 600 permissions: " + e.getMessage());
+			LOG.info("unable to setup 600 permissions: {}", e.getMessage());
 		}
 		Set<ConfigListener> toNotify = new HashSet<ConfigListener>();
 		synchronized (changedProperties) {
