@@ -163,7 +163,7 @@ public class Configuration {
 				}
 			}
 		} catch (ParseException e) {
-			throw new RuntimeException(e);
+			throw new IllegalArgumentException(e);
 		}
 		return result;
 	}
