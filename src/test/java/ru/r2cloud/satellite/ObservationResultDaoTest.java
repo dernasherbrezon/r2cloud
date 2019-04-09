@@ -92,7 +92,7 @@ public class ObservationResultDaoTest {
 	}
 
 	private File createTempFile(String data) throws IOException {
-		File result = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
+		File result = new File(tempFolder.getRoot(), UUID.randomUUID().toString() + ".wav");
 		try (BufferedWriter w = new BufferedWriter(new FileWriter(result))) {
 			w.write(data);
 		}

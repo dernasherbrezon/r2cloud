@@ -63,7 +63,10 @@ public class ObservationIT extends RegisteredTest {
 		assertEquals(300000, observation.getInt("inputSampleRate", 0));
 		assertEquals(137900000, observation.getInt("frequency", 0));
 		assertEquals(137900000, observation.getInt("actualFrequency", 0));
-		assertEquals(0, observation.getInt("numberOfDecodedPackets", -1));
+		//do not assert numberOfDecodedPackets as file contains valid data
+		//there is no control on when test executed, so doppler correction might 
+		//generate valid freq offset and numberOfDecodedPackets might NOT be 0
+		//assertEquals(0, observation.getInt("numberOfDecodedPackets", -1));
 		assertEquals("LRPT", observation.getString("decoder", null));
 		assertEquals("40069", observation.getString("satellite", null));
 	}
