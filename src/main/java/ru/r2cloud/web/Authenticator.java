@@ -86,7 +86,7 @@ public class Authenticator {
 		byte[] token = new byte[12];
 		random.nextBytes(token);
 
-		this.authenticatedToken = new String(Hex.encode(token));
+		this.authenticatedToken = Hex.encode(token);
 		this.authenticatedAt = System.currentTimeMillis();
 		return authenticatedToken;
 	}
@@ -101,7 +101,7 @@ public class Authenticator {
 		}
 
 		byte[] digested = digest.digest(salted.getBytes(StandardCharsets.UTF_8));
-		String passwordToCheck = new String(Hex.encode(digested));
+		String passwordToCheck = Hex.encode(digested);
 		return passwordToCheck;
 	}
 

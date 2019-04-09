@@ -6,7 +6,7 @@ public class Hex {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
     };
 
-    public static char[] encode(byte[] bytes) {
+    public static String encode(byte[] bytes) {
         final int nBytes = bytes.length;
         char[] result = new char[2*nBytes];
 
@@ -18,7 +18,7 @@ public class Hex {
             result[j++] = HEX_CHARS[(0x0F & bytes[i])];
         }
 
-        return result;
+        return new String(result);
     }
     
     private Hex() {
