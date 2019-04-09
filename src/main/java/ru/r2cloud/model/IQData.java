@@ -45,10 +45,7 @@ public class IQData {
 		if (wavFile != null && wavFile.exists()) {
 			return true;
 		}
-		if (iqFile != null && iqFile.exists()) {
-			return true;
-		}
-		return false;
+		return iqFile != null && iqFile.exists();
 	}
 
 	public File getDataFile() {

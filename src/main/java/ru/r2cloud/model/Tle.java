@@ -2,13 +2,15 @@ package ru.r2cloud.model;
 
 import java.util.Arrays;
 
-public class TLE extends uk.me.g4dpz.satellite.TLE {
+import uk.me.g4dpz.satellite.TLE;
+
+public class Tle extends TLE {
 
 	private static final long serialVersionUID = 6446052218267434768L;
 
 	private final String[] raw;
 
-	public TLE(String[] tle) {
+	public Tle(String[] tle) {
 		super(tle);
 		this.raw = tle;
 	}
@@ -33,7 +35,7 @@ public class TLE extends uk.me.g4dpz.satellite.TLE {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		TLE other = (TLE) obj;
+		Tle other = (Tle) obj;
 		return Arrays.equals(raw, other.raw);
 	}
 	

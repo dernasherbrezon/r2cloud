@@ -22,7 +22,7 @@ import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.model.Satellite;
-import ru.r2cloud.model.TLE;
+import ru.r2cloud.model.Tle;
 import ru.r2cloud.satellite.SatelliteDao;
 
 public class TLEDaoTest {
@@ -34,7 +34,7 @@ public class TLEDaoTest {
 	private SatelliteDao satelliteDao;
 	private CelestrakClient celestrak;
 
-	private Map<String, TLE> tleData;
+	private Map<String, Tle> tleData;
 	private List<Satellite> supported;
 
 	@Test
@@ -62,7 +62,7 @@ public class TLEDaoTest {
 
 		celestrak = mock(CelestrakClient.class);
 		// return tle for completely different satellites
-		HashMap<String, TLE> brokenTleData = new HashMap<String, TLE>();
+		HashMap<String, Tle> brokenTleData = new HashMap<String, Tle>();
 		brokenTleData.put(UUID.randomUUID().toString(), tleData.get(supported.get(0).getName()));
 		when(celestrak.getTleForActiveSatellites()).thenReturn(brokenTleData);
 		// trigger last modified
@@ -86,7 +86,7 @@ public class TLEDaoTest {
 	}
 
 	private void setupMocks() {
-		tleData = new HashMap<String, TLE>();
+		tleData = new HashMap<String, Tle>();
 		try (BufferedReader r = new BufferedReader(new InputStreamReader(TLEDaoTest.class.getClassLoader().getResourceAsStream("sample-tle.txt")))) {
 			String curLine = null;
 			List<String> lines = new ArrayList<>();
@@ -94,7 +94,7 @@ public class TLEDaoTest {
 				lines.add(curLine);
 			}
 			for (int i = 0; i < lines.size(); i += 3) {
-				tleData.put(lines.get(i), new TLE(new String[] { lines.get(i), lines.get(i + 1), lines.get(i + 2) }));
+				tleData.put(lines.get(i), new Tle(new String[] { lines.get(i), lines.get(i + 1), lines.get(i + 2) }));
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);

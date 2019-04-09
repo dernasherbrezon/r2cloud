@@ -10,7 +10,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.r2cloud.model.TLE;
+import ru.r2cloud.model.Tle;
 import ru.r2cloud.util.Util;
 
 public class CelestrakClient {
@@ -22,13 +22,13 @@ public class CelestrakClient {
 		this.host = host;
 	}
 
-	public Map<String, TLE> getTleForActiveSatellites() {
+	public Map<String, Tle> getTleForActiveSatellites() {
 		return loadTle("/NORAD/elements/active.txt");
 	}
 
-	private Map<String, TLE> loadTle(String location) {
+	private Map<String, Tle> loadTle(String location) {
 		HttpURLConnection con = null;
-		Map<String, TLE> result = new HashMap<String, TLE>();
+		Map<String, Tle> result = new HashMap<String, Tle>();
 		try {
 			URL obj = new URL(host + location);
 			con = (HttpURLConnection) obj.openConnection();
@@ -51,7 +51,7 @@ public class CelestrakClient {
 						if (line2 == null) {
 							break;
 						}
-						result.put(curLine.trim(), new TLE(new String[] { curLine.trim(), line1, line2 }));
+						result.put(curLine.trim(), new Tle(new String[] { curLine.trim(), line1, line2 }));
 					}
 				}
 			}

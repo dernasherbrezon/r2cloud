@@ -29,6 +29,8 @@ import ru.r2cloud.util.Configuration;
 
 public class R2CloudClient {
 
+	private static final String OBSERVATION_BASEPATH = "/api/v1/observation";
+
 	private static final Logger LOG = LoggerFactory.getLogger(R2CloudClient.class);
 
 	private HttpClient httpclient;
@@ -45,7 +47,7 @@ public class R2CloudClient {
 		if (observation == null) {
 			return null;
 		}
-		HttpRequest request = createJsonRequest("/api/v1/observation", observation.toJson()).build();
+		HttpRequest request = createJsonRequest(OBSERVATION_BASEPATH, observation.toJson()).build();
 		try {
 			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
 			if (response.statusCode() != 200 && LOG.isErrorEnabled()) {
@@ -63,15 +65,15 @@ public class R2CloudClient {
 	}
 
 	public void saveJpeg(Long id, File getaPath) {
-		upload("/api/v1/observation/" + id + "/data", getaPath, "image/jpeg");
+		upload(OBSERVATION_BASEPATH + "/" + id + "/data", getaPath, "image/jpeg");
 	}
 
 	public void saveBinary(Long id, File getaPath) {
-		upload("/api/v1/observation/" + id + "/data", getaPath, "application/octet-stream");
+		upload(OBSERVATION_BASEPATH + "/" + id + "/data", getaPath, "application/octet-stream");
 	}
 
 	public void saveSpectogram(Long id, File spectogramPath) {
-		upload("/api/v1/observation/" + id + "/spectogram", spectogramPath, "image/png");
+		upload(OBSERVATION_BASEPATH + "/" + id + "/spectogram", spectogramPath, "image/png");
 	}
 
 	private void upload(String url, File file, String contentType) {

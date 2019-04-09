@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.Satellite;
-import ru.r2cloud.model.TLE;
+import ru.r2cloud.model.Tle;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
@@ -30,7 +30,7 @@ public class TLEDao {
 	private final File basepath;
 	private final CelestrakClient celestrak;
 
-	private final Map<String, TLE> tle = new ConcurrentHashMap<String, TLE>();
+	private final Map<String, Tle> tle = new ConcurrentHashMap<String, Tle>();
 
 	public TLEDao(Configuration config, SatelliteDao satelliteDao, CelestrakClient celestrak) {
 		this.config = config;
@@ -63,7 +63,7 @@ public class TLEDao {
 				if (line2 == null) {
 					continue;
 				}
-				this.tle.put(cur.getId(), new TLE(new String[] { cur.getName(), line1, line2 }));
+				this.tle.put(cur.getId(), new Tle(new String[] { cur.getName(), line1, line2 }));
 			} catch (IOException e) {
 				LOG.error("unable to load TLE for " + cur.getId(), e);
 				reload = true;
@@ -78,20 +78,20 @@ public class TLEDao {
 		}
 	}
 
-	public TLE findById(String id) {
+	public Tle findById(String id) {
 		return tle.get(id);
 	}
 
-	public Map<String, TLE> findAll() {
+	public Map<String, Tle> findAll() {
 		return tle;
 	}
 
 	void reload() {
-		Map<String, TLE> tle = celestrak.getTleForActiveSatellites();
+		Map<String, Tle> tle = celestrak.getTleForActiveSatellites();
 		if (tle.isEmpty()) {
 			return;
 		}
-		for (Entry<String, TLE> cur : tle.entrySet()) {
+		for (Entry<String, Tle> cur : tle.entrySet()) {
 			Satellite satellite = satelliteDao.findByName(cur.getKey());
 			if (satellite == null) {
 				continue;

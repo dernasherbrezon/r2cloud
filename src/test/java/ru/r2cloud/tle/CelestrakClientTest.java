@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import ru.r2cloud.CelestrakServer;
 import ru.r2cloud.Util;
-import ru.r2cloud.model.TLE;
+import ru.r2cloud.model.Tle;
 
 public class CelestrakClientTest {
 
@@ -21,12 +21,12 @@ public class CelestrakClientTest {
 	@Test
 	public void testSuccess() {
 		String expectedBody = Util.loadExpected("sample-tle.txt");
-		Map<String, TLE> expected = convert(expectedBody);
+		Map<String, Tle> expected = convert(expectedBody);
 		server.mockResponse(expectedBody);
 
 		// one slash is important here
 		CelestrakClient client = new CelestrakClient(server.getUrl());
-		Map<String, TLE> actual = client.getTleForActiveSatellites();
+		Map<String, Tle> actual = client.getTleForActiveSatellites();
 		assertEquals(expected.size(), actual.size());
 		assertTrue(expected.equals(actual));
 	}
@@ -37,11 +37,11 @@ public class CelestrakClientTest {
 		assertEquals(0, client.getTleForActiveSatellites().size());
 	}
 
-	private static Map<String, TLE> convert(String body) {
-		Map<String, TLE> result = new HashMap<String, TLE>();
+	private static Map<String, Tle> convert(String body) {
+		Map<String, Tle> result = new HashMap<String, Tle>();
 		String[] lines = body.split("\n");
 		for (int i = 0; i < lines.length; i += 3) {
-			result.put(lines[i], new TLE(new String[] { lines[i], lines[i + 1], lines[i + 2] }));
+			result.put(lines[i], new Tle(new String[] { lines[i], lines[i + 1], lines[i + 2] }));
 		}
 		return result;
 	}

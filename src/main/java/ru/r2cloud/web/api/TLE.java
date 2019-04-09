@@ -30,7 +30,7 @@ public class TLE extends AbstractHttpController {
 			entity.add("lastUpdated", lastUpdateMillis);
 		}
 		JsonArray tle = new JsonArray();
-		for (Entry<String, ru.r2cloud.model.TLE> cur : service.findAll().entrySet()) {
+		for (Entry<String, ru.r2cloud.model.Tle> cur : service.findAll().entrySet()) {
 			JsonObject curTle = new JsonObject();
 			curTle.add("id", cur.getKey());
 			JsonArray curData = new JsonArray();
