@@ -203,6 +203,10 @@ public class RestClient {
 		return getData("/api/v1/admin/tle");
 	}
 
+	public JsonObject getOverview() {
+		return getData("/api/v1/admin/status/overview");
+	}
+
 	public void setGeneralConfiguration(Double lat, Double lng, boolean autoUpdate) {
 		HttpResponse<String> response = setGeneralConfigurationWithResponse(lat, lng, autoUpdate);
 		if (response.statusCode() != 200) {

@@ -28,6 +28,7 @@ import ru.r2cloud.it.ConfiguredIT;
 import ru.r2cloud.it.GeneralIT;
 import ru.r2cloud.it.ObservationIT;
 import ru.r2cloud.it.ObservationLoadIT;
+import ru.r2cloud.it.OverviewIT;
 import ru.r2cloud.it.R2CloudSaveIT;
 import ru.r2cloud.it.RestoreIT;
 import ru.r2cloud.it.ScheduleListIT;
@@ -38,7 +39,7 @@ import ru.r2cloud.it.TleIT;
 import ru.r2cloud.util.Configuration;
 
 @RunWith(Suite.class)
-@SuiteClasses({ ObservationLoadIT.class, ObservationIT.class, TleIT.class, StaticControllerIT.class, SetupIT.class, ScheduleSaveIT.class, ScheduleListIT.class, R2CloudSaveIT.class, RestoreIT.class, AccessTokenIT.class, ConfiguredIT.class, GeneralIT.class })
+@SuiteClasses({ OverviewIT.class, ObservationLoadIT.class, ObservationIT.class, TleIT.class, StaticControllerIT.class, SetupIT.class, ScheduleSaveIT.class, ScheduleListIT.class, R2CloudSaveIT.class, RestoreIT.class, AccessTokenIT.class, ConfiguredIT.class, GeneralIT.class })
 public class WebTest {
 
 	private static final int RETRY_INTERVAL_MS = 5000;
