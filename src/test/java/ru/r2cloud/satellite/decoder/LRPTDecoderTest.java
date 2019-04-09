@@ -7,7 +7,9 @@ import static org.junit.Assert.assertNull;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.UUID;
+import java.util.zip.GZIPOutputStream;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,7 +20,6 @@ import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.satellite.Predict;
-import ru.r2cloud.satellite.decoder.LRPTDecoder;
 import ru.r2cloud.util.Util;
 import uk.me.g4dpz.satellite.SatelliteFactory;
 import uk.me.g4dpz.satellite.TLE;
@@ -46,8 +47,14 @@ public class LRPTDecoderTest {
 	@Test
 	public void testNoData() throws Exception {
 		File wav = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
-		try (FileOutputStream fos = new FileOutputStream(wav); InputStream is = LRPTDecoderTest.class.getClassLoader().getResourceAsStream("8bit.wav")) {
-			Util.copy(is, fos);
+		try (OutputStream fos = new GZIPOutputStream(new FileOutputStream(wav))) {
+			for (int i = 0; i < 300_000; i++) {
+				if (i % 2 == 0) {
+					fos.write(0x01);
+				} else {
+					fos.write(0x00);
+				}
+			}
 		}
 		LRPTDecoder decoder = new LRPTDecoder(config, new Predict(config));
 		ObservationResult result = decoder.decode(wav, create());
@@ -74,7 +81,7 @@ public class LRPTDecoderTest {
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("locaiton.lat", "53.72");
 		config.setProperty("locaiton.lon", "47.57");
-		
+
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
 		config.update();
 	}
