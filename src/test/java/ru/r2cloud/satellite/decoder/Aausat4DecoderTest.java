@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.util.UUID;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -29,6 +30,7 @@ public class Aausat4DecoderTest {
 	private TestConfiguration config;
 
 	@Test
+	@Ignore
 	public void testSomeData() throws Exception {
 		File wav = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
 		try (FileOutputStream fos = new FileOutputStream(wav); InputStream is = Aausat4DecoderTest.class.getClassLoader().getResourceAsStream("data/aausat4.wav")) {
