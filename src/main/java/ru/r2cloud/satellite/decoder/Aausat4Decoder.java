@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,7 @@ import ru.r2cloud.jradio.detection.PeakDetection;
 import ru.r2cloud.jradio.detection.PeakInterval;
 import ru.r2cloud.jradio.detection.PeakValueSource;
 import ru.r2cloud.jradio.sink.WavFileSink;
+import ru.r2cloud.jradio.source.RtlSdr;
 import ru.r2cloud.jradio.source.SigSource;
 import ru.r2cloud.jradio.source.WavFileSource;
 import ru.r2cloud.jradio.source.Waveform;
@@ -54,9 +56,9 @@ public class Aausat4Decoder implements Decoder {
 	}
 
 	@Override
-	public ObservationResult decode(File wavFile, ObservationRequest req) {
+	public ObservationResult decode(File rawIq, ObservationRequest req) {
 		ObservationResult result = new ObservationResult();
-		result.setWavPath(wavFile);
+		result.setIqPath(rawIq);
 		long numberOfDecodedPackets = 0;
 		File binFile = new File(config.getTempDirectory(), "aausat4-" + req.getId() + ".bin");
 		File tempFile = new File(config.getTempDirectory(), "aausat4-" + req.getId() + ".temp");
@@ -64,22 +66,26 @@ public class Aausat4Decoder implements Decoder {
 		BufferedOutputStream fos = null;
 		try {
 			// 1 stage. correct doppler & remove DC offset
-			WavFileSource source = new WavFileSource(new BufferedInputStream(new FileInputStream(wavFile))); //NOSONAR
-			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) source.getContext().getSampleRate(), new DopplerValueSource(source.getContext().getSampleRate(), req.getSatelliteFrequency(), 1000L, req.getStartTimeMillis()) {
+			Long totalSamples = Util.readTotalSamples(rawIq);
+			if (totalSamples == null) {
+				return result;
+			}
+			RtlSdr sdr = new RtlSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalSamples);
+			float[] taps = Firdes.lowPass(1.0, sdr.getContext().getSampleRate(), 6400, 1000, Window.WIN_HAMMING, 6.76);
+			FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(sdr, taps, req.getInputSampleRate() / req.getOutputSampleRate(), req.getSatelliteFrequency() - req.getActualFrequency());
+			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) xlating.getContext().getSampleRate(), new DopplerValueSource(xlating.getContext().getSampleRate(), req.getSatelliteFrequency(), 1000L, req.getStartTimeMillis()) {
 
 				@Override
 				public long getDopplerFrequency(long satelliteFrequency, long currentTimeMillis) {
 					return predict.getDownlinkFreq(satelliteFrequency, currentTimeMillis, req.getOrigin());
 				}
 			}, 1.0);
-			Multiply mul = new Multiply(source, source2);
-			float[] taps = Firdes.lowPass(1.0, mul.getContext().getSampleRate(), 6400, 1000, Window.WIN_HAMMING, 6.76);
-			FrequencyXlatingFIRFilter filter = new FrequencyXlatingFIRFilter(mul, taps, 5, -(req.getActualFrequency() - req.getSatelliteFrequency()));
-			tempWav = new WavFileSink(filter, 16);
+			Multiply mul = new Multiply(xlating, source2);
+			tempWav = new WavFileSink(mul, 16);
 			fos = new BufferedOutputStream(new FileOutputStream(tempFile));
 			tempWav.process(fos);
 		} catch (Exception e) {
-			LOG.error("unable to correct doppler: " + wavFile, e);
+			LOG.error("unable to correct doppler: " + rawIq.getAbsolutePath(), e);
 			return result;
 		} finally {
 			Util.closeQuietly(tempWav);
@@ -121,7 +127,7 @@ public class Aausat4Decoder implements Decoder {
 				numberOfDecodedPackets++;
 			}
 		} catch (Exception e) {
-			LOG.error("unable to process: " + wavFile, e);
+			LOG.error("unable to process: " + rawIq.getAbsolutePath(), e);
 			return result;
 		} finally {
 			Util.closeQuietly(input);

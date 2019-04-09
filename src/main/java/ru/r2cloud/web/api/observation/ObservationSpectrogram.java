@@ -55,7 +55,7 @@ public class ObservationSpectrogram extends AbstractHttpController {
 			return new NotFound();
 		}
 
-		File spectogram = spectogramService.create(observation.getResult().getWavPath());
+		File spectogram = spectogramService.create(observation);
 		if (spectogram == null) {
 			return new InternalServerError();
 		}

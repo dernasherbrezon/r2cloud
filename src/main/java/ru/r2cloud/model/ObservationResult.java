@@ -5,6 +5,7 @@ import java.io.File;
 public class ObservationResult {
 
 	private File wavPath;
+	private File iqPath;
 
 	private String gain;
 	private String channelA;
@@ -19,6 +20,14 @@ public class ObservationResult {
 
 	private String dataURL;
 	private File dataPath;
+	
+	public File getIqPath() {
+		return iqPath;
+	}
+	
+	public void setIqPath(File iqPath) {
+		this.iqPath = iqPath;
+	}
 
 	public File getWavPath() {
 		return wavPath;

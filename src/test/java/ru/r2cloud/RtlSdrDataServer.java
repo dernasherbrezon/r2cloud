@@ -1,9 +1,9 @@
 package ru.r2cloud;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.util.zip.GZIPInputStream;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -31,11 +31,7 @@ public class RtlSdrDataServer {
 					return;
 				}
 				exchange.getResponseHeaders().add("Content-Type", "application/octet-stream");
-				try (InputStream is = RtlSdrDataServer.class.getResourceAsStream(filename)) {
-					if (is == null) {
-						exchange.sendResponseHeaders(404, 0);
-						return;
-					}
+				try (GZIPInputStream is = new GZIPInputStream(RtlSdrDataServer.class.getResourceAsStream(filename))) {
 					exchange.sendResponseHeaders(200, 0);
 					try (OutputStream os = exchange.getResponseBody();) {
 						Util.copy(is, os);

@@ -33,12 +33,12 @@ public class LRPTDecoderTest {
 	@Test
 	public void testSomeData() throws Exception {
 		File wav = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
-		try (FileOutputStream fos = new FileOutputStream(wav); InputStream is = LRPTDecoderTest.class.getClassLoader().getResourceAsStream("data/meteor.wav")) {
+		try (FileOutputStream fos = new FileOutputStream(wav); InputStream is = LRPTDecoderTest.class.getClassLoader().getResourceAsStream("data/40069-1553411549943.raw.gz")) {
 			Util.copy(is, fos);
 		}
 		LRPTDecoder decoder = new LRPTDecoder(config, new Predict(config));
 		ObservationResult result = decoder.decode(wav, create());
-		assertEquals(15, result.getNumberOfDecodedPackets().longValue());
+		assertEquals(7, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
 		assertNotNull(result.getaPath());
 	}
@@ -63,15 +63,17 @@ public class LRPTDecoderTest {
 		result.setActualFrequency(137900000L);
 		result.setSatelliteFrequency(137900000L);
 		result.setOrigin(SatelliteFactory.createSatellite(tle));
-		result.setStartTimeMillis(1539502977207L);
+		result.setStartTimeMillis(1554483451541L);
+		result.setInputSampleRate(300_000);
+		result.setOutputSampleRate(150_000);
 		return result;
 	}
 
 	@Before
 	public void start() throws Exception {
 		config = new TestConfiguration(tempFolder);
-		config.setProperty("locaiton.lat", "56.189");
-		config.setProperty("locaiton.lon", "38.174");
+		config.setProperty("locaiton.lat", "53.72");
+		config.setProperty("locaiton.lon", "47.57");
 		
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
 		config.update();

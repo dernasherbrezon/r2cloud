@@ -45,7 +45,7 @@ public class R2CloudService {
 		}
 		if (config.getBoolean("r2cloud.syncSpectogram")) {
 			if (observation.getResult().getSpectogramPath() == null) {
-				File spectogram = spectogramService.create(observation.getResult().getWavPath());
+				File spectogram = spectogramService.create(observation);
 				if (spectogram != null && !dao.saveSpectogram(observation.getReq().getSatelliteId(), observation.getReq().getId(), spectogram)) {
 					LOG.info("[{}] unable to save spectogram", observation.getReq().getId());
 				}

@@ -141,15 +141,15 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 				schedule(cur, false);
 
-				if (data == null || data.getWavFile() == null || !data.getWavFile().exists()) {
+				if (data == null || !data.hasDataFile()) {
 					return;
 				}
 				// actual start/end might be different
 				observation.setStartTimeMillis(data.getActualStart());
 				observation.setEndTimeMillis(data.getActualEnd());
 
-				File wavFile = dao.insert(observation, data.getWavFile());
-				if (wavFile == null) {
+				File dataFile = dao.insert(observation, data.getDataFile());
+				if (dataFile == null) {
 					return;
 				}
 
@@ -163,7 +163,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 							return;
 						}
 						LOG.info("[{}] decoding", observation.getId());
-						ObservationResult result = decoder.decode(wavFile, observation);
+						ObservationResult result = decoder.decode(dataFile, observation);
 						LOG.info("[{}] decoded", observation.getId());
 
 						if (result.getDataPath() != null) {

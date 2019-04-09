@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -159,6 +160,26 @@ public final class Util {
 		} catch (IOException e) {
 			LOG.info("unable to close", e);
 		}
+	}
+	
+	// works well for files less than 4Gb
+	public static Long readTotalSamples(File rawFile) {
+		long totalSamples;
+		try (RandomAccessFile raf = new RandomAccessFile(rawFile, "r")) {
+			raf.seek(raf.length() - 4);
+			int b4 = raf.read();
+			int b3 = raf.read();
+			int b2 = raf.read();
+			int b1 = raf.read();
+			totalSamples = ((b1 << 24) | (b2 << 16) + (b3 << 8) + b4) / 2;
+		} catch (IOException e) {
+			LOG.error("unable to get total number of samples", e);
+			if (!rawFile.delete()) {
+				LOG.error("unable to delete raw file at: {}", rawFile.getAbsolutePath());
+			}
+			return null;
+		}
+		return totalSamples;
 	}
 	
 	private Util() {

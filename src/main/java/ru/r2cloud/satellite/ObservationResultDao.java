@@ -26,6 +26,10 @@ import ru.r2cloud.util.Util;
 
 public class ObservationResultDao {
 
+	private static final String SPECTOGRAM_FILENAME = "spectogram.png";
+	private static final String OUTPUT_WAV_FILENAME = "output.wav";
+	private static final String OUTPUT_RAW_FILENAME = "output.raw.gz";
+
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationResultDao.class);
 
 	private final File basepath;
@@ -89,14 +93,18 @@ public class ObservationResultDao {
 			result.setDataPath(data);
 			result.setDataURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getReq().getId() + "/data.bin");
 		}
-		File wav = new File(curDirectory, "output.wav");
+		File wav = new File(curDirectory, OUTPUT_WAV_FILENAME);
 		if (wav.exists()) {
 			result.setWavPath(wav);
 		}
-		File spectogram = new File(curDirectory, "spectogram.png");
+		File tarGz = new File(curDirectory, OUTPUT_RAW_FILENAME);
+		if (wav.exists()) {
+			result.setIqPath(tarGz);
+		}
+		File spectogram = new File(curDirectory, SPECTOGRAM_FILENAME);
 		if (spectogram.exists()) {
 			result.setSpectogramPath(spectogram);
-			result.setSpectogramURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getReq().getId() + "/spectogram.png");
+			result.setSpectogramURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getReq().getId() + "/" + SPECTOGRAM_FILENAME);
 		}
 
 		return full;
@@ -127,7 +135,7 @@ public class ObservationResultDao {
 	}
 
 	public boolean saveSpectogram(String satelliteId, String observationId, File a) {
-		File dest = new File(getObservationBasepath(satelliteId, observationId), "spectogram.png");
+		File dest = new File(getObservationBasepath(satelliteId, observationId), SPECTOGRAM_FILENAME);
 		if (dest.exists()) {
 			LOG.info("unable to save. dest already exist: {}", dest.getAbsolutePath());
 			return false;
@@ -135,7 +143,7 @@ public class ObservationResultDao {
 		return a.renameTo(dest);
 	}
 
-	public File insert(ObservationRequest observation, File wavPath) {
+	public File insert(ObservationRequest observation, File dataFile) {
 		File[] dataDirs = new File(basepath, observation.getSatelliteId() + File.separator + "data").listFiles();
 		if (dataDirs != null && dataDirs.length > maxCount) {
 			Arrays.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
@@ -155,11 +163,17 @@ public class ObservationResultDao {
 			return null;
 		}
 
-		return insertIQData(observation, wavPath);
+		return insertData(observation, dataFile);
 	}
 
-	private File insertIQData(ObservationRequest observation, File wavPath) {
-		File dest = new File(getObservationBasepath(observation), "output.wav");
+	private File insertData(ObservationRequest observation, File dataFile) {
+		String filename;
+		if (dataFile.getName().endsWith("wav")) {
+			filename = OUTPUT_WAV_FILENAME;
+		} else {
+			filename = OUTPUT_RAW_FILENAME;
+		}
+		File dest = new File(getObservationBasepath(observation), filename);
 		if (!dest.getParentFile().exists() && !dest.getParentFile().mkdirs()) {
 			LOG.info("unable to create parent dir: {}", dest.getParentFile().getAbsolutePath());
 			return null;
@@ -168,7 +182,7 @@ public class ObservationResultDao {
 			LOG.info("unable to save. dest already exist: {}", dest.getAbsolutePath());
 			return null;
 		}
-		if (!wavPath.renameTo(dest)) {
+		if (!dataFile.renameTo(dest)) {
 			return null;
 		}
 		return dest;

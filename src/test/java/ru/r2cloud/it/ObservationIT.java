@@ -30,7 +30,7 @@ public class ObservationIT extends RegisteredTest {
 
 	@Test
 	public void testMeteorObservation() throws Exception {
-		rtlSdrMock.mockResponse("/data/40069-1553411549943.raw");
+		rtlSdrMock.mockResponse("/data/40069-1553411549943.raw.gz");
 		JsonHttpResponse metaHandler = new JsonHttpResponse("r2cloudclienttest/save-meta-response.json", 200);
 		server.setObservationMock(metaHandler);
 		JsonHttpResponse spectogramHandler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
@@ -53,7 +53,7 @@ public class ObservationIT extends RegisteredTest {
 		// wait for spectogram upload and assert
 		spectogramHandler.awaitRequest();
 		assertEquals("image/png", spectogramHandler.getRequestContentType());
-		assertSpectogram("meteor.spectogram.png", spectogramHandler.getRequestBytes());
+		assertSpectogram("spectogram-output.raw.gz.png", spectogramHandler.getRequestBytes());
 		assertTempEmpty();
 	}
 
