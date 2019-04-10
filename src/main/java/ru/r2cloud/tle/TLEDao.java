@@ -87,11 +87,11 @@ public class TLEDao {
 	}
 
 	void reload() {
-		Map<String, Tle> tle = celestrak.getTleForActiveSatellites();
-		if (tle.isEmpty()) {
+		Map<String, Tle> newTle = celestrak.getTleForActiveSatellites();
+		if (newTle.isEmpty()) {
 			return;
 		}
-		for (Entry<String, Tle> cur : tle.entrySet()) {
+		for (Entry<String, Tle> cur : newTle.entrySet()) {
 			Satellite satellite = satelliteDao.findByName(cur.getKey());
 			if (satellite == null) {
 				continue;
