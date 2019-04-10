@@ -16,7 +16,7 @@ import com.codahale.metrics.health.HealthCheckRegistry;
 import com.codahale.metrics.health.SharedHealthCheckRegistries;
 
 import ru.r2cloud.R2Cloud;
-import ru.r2cloud.cloud.R2CloudService;
+import ru.r2cloud.cloud.R2ServerService;
 import ru.r2cloud.util.Configuration;
 
 public class Metrics {
@@ -28,9 +28,9 @@ public class Metrics {
 	private RRD4JReporter reporter;
 	private Sigar sigar;
 	private final Configuration config;
-	private final R2CloudService cloudService;
+	private final R2ServerService cloudService;
 
-	public Metrics(Configuration config, R2CloudService cloudService) {
+	public Metrics(Configuration config, R2ServerService cloudService) {
 		this.config = config;
 		this.cloudService = cloudService;
 	}

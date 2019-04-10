@@ -29,7 +29,7 @@ import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.R2Cloud;
-import ru.r2cloud.cloud.R2CloudService;
+import ru.r2cloud.cloud.R2ServerService;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -41,9 +41,9 @@ public class RRD4JReporter extends ScheduledReporter {
 	private final File basepath;
 	private final Map<String, RrdDb> dbPerMetric = new HashMap<String, RrdDb>();
 	private final Map<String, Double> lastValueForCounter = new HashMap<String, Double>();
-	private final R2CloudService cloudService;
+	private final R2ServerService cloudService;
 
-	RRD4JReporter(Configuration config, MetricRegistry registry, R2CloudService cloudService) {
+	RRD4JReporter(Configuration config, MetricRegistry registry, R2ServerService cloudService) {
 		super(registry, "rrd4j-reporter", MetricFilter.ALL, TimeUnit.SECONDS, TimeUnit.MILLISECONDS);
 		basepath = Util.initDirectory(config.getProperty("metrics.basepath.location"));
 		this.cloudService = cloudService;

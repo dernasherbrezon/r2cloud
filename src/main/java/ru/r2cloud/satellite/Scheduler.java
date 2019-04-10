@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.Lifecycle;
 import ru.r2cloud.RtlSdrLock;
-import ru.r2cloud.cloud.R2CloudService;
+import ru.r2cloud.cloud.R2ServerService;
 import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationFull;
@@ -43,7 +43,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private final RtlSdrLock lock;
 	private final ThreadPoolFactory threadpoolFactory;
 	private final Clock clock;
-	private final R2CloudService r2cloudService;
+	private final R2ServerService r2cloudService;
 	private final ProcessFactory processFactory;
 	private final ObservationResultDao dao;
 	private final Map<String, Decoder> decoders;
@@ -53,7 +53,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private ScheduledExecutorService stopThread = null;
 	private ScheduledExecutorService decoderThread = null;
 
-	public Scheduler(Schedule<ScheduledObservation> schedule, Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, R2CloudService r2cloudService, ProcessFactory processFactory, ObservationResultDao dao, Map<String, Decoder> decoders) {
+	public Scheduler(Schedule<ScheduledObservation> schedule, Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, R2ServerService r2cloudService, ProcessFactory processFactory, ObservationResultDao dao, Map<String, Decoder> decoders) {
 		this.schedule = schedule;
 		this.config = config;
 		this.config.subscribe(this, "locaiton.lat");

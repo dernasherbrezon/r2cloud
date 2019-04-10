@@ -27,20 +27,20 @@ import com.eclipsesource.json.ParseException;
 import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.util.Configuration;
 
-public class R2CloudClient {
+public class R2ServerClient {
 
 	private static final String OBSERVATION_BASEPATH = "/api/v1/observation";
 
-	private static final Logger LOG = LoggerFactory.getLogger(R2CloudClient.class);
+	private static final Logger LOG = LoggerFactory.getLogger(R2ServerClient.class);
 
 	private HttpClient httpclient;
 	private final String hostname;
 	private final Configuration config;
 
-	public R2CloudClient(Configuration config) {
+	public R2ServerClient(Configuration config) {
 		this.config = config;
-		this.hostname = config.getProperty("r2cloud.hostname");
-		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMillis(config.getInteger("r2cloud.connectionTimeout"))).build();
+		this.hostname = config.getProperty("r2server.hostname");
+		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMillis(config.getInteger("r2server.connectionTimeout"))).build();
 	}
 	
 	public Long saveMeta(ObservationFull observation) {

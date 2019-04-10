@@ -21,7 +21,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 import ru.r2cloud.TestConfiguration;
-import ru.r2cloud.cloud.R2CloudService;
+import ru.r2cloud.cloud.R2ServerService;
 
 public class RRD4JReporterTest {
 
@@ -81,7 +81,7 @@ public class RRD4JReporterTest {
 		TestConfiguration config = new TestConfiguration(tempFolder);
 		basepath = new File(tempFolder.getRoot().getAbsolutePath(), "rrd4jtest");
 		config.setProperty("metrics.basepath.location", basepath.getAbsolutePath());
-		R2CloudService cloudService = new R2CloudService(config, null, null, null);
+		R2ServerService cloudService = new R2ServerService(config, null, null, null);
 		reporter = new RRD4JReporter(config, registry, cloudService);
 	}
 

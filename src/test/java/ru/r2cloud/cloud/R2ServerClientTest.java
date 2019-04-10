@@ -27,10 +27,10 @@ import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
 
-public class R2CloudClientTest {
+public class R2ServerClientTest {
 
 	private R2CloudServer server;
-	private R2CloudClient client;
+	private R2ServerClient client;
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -138,10 +138,10 @@ public class R2CloudClientTest {
 		server = new R2CloudServer();
 		server.start();
 		TestConfiguration config = new TestConfiguration(tempFolder);
-		config.setProperty("r2cloud.hostname", server.getUrl());
-		config.setProperty("r2cloud.connectionTimeout", "1000");
+		config.setProperty("r2server.hostname", server.getUrl());
+		config.setProperty("r2server.connectionTimeout", "1000");
 		config.setProperty("r2cloud.apiKey", UUID.randomUUID().toString());
-		client = new R2CloudClient(config);
+		client = new R2ServerClient(config);
 	}
 
 	@After

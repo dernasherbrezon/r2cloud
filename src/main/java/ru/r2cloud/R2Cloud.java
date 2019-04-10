@@ -10,8 +10,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.r2cloud.cloud.R2CloudClient;
-import ru.r2cloud.cloud.R2CloudService;
+import ru.r2cloud.cloud.R2ServerClient;
+import ru.r2cloud.cloud.R2ServerService;
 import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.Satellite;
@@ -102,8 +102,8 @@ public class R2Cloud {
 	private final Clock clock;
 	private final ProcessFactory processFactory;
 	private final ObservationResultDao resultDao;
-	private final R2CloudService r2cloudService;
-	private final R2CloudClient r2cloudClient;
+	private final R2ServerService r2cloudService;
+	private final R2ServerClient r2cloudClient;
 	private final SpectogramService spectogramService;
 	private final Map<String, Decoder> decoders = new HashMap<>();
 
@@ -116,10 +116,10 @@ public class R2Cloud {
 		rtlsdrLock.register(Scheduler.class, 3);
 		rtlsdrLock.register(RtlSdrStatusDao.class, 2);
 
-		r2cloudClient = new R2CloudClient(props);
+		r2cloudClient = new R2ServerClient(props);
 		spectogramService = new SpectogramService(props);
 		resultDao = new ObservationResultDao(props);
-		r2cloudService = new R2CloudService(props, resultDao, r2cloudClient, spectogramService);
+		r2cloudService = new R2ServerService(props, resultDao, r2cloudClient, spectogramService);
 		predict = new Predict(props);
 		auth = new Authenticator(props);
 		metrics = new Metrics(props, r2cloudService);
