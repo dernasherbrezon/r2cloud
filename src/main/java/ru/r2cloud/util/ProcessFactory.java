@@ -13,10 +13,10 @@ public class ProcessFactory {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ProcessFactory.class);
 
-	private final static Pattern SPACE = Pattern.compile("\\s");
+	private static final Pattern SPACE = Pattern.compile("\\s");
 
 	public ProcessWrapper create(String commandLine, Redirect redirectError, boolean inheritIO) throws IOException {
-		LOG.info("started with arguments: " + commandLine);
+		LOG.info("started with arguments: {}", commandLine);
 		ProcessBuilder processBuilder = new ProcessBuilder(SPACE.split(commandLine));
 		if (redirectError != null) {
 			processBuilder.redirectError(redirectError);
@@ -36,7 +36,7 @@ public class ProcessFactory {
 	}
 
 	public ProcessWrapper create(List<String> commandLine, boolean redirectErrorStream, boolean inheritIO) throws IOException {
-		LOG.info("started with arguments: " + commandLine);
+		LOG.info("started with arguments: {}", commandLine);
 		ProcessBuilder processBuilder = new ProcessBuilder(commandLine);
 		processBuilder.redirectErrorStream(redirectErrorStream);
 		if (inheritIO) {
