@@ -20,15 +20,14 @@ Base station might include different hardware components. Please check recommend
 
 ## Installation 
 
-There are 2 ways to install r2cloud:
-
-1. From the image. This is simpliest way and require brand new SD card
-
-  - Download the [latest](https://s3.amazonaws.com/r2cloud/dist/image_2017-12-24-r2cloud-lite.zip) official image
-  - Insert SD card into the card reader and flash it. You could use [Etcher](https://etcher.io) to do this
+1. Install r2cloud
+  - From the image. This is simpliest way and require brand new SD card
+    - Download the [latest](https://s3.amazonaws.com/r2cloud/dist/image_2017-12-24-r2cloud-lite.zip) official image
+    - Insert SD card into the card reader and flash it. You could use [Etcher](https://etcher.io) to do this
   
-2. From repository binaries. Use this way if you have something already installed on SD card.
-  - Login via SSH and execute the following commands:
+  - Or from repository binaries. Use this way if you have something already installed on SD card.
+    - Login via SSH and execute the following commands:
+    
 ```
 sudo apt-get install dirmngr
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A5A70917
@@ -36,12 +35,9 @@ sudo bash -c "echo 'deb [arch=armhf] http://s3.amazonaws.com/r2cloud r2cloud mai
 sudo apt-get update
 sudo apt-get install r2cloud
 ```
-
-3. Insert SD card into the card reader and create file ```r2cloud.txt``` in the root directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
-
-4. Insert SD card into the RPi and open [https://raspberrypi.local](https://raspberrypi.local) address.
-
-5. Accept self-signed certificate. This is unique certificate that was generated during installation. Once setup is complete, you could enable proper SSL using [Letsencrypt](https://letsencrypt.org). 
+2. Insert SD card into the card reader and create file ```r2cloud.txt``` in the root directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
+3. Insert SD card into the RPi and open [https://raspberrypi.local](https://raspberrypi.local) address.
+4. Accept self-signed certificate. This is unique certificate that was generated during installation. Once setup is complete, you could enable proper SSL using [Letsencrypt](https://letsencrypt.org). 
 
 ## Design guidelines
 
