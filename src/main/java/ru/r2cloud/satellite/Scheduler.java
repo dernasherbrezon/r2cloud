@@ -115,18 +115,18 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		if (observation == null) {
 			return null;
 		}
-		LOG.info("scheduled next pass for {}. start: {} end: {}", cur.getName(), new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
+		LOG.info("scheduled next pass for {}. start: {} end: {}", cur.getId(), new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
 		IQReader reader = createReader(observation);
 		SafeRunnable readTask = new SafeRunnable() {
 
 			@Override
 			public void doRun() {
 				if (clock.millis() > observation.getEndTimeMillis()) {
-					LOG.info("[{}] observation time passed. skip {}", observation.getId(), cur.getName());
+					LOG.info("[{}] observation time passed. skip {}", observation.getId(), cur.getId());
 					return;
 				}
 				if (!lock.tryLock(Scheduler.this)) {
-					LOG.info("[{}] unable to acquire lock for {}", observation.getId(), cur.getName());
+					LOG.info("[{}] unable to acquire lock for {}", observation.getId(), cur.getId());
 					return;
 				}
 				IQData data;
