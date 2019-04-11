@@ -31,5 +31,15 @@ case $key in
 esac
 done
 
+_term() { 
+  echo "Caught SIGTERM signal!" 
+  kill -TERM "$child" 2>/dev/null
+}
+
+trap _term SIGTERM
+
 CMD="${RTL_SDR} -f ${FREQUENCY} -s ${SAMPLE_RATE} -p ${PPM} -g ${GAIN} -"
-${CMD} | gzip > ${OUTPUT}
+${CMD} | gzip > ${OUTPUT} &
+
+child=$! 
+wait "$child"
