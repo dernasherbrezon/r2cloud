@@ -32,5 +32,4 @@ esac
 done
 
 CMD="${RTL_SDR} -f ${FREQUENCY} -s ${SAMPLE_RATE} -p ${PPM} -g ${GAIN} -"
-echo "running: ${CMD}" >> /dev/stderr
 ${CMD} | gzip > ${OUTPUT}
