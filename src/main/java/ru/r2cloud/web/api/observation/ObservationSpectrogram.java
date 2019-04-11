@@ -50,8 +50,8 @@ public class ObservationSpectrogram extends AbstractHttpController {
 			return new NotFound();
 		}
 
-		if (observation.getResult().getWavPath() == null || !observation.getResult().getWavPath().exists()) {
-			LOG.info("wav file not found");
+		if (!observation.getResult().hasData()) {
+			LOG.info("data file not found");
 			return new NotFound();
 		}
 

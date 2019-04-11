@@ -14,6 +14,10 @@ r2cloud converts Raspberry PI into the base station which supports various radio
 
 ![diagram](docs/diagram.png)
 
+## Assemble base station
+
+Base station might include different hardware components. Please check recommended [bill of materials](https://github.com/dernasherbrezon/r2cloud/wiki/Bill-of-materials). This is very basic setup, but it is guaranteed to be working.
+
 ## Installation 
 
 There are 2 ways to install r2cloud:
