@@ -66,6 +66,10 @@ public class SpectogramService {
 		if (totalSamples == null) {
 			return null;
 		}
+		if (totalSamples < 0) {
+			LOG.error("corrupted raw file: {}", file.getAbsolutePath());
+			return null;
+		}
 		try (RtlSdr sdr = new RtlSdr(new GZIPInputStream(new FileInputStream(file)), sampleRate, totalSamples)) {
 			Spectogram spectogram = new Spectogram((int) (sdr.getContext().getSampleRate() / OPTIMAL_WIDTH));
 			BufferedImage image = spectogram.process(sdr);

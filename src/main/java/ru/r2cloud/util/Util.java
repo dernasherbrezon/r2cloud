@@ -167,10 +167,10 @@ public final class Util {
 		long totalSamples;
 		try (RandomAccessFile raf = new RandomAccessFile(rawFile, "r")) {
 			raf.seek(raf.length() - 4);
-			int b4 = raf.read();
-			int b3 = raf.read();
-			int b2 = raf.read();
-			int b1 = raf.read();
+			long b4 = raf.read();
+			long b3 = raf.read();
+			long b2 = raf.read();
+			long b1 = raf.read();
 			totalSamples = ((b1 << 24) | (b2 << 16) + (b3 << 8) + b4) / 2;
 		} catch (IOException e) {
 			LOG.error("unable to get total number of samples", e);

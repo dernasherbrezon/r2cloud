@@ -29,4 +29,13 @@ public class UtilTest {
 		assertEquals(totalSamplesExpected / 2, Util.readTotalSamples(wav).longValue());
 	}
 
+	@Test
+	public void testUnsignedInt() throws Exception {
+		File file = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
+		try (FileOutputStream fos = new FileOutputStream(file)) {
+			fos.write(new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF });
+		}
+		assertEquals((4294967295L / 2), Util.readTotalSamples(file).longValue());
+	}
+
 }
