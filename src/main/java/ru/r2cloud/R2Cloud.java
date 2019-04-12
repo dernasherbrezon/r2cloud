@@ -26,6 +26,7 @@ import ru.r2cloud.satellite.decoder.Aausat4Decoder;
 import ru.r2cloud.satellite.decoder.Ao73Decoder;
 import ru.r2cloud.satellite.decoder.AstrocastDecoder;
 import ru.r2cloud.satellite.decoder.Decoder;
+import ru.r2cloud.satellite.decoder.DecoderTask;
 import ru.r2cloud.satellite.decoder.Dstar1Decoder;
 import ru.r2cloud.satellite.decoder.EseoDecoder;
 import ru.r2cloud.satellite.decoder.Gomx1Decoder;
@@ -156,9 +157,10 @@ public class R2Cloud {
 		decoders.put("43881", new Dstar1Decoder(props, predict));
 		decoders.put("43908", new Lume1Decoder(props, predict));
 		validateDecoders();
+		DecoderTask decoderTask = new DecoderTask(decoders, resultDao, r2cloudService);
 
 		observationFactory = new ObservationFactory(predict, tleDao);
-		scheduler = new Scheduler(new Schedule<>(), props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, r2cloudService, processFactory, resultDao, decoders);
+		scheduler = new Scheduler(new Schedule<>(), props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, processFactory, resultDao, decoderTask);
 
 		// setup web server
 		index(new Health());

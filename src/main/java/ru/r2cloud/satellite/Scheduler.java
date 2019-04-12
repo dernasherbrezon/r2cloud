@@ -3,7 +3,6 @@ package ru.r2cloud.satellite;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -13,14 +12,11 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.Lifecycle;
 import ru.r2cloud.RtlSdrLock;
-import ru.r2cloud.cloud.R2ServerService;
 import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.IQData;
-import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.model.Satellite;
-import ru.r2cloud.satellite.decoder.Decoder;
+import ru.r2cloud.satellite.decoder.DecoderTask;
 import ru.r2cloud.satellite.reader.IQReader;
 import ru.r2cloud.satellite.reader.RtlFmReader;
 import ru.r2cloud.satellite.reader.RtlSdrReader;
@@ -43,17 +39,16 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private final RtlSdrLock lock;
 	private final ThreadPoolFactory threadpoolFactory;
 	private final Clock clock;
-	private final R2ServerService r2cloudService;
 	private final ProcessFactory processFactory;
 	private final ObservationResultDao dao;
-	private final Map<String, Decoder> decoders;
+	private final DecoderTask decoderTask;
 	private final Schedule<ScheduledObservation> schedule;
 
 	private ScheduledExecutorService startThread = null;
 	private ScheduledExecutorService stopThread = null;
 	private ScheduledExecutorService decoderThread = null;
 
-	public Scheduler(Schedule<ScheduledObservation> schedule, Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, R2ServerService r2cloudService, ProcessFactory processFactory, ObservationResultDao dao, Map<String, Decoder> decoders) {
+	public Scheduler(Schedule<ScheduledObservation> schedule, Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationResultDao dao, DecoderTask decoderTask) {
 		this.schedule = schedule;
 		this.config = config;
 		this.config.subscribe(this, "locaiton.lat");
@@ -63,10 +58,9 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		this.factory = factory;
 		this.threadpoolFactory = threadpoolFactory;
 		this.clock = clock;
-		this.r2cloudService = r2cloudService;
 		this.processFactory = processFactory;
 		this.dao = dao;
-		this.decoders = decoders;
+		this.decoderTask = decoderTask;
 	}
 
 	@Override
@@ -152,46 +146,39 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				if (dataFile == null) {
 					return;
 				}
-
-				decoderThread.execute(new SafeRunnable() {
-
-					@Override
-					public void doRun() {
-						Decoder decoder = decoders.get(observation.getSatelliteId());
-						if (decoder == null) {
-							LOG.error("[{}] unknown decoder for {}", observation.getId(), observation.getSatelliteId());
-							return;
-						}
-						LOG.info("[{}] decoding", observation.getId());
-						ObservationResult result = decoder.decode(dataFile, observation);
-						LOG.info("[{}] decoded", observation.getId());
-
-						if (result.getDataPath() != null) {
-							result.setDataPath(dao.saveData(observation.getSatelliteId(), observation.getId(), result.getDataPath()));
-						}
-						if (result.getaPath() != null) {
-							result.setaPath(dao.saveImage(observation.getSatelliteId(), observation.getId(), result.getaPath()));
-						}
-
-						ObservationFull full = dao.find(observation.getSatelliteId(), observation.getId());
-						full.setResult(result);
-						dao.update(full);
-						r2cloudService.uploadObservation(full);
+				
+				synchronized (Scheduler.this) {
+					if (startThread == null) {
+						return;
 					}
-				});
-			}
-		};
-		Future<?> future = startThread.schedule(readTask, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
-		SafeRunnable completeTask = new SafeRunnable() {
+					
+					decoderThread.execute(new SafeRunnable() {
+						
+						@Override
+						public void doRun() {
+							decoderTask.run(dataFile, observation);
+						}
+					});
+				}
 
-			@Override
-			public void doRun() {
-				reader.complete();
 			}
 		};
-		Future<?> reaperFuture = stopThread.schedule(completeTask, observation.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
-		schedule.add(new ScheduledObservation(observation, future, reaperFuture, readTask, completeTask));
-		return observation;
+		synchronized (this) {
+			if (startThread == null) {
+				return null;
+			}
+			Future<?> future = startThread.schedule(readTask, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
+			SafeRunnable completeTask = new SafeRunnable() {
+
+				@Override
+				public void doRun() {
+					reader.complete();
+				}
+			};
+			Future<?> reaperFuture = stopThread.schedule(completeTask, observation.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
+			schedule.add(new ScheduledObservation(observation, future, reaperFuture, readTask, completeTask));
+			return observation;
+		}
 	}
 
 	private ObservationRequest create(long current, Satellite cur, boolean immediately) {
@@ -240,6 +227,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	public synchronized void stop() {
 		Util.shutdown(startThread, config.getThreadPoolShutdownMillis());
 		Util.shutdown(stopThread, config.getThreadPoolShutdownMillis());
+		Util.shutdown(decoderThread, config.getThreadPoolShutdownMillis());
 		startThread = null;
 		LOG.info("stopped");
 	}
