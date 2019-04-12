@@ -40,6 +40,6 @@ trap _term SIGTERM
 CMD="${RTL_SDR} -f ${FREQUENCY} -s ${SAMPLE_RATE} -p ${PPM} -g ${GAIN} -"
 ${CMD} | gzip > ${OUTPUT} &
 
-rtl=$(jobs -x echo %1)
+rtl=$(jobs -p)
 child=$! 
 wait "$child"
