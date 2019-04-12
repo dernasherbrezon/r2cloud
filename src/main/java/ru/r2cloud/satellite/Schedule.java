@@ -1,7 +1,7 @@
 package ru.r2cloud.satellite;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +10,7 @@ public class Schedule<T extends ScheduleEntry> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Schedule.class);
 
-	private final Map<String, T> scheduledObservations = new ConcurrentHashMap<String, T>();
+	private final Map<String, T> scheduledObservations = new HashMap<String, T>();
 
 	public synchronized void add(T entry) {
 		if (entry == null) {
