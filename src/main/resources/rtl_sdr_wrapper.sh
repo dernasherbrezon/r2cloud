@@ -32,7 +32,7 @@ esac
 done
 
 _term() { 
-  kill -TERM "$child" 2>/dev/null
+  kill -TERM "$rtl" 2>/dev/null
 }
 
 trap _term SIGTERM
@@ -40,5 +40,6 @@ trap _term SIGTERM
 CMD="${RTL_SDR} -f ${FREQUENCY} -s ${SAMPLE_RATE} -p ${PPM} -g ${GAIN} -"
 ${CMD} | gzip > ${OUTPUT} &
 
+rtl=$(jobs -x echo %1)
 child=$! 
 wait "$child"
