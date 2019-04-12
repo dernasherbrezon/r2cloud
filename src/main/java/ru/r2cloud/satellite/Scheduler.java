@@ -25,7 +25,6 @@ import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
 import ru.r2cloud.util.ProcessFactory;
-import ru.r2cloud.util.SafeRunnable;
 import ru.r2cloud.util.ThreadPoolFactory;
 import ru.r2cloud.util.Util;
 
@@ -111,10 +110,10 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		}
 		LOG.info("scheduled next pass for {}. start: {} end: {}", cur.getId(), new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
 		IQReader reader = createReader(observation);
-		SafeRunnable readTask = new SafeRunnable() {
+		Runnable readTask = new Runnable() {
 
 			@Override
-			public void doRun() {
+			public void run() {
 				if (clock.millis() > observation.getEndTimeMillis()) {
 					LOG.info("[{}] observation time passed. skip {}", observation.getId(), cur.getId());
 					return;
@@ -152,10 +151,10 @@ public class Scheduler implements Lifecycle, ConfigListener {
 						return;
 					}
 					
-					decoderThread.execute(new SafeRunnable() {
+					decoderThread.execute(new Runnable() {
 						
 						@Override
-						public void doRun() {
+						public void run() {
 							decoderTask.run(dataFile, observation);
 						}
 					});
@@ -168,10 +167,10 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				return null;
 			}
 			Future<?> future = startThread.schedule(readTask, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
-			SafeRunnable completeTask = new SafeRunnable() {
+			Runnable completeTask = new Runnable() {
 
 				@Override
-				public void doRun() {
+				public void run() {
 					reader.complete();
 				}
 			};

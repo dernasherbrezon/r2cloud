@@ -16,6 +16,10 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry.MetricSupplier;
+import com.codahale.metrics.health.HealthCheck;
+
 import ru.r2cloud.metrics.FormattedGauge;
 import ru.r2cloud.metrics.MetricFormat;
 import ru.r2cloud.metrics.Metrics;
@@ -23,12 +27,7 @@ import ru.r2cloud.model.RtlSdrStatus;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
 import ru.r2cloud.util.ResultUtil;
-import ru.r2cloud.util.SafeRunnable;
 import ru.r2cloud.util.Util;
-
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.MetricRegistry.MetricSupplier;
-import com.codahale.metrics.health.HealthCheck;
 
 public class RtlSdrStatusDao implements Lifecycle {
 
@@ -58,10 +57,10 @@ public class RtlSdrStatusDao implements Lifecycle {
 			return;
 		}
 		executor = Executors.newScheduledThreadPool(1, new NamingThreadFactory("rtlsdr-tester"));
-		executor.scheduleAtFixedRate(new SafeRunnable() {
+		executor.scheduleAtFixedRate(new Runnable() {
 
 			@Override
-			public void doRun() {
+			public void run() {
 				reload();
 			}
 		}, 0, config.getLong("rtltest.interval.seconds"), TimeUnit.SECONDS);
@@ -81,10 +80,10 @@ public class RtlSdrStatusDao implements Lifecycle {
 					executeAt.add(Calendar.DAY_OF_MONTH, 1);
 				}
 				LOG.info("next ppm execution at: {}", executeAt.getTime());
-				executor.scheduleAtFixedRate(new SafeRunnable() {
+				executor.scheduleAtFixedRate(new Runnable() {
 
 					@Override
-					public void doRun() {
+					public void run() {
 						reloadPpm();
 					}
 				}, executeAt.getTimeInMillis() - current, TimeUnit.DAYS.toMillis(1), TimeUnit.MILLISECONDS);

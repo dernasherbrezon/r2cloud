@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.ddns.DDNSType;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
-import ru.r2cloud.util.SafeRunnable;
 import ru.r2cloud.util.Util;
 
 public class AcmeClient {
@@ -83,10 +82,10 @@ public class AcmeClient {
 	private void scheduleRenew(X509Certificate certificate) {
 		long delay = certificate.getNotAfter().getTime() - System.currentTimeMillis() - TimeUnit.DAYS.toMillis(DAYS_BEFORE_EXPIRATION);
 		messages.add("Schedule certificate renewal. NotAfter: " + certificate.getNotAfter() + " Renew at: " + new Date(certificate.getNotAfter().getTime() - TimeUnit.DAYS.toMillis(DAYS_BEFORE_EXPIRATION)), LOG);
-		executor.schedule(new SafeRunnable() {
+		executor.schedule(new Runnable() {
 
 			@Override
-			public void doRun() {
+			public void run() {
 				if (!running.compareAndSet(false, true)) {
 					LOG.info("acmeclient is already running. skip renew");
 					return;
@@ -151,10 +150,10 @@ public class AcmeClient {
 			return;
 		}
 		messages.clear();
-		executor.submit(new SafeRunnable() {
+		executor.submit(new Runnable() {
 
 			@Override
-			public void doRun() {
+			public void run() {
 				doSetup();
 
 				running.set(false);

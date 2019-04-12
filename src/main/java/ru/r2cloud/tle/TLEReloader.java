@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
-import ru.r2cloud.util.SafeRunnable;
 import ru.r2cloud.util.ThreadPoolFactory;
 import ru.r2cloud.util.Util;
 
@@ -56,10 +55,10 @@ public class TLEReloader {
 				executeAt.add(Calendar.WEEK_OF_YEAR, 1);
 			}
 			LOG.info("next tle update at: {}", executeAt.getTime());
-			executor.scheduleAtFixedRate(new SafeRunnable() {
+			executor.scheduleAtFixedRate(new Runnable() {
 
 				@Override
-				public void doRun() {
+				public void run() {
 					dao.reload();
 				}
 			}, executeAt.getTimeInMillis() - current, TimeUnit.DAYS.toMillis(7), TimeUnit.MILLISECONDS);

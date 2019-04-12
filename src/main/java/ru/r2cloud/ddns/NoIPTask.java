@@ -12,10 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.SafeRunnable;
 import ru.r2cloud.util.Util;
 
-public class NoIPTask extends SafeRunnable {
+public class NoIPTask implements Runnable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(NoIPTask.class);
 	private static final long RETRY_TIMEOUT = TimeUnit.MINUTES.toMillis(30);
@@ -39,7 +38,7 @@ public class NoIPTask extends SafeRunnable {
 	}
 
 	@Override
-	public void doRun() {
+	public void run() {
 		if (fatalError) {
 			return;
 		}
