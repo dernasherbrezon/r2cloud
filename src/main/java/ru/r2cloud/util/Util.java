@@ -69,7 +69,7 @@ public final class Util {
 			} else {
 				threadpoolName = "unknown[" + executor.getClass().getSimpleName() + "]";
 			}
-			LOG.error("executor did not terminate in the specified time: " + threadpoolName);
+			LOG.error("executor did not terminate in the specified time: {}", threadpoolName);
 		}
 	}
 
@@ -81,10 +81,10 @@ public final class Util {
 			LOG.info("stopping: {}", name);
 			process.destroy();
 			if (!process.waitFor(timeoutMillis, TimeUnit.MILLISECONDS)) {
-				LOG.info("unable to cleanly shutdown. kill process: " + name);
+				LOG.info("unable to cleanly shutdown. kill process: {}", name);
 				int statusCode = process.destroyForcibly().waitFor();
 				if (statusCode != 0 && statusCode != 137) {
-					LOG.info("invalid status code while stopping: " + statusCode);
+					LOG.info("invalid status code while stopping: {}", statusCode);
 				}
 			}
 
@@ -101,10 +101,10 @@ public final class Util {
 		try {
 			process.destroy();
 			if (!process.waitFor(timeoutMillis, TimeUnit.MILLISECONDS)) {
-				LOG.info("unable to cleanly shutdown. kill process: " + name);
+				LOG.info("unable to cleanly shutdown. kill process: {}", name);
 				int statusCode = process.destroyForcibly().waitFor();
 				if (statusCode != 0 && statusCode != 137) {
-					LOG.info("invalid status code while stopping: " + statusCode);
+					LOG.info("invalid status code while stopping: {}", statusCode);
 				}
 			}
 
@@ -118,13 +118,13 @@ public final class Util {
 			for (File c : f.listFiles()) {
 				boolean curResult = deleteDirectory(c);
 				if (!curResult) {
-					LOG.error("unable to delete: " + c.getAbsolutePath());
+					LOG.error("unable to delete: {}", c.getAbsolutePath());
 					return false;
 				}
 			}
 		}
 		if (!f.delete()) {
-			LOG.error("Failed to delete file: " + f);
+			LOG.error("Failed to delete file: {}", f.getAbsolutePath());
 			return false;
 		}
 		return true;
