@@ -20,11 +20,11 @@ public class ObservationResult {
 
 	private String dataURL;
 	private File dataPath;
-	
+
 	public File getIqPath() {
 		return iqPath;
 	}
-	
+
 	public void setIqPath(File iqPath) {
 		this.iqPath = iqPath;
 	}
@@ -119,6 +119,10 @@ public class ObservationResult {
 
 	public boolean hasData() {
 		return aURL != null || dataURL != null;
+	}
+
+	public boolean hasRawFile() {
+		return wavPath != null || iqPath != null;
 	}
 
 }
