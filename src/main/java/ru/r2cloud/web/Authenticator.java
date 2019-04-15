@@ -15,6 +15,9 @@ import ru.r2cloud.util.Hex;
 
 public class Authenticator {
 
+	private static final String PASSWORD_PROPERTY_NAME = "server.password";
+	private static final String SALT_PROPERTY_NAME = "server.salt";
+	private static final String LOGIN_PROPERTY_NAME = "server.login";
 	private static final Logger LOG = LoggerFactory.getLogger(Authenticator.class);
 
 	private final SecureRandom random = new SecureRandom();
@@ -31,9 +34,9 @@ public class Authenticator {
 
 	public Authenticator(Configuration props) {
 		this.props = props;
-		this.login = props.getProperty("server.login");
-		this.password = props.getProperty("server.password");
-		this.salt = props.getProperty("server.salt");
+		this.login = props.getProperty(LOGIN_PROPERTY_NAME);
+		this.password = props.getProperty(PASSWORD_PROPERTY_NAME);
+		this.salt = props.getProperty(SALT_PROPERTY_NAME);
 		this.maxAgeMillis = props.getLong("server.session.timeout.millis");
 	}
 
@@ -60,10 +63,7 @@ public class Authenticator {
 	}
 
 	public boolean isFirstStart() {
-		if (login == null || login.trim().length() == 0) {
-			return true;
-		}
-		return false;
+		return login == null || login.trim().length() == 0;
 	}
 
 	public String authenticate(String login, String password) {
@@ -72,7 +72,7 @@ public class Authenticator {
 		}
 		if (this.login == null || !this.login.equals(login)) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("login mismatched: " + login);
+				LOG.debug("login mismatched: {}", login);
 			}
 			return null;
 		}
@@ -101,8 +101,7 @@ public class Authenticator {
 		}
 
 		byte[] digested = digest.digest(salted.getBytes(StandardCharsets.UTF_8));
-		String passwordToCheck = Hex.encode(digested);
-		return passwordToCheck;
+		return Hex.encode(digested);
 	}
 
 	private static String salt(String password, String salt) {
@@ -122,19 +121,19 @@ public class Authenticator {
 
 	private void reloadProps() {
 		if (login != null) {
-			props.setProperty("server.login", this.login);
+			props.setProperty(LOGIN_PROPERTY_NAME, this.login);
 		} else {
-			props.remove("server.login");
+			props.remove(LOGIN_PROPERTY_NAME);
 		}
 		if (salt != null) {
-			props.setProperty("server.salt", this.salt);
+			props.setProperty(SALT_PROPERTY_NAME, this.salt);
 		} else {
-			props.remove("server.salt");
+			props.remove(SALT_PROPERTY_NAME);
 		}
 		if (password != null) {
-			props.setProperty("server.password", this.password);
+			props.setProperty(PASSWORD_PROPERTY_NAME, this.password);
 		} else {
-			props.remove("server.password");
+			props.remove(PASSWORD_PROPERTY_NAME);
 		}
 		props.update();
 	}
@@ -144,7 +143,7 @@ public class Authenticator {
 	}
 
 	public void resetPassword(String username) {
-		LOG.info("reset password for: " + username);
+		LOG.info("reset password for: {}", username);
 		if (username == null || username.trim().length() == 0) {
 			return;
 		}
