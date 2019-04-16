@@ -41,7 +41,7 @@ public class WebServer extends NanoHTTPD {
 	public void start() {
 		try {
 			start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
-			LOG.info("webserver is listening on " + getHostname() + ":" + getListeningPort());
+			LOG.info("webserver is listening on {}:{}", getHostname(), getListeningPort());
 		} catch (IOException e) {
 			throw new RuntimeException("unable to start", e);
 		}
