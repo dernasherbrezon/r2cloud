@@ -17,8 +17,17 @@ import ru.r2cloud.web.ModelAndView;
 import ru.r2cloud.web.Success;
 import ru.r2cloud.web.ValidationResult;
 import ru.r2cloud.web.WebServer;
+import ru.r2cloud.web.api.Messages;
 
 public class DDNS extends AbstractHttpController {
+
+	private static final String TYPE_PROPERTY_NAME = "ddns.type";
+
+	private static final String DOMAIN_PROPERTY_NAME = "ddns.noip.domain";
+
+	private static final String PASSWORD_PROPERTY_NAME = "ddns.noip.password";
+
+	private static final String USERNAME_PROPERTY_NAME = "ddns.noip.username";
 
 	private static final Logger LOG = LoggerFactory.getLogger(DDNS.class);
 
@@ -34,10 +43,10 @@ public class DDNS extends AbstractHttpController {
 	public ModelAndView doGet(IHTTPSession session) {
 		ModelAndView result = new ModelAndView();
 		JsonObject entity = new JsonObject();
-		entity.add("username", config.getProperty("ddns.noip.username"));
-		entity.add("password", config.getProperty("ddns.noip.password"));
-		entity.add("domain", config.getProperty("ddns.noip.domain"));
-		entity.add("type", config.getDdnsType("ddns.type").toString());
+		entity.add("username", config.getProperty(USERNAME_PROPERTY_NAME));
+		entity.add("password", config.getProperty(PASSWORD_PROPERTY_NAME));
+		entity.add("domain", config.getProperty(DOMAIN_PROPERTY_NAME));
+		entity.add("type", config.getDdnsType(TYPE_PROPERTY_NAME).toString());
 		entity.add("currentIp", config.getProperty("ddns.ip"));
 		result.setData(entity.toString());
 		return result;
@@ -59,13 +68,13 @@ public class DDNS extends AbstractHttpController {
 		switch (type) {
 		case NOIP:
 			if (username == null || username.trim().length() == 0) {
-				errors.put("username", "Field is required");
+				errors.put("username", Messages.CANNOT_BE_EMPTY);
 			}
 			if (password == null || password.trim().length() == 0) {
-				errors.put("password", "Field is required");
+				errors.put("password", Messages.CANNOT_BE_EMPTY);
 			}
 			if (domain == null || domain.trim().length() == 0) {
-				errors.put("domain", "Field is required");
+				errors.put("domain", Messages.CANNOT_BE_EMPTY);
 			}
 			break;
 		default:
@@ -73,14 +82,14 @@ public class DDNS extends AbstractHttpController {
 		}
 
 		if (!errors.isEmpty()) {
-			LOG.info("unable to save: " + errors);
+			LOG.info("unable to save: {}", errors);
 			return new BadRequest(errors);
 		}
 
-		config.setProperty("ddns.noip.username", username);
-		config.setProperty("ddns.noip.password", password);
-		config.setProperty("ddns.noip.domain", domain);
-		config.setProperty("ddns.type", type.name());
+		config.setProperty(USERNAME_PROPERTY_NAME, username);
+		config.setProperty(PASSWORD_PROPERTY_NAME, password);
+		config.setProperty(DOMAIN_PROPERTY_NAME, domain);
+		config.setProperty(TYPE_PROPERTY_NAME, type.name());
 		config.update();
 
 		ddnsClient.stop();
