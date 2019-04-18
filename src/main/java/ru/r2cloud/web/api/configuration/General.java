@@ -56,7 +56,7 @@ public class General extends AbstractHttpController {
 			errors.put("lng", "Cannot be empty");
 		}
 		if (!errors.isEmpty()) {
-			LOG.info("unable to save: " + errors);
+			LOG.info("unable to save: {}", errors);
 			return new BadRequest(errors);
 		}
 		autoUpdate.setEnabled(WebServer.getBoolean(request, "autoUpdate"));
