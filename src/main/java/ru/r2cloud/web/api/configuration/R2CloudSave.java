@@ -49,7 +49,7 @@ public class R2CloudSave extends AbstractHttpController {
 			errors.put("apiKey", "Cannot be empty");
 		}
 		if (!errors.isEmpty()) {
-			LOG.info("unable to save: " + errors);
+			LOG.info("unable to save: {}", errors);
 			return new BadRequest(errors);
 		}
 		config.setProperty("r2cloud.apiKey", apiKey);
