@@ -69,7 +69,7 @@ public class SSL extends AbstractHttpController {
 		}
 
 		if (!errors.isEmpty()) {
-			LOG.info("unable to save: " + errors);
+			LOG.info("unable to save: {}", errors);
 			return new BadRequest(errors);
 		}
 
