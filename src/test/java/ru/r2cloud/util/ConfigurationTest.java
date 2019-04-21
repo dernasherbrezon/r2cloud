@@ -8,6 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.Random;
 import java.util.UUID;
 
@@ -93,7 +94,8 @@ public class ConfigurationTest {
 		config.update();
 
 		fs.mock(config.getTempDirectoryPath(), new FailingByteChannelCallback(3));
-		fs.mock(fs.getPath(TestConfiguration.getUserSettingsLocation(tempFolder)).getParent(), new FailingByteChannelCallback(3));
+		Path userParentPath = fs.getPath(TestConfiguration.getUserSettingsLocation(tempFolder)).getParent();
+		fs.mock(userParentPath, new FailingByteChannelCallback(3));
 
 		String newLat = "23.40";
 		config.setProperty("locaiton.lat", newLat);
@@ -103,6 +105,9 @@ public class ConfigurationTest {
 		} catch (Exception e) {
 			// expected
 		}
+		
+		fs.removeMock(config.getTempDirectoryPath());
+		fs.removeMock(userParentPath);
 
 		config = new TestConfiguration(tempFolder, fs);
 		assertEquals(lat, config.getProperty("locaiton.lat"));

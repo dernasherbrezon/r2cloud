@@ -150,11 +150,14 @@ public class ObservationResultDao {
 
 	public File insert(ObservationRequest observation, File dataFile) {
 		try {
-			List<Path> dataDirs = Util.toList(Files.newDirectoryStream(basepath.resolve(observation.getSatelliteId()).resolve("data")));
-			if (dataDirs.size() > maxCount) {
-				Collections.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
-				for (int i = 0; i < (dataDirs.size() - maxCount); i++) {
-					Util.deleteDirectory(dataDirs.get(i));
+			Path satelliteBasePath = basepath.resolve(observation.getSatelliteId()).resolve("data");
+			if (Files.exists(satelliteBasePath)) {
+				List<Path> dataDirs = Util.toList(Files.newDirectoryStream(satelliteBasePath));
+				if (dataDirs.size() > maxCount) {
+					Collections.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
+					for (int i = 0; i < (dataDirs.size() - maxCount); i++) {
+						Util.deleteDirectory(dataDirs.get(i));
+					}
 				}
 			}
 		} catch (IOException e) {
