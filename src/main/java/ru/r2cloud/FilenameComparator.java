@@ -1,9 +1,9 @@
 package ru.r2cloud;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Comparator;
 
-public class FilenameComparator implements Comparator<File> {
+public class FilenameComparator implements Comparator<Path> {
 
 	public static final FilenameComparator INSTANCE_ASC = new FilenameComparator(true);
 	public static final FilenameComparator INSTANCE_DESC = new FilenameComparator(false);
@@ -16,7 +16,7 @@ public class FilenameComparator implements Comparator<File> {
 
 	@SuppressWarnings("null")
 	@Override
-	public int compare(File o1, File o2) {
+	public int compare(Path o1, Path o2) {
 		Long n1 = convert(o1);
 		Long n2 = convert(o2);
 		if( n1 == null && n2 != null ) {
@@ -43,9 +43,9 @@ public class FilenameComparator implements Comparator<File> {
 		}
 	}
 
-	private static Long convert(File file) {
+	private static Long convert(Path file) {
 		try {
-			return Long.valueOf(file.getName());
+			return Long.valueOf(file.getFileName().toString());
 		} catch (Exception e) {
 			return null;
 		}

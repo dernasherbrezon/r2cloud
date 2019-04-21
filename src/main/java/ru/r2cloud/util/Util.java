@@ -8,6 +8,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -31,6 +35,27 @@ public final class Util {
 		}
 		if (!result.exists() && !result.mkdirs()) {
 			throw new IllegalArgumentException("unable to create basepath: " + result.getAbsolutePath());
+		}
+		return result;
+	}
+
+	public static boolean initDirectory(Path path) {
+		if (!Files.exists(path)) {
+			try {
+				Files.createDirectories(path);
+				return true;
+			} catch (IOException e) {
+				LOG.info("unable to create parent dir: " + path.toAbsolutePath(), e);
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static List<Path> toList(DirectoryStream<Path> stream) {
+		List<Path> result = new ArrayList<>();
+		for (Path cur : stream) {
+			result.add(cur);
 		}
 		return result;
 	}
@@ -130,6 +155,29 @@ public final class Util {
 		return true;
 	}
 
+	public static boolean deleteDirectory(Path f) {
+		if (Files.isDirectory(f, LinkOption.NOFOLLOW_LINKS)) {
+			try (DirectoryStream<Path> entries = Files.newDirectoryStream(f)) {
+				for (Path entry : entries) {
+					boolean curResult = deleteDirectory(entry);
+					if (!curResult) {
+						return curResult;
+					}
+				}
+			} catch (IOException e) {
+				LOG.error("unable to delete: " + f.toAbsolutePath(), e);
+				return false;
+			}
+		}
+		try {
+			Files.delete(f);
+			return true;
+		} catch (IOException e) {
+			LOG.error("unable to delete: " + f.toAbsolutePath(), e);
+			return false;
+		}
+	}
+
 	public static List<String> splitComma(String str) {
 		String[] values = COMMA.split(str);
 		List<String> result = new ArrayList<>();
@@ -161,7 +209,7 @@ public final class Util {
 			LOG.info("unable to close", e);
 		}
 	}
-	
+
 	// works well for files less than 4Gb
 	public static Long readTotalSamples(File rawFile) {
 		long totalSamples;
@@ -181,7 +229,7 @@ public final class Util {
 		}
 		return totalSamples;
 	}
-	
+
 	private Util() {
 		// do nothing
 	}

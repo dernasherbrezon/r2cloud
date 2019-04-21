@@ -3,11 +3,10 @@ package ru.r2cloud.satellite;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,23 +31,29 @@ public class ObservationResultDao {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationResultDao.class);
 
-	private final File basepath;
+	private final Path basepath;
 	private final Integer maxCount;
 
 	public ObservationResultDao(Configuration config) {
-		this.basepath = Util.initDirectory(config.getProperty("satellites.basepath.location"));
+		this.basepath = config.getSatellitesBasePath();
 		this.maxCount = config.getInteger("scheduler.data.retention.count");
 	}
 
 	public List<ObservationFull> findAllBySatelliteId(String satelliteId) {
-		File dataRoot = new File(basepath, satelliteId + File.separator + "data");
-		if (!dataRoot.exists()) {
+		Path dataRoot = basepath.resolve(satelliteId).resolve("data");
+		if (!Files.exists(dataRoot)) {
 			return Collections.emptyList();
 		}
-		File[] observations = dataRoot.listFiles();
-		Arrays.sort(observations, FilenameComparator.INSTANCE_DESC);
-		List<ObservationFull> result = new ArrayList<ObservationFull>(observations.length);
-		for (File curDirectory : observations) {
+		List<Path> observations;
+		try {
+			observations = Util.toList(Files.newDirectoryStream(dataRoot));
+		} catch (IOException e) {
+			LOG.error("unable to load observations", e);
+			return Collections.emptyList();
+		}
+		Collections.sort(observations, FilenameComparator.INSTANCE_DESC);
+		List<ObservationFull> result = new ArrayList<ObservationFull>(observations.size());
+		for (Path curDirectory : observations) {
 			ObservationFull cur = find(satelliteId, curDirectory);
 			// some directories might be corrupted
 			if (cur == null) {
@@ -60,20 +65,20 @@ public class ObservationResultDao {
 	}
 
 	public ObservationFull find(String satelliteId, String observationId) {
-		File baseDirectory = new File(basepath, satelliteId + File.separator + "data" + File.separator + observationId);
-		if (!baseDirectory.exists()) {
+		Path baseDirectory = basepath.resolve(satelliteId).resolve("data").resolve(observationId);
+		if (!Files.exists(baseDirectory)) {
 			return null;
 		}
 		return find(satelliteId, baseDirectory);
 	}
 
-	private static ObservationFull find(String satelliteId, File curDirectory) {
-		File dest = new File(curDirectory, "meta.json");
-		if (!dest.exists()) {
+	private static ObservationFull find(String satelliteId, Path curDirectory) {
+		Path dest = curDirectory.resolve("meta.json");
+		if (!Files.exists(dest)) {
 			return null;
 		}
 		ObservationFull full;
-		try (BufferedReader r = new BufferedReader(new FileReader(dest))) {
+		try (BufferedReader r = Files.newBufferedReader(dest)) {
 			JsonObject meta = Json.parse(r).asObject();
 			full = ObservationFull.fromJson(meta);
 		} catch (Exception e) {
@@ -83,27 +88,27 @@ public class ObservationResultDao {
 
 		ObservationResult result = full.getResult();
 
-		File a = new File(curDirectory, "a.jpg");
-		if (a.exists()) {
-			result.setaPath(a);
+		Path a = curDirectory.resolve("a.jpg");
+		if (Files.exists(a)) {
+			result.setaPath(a.toFile());
 			result.setaURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getReq().getId() + "/a.jpg");
 		}
-		File data = new File(curDirectory, "data.bin");
-		if (data.exists()) {
-			result.setDataPath(data);
+		Path data = curDirectory.resolve("data.bin");
+		if (Files.exists(data)) {
+			result.setDataPath(data.toFile());
 			result.setDataURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getReq().getId() + "/data.bin");
 		}
-		File wav = new File(curDirectory, OUTPUT_WAV_FILENAME);
-		if (wav.exists()) {
-			result.setWavPath(wav);
+		Path wav = curDirectory.resolve(OUTPUT_WAV_FILENAME);
+		if (Files.exists(wav)) {
+			result.setWavPath(wav.toFile());
 		}
-		File tarGz = new File(curDirectory, OUTPUT_RAW_FILENAME);
-		if (wav.exists()) {
-			result.setIqPath(tarGz);
+		Path tarGz = curDirectory.resolve(OUTPUT_RAW_FILENAME);
+		if (Files.exists(tarGz)) {
+			result.setIqPath(tarGz.toFile());
 		}
-		File spectogram = new File(curDirectory, SPECTOGRAM_FILENAME);
-		if (spectogram.exists()) {
-			result.setSpectogramPath(spectogram);
+		Path spectogram = curDirectory.resolve(SPECTOGRAM_FILENAME);
+		if (Files.exists(spectogram)) {
+			result.setSpectogramPath(spectogram.toFile());
 			result.setSpectogramURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getReq().getId() + "/" + SPECTOGRAM_FILENAME);
 		}
 
@@ -111,50 +116,53 @@ public class ObservationResultDao {
 	}
 
 	public File saveImage(String satelliteId, String observationId, File a) {
-		File dest = new File(getObservationBasepath(satelliteId, observationId), "a.jpg");
-		if (dest.exists()) {
-			LOG.info("unable to save. dest already exist: {}", dest.getAbsolutePath());
+		Path dest = getObservationBasepath(satelliteId, observationId).resolve("a.jpg");
+		if (Files.exists(dest)) {
+			LOG.info("unable to save. dest already exist: {}", dest.toAbsolutePath());
 			return null;
 		}
-		if (!a.renameTo(dest)) {
+		if (!a.renameTo(dest.toFile())) {
 			return null;
 		}
-		return dest;
+		return dest.toFile();
 	}
 
 	public File saveData(String satelliteId, String observationId, File a) {
-		File dest = new File(getObservationBasepath(satelliteId, observationId), "data.bin");
-		if (dest.exists()) {
-			LOG.info("unable to save. dest already exist: {}", dest.getAbsolutePath());
+		Path dest = getObservationBasepath(satelliteId, observationId).resolve("data.bin");
+		if (Files.exists(dest)) {
+			LOG.info("unable to save. dest already exist: {}", dest.toAbsolutePath());
 			return null;
 		}
-		if (!a.renameTo(dest)) {
+		if (!a.renameTo(dest.toFile())) {
 			return null;
 		}
-		return dest;
+		return dest.toFile();
 	}
 
 	public boolean saveSpectogram(String satelliteId, String observationId, File a) {
-		File dest = new File(getObservationBasepath(satelliteId, observationId), SPECTOGRAM_FILENAME);
-		if (dest.exists()) {
-			LOG.info("unable to save. dest already exist: {}", dest.getAbsolutePath());
+		Path dest = getObservationBasepath(satelliteId, observationId).resolve(SPECTOGRAM_FILENAME);
+		if (Files.exists(dest)) {
+			LOG.info("unable to save. dest already exist: {}", dest.toAbsolutePath());
 			return false;
 		}
-		return a.renameTo(dest);
+		return a.renameTo(dest.toFile());
 	}
 
 	public File insert(ObservationRequest observation, File dataFile) {
-		File[] dataDirs = new File(basepath, observation.getSatelliteId() + File.separator + "data").listFiles();
-		if (dataDirs != null && dataDirs.length > maxCount) {
-			Arrays.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
-			for (int i = 0; i < (dataDirs.length - maxCount); i++) {
-				Util.deleteDirectory(dataDirs[i]);
+		try {
+			List<Path> dataDirs = Util.toList(Files.newDirectoryStream(basepath.resolve(observation.getSatelliteId()).resolve("data")));
+			if (dataDirs.size() > maxCount) {
+				Collections.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
+				for (int i = 0; i < (dataDirs.size() - maxCount); i++) {
+					Util.deleteDirectory(dataDirs.get(i));
+				}
 			}
+		} catch (IOException e) {
+			LOG.error("unable to cleanup old observations", e);
 		}
 
-		File observationBasePath = getObservationBasepath(observation);
-		if (!observationBasePath.exists() && !observationBasePath.mkdirs()) {
-			LOG.info("unable to create parent dir: {}", observationBasePath.getAbsolutePath());
+		Path observationBasePath = getObservationBasepath(observation);
+		if (!Util.initDirectory(observationBasePath)) {
 			return null;
 		}
 
@@ -173,25 +181,24 @@ public class ObservationResultDao {
 		} else {
 			filename = OUTPUT_RAW_FILENAME;
 		}
-		File dest = new File(getObservationBasepath(observation), filename);
-		if (!dest.getParentFile().exists() && !dest.getParentFile().mkdirs()) {
-			LOG.info("unable to create parent dir: {}", dest.getParentFile().getAbsolutePath());
+		Path dest = getObservationBasepath(observation).resolve(filename);
+		if (!Util.initDirectory(dest.getParent())) {
 			return null;
 		}
-		if (dest.exists()) {
-			LOG.info("unable to save. dest already exist: {}", dest.getAbsolutePath());
+		if (Files.exists(dest)) {
+			LOG.info("unable to save. dest already exist: {}", dest.toAbsolutePath());
 			return null;
 		}
-		if (!dataFile.renameTo(dest)) {
+		if (!dataFile.renameTo(dest.toFile())) {
 			return null;
 		}
-		return dest;
+		return dest.toFile();
 	}
 
 	public boolean update(ObservationFull cur) {
 		JsonObject meta = cur.toJson();
-		File dest = new File(getObservationBasepath(cur.getReq()), "meta.json");
-		try (BufferedWriter w = new BufferedWriter(new FileWriter(dest))) {
+		Path dest = getObservationBasepath(cur.getReq()).resolve("meta.json");
+		try (BufferedWriter w = Files.newBufferedWriter(dest)) {
 			w.append(meta.toString());
 			return true;
 		} catch (IOException e) {
@@ -200,11 +207,11 @@ public class ObservationResultDao {
 		}
 	}
 
-	private File getObservationBasepath(ObservationRequest observation) {
+	private Path getObservationBasepath(ObservationRequest observation) {
 		return getObservationBasepath(observation.getSatelliteId(), observation.getId());
 	}
 
-	private File getObservationBasepath(String satelliteId, String observationId) {
-		return new File(basepath, satelliteId + File.separator + "data" + File.separator + observationId);
+	private Path getObservationBasepath(String satelliteId, String observationId) {
+		return basepath.resolve(satelliteId).resolve("data").resolve(observationId);
 	}
 }
