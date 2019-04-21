@@ -2,7 +2,6 @@ package ru.r2cloud.util;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystem;
@@ -52,26 +51,22 @@ public class Configuration {
 		systemSettings.load(systemSettingsLocation);
 		this.userSettingsLocation = fs.getPath(userSettingsLocation);
 		this.fs = fs;
-		loadUserSettings(userSettingsLocation);
+		loadUserSettings();
 	}
 
-	public Configuration(String systemSettingsLocation, String userSettingsLocation, FileSystem fs) {
-		try (InputStream is = new FileInputStream(systemSettingsLocation)) {
-			systemSettings.load(is);
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Unable to load properties", e);
-		}
+	public Configuration(String systemSettingsLocation, String userSettingsLocation, FileSystem fs) throws IOException {
 		this.userSettingsLocation = fs.getPath(userSettingsLocation);
 		this.fs = fs;
-		loadUserSettings(userSettingsLocation);
+		try (InputStream is = Files.newInputStream(fs.getPath(systemSettingsLocation))) {
+			systemSettings.load(is);
+		}
+		loadUserSettings();
 	}
 
-	private void loadUserSettings(String userSettingsLocation) {
-		if (new File(userSettingsLocation).exists()) {
-			try (InputStream is = new FileInputStream(userSettingsLocation)) {
+	private void loadUserSettings() throws IOException {
+		if (Files.exists(userSettingsLocation)) {
+			try (InputStream is = Files.newInputStream(userSettingsLocation)) {
 				userSettings.load(is);
-			} catch (Exception e) {
-				throw new IllegalArgumentException("Unable to load user properties", e);
 			}
 		}
 	}
