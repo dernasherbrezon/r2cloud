@@ -2,10 +2,10 @@ package ru.r2cloud.tle;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,7 +19,6 @@ import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.Util;
 
 public class TLEDao {
 
@@ -27,7 +26,7 @@ public class TLEDao {
 
 	private final Configuration config;
 	private final SatelliteDao satelliteDao;
-	private final File basepath;
+	private final Path basepath;
 	private final CelestrakClient celestrak;
 
 	private final Map<String, Tle> tle = new ConcurrentHashMap<String, Tle>();
@@ -35,26 +34,32 @@ public class TLEDao {
 	public TLEDao(Configuration config, SatelliteDao satelliteDao, CelestrakClient celestrak) {
 		this.config = config;
 		this.satelliteDao = satelliteDao;
-		this.basepath = Util.initDirectory(config.getProperty("satellites.basepath.location"));
+		this.basepath = config.getSatellitesBasePath();
 		this.celestrak = celestrak;
 	}
 
 	public synchronized void start() {
 		boolean reload = false;
 		for (Satellite cur : satelliteDao.findAll()) {
-			File tleFile = new File(basepath, cur.getId() + File.separator + "tle.txt");
-			if (!tleFile.exists()) {
+			Path tleFile = basepath.resolve(cur.getId()).resolve("tle.txt");
+			if (!Files.exists(tleFile)) {
 				LOG.info("missing tle for {}. schedule reloading", cur.getName());
 				reload = true;
 				continue;
 			}
-			if (System.currentTimeMillis() - tleFile.lastModified() > TimeUnit.DAYS.toMillis(7)) {
-				LOG.info("tle file: {} stale. Last updated at: {}. schedule reloading", tleFile.getAbsolutePath(), new Date(tleFile.lastModified()));
+			try {
+				long time = Files.getLastModifiedTime(tleFile).toMillis();
+				if (System.currentTimeMillis() - time > TimeUnit.DAYS.toMillis(7)) {
+					LOG.info("tle file: {} stale. Last updated at: {}. schedule reloading", tleFile.toAbsolutePath(), new Date(time));
+					reload = true;
+					// schedule reload, but read it anyway in case celestrak is not
+					// available. better to get stale results, rather than none
+				}
+			} catch (IOException e1) {
+				LOG.error("unable to get last modified time. schedule reloading", e1);
 				reload = true;
-				// shcedule reload, but read it anyway in case celestrak is not
-				// available. better to get stale results, rather than none
 			}
-			try (BufferedReader r = new BufferedReader(new FileReader(tleFile))) {
+			try (BufferedReader r = Files.newBufferedReader(tleFile)) {
 				String line1 = r.readLine();
 				if (line1 == null) {
 					continue;
@@ -97,18 +102,30 @@ public class TLEDao {
 				continue;
 			}
 			this.tle.put(satellite.getId(), cur.getValue());
-			File output = new File(basepath, satellite.getId() + File.separator + "tle.txt");
-			if (!output.getParentFile().exists() && !output.getParentFile().mkdirs()) {
-				LOG.error("unable to create directory for satellite: {}", satellite.getName());
-				continue;
+			Path output = basepath.resolve(satellite.getId()).resolve("tle.txt");
+			if (!Files.exists(output.getParent())) {
+				try {
+					Files.createDirectories(output.getParent());
+				} catch (IOException e) {
+					LOG.error("unable to create directory for satellite: " + satellite.getName(), e);
+					continue;
+				}
 			}
-			try (BufferedWriter w = new BufferedWriter(new FileWriter(output))) {
+			Path tempOutput = basepath.resolve(satellite.getId()).resolve("tle.txt.tmp");
+			try (BufferedWriter w = Files.newBufferedWriter(tempOutput)) {
 				w.append(cur.getValue().getRaw()[1]);
 				w.newLine();
 				w.append(cur.getValue().getRaw()[2]);
 				w.newLine();
 			} catch (IOException e) {
 				LOG.error("unable to write tle for: " + cur.getKey(), e);
+				continue;
+			}
+
+			try {
+				Files.move(tempOutput, output, StandardCopyOption.ATOMIC_MOVE);
+			} catch (IOException e) {
+				LOG.error("unable to move .tmp to dst", e);
 			}
 		}
 		config.setProperty("satellites.tle.lastupdateAtMillis", System.currentTimeMillis());

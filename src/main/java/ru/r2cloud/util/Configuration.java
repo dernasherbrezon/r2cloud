@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ public class Configuration {
 
 	private final Properties userSettings = new Properties();
 	private final String userSettingsLocation;
+	private final FileSystem fs;
 	private static final Set<PosixFilePermission> MODE600 = new HashSet<PosixFilePermission>();
 
 	private final Properties systemSettings = new Properties();
@@ -45,19 +48,21 @@ public class Configuration {
 		MODE600.add(PosixFilePermission.OWNER_WRITE);
 	}
 
-	public Configuration(InputStream systemSettingsLocation, String userSettingsLocation) throws IOException {
+	public Configuration(InputStream systemSettingsLocation, String userSettingsLocation, FileSystem fs) throws IOException {
 		systemSettings.load(systemSettingsLocation);
 		this.userSettingsLocation = userSettingsLocation;
+		this.fs = fs;
 		loadUserSettings(userSettingsLocation);
 	}
 
-	public Configuration(String systemSettingsLocation, String userSettingsLocation) {
+	public Configuration(String systemSettingsLocation, String userSettingsLocation, FileSystem fs) {
 		try (InputStream is = new FileInputStream(systemSettingsLocation)) {
 			systemSettings.load(is);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Unable to load properties", e);
 		}
 		this.userSettingsLocation = userSettingsLocation;
+		this.fs = fs;
 		loadUserSettings(userSettingsLocation);
 	}
 
@@ -81,6 +86,10 @@ public class Configuration {
 
 	public String setProperty(String key, boolean value) {
 		return setProperty(key, String.valueOf(value));
+	}
+	
+	public Path getSatellitesBasePath() {
+		return fs.getPath(getProperty("satellites.basepath.location"));
 	}
 
 	public String setProperty(String key, String value) {

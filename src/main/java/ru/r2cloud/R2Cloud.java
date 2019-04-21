@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.nio.file.FileSystems;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -221,7 +222,7 @@ public class R2Cloud {
 		R2Cloud app;
 		String userPropertiesFilename = System.getProperty("user.home") + File.separator + ".r2cloud";
 		try (InputStream is = new FileInputStream(args[0])) {
-			Configuration props = new Configuration(is, userPropertiesFilename);
+			Configuration props = new Configuration(is, userPropertiesFilename, FileSystems.getDefault());
 			app = new R2Cloud(props);
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e);

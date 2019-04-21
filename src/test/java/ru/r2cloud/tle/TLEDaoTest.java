@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +22,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.aerse.mockfs.FailingByteChannelCallback;
+import com.aerse.mockfs.MockFileSystem;
+
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Tle;
@@ -29,13 +34,32 @@ public class TLEDaoTest {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
-
+	
+	private MockFileSystem fs;
 	private TestConfiguration config;
 	private SatelliteDao satelliteDao;
 	private CelestrakClient celestrak;
 
 	private Map<String, Tle> tleData;
 	private List<Satellite> supported;
+	
+	@Test
+	public void testReloadFailure() {
+		TLEDao dao = new TLEDao(config, satelliteDao, celestrak);
+		//load succesfully
+		dao.reload();
+		
+		Path failingPath = config.getSatellitesBasePath().resolve(supported.get(0).getId());
+		fs.mock(failingPath, new FailingByteChannelCallback(10));
+		dao.reload();
+		fs.removeMock(failingPath);
+		
+		//ensure data reloaded from disk
+		dao.stop();
+		dao.start();
+		
+		assertNotNull(dao.findById(supported.get(0).getId()));
+	}
 
 	@Test
 	public void testSuccess() {
@@ -77,12 +101,12 @@ public class TLEDaoTest {
 
 	@Before
 	public void start() throws Exception {
-		config = new TestConfiguration(tempFolder);
+		fs = new MockFileSystem(FileSystems.getDefault());
+		config = new TestConfiguration(tempFolder, fs);
 		config.setProperty("satellites.basepath.location", tempFolder.getRoot().getAbsolutePath());
 		config.update();
 
 		setupMocks();
-
 	}
 
 	private void setupMocks() {

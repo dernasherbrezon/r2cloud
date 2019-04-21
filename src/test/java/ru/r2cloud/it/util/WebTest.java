@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
 import java.util.UUID;
 
 import org.junit.AfterClass;
@@ -69,7 +70,7 @@ public class WebTest {
 		userSettingsLocation = System.getProperty("java.io.tmpdir") + File.separator + ".r2cloud-" + UUID.randomUUID().toString();
 		Configuration config;
 		try (InputStream is = WebTest.class.getClassLoader().getResourceAsStream("config-dev.properties")) {
-			config = new Configuration(is, userSettingsLocation);
+			config = new Configuration(is, userSettingsLocation, FileSystems.getDefault());
 		}
 		config.setProperty("celestrak.hostname", celestrak.getUrl());
 		config.setProperty("locaiton.lat", "56.189");
