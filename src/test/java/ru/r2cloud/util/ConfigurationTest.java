@@ -1,11 +1,13 @@
 package ru.r2cloud.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import java.nio.file.FileSystems;
 import java.util.Random;
 import java.util.UUID;
 
@@ -13,6 +15,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import com.aerse.mockfs.FailingByteChannelCallback;
+import com.aerse.mockfs.MockFileSystem;
 
 import ru.r2cloud.TestConfiguration;
 
@@ -22,6 +27,7 @@ public class ConfigurationTest {
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private TestConfiguration config;
+	private MockFileSystem fs;
 
 	@Test
 	public void notCalled() {
@@ -48,7 +54,7 @@ public class ConfigurationTest {
 
 		verify(listener, atLeast(1)).onConfigUpdated();
 	}
-	
+
 	@Test
 	public void twoListenersUpdated() {
 		ConfigListener listener1 = mock(ConfigListener.class);
@@ -80,9 +86,32 @@ public class ConfigurationTest {
 		assertEquals(Integer.valueOf(8), config.getInteger("scheduler.elevation.min"));
 	}
 
+	@Test
+	public void testCorruptedAfterFailedWrite() throws Exception {
+		String lat = "53.40";
+		config.setProperty("locaiton.lat", lat);
+		config.update();
+
+		fs.mock(config.getTempDirectoryPath(), new FailingByteChannelCallback(3));
+		fs.mock(fs.getPath(TestConfiguration.getUserSettingsLocation(tempFolder)).getParent(), new FailingByteChannelCallback(3));
+
+		String newLat = "23.40";
+		config.setProperty("locaiton.lat", newLat);
+		try {
+			config.update();
+			fail("config should not be updated");
+		} catch (Exception e) {
+			// expected
+		}
+
+		config = new TestConfiguration(tempFolder, fs);
+		assertEquals(lat, config.getProperty("locaiton.lat"));
+	}
+
 	@Before
 	public void start() throws Exception {
-		config = new TestConfiguration(tempFolder);
+		fs = new MockFileSystem(FileSystems.getDefault());
+		config = new TestConfiguration(tempFolder, fs);
 	}
 
 }

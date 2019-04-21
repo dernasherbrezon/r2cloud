@@ -1,14 +1,14 @@
 package ru.r2cloud.util;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +35,7 @@ public class Configuration {
 	private static final Logger LOG = LoggerFactory.getLogger(Configuration.class);
 
 	private final Properties userSettings = new Properties();
-	private final String userSettingsLocation;
+	private final Path userSettingsLocation;
 	private final FileSystem fs;
 	private static final Set<PosixFilePermission> MODE600 = new HashSet<PosixFilePermission>();
 
@@ -50,7 +50,7 @@ public class Configuration {
 
 	public Configuration(InputStream systemSettingsLocation, String userSettingsLocation, FileSystem fs) throws IOException {
 		systemSettings.load(systemSettingsLocation);
-		this.userSettingsLocation = userSettingsLocation;
+		this.userSettingsLocation = fs.getPath(userSettingsLocation);
 		this.fs = fs;
 		loadUserSettings(userSettingsLocation);
 	}
@@ -61,7 +61,7 @@ public class Configuration {
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Unable to load properties", e);
 		}
-		this.userSettingsLocation = userSettingsLocation;
+		this.userSettingsLocation = fs.getPath(userSettingsLocation);
 		this.fs = fs;
 		loadUserSettings(userSettingsLocation);
 	}
@@ -87,7 +87,7 @@ public class Configuration {
 	public String setProperty(String key, boolean value) {
 		return setProperty(key, String.valueOf(value));
 	}
-	
+
 	public Path getSatellitesBasePath() {
 		return fs.getPath(getProperty("satellites.basepath.location"));
 	}
@@ -100,15 +100,21 @@ public class Configuration {
 	}
 
 	public void update() {
-		try (FileWriter fos = new FileWriter(userSettingsLocation)) {
+		Path tempPath = getTempDirectoryPath().resolve("user.properties.tmp");
+		try (BufferedWriter fos = Files.newBufferedWriter(tempPath)) {
 			userSettings.store(fos, "updated");
 		} catch (IOException e) {
 			throw new IllegalArgumentException(e);
 		}
 		try {
-			Files.setPosixFilePermissions(Paths.get(userSettingsLocation), MODE600);
+			Files.setPosixFilePermissions(tempPath, MODE600);
 		} catch (IOException e) {
-			LOG.info("unable to setup 600 permissions: {}", e.getMessage());
+			throw new IllegalArgumentException(e);
+		}
+		try {
+			Files.move(tempPath, userSettingsLocation, StandardCopyOption.ATOMIC_MOVE);
+		} catch (IOException e) {
+			throw new IllegalArgumentException(e);
 		}
 		Set<ConfigListener> toNotify = new HashSet<ConfigListener>();
 		synchronized (changedProperties) {
@@ -255,4 +261,11 @@ public class Configuration {
 		return new File(System.getProperty("java.io.tmpdir"));
 	}
 
+	public Path getTempDirectoryPath() {
+		String tmpDirectory = getProperty("server.tmp.directory");
+		if (tmpDirectory != null) {
+			return fs.getPath(tmpDirectory);
+		}
+		return fs.getPath(System.getProperty("java.io.tmpdir"));
+	}
 }
