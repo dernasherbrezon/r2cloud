@@ -38,7 +38,7 @@ public class Restore extends AbstractHttpController {
 			errors.put("username", Messages.CANNOT_BE_EMPTY);
 		}
 		if (!errors.isEmpty()) {
-			LOG.info("unable to save: " + errors);
+			LOG.info("unable to save: {}", errors);
 			return new BadRequest(errors);
 		}
 		auth.resetPassword(username);
