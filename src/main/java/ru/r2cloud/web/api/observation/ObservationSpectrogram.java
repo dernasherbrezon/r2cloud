@@ -46,7 +46,7 @@ public class ObservationSpectrogram extends AbstractHttpController {
 		}
 		ObservationFull observation = dao.find(satelliteId, id);
 		if (observation == null) {
-			LOG.info("not found: " + satelliteId + " id: " + id);
+			LOG.info("not found: {} id: {}", satelliteId, id);
 			return new NotFound();
 		}
 
