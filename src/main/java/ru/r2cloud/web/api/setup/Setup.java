@@ -26,7 +26,7 @@ public class Setup extends AbstractHttpController {
 	private static final String USERNAME_PARAMETER = "username";
 	private static final String KEYWORD_PARAMETER = "keyword";
 
-	private final static Logger LOG = LoggerFactory.getLogger(Setup.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Setup.class);
 
 	private final Authenticator auth;
 	private final Configuration config;
@@ -58,7 +58,7 @@ public class Setup extends AbstractHttpController {
 		}
 
 		if (!errors.isEmpty()) {
-			LOG.info("unable to save: " + errors);
+			LOG.info("unable to save: {}", errors);
 			return new BadRequest(errors);
 		}
 
@@ -72,17 +72,16 @@ public class Setup extends AbstractHttpController {
 				errors.put(KEYWORD_PARAMETER, "Invalid keyword");
 			}
 		} catch (Exception e) {
-			String message = "unable to read r2cloud file. ";
 			if (LOG.isDebugEnabled()) {
-				LOG.debug(message, e);
+				LOG.debug("unable to read r2cloud file", e);
 			} else {
-				LOG.info(message + e.getMessage());
+				LOG.info("unable to read r2cloud file {}", e.getMessage());
 			}
 			errors.setGeneral("Unable to read r2cloud file");
 		}
 
 		if (!errors.isEmpty()) {
-			LOG.info("unable to save: " + errors);
+			LOG.info("unable to save: {}", errors);
 			return new BadRequest(errors);
 		}
 
