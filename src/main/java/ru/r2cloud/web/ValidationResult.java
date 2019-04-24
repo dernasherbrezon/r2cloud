@@ -56,4 +56,31 @@ public class ValidationResult extends HashMap<String, String> {
 		return result.toString();
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((general == null) ? 0 : general.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ValidationResult other = (ValidationResult) obj;
+		if (general == null) {
+			if (other.general != null) {
+				return false;
+			}
+		} else if (!general.equals(other.general)) {
+			return false;
+		}
+		return true;
+	}
+
 }
