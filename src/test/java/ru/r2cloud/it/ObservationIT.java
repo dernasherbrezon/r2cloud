@@ -2,6 +2,7 @@ package ru.r2cloud.it;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -17,6 +18,7 @@ import org.junit.Test;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.ParseException;
 
 import ru.r2cloud.JsonHttpResponse;
 import ru.r2cloud.R2CloudServer;
@@ -48,7 +50,13 @@ public class ObservationIT extends RegisteredTest {
 
 		// wait for r2cloud meta upload and assert
 		metaHandler.awaitRequest();
-		assertObservation((JsonObject) Json.parse(metaHandler.getRequest()));
+		JsonObject actual = null;
+		try {
+			actual = (JsonObject) Json.parse(metaHandler.getRequest());
+		} catch (ParseException e) {
+			fail("unable to parse request: " + metaHandler.getRequest() + " " + e.getMessage());
+		}
+		assertObservation(actual);
 
 		// wait for spectogram upload and assert
 		spectogramHandler.awaitRequest();
@@ -63,10 +71,10 @@ public class ObservationIT extends RegisteredTest {
 		assertEquals(300000, observation.getInt("inputSampleRate", 0));
 		assertEquals(137900000, observation.getInt("frequency", 0));
 		assertEquals(137900000, observation.getInt("actualFrequency", 0));
-		//do not assert numberOfDecodedPackets as file contains valid data
-		//there is no control on when test executed, so doppler correction might 
-		//generate valid freq offset and numberOfDecodedPackets might NOT be 0
-		//assertEquals(0, observation.getInt("numberOfDecodedPackets", -1));
+		// do not assert numberOfDecodedPackets as file contains valid data
+		// there is no control on when test executed, so doppler correction might
+		// generate valid freq offset and numberOfDecodedPackets might NOT be 0
+		// assertEquals(0, observation.getInt("numberOfDecodedPackets", -1));
 		assertEquals("LRPT", observation.getString("decoder", null));
 		assertEquals("40069", observation.getString("satellite", null));
 	}
