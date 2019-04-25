@@ -51,11 +51,7 @@ public class WebServer extends NanoHTTPD {
 	public Response serve(IHTTPSession session) {
 		if (session.getMethod().equals(Method.OPTIONS)) {
 			Response result = NanoHTTPD.newFixedLengthResponse(Response.Status.NO_CONTENT, "text/plain; charset=utf-8", "");
-			result.addHeader("Access-Control-Allow-Origin", "*");
-			result.addHeader("Access-Control-Max-Age", "1728000");
-			result.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-			result.addHeader("Access-Control-Allow-Headers", ALLOW_HEADERS);
-			result.addHeader("Access-Control-Expose-Headers", ALLOW_HEADERS);
+			setupCorsHeaders(result);
 			return result;
 		}
 		if (session.getUri().startsWith(staticController.getRequestMappingURL())) {
@@ -63,11 +59,7 @@ public class WebServer extends NanoHTTPD {
 		}
 		if (isAuthenticationRequired(session) && !auth.isAuthenticated(session)) {
 			Response result = NanoHTTPD.newFixedLengthResponse(Response.Status.UNAUTHORIZED, MimeType.JSON.getType(), "{}");
-			result.addHeader("Access-Control-Allow-Origin", "*");
-			result.addHeader("Access-Control-Max-Age", "1728000");
-			result.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-			result.addHeader("Access-Control-Allow-Headers", ALLOW_HEADERS);
-			result.addHeader("Access-Control-Expose-Headers", ALLOW_HEADERS);
+			setupCorsHeaders(result);
 			return result;
 		}
 		HttpContoller controller = controllers.get(session.getUri());
@@ -106,12 +98,16 @@ public class WebServer extends NanoHTTPD {
 				result.addHeader(cur.getKey(), cur.getValue());
 			}
 		}
+		setupCorsHeaders(result);
+		return result;
+	}
+
+	private static void setupCorsHeaders(Response result) {
 		result.addHeader("Access-Control-Allow-Origin", "*");
 		result.addHeader("Access-Control-Max-Age", "1728000");
 		result.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
 		result.addHeader("Access-Control-Allow-Headers", ALLOW_HEADERS);
 		result.addHeader("Access-Control-Expose-Headers", ALLOW_HEADERS);
-		return result;
 	}
 
 	public boolean isAuthenticationRequired(IHTTPSession session) {
