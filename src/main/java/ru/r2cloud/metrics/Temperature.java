@@ -1,8 +1,8 @@
 package ru.r2cloud.metrics;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,16 +14,16 @@ import com.codahale.metrics.MetricRegistry.MetricSupplier;
 public class Temperature extends FormattedGauge<Double> implements MetricSupplier<Gauge> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Temperature.class);
-	private final String fileLocation;
+	private final Path fileLocation;
 
-	public Temperature(String fileLocation) {
+	public Temperature(Path fileLocation) {
 		super(MetricFormat.NORMAL);
 		this.fileLocation = fileLocation;
 	}
 
 	@Override
 	public Double getValue() {
-		try (BufferedReader fis = new BufferedReader(new FileReader(fileLocation))) {
+		try (BufferedReader fis = Files.newBufferedReader(fileLocation)) {
 			String line = fis.readLine();
 			if (line == null) {
 				return null;
@@ -41,7 +41,7 @@ public class Temperature extends FormattedGauge<Double> implements MetricSupplie
 	}
 
 	public boolean isAvailable() {
-		return new File(fileLocation).exists();
+		return Files.exists(fileLocation);
 	}
 
 }

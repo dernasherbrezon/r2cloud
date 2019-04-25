@@ -263,4 +263,8 @@ public class Configuration {
 		}
 		return fs.getPath(System.getProperty("java.io.tmpdir"));
 	}
+	
+	public Path getPath(String filename) {
+		return fs.getPath(filename);
+	}
 }

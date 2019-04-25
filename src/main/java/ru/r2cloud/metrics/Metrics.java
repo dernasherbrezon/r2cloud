@@ -37,7 +37,7 @@ public class Metrics {
 
 	@SuppressWarnings("rawtypes")
 	public void start() {
-		Temperature temp = new Temperature("/sys/class/thermal/thermal_zone0/temp");
+		Temperature temp = new Temperature(config.getPath("/sys/class/thermal/thermal_zone0/temp"));
 		if (temp.isAvailable()) {
 			REGISTRY.gauge("temperature", temp);
 		} else {
