@@ -9,10 +9,17 @@ import com.eclipsesource.json.JsonObject;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.metrics.FormattedCounter;
 import ru.r2cloud.metrics.FormattedGauge;
+import ru.r2cloud.util.SignedURL;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
 
 public class Metrics extends AbstractHttpController {
+
+	private final SignedURL signed;
+
+	public Metrics(SignedURL signed) {
+		this.signed = signed;
+	}
 
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
@@ -21,7 +28,7 @@ public class Metrics extends AbstractHttpController {
 		for (Entry<String, Metric> cur : ru.r2cloud.metrics.Metrics.REGISTRY.getMetrics().entrySet()) {
 			JsonObject curObject = new JsonObject();
 			curObject.add("id", cur.getKey());
-			curObject.add("url", "/admin/static/rrd/" + cur.getKey() + ".rrd");
+			curObject.add("url", signed.sign("/api/v1/admin/static/rrd/" + cur.getKey() + ".rrd"));
 			if (cur.getValue() instanceof FormattedCounter) {
 				curObject.add("format", ((FormattedCounter) cur.getValue()).getFormat().toString());
 			}

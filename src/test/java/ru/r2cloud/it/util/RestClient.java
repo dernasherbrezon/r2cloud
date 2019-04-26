@@ -11,6 +11,7 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -129,6 +130,23 @@ public class RestClient {
 		}
 	}
 
+	private JsonArray getDataArray(String url) {
+		HttpRequest request = createAuthRequest(url).GET().build();
+		try {
+			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				LOG.info("response: {}", response.body());
+				throw new RuntimeException("invalid status code: " + response.statusCode());
+			}
+			return (JsonArray) Json.parse(response.body());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
+
 	public HttpResponse<String> saveR2CloudConfigurationWithResponse(String apiKey, boolean syncSpectogram) {
 		LOG.info("save r2cloud configuration");
 		JsonObject json = Json.object();
@@ -155,6 +173,10 @@ public class RestClient {
 	public JsonObject getR2CloudConfiguration() {
 		LOG.info("get r2cloud configuration");
 		return getData("/api/v1/admin/config/r2cloud");
+	}
+
+	public JsonArray getMetrics() {
+		return getDataArray("/api/v1/admin/status/metrics");
 	}
 
 	private HttpRequest.Builder createJsonPost(String path, JsonObject obj) {
@@ -277,18 +299,6 @@ public class RestClient {
 		return (JsonObject) Json.parse(response.body());
 	}
 
-	public HttpResponse<String> getFileUnauth(String url) {
-		HttpRequest request = createDefaultRequest(url).GET().build();
-		try {
-			return httpclient.send(request, BodyHandlers.ofString());
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new RuntimeException("unable to send request");
-		}
-	}
-
 	public HttpResponse<String> getFileResponse(String url) {
 		HttpRequest request = createAuthRequest(url).GET().build();
 		try {
@@ -308,6 +318,18 @@ public class RestClient {
 			throw new RuntimeException("invalid status code: " + response.statusCode());
 		}
 		return response.body();
+	}
+
+	public HttpResponse<Path> downloadFile(String url, Path file) {
+		HttpRequest request = createAuthRequest(url).GET().build();
+		try {
+			return httpclient.send(request, BodyHandlers.ofFile(file));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
 	}
 
 	public String scheduleStart(String satelliteId) {

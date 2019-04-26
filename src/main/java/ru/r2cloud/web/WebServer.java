@@ -14,6 +14,7 @@ import com.eclipsesource.json.JsonValue;
 
 import fi.iki.elonen.NanoHTTPD;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.SignedURL;
 import ru.r2cloud.web.api.StaticController;
 
 public class WebServer extends NanoHTTPD {
@@ -27,13 +28,13 @@ public class WebServer extends NanoHTTPD {
 
 	private final StaticController staticController;
 
-	public WebServer(Configuration props, Map<String, HttpContoller> controllers, Authenticator auth) {
+	public WebServer(Configuration props, Map<String, HttpContoller> controllers, Authenticator auth, SignedURL signed) {
 		super(props.getProperty("server.hostname"), props.getInteger("server.port"));
 		jsonRenderer = new GsonRenderer();
 		this.auth = auth;
 		this.controllers = controllers;
 
-		staticController = new StaticController(props);
+		staticController = new StaticController(props, signed);
 
 	}
 
@@ -118,6 +119,15 @@ public class WebServer extends NanoHTTPD {
 	}
 
 	public static String getParameter(IHTTPSession session, String name) {
+		Map<String, List<String>> parameters = getParameters(session);
+		List<String> values = parameters.get(name);
+		if (values == null || values.isEmpty()) {
+			return null;
+		}
+		return values.get(0);
+	}
+	
+	public static Map<String, List<String>> getParameters(IHTTPSession session) {
 		Map<String, List<String>> parameters = session.getParameters();
 		if (parameters.isEmpty()) {
 			try {
@@ -129,11 +139,7 @@ public class WebServer extends NanoHTTPD {
 				throw new RuntimeException(e);
 			}
 		}
-		List<String> values = parameters.get(name);
-		if (values == null || values.isEmpty()) {
-			return null;
-		}
-		return values.get(0);
+		return parameters;
 	}
 
 	public static String getRequestBody(IHTTPSession session) {

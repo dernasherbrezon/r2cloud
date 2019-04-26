@@ -51,6 +51,7 @@ import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.DefaultClock;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ShutdownLoggingManager;
+import ru.r2cloud.util.SignedURL;
 import ru.r2cloud.util.ThreadPoolFactory;
 import ru.r2cloud.util.ThreadPoolFactoryImpl;
 import ru.r2cloud.web.Authenticator;
@@ -108,6 +109,7 @@ public class R2Cloud {
 	private final R2ServerClient r2cloudClient;
 	private final SpectogramService spectogramService;
 	private final Map<String, Decoder> decoders = new HashMap<>();
+	private final SignedURL signed;
 
 	public R2Cloud(Configuration props) {
 		threadFactory = new ThreadPoolFactoryImpl();
@@ -132,6 +134,7 @@ public class R2Cloud {
 		satelliteDao = new SatelliteDao(props);
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient(props.getProperty("celestrak.hostname")));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
+		signed = new SignedURL(props, clock);
 		APTDecoder aptDecoder = new APTDecoder(props, processFactory);
 		decoders.put("25338", aptDecoder);
 		decoders.put("28654", aptDecoder);
@@ -169,7 +172,7 @@ public class R2Cloud {
 		index(new Setup(auth, props));
 		index(new Configured(auth, props));
 		index(new Restore(auth));
-		index(new ru.r2cloud.web.api.status.Metrics());
+		index(new ru.r2cloud.web.api.status.Metrics(signed));
 		index(new Overview());
 		index(new General(props, autoUpdate));
 		index(new DDNS(props, ddnsClient));
@@ -177,14 +180,14 @@ public class R2Cloud {
 		index(new SSLLog(acmeClient));
 		index(new TLE(props, tleDao));
 		index(new R2CloudSave(props));
-		index(new ObservationSpectrogram(resultDao, spectogramService));
+		index(new ObservationSpectrogram(resultDao, spectogramService, signed));
 		index(new ObservationList(satelliteDao, resultDao));
-		index(new ObservationLoad(resultDao));
+		index(new ObservationLoad(resultDao, signed));
 		index(new ScheduleList(satelliteDao, scheduler));
 		index(new ScheduleSave(satelliteDao, scheduler));
 		index(new ScheduleStart(satelliteDao, scheduler));
 		index(new ScheduleComplete(scheduler));
-		webServer = new WebServer(props, controllers, auth);
+		webServer = new WebServer(props, controllers, auth, signed);
 	}
 
 	public void start() {

@@ -199,7 +199,7 @@ public class ObservationResultDao {
 	}
 
 	public boolean update(ObservationFull cur) {
-		JsonObject meta = cur.toJson();
+		JsonObject meta = cur.toJson(null);
 		Path dest = getObservationBasepath(cur.getReq()).resolve("meta.json");
 		try (BufferedWriter w = Files.newBufferedWriter(dest)) {
 			w.append(meta.toString());

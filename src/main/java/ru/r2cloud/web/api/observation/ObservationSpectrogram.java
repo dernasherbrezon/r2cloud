@@ -13,6 +13,7 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.SpectogramService;
 import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.satellite.ObservationResultDao;
+import ru.r2cloud.util.SignedURL;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
 import ru.r2cloud.web.InternalServerError;
@@ -26,10 +27,12 @@ public class ObservationSpectrogram extends AbstractHttpController {
 
 	private final ObservationResultDao dao;
 	private final SpectogramService spectogramService;
+	private final SignedURL signed;
 
-	public ObservationSpectrogram(ObservationResultDao dao, SpectogramService spectogramService) {
+	public ObservationSpectrogram(ObservationResultDao dao, SpectogramService spectogramService, SignedURL signed) {
 		this.dao = dao;
 		this.spectogramService = spectogramService;
+		this.signed = signed;
 	}
 
 	@Override
@@ -67,7 +70,7 @@ public class ObservationSpectrogram extends AbstractHttpController {
 
 		observation = dao.find(satelliteId, id);
 		JsonObject entity = new JsonObject();
-		entity.add("spectogramURL", observation.getResult().getSpectogramURL());
+		entity.add("spectogramURL", signed.sign(observation.getResult().getSpectogramURL()));
 		ModelAndView result = new ModelAndView();
 		result.setData(entity.toString());
 		return result;

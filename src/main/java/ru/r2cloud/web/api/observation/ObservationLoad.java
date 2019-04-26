@@ -15,6 +15,7 @@ import ru.r2cloud.jradio.aausat4.AAUSAT4Beacon;
 import ru.r2cloud.jradio.csp.Header;
 import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.satellite.ObservationResultDao;
+import ru.r2cloud.util.SignedURL;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
 import ru.r2cloud.web.ModelAndView;
@@ -28,9 +29,11 @@ public class ObservationLoad extends AbstractHttpController {
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationLoad.class);
 
 	private final ObservationResultDao resultDao;
+	private final SignedURL signed;
 
-	public ObservationLoad(ObservationResultDao resultDao) {
+	public ObservationLoad(ObservationResultDao resultDao, SignedURL signed) {
 		this.resultDao = resultDao;
+		this.signed = signed;
 	}
 
 	@Override
@@ -54,7 +57,7 @@ public class ObservationLoad extends AbstractHttpController {
 			LOG.info("not found: {} id: {}", satelliteId, id);
 			return new NotFound();
 		}
-		JsonObject json = entity.toJson();
+		JsonObject json = entity.toJson(signed);
 		if (entity.getResult().getDataPath() != null) {
 			if (entity.getReq().getSatelliteId().equals("41460")) {
 				try (BeaconInputStream<AAUSAT4Beacon> ais = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(entity.getResult().getDataPath())), AAUSAT4Beacon.class)) {

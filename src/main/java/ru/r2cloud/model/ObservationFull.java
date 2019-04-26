@@ -5,6 +5,8 @@ import java.util.Locale;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
+import ru.r2cloud.util.SignedURL;
+
 public class ObservationFull {
 
 	private final ObservationRequest req;
@@ -62,7 +64,7 @@ public class ObservationFull {
 		return full;
 	}
 
-	public JsonObject toJson() {
+	public JsonObject toJson(SignedURL signed) {
 		JsonObject json = new JsonObject();
 		json.add("id", req.getId());
 		json.add("start", req.getStartTimeMillis());
@@ -91,13 +93,25 @@ public class ObservationFull {
 			json.add("numberOfDecodedPackets", result.getNumberOfDecodedPackets());
 		}
 		if (result.getaURL() != null) {
-			json.add("aURL", result.getaURL());
+			if (signed != null) {
+				json.add("aURL", signed.sign(result.getaURL()));
+			} else {
+				json.add("aURL", result.getaURL());
+			}
 		}
 		if (result.getDataURL() != null) {
-			json.add("data", result.getDataURL());
+			if (signed != null) {
+				json.add("data", signed.sign(result.getDataURL()));
+			} else {
+				json.add("data", result.getDataURL());
+			}
 		}
 		if (result.getSpectogramURL() != null) {
-			json.add("spectogramURL", result.getSpectogramURL());
+			if (signed != null) {
+				json.add("spectogramURL", signed.sign(result.getSpectogramURL()));
+			} else {
+				json.add("spectogramURL", result.getSpectogramURL());
+			}
 		}
 		return json;
 	}

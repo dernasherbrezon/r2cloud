@@ -47,7 +47,7 @@ public class R2ServerClient {
 		if (observation == null) {
 			return null;
 		}
-		HttpRequest request = createJsonRequest(OBSERVATION_BASEPATH, observation.toJson()).build();
+		HttpRequest request = createJsonRequest(OBSERVATION_BASEPATH, observation.toJson(null)).build();
 		try {
 			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
 			if (response.statusCode() != 200 && LOG.isErrorEnabled()) {

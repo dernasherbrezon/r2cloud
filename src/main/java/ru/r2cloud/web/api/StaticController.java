@@ -7,19 +7,22 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.Util;
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import fi.iki.elonen.NanoHTTPD.Response;
+import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.SignedURL;
+import ru.r2cloud.util.Util;
+import ru.r2cloud.web.WebServer;
 
 public class StaticController {
 
 	private final File basePath;
 	private final String canonicalBasePath;
 	private final Map<String, String> mimeTypes = new HashMap<String, String>();
+	private final SignedURL signed;
 
-	public StaticController(Configuration config) {
+	public StaticController(Configuration config, SignedURL signed) {
 		this.basePath = Util.initDirectory(config.getProperty("server.static.location"));
 		try {
 			this.canonicalBasePath = this.basePath.getCanonicalPath();
@@ -29,10 +32,14 @@ public class StaticController {
 		mimeTypes.put("rrd", "application/octet-stream");
 		mimeTypes.put("jpg", "image/jpeg");
 		mimeTypes.put("png", "image/png");
+		this.signed = signed;
 	}
 
 	public Response doGet(IHTTPSession session) {
 		String uri = session.getUri();
+		if (!signed.validate(uri, WebServer.getParameters(session))) {
+			return NanoHTTPD.newFixedLengthResponse(fi.iki.elonen.NanoHTTPD.Response.Status.UNAUTHORIZED, NanoHTTPD.MIME_PLAINTEXT, "invalid signed url");
+		}
 		String path = uri.substring(getRequestMappingURL().length());
 		File result = new File(basePath, path);
 		String requestCanonicalPath;
@@ -41,7 +48,7 @@ public class StaticController {
 		} catch (IOException e1) {
 			return new503ErrorResponse();
 		}
-		//prevent escape from configured base directory
+		// prevent escape from configured base directory
 		if (!requestCanonicalPath.startsWith(canonicalBasePath) || !result.exists()) {
 			return NanoHTTPD.newFixedLengthResponse(fi.iki.elonen.NanoHTTPD.Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "not found");
 		}
