@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -35,8 +36,8 @@ public class SignedURLTest {
 	@Test
 	public void testSuccess() {
 		String signed = service.sign(path);
-		assertEquals("/img/a.jpg?hash=d0fd43be1a1c42ba276c2257ca1d2c34&timestamp=1508713200000", signed);
-		assertTrue(service.validate(path, createParameters("hash", "d0fd43be1a1c42ba276c2257ca1d2c34", "timestamp", "1508713200000")));
+		assertEquals("/img/a.jpg?hash=3679d97d8b1d497743cd8da8ba0440f5&timestamp=1508716800000", signed);
+		assertTrue(service.validate(path, createParameters("hash", "3679d97d8b1d497743cd8da8ba0440f5", "timestamp", "1508716800000")));
 	}
 
 	@Test
@@ -49,13 +50,13 @@ public class SignedURLTest {
 
 	@Test
 	public void testInvalidHash() {
-		assertFalse(service.validate(path, createParameters("hash", "d0fd43be1a1c42ba276c2257ca1d2c35", "timestamp", "1508713200000")));
+		assertFalse(service.validate(path, createParameters("hash", "3679d97d8b1d497743cd8da8ba0440f6", "timestamp", "1508716800000")));
 	}
 	
 	@Test
 	public void testChangePassword() {
 		config.setProperty("server.password", UUID.randomUUID().toString());
-		assertFalse(service.validate(path, createParameters("hash", "d0fd43be1a1c42ba276c2257ca1d2c34", "timestamp", "1508713200000")));
+		assertFalse(service.validate(path, createParameters("hash", "3679d97d8b1d497743cd8da8ba0440f5", "timestamp", "1508716800000")));
 	}
 	
 	@Test
@@ -64,13 +65,14 @@ public class SignedURLTest {
 		long current = sdf.parse("2018-10-23 00:00:00, 000").getTime();
 		when(clock.millis()).thenReturn(current);
 
-		assertFalse(service.validate(path, createParameters("hash", "d0fd43be1a1c42ba276c2257ca1d2c34", "timestamp", "1508713200000")));
+		assertFalse(service.validate(path, createParameters("hash", "3679d97d8b1d497743cd8da8ba0440f5", "timestamp", "1508716800000")));
 	}
 
 	@Before
 	public void start() throws Exception {
 		clock = mock(Clock.class);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss, SSS");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		long current = sdf.parse("2017-10-23 00:00:00, 000").getTime();
 		when(clock.millis()).thenReturn(current);
 

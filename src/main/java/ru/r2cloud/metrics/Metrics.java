@@ -122,6 +122,7 @@ public class Metrics {
 
 		reporter = new RRD4JReporter(config, REGISTRY, cloudService);
 		reporter.start();
+		reporter.report();
 		LOG.info("metrics started");
 	}
 

@@ -126,7 +126,6 @@ public class R2Cloud {
 		r2cloudService = new R2ServerService(props, resultDao, r2cloudClient, spectogramService);
 		predict = new Predict(props);
 		auth = new Authenticator(props);
-		metrics = new Metrics(props, r2cloudService);
 		rtlsdrStatusDao = new RtlSdrStatusDao(props, rtlsdrLock);
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
@@ -165,6 +164,7 @@ public class R2Cloud {
 
 		observationFactory = new ObservationFactory(predict, tleDao);
 		scheduler = new Scheduler(new Schedule<>(), props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, processFactory, resultDao, decoderTask);
+		metrics = new Metrics(props, r2cloudService);
 
 		// setup web server
 		index(new Health());
@@ -191,7 +191,6 @@ public class R2Cloud {
 	}
 
 	public void start() {
-		metrics.start();
 		acmeClient.start();
 		ddnsClient.start();
 		rtlsdrStatusDao.start();
@@ -200,6 +199,7 @@ public class R2Cloud {
 		// scheduler should start after tle (it uses TLE to schedule
 		// observations)
 		scheduler.start();
+		metrics.start();
 		webServer.start();
 		LOG.info("=================================");
 		LOG.info("=========== started =============");
@@ -208,13 +208,13 @@ public class R2Cloud {
 
 	public void stop() {
 		webServer.stop();
+		metrics.stop();
 		scheduler.stop();
 		tleReloader.stop();
 		tleDao.stop();
 		rtlsdrStatusDao.stop();
 		ddnsClient.stop();
 		acmeClient.stop();
-		metrics.stop();
 	}
 
 	public static void main(String[] args) {

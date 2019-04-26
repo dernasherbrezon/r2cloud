@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -23,8 +24,6 @@ import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.ThreadPoolFactory;
 
 public class TLEReloaderTest {
-
-	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss, SSS");
 	
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -62,6 +61,8 @@ public class TLEReloaderTest {
 		executor = mock(ScheduledExecutorService.class);
 		when(threadPool.newScheduledThreadPool(anyInt(), any())).thenReturn(executor);
 
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss, SSS");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		current = sdf.parse("2017-10-23 00:00:00, 000").getTime();
 
 		when(clock.millis()).thenReturn(current);
