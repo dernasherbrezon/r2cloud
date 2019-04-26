@@ -69,7 +69,7 @@ public class SignedURL {
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e);
 		}
-		return new String(Hex.encode(digest.digest()));
+		return Hex.encode(digest.digest());
 	}
 
 	private static String getFirstParameter(Map<String, List<String>> parameters, String name) {
