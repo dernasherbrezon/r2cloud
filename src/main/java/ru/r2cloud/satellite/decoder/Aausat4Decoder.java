@@ -104,6 +104,10 @@ public class Aausat4Decoder implements Decoder {
 		} finally {
 			Util.closeQuietly(source);
 		}
+
+		if (peaks.isEmpty()) {
+			return result;
+		}
 		// 3 stage. correct peaks and decode
 		AAUSAT4 input = null;
 		BeaconOutputStream aos = null;
