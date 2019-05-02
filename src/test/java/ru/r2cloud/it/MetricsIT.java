@@ -44,12 +44,28 @@ public class MetricsIT extends RegisteredTest {
 		HttpResponse<Path> response = client.downloadFile(url, Paths.get(tempFolder.getRoot().getAbsolutePath(), UUID.randomUUID().toString()));
 		assertEquals(200, response.statusCode());
 		assertEquals("application/octet-stream", response.headers().firstValue("content-type").get());
-
+		assertEquals("private, max-age=" + (getLong("server.static.signed.validMillis") / 1000), response.headers().firstValue("cache-control").get());
+		
 		try (RrdDb rrd = new RrdDb(response.body().toString(), RrdBackendFactory.getFactory("FILE"))) {
 			assertEquals(1, rrd.getDsCount());
 			assertEquals(3, rrd.getArcCount());
 		} catch (IOException e) {
 			fail("unable to read: " + e.getMessage());
+		}
+		
+		response = client.downloadFile(url, Paths.get(tempFolder.getRoot().getAbsolutePath(), UUID.randomUUID().toString()), "If-Modified-Since", response.headers().firstValue("Last-Modified").get());
+		assertEquals(304, response.statusCode());
+	}
+
+	private long getLong(String name) {
+		String result = config.getProperty(name);
+		if (result == null) {
+			return -1;
+		}
+		try {
+			return Long.valueOf(result);
+		} catch (Exception e) {
+			return -1;
 		}
 	}
 

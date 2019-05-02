@@ -4,8 +4,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
@@ -21,6 +25,7 @@ public class StaticController {
 	private final String canonicalBasePath;
 	private final Map<String, String> mimeTypes = new HashMap<String, String>();
 	private final SignedURL signed;
+	private final Configuration config;
 
 	public StaticController(Configuration config, SignedURL signed) {
 		this.basePath = Util.initDirectory(config.getProperty("server.static.location"));
@@ -33,6 +38,7 @@ public class StaticController {
 		mimeTypes.put("jpg", "image/jpeg");
 		mimeTypes.put("png", "image/png");
 		this.signed = signed;
+		this.config = config;
 	}
 
 	public Response doGet(IHTTPSession session) {
@@ -41,19 +47,30 @@ public class StaticController {
 			return NanoHTTPD.newFixedLengthResponse(fi.iki.elonen.NanoHTTPD.Response.Status.UNAUTHORIZED, NanoHTTPD.MIME_PLAINTEXT, "invalid signed url");
 		}
 		String path = uri.substring(getRequestMappingURL().length());
-		File result = new File(basePath, path);
+		File file = new File(basePath, path);
 		String requestCanonicalPath;
 		try {
-			requestCanonicalPath = result.getCanonicalPath();
+			requestCanonicalPath = file.getCanonicalPath();
 		} catch (IOException e1) {
 			return new503ErrorResponse();
 		}
 		// prevent escape from configured base directory
-		if (!requestCanonicalPath.startsWith(canonicalBasePath) || !result.exists()) {
+		if (!requestCanonicalPath.startsWith(canonicalBasePath) || !file.exists()) {
 			return NanoHTTPD.newFixedLengthResponse(fi.iki.elonen.NanoHTTPD.Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "not found");
 		}
 		try {
-			return NanoHTTPD.newFixedLengthResponse(fi.iki.elonen.NanoHTTPD.Response.Status.OK, getMimeType(uri), new FileInputStream(result), result.length());
+			SimpleDateFormat dateFormat = createParser();
+			Long ifModifiedSince = getIfModifiedSince(session);
+			Response response;
+			if (ifModifiedSince != null && ifModifiedSince >= file.lastModified() / 1000) {
+				response = NanoHTTPD.newFixedLengthResponse(fi.iki.elonen.NanoHTTPD.Response.Status.NOT_MODIFIED, getMimeType(uri), null);
+			} else {
+				response = NanoHTTPD.newFixedLengthResponse(fi.iki.elonen.NanoHTTPD.Response.Status.OK, getMimeType(uri), new FileInputStream(file), file.length());
+				// convert to seconds
+				response.addHeader("Cache-Control", "private, max-age=" + ((int) (config.getLong("server.static.signed.validMillis") / 1000)));
+			}
+			response.addHeader("Last-Modified", dateFormat.format(new Date(file.lastModified())));
+			return response;
 		} catch (FileNotFoundException e) {
 			return new503ErrorResponse();
 		}
@@ -73,6 +90,24 @@ public class StaticController {
 			return result;
 		}
 		return "application/octet-stream";
+	}
+
+	private static Long getIfModifiedSince(IHTTPSession session) {
+		String ifModifiedSince = session.getHeaders().get("if-modified-since");
+		if (ifModifiedSince == null) {
+			return null;
+		}
+		try {
+			return createParser().parse(ifModifiedSince).getTime();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	private static SimpleDateFormat createParser() {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		return dateFormat;
 	}
 
 	public String getRequestMappingURL() {

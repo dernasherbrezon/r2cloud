@@ -8,6 +8,7 @@ import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpClient.Version;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
@@ -321,7 +322,17 @@ public class RestClient {
 	}
 
 	public HttpResponse<Path> downloadFile(String url, Path file) {
-		HttpRequest request = createAuthRequest(url).GET().build();
+		return downloadFile(url, file, (String[]) null);
+	}
+
+	public HttpResponse<Path> downloadFile(String url, Path file, String... headers) {
+		Builder req = createAuthRequest(url);
+		if (headers != null) {
+			for (int i = 0; i < headers.length; i += 2) {
+				req.header(headers[i], headers[i + 1]);
+			}
+		}
+		HttpRequest request = req.GET().build();
 		try {
 			return httpclient.send(request, BodyHandlers.ofFile(file));
 		} catch (IOException e) {
