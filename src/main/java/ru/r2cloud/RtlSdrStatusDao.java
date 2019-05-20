@@ -158,7 +158,7 @@ public class RtlSdrStatusDao implements Lifecycle {
 			BufferedReader r = new BufferedReader(new InputStreamReader(rtlTest.getInputStream()));
 			String curLine = null;
 			int numberOfSamples = 0;
-			while ((curLine = r.readLine()) != null) {
+			while ((curLine = r.readLine()) != null && !Thread.currentThread().isInterrupted()) {
 				if (LOG.isDebugEnabled()) {
 					LOG.debug(curLine);
 				}
@@ -191,7 +191,7 @@ public class RtlSdrStatusDao implements Lifecycle {
 			Process rtlTest = new ProcessBuilder().command(config.getProperty("rtltest.path"), "-t").start();
 			BufferedReader r = new BufferedReader(new InputStreamReader(rtlTest.getErrorStream()));
 			String curLine = null;
-			while ((curLine = r.readLine()) != null) {
+			while ((curLine = r.readLine()) != null && !Thread.currentThread().isInterrupted()) {
 				if (curLine.startsWith("No supported")) {
 					status = null;
 					return;
