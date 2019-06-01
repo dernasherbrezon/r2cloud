@@ -67,8 +67,8 @@ public class ObservationIT extends RegisteredTest {
 
 	private static void assertObservation(JsonObject observation) {
 		assertNotNull(observation);
-		assertEquals(150000, observation.getInt("sampleRate", 0));
-		assertEquals(300000, observation.getInt("inputSampleRate", 0));
+		assertEquals(144000, observation.getInt("sampleRate", 0));
+		assertEquals(288000, observation.getInt("inputSampleRate", 0));
 		assertEquals(137900000, observation.getInt("frequency", 0));
 		assertEquals(137900000, observation.getInt("actualFrequency", 0));
 		// do not assert numberOfDecodedPackets as file contains valid data
