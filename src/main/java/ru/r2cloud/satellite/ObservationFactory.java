@@ -60,8 +60,8 @@ public class ObservationFactory {
 			result.setOutputSampleRate(11_025);
 			break;
 		case LRPT:
-			result.setInputSampleRate(300_000);
-			result.setOutputSampleRate(150_000);
+			result.setInputSampleRate(288_000);
+			result.setOutputSampleRate(144_000);
 			result.setActualFrequency(satellite.getFrequency());
 			break;
 		case TELEMETRY:
