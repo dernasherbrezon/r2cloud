@@ -52,7 +52,7 @@ public class SpectogramServiceTest {
 			Util.copy(is, fos);
 		}
 		SpectogramService service = new SpectogramService(config);
-		File result = service.create(createIq(file, 300_000));
+		File result = service.create(createIq(file, 288_000));
 		try (InputStream expected = SpectogramServiceTest.class.getClassLoader().getResourceAsStream("spectogram-output.raw.gz.png"); InputStream actual = new FileInputStream(result)) {
 			assertStreamsEqual(expected, actual);
 		}
