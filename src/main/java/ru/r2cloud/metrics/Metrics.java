@@ -22,8 +22,8 @@ import ru.r2cloud.util.Configuration;
 public class Metrics {
 
 	private static final Logger LOG = LoggerFactory.getLogger(R2Cloud.class);
-	public static final MetricRegistry REGISTRY = SharedMetricRegistries.getOrCreate("r2cloud");
-	public static final HealthCheckRegistry HEALTH_REGISTRY = SharedHealthCheckRegistries.getOrCreate("r2cloud");
+	private final MetricRegistry registry = SharedMetricRegistries.getOrCreate("r2cloud");
+	private final HealthCheckRegistry healthRegistry = SharedHealthCheckRegistries.getOrCreate("r2cloud");
 
 	private RRD4JReporter reporter;
 	private Sigar sigar;
@@ -39,7 +39,7 @@ public class Metrics {
 	public void start() {
 		Temperature temp = new Temperature(config.getPath("/sys/class/thermal/thermal_zone0/temp"));
 		if (temp.isAvailable()) {
-			REGISTRY.gauge("temperature", temp);
+			registry.gauge("temperature", temp);
 		} else {
 			LOG.info("temperature metric is not available");
 		}
@@ -48,7 +48,7 @@ public class Metrics {
 		LOG.info("total memory: {}", Runtime.getRuntime().totalMemory());
 		LOG.info("CPU count: {}", Runtime.getRuntime().availableProcessors());
 
-		REGISTRY.gauge("heap", new MetricSupplier<Gauge>() {
+		registry.gauge("heap", new MetricSupplier<Gauge>() {
 			@Override
 			public Gauge<?> newMetric() {
 				return new FormattedGauge<Long>(MetricFormat.BYTES) {
@@ -65,7 +65,7 @@ public class Metrics {
 			sigar = new Sigar();
 			File f = sigar.getNativeLibrary();
 			if (f != null && f.exists()) {
-				REGISTRY.gauge("load-average", new MetricSupplier<Gauge>() {
+				registry.gauge("load-average", new MetricSupplier<Gauge>() {
 					@Override
 					public Gauge<?> newMetric() {
 						return new FormattedGauge<Double>(MetricFormat.NORMAL) {
@@ -81,7 +81,7 @@ public class Metrics {
 						};
 					}
 				});
-				REGISTRY.gauge("ram-used", new MetricSupplier<Gauge>() {
+				registry.gauge("ram-used", new MetricSupplier<Gauge>() {
 					@Override
 					public Gauge<?> newMetric() {
 						return new FormattedGauge<Double>(MetricFormat.NORMAL) {
@@ -97,7 +97,7 @@ public class Metrics {
 						};
 					}
 				});
-				REGISTRY.gauge("disk-used", new MetricSupplier<Gauge>() {
+				registry.gauge("disk-used", new MetricSupplier<Gauge>() {
 					@Override
 					public Gauge<?> newMetric() {
 						return new FormattedGauge<Double>(MetricFormat.NORMAL) {
@@ -120,7 +120,7 @@ public class Metrics {
 			LOG.info("Could not initialize SIGAR library: {}", linkError.getMessage());
 		}
 
-		reporter = new RRD4JReporter(config, REGISTRY, cloudService);
+		reporter = new RRD4JReporter(config, registry, cloudService);
 		reporter.start();
 		reporter.report();
 		LOG.info("metrics started");
@@ -133,5 +133,15 @@ public class Metrics {
 		if (reporter != null) {
 			reporter.close();
 		}
+		SharedHealthCheckRegistries.remove("r2cloud");
+		SharedMetricRegistries.remove("r2cloud");
+	}
+
+	public MetricRegistry getRegistry() {
+		return registry;
+	}
+
+	public HealthCheckRegistry getHealthRegistry() {
+		return healthRegistry;
 	}
 }

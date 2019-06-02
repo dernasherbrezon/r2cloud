@@ -13,11 +13,17 @@ import ru.r2cloud.web.ModelAndView;
 
 public class Overview extends AbstractHttpController {
 
+	private final Metrics metrics;
+
+	public Overview(Metrics metrics) {
+		this.metrics = metrics;
+	}
+
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
 		ModelAndView result = new ModelAndView();
 		JsonObject entity = Json.object();
-		for (Entry<String, Result> cur : Metrics.HEALTH_REGISTRY.runHealthChecks().entrySet()) {
+		for (Entry<String, Result> cur : metrics.getHealthRegistry().runHealthChecks().entrySet()) {
 			JsonObject value = Json.object().add("status", cur.getValue().getDetails().get("status").toString());
 			if (!cur.getValue().isHealthy()) {
 				value.add("message", cur.getValue().getMessage());

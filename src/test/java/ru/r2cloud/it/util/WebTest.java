@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.CelestrakServer;
 import ru.r2cloud.R2Cloud;
+import ru.r2cloud.RtlTestServer;
 import ru.r2cloud.Util;
 import ru.r2cloud.it.AccessTokenIT;
 import ru.r2cloud.it.ConfiguredIT;
@@ -54,6 +55,7 @@ public class WebTest {
 	private static String userSettingsLocation;
 	private static File rtlSdrMock;
 	private static File rtlTestMock;
+	private static RtlTestServer rtlTestServer;
 
 	@BeforeClass
 	public static void start() throws IOException {
@@ -64,6 +66,10 @@ public class WebTest {
 		celestrak = new CelestrakServer();
 		celestrak.start();
 		celestrak.mockResponse(Util.loadExpected("sample-tle.txt"));
+
+		rtlTestServer = new RtlTestServer();
+		rtlTestServer.mockDefault();
+		rtlTestServer.start();
 
 		rtlSdrMock = setupScriptMock("rtl_sdr_mock.sh");
 		rtlTestMock = setupScriptMock("rtl_test_mock.sh");
@@ -117,6 +123,9 @@ public class WebTest {
 		}
 		if (celestrak != null) {
 			celestrak.stop();
+		}
+		if (rtlTestServer != null) {
+			rtlTestServer.stop();
 		}
 		ru.r2cloud.util.Util.deleteDirectory(new File(TEMP_DIRECTORY));
 	}

@@ -1,9 +1,8 @@
 package ru.r2cloud.tle;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -12,7 +11,6 @@ import static org.mockito.Mockito.when;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,7 +22,7 @@ import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.ThreadPoolFactory;
 
 public class TLEReloaderTest {
-	
+
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
@@ -41,9 +39,9 @@ public class TLEReloaderTest {
 		reloader.start();
 
 		verify(clock).millis();
-		verify(executor).scheduleAtFixedRate(any(), eq(TimeUnit.DAYS.toMillis(6)), eq(TimeUnit.DAYS.toMillis(7)), eq(TimeUnit.MILLISECONDS));
+		verify(executor).scheduleAtFixedRate(any(), anyLong(), anyLong(), any());
 	}
-	
+
 	@Test
 	public void testLifecycle() {
 		TLEReloader reloader = new TLEReloader(config, tleDao, threadPool, clock);

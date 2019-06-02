@@ -5,6 +5,24 @@ public class RtlSdrStatus {
 	private String vendor;
 	private String chip;
 	private String serialNumber;
+	private String error;
+	private boolean dongleConnected;
+	
+	public void setDongleConnected(boolean dongleConnected) {
+		this.dongleConnected = dongleConnected;
+	}
+	
+	public boolean isDongleConnected() {
+		return dongleConnected;
+	}
+	
+	public String getError() {
+		return error;
+	}
+	
+	public void setError(String error) {
+		this.error = error;
+	}
 
 	public String getVendor() {
 		return vendor;

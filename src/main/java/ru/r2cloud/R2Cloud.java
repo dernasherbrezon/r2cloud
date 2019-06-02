@@ -75,6 +75,7 @@ import ru.r2cloud.web.api.schedule.ScheduleSave;
 import ru.r2cloud.web.api.schedule.ScheduleStart;
 import ru.r2cloud.web.api.setup.Restore;
 import ru.r2cloud.web.api.setup.Setup;
+import ru.r2cloud.web.api.status.MetricsController;
 import ru.r2cloud.web.api.status.Overview;
 
 public class R2Cloud {
@@ -124,9 +125,10 @@ public class R2Cloud {
 		spectogramService = new SpectogramService(props);
 		resultDao = new ObservationResultDao(props);
 		r2cloudService = new R2ServerService(props, resultDao, r2cloudClient, spectogramService);
+		metrics = new Metrics(props, r2cloudService);
 		predict = new Predict(props);
 		auth = new Authenticator(props);
-		rtlsdrStatusDao = new RtlSdrStatusDao(props, rtlsdrLock);
+		rtlsdrStatusDao = new RtlSdrStatusDao(props, rtlsdrLock, threadFactory, metrics);
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
 		acmeClient = new AcmeClient(props);
@@ -164,7 +166,6 @@ public class R2Cloud {
 
 		observationFactory = new ObservationFactory(predict, tleDao);
 		scheduler = new Scheduler(new Schedule<>(), props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, processFactory, resultDao, decoderTask);
-		metrics = new Metrics(props, r2cloudService);
 
 		// setup web server
 		index(new Health());
@@ -172,8 +173,8 @@ public class R2Cloud {
 		index(new Setup(auth, props));
 		index(new Configured(auth, props));
 		index(new Restore(auth));
-		index(new ru.r2cloud.web.api.status.Metrics(signed));
-		index(new Overview());
+		index(new MetricsController(signed, metrics));
+		index(new Overview(metrics));
 		index(new General(props, autoUpdate));
 		index(new DDNS(props, ddnsClient));
 		index(new SSL(props, acmeClient));
