@@ -212,35 +212,35 @@ public class RtlSdrStatusDao implements Lifecycle {
 	}
 
 	RtlSdrStatus getStatus() {
-		RtlSdrStatus status = null;
+		RtlSdrStatus result = null;
 		try {
 			Process rtlTest = new ProcessBuilder().command(config.getProperty("rtltest.path"), "-t").start();
 			BufferedReader r = new BufferedReader(new InputStreamReader(rtlTest.getErrorStream()));
 			String curLine = null;
 			while ((curLine = r.readLine()) != null && !Thread.currentThread().isInterrupted()) {
 				if (curLine.startsWith("No supported")) {
-					status = new RtlSdrStatus();
-					status.setDongleConnected(false);
+					result = new RtlSdrStatus();
+					result.setDongleConnected(false);
 					break;
 				} else {
 					Matcher m = DEVICEPATTERN.matcher(curLine);
 					if (m.find()) {
-						status = new RtlSdrStatus();
-						status.setDongleConnected(true);
-						status.setVendor(m.group(1));
-						status.setChip(m.group(2));
-						status.setSerialNumber(m.group(3));
+						result = new RtlSdrStatus();
+						result.setDongleConnected(true);
+						result.setVendor(m.group(1));
+						result.setChip(m.group(2));
+						result.setSerialNumber(m.group(3));
 						break;
 					}
 				}
 			}
 		} catch (IOException e) {
 			String error = "unable to read status";
-			status = new RtlSdrStatus();
-			status.setError(error);
+			result = new RtlSdrStatus();
+			result.setError(error);
 			LOG.error(error, e);
 		}
-		return status;
+		return result;
 	}
 
 }
