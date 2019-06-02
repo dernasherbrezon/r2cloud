@@ -180,7 +180,7 @@ public class RtlSdrStatusDao implements Lifecycle {
 		Process rtlTest = null;
 		Integer result = null;
 		try {
-			rtlTest = new ProcessBuilder().command(config.getProperty("stdbuf.path"), "-i0", "-o0", "-e0", config.getProperty("rtltest.path"), "-p2").redirectErrorStream(true).start();
+			rtlTest = new ProcessBuilder().command(config.getProperty("stdbuf.path"), "-i", "0", "-o", "0", "-e", "0", config.getProperty("rtltest.path"), "-p2").redirectErrorStream(true).start();
 			BufferedReader r = new BufferedReader(new InputStreamReader(rtlTest.getInputStream()));
 			String curLine = null;
 			int numberOfSamples = 0;

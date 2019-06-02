@@ -131,7 +131,7 @@ public class RtlSdrStatusDaoTest {
 		return threadFactory;
 	}
 
-	private File setupRtlTestMock(String filename) throws IOException {
+	private File setupScriptMock(String filename) throws IOException {
 		File result = new File(tempFolder.getRoot().getAbsoluteFile(), filename);
 		try (BufferedReader r = new BufferedReader(new InputStreamReader(RtlSdrStatusDaoTest.class.getClassLoader().getResourceAsStream(filename), StandardCharsets.UTF_8)); BufferedWriter w = new BufferedWriter(new FileWriter(result))) {
 			String curLine = null;
@@ -147,7 +147,8 @@ public class RtlSdrStatusDaoTest {
 	public void start() throws Exception {
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
-		config.setProperty("rtltest.path", setupRtlTestMock("rtl_test_mock.sh").getAbsolutePath());
+		config.setProperty("rtltest.path", setupScriptMock("rtl_test_mock.sh").getAbsolutePath());
+		config.setProperty("stdbuf.path", setupScriptMock("stdbuf_mock.sh").getAbsolutePath());
 		config.update();
 
 		rtlTestServer = new RtlTestServer();
