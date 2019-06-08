@@ -17,6 +17,7 @@ import com.codahale.metrics.health.SharedHealthCheckRegistries;
 
 import ru.r2cloud.R2Cloud;
 import ru.r2cloud.cloud.R2ServerService;
+import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 
 public class Metrics {
@@ -29,10 +30,12 @@ public class Metrics {
 	private Sigar sigar;
 	private final Configuration config;
 	private final R2ServerService cloudService;
+	private final Clock clock;
 
-	public Metrics(Configuration config, R2ServerService cloudService) {
+	public Metrics(Configuration config, R2ServerService cloudService, Clock clock) {
 		this.config = config;
 		this.cloudService = cloudService;
+		this.clock = clock;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -120,7 +123,7 @@ public class Metrics {
 			LOG.info("Could not initialize SIGAR library: {}", linkError.getMessage());
 		}
 
-		reporter = new RRD4JReporter(config, registry, cloudService);
+		reporter = new RRD4JReporter(config, registry, cloudService, clock);
 		reporter.start();
 		reporter.report();
 		LOG.info("metrics started");

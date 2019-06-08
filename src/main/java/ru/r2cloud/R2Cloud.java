@@ -125,7 +125,7 @@ public class R2Cloud {
 		spectogramService = new SpectogramService(props);
 		resultDao = new ObservationResultDao(props);
 		r2cloudService = new R2ServerService(props, resultDao, r2cloudClient, spectogramService);
-		metrics = new Metrics(props, r2cloudService);
+		metrics = new Metrics(props, r2cloudService, clock);
 		predict = new Predict(props);
 		auth = new Authenticator(props);
 		rtlsdrStatusDao = new RtlSdrStatusDao(props, rtlsdrLock, threadFactory, metrics);
@@ -252,7 +252,13 @@ public class R2Cloud {
 				LOG.error("UncaughtException at: " + t.getName(), e);
 			}
 		});
-		app.start();
+		try {
+			app.start();
+		} catch (Exception e) {
+			LOG.error("unable to start", e);
+			// this will execute ShutdownHook and graceful shutdown
+			System.exit(1);
+		}
 	}
 
 	private void index(HttpContoller controller) {

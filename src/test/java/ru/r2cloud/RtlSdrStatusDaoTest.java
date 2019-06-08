@@ -28,6 +28,7 @@ import com.codahale.metrics.health.HealthCheck.Result;
 
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.metrics.Status;
+import ru.r2cloud.util.DefaultClock;
 import ru.r2cloud.util.ThreadPoolFactory;
 
 public class RtlSdrStatusDaoTest {
@@ -154,7 +155,7 @@ public class RtlSdrStatusDaoTest {
 		rtlTestServer = new RtlTestServer();
 		rtlTestServer.start();
 
-		metrics = new Metrics(config, null);
+		metrics = new Metrics(config, null, new DefaultClock());
 	}
 
 	@After

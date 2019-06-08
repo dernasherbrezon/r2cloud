@@ -30,6 +30,7 @@ import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.R2Cloud;
 import ru.r2cloud.cloud.R2ServerService;
+import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -42,11 +43,13 @@ public class RRD4JReporter extends ScheduledReporter {
 	private final Map<String, RrdDb> dbPerMetric = new HashMap<String, RrdDb>();
 	private final Map<String, Double> lastValueForCounter = new HashMap<String, Double>();
 	private final R2ServerService cloudService;
+	private final Clock clock;
 
-	RRD4JReporter(Configuration config, MetricRegistry registry, R2ServerService cloudService) {
+	RRD4JReporter(Configuration config, MetricRegistry registry, R2ServerService cloudService, Clock clock) {
 		super(registry, "rrd4j-reporter", MetricFilter.ALL, TimeUnit.SECONDS, TimeUnit.MILLISECONDS);
 		basepath = Util.initDirectory(config.getProperty("metrics.basepath.location"));
 		this.cloudService = cloudService;
+		this.clock = clock;
 	}
 
 	// never change the step. this will break previously created rrd files
@@ -126,13 +129,13 @@ public class RRD4JReporter extends ScheduledReporter {
 		throw new IllegalArgumentException("unsupported value type: " + value.getClass());
 	}
 
-	private static void update(RrdDb db, double value) {
+	private void update(RrdDb db, double value) {
 		if (db == null) {
 			return;
 		}
 		Sample sample;
 		try {
-			sample = db.createSample();
+			sample = db.createSample((clock.millis() + 500L) / 1000L);
 		} catch (IOException e) {
 			LOG.error("unable to create sample", e);
 			return;
@@ -142,6 +145,9 @@ public class RRD4JReporter extends ScheduledReporter {
 			sample.update();
 		} catch (IOException e) {
 			LOG.error("unable to update", e);
+		} catch (IllegalArgumentException e) {
+			// time in raspberrypi can jump back and forward.
+			// just ignore new metrics, until time corrected
 		}
 	}
 
