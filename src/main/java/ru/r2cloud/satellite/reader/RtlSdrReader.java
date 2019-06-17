@@ -43,7 +43,16 @@ public class RtlSdrReader implements IQReader {
 			startTimeMillis = System.currentTimeMillis();
 			rtlSdr = factory.create(config.getProperty("satellites.rtlsdrwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getActualFrequency() + " -s " + req.getInputSampleRate() + " -g 45 -p " + ppm + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
 			int responseCode = rtlSdr.waitFor();
-			LOG.info("[{}] rtl_sdr stopped: {}", req.getId(), responseCode);
+			// rtl_sdr should be killed by the reaper process
+			// all other codes are invalid. even 0
+			if (responseCode != 143) {
+				LOG.error("[{}] invalid response code rtl_sdr: {}", req.getId(), responseCode);
+				if (rawFile.exists() && !rawFile.delete()) {
+					LOG.error("[{}] unable to delete temp file: {}", req.getId(), rawFile.getAbsolutePath());
+				}
+			} else {
+				LOG.info("[{}] rtl_sdr stopped: {}", req.getId(), responseCode);
+			}
 		} catch (IOException e) {
 			LOG.error("[" + req.getId() + "] unable to run", e);
 		} finally {
