@@ -37,6 +37,8 @@ _term() {
 
 trap _term SIGTERM
 
+set -o pipefail
+
 CMD="${RTL_SDR} -f ${FREQUENCY} -s ${SAMPLE_RATE} -p ${PPM} -g ${GAIN} -"
 ${CMD} | gzip > ${OUTPUT} &
 
