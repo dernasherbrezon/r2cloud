@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -15,8 +16,22 @@ import ru.r2cloud.util.ThreadPoolFactory;
 
 public class ExecuteNowThreadFactory implements ThreadPoolFactory, ScheduledExecutorService {
 
+	private final boolean sameThread;
+	private ScheduledExecutorService impl;
+
+	public ExecuteNowThreadFactory(boolean sameThread) {
+		this.sameThread = sameThread;
+	}
+
+	public ExecuteNowThreadFactory() {
+		this(true);
+	}
+
 	@Override
 	public ScheduledExecutorService newScheduledThreadPool(int i, NamingThreadFactory namingThreadFactory) {
+		if (!sameThread) {
+			impl = Executors.newScheduledThreadPool(i, namingThreadFactory);
+		}
 		return this;
 	}
 
@@ -27,7 +42,9 @@ public class ExecuteNowThreadFactory implements ThreadPoolFactory, ScheduledExec
 
 	@Override
 	public List<Runnable> shutdownNow() {
-		// do nothing
+		if (impl != null) {
+			return impl.shutdownNow();
+		}
 		return null;
 	}
 
@@ -45,6 +62,9 @@ public class ExecuteNowThreadFactory implements ThreadPoolFactory, ScheduledExec
 
 	@Override
 	public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+		if (impl != null) {
+			return impl.awaitTermination(timeout, unit);
+		}
 		return true;
 	}
 
@@ -109,6 +129,16 @@ public class ExecuteNowThreadFactory implements ThreadPoolFactory, ScheduledExec
 
 	@Override
 	public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
+		if (impl != null) {
+			ScheduledFuture<?> future = impl.scheduleAtFixedRate(new Runnable() {
+
+				@Override
+				public void run() {
+					command.run();
+				}
+			}, 0, period, unit);
+			return future;
+		}
 		command.run();
 		return null;
 	}

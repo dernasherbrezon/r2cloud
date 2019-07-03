@@ -1,16 +1,11 @@
 package ru.r2cloud;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +27,6 @@ import ru.r2cloud.util.Util;
 public class RtlSdrStatusDao implements Lifecycle {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RtlSdrStatusDao.class);
-	private static final Pattern DEVICEPATTERN = Pattern.compile("^  0:  (.*?), (.*?), SN: (.*?)$");
-	private static final Pattern PPMPATTERN = Pattern.compile("real sample rate: \\d+ current PPM: \\d+ cumulative PPM: (\\d+)");
 
 	private final Configuration config;
 	private final RtlSdrLock lock;
@@ -43,6 +36,8 @@ public class RtlSdrStatusDao implements Lifecycle {
 	private ScheduledExecutorService executor;
 	private RtlSdrStatus status;
 
+	private RtlStatusProcess statusProcess;
+	private PpmProcess ppmProcess;
 	private Integer currentPpm;
 
 	public RtlSdrStatusDao(Configuration config, RtlSdrLock lock, ThreadPoolFactory threadpoolFactory, Metrics metrics) {
@@ -50,6 +45,8 @@ public class RtlSdrStatusDao implements Lifecycle {
 		this.lock = lock;
 		this.threadpoolFactory = threadpoolFactory;
 		this.metrics = metrics;
+		statusProcess = new RtlStatusProcess(config);
+		ppmProcess = new PpmProcess(config);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -64,8 +61,12 @@ public class RtlSdrStatusDao implements Lifecycle {
 
 			@Override
 			public void run() {
+				RtlSdrStatus curStatus = statusProcess.getStatus();
+				if (curStatus == null) {
+					return;
+				}
 				synchronized (RtlSdrStatusDao.this) {
-					status = getStatus();
+					status = curStatus;
 				}
 			}
 		}, 0, config.getLong("rtltest.interval.seconds"), TimeUnit.SECONDS);
@@ -89,7 +90,16 @@ public class RtlSdrStatusDao implements Lifecycle {
 
 					@Override
 					public void run() {
-						Integer ppm = getPpm();
+						if (!lock.tryLock(RtlSdrStatusDao.this)) {
+							LOG.info("unable to lock for ppm calculation");
+							return;
+						}
+						Integer ppm = null;
+						try {
+							ppm = ppmProcess.getPpm();
+						} finally {
+							lock.unlock(RtlSdrStatusDao.this);
+						}
 						if (ppm == null) {
 							return;
 						}
@@ -163,84 +173,11 @@ public class RtlSdrStatusDao implements Lifecycle {
 
 	@Override
 	public synchronized void stop() {
+		ppmProcess.terminate(1000);
+		statusProcess.terminate(1000);
 		Util.shutdown(executor, config.getThreadPoolShutdownMillis());
 		executor = null;
 		LOG.info("stopped");
-	}
-
-	Integer getPpm() {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("ppm calculation");
-		}
-		if (!lock.tryLock(this)) {
-			LOG.info("unable to lock for ppm calculation");
-			return null;
-		}
-
-		Process rtlTest = null;
-		Integer result = null;
-		try {
-			rtlTest = new ProcessBuilder().command(config.getProperty("stdbuf.path"), "-i", "0", "-o", "0", "-e", "0", config.getProperty("rtltest.path"), "-p2").redirectErrorStream(true).start();
-			BufferedReader r = new BufferedReader(new InputStreamReader(rtlTest.getInputStream()));
-			String curLine = null;
-			int numberOfSamples = 0;
-			while ((curLine = r.readLine()) != null && !Thread.currentThread().isInterrupted()) {
-				if (LOG.isDebugEnabled()) {
-					LOG.debug(curLine);
-				}
-				if (curLine.startsWith("No supported")) {
-					break;
-				} else if (curLine.startsWith("real sample rate")) {
-					numberOfSamples++;
-					if (numberOfSamples >= 10) {
-						Matcher m = PPMPATTERN.matcher(curLine);
-						if (m.find()) {
-							String ppmStr = m.group(1);
-							result = Integer.valueOf(ppmStr);
-						}
-						break;
-					}
-				}
-			}
-		} catch (IOException e) {
-			LOG.error("unable to calculate ppm", e);
-		} finally {
-			Util.shutdown("ppm-test", rtlTest, 5000);
-			lock.unlock(this);
-		}
-		return result;
-	}
-
-	RtlSdrStatus getStatus() {
-		RtlSdrStatus result = null;
-		try {
-			Process rtlTest = new ProcessBuilder().command(config.getProperty("rtltest.path"), "-t").start();
-			BufferedReader r = new BufferedReader(new InputStreamReader(rtlTest.getErrorStream()));
-			String curLine = null;
-			while ((curLine = r.readLine()) != null && !Thread.currentThread().isInterrupted()) {
-				if (curLine.startsWith("No supported")) {
-					result = new RtlSdrStatus();
-					result.setDongleConnected(false);
-					break;
-				} else {
-					Matcher m = DEVICEPATTERN.matcher(curLine);
-					if (m.find()) {
-						result = new RtlSdrStatus();
-						result.setDongleConnected(true);
-						result.setVendor(m.group(1));
-						result.setChip(m.group(2));
-						result.setSerialNumber(m.group(3));
-						break;
-					}
-				}
-			}
-		} catch (IOException e) {
-			String error = "unable to read status";
-			result = new RtlSdrStatus();
-			result.setError(error);
-			LOG.error(error, e);
-		}
-		return result;
 	}
 
 }

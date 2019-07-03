@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
@@ -77,13 +78,31 @@ public class RtlSdrStatusDaoTest {
 	@Test
 	public void testSuccess() {
 		rtlTestServer.mockDefault();
-		
+
 		createExecuteNowRtlSdrDao();
 
 		Map<String, Result> status = metrics.getHealthRegistry().runHealthChecks();
 		assertHealthy(status.get("rtltest"));
 		assertHealthy(status.get("rtldongle"));
 		assertPpm(53);
+	}
+
+	@Test
+	public void shutdownProcessProperly() throws Exception {
+		config.setProperty("rtltest.path", setupScriptMock("rtl_test_mock_timeouted.sh").getAbsolutePath());
+		config.setProperty("rtltest.interval.seconds", TimeUnit.HOURS.toSeconds(24));
+		config.update();
+
+		RtlSdrLock lock = new RtlSdrLock();
+		dao = new RtlSdrStatusDao(config, lock, new ExecuteNowThreadFactory(false), metrics);
+		lock.register(RtlSdrStatusDao.class, 1);
+		dao.start();
+
+		long startTerminationMillis = System.currentTimeMillis();
+		dao.stop();
+		long totalTerminationMillis = System.currentTimeMillis() - startTerminationMillis;
+		dao = null;
+		assertTrue("took: " + totalTerminationMillis, totalTerminationMillis < config.getThreadPoolShutdownMillis());
 	}
 
 	@SuppressWarnings("unchecked")
