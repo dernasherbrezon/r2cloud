@@ -116,10 +116,12 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			public void run() {
 				if (clock.millis() > observation.getEndTimeMillis()) {
 					LOG.info("[{}] observation time passed. skip {}", observation.getId(), cur.getId());
+					schedule(cur, false);
 					return;
 				}
 				if (!lock.tryLock(Scheduler.this)) {
 					LOG.info("[{}] unable to acquire lock for {}", observation.getId(), cur.getId());
+					schedule(cur, false);
 					return;
 				}
 				IQData data;
