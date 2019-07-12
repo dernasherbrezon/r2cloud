@@ -32,7 +32,9 @@ public class SSL extends AbstractHttpController {
 	public ModelAndView doGet(IHTTPSession session) {
 		ModelAndView result = new ModelAndView();
 		JsonObject entity = new JsonObject();
-		entity.add("domain", acmeClient.getSslDomain());
+		if (acmeClient.getSslDomain() != null) {
+			entity.add("domain", acmeClient.getSslDomain());
+		}
 		entity.add("enabled", acmeClient.isSSLEnabled());
 		entity.add("running", acmeClient.isRunning());
 		entity.add("agreeWithToC", acmeClient.isSSLEnabled() || acmeClient.isRunning());
@@ -51,7 +53,7 @@ public class SSL extends AbstractHttpController {
 	public ModelAndView doPost(JsonObject request) {
 		boolean sslEnabled = WebServer.getBoolean(request, "enabled");
 		boolean agreeWithToC = WebServer.getBoolean(request, "agreeWithToC");
-		String domain = request.getString("domain", null);
+		String domain = WebServer.getString(request, "domain");
 
 		ValidationResult errors = new ValidationResult();
 		if (sslEnabled && !agreeWithToC) {

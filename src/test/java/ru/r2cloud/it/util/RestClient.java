@@ -218,6 +218,26 @@ public class RestClient {
 		return getData("/api/v1/configured");
 	}
 
+	public JsonObject getSsl() {
+		return getData("/api/v1/admin/config/ssl");
+	}
+
+	public HttpResponse<String> saveSslConfigurationResponse(Boolean enabled, Boolean agreeWithToC, String domain) {
+		JsonObject json = Json.object();
+		json.add("enabled", enabled);
+		json.add("agreeWithToC", agreeWithToC);
+		json.add("domain", domain);
+		HttpRequest request = createJsonPost("/api/v1/admin/config/ssl", json).build();
+		try {
+			return httpclient.send(request, BodyHandlers.ofString());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
+
 	public JsonObject getGeneralConfiguration() {
 		return getData("/api/v1/admin/config/general");
 	}

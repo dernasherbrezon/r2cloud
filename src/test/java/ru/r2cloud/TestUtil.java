@@ -1,5 +1,7 @@
 package ru.r2cloud;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
@@ -14,6 +16,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
+import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
@@ -72,6 +75,17 @@ public class TestUtil {
 		copy(to.getName(), to);
 		to.setExecutable(true);
 		return to;
+	}
+
+	public static void assertJson(String classPathResource, JsonObject actual) {
+		assertNotNull(actual);
+		try (Reader is = new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(classPathResource))) {
+			JsonValue value = Json.parse(is);
+			assertTrue(value.isObject());
+			assertJson(value.asObject(), actual);
+		} catch (Exception e) {
+			fail("unable to assert json: " + classPathResource + " " + e.getMessage());
+		}
 	}
 
 	public static void assertJson(JsonObject expected, JsonObject actual) {
