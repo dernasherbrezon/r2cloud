@@ -1,7 +1,5 @@
 package ru.r2cloud.it;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -26,8 +24,7 @@ public class ObservationListIT extends RegisteredTest {
 	}
 	
 	private static void assertObservation(String expected, JsonObject actual) {
-		JsonObject expectedObject = Json.parse(expected).asObject();
-		assertTrue(expectedObject.equals(actual));
+		TestUtil.assertJson(Json.parse(expected).asObject(), actual);
 	}
 
 	private static JsonObject findById(JsonArray array, String id) {

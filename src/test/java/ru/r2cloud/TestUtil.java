@@ -1,5 +1,7 @@
 package ru.r2cloud;
 
+import static org.junit.Assert.fail;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,6 +13,9 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.it.util.WebTest;
 import ru.r2cloud.tle.CelestrakClientTest;
@@ -64,6 +69,26 @@ public class TestUtil {
 		copy(to.getName(), to);
 		to.setExecutable(true);
 		return to;
+	}
+
+	public static void assertJson(JsonObject expected, JsonObject actual) {
+		StringBuilder message = new StringBuilder();
+		for (String name : expected.names()) {
+			JsonValue value = actual.get(name);
+			if (value == null) {
+				message.append("missing field: " + name).append("\n");
+				continue;
+			}
+			String expectedValue = expected.get(name).toString();
+			String actualValue = value.toString();
+			if (!actualValue.equals(expectedValue)) {
+				message.append("field: \"" + name + "\" expected: " + expectedValue + " actual: " + actualValue + "\n");
+			}
+		}
+
+		if (message.length() > 0) {
+			fail(message.toString().trim());
+		}
 	}
 
 	private TestUtil() {
