@@ -9,7 +9,7 @@ import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.it.util.RegisteredTest;
 
-public class OverviewIT extends RegisteredTest {
+public class OverviewTest extends RegisteredTest {
 
 	@Test
 	public void test() {

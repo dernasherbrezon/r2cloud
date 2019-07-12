@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import ru.r2cloud.it.util.BaseTest;
 
-public class SetupIT extends BaseTest {
+public class SetupTest extends BaseTest {
 
 	@Test
 	public void testSetup() {

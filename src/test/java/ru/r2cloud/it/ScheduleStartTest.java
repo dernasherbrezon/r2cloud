@@ -9,19 +9,20 @@ import org.junit.Test;
 
 import ru.r2cloud.it.util.RegisteredTest;
 
-public class ScheduleCompleteIT extends RegisteredTest {
+public class ScheduleStartTest extends RegisteredTest {
 
 	@Test
 	public void testMissingId() {
-		HttpResponse<String> response = client.scheduleCompleteResponse(null);
+		HttpResponse<String> response = client.scheduleStartResponse(null);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("id", response);
 	}
 
 	@Test
 	public void testUnknownId() {
-		HttpResponse<String> response = client.scheduleCompleteResponse(UUID.randomUUID().toString());
-		assertEquals(404, response.statusCode());
+		HttpResponse<String> response = client.scheduleStartResponse(UUID.randomUUID().toString());
+		assertEquals(400, response.statusCode());
+		assertErrorInField("id", response);
 	}
 
 }

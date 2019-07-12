@@ -9,7 +9,7 @@ import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.it.util.BaseTest;
 
-public class ConfiguredIT extends BaseTest {
+public class ConfiguredTest extends BaseTest {
 
 	@Test
 	public void testGetConfigured() {

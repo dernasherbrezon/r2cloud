@@ -18,7 +18,7 @@ import com.eclipsesource.json.JsonObject;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.it.util.RegisteredTest;
 
-public class ObservationSpectrogramIT extends RegisteredTest {
+public class ObservationSpectrogramTest extends RegisteredTest {
 
 	@Test
 	public void testUnknownObservation() {
@@ -70,7 +70,7 @@ public class ObservationSpectrogramIT extends RegisteredTest {
 		assertNotNull(url);
 		HttpResponse<Path> fileResponse = client.downloadFile(url, Paths.get(tempFolder.getRoot().getAbsolutePath(), UUID.randomUUID().toString()));
 		assertEquals(200, fileResponse.statusCode());
-		ObservationIT.assertSpectogram("spectogram-output.raw.gz.png", new FileInputStream(fileResponse.body().toFile()));
+		ObservationTest.assertSpectogram("spectogram-output.raw.gz.png", new FileInputStream(fileResponse.body().toFile()));
 	}
 
 }

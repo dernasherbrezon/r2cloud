@@ -14,7 +14,7 @@ import com.eclipsesource.json.JsonArray;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.it.util.RegisteredTest;
 
-public class ObservationListIT extends RegisteredTest {
+public class ObservationListTest extends RegisteredTest {
 
 	@Test
 	public void testList() throws IOException {
@@ -25,7 +25,7 @@ public class ObservationListIT extends RegisteredTest {
 	}
 
 	private static void assertObservation(String expected, JsonArray satellites) throws IOException {
-		try (InputStreamReader reader = new InputStreamReader(ObservationListIT.class.getClassLoader().getResourceAsStream(expected))) {
+		try (InputStreamReader reader = new InputStreamReader(ObservationListTest.class.getClassLoader().getResourceAsStream(expected))) {
 			JsonArray expectedArray = Json.parse(reader).asArray();
 			assertEquals(expectedArray.size(), satellites.size());
 			for (int i = 0; i < expectedArray.size(); i++) {

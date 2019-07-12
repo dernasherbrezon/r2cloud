@@ -15,7 +15,7 @@ import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.it.util.RegisteredTest;
 
-public class TleIT extends RegisteredTest {
+public class TleTest extends RegisteredTest {
 
 	@Test
 	public void testLoad() {

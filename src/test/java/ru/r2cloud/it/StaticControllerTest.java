@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import ru.r2cloud.it.util.BaseTest;
 
-public class StaticControllerIT extends BaseTest {
+public class StaticControllerTest extends BaseTest {
 
 	@Test
 	public void testFileWithoutAuth() {

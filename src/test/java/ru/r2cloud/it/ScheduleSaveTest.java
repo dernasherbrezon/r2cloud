@@ -14,7 +14,7 @@ import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.it.util.RegisteredTest;
 
-public class ScheduleSaveIT extends RegisteredTest {
+public class ScheduleSaveTest extends RegisteredTest {
 
 	@Test
 	public void testUpdateConfiguration() {

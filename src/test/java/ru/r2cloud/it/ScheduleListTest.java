@@ -8,7 +8,7 @@ import com.eclipsesource.json.JsonArray;
 
 import ru.r2cloud.it.util.RegisteredTest;
 
-public class ScheduleListIT extends RegisteredTest {
+public class ScheduleListTest extends RegisteredTest {
 
 	@Test
 	public void testList() {

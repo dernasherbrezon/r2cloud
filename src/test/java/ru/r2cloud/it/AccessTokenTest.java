@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import ru.r2cloud.it.util.RegisteredTest;
 
-public class AccessTokenIT extends RegisteredTest {
+public class AccessTokenTest extends RegisteredTest {
 
 	@Test
 	public void testInvalidUsername() {

@@ -15,7 +15,7 @@ import com.eclipsesource.json.JsonObject;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.it.util.RegisteredTest;
 
-public class ObservationLoadIT extends RegisteredTest {
+public class ObservationLoadTest extends RegisteredTest {
 
 	@Test
 	public void testLoadAausat4() throws Exception {
@@ -23,7 +23,7 @@ public class ObservationLoadIT extends RegisteredTest {
 		TestUtil.copy("aausat4Observation/1559942730784.json", new File(basepath, "meta.json"));
 		TestUtil.copy("aausat4Observation/data.bin", new File(basepath, "data.bin"));
 		JsonObject observation = client.getObservation("41460", "1559942730784");
-		try (InputStreamReader reader = new InputStreamReader(ObservationLoadIT.class.getClassLoader().getResourceAsStream("aausat4Observation/expected.json"))) {
+		try (InputStreamReader reader = new InputStreamReader(ObservationLoadTest.class.getClassLoader().getResourceAsStream("aausat4Observation/expected.json"))) {
 			TestUtil.assertJson(Json.parse(reader).asObject(), observation);
 		}
 	}

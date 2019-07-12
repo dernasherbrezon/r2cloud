@@ -25,7 +25,7 @@ import ru.r2cloud.R2CloudServer;
 import ru.r2cloud.RtlSdrDataServer;
 import ru.r2cloud.it.util.RegisteredTest;
 
-public class ObservationIT extends RegisteredTest {
+public class ObservationTest extends RegisteredTest {
 
 	private final static String METEOR_ID = "40069";
 
@@ -88,7 +88,7 @@ public class ObservationIT extends RegisteredTest {
 	}
 
 	static void assertSpectogram(String expectedFilename, InputStream bais) throws IOException {
-		try (InputStream is1 = ObservationIT.class.getClassLoader().getResourceAsStream(expectedFilename)) {
+		try (InputStream is1 = ObservationTest.class.getClassLoader().getResourceAsStream(expectedFilename)) {
 			BufferedImage expected = ImageIO.read(is1);
 			BufferedImage actual = ImageIO.read(bais);
 			for (int i = 0; i < expected.getWidth(); i++) {

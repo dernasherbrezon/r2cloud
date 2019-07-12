@@ -19,7 +19,7 @@ import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.it.util.RegisteredTest;
 
-public class MetricsIT extends RegisteredTest {
+public class MetricsTest extends RegisteredTest {
 
 	@Test
 	public void testLoadMetrics() {

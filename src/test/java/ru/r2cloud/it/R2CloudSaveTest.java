@@ -12,7 +12,7 @@ import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.it.util.RegisteredTest;
 
-public class R2CloudSaveIT extends RegisteredTest {
+public class R2CloudSaveTest extends RegisteredTest {
 
 	@Test
 	public void testSaveAndLoad() {

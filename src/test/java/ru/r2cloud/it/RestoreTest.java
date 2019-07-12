@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import ru.r2cloud.it.util.RegisteredTest;
 
-public class RestoreIT extends RegisteredTest {
+public class RestoreTest extends RegisteredTest {
 
 	@Test
 	public void testReset() {
