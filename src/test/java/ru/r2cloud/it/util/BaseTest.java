@@ -6,7 +6,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.Writer;
 import java.net.http.HttpResponse;
 import java.nio.file.FileSystems;
 import java.util.UUID;
@@ -73,6 +75,10 @@ public abstract class BaseTest {
 		try (InputStream is = BaseTest.class.getClassLoader().getResourceAsStream("config-dev.properties")) {
 			config = new Configuration(is, userSettingsLocation.getAbsolutePath(), FileSystems.getDefault());
 		}
+		File setupKeyword = new File(tempFolder.getRoot(), "r2cloud.txt");
+		try (Writer w = new FileWriter(setupKeyword)) {
+			w.append("ittests");
+		}
 		config.setProperty("celestrak.hostname", celestrak.getUrl());
 		config.setProperty("locaiton.lat", "56.189");
 		config.setProperty("locaiton.lon", "38.174");
@@ -88,6 +94,7 @@ public abstract class BaseTest {
 		config.setProperty("acme.webroot", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "html");
 		config.setProperty("satellites.basepath.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "satellites");
 		config.setProperty("satellites.wxtoimg.license.path", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "wxtoimg" + File.separator + ".wxtoimglic");
+		config.setProperty("server.keyword.location", setupKeyword.getAbsolutePath());
 
 		server = new R2Cloud(config);
 		server.start();
