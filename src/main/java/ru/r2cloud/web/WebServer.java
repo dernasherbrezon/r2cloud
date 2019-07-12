@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
@@ -75,7 +76,12 @@ public class WebServer extends NanoHTTPD {
 					model = controller.doGet(session);
 					break;
 				case POST:
-					model = controller.doPost(session);
+					JsonValue request = Json.parse(WebServer.getRequestBody(session));
+					if (!request.isObject()) {
+						model = new BadRequest("expected object");
+					} else {
+						model = controller.doPost(request.asObject());
+					}
 					break;
 				default:
 					break;
@@ -126,7 +132,7 @@ public class WebServer extends NanoHTTPD {
 		}
 		return values.get(0);
 	}
-	
+
 	public static Map<String, List<String>> getParameters(IHTTPSession session) {
 		Map<String, List<String>> parameters = session.getParameters();
 		if (parameters.isEmpty()) {
@@ -162,7 +168,7 @@ public class WebServer extends NanoHTTPD {
 		}
 		return field.asString();
 	}
-	
+
 	public static Double getDouble(JsonValue value, String name) {
 		JsonValue result = ((JsonObject) value).get(name);
 		if (result == null || result.isNull()) {

@@ -3,11 +3,8 @@ package ru.r2cloud.web.api.schedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 
-import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.satellite.SatelliteDao;
@@ -33,11 +30,7 @@ public class ScheduleStart extends AbstractHttpController {
 	}
 
 	@Override
-	public ModelAndView doPost(IHTTPSession session) {
-		JsonValue request = Json.parse(WebServer.getRequestBody(session));
-		if (!request.isObject()) {
-			return new BadRequest("expected object");
-		}
+	public ModelAndView doPost(JsonObject request) {
 		String id = WebServer.getString(request, "id");
 		ValidationResult errors = new ValidationResult();
 		if (id == null || id.trim().length() == 0) {
@@ -59,7 +52,7 @@ public class ScheduleStart extends AbstractHttpController {
 		if (req == null) {
 			return new InternalServerError();
 		}
-		
+
 		JsonObject entity = new JsonObject();
 		entity.add("id", req.getId());
 		ModelAndView result = new ModelAndView();

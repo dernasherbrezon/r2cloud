@@ -3,10 +3,8 @@ package ru.r2cloud.web.api.setup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonValue;
+import com.eclipsesource.json.JsonObject;
 
-import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.Authenticator;
 import ru.r2cloud.web.BadRequest;
@@ -27,11 +25,7 @@ public class Restore extends AbstractHttpController {
 	}
 
 	@Override
-	public ModelAndView doPost(IHTTPSession session) {
-		JsonValue request = Json.parse(WebServer.getRequestBody(session));
-		if (!request.isObject()) {
-			return new BadRequest("expected object");
-		}
+	public ModelAndView doPost(JsonObject request) {
 		ValidationResult errors = new ValidationResult();
 		String username = WebServer.getString(request, "username");
 		if (username == null || username.trim().length() == 0) {

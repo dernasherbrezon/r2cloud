@@ -2,13 +2,10 @@ package ru.r2cloud.web.api;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 
-import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import fi.iki.elonen.NanoHTTPD.Response;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.Authenticator;
-import ru.r2cloud.web.BadRequest;
 import ru.r2cloud.web.ModelAndView;
 import ru.r2cloud.web.ValidationResult;
 import ru.r2cloud.web.WebServer;
@@ -22,11 +19,7 @@ public class AccessToken extends AbstractHttpController {
 	}
 
 	@Override
-	public ModelAndView doPost(IHTTPSession session) {
-		JsonValue request = Json.parse(WebServer.getRequestBody(session));
-		if (!request.isObject()) {
-			return new BadRequest("expected object");
-		}
+	public ModelAndView doPost(JsonObject request) {
 		String username = WebServer.getString(request, "username");
 		String password = WebServer.getString(request, "password");
 		return doLogin(auth, username, password);

@@ -6,10 +6,8 @@ import java.io.FileReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonValue;
+import com.eclipsesource.json.JsonObject;
 
-import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.Authenticator;
@@ -37,11 +35,7 @@ public class Setup extends AbstractHttpController {
 	}
 
 	@Override
-	public ModelAndView doPost(IHTTPSession session) {
-		JsonValue request = Json.parse(WebServer.getRequestBody(session));
-		if (!request.isObject()) {
-			return new BadRequest("expected object");
-		}
+	public ModelAndView doPost(JsonObject request) {
 		ValidationResult errors = new ValidationResult();
 		String username = WebServer.getString(request, USERNAME_PARAMETER);
 		String password = WebServer.getString(request, PASSWORD_PARAMETER);

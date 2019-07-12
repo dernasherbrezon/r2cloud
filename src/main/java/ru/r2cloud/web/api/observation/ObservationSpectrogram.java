@@ -5,11 +5,8 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 
-import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.SpectogramService;
 import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.satellite.ObservationResultDao;
@@ -19,7 +16,6 @@ import ru.r2cloud.web.BadRequest;
 import ru.r2cloud.web.InternalServerError;
 import ru.r2cloud.web.ModelAndView;
 import ru.r2cloud.web.NotFound;
-import ru.r2cloud.web.WebServer;
 
 public class ObservationSpectrogram extends AbstractHttpController {
 
@@ -36,13 +32,9 @@ public class ObservationSpectrogram extends AbstractHttpController {
 	}
 
 	@Override
-	public ModelAndView doPost(IHTTPSession session) {
-		JsonValue request = Json.parse(WebServer.getRequestBody(session));
-		if (!request.isObject()) {
-			return new BadRequest("expected object");
-		}
-		String satelliteId = ((JsonObject) request).getString("satelliteId", null);
-		String id = ((JsonObject) request).getString("id", null);
+	public ModelAndView doPost(JsonObject request) {
+		String satelliteId = request.getString("satelliteId", null);
+		String id = request.getString("id", null);
 		if (id == null || satelliteId == null) {
 			LOG.info("missing parameters");
 			return new BadRequest("missing parameters");

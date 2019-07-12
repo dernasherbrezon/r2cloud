@@ -3,9 +3,7 @@ package ru.r2cloud.web.api.configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.ddns.DDNSClient;
@@ -16,7 +14,6 @@ import ru.r2cloud.web.BadRequest;
 import ru.r2cloud.web.ModelAndView;
 import ru.r2cloud.web.Success;
 import ru.r2cloud.web.ValidationResult;
-import ru.r2cloud.web.WebServer;
 import ru.r2cloud.web.api.Messages;
 
 public class DDNS extends AbstractHttpController {
@@ -53,16 +50,11 @@ public class DDNS extends AbstractHttpController {
 	}
 
 	@Override
-	public ModelAndView doPost(IHTTPSession session) {
-		JsonValue request = Json.parse(WebServer.getRequestBody(session));
-		if (!request.isObject()) {
-			return new BadRequest("expected object");
-		}
-
-		DDNSType type = DDNSType.valueOf(((JsonObject) request).getString("type", null));
-		String username = ((JsonObject) request).getString("username", null);
-		String password = ((JsonObject) request).getString("password", null);
-		String domain = ((JsonObject) request).getString("domain", null);
+	public ModelAndView doPost(JsonObject request) {
+		DDNSType type = DDNSType.valueOf(request.getString("type", null));
+		String username = request.getString("username", null);
+		String password = request.getString("password", null);
+		String domain = request.getString("domain", null);
 
 		ValidationResult errors = new ValidationResult();
 		switch (type) {

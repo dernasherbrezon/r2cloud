@@ -1,5 +1,7 @@
 package ru.r2cloud.web;
 
+import com.eclipsesource.json.JsonObject;
+
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
 public interface HttpContoller {
@@ -8,6 +10,6 @@ public interface HttpContoller {
 	
 	String getRequestMappingURL();
 
-	ModelAndView doPost(IHTTPSession session);
+	ModelAndView doPost(JsonObject request);
 	
 }

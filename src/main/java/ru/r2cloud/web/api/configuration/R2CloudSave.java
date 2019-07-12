@@ -3,9 +3,7 @@ package ru.r2cloud.web.api.configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.util.Configuration;
@@ -37,11 +35,7 @@ public class R2CloudSave extends AbstractHttpController {
 	}
 
 	@Override
-	public ModelAndView doPost(IHTTPSession session) {
-		JsonValue request = Json.parse(WebServer.getRequestBody(session));
-		if (!request.isObject()) {
-			return new BadRequest("expected object");
-		}
+	public ModelAndView doPost(JsonObject request) {
 		ValidationResult errors = new ValidationResult();
 		String apiKey = WebServer.getString(request, "apiKey");
 		boolean syncSpectogram = WebServer.getBoolean(request, "syncSpectogram");

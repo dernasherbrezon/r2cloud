@@ -3,10 +3,8 @@ package ru.r2cloud.web.api.configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.ssl.AcmeClient;
@@ -50,15 +48,10 @@ public class SSL extends AbstractHttpController {
 	}
 
 	@Override
-	public ModelAndView doPost(IHTTPSession session) {
-		JsonValue request = Json.parse(WebServer.getRequestBody(session));
-		if (!request.isObject()) {
-			return new BadRequest("expected object");
-		}
-
+	public ModelAndView doPost(JsonObject request) {
 		boolean sslEnabled = WebServer.getBoolean(request, "enabled");
 		boolean agreeWithToC = WebServer.getBoolean(request, "agreeWithToC");
-		String domain = ((JsonObject) request).getString("domain", null);
+		String domain = request.getString("domain", null);
 
 		ValidationResult errors = new ValidationResult();
 		if (sslEnabled && !agreeWithToC) {
