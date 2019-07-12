@@ -10,9 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 import com.aerse.core.RrdBackendFactory;
 import com.aerse.core.RrdDb;
@@ -22,9 +20,6 @@ import com.eclipsesource.json.JsonObject;
 import ru.r2cloud.it.util.RegisteredTest;
 
 public class MetricsIT extends RegisteredTest {
-
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	@Test
 	public void testLoadMetrics() {

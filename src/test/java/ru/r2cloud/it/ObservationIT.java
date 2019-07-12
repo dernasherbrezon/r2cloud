@@ -105,6 +105,7 @@ public class ObservationIT extends RegisteredTest {
 	}
 
 	@After
+	@Override
 	public void stop() {
 		if (server != null) {
 			server.stop();
@@ -112,6 +113,7 @@ public class ObservationIT extends RegisteredTest {
 		if (rtlSdrMock != null) {
 			rtlSdrMock.stop();
 		}
+		super.stop();
 	}
 
 	private JsonObject awaitObservation(String observationId) {

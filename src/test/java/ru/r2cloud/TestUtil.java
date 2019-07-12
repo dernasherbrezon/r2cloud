@@ -17,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
-import ru.r2cloud.it.util.WebTest;
 import ru.r2cloud.tle.CelestrakClientTest;
 
 public class TestUtil {
@@ -57,7 +56,7 @@ public class TestUtil {
 		if (!to.getParentFile().exists() && !to.getParentFile().mkdirs()) {
 			throw new IOException("unable to create parent directory: " + to.getParentFile().getAbsolutePath());
 		}
-		try (BufferedReader r = new BufferedReader(new InputStreamReader(WebTest.class.getClassLoader().getResourceAsStream(classpathFrom), StandardCharsets.UTF_8)); BufferedWriter w = new BufferedWriter(new FileWriter(to))) {
+		try (BufferedReader r = new BufferedReader(new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(classpathFrom), StandardCharsets.UTF_8)); BufferedWriter w = new BufferedWriter(new FileWriter(to))) {
 			String curLine = null;
 			while ((curLine = r.readLine()) != null) {
 				w.append(curLine).append("\n");

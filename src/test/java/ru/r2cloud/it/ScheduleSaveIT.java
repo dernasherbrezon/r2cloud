@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.http.HttpResponse;
+import java.util.UUID;
 
 import org.junit.Test;
 
@@ -27,7 +28,7 @@ public class ScheduleSaveIT extends RegisteredTest {
 
 	@Test
 	public void testSaveUnknownSatellite() {
-		HttpResponse<String> response = client.updateScheduleWithResponse("-1", true);
+		HttpResponse<String> response = client.updateScheduleWithResponse(UUID.randomUUID().toString(), true);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("id", response);
 	}
