@@ -21,7 +21,7 @@ public class JsonHttpResponse implements HttpHandler {
 	private byte[] request;
 
 	public JsonHttpResponse(String name, int statusCode) {
-		this.responseBody = Util.loadExpected(name);
+		this.responseBody = TestUtil.loadExpected(name);
 		this.statusCode = statusCode;
 	}
 

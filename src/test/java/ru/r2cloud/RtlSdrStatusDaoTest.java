@@ -4,13 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
@@ -89,7 +83,7 @@ public class RtlSdrStatusDaoTest {
 
 	@Test
 	public void shutdownProcessProperly() throws Exception {
-		config.setProperty("rtltest.path", setupScriptMock("rtl_test_mock_timeouted.sh").getAbsolutePath());
+		config.setProperty("rtltest.path", TestUtil.setupScript(new File(tempFolder.getRoot().getAbsoluteFile(), "rtl_test_mock_timeouted.sh")).getAbsolutePath());
 		config.setProperty("rtltest.interval.seconds", TimeUnit.HOURS.toSeconds(24));
 		config.update();
 
@@ -151,24 +145,12 @@ public class RtlSdrStatusDaoTest {
 		return threadFactory;
 	}
 
-	private File setupScriptMock(String filename) throws IOException {
-		File result = new File(tempFolder.getRoot().getAbsoluteFile(), filename);
-		try (BufferedReader r = new BufferedReader(new InputStreamReader(RtlSdrStatusDaoTest.class.getClassLoader().getResourceAsStream(filename), StandardCharsets.UTF_8)); BufferedWriter w = new BufferedWriter(new FileWriter(result))) {
-			String curLine = null;
-			while ((curLine = r.readLine()) != null) {
-				w.append(curLine).append("\n");
-			}
-		}
-		result.setExecutable(true);
-		return result;
-	}
-
 	@Before
 	public void start() throws Exception {
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
-		config.setProperty("rtltest.path", setupScriptMock("rtl_test_mock.sh").getAbsolutePath());
-		config.setProperty("stdbuf.path", setupScriptMock("stdbuf_mock.sh").getAbsolutePath());
+		config.setProperty("rtltest.path", TestUtil.setupScript(new File(tempFolder.getRoot().getAbsoluteFile(), "rtl_test_mock.sh")).getAbsolutePath());
+		config.setProperty("stdbuf.path", TestUtil.setupScript(new File(tempFolder.getRoot().getAbsoluteFile(), "stdbuf_mock.sh")).getAbsolutePath());
 		config.update();
 
 		rtlTestServer = new RtlTestServer();

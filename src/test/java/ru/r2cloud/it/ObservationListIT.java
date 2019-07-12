@@ -11,8 +11,8 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
+import ru.r2cloud.TestUtil;
 import ru.r2cloud.it.util.RegisteredTest;
-import ru.r2cloud.it.util.WebTest;
 
 public class ObservationListIT extends RegisteredTest {
 
@@ -42,7 +42,7 @@ public class ObservationListIT extends RegisteredTest {
 
 	private void copyObservation(String name) throws IOException {
 		File basepath = new File(config.getProperty("satellites.basepath.location") + File.separator + "40069" + File.separator + "data" + File.separator + name + File.separator + "meta.json");
-		WebTest.copy("observationListIT/" + name + ".json", basepath);
+		TestUtil.copy("observationListIT/" + name + ".json", basepath);
 	}
 
 }

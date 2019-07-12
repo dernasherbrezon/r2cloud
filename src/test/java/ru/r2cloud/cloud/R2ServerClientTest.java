@@ -21,7 +21,7 @@ import com.eclipsesource.json.JsonObject;
 import ru.r2cloud.JsonHttpResponse;
 import ru.r2cloud.R2CloudServer;
 import ru.r2cloud.TestConfiguration;
-import ru.r2cloud.Util;
+import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.model.ObservationRequest;
@@ -184,6 +184,6 @@ public class R2ServerClientTest {
 	}
 
 	private static void assertJson(String filename, String actual) {
-		assertEquals(Util.loadExpected(filename), actual);
+		assertEquals(TestUtil.loadExpected(filename), actual);
 	}
 }

@@ -1,6 +1,9 @@
 package ru.r2cloud;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -9,9 +12,10 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
+import ru.r2cloud.it.util.WebTest;
 import ru.r2cloud.tle.CelestrakClientTest;
 
-public class Util {
+public class TestUtil {
 
 	public static String loadExpected(String name) {
 		StringBuilder expectedStr = new StringBuilder();
@@ -44,7 +48,25 @@ public class Util {
 		}
 	}
 
-	private Util() {
+	public static void copy(String classpathFrom, File to) throws IOException {
+		if (!to.getParentFile().exists() && !to.getParentFile().mkdirs()) {
+			throw new IOException("unable to create parent directory: " + to.getParentFile().getAbsolutePath());
+		}
+		try (BufferedReader r = new BufferedReader(new InputStreamReader(WebTest.class.getClassLoader().getResourceAsStream(classpathFrom), StandardCharsets.UTF_8)); BufferedWriter w = new BufferedWriter(new FileWriter(to))) {
+			String curLine = null;
+			while ((curLine = r.readLine()) != null) {
+				w.append(curLine).append("\n");
+			}
+		}
+	}
+
+	public static File setupScript(File to) throws IOException {
+		copy(to.getName(), to);
+		to.setExecutable(true);
+		return to;
+	}
+
+	private TestUtil() {
 		// do nothing
 	}
 

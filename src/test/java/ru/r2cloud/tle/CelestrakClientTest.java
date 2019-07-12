@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ru.r2cloud.CelestrakServer;
-import ru.r2cloud.Util;
+import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.Tle;
 
 public class CelestrakClientTest {
@@ -20,7 +20,7 @@ public class CelestrakClientTest {
 
 	@Test
 	public void testSuccess() {
-		String expectedBody = Util.loadExpected("sample-tle.txt");
+		String expectedBody = TestUtil.loadExpected("sample-tle.txt");
 		Map<String, Tle> expected = convert(expectedBody);
 		server.mockResponse(expectedBody);
 

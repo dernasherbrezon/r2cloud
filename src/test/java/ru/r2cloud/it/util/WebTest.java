@@ -2,14 +2,9 @@ package ru.r2cloud.it.util;
 
 import static org.junit.Assert.fail;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.util.UUID;
 
@@ -24,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.CelestrakServer;
 import ru.r2cloud.R2Cloud;
 import ru.r2cloud.RtlTestServer;
-import ru.r2cloud.Util;
+import ru.r2cloud.TestUtil;
 import ru.r2cloud.it.AccessTokenIT;
 import ru.r2cloud.it.ConfiguredIT;
 import ru.r2cloud.it.GeneralIT;
@@ -66,14 +61,14 @@ public class WebTest {
 		}
 		celestrak = new CelestrakServer();
 		celestrak.start();
-		celestrak.mockResponse(Util.loadExpected("sample-tle.txt"));
+		celestrak.mockResponse(TestUtil.loadExpected("sample-tle.txt"));
 
 		rtlTestServer = new RtlTestServer();
 		rtlTestServer.mockDefault();
 		rtlTestServer.start();
 
-		rtlSdrMock = setupScriptMock("rtl_sdr_mock.sh");
-		rtlTestMock = setupScriptMock("rtl_test_mock.sh");
+		rtlSdrMock = TestUtil.setupScript(new File(System.getProperty("java.io.tmpdir") + File.separator + "rtl_sdr_mock.sh"));
+		rtlTestMock = TestUtil.setupScript(new File(System.getProperty("java.io.tmpdir") + File.separator + "rtl_test_mock.sh"));
 
 		userSettingsLocation = System.getProperty("java.io.tmpdir") + File.separator + ".r2cloud-" + UUID.randomUUID().toString();
 		Configuration config;
@@ -92,22 +87,6 @@ public class WebTest {
 		server = new R2Cloud(config);
 		server.start();
 		assertStarted();
-	}
-
-	private static File setupScriptMock(String filename) throws IOException {
-		File result = new File(System.getProperty("java.io.tmpdir") + File.separator + filename);
-		copy(filename, result);
-		result.setExecutable(true);
-		return result;
-	}
-
-	public static void copy(String classpathFrom, File to) throws IOException {
-		try (BufferedReader r = new BufferedReader(new InputStreamReader(WebTest.class.getClassLoader().getResourceAsStream(classpathFrom), StandardCharsets.UTF_8)); BufferedWriter w = new BufferedWriter(new FileWriter(to))) {
-			String curLine = null;
-			while ((curLine = r.readLine()) != null) {
-				w.append(curLine).append("\n");
-			}
-		}
 	}
 
 	@AfterClass
