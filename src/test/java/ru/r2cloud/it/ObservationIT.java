@@ -27,6 +27,8 @@ import ru.r2cloud.it.util.RegisteredTest;
 
 public class ObservationIT extends RegisteredTest {
 
+	private final static String METEOR_ID = "40069";
+
 	private RtlSdrDataServer rtlSdrMock;
 	private R2CloudServer server;
 
@@ -39,11 +41,11 @@ public class ObservationIT extends RegisteredTest {
 		server.setSpectogramMock(1L, spectogramHandler);
 
 		// start observation
-		String observationId = client.scheduleStart("40069");
+		String observationId = client.scheduleStart(METEOR_ID);
 		assertNotNull(observationId);
 		Thread.sleep(1000);
 		// complete observation
-		client.scheduleComplete("40069");
+		client.scheduleComplete(METEOR_ID);
 
 		// get observation and assert
 		assertObservation(awaitObservation(observationId));
@@ -76,7 +78,7 @@ public class ObservationIT extends RegisteredTest {
 		// generate valid freq offset and numberOfDecodedPackets might NOT be 0
 		// assertEquals(0, observation.getInt("numberOfDecodedPackets", -1));
 		assertEquals("LRPT", observation.getString("decoder", null));
-		assertEquals("40069", observation.getString("satellite", null));
+		assertEquals(METEOR_ID, observation.getString("satellite", null));
 	}
 
 	private static void assertSpectogram(String expectedFilename, byte[] actualBytes) throws IOException {
@@ -117,7 +119,7 @@ public class ObservationIT extends RegisteredTest {
 		int maxRetries = 40;
 		int curRetry = 0;
 		while (!Thread.currentThread().isInterrupted() && curRetry < maxRetries) {
-			JsonObject observation = client.getObservation("40069", observationId);
+			JsonObject observation = client.getObservation(METEOR_ID, observationId);
 			if (observation != null && observation.get("numberOfDecodedPackets") != null) {
 				return observation;
 			}

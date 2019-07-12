@@ -30,6 +30,7 @@ import ru.r2cloud.it.ConfiguredIT;
 import ru.r2cloud.it.GeneralIT;
 import ru.r2cloud.it.MetricsIT;
 import ru.r2cloud.it.ObservationIT;
+import ru.r2cloud.it.ObservationListIT;
 import ru.r2cloud.it.ObservationLoadIT;
 import ru.r2cloud.it.OverviewIT;
 import ru.r2cloud.it.R2CloudSaveIT;
@@ -42,7 +43,7 @@ import ru.r2cloud.it.TleIT;
 import ru.r2cloud.util.Configuration;
 
 @RunWith(Suite.class)
-@SuiteClasses({ MetricsIT.class, OverviewIT.class, ObservationLoadIT.class, ObservationIT.class, TleIT.class, StaticControllerIT.class, SetupIT.class, ScheduleSaveIT.class, ScheduleListIT.class, R2CloudSaveIT.class, RestoreIT.class, AccessTokenIT.class, ConfiguredIT.class, GeneralIT.class })
+@SuiteClasses({ ObservationListIT.class, MetricsIT.class, OverviewIT.class, ObservationLoadIT.class, ObservationIT.class, TleIT.class, StaticControllerIT.class, SetupIT.class, ScheduleSaveIT.class, ScheduleListIT.class, R2CloudSaveIT.class, RestoreIT.class, AccessTokenIT.class, ConfiguredIT.class, GeneralIT.class })
 public class WebTest {
 
 	private static final int RETRY_INTERVAL_MS = 5000;
@@ -95,14 +96,18 @@ public class WebTest {
 
 	private static File setupScriptMock(String filename) throws IOException {
 		File result = new File(System.getProperty("java.io.tmpdir") + File.separator + filename);
-		try (BufferedReader r = new BufferedReader(new InputStreamReader(WebTest.class.getClassLoader().getResourceAsStream(filename), StandardCharsets.UTF_8)); BufferedWriter w = new BufferedWriter(new FileWriter(result))) {
+		copy(filename, result);
+		result.setExecutable(true);
+		return result;
+	}
+
+	public static void copy(String classpathFrom, File to) throws IOException {
+		try (BufferedReader r = new BufferedReader(new InputStreamReader(WebTest.class.getClassLoader().getResourceAsStream(classpathFrom), StandardCharsets.UTF_8)); BufferedWriter w = new BufferedWriter(new FileWriter(to))) {
 			String curLine = null;
 			while ((curLine = r.readLine()) != null) {
 				w.append(curLine).append("\n");
 			}
 		}
-		result.setExecutable(true);
-		return result;
 	}
 
 	@AfterClass
