@@ -16,6 +16,9 @@ import ru.r2cloud.web.BadRequest;
 import ru.r2cloud.web.InternalServerError;
 import ru.r2cloud.web.ModelAndView;
 import ru.r2cloud.web.NotFound;
+import ru.r2cloud.web.ValidationResult;
+import ru.r2cloud.web.WebServer;
+import ru.r2cloud.web.api.Messages;
 
 public class ObservationSpectrogram extends AbstractHttpController {
 
@@ -33,12 +36,20 @@ public class ObservationSpectrogram extends AbstractHttpController {
 
 	@Override
 	public ModelAndView doPost(JsonObject request) {
-		String satelliteId = request.getString("satelliteId", null);
-		String id = request.getString("id", null);
-		if (id == null || satelliteId == null) {
-			LOG.info("missing parameters");
-			return new BadRequest("missing parameters");
+		ValidationResult errors = new ValidationResult();
+		String id = WebServer.getString(request, "id");
+		if (id == null) {
+			errors.put("id", Messages.CANNOT_BE_EMPTY);
 		}
+		String satelliteId = WebServer.getString(request, "satelliteId");
+		if (satelliteId == null) {
+			errors.put("satelliteId", Messages.CANNOT_BE_EMPTY);
+		}
+
+		if (!errors.isEmpty()) {
+			return new BadRequest(errors);
+		}
+
 		ObservationFull observation = dao.find(satelliteId, id);
 		if (observation == null) {
 			LOG.info("not found: {} id: {}", satelliteId, id);

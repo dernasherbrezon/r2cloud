@@ -81,8 +81,14 @@ public class ObservationIT extends RegisteredTest {
 		assertEquals(METEOR_ID, observation.getString("satellite", null));
 	}
 
-	private static void assertSpectogram(String expectedFilename, byte[] actualBytes) throws IOException {
-		try (InputStream is1 = ObservationIT.class.getClassLoader().getResourceAsStream(expectedFilename); ByteArrayInputStream bais = new ByteArrayInputStream(actualBytes)) {
+	static void assertSpectogram(String expectedFilename, byte[] actualBytes) throws IOException {
+		try (ByteArrayInputStream bais = new ByteArrayInputStream(actualBytes)) {
+			assertSpectogram(expectedFilename, bais);
+		}
+	}
+
+	static void assertSpectogram(String expectedFilename, InputStream bais) throws IOException {
+		try (InputStream is1 = ObservationIT.class.getClassLoader().getResourceAsStream(expectedFilename)) {
 			BufferedImage expected = ImageIO.read(is1);
 			BufferedImage actual = ImageIO.read(bais);
 			for (int i = 0; i < expected.getWidth(); i++) {

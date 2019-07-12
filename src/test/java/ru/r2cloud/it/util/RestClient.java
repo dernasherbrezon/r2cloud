@@ -429,6 +429,30 @@ public class RestClient {
 		}
 	}
 
+	public JsonObject requestObservationSpectogram(String satelliteId, String observationId) {
+		HttpResponse<String> response = requestObservationSpectogramResponse(satelliteId, observationId);
+		if (response.statusCode() != 200) {
+			LOG.info("response: {}", response.body());
+			throw new RuntimeException("invalid status code: " + response.statusCode());
+		}
+		return (JsonObject) Json.parse(response.body());
+	}
+
+	public HttpResponse<String> requestObservationSpectogramResponse(String satelliteId, String observationId) {
+		JsonObject json = Json.object();
+		json.add("satelliteId", satelliteId);
+		json.add("id", observationId);
+		HttpRequest request = createJsonPost("/api/v1/admin/observation/spectogram", json).build();
+		try {
+			return httpclient.send(request, BodyHandlers.ofString());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
+
 	public JsonObject getObservation(String satelliteId, String observationId) {
 		HttpResponse<String> response = getObservationResponse(satelliteId, observationId);
 		if (response.statusCode() == 404) {

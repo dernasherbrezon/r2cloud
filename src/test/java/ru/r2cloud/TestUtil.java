@@ -3,12 +3,12 @@ package ru.r2cloud;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -18,6 +18,7 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.tle.CelestrakClientTest;
+import ru.r2cloud.util.Util;
 
 public class TestUtil {
 
@@ -56,12 +57,15 @@ public class TestUtil {
 		if (!to.getParentFile().exists() && !to.getParentFile().mkdirs()) {
 			throw new IOException("unable to create parent directory: " + to.getParentFile().getAbsolutePath());
 		}
-		try (BufferedReader r = new BufferedReader(new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(classpathFrom), StandardCharsets.UTF_8)); BufferedWriter w = new BufferedWriter(new FileWriter(to))) {
-			String curLine = null;
-			while ((curLine = r.readLine()) != null) {
-				w.append(curLine).append("\n");
-			}
+		try (InputStream is = TestUtil.class.getClassLoader().getResourceAsStream(classpathFrom); OutputStream w = new FileOutputStream(to)) {
+			Util.copy(is, w);
 		}
+		// try (BufferedReader r = new BufferedReader(new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(classpathFrom), StandardCharsets.UTF_8)); BufferedWriter w = new BufferedWriter(new FileWriter(to))) {
+		// String curLine = null;
+		// while ((curLine = r.readLine()) != null) {
+		// w.append(curLine).append("\n");
+		// }
+		// }
 	}
 
 	public static File setupScript(File to) throws IOException {
@@ -76,6 +80,10 @@ public class TestUtil {
 			JsonValue value = actual.get(name);
 			if (value == null) {
 				message.append("missing field: " + name).append("\n");
+				continue;
+			}
+			if (expected.get(name).isObject() && value.isObject()) {
+				assertJson(expected.get(name).asObject(), value.asObject());
 				continue;
 			}
 			String expectedValue = expected.get(name).toString();

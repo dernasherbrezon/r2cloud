@@ -10,47 +10,42 @@
 	"satellite": "41460",
 	"dataEntity": [
 		{
-			"name": 1210540046,
+			"name": 3282266,
 			"body": {
 				"length": 86,
 				"priority": "CSP_PRIO_LOW",
-				"ffrag": true,
+				"ffrag": false,
 				"fhmac": true,
-				"fxtea": true,
+				"fxtea": false,
 				"frdp": false,
-				"fcrc32": true,
+				"fcrc32": false,
 				"eps": {
-					"bootCount": 49085,
-					"uptime": 1210540046,
-					"realtimeClock": 3282266,
-					"pingStatus": 93,
-					"subsystemStatus": 9794,
-					"batteryVoltage": 280,
-					"cellDiff": -8,
-					"batteryCurrent": -116,
-					"solarPower": 4780,
-					"temperature": -65,
-					"paTemperature": -67,
-					"mainVoltage": -17
+					"bootCount": 24590,
+					"uptime": 3282266,
+					"realtimeClock": 1562788359,
+					"pingStatus": 126,
+					"subsystemStatus": 3801,
+					"batteryVoltage": 7800,
+					"cellDiff": 96,
+					"batteryCurrent": -60,
+					"solarPower": 2720,
+					"temperature": 0,
+					"paTemperature": -1,
+					"mainVoltage": -93
 				},
 				"com": {
-					"bootCount": 8125,
-					"packetsReceived": 6383,
-					"packetsSend": 49085,
-					"latestRssi": -4161,
-					"latestBitCorrection": 189,
+					"bootCount": 2086,
+					"packetsReceived": 0,
+					"packetsSend": 882,
+					"latestRssi": 0,
+					"latestBitCorrection": 0,
 					"latestByteCorrection": 0
 				},
 				"adcs1": {
-					"state": 104,
-					"bdot1": -4161,
-					"bdot2": -16913,
-					"bdot3": -16451
-				},
-				"adcs2": {
-					"gyro1": 9728,
-					"gyro2": 3,
-					"gyro3": 29184
+					"state": 0,
+					"bdot1": -2035,
+					"bdot2": 1356,
+					"bdot3": -2015
 				}
 			}
 		}
