@@ -147,14 +147,14 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				if (dataFile == null) {
 					return;
 				}
-				
+
 				synchronized (Scheduler.this) {
 					if (startThread == null) {
 						return;
 					}
-					
+
 					decoderThread.execute(new Runnable() {
-						
+
 						@Override
 						public void run() {
 							decoderTask.run(dataFile, observation);
@@ -242,12 +242,13 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		return schedule(cur, true);
 	}
 
-	public void completeImmediately(String id) {
+	public boolean completeImmediately(String id) {
 		ScheduledObservation previous = schedule.cancel(id);
 		if (previous == null) {
-			return;
+			return false;
 		}
 		stopThread.submit(previous.getCompleteTask());
+		return true;
 	}
 
 }

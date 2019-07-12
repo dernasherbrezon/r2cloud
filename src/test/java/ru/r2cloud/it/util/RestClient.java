@@ -343,20 +343,40 @@ public class RestClient {
 		}
 	}
 
-	public String scheduleStart(String satelliteId) {
+	public HttpResponse<String> scheduleStartResponse(String satelliteId) {
 		JsonObject entity = new JsonObject();
 		if (satelliteId != null) {
 			entity.add("id", satelliteId);
 		}
 		HttpRequest request = createJsonPost("/api/v1/admin/schedule/immediately/start", entity).build();
 		try {
-			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
-			if (response.statusCode() != 200) {
-				LOG.info("response: {}", response.body());
-				throw new RuntimeException("invalid status code: " + response.statusCode());
-			}
-			JsonObject json = (JsonObject) Json.parse(response.body());
-			return json.getString("id", null);
+			return httpclient.send(request, BodyHandlers.ofString());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
+
+	public String scheduleStart(String satelliteId) {
+		HttpResponse<String> response = scheduleStartResponse(satelliteId);
+		if (response.statusCode() != 200) {
+			LOG.info("response: {}", response.body());
+			throw new RuntimeException("invalid status code: " + response.statusCode());
+		}
+		JsonObject json = (JsonObject) Json.parse(response.body());
+		return json.getString("id", null);
+	}
+
+	public HttpResponse<String> scheduleCompleteResponse(String satelliteId) {
+		JsonObject entity = new JsonObject();
+		if (satelliteId != null) {
+			entity.add("id", satelliteId);
+		}
+		HttpRequest request = createJsonPost("/api/v1/admin/schedule/immediately/complete", entity).build();
+		try {
+			return httpclient.send(request, BodyHandlers.ofString());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} catch (InterruptedException e) {
@@ -366,22 +386,10 @@ public class RestClient {
 	}
 
 	public void scheduleComplete(String satelliteId) {
-		JsonObject entity = new JsonObject();
-		if (satelliteId != null) {
-			entity.add("id", satelliteId);
-		}
-		HttpRequest request = createJsonPost("/api/v1/admin/schedule/immediately/complete", entity).build();
-		try {
-			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
-			if (response.statusCode() != 200) {
-				LOG.info("response: {}", response.body());
-				throw new RuntimeException("invalid status code: " + response.statusCode());
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new RuntimeException("unable to send request");
+		HttpResponse<String> response = scheduleCompleteResponse(satelliteId);
+		if (response.statusCode() != 200) {
+			LOG.info("response: {}", response.body());
+			throw new RuntimeException("invalid status code: " + response.statusCode());
 		}
 	}
 

@@ -9,6 +9,7 @@ import ru.r2cloud.satellite.Scheduler;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
 import ru.r2cloud.web.ModelAndView;
+import ru.r2cloud.web.NotFound;
 import ru.r2cloud.web.Success;
 import ru.r2cloud.web.ValidationResult;
 import ru.r2cloud.web.WebServer;
@@ -37,8 +38,11 @@ public class ScheduleComplete extends AbstractHttpController {
 			return new BadRequest(errors);
 		}
 
-		scheduler.completeImmediately(id);
-		return new Success();
+		if (scheduler.completeImmediately(id)) {
+			return new Success();
+		} else {
+			return new NotFound();
+		}
 	}
 
 	@Override
