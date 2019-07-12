@@ -14,6 +14,7 @@ import ru.r2cloud.web.BadRequest;
 import ru.r2cloud.web.ModelAndView;
 import ru.r2cloud.web.Success;
 import ru.r2cloud.web.ValidationResult;
+import ru.r2cloud.web.WebServer;
 import ru.r2cloud.web.api.Messages;
 
 public class DDNS extends AbstractHttpController {
@@ -40,23 +41,50 @@ public class DDNS extends AbstractHttpController {
 	public ModelAndView doGet(IHTTPSession session) {
 		ModelAndView result = new ModelAndView();
 		JsonObject entity = new JsonObject();
-		entity.add("username", config.getProperty(USERNAME_PROPERTY_NAME));
-		entity.add("password", config.getProperty(PASSWORD_PROPERTY_NAME));
-		entity.add("domain", config.getProperty(DOMAIN_PROPERTY_NAME));
+		String username = config.getProperty(USERNAME_PROPERTY_NAME);
+		if (username != null) {
+			entity.add("username", username);
+		}
+		String password = config.getProperty(PASSWORD_PROPERTY_NAME);
+		if (password != null) {
+			entity.add("password", password);
+		}
+		String domain = config.getProperty(DOMAIN_PROPERTY_NAME);
+		if (domain != null) {
+			entity.add("domain", domain);
+		}
 		entity.add("type", config.getDdnsType(TYPE_PROPERTY_NAME).toString());
-		entity.add("currentIp", config.getProperty("ddns.ip"));
+		String currentIp = config.getProperty("ddns.ip");
+		if (currentIp != null) {
+			entity.add("currentIp", currentIp);
+		}
 		result.setData(entity.toString());
 		return result;
 	}
 
 	@Override
 	public ModelAndView doPost(JsonObject request) {
-		DDNSType type = DDNSType.valueOf(request.getString("type", null));
+		String typeStr = WebServer.getString(request, "type");
 		String username = request.getString("username", null);
 		String password = request.getString("password", null);
 		String domain = request.getString("domain", null);
 
 		ValidationResult errors = new ValidationResult();
+		if (typeStr == null) {
+			errors.put("type", Messages.CANNOT_BE_EMPTY);
+			LOG.info("unable to save: {}", errors);
+			return new BadRequest(errors);
+		}
+
+		DDNSType type;
+		try {
+			type = DDNSType.valueOf(typeStr);
+		} catch (Exception e) {
+			LOG.info("unknown ddns type: " + typeStr, e);
+			errors.put("type", "unknown type");
+			return new BadRequest(errors);
+		}
+
 		switch (type) {
 		case NOIP:
 			if (username == null || username.trim().length() == 0) {
@@ -78,9 +106,15 @@ public class DDNS extends AbstractHttpController {
 			return new BadRequest(errors);
 		}
 
-		config.setProperty(USERNAME_PROPERTY_NAME, username);
-		config.setProperty(PASSWORD_PROPERTY_NAME, password);
-		config.setProperty(DOMAIN_PROPERTY_NAME, domain);
+		if (username != null) {
+			config.setProperty(USERNAME_PROPERTY_NAME, username);
+		}
+		if (password != null) {
+			config.setProperty(PASSWORD_PROPERTY_NAME, password);
+		}
+		if (domain != null) {
+			config.setProperty(DOMAIN_PROPERTY_NAME, domain);
+		}
 		config.setProperty(TYPE_PROPERTY_NAME, type.name());
 		config.update();
 
