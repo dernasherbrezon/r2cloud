@@ -1,0 +1,58 @@
+{
+	"id": "1559942730784",
+	"start": 1559942730839,
+	"end": 1559942731040,
+	"sampleRate": 48000,
+	"inputSampleRate": 240000,
+	"frequency": 437424000,
+	"actualFrequency": 437444309,
+	"decoder": "TELEMETRY",
+	"satellite": "41460",
+	"dataEntity": [
+		{
+			"name": 1210540046,
+			"body": {
+				"length": 86,
+				"priority": "CSP_PRIO_LOW",
+				"ffrag": true,
+				"fhmac": true,
+				"fxtea": true,
+				"frdp": false,
+				"fcrc32": true,
+				"eps": {
+					"bootCount": 49085,
+					"uptime": 1210540046,
+					"realtimeClock": 3282266,
+					"pingStatus": 93,
+					"subsystemStatus": 9794,
+					"batteryVoltage": 280,
+					"cellDiff": -8,
+					"batteryCurrent": -116,
+					"solarPower": 4780,
+					"temperature": -65,
+					"paTemperature": -67,
+					"mainVoltage": -17
+				},
+				"com": {
+					"bootCount": 8125,
+					"packetsReceived": 6383,
+					"packetsSend": 49085,
+					"latestRssi": -4161,
+					"latestBitCorrection": 189,
+					"latestByteCorrection": 0
+				},
+				"adcs1": {
+					"state": 104,
+					"bdot1": -4161,
+					"bdot2": -16913,
+					"bdot3": -16451
+				},
+				"adcs2": {
+					"gyro1": 9728,
+					"gyro2": 3,
+					"gyro3": 29184
+				}
+			}
+		}
+	]
+}
