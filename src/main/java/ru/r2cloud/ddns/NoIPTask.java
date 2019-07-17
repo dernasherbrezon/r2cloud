@@ -1,25 +1,19 @@
 package ru.r2cloud.ddns;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.concurrent.TimeUnit;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.ddns.noip.NoIpClient;
+import ru.r2cloud.ddns.noip.NoIpException;
+import ru.r2cloud.ddns.noip.RetryException;
 import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.Util;
 
 public class NoIPTask implements Runnable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(NoIPTask.class);
-	private static final long RETRY_TIMEOUT = TimeUnit.MINUTES.toMillis(30);
 
 	private final Configuration config;
+	private final NoIpClient client;
 	private final String username;
 	private final String password;
 	private final String domainName;
@@ -33,6 +27,7 @@ public class NoIPTask implements Runnable {
 		username = getAndValidate(config, "ddns.noip.username");
 		password = getAndValidate(config, "ddns.noip.password");
 		domainName = getAndValidate(config, "ddns.noip.domain");
+		client = new NoIpClient("https://dynupdate.no-ip.com", username, password);
 		currentExternalIp = config.getProperty("ddns.ip");
 		retryAfter = config.getLong("ddns.retry.after.millis");
 	}
@@ -58,47 +53,24 @@ public class NoIPTask implements Runnable {
 		if (currentExternalIp != null && currentExternalIp.equals(externalIp)) {
 			return;
 		}
+		LOG.info("ip has changed. old: {} new: {}", currentExternalIp, externalIp);
 		try {
-			LOG.info("ip has changed. old: {} new: {}", currentExternalIp, externalIp);
-			URL obj = new URL("https://dynupdate.no-ip.com/nic/update?hostname=" + domainName);
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-			con.setRequestMethod("GET");
-			con.setRequestProperty("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
-			con.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.US_ASCII)));
-			int responseCode = con.getResponseCode();
-			if (responseCode != 200) {
-				LOG.error("unable to update ddns. response code: {}. See logs for details", responseCode);
-				Util.toLog(LOG, con.getInputStream());
-			} else {
-				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-					String response = in.readLine();
-					if (response.startsWith("good") || response.startsWith("nochg")) {
-						int index = response.indexOf(' ');
-						if (index != -1) {
-							LOG.info("ddns ip updated: {}", currentExternalIp);
-							currentExternalIp = response.substring(index + 1);
-							config.setProperty("ddns.ip", currentExternalIp);
-							config.update();
-						}
-					} else if ("nohost".equals(response) || "badauth".equals(response) || "badagent".equals(response) || "!donator".equals(response) || "abuse".equals(response)) {
-						LOG.error("fatal error detected: {}. Please check ddns settings", response);
-						fatalError = true;
-					} else if ("911".equals(response)) {
-						LOG.error("ddns provider returned internal server error. Will retry update after {} millis", RETRY_TIMEOUT);
-						retryAfter = System.currentTimeMillis() + RETRY_TIMEOUT;
-						// save it to show in UI
-						config.setProperty("ddns.retry.after.millis", retryAfter);
-						config.update();
-					} else {
-						if (LOG.isDebugEnabled()) {
-							LOG.debug("unknown response code: {}", response);
-						}
-					}
-				}
-			}
-			con.disconnect();
-		} catch (Exception e) {
-			LOG.error("unable to update ddns", e);
+			currentExternalIp = client.update(domainName);
+			LOG.info("ddns ip updated: {}", currentExternalIp);
+			config.setProperty("ddns.ip", currentExternalIp);
+			config.update();
+		} catch (NoIpException e) {
+			LOG.error("unable to update ddns record", e);
+			fatalError = true;
+		} catch (RetryException e) {
+			LOG.info("no-ip failure. retry after: " + e.getRetryTimeout());
+			retryAfter = System.currentTimeMillis() + e.getRetryTimeout();
+			// save it to show in UI
+			config.setProperty("ddns.retry.after.millis", retryAfter);
+			config.update();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return;
 		}
 	}
 
