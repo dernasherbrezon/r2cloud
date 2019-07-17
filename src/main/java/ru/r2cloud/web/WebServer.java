@@ -52,7 +52,7 @@ public class WebServer extends NanoHTTPD {
 	@Override
 	public Response serve(IHTTPSession session) {
 		if (session.getMethod().equals(Method.OPTIONS)) {
-			Response result = NanoHTTPD.newFixedLengthResponse(Response.Status.NO_CONTENT, "text/plain; charset=utf-8", "");
+			Response result = NanoHTTPD.newFixedLengthResponse(Response.Status.OK, "text/plain; charset=utf-8", null);
 			setupCorsHeaders(result);
 			return result;
 		}
@@ -177,28 +177,12 @@ public class WebServer extends NanoHTTPD {
 		return result.asDouble();
 	}
 
-	public static Double getDouble(IHTTPSession session, String name) {
-		String param = getParameter(session, name);
-		if (param == null || param.trim().length() == 0) {
-			return null;
-		}
-		return Double.valueOf(param);
-	}
-
 	public static Integer getInteger(IHTTPSession session, String name) {
 		String param = getParameter(session, name);
 		if (param == null || param.trim().length() == 0) {
 			return null;
 		}
 		return Integer.valueOf(param);
-	}
-
-	public static Long getLong(JsonValue value, String name) {
-		JsonValue result = ((JsonObject) value).get(name);
-		if (result == null || result.isNull()) {
-			return null;
-		}
-		return result.asLong();
 	}
 
 	public static boolean getBoolean(IHTTPSession session, String name) {

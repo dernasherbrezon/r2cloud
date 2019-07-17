@@ -114,6 +114,18 @@ public class RestClient {
 		}
 	}
 
+	public HttpResponse<String> getOptions(String url) {
+		HttpRequest request = createDefaultRequest(url).method("OPTIONS", BodyPublishers.noBody()).build();
+		try {
+			return httpclient.send(request, BodyHandlers.ofString());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
+
 	private JsonObject getData(String url) {
 		HttpRequest request = createAuthRequest(url).GET().build();
 		try {

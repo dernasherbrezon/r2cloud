@@ -23,4 +23,15 @@ public class WebserverTest extends BaseTest {
 		assertEquals(401, response.statusCode());
 	}
 
+	@Test
+	public void testOptions() {
+		HttpResponse<String> response = client.getOptions("/");
+		assertEquals(200, response.statusCode());
+		assertEquals("*", response.headers().firstValue("Access-Control-Allow-Origin").get());
+		assertEquals("1728000", response.headers().firstValue("Access-Control-Max-Age").get());
+		assertEquals("GET, POST, OPTIONS", response.headers().firstValue("Access-Control-Allow-Methods").get());
+		assertEquals("Authorization, Content-Type", response.headers().firstValue("Access-Control-Allow-Headers").get());
+		assertEquals("Authorization, Content-Type", response.headers().firstValue("Access-Control-Expose-Headers").get());
+	}
+
 }
