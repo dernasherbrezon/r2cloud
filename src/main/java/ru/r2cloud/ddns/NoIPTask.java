@@ -65,14 +65,13 @@ public class NoIPTask implements Runnable {
 			LOG.error("unable to update ddns record", e);
 			fatalError = true;
 		} catch (RetryException e) {
-			LOG.info("no-ip failure. retry after: " + e.getRetryTimeout());
+			LOG.info("no-ip failure. retry after: {}", e.getRetryTimeout());
 			retryAfter = System.currentTimeMillis() + e.getRetryTimeout();
 			// save it to show in UI
 			config.setProperty("ddns.retry.after.millis", retryAfter);
 			config.update();
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			return;
 		}
 	}
 

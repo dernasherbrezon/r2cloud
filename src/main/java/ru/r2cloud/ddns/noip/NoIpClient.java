@@ -45,7 +45,9 @@ public class NoIpClient {
 			throw new NoIpException("unable to update", e);
 		}
 		if (response.statusCode() != 200) {
-			LOG.error("unable to update ddns: {}", response.body());
+			if (LOG.isErrorEnabled()) {
+				LOG.error("unable to update ddns: {}", response.body());
+			}
 			throw new NoIpException("invalid status code: " + response.statusCode());
 		}
 		String body = response.body();
