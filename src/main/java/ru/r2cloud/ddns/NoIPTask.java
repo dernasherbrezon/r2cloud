@@ -14,6 +14,7 @@ public class NoIPTask implements Runnable {
 
 	private final Configuration config;
 	private final NoIpClient client;
+	private final ExternalIpClient externalIpClient;
 	private final String username;
 	private final String password;
 	private final String domainName;
@@ -28,6 +29,7 @@ public class NoIPTask implements Runnable {
 		password = getAndValidate(config, "ddns.noip.password");
 		domainName = getAndValidate(config, "ddns.noip.domain");
 		client = new NoIpClient("https://dynupdate.no-ip.com", username, password);
+		externalIpClient = new ExternalIpClient("http://checkip.amazonaws.com");
 		currentExternalIp = config.getProperty("ddns.ip");
 		retryAfter = config.getLong("ddns.retry.after.millis");
 	}
@@ -49,7 +51,7 @@ public class NoIPTask implements Runnable {
 			}
 		}
 
-		String externalIp = ExternalIpUtil.getExternalIp();
+		String externalIp = externalIpClient.getExternalIp();
 		if (currentExternalIp != null && currentExternalIp.equals(externalIp)) {
 			return;
 		}
