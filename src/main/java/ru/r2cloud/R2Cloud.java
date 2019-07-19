@@ -161,6 +161,7 @@ public class R2Cloud {
 		decoders.put("43814", new PwSat2Decoder(props, predict));
 		decoders.put("43881", new Dstar1Decoder(props, predict));
 		decoders.put("43908", new Lume1Decoder(props, predict));
+		decoders.put("44387", new LRPTDecoder(props, predict));
 		validateDecoders();
 		DecoderTask decoderTask = new DecoderTask(decoders, resultDao, r2cloudService);
 
