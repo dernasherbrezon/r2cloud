@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.ProcessFactory;
+import ru.r2cloud.util.ProcessWrapper;
 import ru.r2cloud.util.Util;
 
 class PpmProcess {
@@ -17,12 +19,14 @@ class PpmProcess {
 	private static final Logger LOG = LoggerFactory.getLogger(PpmProcess.class);
 	private static final Pattern PPMPATTERN = Pattern.compile("real sample rate: \\d+ current PPM: \\d+ cumulative PPM: (\\d+)");
 
-	private Process process;
+	private ProcessWrapper process;
 	private boolean terminated = false;
 	private final Configuration config;
+	private final ProcessFactory factory;
 
-	PpmProcess(Configuration config) {
+	PpmProcess(Configuration config, ProcessFactory factory) {
 		this.config = config;
+		this.factory = factory;
 	}
 
 	Integer getPpm() {
@@ -37,7 +41,7 @@ class PpmProcess {
 					terminated = false;
 					return result;
 				}
-				process = new ProcessBuilder().command(config.getProperty("stdbuf.path"), "-i", "0", "-o", "0", "-e", "0", config.getProperty("rtltest.path"), "-p2").redirectErrorStream(true).start();
+				process = factory.create(config.getProperty("stdbuf.path") + " -i 0 -o 0 -e 0 " + config.getProperty("rtltest.path")+ " -p2", true, false);
 				r = new BufferedReader(new InputStreamReader(process.getInputStream()));
 				terminated = false;
 			}

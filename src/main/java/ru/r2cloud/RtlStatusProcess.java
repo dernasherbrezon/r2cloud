@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.RtlSdrStatus;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.ProcessFactory;
+import ru.r2cloud.util.ProcessWrapper;
 import ru.r2cloud.util.Util;
 
 class RtlStatusProcess {
@@ -18,12 +20,14 @@ class RtlStatusProcess {
 	private static final Logger LOG = LoggerFactory.getLogger(RtlStatusProcess.class);
 	private static final Pattern DEVICEPATTERN = Pattern.compile("^  0:  (.*?), (.*?), SN: (.*?)$");
 
-	private Process process;
+	private ProcessWrapper process;
 	private boolean terminated = false;
 	private final Configuration config;
+	private final ProcessFactory factory;
 
-	RtlStatusProcess(Configuration config) {
+	RtlStatusProcess(Configuration config, ProcessFactory factory) {
 		this.config = config;
+		this.factory = factory;
 	}
 
 	RtlSdrStatus getStatus() {
@@ -35,7 +39,7 @@ class RtlStatusProcess {
 					terminated = false;
 					return result;
 				}
-				process = new ProcessBuilder().command(config.getProperty("rtltest.path"), "-t").start();
+				process = factory.create(config.getProperty("rtltest.path") + " -t", false, false);
 				r = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 				terminated = false;
 			}
@@ -85,5 +89,5 @@ class RtlStatusProcess {
 		Util.shutdown("rtl-status", process, timeout);
 		process = null;
 	}
-	
+
 }

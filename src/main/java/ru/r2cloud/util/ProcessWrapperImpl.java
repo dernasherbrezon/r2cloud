@@ -47,4 +47,9 @@ public class ProcessWrapperImpl implements ProcessWrapper {
 	public InputStream getInputStream() {
 		return impl.getInputStream();
 	}
+	
+	@Override
+	public InputStream getErrorStream() {
+		return impl.getErrorStream();
+	}
 }

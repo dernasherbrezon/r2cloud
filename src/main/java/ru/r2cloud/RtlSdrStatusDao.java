@@ -20,6 +20,7 @@ import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.RtlSdrStatus;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
+import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ResultUtil;
 import ru.r2cloud.util.ThreadPoolFactory;
 import ru.r2cloud.util.Util;
@@ -40,13 +41,13 @@ public class RtlSdrStatusDao implements Lifecycle {
 	private PpmProcess ppmProcess;
 	private Integer currentPpm;
 
-	public RtlSdrStatusDao(Configuration config, RtlSdrLock lock, ThreadPoolFactory threadpoolFactory, Metrics metrics) {
+	public RtlSdrStatusDao(Configuration config, RtlSdrLock lock, ThreadPoolFactory threadpoolFactory, Metrics metrics, ProcessFactory processFactory) {
 		this.config = config;
 		this.lock = lock;
 		this.threadpoolFactory = threadpoolFactory;
 		this.metrics = metrics;
-		statusProcess = new RtlStatusProcess(config);
-		ppmProcess = new PpmProcess(config);
+		statusProcess = new RtlStatusProcess(config, processFactory);
+		ppmProcess = new PpmProcess(config, processFactory);
 	}
 
 	@SuppressWarnings("rawtypes")

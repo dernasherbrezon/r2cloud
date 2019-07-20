@@ -19,5 +19,7 @@ public interface ProcessWrapper {
 	OutputStream getOutputStream();
 
 	InputStream getInputStream();
+	
+	InputStream getErrorStream();
 
 }

@@ -128,7 +128,7 @@ public class R2Cloud {
 		metrics = new Metrics(props, r2cloudService, clock);
 		predict = new Predict(props);
 		auth = new Authenticator(props);
-		rtlsdrStatusDao = new RtlSdrStatusDao(props, rtlsdrLock, threadFactory, metrics);
+		rtlsdrStatusDao = new RtlSdrStatusDao(props, rtlsdrLock, threadFactory, metrics, processFactory);
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
 		acmeClient = new AcmeClient(props);

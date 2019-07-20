@@ -62,6 +62,11 @@ public class ProcessWrapperMock implements ProcessWrapper {
 	public InputStream getInputStream() {
 		return is;
 	}
+	
+	@Override
+	public InputStream getErrorStream() {
+		return null;
+	}
 
 	private void stop() {
 		alive = false;

@@ -24,6 +24,7 @@ import com.codahale.metrics.health.HealthCheck.Result;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.metrics.Status;
 import ru.r2cloud.util.DefaultClock;
+import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ThreadPoolFactory;
 
 public class RtlSdrStatusDaoTest {
@@ -39,7 +40,7 @@ public class RtlSdrStatusDaoTest {
 	@Test
 	public void testInitialStatus() {
 		RtlSdrLock lock = new RtlSdrLock();
-		dao = new RtlSdrStatusDao(config, lock, createNoOpThreadFactory(), metrics);
+		dao = new RtlSdrStatusDao(config, lock, createNoOpThreadFactory(), metrics, new ProcessFactory());
 		lock.register(RtlSdrStatusDao.class, 1);
 		dao.start();
 
@@ -88,7 +89,7 @@ public class RtlSdrStatusDaoTest {
 		config.update();
 
 		RtlSdrLock lock = new RtlSdrLock();
-		dao = new RtlSdrStatusDao(config, lock, new ExecuteNowThreadFactory(false), metrics);
+		dao = new RtlSdrStatusDao(config, lock, new ExecuteNowThreadFactory(false), metrics, new ProcessFactory());
 		lock.register(RtlSdrStatusDao.class, 1);
 		dao.start();
 
@@ -107,7 +108,7 @@ public class RtlSdrStatusDaoTest {
 
 	private void createExecuteNowRtlSdrDao() {
 		RtlSdrLock lock = new RtlSdrLock();
-		dao = new RtlSdrStatusDao(config, lock, new ExecuteNowThreadFactory(), metrics);
+		dao = new RtlSdrStatusDao(config, lock, new ExecuteNowThreadFactory(), metrics, new ProcessFactory());
 		lock.register(RtlSdrStatusDao.class, 1);
 		dao.start();
 	}
