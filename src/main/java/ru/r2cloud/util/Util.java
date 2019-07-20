@@ -138,23 +138,6 @@ public final class Util {
 		}
 	}
 
-	public static boolean deleteDirectory(File f) {
-		if (f.isDirectory()) {
-			for (File c : f.listFiles()) {
-				boolean curResult = deleteDirectory(c);
-				if (!curResult) {
-					LOG.error("unable to delete: {}", c.getAbsolutePath());
-					return false;
-				}
-			}
-		}
-		if (!f.delete()) {
-			LOG.error("Failed to delete file: {}", f.getAbsolutePath());
-			return false;
-		}
-		return true;
-	}
-
 	public static boolean deleteDirectory(Path f) {
 		if (Files.isDirectory(f, LinkOption.NOFOLLOW_LINKS)) {
 			try (DirectoryStream<Path> entries = Files.newDirectoryStream(f)) {
