@@ -54,15 +54,6 @@ public class Configuration {
 		loadUserSettings();
 	}
 
-	public Configuration(String systemSettingsLocation, String userSettingsLocation, FileSystem fs) throws IOException {
-		this.userSettingsLocation = fs.getPath(userSettingsLocation);
-		this.fs = fs;
-		try (InputStream is = Files.newInputStream(fs.getPath(systemSettingsLocation))) {
-			systemSettings.load(is);
-		}
-		loadUserSettings();
-	}
-
 	private void loadUserSettings() throws IOException {
 		if (Files.exists(userSettingsLocation)) {
 			try (InputStream is = Files.newInputStream(userSettingsLocation)) {

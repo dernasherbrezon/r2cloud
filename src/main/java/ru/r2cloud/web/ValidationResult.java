@@ -19,10 +19,6 @@ public class ValidationResult extends HashMap<String, String> {
 		this.general = general;
 	}
 
-	public String getGeneral() {
-		return general;
-	}
-
 	public void setGeneral(String general) {
 		this.general = general;
 	}

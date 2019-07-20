@@ -177,7 +177,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				}
 			};
 			Future<?> reaperFuture = stopThread.schedule(completeTask, observation.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
-			schedule.add(new ScheduledObservation(observation, future, reaperFuture, readTask, completeTask));
+			schedule.add(new ScheduledObservation(observation, future, reaperFuture, completeTask));
 			return observation;
 		}
 	}
