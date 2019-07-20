@@ -31,12 +31,6 @@ public class ValidationResult extends HashMap<String, String> {
 		return super.isEmpty();
 	}
 
-	public static ValidationResult valueOf(String fieldName, String error) {
-		ValidationResult result = new ValidationResult();
-		result.put(fieldName, error);
-		return result;
-	}
-
 	public String toJson() {
 		JsonObject result = Json.object();
 		if (!isEmpty()) {

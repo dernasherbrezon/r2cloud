@@ -20,6 +20,7 @@ public class DdnsTest extends RegisteredTest {
 	@Test
 	public void testSaveNONE() {
 		client.saveDdnsConfiguration("NONE", null, null, null);
+		TestUtil.assertJson("noDdns.json", client.getDdnsConfiguration());
 	}
 
 	@Test

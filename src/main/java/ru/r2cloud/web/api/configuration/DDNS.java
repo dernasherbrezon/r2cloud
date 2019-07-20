@@ -20,13 +20,14 @@ import ru.r2cloud.web.api.Messages;
 public class DDNS extends AbstractHttpController {
 
 	private static final String TYPE_PROPERTY_NAME = "ddns.type";
-
 	private static final String DOMAIN_PROPERTY_NAME = "ddns.noip.domain";
-
 	private static final String PASSWORD_PROPERTY_NAME = "ddns.noip.password";
-
 	private static final String USERNAME_PROPERTY_NAME = "ddns.noip.username";
-
+	
+	private static final String PASSWORD_PARAMETER = "password";
+	private static final String USERNAME_PARAMETER = "username";
+	private static final String DOMAIN_PARAMETER = "domain";
+	
 	private static final Logger LOG = LoggerFactory.getLogger(DDNS.class);
 
 	private final Configuration config;
@@ -43,15 +44,15 @@ public class DDNS extends AbstractHttpController {
 		JsonObject entity = new JsonObject();
 		String username = config.getProperty(USERNAME_PROPERTY_NAME);
 		if (username != null) {
-			entity.add("username", username);
+			entity.add(USERNAME_PARAMETER, username);
 		}
 		String password = config.getProperty(PASSWORD_PROPERTY_NAME);
 		if (password != null) {
-			entity.add("password", password);
+			entity.add(PASSWORD_PARAMETER, password);
 		}
 		String domain = config.getProperty(DOMAIN_PROPERTY_NAME);
 		if (domain != null) {
-			entity.add("domain", domain);
+			entity.add(DOMAIN_PARAMETER, domain);
 		}
 		entity.add("type", config.getDdnsType(TYPE_PROPERTY_NAME).toString());
 		String currentIp = config.getProperty("ddns.ip");
@@ -65,9 +66,9 @@ public class DDNS extends AbstractHttpController {
 	@Override
 	public ModelAndView doPost(JsonObject request) {
 		String typeStr = WebServer.getString(request, "type");
-		String username = request.getString("username", null);
-		String password = request.getString("password", null);
-		String domain = request.getString("domain", null);
+		String username = request.getString(USERNAME_PARAMETER, null);
+		String password = request.getString(PASSWORD_PARAMETER, null);
+		String domain = request.getString(DOMAIN_PARAMETER, null);
 
 		ValidationResult errors = new ValidationResult();
 		if (typeStr == null) {
@@ -88,13 +89,13 @@ public class DDNS extends AbstractHttpController {
 		switch (type) {
 		case NOIP:
 			if (username == null || username.trim().length() == 0) {
-				errors.put("username", Messages.CANNOT_BE_EMPTY);
+				errors.put(USERNAME_PARAMETER, Messages.CANNOT_BE_EMPTY);
 			}
 			if (password == null || password.trim().length() == 0) {
-				errors.put("password", Messages.CANNOT_BE_EMPTY);
+				errors.put(PASSWORD_PARAMETER, Messages.CANNOT_BE_EMPTY);
 			}
 			if (domain == null || domain.trim().length() == 0) {
-				errors.put("domain", Messages.CANNOT_BE_EMPTY);
+				errors.put(DOMAIN_PARAMETER, Messages.CANNOT_BE_EMPTY);
 			}
 			break;
 		default:
