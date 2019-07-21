@@ -4,10 +4,6 @@ import fi.iki.elonen.NanoHTTPD.Response;
 
 public class BadRequest extends ModelAndView {
 
-	public BadRequest() {
-		this("Invalid request");
-	}
-
 	public BadRequest(String generalError) {
 		this(new ValidationResult(generalError));
 	}

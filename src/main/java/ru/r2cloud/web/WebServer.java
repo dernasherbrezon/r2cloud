@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
+import com.eclipsesource.json.ParseException;
 
 import fi.iki.elonen.NanoHTTPD;
 import ru.r2cloud.util.Configuration;
@@ -76,11 +77,16 @@ public class WebServer extends NanoHTTPD {
 					model = controller.doGet(session);
 					break;
 				case POST:
-					JsonValue request = Json.parse(WebServer.getRequestBody(session));
-					if (!request.isObject()) {
-						model = new BadRequest("expected object");
-					} else {
-						model = controller.doPost(request.asObject());
+					JsonValue request;
+					try {
+						request = Json.parse(WebServer.getRequestBody(session));
+						if (!request.isObject()) {
+							model = new BadRequest("expected object");
+						} else {
+							model = controller.doPost(request.asObject());
+						}
+					} catch (ParseException e) {
+						model = new BadRequest("expected json object");
 					}
 					break;
 				default:

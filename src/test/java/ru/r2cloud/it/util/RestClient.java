@@ -331,6 +331,18 @@ public class RestClient {
 		}
 		return (JsonObject) Json.parse(response.body());
 	}
+	
+	public HttpResponse<String> postData(String url, String data) {
+		HttpRequest request = createDefaultRequest(url).POST(BodyPublishers.ofString(data, StandardCharsets.UTF_8)).build();
+		try {
+			return httpclient.send(request, BodyHandlers.ofString());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
 
 	public HttpResponse<String> getFileResponse(String url) {
 		HttpRequest request = createAuthRequest(url).GET().build();
@@ -343,7 +355,7 @@ public class RestClient {
 			throw new RuntimeException("unable to send request");
 		}
 	}
-
+	
 	public String getFile(String url) {
 		HttpResponse<String> response = getFileResponse(url);
 		if (response.statusCode() != 200) {

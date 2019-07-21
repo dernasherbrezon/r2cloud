@@ -22,6 +22,18 @@ public class WebserverTest extends BaseTest {
 		HttpResponse<String> response = client.saveR2CloudConfigurationWithResponse(UUID.randomUUID().toString(), true);
 		assertEquals(401, response.statusCode());
 	}
+	
+	@Test
+	public void testInvalidPost() {
+		HttpResponse<String> response = client.postData("/api/v1/setup/setup", UUID.randomUUID().toString());
+		assertEquals(400, response.statusCode());
+	}
+	
+	@Test
+	public void testInvalidPostBody() {
+		HttpResponse<String> response = client.postData("/api/v1/setup/setup", "[{\"test\": 1 }]");
+		assertEquals(400, response.statusCode());
+	}
 
 	@Test
 	public void testOptions() {
