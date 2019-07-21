@@ -78,6 +78,10 @@ public class Configuration {
 		return fs.getPath(getProperty("satellites.basepath.location"));
 	}
 
+	public Path getPathFromProperty(String propertyName) {
+		return fs.getPath(getProperty(propertyName));
+	}
+
 	public String setProperty(String key, String value) {
 		synchronized (changedProperties) {
 			changedProperties.add(key);
@@ -254,7 +258,7 @@ public class Configuration {
 		}
 		return fs.getPath(System.getProperty("java.io.tmpdir"));
 	}
-	
+
 	public Path getPath(String filename) {
 		return fs.getPath(filename);
 	}
