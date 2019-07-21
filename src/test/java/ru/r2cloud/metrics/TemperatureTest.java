@@ -34,12 +34,19 @@ public class TemperatureTest {
 	public void testNotAvailable() {
 		assertFalse(temp.isAvailable());
 	}
+	
+	@Test
+	public void testEmptyFile() throws Exception {
+		Files.createFile(tempfile);
+		assertNull(temp.getValue());
+	}
 
 	@Test
 	public void testTemperature() throws Exception {
 		setupData("47078");
 		assertTrue(temp.isAvailable());
 		assertEquals(47.078, temp.getValue(), 0.0);
+		assertEquals(47.078, (Double)temp.newMetric().getValue(), 0.0);
 	}
 
 	@Test

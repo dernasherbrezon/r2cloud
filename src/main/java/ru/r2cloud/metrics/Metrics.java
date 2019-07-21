@@ -15,14 +15,13 @@ import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.codahale.metrics.health.SharedHealthCheckRegistries;
 
-import ru.r2cloud.R2Cloud;
 import ru.r2cloud.cloud.R2ServerService;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 
 public class Metrics {
 
-	private static final Logger LOG = LoggerFactory.getLogger(R2Cloud.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Metrics.class);
 	private final MetricRegistry registry = SharedMetricRegistries.getOrCreate("r2cloud");
 	private final HealthCheckRegistry healthRegistry = SharedHealthCheckRegistries.getOrCreate("r2cloud");
 
