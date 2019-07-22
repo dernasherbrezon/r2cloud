@@ -112,7 +112,7 @@ public class ConfigurationTest {
 		config = new TestConfiguration(tempFolder, fs);
 		assertEquals(lat, config.getProperty("locaiton.lat"));
 	}
-
+	
 	@Before
 	public void start() throws Exception {
 		fs = new MockFileSystem(FileSystems.getDefault());

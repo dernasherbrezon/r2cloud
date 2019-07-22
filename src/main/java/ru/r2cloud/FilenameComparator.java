@@ -19,22 +19,26 @@ public class FilenameComparator implements Comparator<Path> {
 	public int compare(Path o1, Path o2) {
 		Long n1 = convert(o1);
 		Long n2 = convert(o2);
-		if( n1 == null && n2 != null ) {
-			if( asc ) {
+		if (n1 == null && n2 != null) {
+			if (asc) {
 				return 1;
 			} else {
 				return -1;
 			}
 		}
-		if( n1 != null && n2 == null ) {
-			if( asc ) {
+		if (n1 != null && n2 == null) {
+			if (asc) {
 				return -1;
 			} else {
 				return 1;
 			}
 		}
-		if( n1 == null && n2 == null ) {
-			return 0;
+		if (n1 == null && n2 == null) {
+			if (asc) {
+				return o1.getFileName().toString().compareTo(o2.getFileName().toString());
+			} else {
+				return o2.getFileName().toString().compareTo(o1.getFileName().toString());
+			}
 		}
 		if (asc) {
 			return n1.compareTo(n2);

@@ -14,8 +14,17 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.it.util.RegisteredTest;
+import ru.r2cloud.model.Tle;
 
 public class TleTest extends RegisteredTest {
+
+	@Test
+	public void testEqualsHashCode() {
+		Tle first = new Tle(createTle().toArray(new String[0]));
+		Tle second = new Tle(createTle().toArray(new String[0]));
+		assertEquals(first.hashCode(), second.hashCode());
+		assertTrue(first.equals(second));
+	}
 
 	@Test
 	public void testLoad() {
@@ -24,11 +33,15 @@ public class TleTest extends RegisteredTest {
 		assertNotNull(data);
 		assertTrue(data.isArray());
 		JsonArray dataArray = data.asArray();
+		assertEquals(createTle(), findData("40069", dataArray));
+	}
+
+	private static List<String> createTle() {
 		List<String> expected = new ArrayList<>();
 		expected.add("METEOR-M 2");
 		expected.add("1 40069U 14037A   18286.52491495 -.00000023  00000-0  92613-5 0  9990");
 		expected.add("2 40069  98.5901 334.4030 0004544 256.4188 103.6490 14.20654800221188");
-		assertEquals(expected, findData("40069", dataArray));
+		return expected;
 	}
 
 	private static List<String> findData(String id, JsonArray array) {

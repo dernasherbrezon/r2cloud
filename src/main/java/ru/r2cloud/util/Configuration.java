@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -18,12 +17,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.cli.BasicParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,40 +132,6 @@ public class Configuration {
 		return Long.valueOf(strValue);
 	}
 
-	public List<String> getOptions(String name, Options supportedOptions) {
-		String args = getProperty(name);
-		if (args == null) {
-			return Collections.emptyList();
-		}
-		List<String> result = new ArrayList<>();
-		String[] params = args.split(" ");
-		CommandLineParser parser = new BasicParser();
-		try {
-			CommandLine line = parser.parse(supportedOptions, params);
-			if (!line.getArgList().isEmpty()) {
-				StringBuilder notFound = new StringBuilder();
-				notFound.append("Unsupported args: ");
-				for (Object cur : line.getArgList()) {
-					notFound.append(cur).append(" ");
-				}
-				throw new IllegalArgumentException(notFound.toString());
-			}
-			for (Option cur : line.getOptions()) {
-				if (cur.getLongOpt() != null) {
-					result.add(cur.getLongOpt());
-				} else {
-					continue;
-				}
-				if (cur.getValue() != null) {
-					result.add(cur.getValue());
-				}
-			}
-		} catch (ParseException e) {
-			throw new IllegalArgumentException(e);
-		}
-		return result;
-	}
-
 	public Integer getInteger(String name) {
 		String strValue = getProperty(name);
 		if (strValue == null) {
@@ -222,14 +181,6 @@ public class Configuration {
 			changedProperties.add(name);
 		}
 		userSettings.remove(name);
-	}
-
-	public List<String> getList(String name) {
-		String str = getProperty(name);
-		if (str == null) {
-			return Collections.emptyList();
-		}
-		return Util.splitComma(str);
 	}
 
 	public void subscribe(ConfigListener listener, String... names) {
