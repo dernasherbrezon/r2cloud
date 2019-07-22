@@ -152,7 +152,7 @@ public class RtlSdrStatusDaoTest {
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
 		config.setProperty("rtltest.path", TestUtil.setupScript(new File(tempFolder.getRoot().getAbsoluteFile(), "rtl_test_mock.sh")).getAbsolutePath());
 		config.setProperty("stdbuf.path", TestUtil.setupScript(new File(tempFolder.getRoot().getAbsoluteFile(), "stdbuf_mock.sh")).getAbsolutePath());
-		config.setProperty("threadpool.shutdown.millis", "10000");
+		config.setProperty("threadpool.shutdown.millis", "15000");
 		config.update();
 
 		rtlTestServer = new RtlTestServer();
