@@ -47,6 +47,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>ru.r2cloud</groupId>
+			<artifactId>journald-formatter</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>ru.r2cloud</groupId>
 			<artifactId>jradio</artifactId>
 			<version>1.15</version>
 		</dependency>
