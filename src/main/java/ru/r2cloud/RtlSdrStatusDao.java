@@ -58,19 +58,6 @@ public class RtlSdrStatusDao implements Lifecycle {
 		}
 		currentPpm = config.getInteger("ppm.current");
 		executor = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("rtlsdr-tester"));
-		executor.scheduleAtFixedRate(new Runnable() {
-
-			@Override
-			public void run() {
-				RtlSdrStatus curStatus = statusProcess.getStatus();
-				if (curStatus == null) {
-					return;
-				}
-				synchronized (RtlSdrStatusDao.this) {
-					status = curStatus;
-				}
-			}
-		}, 0, config.getLong("rtltest.interval.seconds"), TimeUnit.SECONDS);
 		if (config.getBoolean("ppm.calculate")) {
 			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 			try {
@@ -120,26 +107,19 @@ public class RtlSdrStatusDao implements Lifecycle {
 
 			@Override
 			protected Result check() throws Exception {
-				synchronized (RtlSdrStatusDao.this) {
-					if (status == null || !status.isDongleConnected()) {
-						return ResultUtil.unknown();
-					}
-					if (status.getError() == null) {
-						return ResultUtil.healthy();
-					} else {
-						return ResultUtil.unhealthy(status.getError());
-					}
-				}
+				return ResultUtil.healthy();
 			}
 		});
 		metrics.getHealthRegistry().register("rtldongle", new HealthCheck() {
 
 			@Override
 			protected Result check() throws Exception {
+				RtlSdrStatus curStatus = statusProcess.getStatus();
+				if (curStatus == null) {
+					return ResultUtil.unknown();
+				}
 				synchronized (RtlSdrStatusDao.this) {
-					if (status == null) {
-						return ResultUtil.unknown();
-					}
+					status = curStatus;
 					if (status.isDongleConnected()) {
 						return ResultUtil.healthy();
 					} else {

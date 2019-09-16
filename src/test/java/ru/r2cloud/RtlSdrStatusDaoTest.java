@@ -8,7 +8,6 @@ import java.io.File;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
@@ -55,7 +54,6 @@ public class RtlSdrStatusDaoTest {
 		createExecuteNowRtlSdrDao();
 
 		Map<String, Result> status = metrics.getHealthRegistry().runHealthChecks();
-		assertUnknown(status.get("rtltest"));
 		assertError(status.get("rtldongle"));
 		assertPpm(0);
 	}
@@ -66,7 +64,6 @@ public class RtlSdrStatusDaoTest {
 		createExecuteNowRtlSdrDao();
 
 		Map<String, Result> status = metrics.getHealthRegistry().runHealthChecks();
-		assertUnknown(status.get("rtltest"));
 		assertUnknown(status.get("rtldongle"));
 	}
 
@@ -85,7 +82,6 @@ public class RtlSdrStatusDaoTest {
 	@Test
 	public void shutdownProcessProperly() throws Exception {
 		config.setProperty("rtltest.path", TestUtil.setupScript(new File(tempFolder.getRoot().getAbsoluteFile(), "rtl_test_mock_timeouted.sh")).getAbsolutePath());
-		config.setProperty("rtltest.interval.seconds", TimeUnit.HOURS.toSeconds(24));
 		config.update();
 
 		RtlSdrLock lock = new RtlSdrLock();
@@ -115,7 +111,6 @@ public class RtlSdrStatusDaoTest {
 
 	private void assertUnknown() {
 		Map<String, Result> status = metrics.getHealthRegistry().runHealthChecks();
-		assertUnknown(status.get("rtltest"));
 		assertUnknown(status.get("rtldongle"));
 	}
 
