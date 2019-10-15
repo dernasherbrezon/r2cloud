@@ -25,7 +25,7 @@ public class AstrocastDecoder extends TelemetryDecoder {
 		int baud = 1200;
 		GmskDemodulator gmsk = new GmskDemodulator(source, baud, gainMu);
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(gmsk, 8, "0111010111111010110000011010001101011000110100000110010001110110", false);
-		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new UnpackedToPacked(new FixedLengthTagger(correlateTag, 255 * 8), 1, Endianness.GR_MSB_FIRST, Byte.class));
+		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new UnpackedToPacked(new FixedLengthTagger(correlateTag, 255 * 8), 1, Endianness.GR_MSB_FIRST));
 		return new Astrocast(pdu);
 	}
 
