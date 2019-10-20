@@ -44,6 +44,7 @@ public class ObservationFactory {
 		result.setSource(satellite.getSource());
 		result.setStartLatitude(nextPass.getStart().getLatitude());
 		result.setEndLatitude(nextPass.getEnd().getLatitude());
+		result.setBandwidth(satellite.getBandwidth());
 		if (immediately) {
 			result.setStartTimeMillis(date.getTime());
 			result.setEndTimeMillis(result.getStartTimeMillis() + (nextPass.getEnd().getTime().getTime() - nextPass.getStart().getTime().getTime()));

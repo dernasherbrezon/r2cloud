@@ -75,6 +75,7 @@ public class LRPTDecoderTest {
 		result.setStartTimeMillis(1554483451541L);
 		result.setInputSampleRate(300_000);
 		result.setOutputSampleRate(150_000);
+		result.setBandwidth(140000);
 		return result;
 	}
 

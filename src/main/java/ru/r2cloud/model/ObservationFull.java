@@ -38,6 +38,7 @@ public class ObservationFull {
 		req.setInputSampleRate(meta.getInt("inputSampleRate", -1));
 		req.setSatelliteFrequency(meta.getLong("frequency", -1));
 		req.setActualFrequency(meta.getLong("actualFrequency", -1));
+		req.setBandwidth(meta.getLong("bandwidth", -1));
 		String decoder = meta.getString("decoder", null);
 		if ("aausat4".equals(decoder)) {
 			decoder = "telemetry";
@@ -75,6 +76,7 @@ public class ObservationFull {
 		json.add("actualFrequency", req.getActualFrequency());
 		json.add("decoder", req.getSource().name());
 		json.add("satellite", req.getSatelliteId());
+		json.add("bandwidth", req.getBandwidth());
 
 		if (result == null) {
 			return json;

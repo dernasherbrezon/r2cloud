@@ -7,6 +7,15 @@ public class Satellite {
 	private FrequencySource source;
 	private long frequency;
 	private boolean enabled;
+	private long bandwidth;
+	
+	public long getBandwidth() {
+		return bandwidth;
+	}
+	
+	public void setBandwidth(long bandwidth) {
+		this.bandwidth = bandwidth;
+	}
 
 	public boolean isEnabled() {
 		return enabled;

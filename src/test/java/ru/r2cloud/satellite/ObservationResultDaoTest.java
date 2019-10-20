@@ -51,6 +51,7 @@ public class ObservationResultDaoTest {
 		req.setSatelliteId(UUID.randomUUID().toString());
 		req.setStartTimeMillis(System.currentTimeMillis());
 		req.setStartLatitude(0.1);
+		req.setBandwidth(4_000);
 		assertNotNull(dao.insert(req, createTempFile("wav")));
 		ObservationFull actual = dao.find(req.getSatelliteId(), req.getId());
 		assertNotNull(actual.getResult().getWavPath());
@@ -60,6 +61,7 @@ public class ObservationResultDaoTest {
 		assertNull(actual.getResult().getSpectogramPath());
 		assertEquals(1, actual.getReq().getSatelliteFrequency());
 		assertEquals(2, actual.getReq().getActualFrequency());
+		assertEquals(4_000, actual.getReq().getBandwidth());
 
 		assertNotNull(dao.saveData(req.getSatelliteId(), req.getId(), createTempFile("data")));
 

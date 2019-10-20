@@ -11,10 +11,19 @@ public class ObservationRequest {
 	private FrequencySource source;
 	private long satelliteFrequency;
 	private uk.me.g4dpz.satellite.Satellite origin;
+	private long bandwidth;
 
 	private int inputSampleRate;
 	private int outputSampleRate;
 	private long actualFrequency;
+	
+	public long getBandwidth() {
+		return bandwidth;
+	}
+	
+	public void setBandwidth(long bandwidth) {
+		this.bandwidth = bandwidth;
+	}
 
 	public String getId() {
 		return id;

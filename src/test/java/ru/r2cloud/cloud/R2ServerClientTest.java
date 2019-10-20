@@ -170,6 +170,7 @@ public class R2ServerClientTest {
 		req.setActualFrequency(100L);
 		req.setSource(FrequencySource.APT);
 		req.setSatelliteId("1");
+		req.setBandwidth(1000);
 		ObservationResult res = new ObservationResult();
 		res.setGain("1");
 		res.setChannelA("1");
