@@ -26,12 +26,18 @@ public class CelestrakServer {
 			@Override
 			public void handle(HttpExchange exchange) throws IOException {
 				if (data == null) {
-					exchange.sendResponseHeaders(404, 0);
+					String message = "expected not found";
+					byte[] body = message.getBytes(StandardCharsets.UTF_8);
+					exchange.sendResponseHeaders(404, body.length);
+					OutputStream os = exchange.getResponseBody();
+					os.write(body);
+					os.close();
 					return;
 				}
-				exchange.sendResponseHeaders(200, data.length());
+				byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
+				exchange.sendResponseHeaders(200, bytes.length);
 				OutputStream os = exchange.getResponseBody();
-				os.write(data.getBytes(StandardCharsets.UTF_8));
+				os.write(bytes);
 				os.close();
 			}
 		});

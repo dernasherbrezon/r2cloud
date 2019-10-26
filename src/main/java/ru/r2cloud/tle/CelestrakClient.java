@@ -37,7 +37,7 @@ public class CelestrakClient {
 			int responseCode = con.getResponseCode();
 			if (responseCode != 200) {
 				LOG.error("unable to get weather tle. response code: {}. See logs for details", responseCode);
-				Util.toLog(LOG, con.getInputStream());
+				Util.toLog(LOG, con.getErrorStream());
 			} else {
 				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
 					// only first line matters
