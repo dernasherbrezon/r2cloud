@@ -27,7 +27,7 @@ public class TestUtil {
 
 	public static String loadExpected(String name) {
 		StringBuilder expectedStr = new StringBuilder();
-		try (BufferedReader r = new BufferedReader(new InputStreamReader(CelestrakClientTest.class.getClassLoader().getResourceAsStream(name)))) {
+		try (BufferedReader r = new BufferedReader(new InputStreamReader(CelestrakClientTest.class.getClassLoader().getResourceAsStream(name), StandardCharsets.UTF_8))) {
 			String curLine = null;
 			while ((curLine = r.readLine()) != null) {
 				expectedStr.append(curLine).append("\n");
@@ -63,12 +63,6 @@ public class TestUtil {
 		try (InputStream is = TestUtil.class.getClassLoader().getResourceAsStream(classpathFrom); OutputStream w = new FileOutputStream(to)) {
 			Util.copy(is, w);
 		}
-		// try (BufferedReader r = new BufferedReader(new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(classpathFrom), StandardCharsets.UTF_8)); BufferedWriter w = new BufferedWriter(new FileWriter(to))) {
-		// String curLine = null;
-		// while ((curLine = r.readLine()) != null) {
-		// w.append(curLine).append("\n");
-		// }
-		// }
 	}
 
 	public static File setupScript(File to) throws IOException {
@@ -79,7 +73,7 @@ public class TestUtil {
 
 	public static void assertJson(String classPathResource, JsonObject actual) {
 		assertNotNull(actual);
-		try (Reader is = new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(classPathResource))) {
+		try (Reader is = new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(classPathResource), StandardCharsets.UTF_8)) {
 			JsonValue value = Json.parse(is);
 			assertTrue(value.isObject());
 			assertJson(value.asObject(), actual);
