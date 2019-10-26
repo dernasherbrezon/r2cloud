@@ -22,7 +22,7 @@ Base station might include different hardware components. Please check recommend
 
 1. Install r2cloud
   - From the image. This is simpliest way and require brand new SD card
-    - Download the [latest](https://s3.amazonaws.com/r2cloud/dist/image_2019-04-28-r2cloud-lite.zip) official image
+    - Download the [latest](https://s3.amazonaws.com/r2cloud/dist/image_2019-10-25-r2cloud-lite.zip) official image
     - Insert SD card into the card reader and flash it. You could use [Etcher](https://etcher.io) to do this
     - Insert SD card into the card reader and create file ```r2cloud.txt``` in the root directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
   
