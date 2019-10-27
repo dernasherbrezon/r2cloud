@@ -62,7 +62,7 @@ public class SpectogramService {
 	}
 
 	private File createFromIq(File file, float sampleRate) {
-		Long totalSamples = Util.readTotalSamples(file);
+		Long totalSamples = Util.readTotalSamples(file.toPath());
 		if (totalSamples == null) {
 			return null;
 		}

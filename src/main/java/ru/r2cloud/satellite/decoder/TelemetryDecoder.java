@@ -47,7 +47,7 @@ public abstract class TelemetryDecoder implements Decoder {
 		BeaconSource<? extends Beacon> input = null;
 		BeaconOutputStream aos = null;
 		try {
-			Long totalSamples = Util.readTotalSamples(rawIq);
+			Long totalSamples = Util.readTotalSamples(rawIq.toPath());
 			if (totalSamples != null) {
 				RtlSdr sdr = new RtlSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalSamples);
 

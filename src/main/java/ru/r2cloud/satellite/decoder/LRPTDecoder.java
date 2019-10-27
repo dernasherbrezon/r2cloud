@@ -56,7 +56,7 @@ public class LRPTDecoder implements Decoder {
 		long numberOfDecodedPackets = 0;
 		File binFile = new File(config.getTempDirectory(), "lrpt-" + req.getId() + ".bin");
 		try {
-			Long totalSamples = Util.readTotalSamples(rawIq);
+			Long totalSamples = Util.readTotalSamples(rawIq.toPath());
 			if (totalSamples != null) {
 				RtlSdr sdr = new RtlSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalSamples);
 				

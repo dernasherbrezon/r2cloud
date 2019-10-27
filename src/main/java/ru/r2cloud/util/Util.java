@@ -2,16 +2,20 @@ package ru.r2cloud.util;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -174,23 +178,38 @@ public final class Util {
 	}
 
 	// works well for files less than 4Gb
-	public static Long readTotalSamples(File rawFile) {
-		long totalSamples;
-		try (RandomAccessFile raf = new RandomAccessFile(rawFile, "r")) {
-			raf.seek(raf.length() - 4);
-			long b4 = raf.read();
-			long b3 = raf.read();
-			long b2 = raf.read();
-			long b1 = raf.read();
-			totalSamples = ((b1 << 24) | (b2 << 16) + (b3 << 8) + b4) / 2;
-		} catch (IOException e) {
-			LOG.error("unable to get total number of samples", e);
-			if (!rawFile.delete()) {
-				LOG.error("unable to delete raw file at: {}", rawFile.getAbsolutePath());
+	public static Long readTotalSamples(Path rawFile) {
+		try (SeekableByteChannel bch = Files.newByteChannel(rawFile, StandardOpenOption.READ)) {
+			if (bch.size() < 4) {
+				return null;
 			}
+			bch.position(bch.size() - 4);
+			ByteBuffer dst = ByteBuffer.allocate(4);
+			readFully(bch, dst);
+			long b4 = dst.get(0) & 0xFF;
+			long b3 = dst.get(1) & 0xFF;
+			long b2 = dst.get(2) & 0xFF;
+			long b1 = dst.get(3) & 0xFF;
+			return ((b1 << 24) | (b2 << 16) + (b3 << 8) + b4) / 2;
+		} catch (IOException e1) {
+			LOG.error("unable to get total number of samples", e1);
 			return null;
 		}
-		return totalSamples;
+	}
+
+	public static void readFully(ReadableByteChannel channel, ByteBuffer b) throws IOException {
+		final int expectedLength = b.remaining();
+		int read = 0;
+		while (read < expectedLength) {
+			int readNow = channel.read(b);
+			if (readNow <= 0) {
+				break;
+			}
+			read += readNow;
+		}
+		if (read < expectedLength) {
+			throw new EOFException();
+		}
 	}
 
 	private Util() {

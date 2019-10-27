@@ -66,7 +66,7 @@ public class Aausat4Decoder implements Decoder {
 		BufferedOutputStream fos = null;
 		try {
 			// 1 stage. correct doppler & remove DC offset
-			Long totalSamples = Util.readTotalSamples(rawIq);
+			Long totalSamples = Util.readTotalSamples(rawIq.toPath());
 			if (totalSamples == null) {
 				return result;
 			}
