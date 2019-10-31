@@ -193,6 +193,7 @@ public class ObservationResultDao {
 			return null;
 		}
 		if (!dataFile.renameTo(dest.toFile())) {
+			LOG.error("unable to save file from {} to {}. Check src and dst are on the same filesystem", dataFile.getAbsolutePath(), dest.toFile().getAbsolutePath());
 			return null;
 		}
 		return dest.toFile();
