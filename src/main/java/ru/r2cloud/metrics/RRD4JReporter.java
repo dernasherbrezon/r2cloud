@@ -28,7 +28,6 @@ import com.codahale.metrics.Timer;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
-import ru.r2cloud.R2Cloud;
 import ru.r2cloud.cloud.R2ServerService;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
@@ -36,7 +35,7 @@ import ru.r2cloud.util.Util;
 
 public class RRD4JReporter extends ScheduledReporter {
 
-	private static final Logger LOG = LoggerFactory.getLogger(R2Cloud.class);
+	private static final Logger LOG = LoggerFactory.getLogger(RRD4JReporter.class);
 	private static final long STEP = 300; // secs
 
 	private final File basepath;
