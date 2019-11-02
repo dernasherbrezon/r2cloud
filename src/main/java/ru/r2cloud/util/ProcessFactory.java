@@ -2,7 +2,7 @@ package ru.r2cloud.util;
 
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -28,11 +28,7 @@ public class ProcessFactory {
 	}
 
 	public ProcessWrapper create(String commandLine, boolean redirectErrorStream, boolean inheritIO) throws IOException {
-		List<String> args = new ArrayList<>();
-		for (String cur : SPACE.split(commandLine)) {
-			args.add(cur);
-		}
-		return create(args, redirectErrorStream, inheritIO);
+		return create(Arrays.asList(SPACE.split(commandLine)), redirectErrorStream, inheritIO);
 	}
 
 	public ProcessWrapper create(List<String> commandLine, boolean redirectErrorStream, boolean inheritIO) throws IOException {
