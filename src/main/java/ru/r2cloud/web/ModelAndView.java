@@ -1,6 +1,5 @@
 package ru.r2cloud.web;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.eclipsesource.json.JsonValue;
@@ -23,17 +22,6 @@ public class ModelAndView {
 
 	public Map<String, String> getHeaders() {
 		return headers;
-	}
-
-	public void setHeaders(Map<String, String> headers) {
-		this.headers = headers;
-	}
-
-	public void addHeader(String name, String value) {
-		if (headers == null) {
-			headers = new HashMap<String, String>();
-		}
-		headers.put(name, value);
 	}
 
 	public String getData() {
