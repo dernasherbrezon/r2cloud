@@ -35,6 +35,7 @@ import ru.r2cloud.satellite.decoder.Jy1satDecoder;
 import ru.r2cloud.satellite.decoder.KunsPfDecoder;
 import ru.r2cloud.satellite.decoder.LRPTDecoder;
 import ru.r2cloud.satellite.decoder.Lume1Decoder;
+import ru.r2cloud.satellite.decoder.MeteorM22Decoder;
 import ru.r2cloud.satellite.decoder.Nayif1Decoder;
 import ru.r2cloud.satellite.decoder.PegasusDecoder;
 import ru.r2cloud.satellite.decoder.PwSat2Decoder;
@@ -161,6 +162,8 @@ public class R2Cloud {
 		decoders.put("43814", new PwSat2Decoder(props, predict));
 		decoders.put("43881", new Dstar1Decoder(props, predict));
 		decoders.put("43908", new Lume1Decoder(props, predict));
+		decoders.put("44387", new MeteorM22Decoder(props, predict, processFactory));
+		
 		validateDecoders();
 		DecoderTask decoderTask = new DecoderTask(decoders, resultDao, r2cloudService);
 

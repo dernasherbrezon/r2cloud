@@ -6,7 +6,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({APTDecoderIT.class})
+@SuiteClasses({APTDecoderIT.class, MeteorM22DecoderIT.class})
 public class IntegrationalTests {
 
 	public static void main(String[] args) throws Exception {
