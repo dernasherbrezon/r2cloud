@@ -35,10 +35,10 @@ public class ObservationTest extends RegisteredTest {
 	@Test
 	public void testMeteorObservation() throws Exception {
 		rtlSdrMock.mockResponse("/data/40069-1553411549943.raw.gz");
-		JsonHttpResponse metaHandler = new JsonHttpResponse("r2cloudclienttest/save-meta-response.json", 200);
-		server.setObservationMock(metaHandler);
 		JsonHttpResponse spectogramHandler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
 		server.setSpectogramMock(1L, spectogramHandler);
+		JsonHttpResponse metaHandler = new JsonHttpResponse("r2cloudclienttest/save-meta-response.json", 200);
+		server.setObservationMock(metaHandler);
 
 		// start observation
 		String observationId = client.scheduleStart(METEOR_ID);
@@ -56,7 +56,7 @@ public class ObservationTest extends RegisteredTest {
 		try {
 			actual = (JsonObject) Json.parse(metaHandler.getRequest());
 		} catch (ParseException e) {
-			fail("unable to parse request: " + metaHandler.getRequest() + " " + e.getMessage());
+			fail("unable to parse request: " + metaHandler.getRequest() + " content-type: " + metaHandler.getRequestContentType() + " " + e.getMessage());
 		}
 		assertObservation(actual);
 
