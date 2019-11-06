@@ -69,3 +69,8 @@ Please read our [guidelines](https://github.com/dernasherbrezon/r2cloud/wiki/Con
 ## Contact
 
 Please use [gitter](https://gitter.im/r2cloud/Lobby)
+
+## Troubleshooting guide
+
+Frequent errors are combined in our [guide](https://github.com/dernasherbrezon/r2cloud/wiki/Troubleshooting-guide).
+
