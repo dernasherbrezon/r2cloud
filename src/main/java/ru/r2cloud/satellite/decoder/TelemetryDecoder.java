@@ -42,37 +42,40 @@ public abstract class TelemetryDecoder implements Decoder {
 	public ObservationResult decode(File rawIq, ObservationRequest req) {
 		ObservationResult result = new ObservationResult();
 		result.setIqPath(rawIq);
+
+		Long totalSamples = Util.readTotalSamples(rawIq.toPath());
+		if (totalSamples == null) {
+			return result;
+		}
+
 		long numberOfDecodedPackets = 0;
 		File binFile = new File(config.getTempDirectory(), req.getId() + ".bin");
 		BeaconSource<? extends Beacon> input = null;
 		BeaconOutputStream aos = null;
 		try {
-			Long totalSamples = Util.readTotalSamples(rawIq.toPath());
-			if (totalSamples != null) {
-				RtlSdr sdr = new RtlSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalSamples);
+			RtlSdr sdr = new RtlSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalSamples);
 
-				long startOffset = predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getStartTimeMillis(), req.getOrigin());
-				long endOffset = predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getEndTimeMillis(), req.getOrigin());
-				long finalBandwidth = startOffset - endOffset + req.getBandwidth() / 2;
+			long startOffset = predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getStartTimeMillis(), req.getOrigin());
+			long endOffset = predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getEndTimeMillis(), req.getOrigin());
+			long finalBandwidth = startOffset - endOffset + req.getBandwidth() / 2;
 
-				float[] taps = Firdes.lowPass(1.0, sdr.getContext().getSampleRate(), finalBandwidth, 1600, Window.WIN_HAMMING, 6.76);
-				FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(sdr, taps, req.getInputSampleRate() / req.getOutputSampleRate(), (double) req.getSatelliteFrequency() - req.getActualFrequency());
-				SigSource source2 = new SigSource(Waveform.COMPLEX, (long) xlating.getContext().getSampleRate(), new DopplerValueSource(xlating.getContext().getSampleRate(), req.getSatelliteFrequency(), 1000L, req.getStartTimeMillis()) {
+			float[] taps = Firdes.lowPass(1.0, sdr.getContext().getSampleRate(), finalBandwidth, 1600, Window.WIN_HAMMING, 6.76);
+			FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(sdr, taps, req.getInputSampleRate() / req.getOutputSampleRate(), (double) req.getSatelliteFrequency() - req.getActualFrequency());
+			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) xlating.getContext().getSampleRate(), new DopplerValueSource(xlating.getContext().getSampleRate(), req.getSatelliteFrequency(), 1000L, req.getStartTimeMillis()) {
 
-					@Override
-					public long getDopplerFrequency(long satelliteFrequency, long currentTimeMillis) {
-						return predict.getDownlinkFreq(satelliteFrequency, currentTimeMillis, req.getOrigin());
-					}
-				}, 1.0);
-				Multiply mul = new Multiply(xlating, source2);
-				input = createBeaconSource(mul, req);
-				aos = new BeaconOutputStream(new FileOutputStream(binFile));
-				while (input.hasNext()) {
-					Beacon next = input.next();
-					next.setBeginMillis(req.getStartTimeMillis() + (long) ((next.getBeginSample() * 1000) / xlating.getContext().getSampleRate()));
-					aos.write(next);
-					numberOfDecodedPackets++;
+				@Override
+				public long getDopplerFrequency(long satelliteFrequency, long currentTimeMillis) {
+					return predict.getDownlinkFreq(satelliteFrequency, currentTimeMillis, req.getOrigin());
 				}
+			}, 1.0);
+			Multiply mul = new Multiply(xlating, source2);
+			input = createBeaconSource(mul, req);
+			aos = new BeaconOutputStream(new FileOutputStream(binFile));
+			while (input.hasNext()) {
+				Beacon next = input.next();
+				next.setBeginMillis(req.getStartTimeMillis() + (long) ((next.getBeginSample() * 1000) / xlating.getContext().getSampleRate()));
+				aos.write(next);
+				numberOfDecodedPackets++;
 			}
 		} catch (Exception e) {
 			LOG.error("unable to process: " + rawIq, e);

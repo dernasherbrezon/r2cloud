@@ -53,48 +53,45 @@ public class LRPTDecoder implements Decoder {
 		MeteorM lrpt = null;
 		ObservationResult result = new ObservationResult();
 		result.setIqPath(rawIq);
+
+		Long totalSamples = Util.readTotalSamples(rawIq.toPath());
+		if (totalSamples == null) {
+			return result;
+		}
+
 		long numberOfDecodedPackets = 0;
 		File binFile = new File(config.getTempDirectory(), "lrpt-" + req.getId() + ".bin");
 		try {
-			Long totalSamples = Util.readTotalSamples(rawIq.toPath());
-			if (totalSamples != null) {
-				RtlSdr sdr = new RtlSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalSamples);
-				
-				long startOffset = predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getStartTimeMillis(), req.getOrigin());
-				long endOffset = predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getEndTimeMillis(), req.getOrigin());
-				long finalBandwidth = startOffset - endOffset + req.getBandwidth() / 2;
+			RtlSdr sdr = new RtlSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalSamples);
 
-				float[] taps = Firdes.lowPass(1.0, sdr.getContext().getSampleRate(), finalBandwidth, 1600, Window.WIN_HAMMING, 6.76);
-				FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(sdr, taps, req.getInputSampleRate() / req.getOutputSampleRate(), (double) req.getSatelliteFrequency() - req.getActualFrequency());
-				SigSource source2 = new SigSource(Waveform.COMPLEX, (long) xlating.getContext().getSampleRate(), new DopplerValueSource(xlating.getContext().getSampleRate(), req.getSatelliteFrequency(), 1000L, req.getStartTimeMillis()) {
+			long startOffset = predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getStartTimeMillis(), req.getOrigin());
+			long endOffset = predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getEndTimeMillis(), req.getOrigin());
+			long finalBandwidth = startOffset - endOffset + req.getBandwidth() / 2;
 
-					@Override
-					public long getDopplerFrequency(long satelliteFrequency, long currentTimeMillis) {
-						return predict.getDownlinkFreq(satelliteFrequency, currentTimeMillis, req.getOrigin());
-					}
-				}, 1.0);
-				Multiply mul = new Multiply(xlating, source2);
-				Constellation constel = new Constellation(new float[] { -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f }, new int[] { 0, 1, 3, 2 }, 4, 1);
-				QpskDemodulator qpskDemod = new QpskDemodulator(mul, symbolRate, constel);
-				lrpt = new MeteorMN2(qpskDemod);
-				try (OutputStream fos = new BufferedOutputStream(new FileOutputStream(binFile))) {
-					while (lrpt.hasNext()) {
-						Vcdu next = lrpt.next();
-						fos.write(next.getData());
-						numberOfDecodedPackets++;
-					}
+			float[] taps = Firdes.lowPass(1.0, sdr.getContext().getSampleRate(), finalBandwidth, 1600, Window.WIN_HAMMING, 6.76);
+			FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(sdr, taps, req.getInputSampleRate() / req.getOutputSampleRate(), (double) req.getSatelliteFrequency() - req.getActualFrequency());
+			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) xlating.getContext().getSampleRate(), new DopplerValueSource(xlating.getContext().getSampleRate(), req.getSatelliteFrequency(), 1000L, req.getStartTimeMillis()) {
+
+				@Override
+				public long getDopplerFrequency(long satelliteFrequency, long currentTimeMillis) {
+					return predict.getDownlinkFreq(satelliteFrequency, currentTimeMillis, req.getOrigin());
+				}
+			}, 1.0);
+			Multiply mul = new Multiply(xlating, source2);
+			Constellation constel = new Constellation(new float[] { -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f }, new int[] { 0, 1, 3, 2 }, 4, 1);
+			QpskDemodulator qpskDemod = new QpskDemodulator(mul, symbolRate, constel);
+			lrpt = new MeteorMN2(qpskDemod);
+			try (OutputStream fos = new BufferedOutputStream(new FileOutputStream(binFile))) {
+				while (lrpt.hasNext()) {
+					Vcdu next = lrpt.next();
+					fos.write(next.getData());
+					numberOfDecodedPackets++;
 				}
 			}
 		} catch (Exception e) {
 			LOG.error("unable to process: " + rawIq.getAbsolutePath(), e);
 		} finally {
-			if (lrpt != null) {
-				try {
-					lrpt.close();
-				} catch (IOException e) {
-					LOG.info("unable to close", e);
-				}
-			}
+			Util.closeQuietly(lrpt);
 		}
 		result.setNumberOfDecodedPackets(numberOfDecodedPackets);
 		if (numberOfDecodedPackets <= 0) {
