@@ -4,9 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -15,10 +12,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
+import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.satellite.Predict;
-import ru.r2cloud.util.Util;
 import uk.me.g4dpz.satellite.SatelliteFactory;
 import uk.me.g4dpz.satellite.TLE;
 
@@ -32,10 +29,7 @@ public class Aausat4DecoderTest {
 	@Test
 	@Ignore
 	public void testSomeData() throws Exception {
-		File wav = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
-		try (FileOutputStream fos = new FileOutputStream(wav); InputStream is = Aausat4DecoderTest.class.getClassLoader().getResourceAsStream("data/aausat4.wav")) {
-			Util.copy(is, fos);
-		}
+		File wav = TestUtil.setupClasspathResource(tempFolder, "data/aausat4.wav"); 
 		Aausat4Decoder decoder = new Aausat4Decoder(config, new Predict(config));
 		ObservationResult result = decoder.decode(wav, create());
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());

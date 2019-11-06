@@ -3,8 +3,6 @@ package ru.r2cloud.it;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -12,12 +10,12 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
+import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.satellite.decoder.MeteorM22Decoder;
 import ru.r2cloud.util.ProcessFactory;
-import ru.r2cloud.util.Util;
 import uk.me.g4dpz.satellite.SatelliteFactory;
 import uk.me.g4dpz.satellite.TLE;
 
@@ -31,10 +29,7 @@ public class MeteorM22DecoderIT {
 
 	@Test
 	public void testSuccess() throws Exception {
-		File file = new File(tempFolder.getRoot(), "meteor-m22-small.raw.gz");
-		try (FileOutputStream fos = new FileOutputStream(file); InputStream is = MeteorM22DecoderIT.class.getClassLoader().getResourceAsStream("data/meteor-m22-small.raw.gz")) {
-			Util.copy(is, fos);
-		}
+		File file = TestUtil.setupClasspathResource(tempFolder, "data/meteor-m22-small.raw.gz");
 		MeteorM22Decoder decoder = new MeteorM22Decoder(config, new Predict(config), factory);
 		ObservationResult result = decoder.decode(file, create());
 		assertEquals(2L, result.getNumberOfDecodedPackets().longValue());

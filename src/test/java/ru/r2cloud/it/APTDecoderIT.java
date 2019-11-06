@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -13,11 +11,11 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
+import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.satellite.decoder.APTDecoder;
 import ru.r2cloud.util.ProcessFactory;
-import ru.r2cloud.util.Util;
 
 public class APTDecoderIT {
 
@@ -29,10 +27,7 @@ public class APTDecoderIT {
 
 	@Test
 	public void testSuccess() throws Exception {
-		File wav = new File(tempFolder.getRoot(), "output.wav");
-		try (FileOutputStream fos = new FileOutputStream(wav); InputStream is = APTDecoderIT.class.getClassLoader().getResourceAsStream("8bit.wav")) {
-			Util.copy(is, fos);
-		}
+		File wav = TestUtil.setupClasspathResource(tempFolder, "8bit.wav");
 		ObservationRequest request = new ObservationRequest();
 		request.setStartLatitude(0.0);
 		request.setEndLatitude(0.0);

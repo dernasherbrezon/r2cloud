@@ -14,7 +14,11 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
+
+import org.junit.rules.TemporaryFolder;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
@@ -46,6 +50,22 @@ public class TestUtil {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static File setupClasspathResource(TemporaryFolder tempFolder, String name) throws IOException {
+		URL resource = TestUtil.class.getClassLoader().getResource(name);
+		if (resource == null) {
+			throw new IllegalArgumentException("unable to find: " + name + " in classpath");
+		}
+		if (resource.getProtocol().equals("file")) {
+			return new File(resource.getFile());
+		}
+		// copy only if resource is in jar
+		File result = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
+		try (FileOutputStream fos = new FileOutputStream(result); InputStream is = resource.openStream()) {
+			Util.copy(is, fos);
+		}
+		return result;
 	}
 
 	public static void copy(Reader input, Writer output) throws IOException {

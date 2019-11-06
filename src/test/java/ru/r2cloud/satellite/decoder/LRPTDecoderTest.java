@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 import java.util.zip.GZIPOutputStream;
@@ -17,10 +16,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
+import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.satellite.Predict;
-import ru.r2cloud.util.Util;
 import uk.me.g4dpz.satellite.SatelliteFactory;
 import uk.me.g4dpz.satellite.TLE;
 
@@ -33,10 +32,7 @@ public class LRPTDecoderTest {
 
 	@Test
 	public void testSomeData() throws Exception {
-		File wav = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
-		try (FileOutputStream fos = new FileOutputStream(wav); InputStream is = LRPTDecoderTest.class.getClassLoader().getResourceAsStream("data/40069-1553411549943.raw.gz")) {
-			Util.copy(is, fos);
-		}
+		File wav = TestUtil.setupClasspathResource(tempFolder, "data/40069-1553411549943.raw.gz");
 		LRPTDecoder decoder = new LRPTDecoder(config, new Predict(config));
 		ObservationResult result = decoder.decode(wav, create());
 		assertEquals(9, result.getNumberOfDecodedPackets().longValue());
