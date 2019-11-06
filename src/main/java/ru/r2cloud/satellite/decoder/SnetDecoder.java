@@ -13,13 +13,12 @@ import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
 import ru.r2cloud.jradio.blocks.Window;
 import ru.r2cloud.jradio.snet.Snet;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.util.Configuration;
 
 public class SnetDecoder extends TelemetryDecoder {
 
-	public SnetDecoder(Configuration config, Predict predict) {
-		super(config, predict);
+	public SnetDecoder(Configuration config) {
+		super(config);
 	}
 
 	@Override

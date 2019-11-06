@@ -23,9 +23,8 @@ import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
-import uk.me.g4dpz.satellite.Satellite;
-import uk.me.g4dpz.satellite.SatelliteFactory;
-import uk.me.g4dpz.satellite.TLE;
+import ru.r2cloud.model.Tle;
+import uk.me.g4dpz.satellite.GroundStationPosition;
 
 public class ObservationResultDaoTest {
 
@@ -44,7 +43,7 @@ public class ObservationResultDaoTest {
 		req.setEndLatitude(0.2);
 		req.setId(UUID.randomUUID().toString());
 		req.setInputSampleRate(1);
-		req.setOrigin(create());
+		req.setTle(create());
 		req.setOutputSampleRate(1);
 		req.setSatelliteFrequency(1);
 		req.setActualFrequency(2);
@@ -52,6 +51,7 @@ public class ObservationResultDaoTest {
 		req.setStartTimeMillis(System.currentTimeMillis());
 		req.setStartLatitude(0.1);
 		req.setBandwidth(4_000);
+		req.setGroundStation(createGroundStation());
 		assertNotNull(dao.insert(req, createTempFile("wav")));
 		ObservationFull actual = dao.find(req.getSatelliteId(), req.getId());
 		assertNotNull(actual.getResult().getWavPath());
@@ -62,6 +62,10 @@ public class ObservationResultDaoTest {
 		assertEquals(1, actual.getReq().getSatelliteFrequency());
 		assertEquals(2, actual.getReq().getActualFrequency());
 		assertEquals(4_000, actual.getReq().getBandwidth());
+		assertEquals(req.getTle(), actual.getReq().getTle());
+		assertEquals(req.getGroundStation().getLatitude(), actual.getReq().getGroundStation().getLatitude(), 0.0);
+		assertEquals(req.getGroundStation().getLongitude(), actual.getReq().getGroundStation().getLongitude(), 0.0);
+		assertEquals(req.getGroundStation().getName(), actual.getReq().getGroundStation().getName());
 
 		assertNotNull(dao.saveData(req.getSatelliteId(), req.getId(), createTempFile("data")));
 
@@ -76,21 +80,25 @@ public class ObservationResultDaoTest {
 		res.setChannelB(UUID.randomUUID().toString());
 		res.setGain(UUID.randomUUID().toString());
 		res.setNumberOfDecodedPackets(1L);
-		
+
 		ObservationFull full = new ObservationFull(req);
 		full.setResult(res);
 		assertTrue(dao.update(full));
 		actual = dao.find(req.getSatelliteId(), req.getId());
 		assertEquals(res.getGain(), actual.getResult().getGain());
 		assertEquals(res.getNumberOfDecodedPackets(), actual.getResult().getNumberOfDecodedPackets());
-		
+
 		List<ObservationFull> all = dao.findAllBySatelliteId(req.getSatelliteId());
 		assertEquals(1, all.size());
 	}
 
-	private static Satellite create() {
-		TLE tle = new TLE(new String[] { "meteor", "1 40069U 14037A   18286.52491495 -.00000023  00000-0  92613-5 0  9990", "2 40069  98.5901 334.4030 0004544 256.4188 103.6490 14.20654800221188" });
-		return SatelliteFactory.createSatellite(tle);
+	private static Tle create() {
+		return new Tle(new String[] { "meteor", "1 40069U 14037A   18286.52491495 -.00000023  00000-0  92613-5 0  9990", "2 40069  98.5901 334.4030 0004544 256.4188 103.6490 14.20654800221188" });
+	}
+
+	private static GroundStationPosition createGroundStation() {
+		GroundStationPosition result = new GroundStationPosition(11.1, -2.333566, 0.0, UUID.randomUUID().toString());
+		return result;
 	}
 
 	private File createTempFile(String data) throws IOException {

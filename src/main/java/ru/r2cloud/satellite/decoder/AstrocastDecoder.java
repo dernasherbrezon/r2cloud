@@ -10,13 +10,12 @@ import ru.r2cloud.jradio.blocks.FixedLengthTagger;
 import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
 import ru.r2cloud.jradio.blocks.UnpackedToPacked;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.util.Configuration;
 
 public class AstrocastDecoder extends TelemetryDecoder {
 
-	public AstrocastDecoder(Configuration config, Predict predict) {
-		super(config, predict);
+	public AstrocastDecoder(Configuration config) {
+		super(config);
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.util.SignedURL;
+import uk.me.g4dpz.satellite.GroundStationPosition;
 
 public class ObservationFull {
 
@@ -47,15 +48,20 @@ public class ObservationFull {
 			req.setSource(FrequencySource.valueOf(decoder.toUpperCase(Locale.UK)));
 		}
 		req.setSatelliteId(meta.getString("satellite", null));
+		JsonValue tle = meta.get("tle");
+		if (tle != null && tle.isObject()) {
+			req.setTle(Tle.fromJson(tle.asObject()));
+		}
+		JsonValue groundStation = meta.get("groundStation");
+		if (groundStation != null && groundStation.isObject()) {
+			req.setGroundStation(groundStationFromJson(groundStation.asObject()));
+		}
 
 		ObservationResult result = new ObservationResult();
 		result.setGain(meta.getString("gain", null));
 		result.setChannelA(meta.getString("channelA", null));
 		result.setChannelB(meta.getString("channelB", null));
-		JsonValue decodedPackets = meta.get("numberOfDecodedPackets");
-		if (decodedPackets != null) {
-			result.setNumberOfDecodedPackets(decodedPackets.asLong());
-		}
+		result.setNumberOfDecodedPackets(meta.getLong("numberOfDecodedPackets", 0));
 		result.setaURL(meta.getString("aURL", null));
 		result.setDataURL(meta.getString("data", null));
 		result.setSpectogramURL(meta.getString("spectogramURL", null));
@@ -77,6 +83,12 @@ public class ObservationFull {
 		json.add("decoder", req.getSource().name());
 		json.add("satellite", req.getSatelliteId());
 		json.add("bandwidth", req.getBandwidth());
+		if (req.getTle() != null) {
+			json.add("tle", req.getTle().toJson());
+		}
+		if (req.getGroundStation() != null) {
+			json.add("groundStation", toJson(req.getGroundStation()));
+		}
 
 		if (result == null) {
 			return json;
@@ -118,4 +130,20 @@ public class ObservationFull {
 		return json;
 	}
 
+	private static GroundStationPosition groundStationFromJson(JsonObject json) {
+		double lat = json.getDouble("lat", Double.NaN);
+		double lon = json.getDouble("lon", Double.NaN);
+		String name = json.getString("name", "");
+		return new GroundStationPosition(lat, lon, 0.0, name);
+	}
+
+	private static JsonObject toJson(GroundStationPosition groundStation) {
+		JsonObject result = new JsonObject();
+		result.add("lat", groundStation.getLatitude());
+		result.add("lon", groundStation.getLongitude());
+		if (groundStation.getName() != null && groundStation.getName().trim().length() != 0) {
+			result.add("name", groundStation.getName());
+		}
+		return result;
+	}
 }

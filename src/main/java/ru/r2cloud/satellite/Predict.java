@@ -24,11 +24,7 @@ public class Predict {
 		this.config = config;
 	}
 
-	public Long getDownlinkFreq(final Long freq, final long utcTimeMillis, final Satellite satellite) {
-		GroundStationPosition currentLocation = getPosition();
-		if (currentLocation == null) {
-			return null;
-		}
+	public static Long getDownlinkFreq(final Long freq, final long utcTimeMillis, final GroundStationPosition currentLocation, final Satellite satellite) {
 		final SatPos satPos = satellite.getPosition(currentLocation, new Date(utcTimeMillis));
 		final double rangeRate = satPos.getRangeRate();
 		return (long) ((double) freq * (SPEED_OF_LIGHT - rangeRate * 1000.0) / SPEED_OF_LIGHT);
@@ -108,7 +104,7 @@ public class Predict {
 		}
 	}
 
-	private GroundStationPosition getPosition() {
+	public GroundStationPosition getPosition() {
 		// get the current position
 		// FIXME cache ground station posisiotn object and reload when config changes
 		Double lat = config.getDouble("locaiton.lat");

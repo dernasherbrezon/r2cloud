@@ -24,10 +24,20 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
+import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.tle.CelestrakClientTest;
 import ru.r2cloud.util.Util;
 
 public class TestUtil {
+
+	public static ObservationFull loadObservation(String classpath) {
+		try (BufferedReader r = new BufferedReader(new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(classpath), StandardCharsets.UTF_8))) {
+			JsonObject meta = Json.parse(r).asObject();
+			return ObservationFull.fromJson(meta);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	public static String loadExpected(String name) {
 		StringBuilder expectedStr = new StringBuilder();

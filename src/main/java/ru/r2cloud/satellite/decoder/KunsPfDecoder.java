@@ -9,13 +9,12 @@ import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
 import ru.r2cloud.jradio.gomx1.AX100Decoder;
 import ru.r2cloud.jradio.kunspf.KunsPf;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.util.Configuration;
 
 public class KunsPfDecoder extends TelemetryDecoder {
 
-	public KunsPfDecoder(Configuration config, Predict predict) {
-		super(config, predict);
+	public KunsPfDecoder(Configuration config) {
+		super(config);
 	}
 
 	@Override

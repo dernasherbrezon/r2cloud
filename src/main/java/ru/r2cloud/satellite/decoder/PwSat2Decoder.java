@@ -6,13 +6,12 @@ import ru.r2cloud.jradio.FloatInput;
 import ru.r2cloud.jradio.demod.BpskDemodulator;
 import ru.r2cloud.jradio.pwsat2.PwSat2;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.util.Configuration;
 
 public class PwSat2Decoder extends TelemetryDecoder {
 
-	public PwSat2Decoder(Configuration config, Predict predict) {
-		super(config, predict);
+	public PwSat2Decoder(Configuration config) {
+		super(config);
 	}
 
 	@Override

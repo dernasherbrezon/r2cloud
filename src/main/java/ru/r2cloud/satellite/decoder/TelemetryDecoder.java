@@ -25,17 +25,17 @@ import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
+import uk.me.g4dpz.satellite.Satellite;
+import uk.me.g4dpz.satellite.SatelliteFactory;
 
 public abstract class TelemetryDecoder implements Decoder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TelemetryDecoder.class);
 
 	private final Configuration config;
-	private final Predict predict;
 
-	public TelemetryDecoder(Configuration config, Predict predict) {
+	public TelemetryDecoder(Configuration config) {
 		this.config = config;
-		this.predict = predict;
 	}
 
 	@Override
@@ -54,9 +54,9 @@ public abstract class TelemetryDecoder implements Decoder {
 		BeaconOutputStream aos = null;
 		try {
 			RtlSdr sdr = new RtlSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalSamples);
-
-			long startOffset = predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getStartTimeMillis(), req.getOrigin());
-			long endOffset = predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getEndTimeMillis(), req.getOrigin());
+			Satellite satellite = SatelliteFactory.createSatellite(req.getTle());
+			long startOffset = Predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getStartTimeMillis(), req.getGroundStation(), satellite);
+			long endOffset = Predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getEndTimeMillis(), req.getGroundStation(), satellite);
 			long finalBandwidth = startOffset - endOffset + req.getBandwidth() / 2;
 
 			float[] taps = Firdes.lowPass(1.0, sdr.getContext().getSampleRate(), finalBandwidth, 1600, Window.WIN_HAMMING, 6.76);
@@ -65,7 +65,7 @@ public abstract class TelemetryDecoder implements Decoder {
 
 				@Override
 				public long getDopplerFrequency(long satelliteFrequency, long currentTimeMillis) {
-					return predict.getDownlinkFreq(satelliteFrequency, currentTimeMillis, req.getOrigin());
+					return Predict.getDownlinkFreq(satelliteFrequency, currentTimeMillis, req.getGroundStation(), satellite);
 				}
 			}, 1.0);
 			Multiply mul = new Multiply(xlating, source2);

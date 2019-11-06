@@ -9,13 +9,12 @@ import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
 import ru.r2cloud.jradio.gomx1.AX100Decoder;
 import ru.r2cloud.jradio.lume1.Lume1;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.util.Configuration;
 
 public class Lume1Decoder extends TelemetryDecoder {
 
-	public Lume1Decoder(Configuration config, Predict predict) {
-		super(config, predict);
+	public Lume1Decoder(Configuration config) {
+		super(config);
 	}
 
 	@Override

@@ -6,13 +6,12 @@ import ru.r2cloud.jradio.FloatInput;
 import ru.r2cloud.jradio.demod.BpskDemodulator;
 import ru.r2cloud.jradio.nayif1.Nayif1;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.util.Configuration;
 
 public class Nayif1Decoder extends TelemetryDecoder {
 
-	public Nayif1Decoder(Configuration config, Predict predict) {
-		super(config, predict);
+	public Nayif1Decoder(Configuration config) {
+		super(config);
 	}
 
 	@Override

@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.SatPass;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.Tle;
 import ru.r2cloud.tle.TLEDao;
 import uk.me.g4dpz.satellite.SatelliteFactory;
-import uk.me.g4dpz.satellite.TLE;
 
 public class ObservationFactory {
 
@@ -26,7 +26,7 @@ public class ObservationFactory {
 	}
 
 	public ObservationRequest create(Date date, Satellite satellite, boolean immediately) {
-		TLE tle = tleDao.findById(satellite.getId());
+		Tle tle = tleDao.findById(satellite.getId());
 		if (tle == null) {
 			LOG.error("unable to find tle for: {}", satellite.getName());
 			return null;
@@ -38,13 +38,14 @@ public class ObservationFactory {
 			return null;
 		}
 		ObservationRequest result = new ObservationRequest();
-		result.setOrigin(libSatellite);
 		result.setSatelliteFrequency(satellite.getFrequency());
 		result.setSatelliteId(satellite.getId());
 		result.setSource(satellite.getSource());
 		result.setStartLatitude(nextPass.getStart().getLatitude());
 		result.setEndLatitude(nextPass.getEnd().getLatitude());
 		result.setBandwidth(satellite.getBandwidth());
+		result.setTle(tle);
+		result.setGroundStation(predict.getPosition());
 		if (immediately) {
 			result.setStartTimeMillis(date.getTime());
 			result.setEndTimeMillis(result.getStartTimeMillis() + (nextPass.getEnd().getTime().getTime() - nextPass.getStart().getTime().getTime()));
@@ -69,7 +70,7 @@ public class ObservationFactory {
 			result.setInputSampleRate(240_000);
 			result.setOutputSampleRate(48_000);
 			// at the beginning doppler freq is the max
-			long initialDopplerFrequency = predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStart().getTime().getTime(), libSatellite);
+			long initialDopplerFrequency = Predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStart().getTime().getTime(), result.getGroundStation(), libSatellite);
 			result.setActualFrequency(initialDopplerFrequency + DC_OFFSET);
 			break;
 		default:

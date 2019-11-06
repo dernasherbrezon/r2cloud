@@ -42,23 +42,29 @@ import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
+import uk.me.g4dpz.satellite.Satellite;
+import uk.me.g4dpz.satellite.SatelliteFactory;
 
 public class Aausat4Decoder implements Decoder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Aausat4Decoder.class);
 
 	private final Configuration config;
-	private final Predict predict;
 
-	public Aausat4Decoder(Configuration config, Predict predict) {
+	public Aausat4Decoder(Configuration config) {
 		this.config = config;
-		this.predict = predict;
 	}
 
 	@Override
 	public ObservationResult decode(File rawIq, ObservationRequest req) {
 		ObservationResult result = new ObservationResult();
 		result.setIqPath(rawIq);
+
+		Long totalSamples = Util.readTotalSamples(rawIq.toPath());
+		if (totalSamples == null) {
+			return result;
+		}
+
 		long numberOfDecodedPackets = 0;
 		File binFile = new File(config.getTempDirectory(), "aausat4-" + req.getId() + ".bin");
 		File tempFile = new File(config.getTempDirectory(), "aausat4-" + req.getId() + ".temp");
@@ -66,10 +72,7 @@ public class Aausat4Decoder implements Decoder {
 		BufferedOutputStream fos = null;
 		try {
 			// 1 stage. correct doppler & remove DC offset
-			Long totalSamples = Util.readTotalSamples(rawIq.toPath());
-			if (totalSamples == null) {
-				return result;
-			}
+			Satellite satellite = SatelliteFactory.createSatellite(req.getTle());
 			RtlSdr sdr = new RtlSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalSamples);
 			float[] taps = Firdes.lowPass(1.0, sdr.getContext().getSampleRate(), 6400, 1000, Window.WIN_HAMMING, 6.76);
 			FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(sdr, taps, req.getInputSampleRate() / req.getOutputSampleRate(), req.getSatelliteFrequency() - req.getActualFrequency());
@@ -77,7 +80,7 @@ public class Aausat4Decoder implements Decoder {
 
 				@Override
 				public long getDopplerFrequency(long satelliteFrequency, long currentTimeMillis) {
-					return predict.getDownlinkFreq(satelliteFrequency, currentTimeMillis, req.getOrigin());
+					return Predict.getDownlinkFreq(satelliteFrequency, currentTimeMillis, req.getGroundStation(), satellite);
 				}
 			}, 1.0);
 			Multiply mul = new Multiply(xlating, source2);

@@ -1,5 +1,7 @@
 package ru.r2cloud.model;
 
+import uk.me.g4dpz.satellite.GroundStationPosition;
+
 public class ObservationRequest {
 
 	private String id;
@@ -10,12 +12,29 @@ public class ObservationRequest {
 	private String satelliteId;
 	private FrequencySource source;
 	private long satelliteFrequency;
-	private uk.me.g4dpz.satellite.Satellite origin;
 	private long bandwidth;
+	private Tle tle;
+	private GroundStationPosition groundStation;
 
 	private int inputSampleRate;
 	private int outputSampleRate;
 	private long actualFrequency;
+	
+	public GroundStationPosition getGroundStation() {
+		return groundStation;
+	}
+	
+	public void setGroundStation(GroundStationPosition groundStation) {
+		this.groundStation = groundStation;
+	}
+	
+	public Tle getTle() {
+		return tle;
+	}
+	
+	public void setTle(Tle tle) {
+		this.tle = tle;
+	}
 	
 	public long getBandwidth() {
 		return bandwidth;
@@ -31,14 +50,6 @@ public class ObservationRequest {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public uk.me.g4dpz.satellite.Satellite getOrigin() {
-		return origin;
-	}
-
-	public void setOrigin(uk.me.g4dpz.satellite.Satellite origin) {
-		this.origin = origin;
 	}
 
 	public long getStartTimeMillis() {

@@ -9,13 +9,12 @@ import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
 import ru.r2cloud.jradio.gomx1.AX100Decoder;
 import ru.r2cloud.jradio.suomi100.Suomi100;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.util.Configuration;
 
 public class Suomi100Decoder extends TelemetryDecoder {
 
-	public Suomi100Decoder(Configuration config, Predict predict) {
-		super(config, predict);
+	public Suomi100Decoder(Configuration config) {
+		super(config);
 	}
 
 	@Override

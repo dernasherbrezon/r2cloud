@@ -10,7 +10,7 @@ public class ObservationResult {
 	private String gain;
 	private String channelA;
 	private String channelB;
-	private Long numberOfDecodedPackets;
+	private Long numberOfDecodedPackets = 0L;
 
 	private String aURL;
 	private File aPath;

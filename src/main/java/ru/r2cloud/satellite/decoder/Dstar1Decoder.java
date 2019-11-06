@@ -11,13 +11,12 @@ import ru.r2cloud.jradio.blocks.UnpackedToPacked;
 import ru.r2cloud.jradio.dstar1.Dstar1;
 import ru.r2cloud.jradio.tubix20.CMX909bBeacon;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.util.Configuration;
 
 public class Dstar1Decoder extends TelemetryDecoder {
 
-	public Dstar1Decoder(Configuration config, Predict predict) {
-		super(config, predict);
+	public Dstar1Decoder(Configuration config) {
+		super(config);
 	}
 
 	@Override
