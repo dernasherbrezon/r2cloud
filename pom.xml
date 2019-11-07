@@ -349,7 +349,7 @@
 						<!-- required by deps-maven-plugin -->
 						<wget />
 						<!-- meteor m2-2 demodulator -->
-						<r2cloud-meteor_demod>>=0.3-beta1-6</r2cloud-meteor_demod>
+						<meteor-demod>>=0.3-beta1-1</meteor-demod>
 					</osDependencies>
 					<javaServiceWrapper>false</javaServiceWrapper>
 					<fileSets>
