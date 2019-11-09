@@ -28,7 +28,7 @@ public class MeteorM22DecoderIT {
 		File file = TestUtil.setupClasspathResource(tempFolder, "data/meteor-m22-small.raw.gz");
 		MeteorM22Decoder decoder = new MeteorM22Decoder(config, factory);
 		ObservationResult result = decoder.decode(file, TestUtil.loadObservation("decodertests/MeteorM22DecoderTest.json").getReq());
-		assertEquals(2L, result.getNumberOfDecodedPackets().longValue());
+		assertEquals(3L, result.getNumberOfDecodedPackets().longValue());
 	}
 
 	@Before
