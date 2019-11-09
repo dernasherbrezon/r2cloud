@@ -1,9 +1,14 @@
 package ru.r2cloud.util;
 
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,6 +29,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
+import javax.imageio.ImageIO;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +39,24 @@ public final class Util {
 	private static final Logger LOG = LoggerFactory.getLogger(Util.class);
 	private static final Pattern COMMA = Pattern.compile(",");
 
+	public static void rotateImage(File result) {
+		try {
+			BufferedImage image;
+			try (FileInputStream fis = new FileInputStream(result)) {
+				image = ImageIO.read(fis);
+			}
+			AffineTransform tx = AffineTransform.getScaleInstance(-1, -1);
+			tx.translate(-image.getWidth(null), -image.getHeight(null));
+			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+			image = op.filter(image, null);
+			try (FileOutputStream fos = new FileOutputStream(result)) {
+				ImageIO.write(image, "jpg", fos);
+			}
+		} catch (Exception e) {
+			LOG.error("unable to rotate image", e);
+		}
+	}
+	
 	public static File initDirectory(String path) {
 		File result = new File(path);
 		if (result.exists() && !result.isDirectory()) {

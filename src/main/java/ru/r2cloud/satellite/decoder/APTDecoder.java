@@ -1,19 +1,12 @@
 package ru.r2cloud.satellite.decoder;
 
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.imageio.ImageIO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +63,7 @@ public class APTDecoder implements Decoder {
 			process.waitFor();
 			if (convert(result, lines)) {
 				if (request.getStartLatitude() < request.getEndLatitude()) {
-					rotateImage(image);
+					Util.rotateImage(image);
 				}
 				result.setaPath(image);
 			} else {
@@ -85,24 +78,6 @@ public class APTDecoder implements Decoder {
 			LOG.error("unable to run", e);
 		}
 		return result;
-	}
-
-	private static void rotateImage(File result) {
-		try {
-			BufferedImage image;
-			try (FileInputStream fis = new FileInputStream(result)) {
-				image = ImageIO.read(fis);
-			}
-			AffineTransform tx = AffineTransform.getScaleInstance(-1, -1);
-			tx.translate(-image.getWidth(null), -image.getHeight(null));
-			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-			image = op.filter(image, null);
-			try (FileOutputStream fos = new FileOutputStream(result)) {
-				ImageIO.write(image, "jpg", fos);
-			}
-		} catch (Exception e) {
-			LOG.error("unable to rotate image", e);
-		}
 	}
 
 	// success

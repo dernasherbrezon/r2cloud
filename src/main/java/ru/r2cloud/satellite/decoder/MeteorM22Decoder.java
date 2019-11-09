@@ -150,6 +150,9 @@ public class MeteorM22Decoder implements Decoder {
 				if (actual != null) {
 					File imageFile = new File(config.getTempDirectory(), "lrpt-" + req.getId() + ".jpg");
 					ImageIO.write(actual, "jpg", imageFile);
+					if (req.getStartLatitude() < req.getEndLatitude()) {
+						Util.rotateImage(imageFile);
+					}
 					result.setaPath(imageFile);
 				}
 			} catch (IOException e) {
