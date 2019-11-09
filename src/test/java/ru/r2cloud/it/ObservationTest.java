@@ -4,13 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.UUID;
-
-import javax.imageio.ImageIO;
 
 import org.junit.After;
 import org.junit.Before;
@@ -23,6 +19,7 @@ import com.eclipsesource.json.ParseException;
 import ru.r2cloud.JsonHttpResponse;
 import ru.r2cloud.R2CloudServer;
 import ru.r2cloud.RtlSdrDataServer;
+import ru.r2cloud.TestUtil;
 import ru.r2cloud.it.util.RegisteredTest;
 
 public class ObservationTest extends RegisteredTest {
@@ -83,19 +80,7 @@ public class ObservationTest extends RegisteredTest {
 
 	static void assertSpectogram(String expectedFilename, byte[] actualBytes) throws IOException {
 		try (ByteArrayInputStream bais = new ByteArrayInputStream(actualBytes)) {
-			assertSpectogram(expectedFilename, bais);
-		}
-	}
-
-	static void assertSpectogram(String expectedFilename, InputStream bais) throws IOException {
-		try (InputStream is1 = ObservationTest.class.getClassLoader().getResourceAsStream(expectedFilename)) {
-			BufferedImage expected = ImageIO.read(is1);
-			BufferedImage actual = ImageIO.read(bais);
-			for (int i = 0; i < expected.getWidth(); i++) {
-				for (int j = 0; j < expected.getHeight(); j++) {
-					assertEquals(expected.getRGB(i, j), actual.getRGB(i, j));
-				}
-			}
+			TestUtil.assertImage(expectedFilename, bais);
 		}
 	}
 

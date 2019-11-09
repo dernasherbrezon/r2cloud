@@ -26,10 +26,20 @@ import org.junit.rules.TemporaryFolder;
 import com.aerse.mockfs.FailingByteChannelCallback;
 import com.aerse.mockfs.MockFileSystem;
 
+import ru.r2cloud.TestUtil;
+
 public class UtilTest {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
+
+	@Test
+	public void testRotateImage() throws Exception {
+		File rotatedImage = new File(tempFolder.getRoot(), UUID.randomUUID().toString() + ".jpg");
+		TestUtil.copy("meteor.spectogram.jpg", rotatedImage);
+		Util.rotateImage(rotatedImage);
+		TestUtil.assertImage("rotated.meteor.spectogram.jpg", rotatedImage);
+	}
 
 	@Test
 	public void testTotalSamples() throws Exception {
@@ -52,14 +62,14 @@ public class UtilTest {
 	public void testUnknownFile() {
 		assertNull(Util.readTotalSamples(tempFolder.getRoot().toPath().resolve(UUID.randomUUID().toString())));
 	}
-	
+
 	@Test
 	public void testSmallFile() throws Exception {
-		//only 3 bytes
+		// only 3 bytes
 		File file = setupTempFile(new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF });
 		assertNull(Util.readTotalSamples(file.toPath()));
 	}
-	
+
 	@Test
 	public void testUnsignedInt() throws Exception {
 		File file = setupTempFile(new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF });

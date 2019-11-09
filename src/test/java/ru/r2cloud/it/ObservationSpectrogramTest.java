@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
@@ -70,7 +69,7 @@ public class ObservationSpectrogramTest extends RegisteredTest {
 		assertNotNull(url);
 		HttpResponse<Path> fileResponse = client.downloadFile(url, Paths.get(tempFolder.getRoot().getAbsolutePath(), UUID.randomUUID().toString()));
 		assertEquals(200, fileResponse.statusCode());
-		ObservationTest.assertSpectogram("spectogram-output.raw.gz.png", new FileInputStream(fileResponse.body().toFile()));
+		TestUtil.assertImage("spectogram-output.raw.gz.png", fileResponse.body().toFile());
 	}
 
 }

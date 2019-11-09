@@ -1,11 +1,15 @@
 package ru.r2cloud;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,12 +22,15 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
+import javax.imageio.ImageIO;
+
 import org.junit.rules.TemporaryFolder;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
+import ru.r2cloud.it.ObservationTest;
 import ru.r2cloud.model.ObservationFull;
 import ru.r2cloud.tle.CelestrakClientTest;
 import ru.r2cloud.util.Util;
@@ -99,6 +106,24 @@ public class TestUtil {
 		copy(to.getName(), to);
 		to.setExecutable(true);
 		return to;
+	}
+
+	public static void assertImage(String expectedFilename, File bais) throws IOException {
+		try (InputStream is = new BufferedInputStream(new FileInputStream(bais))) {
+			assertImage(expectedFilename, is);
+		}
+	}
+
+	public static void assertImage(String expectedFilename, InputStream bais) throws IOException {
+		try (InputStream is1 = ObservationTest.class.getClassLoader().getResourceAsStream(expectedFilename)) {
+			BufferedImage expected = ImageIO.read(is1);
+			BufferedImage actual = ImageIO.read(bais);
+			for (int i = 0; i < expected.getWidth(); i++) {
+				for (int j = 0; j < expected.getHeight(); j++) {
+					assertEquals(expected.getRGB(i, j), actual.getRGB(i, j));
+				}
+			}
+		}
 	}
 
 	public static void assertJson(String classPathResource, JsonObject actual) {
