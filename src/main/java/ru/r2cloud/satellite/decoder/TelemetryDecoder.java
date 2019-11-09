@@ -57,7 +57,7 @@ public abstract class TelemetryDecoder implements Decoder {
 			Satellite satellite = SatelliteFactory.createSatellite(req.getTle());
 			long startOffset = Predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getStartTimeMillis(), req.getGroundStation(), satellite);
 			long endOffset = Predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getEndTimeMillis(), req.getGroundStation(), satellite);
-			long finalBandwidth = startOffset - endOffset + req.getBandwidth() / 2;
+			long finalBandwidth = (startOffset - endOffset + req.getBandwidth()) / 2;
 
 			float[] taps = Firdes.lowPass(1.0, sdr.getContext().getSampleRate(), finalBandwidth, 1600, Window.WIN_HAMMING, 6.76);
 			FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(sdr, taps, req.getInputSampleRate() / req.getOutputSampleRate(), (double) req.getSatelliteFrequency() - req.getActualFrequency());

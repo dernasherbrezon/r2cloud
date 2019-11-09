@@ -31,7 +31,7 @@ public class LRPTDecoderTest {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/40069-1553411549943.raw.gz");
 		LRPTDecoder decoder = new LRPTDecoder(config);
 		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("decodertests/LRPTDecoderTest.json").getReq());
-		assertEquals(9, result.getNumberOfDecodedPackets().longValue());
+		assertEquals(6, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
 		assertNotNull(result.getaPath());
 		assertNotNull(result.getIqPath());
