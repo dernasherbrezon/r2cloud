@@ -21,7 +21,7 @@ public class PegasusDecoder extends TelemetryDecoder {
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
 		float gainMu = 0.175f;
-		GmskDemodulator gmsk = new GmskDemodulator(source, 9600, gainMu);
+		GmskDemodulator gmsk = new GmskDemodulator(source, 9600, req.getBandwidth(), gainMu);
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(gmsk, 1, "0010110111010100", false);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new UnpackedToPacked(new FixedLengthTagger(correlateTag, 64 * 8), 1, Endianness.GR_MSB_FIRST));
 		return new At03(pdu);

@@ -19,7 +19,7 @@ public class KunsPfDecoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		GmskDemodulator demodulator = new GmskDemodulator(source, 1200, 0.175f * 3);
+		GmskDemodulator demodulator = new GmskDemodulator(source, 9600, req.getBandwidth(), 0.175f * 3);
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(demodulator, 4, "10010011000010110101000111011110", true);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new FixedLengthTagger(correlateTag, 255 * 8));
 		AX100Decoder ax100 = new AX100Decoder(pdu, false, true, true);

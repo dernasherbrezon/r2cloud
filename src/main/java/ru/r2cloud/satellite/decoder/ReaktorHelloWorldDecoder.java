@@ -22,7 +22,7 @@ public class ReaktorHelloWorldDecoder extends TelemetryDecoder {
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
 		float gainMu = 0.175f * 3;
-		GmskDemodulator gmsk = new GmskDemodulator(source, 9600, gainMu);
+		GmskDemodulator gmsk = new GmskDemodulator(source, 9600, req.getBandwidth(), gainMu);
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(gmsk, 4, "00110101001011100011010100101110", false);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new UnpackedToPacked(new FixedLengthTagger(correlateTag, 120 * 8), 1, Endianness.GR_MSB_FIRST));
 		Cc11xxReceiver cc11 = new Cc11xxReceiver(pdu, true, true);

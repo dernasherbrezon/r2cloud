@@ -22,7 +22,7 @@ public class AstrocastDecoder extends TelemetryDecoder {
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
 		float gainMu = 0.175f * 5;
 		int baud = 1200;
-		GmskDemodulator gmsk = new GmskDemodulator(source, baud, gainMu);
+		GmskDemodulator gmsk = new GmskDemodulator(source, baud, req.getBandwidth(), gainMu);
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(gmsk, 8, "0111010111111010110000011010001101011000110100000110010001110110", false);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new UnpackedToPacked(new FixedLengthTagger(correlateTag, 255 * 8), 1, Endianness.GR_MSB_FIRST));
 		return new Astrocast(pdu);

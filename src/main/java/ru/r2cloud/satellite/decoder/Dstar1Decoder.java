@@ -22,7 +22,7 @@ public class Dstar1Decoder extends TelemetryDecoder {
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
 		float gainMu = 0.175f;
-		GmskDemodulator gmsk = new GmskDemodulator(source, 4800, gainMu);
+		GmskDemodulator gmsk = new GmskDemodulator(source, 4800, req.getBandwidth(), gainMu);
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(gmsk, 6, "11001100110011000101011101100101", false);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new UnpackedToPacked(new FixedLengthTagger(correlateTag, CMX909bBeacon.MAX_SIZE * 8), 1, Endianness.GR_MSB_FIRST));
 		return new Dstar1(pdu);
