@@ -57,6 +57,6 @@ public class JsonHttpResponse implements HttpHandler {
 	}
 
 	public void awaitRequest() throws InterruptedException {
-		latch.await(5000, TimeUnit.MILLISECONDS);
+		latch.await(10000, TimeUnit.MILLISECONDS);
 	}
 }
