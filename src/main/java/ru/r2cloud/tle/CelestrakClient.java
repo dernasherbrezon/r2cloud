@@ -15,6 +15,7 @@ import ru.r2cloud.util.Util;
 
 public class CelestrakClient {
 
+	private static final int TIMEOUT = 60 * 1000;
 	private static final Logger LOG = LoggerFactory.getLogger(CelestrakClient.class);
 	private final String host;
 
@@ -33,6 +34,8 @@ public class CelestrakClient {
 			URL obj = new URL(host + location);
 			con = (HttpURLConnection) obj.openConnection();
 			con.setRequestMethod("GET");
+			con.setConnectTimeout(TIMEOUT);
+			con.setReadTimeout(TIMEOUT);
 			con.setRequestProperty("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
 			int responseCode = con.getResponseCode();
 			if (responseCode != 200) {
