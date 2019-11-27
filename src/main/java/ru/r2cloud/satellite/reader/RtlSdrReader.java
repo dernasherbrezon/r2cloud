@@ -41,7 +41,7 @@ public class RtlSdrReader implements IQReader {
 				ppm = 0;
 			}
 			startTimeMillis = System.currentTimeMillis();
-			rtlSdr = factory.create(config.getProperty("satellites.rtlsdrwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getActualFrequency() + " -s " + req.getInputSampleRate() + " -g 45 -p " + ppm + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
+			rtlSdr = factory.create(config.getProperty("satellites.rtlsdrwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getActualFrequency() + " -s " + req.getInputSampleRate() + " -g " + config.getProperty("satellites.rtlsdr.gain") + " -p " + ppm + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
 			int responseCode = rtlSdr.waitFor();
 			// rtl_sdr should be killed by the reaper process
 			// all other codes are invalid. even 0
