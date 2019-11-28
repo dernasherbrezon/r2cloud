@@ -31,7 +31,7 @@ case $key in
 esac
 done
 
-_term() { 
+_term() {
   kill -TERM "$rtl" 2>/dev/null
 }
 

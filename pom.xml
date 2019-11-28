@@ -319,7 +319,7 @@
 			<plugin>
 				<groupId>com.aerse.maven</groupId>
 				<artifactId>deb-maven-plugin</artifactId>
-				<version>1.6</version>
+				<version>1.12</version>
 				<executions>
 					<execution>
 						<id>package</id>
@@ -354,8 +354,20 @@
 					<javaServiceWrapper>false</javaServiceWrapper>
 					<fileSets>
 						<fileSet>
-							<source>${basedir}/src/main/deb</source>
-							<target>/</target>
+							<source>${basedir}/src/main/deb/etc</source>
+							<target>/etc</target>
+						</fileSet>
+						<fileSet>
+							<source>${basedir}/src/main/deb/lib</source>
+							<target>/lib</target>
+						</fileSet>
+						<fileSet>
+							<source>${basedir}/src/main/deb/html</source>
+							<target>html</target>
+						</fileSet>
+						<fileSet>
+							<source>${basedir}/src/main/resources/.wxtoimglic</source>
+							<target>/home/pi/.wxtoimglic</target>
 						</fileSet>
 						<fileSet>
 							<source>${project.build.directory}/assembly-lib/lib</source>

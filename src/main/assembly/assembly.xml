@@ -33,7 +33,6 @@
 					<include>**/*.service</include>
 					<include>**/*.ftl</include>
 					<include>**/*.yml</include>
-					<include>**/*.sh</include>
 					<include>**/*.j2</include>
 					<include>**/*.crontab</include>
 					<include>**/.wxtoimglic</include>
@@ -43,6 +42,21 @@
 				</excludes>
 			</unpackOptions>
 		</dependencySet>
+		<dependencySet>
+			<includes>
+				<include>${project.groupId}:${project.artifactId}:*</include>
+			</includes>
+			<useProjectArtifact>true</useProjectArtifact>
+			<outputDirectory>etc</outputDirectory>
+			<unpack>true</unpack>
+			<unpackOptions>
+				<encoding>UTF-8</encoding>
+				<includes>
+					<include>**/*.sh</include>
+				</includes>
+			</unpackOptions>
+			<fileMode>755</fileMode>
+		</dependencySet>		
 	</dependencySets>
 
 </assembly>
