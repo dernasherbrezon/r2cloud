@@ -15,7 +15,9 @@ if [ -d /run/systemd/system ]; then
 fi
 
 cp ${config.installDir}/etc/r2cloud-prod.conf /etc/nginx/nginx.conf;
-chmod 755 /etc/cron.daily/r2cloud
+if [ -f /etc/cron.daily/r2cloud ]; then
+	chmod 755 /etc/cron.daily/r2cloud
+fi
 
 if [ ! -f ${config.installDir}/ssl/domain-chain.crt ]; then
     echo "Certificate is not found at ${config.installDir}/ssl/domain-chain.crt. Generating new"
@@ -32,7 +34,9 @@ if [ -f /run/nginx.pid ]; then
 	nginx -s reload
 fi
 
-chmod 440 /etc/sudoers.d/nginx
+if [ -f /etc/sudoers.d/nginx ]; then
+	chmod 440 /etc/sudoers.d/nginx
+fi
 
 usermod -a -G systemd-journal pi
 if [ ! -d /var/log/journal ]; then
