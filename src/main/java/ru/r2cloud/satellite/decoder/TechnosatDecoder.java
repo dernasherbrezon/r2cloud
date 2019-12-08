@@ -9,6 +9,7 @@ import ru.r2cloud.jradio.blocks.FixedLengthTagger;
 import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
 import ru.r2cloud.jradio.blocks.UnpackedToPacked;
 import ru.r2cloud.jradio.technosat.Technosat;
+import ru.r2cloud.jradio.technosat.TechnosatBeacon;
 import ru.r2cloud.jradio.tubix20.CMX909bBeacon;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.util.Configuration;
@@ -26,6 +27,11 @@ public class TechnosatDecoder extends TelemetryDecoder {
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(gmsk, 4, "111011110000111011110000", false);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new UnpackedToPacked(new FixedLengthTagger(correlateTag, CMX909bBeacon.MAX_SIZE * 8), 1, Endianness.GR_MSB_FIRST));
 		return new Technosat(pdu);
+	}
+	
+	@Override
+	public Class<? extends Beacon> getBeaconClass() {
+		return TechnosatBeacon.class;
 	}
 
 }

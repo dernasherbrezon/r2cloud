@@ -8,6 +8,7 @@ import ru.r2cloud.jradio.blocks.FixedLengthTagger;
 import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
 import ru.r2cloud.jradio.gomx1.AX100Decoder;
 import ru.r2cloud.jradio.kunspf.KunsPf;
+import ru.r2cloud.jradio.kunspf.KunsPfBeacon;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.util.Configuration;
 
@@ -24,6 +25,11 @@ public class KunsPfDecoder extends TelemetryDecoder {
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new FixedLengthTagger(correlateTag, 255 * 8));
 		AX100Decoder ax100 = new AX100Decoder(pdu, false, true, true);
 		return new KunsPf(ax100);
+	}
+	
+	@Override
+	public Class<? extends Beacon> getBeaconClass() {
+		return KunsPfBeacon.class;
 	}
 
 }

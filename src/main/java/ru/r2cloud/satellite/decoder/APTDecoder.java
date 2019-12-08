@@ -122,5 +122,5 @@ public class APTDecoder implements Decoder {
 		}
 		return success;
 	}
-
+	
 }

@@ -1,157 +1,44 @@
 package ru.r2cloud.satellite.decoder;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.util.List;
-import java.util.zip.GZIPInputStream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ru.r2cloud.jradio.BeaconOutputStream;
-import ru.r2cloud.jradio.DopplerValueSource;
+import ru.r2cloud.jradio.Beacon;
+import ru.r2cloud.jradio.BeaconSource;
+import ru.r2cloud.jradio.FloatInput;
 import ru.r2cloud.jradio.aausat4.AAUSAT4;
 import ru.r2cloud.jradio.aausat4.AAUSAT4Beacon;
 import ru.r2cloud.jradio.blocks.ClockRecoveryMM;
 import ru.r2cloud.jradio.blocks.CorrelateAccessCodeTag;
-import ru.r2cloud.jradio.blocks.Firdes;
 import ru.r2cloud.jradio.blocks.FixedLengthTagger;
 import ru.r2cloud.jradio.blocks.FloatToChar;
-import ru.r2cloud.jradio.blocks.FrequencyXlatingFIRFilter;
 import ru.r2cloud.jradio.blocks.LowPassFilter;
-import ru.r2cloud.jradio.blocks.Multiply;
 import ru.r2cloud.jradio.blocks.MultiplyConst;
 import ru.r2cloud.jradio.blocks.QuadratureDemodulation;
 import ru.r2cloud.jradio.blocks.Rail;
 import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
 import ru.r2cloud.jradio.blocks.Window;
-import ru.r2cloud.jradio.detection.GmskFrequencyCorrection;
-import ru.r2cloud.jradio.detection.PeakDetection;
-import ru.r2cloud.jradio.detection.PeakInterval;
-import ru.r2cloud.jradio.detection.PeakValueSource;
-import ru.r2cloud.jradio.sink.WavFileSink;
-import ru.r2cloud.jradio.source.RtlSdr;
-import ru.r2cloud.jradio.source.SigSource;
-import ru.r2cloud.jradio.source.WavFileSource;
-import ru.r2cloud.jradio.source.Waveform;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.ObservationResult;
-import ru.r2cloud.satellite.Predict;
 import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.Util;
-import uk.me.g4dpz.satellite.Satellite;
-import uk.me.g4dpz.satellite.SatelliteFactory;
 
-public class Aausat4Decoder implements Decoder {
-
-	private static final Logger LOG = LoggerFactory.getLogger(Aausat4Decoder.class);
-
-	private final Configuration config;
+public class Aausat4Decoder extends TelemetryDecoder {
 
 	public Aausat4Decoder(Configuration config) {
-		this.config = config;
+		super(config);
 	}
 
 	@Override
-	public ObservationResult decode(File rawIq, ObservationRequest req) {
-		ObservationResult result = new ObservationResult();
-		result.setIqPath(rawIq);
-
-		Long totalSamples = Util.readTotalSamples(rawIq.toPath());
-		if (totalSamples == null) {
-			return result;
-		}
-
-		long numberOfDecodedPackets = 0;
-		File binFile = new File(config.getTempDirectory(), "aausat4-" + req.getId() + ".bin");
-		File tempFile = new File(config.getTempDirectory(), "aausat4-" + req.getId() + ".temp");
-		WavFileSink tempWav = null;
-		BufferedOutputStream fos = null;
-		try {
-			// 1 stage. correct doppler & remove DC offset
-			Satellite satellite = SatelliteFactory.createSatellite(req.getTle());
-			RtlSdr sdr = new RtlSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalSamples);
-			float[] taps = Firdes.lowPass(1.0, sdr.getContext().getSampleRate(), 6400, 1000, Window.WIN_HAMMING, 6.76);
-			FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(sdr, taps, req.getInputSampleRate() / req.getOutputSampleRate(), req.getSatelliteFrequency() - req.getActualFrequency());
-			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) xlating.getContext().getSampleRate(), new DopplerValueSource(xlating.getContext().getSampleRate(), req.getSatelliteFrequency(), 1000L, req.getStartTimeMillis()) {
-
-				@Override
-				public long getDopplerFrequency(long satelliteFrequency, long currentTimeMillis) {
-					return Predict.getDownlinkFreq(satelliteFrequency, currentTimeMillis, req.getGroundStation(), satellite);
-				}
-			}, 1.0);
-			Multiply mul = new Multiply(xlating, source2);
-			tempWav = new WavFileSink(mul, 16);
-			fos = new BufferedOutputStream(new FileOutputStream(tempFile));
-			tempWav.process(fos);
-		} catch (Exception e) {
-			LOG.error("unable to correct doppler: " + rawIq.getAbsolutePath(), e);
-			return result;
-		} finally {
-			Util.closeQuietly(tempWav);
-			Util.closeQuietly(fos);
-		}
-		// 2 stage. detect peaks
-		List<PeakInterval> peaks;
-		WavFileSource source = null;
-		try {
-			source = new WavFileSource(new BufferedInputStream(new FileInputStream(tempFile)));
-			PeakDetection detection = new PeakDetection(10, -80.0f, 3);
-			peaks = detection.process(source);
-		} catch (Exception e) {
-			LOG.error("unable to detect peaks: " + tempFile.getAbsolutePath(), e);
-			return result;
-		} finally {
-			Util.closeQuietly(source);
-		}
-
-		if (peaks.isEmpty()) {
-			return result;
-		}
-		// 3 stage. correct peaks and decode
-		AAUSAT4 input = null;
-		BeaconOutputStream aos = null;
-		try {
-			source = new WavFileSource(new BufferedInputStream(new FileInputStream(tempFile)));
-			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) source.getContext().getSampleRate(), new PeakValueSource(peaks, new GmskFrequencyCorrection(2400, 10)), 1.0f);
-			Multiply mul = new Multiply(source, source2);
-			QuadratureDemodulation qd = new QuadratureDemodulation(mul, 0.4f);
-			LowPassFilter lpf = new LowPassFilter(qd, 1.0, 1500.0f, 100, Window.WIN_HAMMING, 6.76);
-			MultiplyConst mc = new MultiplyConst(lpf, 1.0f);
-			ClockRecoveryMM clockRecovery = new ClockRecoveryMM(mc, mc.getContext().getSampleRate() / 2400, (float) (0.25 * 0.175 * 0.175), 0.005f, 0.175f, 0.005f);
-			Rail rail = new Rail(clockRecovery, -1.0f, 1.0f);
-			FloatToChar f2char = new FloatToChar(rail, 127.0f);
-			CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(f2char, 10, "010011110101101000110100010000110101010101000010", true);
-			input = new AAUSAT4(new TaggedStreamToPdu(new FixedLengthTagger(correlateTag, AAUSAT4.VITERBI_TAIL_SIZE + 8))); // 8 for fsm
-			aos = new BeaconOutputStream(new FileOutputStream(binFile));
-			while (input.hasNext()) {
-				AAUSAT4Beacon next = input.next();
-				next.setBeginMillis(req.getStartTimeMillis() + (long) ((next.getBeginSample() * 1000) / source.getContext().getSampleRate()));
-				aos.write(next);
-				numberOfDecodedPackets++;
-			}
-		} catch (Exception e) {
-			LOG.error("unable to process: " + rawIq.getAbsolutePath(), e);
-			return result;
-		} finally {
-			Util.closeQuietly(input);
-			Util.closeQuietly(aos);
-			if (!tempFile.delete()) {
-				LOG.error("unable to delete temp file: {}", tempFile.getAbsolutePath());
-			}
-		}
-		result.setNumberOfDecodedPackets(numberOfDecodedPackets);
-		if (numberOfDecodedPackets <= 0) {
-			if (binFile.exists() && !binFile.delete()) {
-				LOG.error("unable to delete temp file: {}", binFile.getAbsolutePath());
-			}
-		} else {
-			result.setDataPath(binFile);
-		}
-		return result;
+	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
+		QuadratureDemodulation qd = new QuadratureDemodulation(source, 0.4f);
+		LowPassFilter lpf = new LowPassFilter(qd, 1.0, 1500.0f, 100, Window.WIN_HAMMING, 6.76);
+		MultiplyConst mc = new MultiplyConst(lpf, 1.0f);
+		ClockRecoveryMM clockRecovery = new ClockRecoveryMM(mc, mc.getContext().getSampleRate() / 2400, (float) (0.25 * 0.175 * 0.175), 0.005f, 0.175f, 0.005f);
+		Rail rail = new Rail(clockRecovery, -1.0f, 1.0f);
+		FloatToChar f2char = new FloatToChar(rail, 127.0f);
+		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(f2char, 10, "010011110101101000110100010000110101010101000010", true);
+		return new AAUSAT4(new TaggedStreamToPdu(new FixedLengthTagger(correlateTag, AAUSAT4.VITERBI_TAIL_SIZE + 8))); // 8 for fsm
+	}
+	
+	@Override
+	public Class<? extends Beacon> getBeaconClass() {
+		return AAUSAT4Beacon.class;
 	}
 
 }

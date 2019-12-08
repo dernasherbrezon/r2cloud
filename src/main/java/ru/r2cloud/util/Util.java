@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
@@ -22,7 +24,11 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
@@ -33,6 +39,11 @@ import javax.imageio.ImageIO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 public final class Util {
 
@@ -56,7 +67,7 @@ public final class Util {
 			LOG.error("unable to rotate image", e);
 		}
 	}
-	
+
 	public static File initDirectory(String path) {
 		File result = new File(path);
 		if (result.exists() && !result.isDirectory()) {
@@ -235,6 +246,120 @@ public final class Util {
 		if (read < expectedLength) {
 			throw new EOFException();
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static JsonValue convertObject(Object obj) {
+		JsonValue primitiveValue = convertPrimitive(obj);
+		if (primitiveValue != null) {
+			return primitiveValue;
+		}
+		if (obj.getClass().isArray()) {
+			JsonArray result = new JsonArray();
+			for (int i = 0; i < Array.getLength(obj); i++) {
+				JsonValue convertObject = convertObject(Array.get(obj, i));
+				if (convertObject == null) {
+					continue;
+				}
+				result.add(convertObject);
+			}
+			if (result.isEmpty()) {
+				return null;
+			}
+			return result;
+		} else if (obj instanceof Collection<?>) {
+			JsonArray result = new JsonArray();
+			for (Object curCollectionItem : (Collection<?>) obj) {
+				JsonValue convertObject = convertObject(curCollectionItem);
+				if (convertObject == null) {
+					continue;
+				}
+				result.add(convertObject);
+			}
+			if (result.isEmpty()) {
+				return null;
+			}
+			return result;
+		} else if (obj instanceof Map<?, ?>) {
+			JsonObject result = new JsonObject();
+			for (Entry<Object, Object> curEntry : ((Map<Object, Object>) obj).entrySet()) {
+				JsonValue convertObject = convertObject(curEntry.getValue());
+				if (convertObject == null) {
+					continue;
+				}
+				result.add(curEntry.getKey().toString(), convertObject);
+			}
+			if (result.isEmpty()) {
+				return null;
+			}
+			return result;
+		} else if (obj.getClass().isEnum()) {
+			return Json.value(((Enum<?>) obj).name());
+		}
+		JsonObject result = new JsonObject();
+		Method[] m = obj.getClass().getMethods();
+		Arrays.sort(m, MethodComparator.INSTANCE);
+		for (Method cur : m) {
+			if (cur.getParameterCount() > 0) {
+				continue;
+			}
+			String name = extractName(cur.getName());
+			if (name == null) {
+				continue;
+			}
+			try {
+				Object value = cur.invoke(obj, (Object[]) null);
+				if (value == null || value instanceof Class<?>) {
+					continue;
+				}
+
+				JsonValue jsonValue = convertObject(value);
+				if (jsonValue == null) {
+					continue;
+				}
+				result.add(name, jsonValue);
+			} catch (Exception e) {
+				LOG.error("unable to get value: " + name, e);
+			}
+		}
+		if (result.isEmpty()) {
+			return null;
+		}
+		return result;
+	}
+
+	private static JsonValue convertPrimitive(Object value) {
+		JsonValue jsonValue;
+		if (value instanceof Integer) {
+			jsonValue = Json.value((Integer) value);
+		} else if (value instanceof Long) {
+			jsonValue = Json.value((Long) value);
+		} else if (value instanceof Float) {
+			jsonValue = Json.value((Float) value);
+		} else if (value instanceof Double) {
+			jsonValue = Json.value((Double) value);
+		} else if (value instanceof Boolean) {
+			jsonValue = Json.value((Boolean) value);
+		} else if (value instanceof Byte) {
+			jsonValue = Json.value((Byte) value);
+		} else if (value instanceof Short) {
+			jsonValue = Json.value((Short) value);
+		} else if (value instanceof String) {
+			jsonValue = Json.value((String) value);
+		} else {
+			jsonValue = null;
+		}
+		return jsonValue;
+	}
+
+	private static String extractName(String methodName) {
+		if (methodName.startsWith("get")) {
+			return Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
+		}
+		if (methodName.startsWith("is")) {
+			return Character.toLowerCase(methodName.charAt(2)) + methodName.substring(3);
+		}
+		return null;
 	}
 
 	private Util() {

@@ -26,6 +26,7 @@ import org.junit.rules.TemporaryFolder;
 import com.aerse.mockfs.FailingByteChannelCallback;
 import com.aerse.mockfs.MockFileSystem;
 
+import ru.r2cloud.SampleClass;
 import ru.r2cloud.TestUtil;
 
 public class UtilTest {
@@ -94,6 +95,11 @@ public class UtilTest {
 		assertEquals(2, result.size());
 		assertEquals("test", result.get(0));
 		assertEquals("test2", result.get(1));
+	}
+
+	@Test
+	public void testSerializeJsonList() {
+		assertEquals("{\"f1\":1,\"f10\":\"E2\",\"f11\":[1.1,2.2,3.3],\"f2\":2,\"f3\":3,\"f4\":4,\"f5\":5.1,\"f6\":6.1,\"f7\":\"f7\",\"f8\":[\"1\",\"2\",\"3\"],\"f9\":{\"f9\":[\"1\",\"2\",\"3\"]}}", Util.convertObject(new SampleClass()).toString());
 	}
 
 	private File setupTempFile(byte[] data) throws IOException, FileNotFoundException {

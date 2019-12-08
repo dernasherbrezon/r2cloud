@@ -186,7 +186,7 @@ public class R2Cloud {
 		index(new R2CloudSave(props));
 		index(new ObservationSpectrogram(resultDao, spectogramService, signed));
 		index(new ObservationList(satelliteDao, resultDao));
-		index(new ObservationLoad(resultDao, signed));
+		index(new ObservationLoad(resultDao, signed, decoders));
 		index(new ScheduleList(satelliteDao, scheduler));
 		index(new ScheduleSave(satelliteDao, scheduler));
 		index(new ScheduleStart(satelliteDao, scheduler));

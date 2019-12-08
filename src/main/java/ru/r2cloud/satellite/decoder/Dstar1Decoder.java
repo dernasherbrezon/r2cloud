@@ -9,6 +9,7 @@ import ru.r2cloud.jradio.blocks.FixedLengthTagger;
 import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
 import ru.r2cloud.jradio.blocks.UnpackedToPacked;
 import ru.r2cloud.jradio.dstar1.Dstar1;
+import ru.r2cloud.jradio.dstar1.Dstar1Beacon;
 import ru.r2cloud.jradio.tubix20.CMX909bBeacon;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.util.Configuration;
@@ -28,4 +29,8 @@ public class Dstar1Decoder extends TelemetryDecoder {
 		return new Dstar1(pdu);
 	}
 
+	@Override
+	public Class<? extends Beacon> getBeaconClass() {
+		return Dstar1Beacon.class;
+	}
 }

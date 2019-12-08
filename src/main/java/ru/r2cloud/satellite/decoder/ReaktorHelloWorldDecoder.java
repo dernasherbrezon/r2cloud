@@ -10,6 +10,7 @@ import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
 import ru.r2cloud.jradio.blocks.UnpackedToPacked;
 import ru.r2cloud.jradio.cc11xx.Cc11xxReceiver;
 import ru.r2cloud.jradio.rhw.ReaktorHelloWorld;
+import ru.r2cloud.jradio.rhw.ReaktorHelloWorldBeacon;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.util.Configuration;
 
@@ -29,4 +30,8 @@ public class ReaktorHelloWorldDecoder extends TelemetryDecoder {
 		return new ReaktorHelloWorld(cc11);
 	}
 
+	@Override
+	public Class<? extends Beacon> getBeaconClass() {
+		return ReaktorHelloWorldBeacon.class;
+	}
 }

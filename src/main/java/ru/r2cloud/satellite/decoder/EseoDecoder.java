@@ -27,5 +27,10 @@ public class EseoDecoder extends TelemetryDecoder {
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new UnpackedToPacked(new FixedLengthTagger(correlateTag, 257 * 8), 1, Endianness.GR_MSB_FIRST));
 		return new Eseo(pdu);
 	}
+	
+	@Override
+	public Class<? extends Beacon> getBeaconClass() {
+		return EseoBeacon.class;
+	}
 
 }

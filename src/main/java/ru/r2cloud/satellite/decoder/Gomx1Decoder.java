@@ -16,6 +16,7 @@ import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
 import ru.r2cloud.jradio.blocks.Window;
 import ru.r2cloud.jradio.gomx1.AX100Decoder;
 import ru.r2cloud.jradio.gomx1.Gomx1;
+import ru.r2cloud.jradio.gomx1.Gomx1Beacon;
 import ru.r2cloud.jradio.source.SigSource;
 import ru.r2cloud.jradio.source.Waveform;
 import ru.r2cloud.model.ObservationRequest;
@@ -46,5 +47,10 @@ public class Gomx1Decoder extends TelemetryDecoder {
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new FixedLengthTagger(correlateTag, (255 + 3) * 8));
 		AX100Decoder ax100 = new AX100Decoder(pdu, false, false, false);
 		return new Gomx1(ax100);
+	}
+	
+	@Override
+	public Class<? extends Beacon> getBeaconClass() {
+		return Gomx1Beacon.class;
 	}
 }

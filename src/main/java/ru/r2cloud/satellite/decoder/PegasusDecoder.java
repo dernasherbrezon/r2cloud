@@ -5,6 +5,7 @@ import ru.r2cloud.jradio.BeaconSource;
 import ru.r2cloud.jradio.Endianness;
 import ru.r2cloud.jradio.FloatInput;
 import ru.r2cloud.jradio.at03.At03;
+import ru.r2cloud.jradio.at03.At03Beacon;
 import ru.r2cloud.jradio.blocks.CorrelateAccessCodeTag;
 import ru.r2cloud.jradio.blocks.FixedLengthTagger;
 import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
@@ -25,5 +26,10 @@ public class PegasusDecoder extends TelemetryDecoder {
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(gmsk, 1, "0010110111010100", false);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new UnpackedToPacked(new FixedLengthTagger(correlateTag, 64 * 8), 1, Endianness.GR_MSB_FIRST));
 		return new At03(pdu);
+	}
+	
+	@Override
+	public Class<? extends Beacon> getBeaconClass() {
+		return At03Beacon.class;
 	}
 }

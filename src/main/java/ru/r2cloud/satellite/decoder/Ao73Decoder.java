@@ -4,6 +4,7 @@ import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconSource;
 import ru.r2cloud.jradio.FloatInput;
 import ru.r2cloud.jradio.ao73.Ao73;
+import ru.r2cloud.jradio.ao73.Ao73Beacon;
 import ru.r2cloud.jradio.demod.BpskDemodulator;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.util.Configuration;
@@ -20,4 +21,8 @@ public class Ao73Decoder extends TelemetryDecoder {
 		return new Ao73(bpsk);
 	}
 
+	@Override
+	public Class<? extends Beacon> getBeaconClass() {
+		return Ao73Beacon.class;
+	}
 }

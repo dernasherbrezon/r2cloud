@@ -64,4 +64,6 @@ public abstract class TelemetryDecoder implements Decoder {
 
 	public abstract BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req);
 
+	public abstract Class<? extends Beacon> getBeaconClass();
+
 }

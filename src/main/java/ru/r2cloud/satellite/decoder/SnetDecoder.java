@@ -12,6 +12,7 @@ import ru.r2cloud.jradio.blocks.QuadratureDemodulation;
 import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
 import ru.r2cloud.jradio.blocks.Window;
 import ru.r2cloud.jradio.snet.Snet;
+import ru.r2cloud.jradio.snet.SnetBeacon;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.util.Configuration;
 
@@ -31,5 +32,10 @@ public class SnetDecoder extends TelemetryDecoder {
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(bs, 4, "00000100110011110101111111001000", false);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new FixedLengthTagger(correlateTag, 512 * 8));
 		return new Snet(pdu);
+	}
+	
+	@Override
+	public Class<? extends Beacon> getBeaconClass() {
+		return SnetBeacon.class;
 	}
 }
