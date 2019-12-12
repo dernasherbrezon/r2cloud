@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Locale;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -34,7 +35,7 @@ public class Authenticator {
 
 	public Authenticator(Configuration props) {
 		this.props = props;
-		this.login = props.getProperty(LOGIN_PROPERTY_NAME);
+		this.login = normalizeUsername(props.getProperty(LOGIN_PROPERTY_NAME));
 		this.password = props.getProperty(PASSWORD_PROPERTY_NAME);
 		this.salt = props.getProperty(SALT_PROPERTY_NAME);
 		this.maxAgeMillis = props.getLong("server.session.timeout.millis");
@@ -70,6 +71,7 @@ public class Authenticator {
 		if (login == null || password == null) {
 			return null;
 		}
+		login = normalizeUsername(login);
 		if (this.login == null || !this.login.equals(login)) {
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("login mismatched: {}", login);
@@ -112,7 +114,7 @@ public class Authenticator {
 		if (this.login != null) {
 			return;
 		}
-		this.login = login;
+		this.login = normalizeUsername(login);
 		this.salt = UUID.randomUUID().toString();
 		this.password = getPasswordToCheck(salt(password, salt));
 
@@ -147,6 +149,7 @@ public class Authenticator {
 		if (username == null || username.trim().length() == 0) {
 			return;
 		}
+		username = normalizeUsername(username);
 		if (!username.equals(login)) {
 			return;
 		}
@@ -158,6 +161,13 @@ public class Authenticator {
 		this.authenticatedAt = 0L;
 
 		reloadProps();
+	}
+
+	private static String normalizeUsername(String username) {
+		if (username == null) {
+			return null;
+		}
+		return username.trim().toLowerCase(Locale.UK);
 	}
 
 }

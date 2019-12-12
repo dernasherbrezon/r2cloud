@@ -21,6 +21,14 @@ public class SetupTest extends BaseTest {
 	}
 
 	@Test
+	public void testLoginCaseInsensitive() {
+		client.setup(keyword, " " + Character.toUpperCase(username.charAt(0)) + username.substring(1), password);
+		String usernameToLogin = username.substring(0, username.length() - 1) + Character.toUpperCase(username.charAt(username.length() - 1)) + " ";
+		HttpResponse<String> response = client.loginWithResponse(usernameToLogin, password);
+		assertEquals(200, response.statusCode());
+	}
+
+	@Test
 	public void testInvalidKeyword() {
 		String secondPassword = UUID.randomUUID().toString();
 		HttpResponse<String> response = client.setupWithResponse(UUID.randomUUID().toString(), username, secondPassword);
