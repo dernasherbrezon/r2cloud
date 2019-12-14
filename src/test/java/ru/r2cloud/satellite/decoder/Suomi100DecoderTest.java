@@ -26,7 +26,7 @@ public class Suomi100DecoderTest {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/suomi.raw.gz");
 		Suomi100Decoder decoder = new Suomi100Decoder(config);
 		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("data/suomi.raw.gz.json").getReq());
-		assertEquals(2, result.getNumberOfDecodedPackets().longValue());
+		assertEquals(3, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
 		assertNotNull(result.getIqPath());
 	}

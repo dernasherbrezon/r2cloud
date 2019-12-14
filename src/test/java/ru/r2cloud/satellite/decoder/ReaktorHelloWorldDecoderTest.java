@@ -26,7 +26,7 @@ public class ReaktorHelloWorldDecoderTest {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/rhw.raw.gz");
 		ReaktorHelloWorldDecoder decoder = new ReaktorHelloWorldDecoder(config);
 		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("data/rhw.raw.gz.json").getReq());
-		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
+		assertEquals(2, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
 		assertNotNull(result.getIqPath());
 	}

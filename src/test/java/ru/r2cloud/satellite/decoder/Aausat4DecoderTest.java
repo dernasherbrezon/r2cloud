@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -23,11 +22,10 @@ public class Aausat4DecoderTest {
 	private TestConfiguration config;
 
 	@Test
-	@Ignore
 	public void testSomeData() throws Exception {
-		File wav = TestUtil.setupClasspathResource(tempFolder, "data/aausat4.wav"); 
+		File wav = TestUtil.setupClasspathResource(tempFolder, "data/aausat.raw.gz");
 		Aausat4Decoder decoder = new Aausat4Decoder(config);
-		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("decodertests/Aausat4DecoderTest.json").getReq());
+		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("data/aausat.raw.gz.json").getReq());
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
 	}
