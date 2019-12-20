@@ -22,7 +22,6 @@ services:
 
 before_install:
   - gem install deb-s3
-  - sudo apt-get install -y sox
     
 script:
   - set -e
