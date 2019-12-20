@@ -77,17 +77,7 @@ public class WebServer extends NanoHTTPD {
 					model = controller.doGet(session);
 					break;
 				case POST:
-					JsonValue request;
-					try {
-						request = Json.parse(WebServer.getRequestBody(session));
-						if (!request.isObject()) {
-							model = new BadRequest("expected object");
-						} else {
-							model = controller.doPost(request.asObject());
-						}
-					} catch (ParseException e) {
-						model = new BadRequest("expected json object");
-					}
+					model = processPost(session, controller);
 					break;
 				default:
 					break;
@@ -115,6 +105,22 @@ public class WebServer extends NanoHTTPD {
 		return result;
 	}
 
+	private static ModelAndView processPost(IHTTPSession session, HttpContoller controller) {
+		ModelAndView model;
+		JsonValue request;
+		try {
+			request = Json.parse(WebServer.getRequestBody(session));
+			if (!request.isObject()) {
+				model = new BadRequest("expected object");
+			} else {
+				model = controller.doPost(request.asObject());
+			}
+		} catch (ParseException e) {
+			model = new BadRequest("expected json object");
+		}
+		return model;
+	}
+
 	private static void setupCorsHeaders(Response result) {
 		result.addHeader("Access-Control-Allow-Origin", "*");
 		result.addHeader("Access-Control-Max-Age", "1728000");
@@ -124,10 +130,7 @@ public class WebServer extends NanoHTTPD {
 	}
 
 	public boolean isAuthenticationRequired(IHTTPSession session) {
-		if (session.getUri().startsWith("/api/v1/admin/")) {
-			return true;
-		}
-		return false;
+		return session.getUri().startsWith("/api/v1/admin/");
 	}
 
 	public static String getParameter(IHTTPSession session, String name) {
