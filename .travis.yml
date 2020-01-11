@@ -12,7 +12,8 @@ addons:
 
 cache:
   directories:
-  - $HOME/.m2
+  - $HOME/.m2/repository
+  - $HOME/.sonar/cache
 
 before_cache:
   - rm -rf $HOME/.m2/repository/ru/r2cloud/
@@ -25,7 +26,7 @@ before_install:
     
 script:
   - set -e
-  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
+  - mvn clean verify sonar:sonar -Pcoverage -Dsonar.scm.disabled=true -Dsonar.language=java
   - cp ./target/*.deb ./target/it-tests
   - docker run --rm --privileged multiarch/qemu-user-static:register
   - docker build -t r2cloud ./target/it-tests
