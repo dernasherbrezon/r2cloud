@@ -19,7 +19,7 @@ public abstract class TelemetryDecoder implements Decoder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TelemetryDecoder.class);
 
-	private final Configuration config;
+	protected final Configuration config;
 
 	public TelemetryDecoder(Configuration config) {
 		this.config = config;
