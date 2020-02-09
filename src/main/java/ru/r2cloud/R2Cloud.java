@@ -24,6 +24,7 @@ import ru.r2cloud.satellite.Schedule;
 import ru.r2cloud.satellite.Scheduler;
 import ru.r2cloud.satellite.decoder.APTDecoder;
 import ru.r2cloud.satellite.decoder.Aausat4Decoder;
+import ru.r2cloud.satellite.decoder.Aistechsat3Decoder;
 import ru.r2cloud.satellite.decoder.Ao73Decoder;
 import ru.r2cloud.satellite.decoder.AstrocastDecoder;
 import ru.r2cloud.satellite.decoder.Decoder;
@@ -163,6 +164,7 @@ public class R2Cloud {
 		decoders.put("43881", new Dstar1Decoder(props));
 		decoders.put("43908", new Lume1Decoder(props));
 		decoders.put("44045", new Mysat1Decoder(props));
+		decoders.put("44103", new Aistechsat3Decoder(props));
 		
 		validateDecoders();
 		DecoderTask decoderTask = new DecoderTask(decoders, resultDao, r2cloudService);
