@@ -16,6 +16,9 @@ import ru.r2cloud.web.WebServer;
 
 public class R2CloudSave extends AbstractHttpController {
 
+	private static final String APIKEY_PARAMETER = "apiKey";
+	private static final String SYNC_PARAMETER = "syncSpectogram";
+
 	private static final Logger LOG = LoggerFactory.getLogger(R2CloudSave.class);
 
 	private final Configuration config;
@@ -28,8 +31,8 @@ public class R2CloudSave extends AbstractHttpController {
 	public ModelAndView doGet(IHTTPSession session) {
 		ModelAndView result = new ModelAndView();
 		JsonObject entity = new JsonObject();
-		entity.add("apiKey", config.getProperty("r2cloud.apiKey"));
-		entity.add("syncSpectogram", config.getBoolean("r2cloud.syncSpectogram"));
+		entity.add(APIKEY_PARAMETER, config.getProperty("r2cloud.apiKey"));
+		entity.add(SYNC_PARAMETER, config.getBoolean("r2cloud.syncSpectogram"));
 		result.setData(entity.toString());
 		return result;
 	}
@@ -37,10 +40,10 @@ public class R2CloudSave extends AbstractHttpController {
 	@Override
 	public ModelAndView doPost(JsonObject request) {
 		ValidationResult errors = new ValidationResult();
-		String apiKey = WebServer.getString(request, "apiKey");
-		boolean syncSpectogram = WebServer.getBoolean(request, "syncSpectogram");
+		String apiKey = WebServer.getString(request, APIKEY_PARAMETER);
+		boolean syncSpectogram = WebServer.getBoolean(request, SYNC_PARAMETER);
 		if (apiKey == null || apiKey.trim().length() == 0) {
-			errors.put("apiKey", "Cannot be empty");
+			errors.put(APIKEY_PARAMETER, "Cannot be empty");
 		}
 		if (!errors.isEmpty()) {
 			LOG.info("unable to save: {}", errors);
