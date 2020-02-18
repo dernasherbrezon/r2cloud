@@ -26,7 +26,7 @@ public class Dstar1DecoderTest {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/dstar1.raw.gz");
 		Dstar1Decoder decoder = new Dstar1Decoder(config);
 		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("data/dstar1.raw.gz.json").getReq());
-		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
+		assertEquals(10, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
 		assertNotNull(result.getIqPath());
 	}
