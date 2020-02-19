@@ -53,7 +53,7 @@
 		<dependency>
 			<groupId>ru.r2cloud</groupId>
 			<artifactId>jradio</artifactId>
-			<version>1.23</version>
+			<version>1.25</version>
 		</dependency>
 		<dependency>
 			<groupId>uk.me.g4dpz</groupId>
