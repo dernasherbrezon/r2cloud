@@ -36,7 +36,7 @@ public abstract class TelemetryDecoder implements Decoder {
 		BeaconOutputStream aos = null;
 		try {
 			DopplerCorrectedSource source = new DopplerCorrectedSource(rawIq, req);
-			float sampleRate = source.getContext().getSampleRate();
+			float sampleRate = req.getInputSampleRate();
 			input = createBeaconSource(source, req);
 			aos = new BeaconOutputStream(new FileOutputStream(binFile));
 			while (input.hasNext()) {
