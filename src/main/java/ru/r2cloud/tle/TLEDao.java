@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +39,7 @@ public class TLEDao {
 
 	public synchronized void start() {
 		boolean reload = false;
+		long periodMillis = config.getLong("tle.update.periodMillis");
 		for (Satellite cur : satelliteDao.findAll()) {
 			Path tleFile = basepath.resolve(cur.getId()).resolve("tle.txt");
 			if (!Files.exists(tleFile)) {
@@ -49,7 +49,7 @@ public class TLEDao {
 			}
 			try {
 				long time = Files.getLastModifiedTime(tleFile).toMillis();
-				if (System.currentTimeMillis() - time > TimeUnit.DAYS.toMillis(7)) {
+				if (System.currentTimeMillis() - time > periodMillis) {
 					LOG.info("tle file: {} stale. Last updated at: {}. schedule reloading", tleFile.toAbsolutePath(), new Date(time));
 					reload = true;
 					// schedule reload, but read it anyway in case celestrak is not

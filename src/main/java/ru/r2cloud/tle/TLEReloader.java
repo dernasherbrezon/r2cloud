@@ -38,21 +38,21 @@ public class TLEReloader {
 			return;
 		}
 		executor = threadFactory.newScheduledThreadPool(1, new NamingThreadFactory("tle-updater"));
-		SimpleDateFormat sdf = new SimpleDateFormat("u HH:mm");
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 		try {
 			long current = clock.millis();
 			Date date = sdf.parse(config.getProperty("tle.update.timeUTC"));
+			long periodMillis = config.getLong("tle.update.periodMillis");
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(date);
 			Calendar executeAt = Calendar.getInstance();
 			executeAt.setTimeInMillis(current);
-			executeAt.set(Calendar.DAY_OF_WEEK, cal.get(Calendar.DAY_OF_WEEK));
 			executeAt.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY));
 			executeAt.set(Calendar.MINUTE, cal.get(Calendar.MINUTE));
 			executeAt.set(Calendar.SECOND, 0);
 			executeAt.set(Calendar.MILLISECOND, 0);
 			if (executeAt.getTimeInMillis() < current) {
-				executeAt.add(Calendar.WEEK_OF_YEAR, 1);
+				executeAt.add(Calendar.MILLISECOND, (int) periodMillis);
 			}
 			LOG.info("next tle update at: {}", executeAt.getTime());
 			executor.scheduleAtFixedRate(new Runnable() {
@@ -61,7 +61,7 @@ public class TLEReloader {
 				public void run() {
 					dao.reload();
 				}
-			}, executeAt.getTimeInMillis() - current, TimeUnit.DAYS.toMillis(7), TimeUnit.MILLISECONDS);
+			}, executeAt.getTimeInMillis() - current, periodMillis, TimeUnit.MILLISECONDS);
 
 		} catch (ParseException e) {
 			LOG.info("invalid time. tle will be disabled", e);
