@@ -354,8 +354,6 @@
 						<sox>>=14.4.1</sox>
 						<!-- required by deps-maven-plugin -->
 						<wget />
-						<!-- meteor m2-2 demodulator -->
-						<meteor-demod>>=0.3-beta1-1</meteor-demod>
 					</osDependencies>
 					<javaServiceWrapper>false</javaServiceWrapper>
 					<fileSets>
