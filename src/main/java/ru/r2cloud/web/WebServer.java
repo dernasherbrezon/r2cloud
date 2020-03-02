@@ -202,6 +202,20 @@ public class WebServer extends NanoHTTPD {
 		return Boolean.valueOf(param);
 	}
 
+	public static Integer getInteger(JsonValue value, String name) {
+		JsonValue result = ((JsonObject) value).get(name);
+		if (result == null || result.isNull()) {
+			return null;
+		}
+		if (result.isString()) {
+			return Integer.parseInt(result.asString());
+		}
+		if (!result.isNumber()) {
+			throw new NumberFormatException();
+		}
+		return result.asInt();
+	}
+
 	public static boolean getBoolean(JsonValue value, String name) {
 		JsonValue result = ((JsonObject) value).get(name);
 		if (result == null || result.isNull()) {

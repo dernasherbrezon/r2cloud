@@ -26,6 +26,8 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
+import ru.r2cloud.model.GeneralConfiguration;
+
 public class RestClient {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RestClient.class);
@@ -262,22 +264,28 @@ public class RestClient {
 		return getData("/api/v1/admin/status/overview");
 	}
 
-	public void setGeneralConfiguration(Double lat, Double lng, boolean autoUpdate) {
-		HttpResponse<String> response = setGeneralConfigurationWithResponse(lat, lng, autoUpdate);
+	public void setGeneralConfiguration(GeneralConfiguration config) {
+		HttpResponse<String> response = setGeneralConfigurationWithResponse(config);
 		if (response.statusCode() != 200) {
 			throw new RuntimeException("invalid status code: " + response.statusCode());
 		}
 	}
 
-	public HttpResponse<String> setGeneralConfigurationWithResponse(Double lat, Double lng, boolean autoUpdate) {
+	public HttpResponse<String> setGeneralConfigurationWithResponse(GeneralConfiguration config) {
 		JsonObject json = Json.object();
-		if (lat != null) {
-			json.add("lat", lat);
+		if (config.getLat() != null) {
+			json.add("lat", config.getLat());
 		}
-		if (lng != null) {
-			json.add("lng", lng);
+		if (config.getLng() != null) {
+			json.add("lng", config.getLng());
 		}
-		json.add("autoUpdate", autoUpdate);
+		json.add("autoUpdate", config.isAutoUpdate());
+		if (config.getPpmType() != null) {
+			json.add("ppmType", config.getPpmType());
+		}
+		if (config.getPpm() != null) {
+			json.add("ppm", config.getPpm());
+		}
 		HttpRequest request = createJsonPost("/api/v1/admin/config/general", json).build();
 		try {
 			return httpclient.send(request, BodyHandlers.ofString());
@@ -331,7 +339,7 @@ public class RestClient {
 		}
 		return (JsonObject) Json.parse(response.body());
 	}
-	
+
 	public HttpResponse<String> postData(String url, String data) {
 		HttpRequest request = createDefaultRequest(url).POST(BodyPublishers.ofString(data, StandardCharsets.UTF_8)).build();
 		try {
@@ -355,7 +363,7 @@ public class RestClient {
 			throw new RuntimeException("unable to send request");
 		}
 	}
-	
+
 	public String getFile(String url) {
 		HttpResponse<String> response = getFileResponse(url);
 		if (response.statusCode() != 200) {
