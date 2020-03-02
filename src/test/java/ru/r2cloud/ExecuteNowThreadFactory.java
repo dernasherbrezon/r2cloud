@@ -140,7 +140,7 @@ public class ExecuteNowThreadFactory implements ThreadPoolFactory, ScheduledExec
 			return future;
 		}
 		command.run();
-		return null;
+		return new NoOpScheduledFuture<>();
 	}
 
 	@Override

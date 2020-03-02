@@ -43,6 +43,7 @@ public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
 	private RtlStatusProcess statusProcess;
 	private PpmProcess ppmProcess;
 	private Integer currentPpm;
+	private PpmType previousType;
 	private ScheduledFuture<?> ppmTask;
 
 	public RtlSdrStatusDao(Configuration config, RtlSdrLock lock, ThreadPoolFactory threadpoolFactory, Metrics metrics, ProcessFactory processFactory) {
@@ -66,7 +67,7 @@ public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
 			break;
 		case AUTO:
 			// ensure called only once
-			if (ppmTask == null) {
+			if (previousType == null || previousType.equals(PpmType.MANUAL)) {
 				scheduleAutoPpm();
 			}
 			break;
@@ -83,12 +84,12 @@ public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
 		}
 		currentPpm = config.getInteger("ppm.current");
 		executor = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("rtlsdr-tester"));
-		PpmType type = config.getPpmType();
-		if (PpmType.AUTO.equals(type)) {
+		previousType = config.getPpmType();
+		if (PpmType.AUTO.equals(previousType)) {
 			if (config.getBoolean("ppm.calculate")) {
 				scheduleAutoPpm();
 			}
-		} else if (PpmType.MANUAL.equals(type)) {
+		} else if (PpmType.MANUAL.equals(previousType)) {
 			LOG.info("ppm configured manually: {}", currentPpm);
 		}
 		metrics.getHealthRegistry().register("rtltest", new HealthCheck() {
