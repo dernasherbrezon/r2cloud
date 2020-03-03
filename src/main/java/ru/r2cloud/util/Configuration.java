@@ -84,7 +84,7 @@ public class Configuration {
 	}
 
 	public void update() {
-		Path tempPath = getTempDirectoryPath().resolve("user.properties.tmp");
+		Path tempPath = userSettingsLocation.getParent().resolve("user.properties.tmp");
 		try (BufferedWriter fos = Files.newBufferedWriter(tempPath)) {
 			userSettings.store(fos, "updated");
 		} catch (IOException e) {
@@ -96,6 +96,8 @@ public class Configuration {
 			throw new IllegalArgumentException(e);
 		}
 		try {
+			// temp and dest are on the same filestore
+			// AtomicMoveNotSupportedException shouldn't happen
 			Files.move(tempPath, userSettingsLocation, StandardCopyOption.ATOMIC_MOVE);
 		} catch (IOException e) {
 			throw new IllegalArgumentException(e);

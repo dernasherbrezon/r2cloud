@@ -111,7 +111,8 @@ public class TLEDao {
 					continue;
 				}
 			}
-			Path tempOutput = basepath.resolve(satellite.getId()).resolve("tle.txt.tmp");
+			// ensure temp and output are on the same filestore
+			Path tempOutput = output.getParent().resolve("tle.txt.tmp");
 			try (BufferedWriter w = Files.newBufferedWriter(tempOutput)) {
 				w.append(cur.getValue().getRaw()[1]);
 				w.newLine();
