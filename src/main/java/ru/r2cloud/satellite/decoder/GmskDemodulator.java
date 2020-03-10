@@ -20,10 +20,16 @@ public class GmskDemodulator implements ByteInput {
 	private final ByteInput source;
 
 	public GmskDemodulator(FloatInput source, int baudRate, float bandwidth, float gainMu) {
+		this(source, baudRate, bandwidth, gainMu, true);
+	}
+
+	public GmskDemodulator(FloatInput source, int baudRate, float bandwidth, float gainMu, boolean useFll) {
 		float samplesPerSymbol = source.getContext().getSampleRate() / baudRate;
-		RmsAgc agc = new RmsAgc(source, 1e-2f, 0.5f);
-		FLLBandEdge fll = new FLLBandEdge(agc, samplesPerSymbol, 0.35f, 100, 0.06f);
-		LowPassFilterComplex lpf = new LowPassFilterComplex(fll, 1.0, bandwidth / 2, 600, Window.WIN_HAMMING, 6.76);
+		FloatInput next = new RmsAgc(source, 1e-2f, 0.5f);
+		if (useFll) {
+			next = new FLLBandEdge(next, samplesPerSymbol, 0.35f, 100, 0.06f);
+		}
+		LowPassFilterComplex lpf = new LowPassFilterComplex(next, 1.0, bandwidth / 2, 600, Window.WIN_HAMMING, 6.76);
 		QuadratureDemodulation qd = new QuadratureDemodulation(lpf, 1.0f);
 		LowPassFilter lpf2 = new LowPassFilter(qd, 1.0, (double) baudRate / 2, 2000, Window.WIN_HAMMING, 6.76);
 		ClockRecoveryMM clockRecovery = new ClockRecoveryMM(lpf2, samplesPerSymbol, (float) (0.25 * gainMu * gainMu), 0.5f, gainMu, 0.005f);
