@@ -20,7 +20,7 @@ public class Lucky7Decoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		GmskDemodulator demodulator = new GmskDemodulator(source, 4800, req.getBandwidth(), 0.175f, false);
+		GmskDemodulator demodulator = new GmskDemodulator(source, 4800, req.getBandwidth(), 0.175f, null);
 		SoftToHard bs = new SoftToHard(demodulator);
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(bs, 3, "0010110111010100", false);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new FixedLengthTagger(correlateTag, 37 * 8));
