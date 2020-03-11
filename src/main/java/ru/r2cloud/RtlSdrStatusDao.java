@@ -30,6 +30,7 @@ import ru.r2cloud.util.Util;
 
 public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
 
+	private static final String PPM_CURRENT_PROPERTY_NAME = "ppm.current";
 	private static final Logger LOG = LoggerFactory.getLogger(RtlSdrStatusDao.class);
 
 	private final Configuration config;
@@ -48,7 +49,7 @@ public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
 
 	public RtlSdrStatusDao(Configuration config, RtlSdrLock lock, ThreadPoolFactory threadpoolFactory, Metrics metrics, ProcessFactory processFactory) {
 		this.config = config;
-		this.config.subscribe(this, "ppm.calculate.type", "ppm.current");
+		this.config.subscribe(this, "ppm.calculate.type", PPM_CURRENT_PROPERTY_NAME);
 		this.lock = lock;
 		this.threadpoolFactory = threadpoolFactory;
 		this.metrics = metrics;
@@ -58,7 +59,7 @@ public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
 
 	@Override
 	public void onConfigUpdated() {
-		currentPpm = config.getInteger("ppm.current");
+		currentPpm = config.getInteger(PPM_CURRENT_PROPERTY_NAME);
 		PpmType type = config.getPpmType();
 		switch (type) {
 		case MANUAL:
@@ -72,7 +73,7 @@ public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
 			}
 			break;
 		default:
-			LOG.error("unknown ppm type: " + type);
+			LOG.error("unknown ppm type: {}", type);
 		}
 	}
 
@@ -82,7 +83,7 @@ public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
 		if (executor != null) {
 			return;
 		}
-		currentPpm = config.getInteger("ppm.current");
+		currentPpm = config.getInteger(PPM_CURRENT_PROPERTY_NAME);
 		executor = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("rtlsdr-tester"));
 		previousType = config.getPpmType();
 		if (PpmType.AUTO.equals(previousType)) {
@@ -184,7 +185,7 @@ public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
 					synchronized (RtlSdrStatusDao.this) {
 						currentPpm = ppm;
 					}
-					config.setProperty("ppm.current", ppm);
+					config.setProperty(PPM_CURRENT_PROPERTY_NAME, ppm);
 					config.update();
 				}
 			}, executeAt.getTimeInMillis() - current, TimeUnit.DAYS.toMillis(1), TimeUnit.MILLISECONDS);
