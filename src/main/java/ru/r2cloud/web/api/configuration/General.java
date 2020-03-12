@@ -76,9 +76,7 @@ public class General extends AbstractHttpController {
 					errors.put("ppm", Messages.CANNOT_BE_EMPTY);
 				}
 			} catch (NumberFormatException e) {
-				if (ppm == null) {
-					errors.put("ppm", "not an integer");
-				}
+				errors.put("ppm", "not an integer");
 			}
 		}
 		if (!errors.isEmpty()) {
