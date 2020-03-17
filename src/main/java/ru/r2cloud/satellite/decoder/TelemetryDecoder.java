@@ -2,6 +2,9 @@ package ru.r2cloud.satellite.decoder;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,26 +34,28 @@ public abstract class TelemetryDecoder implements Decoder {
 		result.setIqPath(rawIq);
 
 		long numberOfDecodedPackets = 0;
+		float sampleRate = req.getInputSampleRate();
 		File binFile = new File(config.getTempDirectory(), req.getId() + ".bin");
-		BeaconSource<? extends Beacon> input = null;
-		BeaconOutputStream aos = null;
-		try {
-			DopplerCorrectedSource source = new DopplerCorrectedSource(rawIq, req);
-			float sampleRate = req.getInputSampleRate();
-			input = createBeaconSource(source, req);
-			aos = new BeaconOutputStream(new FileOutputStream(binFile));
-			while (input.hasNext()) {
-				Beacon next = input.next();
-				next.setBeginMillis(req.getStartTimeMillis() + (long) ((next.getBeginSample() * 1000) / sampleRate));
-				aos.write(next);
-				numberOfDecodedPackets++;
+		List<BeaconSource<? extends Beacon>> input = null;
+		try (BeaconOutputStream aos = new BeaconOutputStream(new FileOutputStream(binFile));) {
+			input = createBeaconSources(rawIq, req);
+			for (int i = 0; i < input.size(); i++) {
+				// process each beaconsource
+				BeaconSource<? extends Beacon> currentInput = input.get(i);
+				try {
+					while (currentInput.hasNext()) {
+						Beacon next = currentInput.next();
+						next.setBeginMillis(req.getStartTimeMillis() + (long) ((next.getBeginSample() * 1000) / sampleRate));
+						aos.write(next);
+						numberOfDecodedPackets++;
+					}
+				} finally {
+					Util.closeQuietly(currentInput);
+				}
 			}
 		} catch (Exception e) {
 			LOG.error("unable to process: " + rawIq, e);
 			return result;
-		} finally {
-			Util.closeQuietly(input);
-			Util.closeQuietly(aos);
 		}
 		result.setNumberOfDecodedPackets(numberOfDecodedPackets);
 		if (numberOfDecodedPackets <= 0) {
@@ -63,7 +68,19 @@ public abstract class TelemetryDecoder implements Decoder {
 		return result;
 	}
 
-	public abstract BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req);
+	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, ObservationRequest req) throws IOException {
+		DopplerCorrectedSource source = new DopplerCorrectedSource(rawIq, req);
+		BeaconSource<? extends Beacon> beaconSource = createBeaconSource(source, req);
+		if (beaconSource == null) {
+			throw new IllegalArgumentException("at least one beacon source should be specified");
+		}
+		return Collections.singletonList(beaconSource);
+	}
+
+	@SuppressWarnings("unused")
+	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
+		return null;
+	}
 
 	public abstract Class<? extends Beacon> getBeaconClass();
 
