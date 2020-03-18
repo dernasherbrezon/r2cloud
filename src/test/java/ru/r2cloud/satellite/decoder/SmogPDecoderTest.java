@@ -26,7 +26,7 @@ public class SmogPDecoderTest {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/smogp.gz");
 		SmogPDecoder decoder = new SmogPDecoder(config);
 		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("data/smogp.raw.gz.json").getReq());
-		assertEquals(3, result.getNumberOfDecodedPackets().longValue());
+		assertEquals(2, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
 		assertNotNull(result.getIqPath());
 	}
