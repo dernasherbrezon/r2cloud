@@ -42,7 +42,7 @@ public class R2ServerClient {
 		this.hostname = config.getProperty("r2server.hostname");
 		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMillis(config.getInteger("r2server.connectionTimeout"))).build();
 	}
-	
+
 	public Long saveMeta(ObservationFull observation) {
 		if (observation == null) {
 			return null;
@@ -50,8 +50,10 @@ public class R2ServerClient {
 		HttpRequest request = createJsonRequest(OBSERVATION_BASEPATH, observation.toJson(null)).build();
 		try {
 			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
-			if (response.statusCode() != 200 && LOG.isErrorEnabled()) {
-				LOG.error("unable to save meta. response code: {}. response: {}", response.statusCode(), response.body());
+			if (response.statusCode() != 200) {
+				if (LOG.isErrorEnabled()) {
+					LOG.error("unable to save meta. response code: {}. response: {}", response.statusCode(), response.body());
+				}
 				return null;
 			}
 			return readObservationId(response.body());
