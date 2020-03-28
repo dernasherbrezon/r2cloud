@@ -7,12 +7,13 @@ import ru.r2cloud.jradio.ao73.Ao73;
 import ru.r2cloud.jradio.ao73.Ao73Beacon;
 import ru.r2cloud.jradio.demod.BpskDemodulator;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
 public class Ao73Decoder extends TelemetryDecoder {
 
-	public Ao73Decoder(Configuration config) {
-		super(config);
+	public Ao73Decoder(PredictOreKit predict, Configuration config) {
+		super(predict, config);
 	}
 
 	@Override

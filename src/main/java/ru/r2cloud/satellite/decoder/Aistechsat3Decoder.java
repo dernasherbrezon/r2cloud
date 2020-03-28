@@ -10,12 +10,13 @@ import ru.r2cloud.jradio.blocks.FixedLengthTagger;
 import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
 import ru.r2cloud.jradio.gomx1.AX100Decoder;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
 public class Aistechsat3Decoder extends TelemetryDecoder {
 
-	public Aistechsat3Decoder(Configuration config) {
-		super(config);
+	public Aistechsat3Decoder(PredictOreKit predict, Configuration config) {
+		super(predict, config);
 	}
 
 	@Override

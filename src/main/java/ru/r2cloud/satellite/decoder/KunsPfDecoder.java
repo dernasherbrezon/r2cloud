@@ -10,12 +10,13 @@ import ru.r2cloud.jradio.gomx1.AX100Decoder;
 import ru.r2cloud.jradio.kunspf.KunsPf;
 import ru.r2cloud.jradio.kunspf.KunsPfBeacon;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
 public class KunsPfDecoder extends TelemetryDecoder {
 
-	public KunsPfDecoder(Configuration config) {
-		super(config);
+	public KunsPfDecoder(PredictOreKit predict, Configuration config) {
+		super(predict, config);
 	}
 
 	@Override

@@ -41,21 +41,21 @@ public class PredictOreKit {
 		this.minElevation = config.getDouble("scheduler.elevation.min");
 		this.guaranteedElevation = config.getDouble("scheduler.elevation.guaranteed");
 		this.config = config;
-		
-		File orekitData = new File("/Users/dernasherbrezon/Downloads/orekit-data-master");
+
+		File orekitData = new File(config.getProperty("scheduler.orekit.path"));
 		DataProvidersManager manager = DataProvidersManager.getInstance();
 		manager.addProvider(new DirectoryCrawler(orekitData));
-		
+
 		earthFrame = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
 		earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING, earthFrame);
 		// FIXME download data
 	}
 
-	public static Long getDownlinkFreq(final Long freq, final long utcTimeMillis, final TopocentricFrame currentLocation, final TLEPropagator tlePropagator) {
+	public Long getDownlinkFreq(final Long freq, final long utcTimeMillis, TopocentricFrame currentLocation, final TLEPropagator tlePropagator) {
 		tlePropagator.setEphemerisMode();
 		SpacecraftState currentState = tlePropagator.propagate(new AbsoluteDate(new Date(utcTimeMillis), TimeScalesFactory.getUTC()));
 		final double rangeRate = currentLocation.getRangeRate(currentState.getPVCoordinates(), currentState.getFrame(), currentState.getDate());
-		return (long) ((double) freq * (SPEED_OF_LIGHT - rangeRate * 1000.0) / SPEED_OF_LIGHT);
+		return (long) ((double) freq * (SPEED_OF_LIGHT - rangeRate) / SPEED_OF_LIGHT);
 	}
 
 	public SatPass calculateNext(Date current, TLEPropagator tlePropagator) {
@@ -101,7 +101,10 @@ public class PredictOreKit {
 		if (lat == null || lon == null) {
 			return null;
 		}
-		GeodeticPoint point = new GeodeticPoint(FastMath.toRadians(lat), FastMath.toRadians(lon), 0.0);
+		return getPosition(new GeodeticPoint(FastMath.toRadians(lat), FastMath.toRadians(lon), 0.0));
+	}
+
+	public TopocentricFrame getPosition(GeodeticPoint point) {
 		TopocentricFrame baseStationFrame = new TopocentricFrame(earth, point, "station1");
 		return baseStationFrame;
 	}

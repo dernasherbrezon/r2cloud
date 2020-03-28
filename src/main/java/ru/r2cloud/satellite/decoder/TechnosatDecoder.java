@@ -12,12 +12,13 @@ import ru.r2cloud.jradio.technosat.Technosat;
 import ru.r2cloud.jradio.technosat.TechnosatBeacon;
 import ru.r2cloud.jradio.tubix20.CMX909bBeacon;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
 public class TechnosatDecoder extends TelemetryDecoder {
 
-	public TechnosatDecoder(Configuration config) {
-		super(config);
+	public TechnosatDecoder(PredictOreKit predict, Configuration config) {
+		super(predict, config);
 	}
 
 	@Override

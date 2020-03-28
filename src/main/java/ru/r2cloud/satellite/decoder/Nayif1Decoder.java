@@ -7,12 +7,13 @@ import ru.r2cloud.jradio.demod.BpskDemodulator;
 import ru.r2cloud.jradio.nayif1.Nayif1;
 import ru.r2cloud.jradio.nayif1.Nayif1Beacon;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
 public class Nayif1Decoder extends TelemetryDecoder {
 
-	public Nayif1Decoder(Configuration config) {
-		super(config);
+	public Nayif1Decoder(PredictOreKit predict, Configuration config) {
+		super(predict, config);
 	}
 
 	@Override

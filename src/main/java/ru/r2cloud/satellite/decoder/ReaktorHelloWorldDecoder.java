@@ -13,12 +13,13 @@ import ru.r2cloud.jradio.cc11xx.Cc11xxReceiver;
 import ru.r2cloud.jradio.rhw.ReaktorHelloWorld;
 import ru.r2cloud.jradio.rhw.ReaktorHelloWorldBeacon;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
 public class ReaktorHelloWorldDecoder extends TelemetryDecoder {
 
-	public ReaktorHelloWorldDecoder(Configuration config) {
-		super(config);
+	public ReaktorHelloWorldDecoder(PredictOreKit predict, Configuration config) {
+		super(predict, config);
 	}
 
 	@Override

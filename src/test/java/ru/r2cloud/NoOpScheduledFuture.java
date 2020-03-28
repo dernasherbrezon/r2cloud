@@ -10,13 +10,11 @@ public class NoOpScheduledFuture<V> implements ScheduledFuture<V> {
 
 	@Override
 	public long getDelay(TimeUnit unit) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public int compareTo(Delayed o) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -32,19 +30,16 @@ public class NoOpScheduledFuture<V> implements ScheduledFuture<V> {
 
 	@Override
 	public boolean isDone() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public V get() throws InterruptedException, ExecutionException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -8,12 +8,13 @@ import ru.r2cloud.jradio.demod.BpskDemodulator;
 import ru.r2cloud.jradio.itasat1.Itasat1;
 import ru.r2cloud.jradio.itasat1.Itaset1Beacon;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
 public class Itasat1Decoder extends TelemetryDecoder {
 
-	public Itasat1Decoder(Configuration config) {
-		super(config);
+	public Itasat1Decoder(PredictOreKit predict, Configuration config) {
+		super(predict, config);
 	}
 
 	@Override

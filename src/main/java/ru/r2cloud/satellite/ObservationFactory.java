@@ -46,7 +46,7 @@ public class ObservationFactory {
 //		result.setEndLatitude(nextPass.getEnd().getLatitude());
 		result.setBandwidth(satellite.getBandwidth());
 		result.setTle(tle);
-		result.setGroundStation(predict.getPosition());
+		result.setGroundStation(predict.getPosition().getPoint());
 		if (immediately) {
 			result.setStartTimeMillis(date.getTime());
 			result.setEndTimeMillis(result.getStartTimeMillis() + (nextPass.getEndMillis() - nextPass.getStartMillis()));
@@ -71,7 +71,7 @@ public class ObservationFactory {
 			result.setInputSampleRate(240_000);
 			result.setOutputSampleRate(48_000);
 			// at the beginning doppler freq is the max
-			long initialDopplerFrequency = PredictOreKit.getDownlinkFreq(satellite.getFrequency(), nextPass.getStartMillis(), result.getGroundStation(), tlePropagator);
+			long initialDopplerFrequency = predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStartMillis(), predict.getPosition(), tlePropagator);
 			result.setActualFrequency(initialDopplerFrequency + DC_OFFSET);
 			break;
 		default:

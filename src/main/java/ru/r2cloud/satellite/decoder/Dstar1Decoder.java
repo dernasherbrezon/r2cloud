@@ -13,14 +13,15 @@ import ru.r2cloud.jradio.blocks.UnpackedToPacked;
 import ru.r2cloud.jradio.dstar1.Dstar1;
 import ru.r2cloud.jradio.dstar1.Dstar1Beacon;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
 public class Dstar1Decoder extends TelemetryDecoder {
 
 	private static final int MAX_MESSAGE_SIZE_BYTES = 190;
 
-	public Dstar1Decoder(Configuration config) {
-		super(config);
+	public Dstar1Decoder(PredictOreKit predict, Configuration config) {
+		super(predict, config);
 	}
 
 	@Override

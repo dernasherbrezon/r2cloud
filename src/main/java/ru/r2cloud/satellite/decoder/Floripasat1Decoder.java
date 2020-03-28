@@ -12,12 +12,13 @@ import ru.r2cloud.jradio.blocks.UnpackedToPacked;
 import ru.r2cloud.jradio.florsat.Floripasat1;
 import ru.r2cloud.jradio.florsat.Floripasat1Beacon;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
 public class Floripasat1Decoder extends TelemetryDecoder {
 
-	public Floripasat1Decoder(Configuration config) {
-		super(config);
+	public Floripasat1Decoder(PredictOreKit predict, Configuration config) {
+		super(predict, config);
 	}
 
 	@Override

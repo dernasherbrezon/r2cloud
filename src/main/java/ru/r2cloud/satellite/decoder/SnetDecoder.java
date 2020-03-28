@@ -14,12 +14,13 @@ import ru.r2cloud.jradio.blocks.Window;
 import ru.r2cloud.jradio.snet.Snet;
 import ru.r2cloud.jradio.snet.SnetBeacon;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
 public class SnetDecoder extends TelemetryDecoder {
 
-	public SnetDecoder(Configuration config) {
-		super(config);
+	public SnetDecoder(PredictOreKit predict, Configuration config) {
+		super(predict, config);
 	}
 
 	@Override

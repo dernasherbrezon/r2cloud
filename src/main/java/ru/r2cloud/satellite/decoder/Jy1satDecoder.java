@@ -20,6 +20,7 @@ import ru.r2cloud.jradio.jy1sat.Jy1satBeacon;
 import ru.r2cloud.jradio.jy1sat.Jy1satSsdvPacketSource;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.ssdv.SsdvDecoder;
 import ru.r2cloud.ssdv.SsdvImage;
 import ru.r2cloud.util.Configuration;
@@ -28,8 +29,8 @@ public class Jy1satDecoder extends TelemetryDecoder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Jy1satDecoder.class);
 
-	public Jy1satDecoder(Configuration config) {
-		super(config);
+	public Jy1satDecoder(PredictOreKit predict, Configuration config) {
+		super(predict, config);
 	}
 
 	@Override

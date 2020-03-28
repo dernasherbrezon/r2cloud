@@ -20,12 +20,13 @@ import ru.r2cloud.jradio.gomx1.Gomx1Beacon;
 import ru.r2cloud.jradio.source.SigSource;
 import ru.r2cloud.jradio.source.Waveform;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
 public class Gomx1Decoder extends TelemetryDecoder {
 
-	public Gomx1Decoder(Configuration config) {
-		super(config);
+	public Gomx1Decoder(PredictOreKit predict, Configuration config) {
+		super(predict, config);
 	}
 
 	@Override

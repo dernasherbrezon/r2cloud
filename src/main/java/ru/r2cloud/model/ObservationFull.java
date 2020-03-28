@@ -2,11 +2,12 @@ package ru.r2cloud.model;
 
 import java.util.Locale;
 
+import org.orekit.bodies.GeodeticPoint;
+
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.util.SignedURL;
-import uk.me.g4dpz.satellite.GroundStationPosition;
 
 public class ObservationFull {
 
@@ -54,8 +55,7 @@ public class ObservationFull {
 		}
 		JsonValue groundStation = meta.get("groundStation");
 		if (groundStation != null && groundStation.isObject()) {
-			//FIXME
-//			req.setGroundStation(groundStationFromJson(groundStation.asObject()));
+			req.setGroundStation(groundStationFromJson(groundStation.asObject()));
 		}
 
 		ObservationResult result = new ObservationResult();
@@ -88,8 +88,7 @@ public class ObservationFull {
 			json.add("tle", req.getTle().toJson());
 		}
 		if (req.getGroundStation() != null) {
-			//FIXME 
-//			json.add("groundStation", toJson(req.getGroundStation()));
+			json.add("groundStation", toJson(req.getGroundStation()));
 		}
 
 		if (result == null) {
@@ -132,20 +131,16 @@ public class ObservationFull {
 		return json;
 	}
 
-	private static GroundStationPosition groundStationFromJson(JsonObject json) {
+	private static GeodeticPoint groundStationFromJson(JsonObject json) {
 		double lat = json.getDouble("lat", Double.NaN);
 		double lon = json.getDouble("lon", Double.NaN);
-		String name = json.getString("name", "");
-		return new GroundStationPosition(lat, lon, 0.0, name);
+		return new GeodeticPoint(lat, lon, 0.0);
 	}
 
-	private static JsonObject toJson(GroundStationPosition groundStation) {
+	private static JsonObject toJson(GeodeticPoint groundStation) {
 		JsonObject result = new JsonObject();
 		result.add("lat", groundStation.getLatitude());
 		result.add("lon", groundStation.getLongitude());
-		if (groundStation.getName() != null && groundStation.getName().trim().length() != 0) {
-			result.add("name", groundStation.getName());
-		}
 		return result;
 	}
 }

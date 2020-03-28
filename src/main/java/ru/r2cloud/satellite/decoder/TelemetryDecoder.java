@@ -15,6 +15,7 @@ import ru.r2cloud.jradio.BeaconSource;
 import ru.r2cloud.jradio.FloatInput;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -23,9 +24,11 @@ public abstract class TelemetryDecoder implements Decoder {
 	private static final Logger LOG = LoggerFactory.getLogger(TelemetryDecoder.class);
 
 	protected final Configuration config;
+	protected final PredictOreKit predict;
 
-	public TelemetryDecoder(Configuration config) {
+	public TelemetryDecoder(PredictOreKit predict, Configuration config) {
 		this.config = config;
+		this.predict = predict;
 	}
 
 	@Override
@@ -69,7 +72,7 @@ public abstract class TelemetryDecoder implements Decoder {
 	}
 
 	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, ObservationRequest req) throws IOException {
-		DopplerCorrectedSource source = new DopplerCorrectedSource(rawIq, req);
+		DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req);
 		BeaconSource<? extends Beacon> beaconSource = createBeaconSource(source, req);
 		if (beaconSource == null) {
 			throw new IllegalArgumentException("at least one beacon source should be specified");

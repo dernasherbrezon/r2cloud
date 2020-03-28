@@ -11,12 +11,13 @@ import ru.r2cloud.jradio.blocks.UnpackedToPacked;
 import ru.r2cloud.jradio.eseo.Eseo;
 import ru.r2cloud.jradio.eseo.EseoBeacon;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
 public class EseoDecoder extends TelemetryDecoder {
 
-	public EseoDecoder(Configuration config) {
-		super(config);
+	public EseoDecoder(PredictOreKit predict, Configuration config) {
+		super(predict, config);
 	}
 
 	@Override

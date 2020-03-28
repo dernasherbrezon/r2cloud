@@ -15,14 +15,15 @@ import ru.r2cloud.jradio.blocks.CorrelateAccessCodeTag;
 import ru.r2cloud.jradio.blocks.FixedLengthTagger;
 import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
 public class Atl1Decoder extends TelemetryDecoder {
 
 	private static final int[] DOWNLINK_SPEEDS = new int[] { 1250, 2500, 5000, 12500 };
 
-	public Atl1Decoder(Configuration config) {
-		super(config);
+	public Atl1Decoder(PredictOreKit predict, Configuration config) {
+		super(predict, config);
 	}
 
 	@Override
@@ -44,8 +45,8 @@ public class Atl1Decoder extends TelemetryDecoder {
 		return result;
 	}
 
-	private static GmskDemodulator createDemodulator(int downlinkSpeed, File rawIq, ObservationRequest req) throws IOException {
-		DopplerCorrectedSource source = new DopplerCorrectedSource(rawIq, req);
+	private GmskDemodulator createDemodulator(int downlinkSpeed, File rawIq, ObservationRequest req) throws IOException {
+		DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req);
 		return new GmskDemodulator(source, downlinkSpeed, downlinkSpeed * 2.0f, 0.175f * 3, 0.03f);
 	}
 

@@ -18,6 +18,7 @@ import ru.r2cloud.TestUtil;
 import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.jradio.aausat4.AAUSAT4Beacon;
 import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.predict.PredictOreKit;
 
 public class Aausat4DecoderTest {
 
@@ -29,7 +30,8 @@ public class Aausat4DecoderTest {
 	@Test
 	public void testSomeData() throws Exception {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/aausat.raw.gz");
-		Aausat4Decoder decoder = new Aausat4Decoder(config);
+		PredictOreKit predict = new PredictOreKit(config);
+		Aausat4Decoder decoder = new Aausat4Decoder(predict, config);
 		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("data/aausat.raw.gz.json").getReq());
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());

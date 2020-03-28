@@ -7,12 +7,13 @@ import ru.r2cloud.jradio.blocks.SoftToHard;
 import ru.r2cloud.jradio.opssat.OpsSat;
 import ru.r2cloud.jradio.opssat.OpsSatBeacon;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
 public class OpsSatDecoder extends TelemetryDecoder {
 
-	public OpsSatDecoder(Configuration config) {
-		super(config);
+	public OpsSatDecoder(PredictOreKit predict, Configuration config) {
+		super(predict, config);
 	}
 
 	@Override

@@ -10,12 +10,13 @@ import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
 import ru.r2cloud.jradio.lucky7.Lucky7;
 import ru.r2cloud.jradio.lucky7.Lucky7Beacon;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
 public class Lucky7Decoder extends TelemetryDecoder {
 
-	public Lucky7Decoder(Configuration config) {
-		super(config);
+	public Lucky7Decoder(PredictOreKit predict, Configuration config) {
+		super(predict, config);
 	}
 
 	@Override
