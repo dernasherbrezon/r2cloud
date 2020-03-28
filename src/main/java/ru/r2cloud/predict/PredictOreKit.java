@@ -70,7 +70,7 @@ public class PredictOreKit {
 		tlePropagator.clearEventsDetectors();
 		tlePropagator.addEventDetector(new EventSlopeFilter<EventDetector>(maxDetector, FilterType.TRIGGER_ONLY_DECREASING_EVENTS));
 		tlePropagator.setSlaveMode();
-		tlePropagator.propagate(new AbsoluteDate(initialDate, 3600. * 24 * 2));
+		tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, 3600. * 24 * 2));
 		if (maxElevationHandler.getDate() == null) {
 			return null;
 		}
