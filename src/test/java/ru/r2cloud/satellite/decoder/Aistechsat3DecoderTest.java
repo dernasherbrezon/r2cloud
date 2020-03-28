@@ -13,6 +13,7 @@ import org.junit.rules.TemporaryFolder;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.predict.PredictOreKit;
 
 public class Aistechsat3DecoderTest {
 
@@ -24,7 +25,8 @@ public class Aistechsat3DecoderTest {
 	@Test
 	public void testSomeData() throws Exception {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/aistechsat3.raw.gz");
-		Aistechsat3Decoder decoder = new Aistechsat3Decoder(config);
+		PredictOreKit predict = new PredictOreKit(config);
+		Aistechsat3Decoder decoder = new Aistechsat3Decoder(predict, config);
 		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("data/aistechsat3.raw.gz.json").getReq());
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());

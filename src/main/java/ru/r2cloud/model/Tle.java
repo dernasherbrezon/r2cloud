@@ -4,16 +4,11 @@ import java.util.Arrays;
 
 import com.eclipsesource.json.JsonObject;
 
-import uk.me.g4dpz.satellite.TLE;
-
-public class Tle extends TLE {
-
-	private static final long serialVersionUID = 6446052218267434768L;
+public class Tle {
 
 	private final String[] raw;
 
 	public Tle(String[] tle) {
-		super(tle);
 		this.raw = tle;
 	}
 

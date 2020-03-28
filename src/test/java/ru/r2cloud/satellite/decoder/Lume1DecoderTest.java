@@ -13,6 +13,7 @@ import org.junit.rules.TemporaryFolder;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.predict.PredictOreKit;
 
 public class Lume1DecoderTest {
 
@@ -24,7 +25,8 @@ public class Lume1DecoderTest {
 	@Test
 	public void testSomeData() throws Exception {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/lume1.raw.gz");
-		Lume1Decoder decoder = new Lume1Decoder(config);
+		PredictOreKit predict = new PredictOreKit(config);
+		Lume1Decoder decoder = new Lume1Decoder(predict, config);
 		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("data/lume1.raw.gz.json").getReq());
 		assertEquals(5, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());

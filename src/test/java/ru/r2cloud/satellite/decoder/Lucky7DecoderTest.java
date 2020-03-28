@@ -13,6 +13,7 @@ import org.junit.rules.TemporaryFolder;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.predict.PredictOreKit;
 
 public class Lucky7DecoderTest {
 
@@ -24,7 +25,8 @@ public class Lucky7DecoderTest {
 	@Test
 	public void testSomeData() throws Exception {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/lucky7.raw.gz");
-		Lucky7Decoder decoder = new Lucky7Decoder(config);
+		PredictOreKit predict = new PredictOreKit(config);
+		Lucky7Decoder decoder = new Lucky7Decoder(predict, config);
 		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("data/lucky7.raw.gz.json").getReq());
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());

@@ -13,6 +13,7 @@ import org.junit.rules.TemporaryFolder;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.predict.PredictOreKit;
 
 public class KunsPfDecoderTest {
 
@@ -24,7 +25,8 @@ public class KunsPfDecoderTest {
 	@Test
 	public void testSomeData() throws Exception {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/1kuns-pf.raw.gz");
-		KunsPfDecoder decoder = new KunsPfDecoder(config);
+		PredictOreKit predict = new PredictOreKit(config);
+		KunsPfDecoder decoder = new KunsPfDecoder(predict, config);
 		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("data/1kuns-pf.raw.gz.json").getReq());
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());

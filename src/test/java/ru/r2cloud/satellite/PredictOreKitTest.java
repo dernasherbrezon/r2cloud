@@ -4,55 +4,55 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.TimeZone;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.orekit.propagation.analytical.tle.TLEPropagator;
 
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.model.SatPass;
-import uk.me.g4dpz.satellite.Satellite;
-import uk.me.g4dpz.satellite.SatelliteFactory;
-import uk.me.g4dpz.satellite.TLE;
+import ru.r2cloud.predict.PredictOreKit;
 
-public class PredictTest {
+public class PredictOreKitTest {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private TestConfiguration config;
-	
+
 	// happens on initial startup
 	@Test
 	public void testPrediectWithoutBaseStationCoordinates() throws Exception {
 		config.remove("locaiton.lat");
 		config.remove("locaiton.lon");
 
-		Satellite noaa15 = SatelliteFactory.createSatellite(new TLE(new String[] { "NOAA 15", "1 25338U 98030A   17271.51297398  .00000037  00000-0  34305-4 0  9992", "2 25338  98.7817 282.6269 0009465 266.6019  93.4077 14.25818111  7720" }));
-		Predict s = new Predict(config);
+		PredictOreKit s = new PredictOreKit(config);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
+		TLEPropagator noaa15 = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE("1 25338U 98030A   17271.51297398  .00000037  00000-0  34305-4 0  9992", "2 25338  98.7817 282.6269 0009465 266.6019  93.4077 14.25818111  7720"));
 		assertNull(s.calculateNext(sdf.parse("29-09-2017 14:54:00"), noaa15));
 	}
 
 	// expected pass times taken from wxtoimg
 	@Test
 	public void testSameAsWxToImg() throws Exception {
-		Satellite noaa15 = SatelliteFactory.createSatellite(new TLE(new String[] { "NOAA 15", "1 25338U 98030A   17271.51297398  .00000037  00000-0  34305-4 0  9992", "2 25338  98.7817 282.6269 0009465 266.6019  93.4077 14.25818111  7720" }));
-		Predict s = new Predict(config);
+		PredictOreKit s = new PredictOreKit(config);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
-		assertPosition("18:05:58", "18:17:13", s.calculateNext(sdf.parse("29-09-2017 14:54:00"), noaa15));
-		assertPosition("19:46:57", "19:56:34", s.calculateNext(sdf.parse("29-09-2017 19:00:00"), noaa15));
+		TLEPropagator noaa15 = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE("1 25338U 98030A   17271.51297398  .00000037  00000-0  34305-4 0  9992", "2 25338  98.7817 282.6269 0009465 266.6019  93.4077 14.25818111  7720"));
+		assertPosition("18:05:57", "18:17:13", s.calculateNext(sdf.parse("29-09-2017 14:54:00"), noaa15));
+		assertPosition("19:46:56", "19:56:34", s.calculateNext(sdf.parse("29-09-2017 19:00:00"), noaa15));
 	}
 
 	private static void assertPosition(String start, String end, SatPass pass) throws Exception {
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 		sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
-//		assertEquals(start, sdf.format(pass.getStart().getTime()));
-//		assertEquals(end, sdf.format(pass.getEnd().getTime()));
+		assertEquals(start, sdf.format(new Date(pass.getStartMillis())));
+		assertEquals(end, sdf.format(new Date(pass.getEndMillis())));
 	}
 
 	@Before
@@ -60,6 +60,7 @@ public class PredictTest {
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("locaiton.lat", "51.49");
 		config.setProperty("locaiton.lon", "0.01");
+		config.setProperty("scheduler.orekit.path", "./src/test/resources/data/orekit-data");
 	}
 
 }

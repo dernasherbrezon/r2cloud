@@ -18,6 +18,7 @@ import org.junit.rules.TemporaryFolder;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.predict.PredictOreKit;
 
 public class LRPTDecoderTest {
 
@@ -29,7 +30,8 @@ public class LRPTDecoderTest {
 	@Test
 	public void testSomeData() throws Exception {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/40069-1553411549943.raw.gz");
-		LRPTDecoder decoder = new LRPTDecoder(config);
+		PredictOreKit predict = new PredictOreKit(config);
+		LRPTDecoder decoder = new LRPTDecoder(predict, config);
 		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("decodertests/LRPTDecoderTest.json").getReq());
 		assertEquals(6, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
@@ -49,7 +51,8 @@ public class LRPTDecoderTest {
 				}
 			}
 		}
-		LRPTDecoder decoder = new LRPTDecoder(config);
+		PredictOreKit predict = new PredictOreKit(config);
+		LRPTDecoder decoder = new LRPTDecoder(predict, config);
 		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("decodertests/LRPTDecoderTest.json").getReq());
 		assertEquals(0, result.getNumberOfDecodedPackets().longValue());
 		assertNull(result.getDataPath());

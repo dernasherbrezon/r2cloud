@@ -13,6 +13,7 @@ import org.junit.rules.TemporaryFolder;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.predict.PredictOreKit;
 
 public class ReaktorHelloWorldDecoderTest {
 
@@ -24,7 +25,8 @@ public class ReaktorHelloWorldDecoderTest {
 	@Test
 	public void testSomeData() throws Exception {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/rhw.raw.gz");
-		ReaktorHelloWorldDecoder decoder = new ReaktorHelloWorldDecoder(config);
+		PredictOreKit predict = new PredictOreKit(config);
+		ReaktorHelloWorldDecoder decoder = new ReaktorHelloWorldDecoder(predict, config);
 		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("data/rhw.raw.gz.json").getReq());
 		assertEquals(2, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());

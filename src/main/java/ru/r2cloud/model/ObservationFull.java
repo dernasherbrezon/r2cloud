@@ -2,6 +2,7 @@ package ru.r2cloud.model;
 
 import java.util.Locale;
 
+import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
 
 import com.eclipsesource.json.JsonObject;
@@ -134,13 +135,13 @@ public class ObservationFull {
 	private static GeodeticPoint groundStationFromJson(JsonObject json) {
 		double lat = json.getDouble("lat", Double.NaN);
 		double lon = json.getDouble("lon", Double.NaN);
-		return new GeodeticPoint(lat, lon, 0.0);
+		return new GeodeticPoint(FastMath.toRadians(lat), FastMath.toRadians(lon), 0.0);
 	}
 
 	private static JsonObject toJson(GeodeticPoint groundStation) {
 		JsonObject result = new JsonObject();
-		result.add("lat", groundStation.getLatitude());
-		result.add("lon", groundStation.getLongitude());
+		result.add("lat", FastMath.toDegrees(groundStation.getLatitude()));
+		result.add("lon", FastMath.toDegrees(groundStation.getLongitude()));
 		return result;
 	}
 }
