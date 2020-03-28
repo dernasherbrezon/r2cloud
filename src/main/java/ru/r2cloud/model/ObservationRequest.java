@@ -1,6 +1,6 @@
 package ru.r2cloud.model;
 
-import uk.me.g4dpz.satellite.GroundStationPosition;
+import org.orekit.frames.TopocentricFrame;
 
 public class ObservationRequest {
 
@@ -14,17 +14,17 @@ public class ObservationRequest {
 	private long satelliteFrequency;
 	private long bandwidth;
 	private Tle tle;
-	private GroundStationPosition groundStation;
+	private TopocentricFrame groundStation;
 
 	private int inputSampleRate;
 	private int outputSampleRate;
 	private long actualFrequency;
 	
-	public GroundStationPosition getGroundStation() {
+	public TopocentricFrame getGroundStation() {
 		return groundStation;
 	}
 	
-	public void setGroundStation(GroundStationPosition groundStation) {
+	public void setGroundStation(TopocentricFrame groundStation) {
 		this.groundStation = groundStation;
 	}
 	

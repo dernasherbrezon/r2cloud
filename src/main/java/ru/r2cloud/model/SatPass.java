@@ -1,31 +1,35 @@
 package ru.r2cloud.model;
 
-import uk.me.g4dpz.satellite.SatPos;
+import org.orekit.time.AbsoluteDate;
+import org.orekit.time.TimeScalesFactory;
 
 public class SatPass {
 
-	private SatPos start;
-	private SatPos end;
+	private AbsoluteDate start;
+	private AbsoluteDate end;
 
-	public SatPos getStart() {
+	public AbsoluteDate getStart() {
 		return start;
 	}
 
-	public void setStart(SatPos start) {
-		this.start = start;
+	public long getStartMillis() {
+		return start.toDate(TimeScalesFactory.getUTC()).getTime();
 	}
 
-	public SatPos getEnd() {
+	public void setStart(AbsoluteDate start) {
+		this.start = start;
+	}
+	
+	public long getEndMillis() {
+		return end.toDate(TimeScalesFactory.getUTC()).getTime();
+	}
+
+	public AbsoluteDate getEnd() {
 		return end;
 	}
 
-	public void setEnd(SatPos end) {
+	public void setEnd(AbsoluteDate end) {
 		this.end = end;
-	}
-
-	@Override
-	public String toString() {
-		return "[start=" + start.getTime() + ", end=" + end.getTime() + "]";
 	}
 
 }

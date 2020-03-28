@@ -64,8 +64,8 @@ public class Predict {
 				} else {
 					if (matched && maxElevation >= guaranteedElevation) {
 						SatPass result = new SatPass();
-						result.setStart(start);
-						result.setEnd(findPrecise(currentLocation, previous, position, satellite));
+//						result.setStart(start);
+//						result.setEnd(findPrecise(currentLocation, previous, position, satellite));
 						return result;
 					}
 					matched = false;

@@ -54,7 +54,8 @@ public class ObservationFull {
 		}
 		JsonValue groundStation = meta.get("groundStation");
 		if (groundStation != null && groundStation.isObject()) {
-			req.setGroundStation(groundStationFromJson(groundStation.asObject()));
+			//FIXME
+//			req.setGroundStation(groundStationFromJson(groundStation.asObject()));
 		}
 
 		ObservationResult result = new ObservationResult();
@@ -87,7 +88,8 @@ public class ObservationFull {
 			json.add("tle", req.getTle().toJson());
 		}
 		if (req.getGroundStation() != null) {
-			json.add("groundStation", toJson(req.getGroundStation()));
+			//FIXME 
+//			json.add("groundStation", toJson(req.getGroundStation()));
 		}
 
 		if (result == null) {

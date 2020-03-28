@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
+import org.orekit.propagation.analytical.tle.TLEPropagator;
+
 import ru.r2cloud.jradio.Context;
 import ru.r2cloud.jradio.DopplerValueSource;
 import ru.r2cloud.jradio.FloatInput;
@@ -16,10 +18,8 @@ import ru.r2cloud.jradio.source.RtlSdr;
 import ru.r2cloud.jradio.source.SigSource;
 import ru.r2cloud.jradio.source.Waveform;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.satellite.Predict;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Util;
-import uk.me.g4dpz.satellite.Satellite;
-import uk.me.g4dpz.satellite.SatelliteFactory;
 
 public class DopplerCorrectedSource implements FloatInput {
 
@@ -32,9 +32,9 @@ public class DopplerCorrectedSource implements FloatInput {
 		}
 
 		RtlSdr sdr = new RtlSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalSamples);
-		Satellite satellite = SatelliteFactory.createSatellite(req.getTle());
-		long startFrequency = Predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getStartTimeMillis(), req.getGroundStation(), satellite);
-		long endFrequency = Predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getEndTimeMillis(), req.getGroundStation(), satellite);
+		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(req.getTle().getRaw()[1], req.getTle().getRaw()[2]));
+		long startFrequency = PredictOreKit.getDownlinkFreq(req.getSatelliteFrequency(), req.getStartTimeMillis(), req.getGroundStation(), tlePropagator);
+		long endFrequency = PredictOreKit.getDownlinkFreq(req.getSatelliteFrequency(), req.getEndTimeMillis(), req.getGroundStation(), tlePropagator);
 		
 		long maxOffset = Math.max(Math.abs(req.getSatelliteFrequency() - startFrequency), Math.abs(req.getSatelliteFrequency() - endFrequency));
 		
@@ -46,7 +46,7 @@ public class DopplerCorrectedSource implements FloatInput {
 
 			@Override
 			public long getDopplerFrequency(long satelliteFrequency, long currentTimeMillis) {
-				return Predict.getDownlinkFreq(satelliteFrequency, currentTimeMillis, req.getGroundStation(), satellite);
+				return PredictOreKit.getDownlinkFreq(satelliteFrequency, currentTimeMillis, req.getGroundStation(), tlePropagator);
 			}
 		}, 1.0);
 		input = new Multiply(xlating, source2);

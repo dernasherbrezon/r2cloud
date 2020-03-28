@@ -16,6 +16,7 @@ import ru.r2cloud.cloud.R2ServerService;
 import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.ObservationResultDao;
 import ru.r2cloud.satellite.Predict;
@@ -108,7 +109,7 @@ public class R2Cloud {
 	private final TLEReloader tleReloader;
 	private final Scheduler scheduler;
 	private final RtlSdrLock rtlsdrLock;
-	private final Predict predict;
+	private final PredictOreKit predict;
 	private final ThreadPoolFactory threadFactory;
 	private final ObservationFactory observationFactory;
 	private final Clock clock;
@@ -134,7 +135,7 @@ public class R2Cloud {
 		resultDao = new ObservationResultDao(props);
 		r2cloudService = new R2ServerService(props, resultDao, r2cloudClient, spectogramService);
 		metrics = new Metrics(props, r2cloudService, clock);
-		predict = new Predict(props);
+		predict = new PredictOreKit(props);
 		auth = new Authenticator(props);
 		rtlsdrStatusDao = new RtlSdrStatusDao(props, rtlsdrLock, threadFactory, metrics, processFactory);
 		autoUpdate = new AutoUpdate(props);
