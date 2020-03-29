@@ -47,7 +47,7 @@ public class Atl1Decoder extends TelemetryDecoder {
 
 	private GmskDemodulator createDemodulator(int downlinkSpeed, File rawIq, ObservationRequest req) throws IOException {
 		DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req);
-		return new GmskDemodulator(source, downlinkSpeed, downlinkSpeed * 2.0f, 0.175f * 3, 0.03f);
+		return new GmskDemodulator(source, downlinkSpeed, downlinkSpeed * 2.0f, 0.175f * 3, 0.015f);
 	}
 
 	@Override
