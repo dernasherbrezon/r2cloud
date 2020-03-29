@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -182,6 +183,14 @@ public class Configuration {
 			return null;
 		}
 		return result;
+	}
+
+	public List<String> getProperties(String name) {
+		String rawValue = getProperty(name);
+		if (rawValue == null) {
+			return Collections.emptyList();
+		}
+		return Util.splitComma(rawValue);
 	}
 
 	public DDNSType getDdnsType(String name) {

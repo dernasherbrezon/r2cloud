@@ -10,7 +10,6 @@ import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteComparator;
 import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.Util;
 
 public class SatelliteDao {
 
@@ -22,7 +21,7 @@ public class SatelliteDao {
 	public SatelliteDao(Configuration config) {
 		this.config = config;
 		satellites = new ArrayList<Satellite>();
-		for (String cur : Util.splitComma(config.getProperty("satellites.supported"))) {
+		for (String cur : config.getProperties("satellites.supported")) {
 			Satellite curSatellite = new Satellite();
 			curSatellite.setId(cur);
 			String name = config.getProperty("satellites." + curSatellite.getId() + ".name");

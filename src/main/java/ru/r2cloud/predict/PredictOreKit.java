@@ -1,12 +1,14 @@
 package ru.r2cloud.predict;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.BodyShape;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
+import org.orekit.data.DataContext;
 import org.orekit.data.DataProvidersManager;
 import org.orekit.data.DirectoryCrawler;
 import org.orekit.frames.Frame;
@@ -23,12 +25,15 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.SatPass;
 import ru.r2cloud.util.Configuration;
 
 public class PredictOreKit {
 
+	private static final Logger LOG = LoggerFactory.getLogger(PredictOreKit.class);
 	private static final double SPEED_OF_LIGHT = 2.99792458E8;
 
 	private final double minElevation;
@@ -43,12 +48,20 @@ public class PredictOreKit {
 		this.config = config;
 
 		File orekitData = new File(config.getProperty("scheduler.orekit.path"));
-		DataProvidersManager manager = DataProvidersManager.getInstance();
+		if (!orekitData.exists()) {
+			LOG.info("orekit master data doesn't exist. downloading now. it might take some time");
+			OreKitDataClient client = new OreKitDataClient(config.getProperties("scheduler.orekit.urls"));
+			try {
+				client.downloadAndSaveTo(orekitData.toPath());
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		DataProvidersManager manager = DataContext.getDefault().getDataProvidersManager();
 		manager.addProvider(new DirectoryCrawler(orekitData));
 
 		earthFrame = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
 		earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS, Constants.WGS84_EARTH_FLATTENING, earthFrame);
-		// FIXME download data
 	}
 
 	public Long getDownlinkFreq(final Long freq, final long utcTimeMillis, TopocentricFrame currentLocation, final TLEPropagator tlePropagator) {
@@ -76,12 +89,12 @@ public class PredictOreKit {
 		}
 
 		MinElevationHandler minElevationHandler = new MinElevationHandler();
-		ElevationDetector sta1Visi2 = new ElevationDetector(60, 0.001, baseStationFrame).withConstantElevation(FastMath.toRadians(minElevation)).withHandler(minElevationHandler);
+		ElevationDetector boundsDetector = new ElevationDetector(60, 0.001, baseStationFrame).withConstantElevation(FastMath.toRadians(minElevation)).withHandler(minElevationHandler);
 		tlePropagator.clearEventsDetectors();
-		tlePropagator.addEventDetector(sta1Visi2);
+		tlePropagator.addEventDetector(boundsDetector);
 		// 20 mins before and 20 mins later
 		AbsoluteDate startDate = maxElevationHandler.getDate().shiftedBy(-20 * 60.0);
-		tlePropagator.propagate(startDate, startDate.shiftedBy(40 * 60.));
+		tlePropagator.propagate(startDate, startDate.shiftedBy(40 * 60.0));
 
 		if (minElevationHandler.getStart() == null || minElevationHandler.getEnd() == null) {
 			return null;
