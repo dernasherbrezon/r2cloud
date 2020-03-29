@@ -73,7 +73,7 @@ public class OreKitDataClientTest {
 		OreKitDataClient client = new OreKitDataClient(urls(validZipFile));
 		client.downloadAndSaveTo(dataFolder);
 	}
-	
+
 	@Test
 	public void testTempFolderAlreadyExist() throws Exception {
 		Files.createDirectories(dataFolder.getParent().resolve("./orekit-data.tmp/test/some/old/path"));
@@ -110,6 +110,12 @@ public class OreKitDataClientTest {
 	private static byte[] createZip(String filename, String data) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+			int slashIndex = filename.indexOf('/');
+			// 1 directory entry is enough for test
+			if (slashIndex != -1) {
+				ZipEntry ze = new ZipEntry(filename.substring(0, slashIndex + 1));
+				zos.putNextEntry(ze);
+			}
 			ZipEntry entry = new ZipEntry(filename);
 			zos.putNextEntry(entry);
 			zos.write(data.getBytes(StandardCharsets.UTF_8));
