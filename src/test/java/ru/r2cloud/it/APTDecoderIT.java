@@ -29,8 +29,6 @@ public class APTDecoderIT {
 	public void testSuccess() throws Exception {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "8bit.wav");
 		ObservationRequest request = new ObservationRequest();
-		request.setStartLatitude(0.0);
-		request.setEndLatitude(0.0);
 		APTDecoder decoder = new APTDecoder(config, factory);
 		ObservationResult result = decoder.decode(wav, request);
 		assertNull(result.getaPath());

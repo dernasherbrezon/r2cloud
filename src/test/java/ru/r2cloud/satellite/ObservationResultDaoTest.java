@@ -40,7 +40,6 @@ public class ObservationResultDaoTest {
 		req.setActualFrequency(1L);
 		req.setSource(FrequencySource.APT);
 		req.setEndTimeMillis(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5));
-		req.setEndLatitude(0.2);
 		req.setId(UUID.randomUUID().toString());
 		req.setInputSampleRate(1);
 		req.setTle(create());
@@ -49,7 +48,6 @@ public class ObservationResultDaoTest {
 		req.setActualFrequency(2);
 		req.setSatelliteId(UUID.randomUUID().toString());
 		req.setStartTimeMillis(System.currentTimeMillis());
-		req.setStartLatitude(0.1);
 		req.setBandwidth(4_000);
 		req.setGroundStation(createGroundStation());
 		assertNotNull(dao.insert(req, createTempFile("wav")));

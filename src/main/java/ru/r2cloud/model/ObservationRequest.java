@@ -6,9 +6,7 @@ public class ObservationRequest {
 
 	private String id;
 	private long startTimeMillis;
-	private double startLatitude;
 	private long endTimeMillis;
-	private double endLatitude;
 	private String satelliteId;
 	private FrequencySource source;
 	private long satelliteFrequency;
@@ -66,22 +64,6 @@ public class ObservationRequest {
 
 	public void setEndTimeMillis(long endTimeMillis) {
 		this.endTimeMillis = endTimeMillis;
-	}
-
-	public double getStartLatitude() {
-		return startLatitude;
-	}
-
-	public void setStartLatitude(double startLatitude) {
-		this.startLatitude = startLatitude;
-	}
-
-	public double getEndLatitude() {
-		return endLatitude;
-	}
-
-	public void setEndLatitude(double endLatitude) {
-		this.endLatitude = endLatitude;
 	}
 
 	public int getInputSampleRate() {

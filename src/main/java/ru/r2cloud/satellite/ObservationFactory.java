@@ -42,8 +42,6 @@ public class ObservationFactory {
 		result.setSatelliteFrequency(satellite.getFrequency());
 		result.setSatelliteId(satellite.getId());
 		result.setSource(satellite.getSource());
-//		result.setStartLatitude(nextPass.getStart().getLatitude());
-//		result.setEndLatitude(nextPass.getEnd().getLatitude());
 		result.setBandwidth(satellite.getBandwidth());
 		result.setTle(tle);
 		result.setGroundStation(predict.getPosition().getPoint());
