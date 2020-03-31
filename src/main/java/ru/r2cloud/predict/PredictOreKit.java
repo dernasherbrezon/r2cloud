@@ -14,7 +14,6 @@ import org.orekit.data.DirectoryCrawler;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;
-import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.analytical.tle.TLEPropagator;
 import org.orekit.propagation.events.ElevationDetector;
 import org.orekit.propagation.events.ElevationExtremumDetector;
@@ -25,6 +24,7 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
+import org.orekit.utils.PVCoordinates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,9 +65,9 @@ public class PredictOreKit {
 	}
 
 	public Long getDownlinkFreq(final Long freq, final long utcTimeMillis, TopocentricFrame currentLocation, final TLEPropagator tlePropagator) {
-		tlePropagator.setEphemerisMode();
-		SpacecraftState currentState = tlePropagator.propagate(new AbsoluteDate(new Date(utcTimeMillis), TimeScalesFactory.getUTC()));
-		final double rangeRate = currentLocation.getRangeRate(currentState.getPVCoordinates(), currentState.getFrame(), currentState.getDate());
+		AbsoluteDate date = new AbsoluteDate(new Date(utcTimeMillis), TimeScalesFactory.getUTC());
+		PVCoordinates currentState = tlePropagator.getPVCoordinates(date);
+		final double rangeRate = currentLocation.getRangeRate(currentState, tlePropagator.getFrame(), date);
 		return (long) ((double) freq * (SPEED_OF_LIGHT - rangeRate) / SPEED_OF_LIGHT);
 	}
 
