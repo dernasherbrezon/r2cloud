@@ -26,7 +26,7 @@ before_install:
     
 script:
   - set -e
-  - mvn clean verify sonar:sonar -Pcoverage -Dsonar.scm.disabled=true -Dsonar.language=java
+  - mvn clean verify sonar:sonar -Pcoverage -Dsonar.scm.disabled=true -Dsonar.language=java -Dsonar.java.source=1.8
   - cp ./target/*.deb ./target/it-tests
   - docker run --rm --privileged multiarch/qemu-user-static:register
   - docker build -t r2cloud ./target/it-tests
