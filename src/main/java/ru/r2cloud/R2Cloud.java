@@ -30,6 +30,7 @@ import ru.r2cloud.satellite.decoder.AstrocastDecoder;
 import ru.r2cloud.satellite.decoder.Atl1Decoder;
 import ru.r2cloud.satellite.decoder.Decoder;
 import ru.r2cloud.satellite.decoder.DecoderTask;
+import ru.r2cloud.satellite.decoder.DelfiC3Decoder;
 import ru.r2cloud.satellite.decoder.Dstar1Decoder;
 import ru.r2cloud.satellite.decoder.EseoDecoder;
 import ru.r2cloud.satellite.decoder.Floripasat1Decoder;
@@ -45,10 +46,12 @@ import ru.r2cloud.satellite.decoder.Nayif1Decoder;
 import ru.r2cloud.satellite.decoder.OpsSatDecoder;
 import ru.r2cloud.satellite.decoder.PegasusDecoder;
 import ru.r2cloud.satellite.decoder.PwSat2Decoder;
+import ru.r2cloud.satellite.decoder.QarmanDecoder;
 import ru.r2cloud.satellite.decoder.ReaktorHelloWorldDecoder;
 import ru.r2cloud.satellite.decoder.SmogPDecoder;
 import ru.r2cloud.satellite.decoder.SnetDecoder;
 import ru.r2cloud.satellite.decoder.Suomi100Decoder;
+import ru.r2cloud.satellite.decoder.Swampsat2Decoder;
 import ru.r2cloud.satellite.decoder.TechnosatDecoder;
 import ru.r2cloud.ssl.AcmeClient;
 import ru.r2cloud.tle.CelestrakClient;
@@ -147,6 +150,7 @@ public class R2Cloud {
 		APTDecoder aptDecoder = new APTDecoder(props, processFactory);
 		decoders.put("25338", aptDecoder);
 		decoders.put("28654", aptDecoder);
+		decoders.put("32789", new DelfiC3Decoder(predict, props));
 		decoders.put("33591", aptDecoder);
 		decoders.put("39430", new Gomx1Decoder(predict, props));
 		decoders.put("39444", new Ao73Decoder(predict, props));
@@ -177,6 +181,8 @@ public class R2Cloud {
 		decoders.put("44832", new SmogPDecoder(predict, props));
 		decoders.put("44878", new OpsSatDecoder(predict, props));
 		decoders.put("44885", new Floripasat1Decoder(predict, props));
+		decoders.put("45115", new Swampsat2Decoder(predict, props));
+		decoders.put("45263", new QarmanDecoder(predict, props));
 
 		validateDecoders();
 		DecoderTask decoderTask = new DecoderTask(decoders, resultDao, r2cloudService);
