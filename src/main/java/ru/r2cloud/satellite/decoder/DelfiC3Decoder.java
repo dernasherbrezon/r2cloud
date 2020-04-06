@@ -18,7 +18,7 @@ public class DelfiC3Decoder extends TelemetryDecoder {
 	
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		BpskDemodulator bpsk = new BpskDemodulator(source, 1200, 1, 1400.0, 2000.0f, true);
+		BpskDemodulator bpsk = new BpskDemodulator(source, 1200, 1, -1450.0, 1500.0f, true);
 		return new DelfiC3(bpsk);
 	}
 	
