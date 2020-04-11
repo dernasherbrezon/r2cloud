@@ -12,7 +12,7 @@ import ru.r2cloud.jradio.blocks.LowPassFilter;
 import ru.r2cloud.jradio.blocks.LowPassFilterComplex;
 import ru.r2cloud.jradio.blocks.QuadratureDemodulation;
 import ru.r2cloud.jradio.blocks.Rail;
-import ru.r2cloud.jradio.blocks.RmsAgc;
+import ru.r2cloud.jradio.blocks.RmsAgcComplex;
 import ru.r2cloud.jradio.blocks.Window;
 
 public class GmskDemodulator implements ByteInput {
@@ -25,7 +25,7 @@ public class GmskDemodulator implements ByteInput {
 
 	public GmskDemodulator(FloatInput source, int baudRate, float bandwidth, float gainMu, Float fllBandwidth) {
 		float samplesPerSymbol = source.getContext().getSampleRate() / baudRate;
-		FloatInput next = new RmsAgc(source, 1e-2f, 0.5f);
+		FloatInput next = new RmsAgcComplex(source, 1e-2f, 0.5f);
 		if (fllBandwidth != null) {
 			next = new FLLBandEdge(next, samplesPerSymbol, 0.35f, 100, fllBandwidth);
 		}

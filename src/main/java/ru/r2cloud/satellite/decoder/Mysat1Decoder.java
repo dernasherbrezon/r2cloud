@@ -18,7 +18,7 @@ public class Mysat1Decoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		BpskDemodulator bpsk = new BpskDemodulator(source, 1200, 1, 0.0, 2000.0f, false);
+		BpskDemodulator bpsk = new BpskDemodulator(source, 1200, 1, 0.0, false);
 		return new Mysat1(bpsk);
 	}
 

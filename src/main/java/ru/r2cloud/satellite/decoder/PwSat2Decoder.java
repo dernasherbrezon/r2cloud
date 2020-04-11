@@ -18,7 +18,7 @@ public class PwSat2Decoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		BpskDemodulator bpsk = new BpskDemodulator(source, 1200, 5, 0.0, 2000.0f, false);
+		BpskDemodulator bpsk = new BpskDemodulator(source, 1200, 5, 0.0, false);
 		return new PwSat2(bpsk);
 	}
 	
