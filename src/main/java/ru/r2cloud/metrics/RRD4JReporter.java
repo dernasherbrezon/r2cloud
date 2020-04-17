@@ -39,8 +39,8 @@ public class RRD4JReporter extends ScheduledReporter {
 	private static final long STEP = 300; // secs
 
 	private final File basepath;
-	private final Map<String, RrdDb> dbPerMetric = new HashMap<String, RrdDb>();
-	private final Map<String, Double> lastValueForCounter = new HashMap<String, Double>();
+	private final Map<String, RrdDb> dbPerMetric = new HashMap<>();
+	private final Map<String, Double> lastValueForCounter = new HashMap<>();
 	private final R2ServerService cloudService;
 	private final Clock clock;
 
