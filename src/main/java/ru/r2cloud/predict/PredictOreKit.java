@@ -108,7 +108,6 @@ public class PredictOreKit {
 
 	public TopocentricFrame getPosition() {
 		// get the current position
-		// FIXME cache ground station posisiotn object and reload when config changes
 		Double lat = config.getDouble("locaiton.lat");
 		Double lon = config.getDouble("locaiton.lon");
 		if (lat == null || lon == null) {
@@ -118,8 +117,7 @@ public class PredictOreKit {
 	}
 
 	public TopocentricFrame getPosition(GeodeticPoint point) {
-		TopocentricFrame baseStationFrame = new TopocentricFrame(earth, point, "station1");
-		return baseStationFrame;
+		return new TopocentricFrame(earth, point, "station1");
 	}
 
 }
