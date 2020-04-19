@@ -20,7 +20,7 @@ public class SatelliteDao {
 
 	public SatelliteDao(Configuration config) {
 		this.config = config;
-		satellites = new ArrayList<Satellite>();
+		satellites = new ArrayList<>();
 		for (String cur : config.getProperties("satellites.supported")) {
 			Satellite curSatellite = new Satellite();
 			curSatellite.setId(cur);
