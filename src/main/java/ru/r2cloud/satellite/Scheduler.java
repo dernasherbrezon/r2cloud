@@ -104,6 +104,15 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	public ObservationRequest schedule(Satellite cur, boolean immediately) {
 		long current = clock.millis();
+		return schedule(cur, immediately, current);
+	}
+	
+	private ObservationRequest scheduleNext(Satellite cur, ObservationRequest previous) {
+		// add 1 second just in case
+		return schedule(cur, false, previous.getEndTimeMillis() + 1000);
+	}
+	
+	private ObservationRequest schedule(Satellite cur, boolean immediately, long current) {
 		ObservationRequest observation = create(current, cur, immediately);
 		if (observation == null) {
 			return null;
@@ -116,12 +125,12 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			public void run() {
 				if (clock.millis() > observation.getEndTimeMillis()) {
 					LOG.info("[{}] observation time passed. skip {}", observation.getId(), cur.getId());
-					schedule(cur, false);
+					scheduleNext(cur, observation);
 					return;
 				}
 				if (!lock.tryLock(Scheduler.this)) {
 					LOG.info("[{}] unable to acquire lock for {}", observation.getId(), cur.getId());
-					schedule(cur, false);
+					scheduleNext(cur, observation);
 					return;
 				}
 				IQData data;
@@ -134,7 +143,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 					lock.unlock(Scheduler.this);
 				}
 
-				schedule(cur, false);
+				scheduleNext(cur, observation);
 
 				if (data == null || !data.hasDataFile()) {
 					return;
