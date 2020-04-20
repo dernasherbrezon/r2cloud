@@ -10,7 +10,7 @@ public class Schedule<T extends ScheduleEntry> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Schedule.class);
 
-	private final Map<String, T> scheduledObservations = new HashMap<String, T>();
+	private final Map<String, T> scheduledObservations = new HashMap<>();
 
 	public synchronized void add(T entry) {
 		if (entry == null) {
