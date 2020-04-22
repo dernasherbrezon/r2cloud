@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +46,7 @@ public class APTDecoder implements Decoder {
 				@Override
 				public void run() {
 					try {
-						BufferedReader r = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+						BufferedReader r = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 						String curLine = null;
 						while ((curLine = r.readLine()) != null) {
 							synchronized (lines) {
@@ -64,8 +66,12 @@ public class APTDecoder implements Decoder {
 			if (convert(result, lines)) {
 				result.setaPath(image);
 			} else {
-				if (image.exists() && !image.delete()) {
-					LOG.info("unable to delete temp file: {}", image.getAbsolutePath());
+				if (image.exists()) {
+					try {
+						Files.delete(image.toPath());
+					} catch (IOException e) {
+						LOG.error("unable to delete temp file: " + image.getAbsolutePath(), e);
+					}
 				}
 			}
 		} catch (InterruptedException e) {
@@ -119,5 +125,5 @@ public class APTDecoder implements Decoder {
 		}
 		return success;
 	}
-	
+
 }
