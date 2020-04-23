@@ -40,15 +40,11 @@ public class Jy1satDecoder extends TelemetryDecoder {
 			try (BeaconInputStream<Jy1satBeacon> bis = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(result.getDataPath())), Jy1satBeacon.class)) {
 				SsdvDecoder decoder = new SsdvDecoder(new Jy1satSsdvPacketSource(bis));
 				while (decoder.hasNext()) {
-					SsdvImage image = decoder.next();
-					File imageFile = new File(config.getTempDirectory(), "ssdv-" + req.getId() + ".jpg");
-					try {
-						ImageIO.write(image.getImage(), "jpg", imageFile);
+					File imageFile = saveImage("ssdv-" + req.getId() + ".jpg", decoder.next());
+					if (imageFile != null) {
 						result.setaPath(imageFile);
 						// interested only in the first image
 						break;
-					} catch (IOException e) {
-						LOG.error("unable to write image", e);
 					}
 				}
 			} catch (IOException e) {
@@ -56,6 +52,17 @@ public class Jy1satDecoder extends TelemetryDecoder {
 			}
 		}
 		return result;
+	}
+
+	private File saveImage(String path, SsdvImage image) {
+		File imageFile = new File(config.getTempDirectory(), path);
+		try {
+			ImageIO.write(image.getImage(), "jpg", imageFile);
+			return imageFile;
+		} catch (IOException e) {
+			LOG.error("unable to write image", e);
+			return null;
+		}
 	}
 
 	@Override
