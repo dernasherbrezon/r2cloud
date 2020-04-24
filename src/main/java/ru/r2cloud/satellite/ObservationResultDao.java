@@ -25,6 +25,7 @@ import ru.r2cloud.util.Util;
 
 public class ObservationResultDao {
 
+	private static final String DEST_ALREADY_EXIST_MESSAGE = "unable to save. dest already exist: {}";
 	private static final String SPECTOGRAM_FILENAME = "spectogram.png";
 	private static final String OUTPUT_WAV_FILENAME = "output.wav";
 	private static final String OUTPUT_RAW_FILENAME = "output.raw.gz";
@@ -52,7 +53,7 @@ public class ObservationResultDao {
 			return Collections.emptyList();
 		}
 		Collections.sort(observations, FilenameComparator.INSTANCE_DESC);
-		List<ObservationFull> result = new ArrayList<ObservationFull>(observations.size());
+		List<ObservationFull> result = new ArrayList<>(observations.size());
 		for (Path curDirectory : observations) {
 			ObservationFull cur = find(satelliteId, curDirectory);
 			// some directories might be corrupted
@@ -118,7 +119,7 @@ public class ObservationResultDao {
 	public File saveImage(String satelliteId, String observationId, File a) {
 		Path dest = getObservationBasepath(satelliteId, observationId).resolve("a.jpg");
 		if (Files.exists(dest)) {
-			LOG.info("unable to save. dest already exist: {}", dest.toAbsolutePath());
+			LOG.info(DEST_ALREADY_EXIST_MESSAGE, dest.toAbsolutePath());
 			return null;
 		}
 		if (!a.renameTo(dest.toFile())) {
@@ -130,7 +131,7 @@ public class ObservationResultDao {
 	public File saveData(String satelliteId, String observationId, File a) {
 		Path dest = getObservationBasepath(satelliteId, observationId).resolve("data.bin");
 		if (Files.exists(dest)) {
-			LOG.info("unable to save. dest already exist: {}", dest.toAbsolutePath());
+			LOG.info(DEST_ALREADY_EXIST_MESSAGE, dest.toAbsolutePath());
 			return null;
 		}
 		if (!a.renameTo(dest.toFile())) {
@@ -142,7 +143,7 @@ public class ObservationResultDao {
 	public boolean saveSpectogram(String satelliteId, String observationId, File a) {
 		Path dest = getObservationBasepath(satelliteId, observationId).resolve(SPECTOGRAM_FILENAME);
 		if (Files.exists(dest)) {
-			LOG.info("unable to save. dest already exist: {}", dest.toAbsolutePath());
+			LOG.info(DEST_ALREADY_EXIST_MESSAGE, dest.toAbsolutePath());
 			return false;
 		}
 		return a.renameTo(dest.toFile());
@@ -189,7 +190,7 @@ public class ObservationResultDao {
 			return null;
 		}
 		if (Files.exists(dest)) {
-			LOG.info("unable to save. dest already exist: {}", dest.toAbsolutePath());
+			LOG.info(DEST_ALREADY_EXIST_MESSAGE, dest.toAbsolutePath());
 			return null;
 		}
 		if (!dataFile.renameTo(dest.toFile())) {
