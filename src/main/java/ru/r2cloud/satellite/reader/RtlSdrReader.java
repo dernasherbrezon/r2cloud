@@ -3,6 +3,7 @@ package ru.r2cloud.satellite.reader;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
+import java.nio.file.Files;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +48,7 @@ public class RtlSdrReader implements IQReader {
 			// all other codes are invalid. even 0
 			if (responseCode != 143) {
 				LOG.error("[{}] invalid response code rtl_sdr: {}", req.getId(), responseCode);
-				if (rawFile.exists() && !rawFile.delete()) {
-					LOG.error("[{}] unable to delete temp file: {}", req.getId(), rawFile.getAbsolutePath());
-				}
+				deleteFile(rawFile);
 			} else {
 				LOG.info("[{}] rtl_sdr stopped: {}", req.getId(), responseCode);
 			}
@@ -66,6 +65,16 @@ public class RtlSdrReader implements IQReader {
 			result.setIqFile(rawFile);
 		}
 		return result;
+	}
+
+	private void deleteFile(File rawFile) {
+		if (rawFile.exists()) {
+			try {
+				Files.delete(rawFile.toPath());
+			} catch (IOException e) {
+				LOG.error("[" + req.getId() + "] unable to delete temp file: " + rawFile.getAbsolutePath(), e);
+			}
+		}
 	}
 
 	@Override
