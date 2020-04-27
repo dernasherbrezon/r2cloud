@@ -31,11 +31,11 @@ public class Configuration {
 	private final Properties userSettings = new Properties();
 	private final Path userSettingsLocation;
 	private final FileSystem fs;
-	private static final Set<PosixFilePermission> MODE600 = new HashSet<PosixFilePermission>();
+	private static final Set<PosixFilePermission> MODE600 = new HashSet<>();
 
 	private final Properties systemSettings = new Properties();
-	private final Map<String, List<ConfigListener>> listeners = new ConcurrentHashMap<String, List<ConfigListener>>();
-	private final Set<String> changedProperties = new HashSet<String>();
+	private final Map<String, List<ConfigListener>> listeners = new ConcurrentHashMap<>();
+	private final Set<String> changedProperties = new HashSet<>();
 
 	static {
 		MODE600.add(PosixFilePermission.OWNER_READ);
@@ -103,7 +103,7 @@ public class Configuration {
 		} catch (IOException e) {
 			throw new IllegalArgumentException(e);
 		}
-		Set<ConfigListener> toNotify = new HashSet<ConfigListener>();
+		Set<ConfigListener> toNotify = new HashSet<>();
 		synchronized (changedProperties) {
 			for (String cur : changedProperties) {
 				List<ConfigListener> curListener = listeners.get(cur);
