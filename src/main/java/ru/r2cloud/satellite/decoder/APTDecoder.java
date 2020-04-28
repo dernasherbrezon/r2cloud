@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,13 +65,7 @@ public class APTDecoder implements Decoder {
 			if (convert(result, lines)) {
 				result.setaPath(image);
 			} else {
-				if (image.exists()) {
-					try {
-						Files.delete(image.toPath());
-					} catch (IOException e) {
-						LOG.error("unable to delete temp file: " + image.getAbsolutePath(), e);
-					}
-				}
+				Util.deleteQuietly(image);
 			}
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();

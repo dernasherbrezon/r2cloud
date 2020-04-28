@@ -252,8 +252,8 @@ public class AcmeClient {
 		} finally {
 			messages.add("cleanup challenge data", LOG);
 			for (File cur : challengePath.listFiles()) {
-				if (cur.isFile() && !cur.delete()) {
-					LOG.info("unable to cleanup: {}", cur.getAbsolutePath());
+				if (cur.isFile()) {
+					Util.deleteQuietly(cur);
 				}
 			}
 		}

@@ -138,6 +138,17 @@ public final class Util {
 		}
 	}
 
+	public static void deleteQuietly(File file) {
+		if (!file.exists()) {
+			return;
+		}
+		try {
+			Files.delete(file.toPath());
+		} catch (IOException e) {
+			LOG.error("unable to delete temp file: " + file.getAbsolutePath(), e);
+		}
+	}
+
 	public static void shutdown(String name, ProcessWrapper process, long timeoutMillis) {
 		if (process == null || !process.isAlive()) {
 			return;

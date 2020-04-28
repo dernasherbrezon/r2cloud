@@ -62,9 +62,7 @@ public abstract class TelemetryDecoder implements Decoder {
 		}
 		result.setNumberOfDecodedPackets(numberOfDecodedPackets);
 		if (numberOfDecodedPackets <= 0) {
-			if (binFile.exists() && !binFile.delete()) {
-				LOG.error("unable to delete temp file: {}", binFile.getAbsolutePath());
-			}
+			Util.deleteQuietly(binFile);
 		} else {
 			result.setDataPath(binFile);
 		}
