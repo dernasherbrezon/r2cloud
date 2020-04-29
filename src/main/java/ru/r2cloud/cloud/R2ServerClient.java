@@ -42,7 +42,7 @@ public class R2ServerClient {
 		this.hostname = config.getProperty("r2server.hostname");
 		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMillis(config.getInteger("r2server.connectionTimeout"))).build();
 	}
-
+	
 	public Long saveMeta(ObservationFull observation) {
 		if (observation == null) {
 			return null;
@@ -83,11 +83,11 @@ public class R2ServerClient {
 		try {
 			request = createRequest(url).header("Content-Type", contentType).PUT(BodyPublishers.ofFile(file.toPath())).build();
 		} catch (FileNotFoundException e) {
-			LOG.error("unable to upload: " + url, e);
+			LOG.error("unable to upload: {}", url, e);
 			return;
 		}
 		httpclient.sendAsync(request, BodyHandlers.ofString()).exceptionally(ex -> {
-			LOG.error("unable to upload: " + url, ex);
+			LOG.error("unable to upload: {}", url, ex);
 			return null;
 		}).thenAccept(response -> {
 			if (response != null && response.statusCode() != 200 && LOG.isErrorEnabled()) {
