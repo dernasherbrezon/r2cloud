@@ -60,7 +60,7 @@ public class LRPTDecoder implements Decoder {
 				}
 			}
 		} catch (Exception e) {
-			LOG.error("unable to process: " + rawIq.getAbsolutePath(), e);
+			LOG.error("unable to process: {}", rawIq.getAbsolutePath(), e);
 		} finally {
 			Util.closeQuietly(lrpt);
 		}
