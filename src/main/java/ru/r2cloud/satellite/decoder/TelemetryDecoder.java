@@ -57,7 +57,7 @@ public abstract class TelemetryDecoder implements Decoder {
 				}
 			}
 		} catch (Exception e) {
-			LOG.error("unable to process: " + rawIq, e);
+			LOG.error("unable to process: {}", rawIq, e);
 			return result;
 		}
 		result.setNumberOfDecodedPackets(numberOfDecodedPackets);
