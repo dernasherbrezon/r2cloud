@@ -44,7 +44,7 @@ public class AutoUpdate {
 			try {
 				Files.deleteIfExists(fileLock);
 			} catch (IOException e) {
-				LOG.error("unable to remove file lock for auto update at: " + fileLock.toAbsolutePath(), e);
+				LOG.error("unable to remove file lock for auto update at: {}", fileLock.toAbsolutePath(), e);
 			}
 		}
 	}
