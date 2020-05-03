@@ -121,7 +121,7 @@ public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
 		metrics.getRegistry().gauge("ppm", new MetricSupplier<Gauge>() {
 
 			@Override
-			public Gauge<?> newMetric() {
+			public Gauge<Integer> newMetric() {
 				return new FormattedGauge<Integer>(MetricFormat.NORMAL) {
 
 					@Override
