@@ -52,7 +52,7 @@ public class RtlSdrReader implements IQReader {
 				LOG.info("[{}] rtl_sdr stopped: {}", req.getId(), responseCode);
 			}
 		} catch (IOException e) {
-			LOG.error("[" + req.getId() + "] unable to run", e);
+			LOG.error("[{}] unable to run", req.getId(), e);
 		} finally {
 			endTimeMillis = System.currentTimeMillis();
 		}
