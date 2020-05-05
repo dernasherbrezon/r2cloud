@@ -29,7 +29,7 @@ public class CelestrakClient {
 
 	private Map<String, Tle> loadTle(String location) {
 		HttpURLConnection con = null;
-		Map<String, Tle> result = new HashMap<String, Tle>();
+		Map<String, Tle> result = new HashMap<>();
 		try {
 			URL obj = new URL(host + location);
 			con = (HttpURLConnection) obj.openConnection();
