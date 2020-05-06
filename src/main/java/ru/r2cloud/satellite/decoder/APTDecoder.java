@@ -55,7 +55,7 @@ public class APTDecoder implements Decoder {
 						}
 						r.close();
 					} catch (Exception e) {
-						LOG.error("unable to read input: " + wavFile.getAbsolutePath(), e);
+						LOG.error("unable to read input: {}", wavFile.getAbsolutePath(), e);
 					}
 				}
 			}, "wxtoimg-daemon");
