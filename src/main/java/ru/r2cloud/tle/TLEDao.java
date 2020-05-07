@@ -28,7 +28,7 @@ public class TLEDao {
 	private final Path basepath;
 	private final CelestrakClient celestrak;
 
-	private final Map<String, Tle> tle = new ConcurrentHashMap<String, Tle>();
+	private final Map<String, Tle> tle = new ConcurrentHashMap<>();
 
 	public TLEDao(Configuration config, SatelliteDao satelliteDao, CelestrakClient celestrak) {
 		this.config = config;
@@ -70,7 +70,7 @@ public class TLEDao {
 				}
 				this.tle.put(cur.getId(), new Tle(new String[] { cur.getName(), line1, line2 }));
 			} catch (IOException e) {
-				LOG.error("unable to load TLE for " + cur.getId(), e);
+				LOG.error("unable to load TLE for {}", cur.getId(), e);
 				reload = true;
 				continue;
 			}
@@ -107,7 +107,7 @@ public class TLEDao {
 				try {
 					Files.createDirectories(output.getParent());
 				} catch (IOException e) {
-					LOG.error("unable to create directory for satellite: " + satellite.getName(), e);
+					LOG.error("unable to create directory for satellite: {}", satellite.getName(), e);
 					continue;
 				}
 			}
@@ -119,7 +119,7 @@ public class TLEDao {
 				w.append(cur.getValue().getRaw()[2]);
 				w.newLine();
 			} catch (IOException e) {
-				LOG.error("unable to write tle for: " + cur.getKey(), e);
+				LOG.error("unable to write tle for: {}", cur.getKey(), e);
 				continue;
 			}
 
