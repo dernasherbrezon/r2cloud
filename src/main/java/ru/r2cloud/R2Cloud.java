@@ -170,6 +170,7 @@ public class R2Cloud {
 		decoders.put("43786", new Itasat1Decoder(predict, props));
 		decoders.put("43792", new EseoDecoder(predict, props));
 		decoders.put("43798", new AstrocastDecoder(predict, props));
+		decoders.put("44083", new AstrocastDecoder(predict, props));
 		decoders.put("43803", new Jy1satDecoder(predict, props));
 		decoders.put("43804", new Suomi100Decoder(predict, props));
 		decoders.put("43814", new PwSat2Decoder(predict, props));
