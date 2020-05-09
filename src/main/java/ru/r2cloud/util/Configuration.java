@@ -119,7 +119,7 @@ public class Configuration {
 			try {
 				cur.onConfigUpdated();
 			} catch (Exception e) {
-				LOG.error("unable to notify listener: " + cur, e);
+				LOG.error("unable to notify listener: {}", cur, e);
 			}
 		}
 	}
@@ -160,7 +160,7 @@ public class Configuration {
 		try {
 			return PpmType.valueOf(str);
 		} catch (Exception e) {
-			LOG.error("invalid ppm type: " + str + " default to: AUTO", e);
+			LOG.error("invalid ppm type: {} default to: AUTO", str, e);
 			return PpmType.AUTO;
 		}
 	}
