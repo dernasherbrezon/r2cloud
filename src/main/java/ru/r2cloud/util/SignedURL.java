@@ -65,7 +65,7 @@ public class SignedURL {
 		MessageDigest digest;
 		try {
 			digest = MessageDigest.getInstance("MD5");
-			digest.update(input.getBytes("UTF-8"));
+			digest.update(input.getBytes(StandardCharsets.UTF_8));
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e);
 		}
