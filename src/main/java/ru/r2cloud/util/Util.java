@@ -85,7 +85,7 @@ public final class Util {
 				Files.createDirectories(path);
 				return true;
 			} catch (IOException e) {
-				LOG.info("unable to create parent dir: " + path.toAbsolutePath(), e);
+				LOG.info("unable to create parent dir: {}", path.toAbsolutePath(), e);
 				return false;
 			}
 		}
@@ -145,7 +145,7 @@ public final class Util {
 		try {
 			Files.delete(file.toPath());
 		} catch (IOException e) {
-			LOG.error("unable to delete temp file: " + file.getAbsolutePath(), e);
+			LOG.error("unable to delete temp file: {}", file.getAbsolutePath(), e);
 		}
 	}
 
@@ -179,7 +179,7 @@ public final class Util {
 					}
 				}
 			} catch (IOException e) {
-				LOG.error("unable to delete: " + f.toAbsolutePath(), e);
+				LOG.error("unable to delete: {}", f.toAbsolutePath(), e);
 				return false;
 			}
 		}
@@ -187,7 +187,7 @@ public final class Util {
 			Files.delete(f);
 			return true;
 		} catch (IOException e) {
-			LOG.error("unable to delete: " + f.toAbsolutePath(), e);
+			LOG.error("unable to delete: {}", f.toAbsolutePath(), e);
 			return false;
 		}
 	}
@@ -330,7 +330,7 @@ public final class Util {
 				}
 				result.add(name, jsonValue);
 			} catch (Exception e) {
-				LOG.error("unable to get value: " + name, e);
+				LOG.error("unable to get value: {}", name, e);
 			}
 		}
 		if (result.isEmpty()) {
