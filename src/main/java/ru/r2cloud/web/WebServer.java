@@ -158,7 +158,7 @@ public class WebServer extends NanoHTTPD {
 	}
 
 	public static String getRequestBody(IHTTPSession session) {
-		final HashMap<String, String> map = new HashMap<String, String>();
+		final HashMap<String, String> map = new HashMap<>();
 		try {
 			session.parseBody(map);
 		} catch (Exception e) {
