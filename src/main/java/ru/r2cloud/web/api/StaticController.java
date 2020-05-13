@@ -23,7 +23,7 @@ public class StaticController {
 
 	private final File basePath;
 	private final String canonicalBasePath;
-	private final Map<String, String> mimeTypes = new HashMap<String, String>();
+	private final Map<String, String> mimeTypes = new HashMap<>();
 	private final SignedURL signed;
 	private final Configuration config;
 
