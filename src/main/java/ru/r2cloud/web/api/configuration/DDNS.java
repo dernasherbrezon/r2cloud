@@ -81,7 +81,7 @@ public class DDNS extends AbstractHttpController {
 		try {
 			type = DDNSType.valueOf(typeStr);
 		} catch (Exception e) {
-			LOG.info("unknown ddns type: " + typeStr, e);
+			LOG.info("unknown ddns type: {}", typeStr, e);
 			errors.put("type", "unknown type");
 			return new BadRequest(errors);
 		}
