@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.cloud.R2ServerClient;
 import ru.r2cloud.cloud.R2ServerService;
 import ru.r2cloud.ddns.DDNSClient;
-import ru.r2cloud.jradio.fox.Fox1ABeacon;
 import ru.r2cloud.jradio.fox.Fox1BBeacon;
 import ru.r2cloud.jradio.fox.Fox1CBeacon;
 import ru.r2cloud.jradio.fox.Fox1DBeacon;
@@ -192,7 +191,6 @@ public class R2Cloud {
 		decoders.put("45115", new Swampsat2Decoder(predict, props));
 		decoders.put("45263", new QarmanDecoder(predict, props));
 		decoders.put("45598", new Quetzal1Decoder(predict, props));
-		decoders.put("40967", new FoxSlowDecoder<>(predict, props, Fox1ABeacon.class));
 		decoders.put("43017", new FoxSlowDecoder<>(predict, props, Fox1BBeacon.class));
 		decoders.put("43770", new FoxSlowDecoder<>(predict, props, Fox1CBeacon.class));
 		decoders.put("43137", new FoxDecoder<>(predict, props, Fox1DBeacon.class));
