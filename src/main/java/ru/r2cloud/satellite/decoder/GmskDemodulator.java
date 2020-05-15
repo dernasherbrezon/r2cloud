@@ -24,17 +24,16 @@ public class GmskDemodulator implements ByteInput {
 	}
 
 	public GmskDemodulator(FloatInput source, int baudRate, float bandwidth, float gainMu, Float fllBandwidth, int decimation, double transitionWidth) {
-		float samplesPerSymbol = source.getContext().getSampleRate() / baudRate;
 		FloatInput next = new RmsAgcComplex(source, 1e-2f, 0.5f);
 		if (fllBandwidth != null) {
-			next = new FLLBandEdge(next, samplesPerSymbol, 0.35f, 100, fllBandwidth);
+			next = new FLLBandEdge(next, next.getContext().getSampleRate() / baudRate, 0.35f, 100, fllBandwidth);
 		}
-		LowPassFilterComplex lpf = new LowPassFilterComplex(next, 1.0, bandwidth / 2, 600, Window.WIN_HAMMING, 6.76);
-		QuadratureDemodulation qd = new QuadratureDemodulation(lpf, 1.0f);
-		LowPassFilter lpf2 = new LowPassFilter(qd, decimation, 1.0, (double) baudRate / 2, transitionWidth, Window.WIN_HAMMING, 6.76);
-		ClockRecoveryMM clockRecovery = new ClockRecoveryMM(lpf2, samplesPerSymbol, (float) (0.25 * gainMu * gainMu), 0.5f, gainMu, 0.005f);
-		Rail rail = new Rail(clockRecovery, -1.0f, 1.0f);
-		this.source = new FloatToChar(rail, 127.0f);
+		next = new LowPassFilterComplex(next, 1.0, bandwidth / 2, 600, Window.WIN_HAMMING, 6.76);
+		next = new QuadratureDemodulation(next, 1.0f);
+		next = new LowPassFilter(next, decimation, 1.0, (double) baudRate / 2, transitionWidth, Window.WIN_HAMMING, 6.76);
+		next = new ClockRecoveryMM(next, next.getContext().getSampleRate() / baudRate, (float) (0.25 * gainMu * gainMu), 0.5f, gainMu, 0.005f);
+		next = new Rail(next, -1.0f, 1.0f);
+		this.source = new FloatToChar(next, 127.0f);
 	}
 
 	@Override

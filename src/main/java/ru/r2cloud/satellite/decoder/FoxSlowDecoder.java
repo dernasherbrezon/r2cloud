@@ -27,7 +27,7 @@ public class FoxSlowDecoder<T extends Beacon> extends TelemetryDecoder {
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
 		float gainMu = 0.175f * 3;
-		GmskDemodulator gmsk = new GmskDemodulator(source, 200, req.getBandwidth(), gainMu, 0.06f, 120, 200.0f);
+		GmskDemodulator gmsk = new GmskDemodulator(source, 200, req.getBandwidth(), gainMu, null, 120, 200.0f);
 		SoftToHard s2h = new SoftToHard(gmsk);
 		Set<String> codes = new HashSet<>();
 		codes.add("0011111010");
