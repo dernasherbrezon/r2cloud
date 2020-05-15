@@ -1,24 +1,39 @@
 package ru.r2cloud.satellite.decoder;
 
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ru.r2cloud.jradio.Beacon;
+import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.jradio.BeaconSource;
 import ru.r2cloud.jradio.blocks.CorrelateAccessCodeTag;
 import ru.r2cloud.jradio.blocks.FixedLengthTagger;
 import ru.r2cloud.jradio.blocks.SoftToHard;
 import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
+import ru.r2cloud.jradio.fox.Fox1DBeacon;
+import ru.r2cloud.jradio.fox.FoxPictureDecoder;
 import ru.r2cloud.jradio.fox.HighSpeedFox;
+import ru.r2cloud.jradio.fox.PictureScanLine;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
 public class FoxDecoder<T extends Beacon> extends FoxSlowDecoder<T> {
+
+	private static final Logger LOG = LoggerFactory.getLogger(FoxDecoder.class);
 
 	private final Class<T> clazz;
 
@@ -45,6 +60,50 @@ public class FoxDecoder<T extends Beacon> extends FoxSlowDecoder<T> {
 		result.add(new HighSpeedFox(pdu));
 
 		return result;
+	}
+
+	@Override
+	public ObservationResult decode(File rawIq, ObservationRequest req) {
+		ObservationResult result = super.decode(rawIq, req);
+		if (result.getDataPath() != null) {
+			try (BeaconInputStream<Fox1DBeacon> bis = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(result.getDataPath())), Fox1DBeacon.class)) {
+				List<PictureScanLine> scanLines = new ArrayList<>();
+				while (bis.hasNext()) {
+					Fox1DBeacon beacon = bis.next();
+					if (beacon.getPictureScanLines() == null) {
+						continue;
+					}
+					scanLines.addAll(beacon.getPictureScanLines());
+				}
+				FoxPictureDecoder pictureDecoder = new FoxPictureDecoder(scanLines);
+				while (pictureDecoder.hasNext()) {
+					BufferedImage cur = pictureDecoder.next();
+					if (cur == null) {
+						continue;
+					}
+					File imageFile = saveImage("fox1d-" + req.getId() + ".jpg", cur);
+					if (imageFile != null) {
+						result.setaPath(imageFile);
+						// interested only in the first image
+						break;
+					}
+				}
+			} catch (IOException e) {
+				LOG.error("unable to read data", e);
+			}
+		}
+		return result;
+	}
+
+	private File saveImage(String path, BufferedImage image) {
+		File imageFile = new File(config.getTempDirectory(), path);
+		try {
+			ImageIO.write(image, "jpg", imageFile);
+			return imageFile;
+		} catch (IOException e) {
+			LOG.error("unable to write image", e);
+			return null;
+		}
 	}
 
 	@Override
