@@ -17,7 +17,7 @@ public class Quetzal1Decoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		GmskDemodulator demodulator = new GmskDemodulator(source, 4800, req.getBandwidth(), 0.175f * 3, 0.02f);
+		GmskDemodulator demodulator = new GmskDemodulator(source, 4800, req.getBandwidth(), 0.175f * 3, 0.02f, 1, 2000);
 		return new Ax25G3ruhBeaconSource<>(demodulator, Quetzal1Beacon.class);
 	}
 
