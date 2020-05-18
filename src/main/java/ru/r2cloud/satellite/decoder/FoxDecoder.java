@@ -57,7 +57,7 @@ public class FoxDecoder<T extends Beacon> extends FoxSlowDecoder<T> {
 		codes.add("1100000101");
 		CorrelateAccessCodeTag correlate = new CorrelateAccessCodeTag(s2h, 0, codes, false);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new FixedLengthTagger(correlate, HighSpeedFox.HIGH_SPEED_FRAME_SIZE * 10));
-		result.add(new HighSpeedFox(pdu));
+		result.add(new HighSpeedFox<>(pdu, Fox1DBeacon.class));
 
 		return result;
 	}

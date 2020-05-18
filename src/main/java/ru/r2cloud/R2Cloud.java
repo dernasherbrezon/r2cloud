@@ -40,6 +40,7 @@ import ru.r2cloud.satellite.decoder.Floripasat1Decoder;
 import ru.r2cloud.satellite.decoder.FoxDecoder;
 import ru.r2cloud.satellite.decoder.FoxSlowDecoder;
 import ru.r2cloud.satellite.decoder.Gomx1Decoder;
+import ru.r2cloud.satellite.decoder.Huskysat1Decoder;
 import ru.r2cloud.satellite.decoder.Itasat1Decoder;
 import ru.r2cloud.satellite.decoder.Jy1satDecoder;
 import ru.r2cloud.satellite.decoder.KunsPfDecoder;
@@ -194,6 +195,7 @@ public class R2Cloud {
 		decoders.put("43017", new FoxSlowDecoder<>(predict, props, Fox1BBeacon.class));
 		decoders.put("43770", new FoxSlowDecoder<>(predict, props, Fox1CBeacon.class));
 		decoders.put("43137", new FoxDecoder<>(predict, props, Fox1DBeacon.class));
+		decoders.put("45119", new Huskysat1Decoder(predict, props));
 
 		validateDecoders();
 		DecoderTask decoderTask = new DecoderTask(decoders, resultDao, r2cloudService);
