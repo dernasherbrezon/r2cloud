@@ -44,6 +44,11 @@ public class Configuration {
 
 	public Configuration(InputStream systemSettingsLocation, String userSettingsLocation, FileSystem fs) throws IOException {
 		systemSettings.load(systemSettingsLocation);
+		try (InputStream is = Configuration.class.getClassLoader().getResourceAsStream("config-common.properties")) {
+			Properties commonProps = new Properties();
+			commonProps.load(is);
+			systemSettings.putAll(commonProps);
+		}
 		this.userSettingsLocation = fs.getPath(userSettingsLocation);
 		this.fs = fs;
 		loadUserSettings();
