@@ -43,6 +43,9 @@ public abstract class TelemetryDecoder implements Decoder {
 		try (BeaconOutputStream aos = new BeaconOutputStream(new FileOutputStream(binFile));) {
 			input = createBeaconSources(rawIq, req);
 			for (int i = 0; i < input.size(); i++) {
+				if (Thread.currentThread().isInterrupted()) {
+					break;
+				}
 				// process each beaconsource
 				BeaconSource<? extends Beacon> currentInput = input.get(i);
 				try {
