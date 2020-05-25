@@ -177,16 +177,16 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			if (startThread == null) {
 				return null;
 			}
-			Future<?> future = startThread.schedule(readTask, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
-			Runnable completeTask = new Runnable() {
+			Future<?> startFuture = startThread.schedule(readTask, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
+			Runnable stopRtlSdrTask = new Runnable() {
 
 				@Override
 				public void run() {
 					reader.complete();
 				}
 			};
-			Future<?> reaperFuture = stopThread.schedule(completeTask, observation.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
-			schedule.add(new ScheduledObservation(observation, future, reaperFuture, completeTask));
+			Future<?> stopRtlSdrFuture = stopThread.schedule(stopRtlSdrTask, observation.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
+			schedule.add(new ScheduledObservation(observation, startFuture, stopRtlSdrFuture, stopRtlSdrTask));
 			return observation;
 		}
 	}
