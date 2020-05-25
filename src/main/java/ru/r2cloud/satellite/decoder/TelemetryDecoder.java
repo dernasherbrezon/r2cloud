@@ -44,6 +44,7 @@ public abstract class TelemetryDecoder implements Decoder {
 			input = createBeaconSources(rawIq, req);
 			for (int i = 0; i < input.size(); i++) {
 				if (Thread.currentThread().isInterrupted()) {
+					LOG.info("decoding thread interrupted. stopping...");
 					break;
 				}
 				// process each beaconsource
