@@ -40,7 +40,7 @@ public class FoxSlowDecoder<T extends Beacon> extends TelemetryDecoder {
 		long bandwidth = req.getBandwidth();
 		int decimation = 120;
 		float transitionWidth = 200.0f;
-		FloatInput next = new LowPassFilterComplex(source, 1.0, bandwidth / 2, 600, Window.WIN_HAMMING, 6.76);
+		FloatInput next = new LowPassFilterComplex(source, 1.0, (double) bandwidth / 2, 600, Window.WIN_HAMMING, 6.76);
 		next = new QuadratureDemodulation(next, 1.0f);
 		next = new LowPassFilter(next, decimation, 1.0, (double) baudRate / 2, transitionWidth, Window.WIN_HAMMING, 6.76);
 		next = new DcBlocker(next, (int) (Math.ceil(next.getContext().getSampleRate() / baudRate * 32)), true);		
