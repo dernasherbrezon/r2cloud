@@ -10,6 +10,7 @@ import ru.r2cloud.cloud.R2ServerService;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.ObservationStatus;
 import ru.r2cloud.satellite.ObservationDao;
 
 public class DecoderTask {
@@ -52,6 +53,7 @@ public class DecoderTask {
 		observation.setNumberOfDecodedPackets(result.getNumberOfDecodedPackets());
 		observation.setaPath(result.getaPath());
 		observation.setDataPath(result.getDataPath());
+		observation.setStatus(ObservationStatus.DECODED);
 		
 		dao.update(observation);
 		r2cloudService.uploadObservation(observation);		

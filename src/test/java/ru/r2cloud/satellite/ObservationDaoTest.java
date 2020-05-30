@@ -23,6 +23,7 @@ import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.ObservationStatus;
 import ru.r2cloud.model.Tle;
 
 public class ObservationDaoTest {
@@ -62,6 +63,7 @@ public class ObservationDaoTest {
 		assertEquals(req.getTle(), actual.getTle());
 		assertEquals(req.getGroundStation().getLatitude(), actual.getGroundStation().getLatitude(), 0.0);
 		assertEquals(req.getGroundStation().getLongitude(), actual.getGroundStation().getLongitude(), 0.0);
+		assertEquals(ObservationStatus.NEW, actual.getStatus());
 
 		assertNotNull(dao.saveData(req.getSatelliteId(), req.getId(), createTempFile("data")));
 
@@ -77,10 +79,12 @@ public class ObservationDaoTest {
 		full.setChannelB(UUID.randomUUID().toString());
 		full.setGain(gain);
 		full.setNumberOfDecodedPackets(1L);
+		full.setStatus(ObservationStatus.DECODED);
 		assertTrue(dao.update(full));
 		actual = dao.find(req.getSatelliteId(), req.getId());
 		assertEquals(gain, actual.getGain());
 		assertEquals(1, actual.getNumberOfDecodedPackets().longValue());
+		assertEquals(ObservationStatus.DECODED, actual.getStatus());
 
 		List<Observation> all = dao.findAllBySatelliteId(req.getSatelliteId());
 		assertEquals(1, all.size());

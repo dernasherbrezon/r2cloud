@@ -46,6 +46,8 @@ public class Observation {
 	private String dataURL;
 	private File dataPath;
 
+	private ObservationStatus status;
+
 	public Observation() {
 		// do nothing
 	}
@@ -80,6 +82,14 @@ public class Observation {
 		result.setOutputSampleRate(outputSampleRate);
 		result.setActualFrequency(actualFrequency);
 		return result;
+	}
+
+	public ObservationStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(ObservationStatus status) {
+		this.status = status;
 	}
 
 	public String getId() {
@@ -307,6 +317,10 @@ public class Observation {
 		result.setaURL(meta.getString("aURL", null));
 		result.setDataURL(meta.getString("data", null));
 		result.setSpectogramURL(meta.getString("spectogramURL", null));
+		String statusStr = meta.getString("status", null);
+		if (statusStr != null) {
+			result.setStatus(ObservationStatus.valueOf(statusStr));
+		}
 		return result;
 	}
 
@@ -362,6 +376,11 @@ public class Observation {
 				json.add("spectogramURL", getSpectogramURL());
 			}
 		}
+		ObservationStatus status = getStatus();
+		if (status == null) {
+			status = ObservationStatus.UPLOADED;
+		}
+		json.add("status", status.name());
 		return json;
 	}
 

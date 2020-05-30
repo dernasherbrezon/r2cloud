@@ -19,6 +19,7 @@ import com.eclipsesource.json.JsonObject;
 import ru.r2cloud.FilenameComparator;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.ObservationStatus;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -146,9 +147,9 @@ public class ObservationDao {
 		return a.renameTo(dest.toFile());
 	}
 
-	public File insert(ObservationRequest observation, File dataFile) {
+	public File insert(ObservationRequest request, File dataFile) {
 		try {
-			Path satelliteBasePath = basepath.resolve(observation.getSatelliteId()).resolve("data");
+			Path satelliteBasePath = basepath.resolve(request.getSatelliteId()).resolve("data");
 			if (Files.exists(satelliteBasePath)) {
 				List<Path> dataDirs = Util.toList(Files.newDirectoryStream(satelliteBasePath));
 				if (dataDirs.size() > maxCount) {
@@ -162,17 +163,18 @@ public class ObservationDao {
 			LOG.error("unable to cleanup old observations", e);
 		}
 
-		Path observationBasePath = getObservationBasepath(observation);
+		Path observationBasePath = getObservationBasepath(request);
 		if (!Util.initDirectory(observationBasePath)) {
 			return null;
 		}
 
-		Observation full = new Observation(observation);
-		if (!update(full)) {
+		Observation observation = new Observation(request);
+		observation.setStatus(ObservationStatus.NEW);
+		if (!update(observation)) {
 			return null;
 		}
 
-		return insertData(observation, dataFile);
+		return insertData(request, dataFile);
 	}
 
 	private File insertData(ObservationRequest observation, File dataFile) {

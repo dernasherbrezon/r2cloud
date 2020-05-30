@@ -9,6 +9,7 @@ import com.eclipsesource.json.JsonArray;
 
 import ru.r2cloud.SpectogramService;
 import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.ObservationStatus;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.util.Configuration;
 
@@ -43,6 +44,13 @@ public class R2ServerService {
 		} else if (observation.getaPath() != null) {
 			client.saveJpeg(id, observation.getaPath());
 		}
+		// update status to UPLOADED even if spectogram not
+		// in case of failure spectogram is not necessary to upload
+		// + I'm a bit lazy to introduce new status: SPECTOGRAM_UPLOADED
+		// FIXME check the real response code from client.save* and update status based on it
+		observation.setStatus(ObservationStatus.UPLOADED);
+		dao.update(observation);
+
 		if (config.getBoolean("r2cloud.syncSpectogram")) {
 			if (observation.getSpectogramPath() == null) {
 				File spectogram = spectogramService.create(observation);
