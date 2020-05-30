@@ -23,9 +23,7 @@ import ru.r2cloud.R2CloudServer;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.FrequencySource;
-import ru.r2cloud.model.ObservationFull;
-import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.model.Observation;
 
 public class R2ServerClientTest {
 
@@ -159,29 +157,26 @@ public class R2ServerClientTest {
 		return file;
 	}
 
-	private static ObservationFull createRequest() {
-		ObservationRequest req = new ObservationRequest();
-		req.setId("1");
-		req.setStartTimeMillis(1L);
-		req.setEndTimeMillis(1L);
-		req.setOutputSampleRate(1);
-		req.setInputSampleRate(1);
-		req.setSatelliteFrequency(1L);
-		req.setActualFrequency(100L);
-		req.setSource(FrequencySource.APT);
-		req.setSatelliteId("1");
-		req.setBandwidth(1000);
-		ObservationResult res = new ObservationResult();
-		res.setGain("1");
-		res.setChannelA("1");
-		res.setChannelB("1");
-		res.setNumberOfDecodedPackets(1L);
-		res.setaURL("1");
-		res.setDataURL("1");
-		res.setSpectogramURL("1");
-		ObservationFull observation = new ObservationFull(req);
-		observation.setResult(res);
-		return observation;
+	private static Observation createRequest() {
+		Observation result = new Observation();
+		result.setId("1");
+		result.setStartTimeMillis(1L);
+		result.setEndTimeMillis(1L);
+		result.setOutputSampleRate(1);
+		result.setInputSampleRate(1);
+		result.setSatelliteFrequency(1L);
+		result.setActualFrequency(100L);
+		result.setSource(FrequencySource.APT);
+		result.setSatelliteId("1");
+		result.setBandwidth(1000);
+		result.setGain("1");
+		result.setChannelA("1");
+		result.setChannelB("1");
+		result.setNumberOfDecodedPackets(1L);
+		result.setaURL("1");
+		result.setDataURL("1");
+		result.setSpectogramURL("1");
+		return result;
 	}
 
 	private static void assertJson(String filename, String actual) {

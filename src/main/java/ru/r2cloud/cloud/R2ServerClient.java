@@ -24,7 +24,7 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
 
-import ru.r2cloud.model.ObservationFull;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.util.Configuration;
 
 public class R2ServerClient {
@@ -43,7 +43,7 @@ public class R2ServerClient {
 		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMillis(config.getInteger("r2server.connectionTimeout"))).build();
 	}
 	
-	public Long saveMeta(ObservationFull observation) {
+	public Long saveMeta(Observation observation) {
 		if (observation == null) {
 			return null;
 		}

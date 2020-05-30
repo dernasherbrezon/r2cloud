@@ -2,7 +2,7 @@ package ru.r2cloud.model;
 
 import java.io.File;
 
-public class ObservationResult {
+public class DecoderResult {
 
 	private File wavPath;
 	private File iqPath;
@@ -12,13 +12,7 @@ public class ObservationResult {
 	private String channelB;
 	private Long numberOfDecodedPackets = 0L;
 
-	private String aURL;
 	private File aPath;
-
-	private String spectogramURL;
-	private File spectogramPath;
-
-	private String dataURL;
 	private File dataPath;
 
 	public File getIqPath() {
@@ -69,14 +63,6 @@ public class ObservationResult {
 		this.numberOfDecodedPackets = numberOfDecodedPackets;
 	}
 
-	public String getaURL() {
-		return aURL;
-	}
-
-	public void setaURL(String aURL) {
-		this.aURL = aURL;
-	}
-
 	public File getaPath() {
 		return aPath;
 	}
@@ -85,44 +71,12 @@ public class ObservationResult {
 		this.aPath = aPath;
 	}
 
-	public String getSpectogramURL() {
-		return spectogramURL;
-	}
-
-	public void setSpectogramURL(String spectogramURL) {
-		this.spectogramURL = spectogramURL;
-	}
-
-	public File getSpectogramPath() {
-		return spectogramPath;
-	}
-
-	public void setSpectogramPath(File spectogramPath) {
-		this.spectogramPath = spectogramPath;
-	}
-
-	public String getDataURL() {
-		return dataURL;
-	}
-
-	public void setDataURL(String dataURL) {
-		this.dataURL = dataURL;
-	}
-
 	public File getDataPath() {
 		return dataPath;
 	}
 
 	public void setDataPath(File dataPath) {
 		this.dataPath = dataPath;
-	}
-
-	public boolean hasData() {
-		return aURL != null || dataURL != null;
-	}
-
-	public boolean hasRawFile() {
-		return wavPath != null || iqPath != null;
 	}
 
 }

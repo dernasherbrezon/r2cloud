@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ProcessWrapper;
@@ -32,8 +32,8 @@ public class APTDecoder implements Decoder {
 	}
 
 	@Override
-	public ObservationResult decode(final File wavFile, final ObservationRequest request) {
-		ObservationResult result = new ObservationResult();
+	public DecoderResult decode(final File wavFile, final ObservationRequest request) {
+		DecoderResult result = new DecoderResult();
 		result.setWavPath(wavFile);
 		File image = new File(config.getTempDirectory(), "apt-" + request.getId() + ".jpg");
 		ProcessWrapper process = null;
@@ -90,7 +90,7 @@ public class APTDecoder implements Decoder {
 	// Gain: 12.6
 	// Channel A: 3/3B (mid infrared)
 	// Channel B: 4 (thermal infrared)
-	private static boolean convert(ObservationResult observation, List<String> lines) {
+	private static boolean convert(DecoderResult observation, List<String> lines) {
 		boolean success = true;
 		for (String cur : lines) {
 			int index = cur.indexOf(':');

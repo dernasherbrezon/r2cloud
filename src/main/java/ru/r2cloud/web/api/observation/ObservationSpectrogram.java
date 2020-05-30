@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.SpectogramService;
-import ru.r2cloud.model.ObservationFull;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.satellite.ObservationResultDao;
 import ru.r2cloud.util.SignedURL;
 import ru.r2cloud.web.AbstractHttpController;
@@ -50,13 +50,13 @@ public class ObservationSpectrogram extends AbstractHttpController {
 			return new BadRequest(errors);
 		}
 
-		ObservationFull observation = dao.find(satelliteId, id);
+		Observation observation = dao.find(satelliteId, id);
 		if (observation == null) {
 			LOG.info("not found: {} id: {}", satelliteId, id);
 			return new NotFound();
 		}
 
-		if (!observation.getResult().hasRawFile()) {
+		if (!observation.hasRawFile()) {
 			LOG.info("data file not found");
 			return new NotFound();
 		}
@@ -73,7 +73,7 @@ public class ObservationSpectrogram extends AbstractHttpController {
 
 		observation = dao.find(satelliteId, id);
 		JsonObject entity = new JsonObject();
-		entity.add("spectogramURL", signed.sign(observation.getResult().getSpectogramURL()));
+		entity.add("spectogramURL", signed.sign(observation.getSpectogramURL()));
 		ModelAndView result = new ModelAndView();
 		result.setData(entity.toString());
 		return result;

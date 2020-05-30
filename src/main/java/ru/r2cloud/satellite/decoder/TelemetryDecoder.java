@@ -14,7 +14,7 @@ import ru.r2cloud.jradio.BeaconOutputStream;
 import ru.r2cloud.jradio.BeaconSource;
 import ru.r2cloud.jradio.FloatInput;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
@@ -32,8 +32,8 @@ public abstract class TelemetryDecoder implements Decoder {
 	}
 
 	@Override
-	public ObservationResult decode(File rawIq, ObservationRequest req) {
-		ObservationResult result = new ObservationResult();
+	public DecoderResult decode(File rawIq, ObservationRequest req) {
+		DecoderResult result = new DecoderResult();
 		result.setIqPath(rawIq);
 
 		long numberOfDecodedPackets = 0;
@@ -64,6 +64,7 @@ public abstract class TelemetryDecoder implements Decoder {
 			LOG.error("unable to process: {}", rawIq, e);
 			return result;
 		}
+		// FIXME only these are required in the observationresult
 		result.setNumberOfDecodedPackets(numberOfDecodedPackets);
 		if (numberOfDecodedPackets <= 0) {
 			Util.deleteQuietly(binFile);

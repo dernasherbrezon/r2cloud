@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.jradio.sink.Spectogram;
 import ru.r2cloud.jradio.source.RtlSdr;
 import ru.r2cloud.jradio.source.WavFileSource;
-import ru.r2cloud.model.ObservationFull;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -30,18 +30,15 @@ public class SpectogramService {
 		this.config = config;
 	}
 
-	public File create(ObservationFull observation) {
+	public File create(Observation observation) {
 		LOG.info("generating spectogram");
-		if (observation == null || observation.getResult() == null) {
+		if (observation == null) {
 			return null;
 		}
-		if (observation.getResult().getWavPath() != null) {
-			return createFromWav(observation.getResult().getWavPath());
-		} else if (observation.getResult().getIqPath() != null) {
-			if (observation.getReq() == null) {
-				return null;
-			}
-			return createFromIq(observation.getResult().getIqPath(), observation.getReq().getInputSampleRate());
+		if (observation.getWavPath() != null) {
+			return createFromWav(observation.getWavPath());
+		} else if (observation.getIqPath() != null) {
+			return createFromIq(observation.getIqPath(), observation.getInputSampleRate());
 		}
 		return null;
 	}

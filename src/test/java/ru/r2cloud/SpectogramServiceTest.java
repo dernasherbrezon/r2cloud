@@ -13,9 +13,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import ru.r2cloud.model.ObservationFull;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.ObservationResult;
 
 public class SpectogramServiceTest {
 
@@ -61,21 +60,17 @@ public class SpectogramServiceTest {
 		}
 	}
 
-	private static ObservationFull createWav(File wav) {
-		ObservationResult res = new ObservationResult();
-		res.setWavPath(wav);
-		ObservationFull result = new ObservationFull(new ObservationRequest());
-		result.setResult(res);
+	private static Observation createWav(File wav) {
+		Observation result = new Observation(new ObservationRequest());
+		result.setWavPath(wav);
 		return result;
 	}
 
-	private static ObservationFull createIq(File iq, int sampleRate) {
-		ObservationResult res = new ObservationResult();
-		res.setIqPath(iq);
+	private static Observation createIq(File iq, int sampleRate) {
 		ObservationRequest req = new ObservationRequest();
 		req.setInputSampleRate(sampleRate);
-		ObservationFull result = new ObservationFull(req);
-		result.setResult(res);
+		Observation result = new Observation(req);
+		result.setIqPath(iq);
 		return result;
 	}
 

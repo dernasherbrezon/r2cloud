@@ -17,7 +17,7 @@ import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
-import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.predict.PredictOreKit;
 
 public class LRPTDecoderTest {
@@ -32,7 +32,7 @@ public class LRPTDecoderTest {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/40069-1553411549943.raw.gz");
 		PredictOreKit predict = new PredictOreKit(config);
 		LRPTDecoder decoder = new LRPTDecoder(predict, config);
-		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("decodertests/LRPTDecoderTest.json").getReq());
+		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("decodertests/LRPTDecoderTest.json").getReq());
 		assertEquals(6, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
 		assertNotNull(result.getaPath());
@@ -53,7 +53,7 @@ public class LRPTDecoderTest {
 		}
 		PredictOreKit predict = new PredictOreKit(config);
 		LRPTDecoder decoder = new LRPTDecoder(predict, config);
-		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("decodertests/LRPTDecoderTest.json").getReq());
+		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("decodertests/LRPTDecoderTest.json").getReq());
 		assertEquals(0, result.getNumberOfDecodedPackets().longValue());
 		assertNull(result.getDataPath());
 		assertNull(result.getaPath());

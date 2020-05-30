@@ -12,7 +12,7 @@ import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
-import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.predict.PredictOreKit;
 
 public class Suomi100DecoderTest {
@@ -27,7 +27,7 @@ public class Suomi100DecoderTest {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/suomi.raw.gz");
 		PredictOreKit predict = new PredictOreKit(config);
 		Suomi100Decoder decoder = new Suomi100Decoder(predict, config);
-		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("data/suomi.raw.gz.json").getReq());
+		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/suomi.raw.gz.json").getReq());
 		assertEquals(3, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
 		assertNotNull(result.getIqPath());

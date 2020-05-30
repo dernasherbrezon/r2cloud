@@ -12,7 +12,7 @@ import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
-import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.predict.PredictOreKit;
 
 public class PegasusDecoderTest {
@@ -27,7 +27,7 @@ public class PegasusDecoderTest {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/pegasus.raw.gz");
 		PredictOreKit predict = new PredictOreKit(config);
 		PegasusDecoder decoder = new PegasusDecoder(predict, config);
-		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("data/pegasus.raw.gz.json").getReq());
+		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/pegasus.raw.gz.json").getReq());
 		assertEquals(2, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
 		assertNotNull(result.getIqPath());

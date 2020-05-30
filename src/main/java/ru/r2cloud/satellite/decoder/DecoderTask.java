@@ -7,9 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.cloud.R2ServerService;
-import ru.r2cloud.model.ObservationFull;
+import ru.r2cloud.model.DecoderResult;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.satellite.ObservationResultDao;
 
 public class DecoderTask {
@@ -26,27 +26,35 @@ public class DecoderTask {
 		this.r2cloudService = r2cloudService;
 	}
 
-	public void run(File dataFile, ObservationRequest observation) {
-		Decoder decoder = decoders.get(observation.getSatelliteId());
+	public void run(File dataFile, ObservationRequest request) {
+		Decoder decoder = decoders.get(request.getSatelliteId());
 		if (decoder == null) {
-			LOG.error("[{}] unknown decoder for {}", observation.getId(), observation.getSatelliteId());
+			LOG.error("[{}] unknown decoder for {}", request.getId(), request.getSatelliteId());
 			return;
 		}
-		LOG.info("[{}] decoding", observation.getId());
-		ObservationResult result = decoder.decode(dataFile, observation);
-		LOG.info("[{}] decoded", observation.getId());
+		LOG.info("[{}] decoding", request.getId());
+		DecoderResult result = decoder.decode(dataFile, request);
+		LOG.info("[{}] decoded", request.getId());
 		
 		if (result.getDataPath() != null) {
-			result.setDataPath(dao.saveData(observation.getSatelliteId(), observation.getId(), result.getDataPath()));
+			result.setDataPath(dao.saveData(request.getSatelliteId(), request.getId(), result.getDataPath()));
 		}
 		if (result.getaPath() != null) {
-			result.setaPath(dao.saveImage(observation.getSatelliteId(), observation.getId(), result.getaPath()));
+			result.setaPath(dao.saveImage(request.getSatelliteId(), request.getId(), result.getaPath()));
 		}
 		
-		ObservationFull full = dao.find(observation.getSatelliteId(), observation.getId());
-		full.setResult(result);
-		dao.update(full);
-		r2cloudService.uploadObservation(full);		
+		Observation observation = dao.find(request.getSatelliteId(), request.getId());
+		observation.setWavPath(result.getWavPath());
+		observation.setIqPath(result.getIqPath());
+		observation.setGain(result.getGain());
+		observation.setChannelA(result.getChannelA());
+		observation.setChannelB(result.getChannelB());
+		observation.setNumberOfDecodedPackets(result.getNumberOfDecodedPackets());
+		observation.setaPath(result.getaPath());
+		observation.setDataPath(result.getDataPath());
+		
+		dao.update(observation);
+		r2cloudService.uploadObservation(observation);		
 	}
 
 }

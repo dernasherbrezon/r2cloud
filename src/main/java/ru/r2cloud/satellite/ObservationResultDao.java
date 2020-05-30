@@ -17,9 +17,8 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.FilenameComparator;
-import ru.r2cloud.model.ObservationFull;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -40,7 +39,7 @@ public class ObservationResultDao {
 		this.maxCount = config.getInteger("scheduler.data.retention.count");
 	}
 
-	public List<ObservationFull> findAllBySatelliteId(String satelliteId) {
+	public List<Observation> findAllBySatelliteId(String satelliteId) {
 		Path dataRoot = basepath.resolve(satelliteId).resolve("data");
 		if (!Files.exists(dataRoot)) {
 			return Collections.emptyList();
@@ -53,9 +52,9 @@ public class ObservationResultDao {
 			return Collections.emptyList();
 		}
 		Collections.sort(observations, FilenameComparator.INSTANCE_DESC);
-		List<ObservationFull> result = new ArrayList<>(observations.size());
+		List<Observation> result = new ArrayList<>(observations.size());
 		for (Path curDirectory : observations) {
-			ObservationFull cur = find(satelliteId, curDirectory);
+			Observation cur = find(satelliteId, curDirectory);
 			// some directories might be corrupted
 			if (cur == null) {
 				continue;
@@ -65,7 +64,7 @@ public class ObservationResultDao {
 		return result;
 	}
 
-	public ObservationFull find(String satelliteId, String observationId) {
+	public Observation find(String satelliteId, String observationId) {
 		Path baseDirectory = basepath.resolve(satelliteId).resolve("data").resolve(observationId);
 		if (!Files.exists(baseDirectory)) {
 			return null;
@@ -73,44 +72,42 @@ public class ObservationResultDao {
 		return find(satelliteId, baseDirectory);
 	}
 
-	private static ObservationFull find(String satelliteId, Path curDirectory) {
+	private static Observation find(String satelliteId, Path curDirectory) {
 		Path dest = curDirectory.resolve("meta.json");
 		if (!Files.exists(dest)) {
 			return null;
 		}
-		ObservationFull full;
+		Observation full;
 		try (BufferedReader r = Files.newBufferedReader(dest)) {
 			JsonObject meta = Json.parse(r).asObject();
-			full = ObservationFull.fromJson(meta);
+			full = Observation.fromJson(meta);
 		} catch (Exception e) {
 			LOG.error("unable to load meta", e);
 			return null;
 		}
 
-		ObservationResult result = full.getResult();
-
 		Path a = curDirectory.resolve("a.jpg");
 		if (Files.exists(a)) {
-			result.setaPath(a.toFile());
-			result.setaURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getReq().getId() + "/a.jpg");
+			full.setaPath(a.toFile());
+			full.setaURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/a.jpg");
 		}
 		Path data = curDirectory.resolve("data.bin");
 		if (Files.exists(data)) {
-			result.setDataPath(data.toFile());
-			result.setDataURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getReq().getId() + "/data.bin");
+			full.setDataPath(data.toFile());
+			full.setDataURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/data.bin");
 		}
 		Path wav = curDirectory.resolve(OUTPUT_WAV_FILENAME);
 		if (Files.exists(wav)) {
-			result.setWavPath(wav.toFile());
+			full.setWavPath(wav.toFile());
 		}
 		Path tarGz = curDirectory.resolve(OUTPUT_RAW_FILENAME);
 		if (Files.exists(tarGz)) {
-			result.setIqPath(tarGz.toFile());
+			full.setIqPath(tarGz.toFile());
 		}
 		Path spectogram = curDirectory.resolve(SPECTOGRAM_FILENAME);
 		if (Files.exists(spectogram)) {
-			result.setSpectogramPath(spectogram.toFile());
-			result.setSpectogramURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getReq().getId() + "/" + SPECTOGRAM_FILENAME);
+			full.setSpectogramPath(spectogram.toFile());
+			full.setSpectogramURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + SPECTOGRAM_FILENAME);
 		}
 
 		return full;
@@ -170,7 +167,7 @@ public class ObservationResultDao {
 			return null;
 		}
 
-		ObservationFull full = new ObservationFull(observation);
+		Observation full = new Observation(observation);
 		if (!update(full)) {
 			return null;
 		}
@@ -200,9 +197,9 @@ public class ObservationResultDao {
 		return dest.toFile();
 	}
 
-	public boolean update(ObservationFull cur) {
+	public boolean update(Observation cur) {
 		JsonObject meta = cur.toJson(null);
-		Path dest = getObservationBasepath(cur.getReq()).resolve("meta.json");
+		Path dest = getObservationBasepath(cur).resolve("meta.json");
 		try (BufferedWriter w = Files.newBufferedWriter(dest)) {
 			w.append(meta.toString());
 			return true;
@@ -210,6 +207,10 @@ public class ObservationResultDao {
 			LOG.error("unable to write meta", e);
 			return false;
 		}
+	}
+
+	private Path getObservationBasepath(Observation observation) {
+		return getObservationBasepath(observation.getSatelliteId(), observation.getId());
 	}
 
 	private Path getObservationBasepath(ObservationRequest observation) {

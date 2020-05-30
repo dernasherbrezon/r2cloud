@@ -14,7 +14,7 @@ import com.eclipsesource.json.JsonValue;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconInputStream;
-import ru.r2cloud.model.ObservationFull;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.satellite.ObservationResultDao;
 import ru.r2cloud.satellite.decoder.Decoder;
 import ru.r2cloud.satellite.decoder.TelemetryDecoder;
@@ -58,17 +58,17 @@ public class ObservationLoad extends AbstractHttpController {
 			return new BadRequest(errors);
 		}
 
-		ObservationFull entity = resultDao.find(satelliteId, id);
+		Observation entity = resultDao.find(satelliteId, id);
 		if (entity == null) {
 			LOG.info("not found: {} id: {}", satelliteId, id);
 			return new NotFound();
 		}
 		JsonObject json = entity.toJson(signed);
-		if (entity.getResult().getDataPath() != null) {
-			Decoder decoder = decoders.get(entity.getReq().getSatelliteId());
+		if (entity.getDataPath() != null) {
+			Decoder decoder = decoders.get(entity.getSatelliteId());
 			if (decoder instanceof TelemetryDecoder) {
 				TelemetryDecoder telemetryDecoder = (TelemetryDecoder) decoder;
-				try (BeaconInputStream<?> ais = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(entity.getResult().getDataPath())), telemetryDecoder.getBeaconClass())) {
+				try (BeaconInputStream<?> ais = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(entity.getDataPath())), telemetryDecoder.getBeaconClass())) {
 					JsonArray data = new JsonArray();
 					while (ais.hasNext()) {
 						data.add(convert(ais.next()));

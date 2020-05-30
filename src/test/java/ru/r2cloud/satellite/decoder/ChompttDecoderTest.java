@@ -12,7 +12,7 @@ import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
-import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.predict.PredictOreKit;
 
 public class ChompttDecoderTest {
@@ -27,7 +27,7 @@ public class ChompttDecoderTest {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/chomptt.raw.gz");
 		PredictOreKit predict = new PredictOreKit(config);
 		ChompttDecoder decoder = new ChompttDecoder(predict, config);
-		ObservationResult result = decoder.decode(wav, TestUtil.loadObservation("data/chomptt.raw.gz.json").getReq());
+		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/chomptt.raw.gz.json").getReq());
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
 	}

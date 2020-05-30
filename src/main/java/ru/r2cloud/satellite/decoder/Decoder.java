@@ -3,10 +3,10 @@ package ru.r2cloud.satellite.decoder;
 import java.io.File;
 
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.model.DecoderResult;
 
 public interface Decoder {
 
-	ObservationResult decode(final File wavFile, final ObservationRequest request);
+	DecoderResult decode(final File wavFile, final ObservationRequest request);
 
 }

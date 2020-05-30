@@ -21,9 +21,8 @@ import org.orekit.bodies.GeodeticPoint;
 
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.model.FrequencySource;
-import ru.r2cloud.model.ObservationFull;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.ObservationResult;
 import ru.r2cloud.model.Tle;
 
 public class ObservationResultDaoTest {
@@ -51,18 +50,18 @@ public class ObservationResultDaoTest {
 		req.setBandwidth(4_000);
 		req.setGroundStation(createGroundStation());
 		assertNotNull(dao.insert(req, createTempFile("wav")));
-		ObservationFull actual = dao.find(req.getSatelliteId(), req.getId());
-		assertNotNull(actual.getResult().getWavPath());
-		assertEquals(req.getSource(), actual.getReq().getSource());
-		assertNull(actual.getResult().getDataPath());
-		assertNull(actual.getResult().getaPath());
-		assertNull(actual.getResult().getSpectogramPath());
-		assertEquals(1, actual.getReq().getSatelliteFrequency());
-		assertEquals(2, actual.getReq().getActualFrequency());
-		assertEquals(4_000, actual.getReq().getBandwidth());
-		assertEquals(req.getTle(), actual.getReq().getTle());
-		assertEquals(req.getGroundStation().getLatitude(), actual.getReq().getGroundStation().getLatitude(), 0.0);
-		assertEquals(req.getGroundStation().getLongitude(), actual.getReq().getGroundStation().getLongitude(), 0.0);
+		Observation actual = dao.find(req.getSatelliteId(), req.getId());
+		assertNotNull(actual.getWavPath());
+		assertEquals(req.getSource(), actual.getSource());
+		assertNull(actual.getDataPath());
+		assertNull(actual.getaPath());
+		assertNull(actual.getSpectogramPath());
+		assertEquals(1, actual.getSatelliteFrequency());
+		assertEquals(2, actual.getActualFrequency());
+		assertEquals(4_000, actual.getBandwidth());
+		assertEquals(req.getTle(), actual.getTle());
+		assertEquals(req.getGroundStation().getLatitude(), actual.getGroundStation().getLatitude(), 0.0);
+		assertEquals(req.getGroundStation().getLongitude(), actual.getGroundStation().getLongitude(), 0.0);
 
 		assertNotNull(dao.saveData(req.getSatelliteId(), req.getId(), createTempFile("data")));
 
@@ -70,22 +69,20 @@ public class ObservationResultDaoTest {
 
 		assertTrue(dao.saveSpectogram(req.getSatelliteId(), req.getId(), createTempFile("spectogram")));
 		actual = dao.find(req.getSatelliteId(), req.getId());
-		assertNotNull(actual.getResult().getSpectogramPath());
+		assertNotNull(actual.getSpectogramPath());
 
-		ObservationResult res = new ObservationResult();
-		res.setChannelA(UUID.randomUUID().toString());
-		res.setChannelB(UUID.randomUUID().toString());
-		res.setGain(UUID.randomUUID().toString());
-		res.setNumberOfDecodedPackets(1L);
-
-		ObservationFull full = new ObservationFull(req);
-		full.setResult(res);
+		String gain = UUID.randomUUID().toString();
+		Observation full = new Observation(req);
+		full.setChannelA(UUID.randomUUID().toString());
+		full.setChannelB(UUID.randomUUID().toString());
+		full.setGain(gain);
+		full.setNumberOfDecodedPackets(1L);
 		assertTrue(dao.update(full));
 		actual = dao.find(req.getSatelliteId(), req.getId());
-		assertEquals(res.getGain(), actual.getResult().getGain());
-		assertEquals(res.getNumberOfDecodedPackets(), actual.getResult().getNumberOfDecodedPackets());
+		assertEquals(gain, actual.getGain());
+		assertEquals(1, actual.getNumberOfDecodedPackets().longValue());
 
-		List<ObservationFull> all = dao.findAllBySatelliteId(req.getSatelliteId());
+		List<Observation> all = dao.findAllBySatelliteId(req.getSatelliteId());
 		assertEquals(1, all.size());
 	}
 

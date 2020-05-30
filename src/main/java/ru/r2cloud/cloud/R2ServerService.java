@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.eclipsesource.json.JsonArray;
 
 import ru.r2cloud.SpectogramService;
-import ru.r2cloud.model.ObservationFull;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.satellite.ObservationResultDao;
 import ru.r2cloud.util.Configuration;
 
@@ -28,35 +28,35 @@ public class R2ServerService {
 		this.spectogramService = spectogramService;
 	}
 
-	public void uploadObservation(ObservationFull observation) {
+	public void uploadObservation(Observation observation) {
 		String apiKey = config.getProperty("r2cloud.apiKey");
 		if (apiKey == null) {
 			return;
 		}
-		LOG.info("[{}] uploading observation", observation.getReq().getId());
+		LOG.info("[{}] uploading observation", observation.getId());
 		Long id = client.saveMeta(observation);
 		if (id == null) {
 			return;
 		}
-		if (observation.getResult().getDataPath() != null) {
-			client.saveBinary(id, observation.getResult().getDataPath());
-		} else if (observation.getResult().getaPath() != null) {
-			client.saveJpeg(id, observation.getResult().getaPath());
+		if (observation.getDataPath() != null) {
+			client.saveBinary(id, observation.getDataPath());
+		} else if (observation.getaPath() != null) {
+			client.saveJpeg(id, observation.getaPath());
 		}
 		if (config.getBoolean("r2cloud.syncSpectogram")) {
-			if (observation.getResult().getSpectogramPath() == null) {
+			if (observation.getSpectogramPath() == null) {
 				File spectogram = spectogramService.create(observation);
-				if (spectogram != null && !dao.saveSpectogram(observation.getReq().getSatelliteId(), observation.getReq().getId(), spectogram)) {
-					LOG.info("[{}] unable to save spectogram", observation.getReq().getId());
+				if (spectogram != null && !dao.saveSpectogram(observation.getSatelliteId(), observation.getId(), spectogram)) {
+					LOG.info("[{}] unable to save spectogram", observation.getId());
 				}
 			}
 
-			ObservationFull reloadedObservation = dao.find(observation.getReq().getSatelliteId(), observation.getReq().getId());
-			if (reloadedObservation.getResult().getSpectogramPath() != null) {
-				client.saveSpectogram(id, reloadedObservation.getResult().getSpectogramPath());
+			Observation reloadedObservation = dao.find(observation.getSatelliteId(), observation.getId());
+			if (reloadedObservation.getSpectogramPath() != null) {
+				client.saveSpectogram(id, reloadedObservation.getSpectogramPath());
 			}
 		}
-		LOG.info("[{}] observation uploaded", observation.getReq().getId());
+		LOG.info("[{}] observation uploaded", observation.getId());
 	}
 
 	public void saveMetrics(JsonArray metrics) {

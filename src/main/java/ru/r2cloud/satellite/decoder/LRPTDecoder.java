@@ -21,7 +21,7 @@ import ru.r2cloud.jradio.meteor.MeteorImage;
 import ru.r2cloud.jradio.meteor.MeteorM;
 import ru.r2cloud.jradio.meteor.MeteorMN2;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
@@ -39,10 +39,10 @@ public class LRPTDecoder implements Decoder {
 	}
 
 	@Override
-	public ObservationResult decode(final File rawIq, final ObservationRequest req) {
+	public DecoderResult decode(final File rawIq, final ObservationRequest req) {
 		int symbolRate = 72000;
 		MeteorM lrpt = null;
-		ObservationResult result = new ObservationResult();
+		DecoderResult result = new DecoderResult();
 		result.setIqPath(rawIq);
 
 		long numberOfDecodedPackets = 0;

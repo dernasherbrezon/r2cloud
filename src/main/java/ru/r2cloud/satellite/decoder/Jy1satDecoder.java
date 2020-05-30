@@ -19,7 +19,7 @@ import ru.r2cloud.jradio.jy1sat.Jy1sat;
 import ru.r2cloud.jradio.jy1sat.Jy1satBeacon;
 import ru.r2cloud.jradio.jy1sat.Jy1satSsdvPacketSource;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.ObservationResult;
+import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.ssdv.SsdvDecoder;
 import ru.r2cloud.ssdv.SsdvImage;
@@ -34,8 +34,8 @@ public class Jy1satDecoder extends TelemetryDecoder {
 	}
 
 	@Override
-	public ObservationResult decode(File rawIq, ObservationRequest req) {
-		ObservationResult result = super.decode(rawIq, req);
+	public DecoderResult decode(File rawIq, ObservationRequest req) {
+		DecoderResult result = super.decode(rawIq, req);
 		if (result.getDataPath() != null) {
 			try (BeaconInputStream<Jy1satBeacon> bis = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(result.getDataPath())), Jy1satBeacon.class)) {
 				SsdvDecoder decoder = new SsdvDecoder(new Jy1satSsdvPacketSource(bis));
