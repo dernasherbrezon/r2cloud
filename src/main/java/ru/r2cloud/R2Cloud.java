@@ -21,7 +21,7 @@ import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.ObservationFactory;
-import ru.r2cloud.satellite.ObservationResultDao;
+import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.Schedule;
 import ru.r2cloud.satellite.Scheduler;
@@ -125,7 +125,7 @@ public class R2Cloud {
 	private final ObservationFactory observationFactory;
 	private final Clock clock;
 	private final ProcessFactory processFactory;
-	private final ObservationResultDao resultDao;
+	private final ObservationDao resultDao;
 	private final R2ServerService r2cloudService;
 	private final R2ServerClient r2cloudClient;
 	private final SpectogramService spectogramService;
@@ -143,7 +143,7 @@ public class R2Cloud {
 
 		r2cloudClient = new R2ServerClient(props);
 		spectogramService = new SpectogramService(props);
-		resultDao = new ObservationResultDao(props);
+		resultDao = new ObservationDao(props);
 		r2cloudService = new R2ServerService(props, resultDao, r2cloudClient, spectogramService);
 		metrics = new Metrics(props, r2cloudService, clock);
 		predict = new PredictOreKit(props);

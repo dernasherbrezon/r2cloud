@@ -39,7 +39,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private final ThreadPoolFactory threadpoolFactory;
 	private final Clock clock;
 	private final ProcessFactory processFactory;
-	private final ObservationResultDao dao;
+	private final ObservationDao dao;
 	private final DecoderTask decoderTask;
 	private final Schedule<ScheduledObservation> schedule;
 
@@ -47,7 +47,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private ScheduledExecutorService stopThread = null;
 	private ScheduledExecutorService decoderThread = null;
 
-	public Scheduler(Schedule<ScheduledObservation> schedule, Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationResultDao dao, DecoderTask decoderTask) {
+	public Scheduler(Schedule<ScheduledObservation> schedule, Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderTask decoderTask) {
 		this.schedule = schedule;
 		this.config = config;
 		this.config.subscribe(this, "locaiton.lat");

@@ -9,7 +9,7 @@ import com.eclipsesource.json.JsonArray;
 
 import ru.r2cloud.SpectogramService;
 import ru.r2cloud.model.Observation;
-import ru.r2cloud.satellite.ObservationResultDao;
+import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.util.Configuration;
 
 public class R2ServerService {
@@ -17,11 +17,11 @@ public class R2ServerService {
 	private static final Logger LOG = LoggerFactory.getLogger(R2ServerService.class);
 
 	private final Configuration config;
-	private final ObservationResultDao dao;
+	private final ObservationDao dao;
 	private final R2ServerClient client;
 	private final SpectogramService spectogramService;
 
-	public R2ServerService(Configuration config, ObservationResultDao dao, R2ServerClient client, SpectogramService spectogramService) {
+	public R2ServerService(Configuration config, ObservationDao dao, R2ServerClient client, SpectogramService spectogramService) {
 		this.config = config;
 		this.dao = dao;
 		this.client = client;

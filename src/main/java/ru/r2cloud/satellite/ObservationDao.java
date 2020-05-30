@@ -22,19 +22,19 @@ import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
-public class ObservationResultDao {
+public class ObservationDao {
 
 	private static final String DEST_ALREADY_EXIST_MESSAGE = "unable to save. dest already exist: {}";
 	private static final String SPECTOGRAM_FILENAME = "spectogram.png";
 	private static final String OUTPUT_WAV_FILENAME = "output.wav";
 	private static final String OUTPUT_RAW_FILENAME = "output.raw.gz";
 
-	private static final Logger LOG = LoggerFactory.getLogger(ObservationResultDao.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ObservationDao.class);
 
 	private final Path basepath;
 	private final Integer maxCount;
 
-	public ObservationResultDao(Configuration config) {
+	public ObservationDao(Configuration config) {
 		this.basepath = config.getSatellitesBasePath();
 		this.maxCount = config.getInteger("scheduler.data.retention.count");
 	}

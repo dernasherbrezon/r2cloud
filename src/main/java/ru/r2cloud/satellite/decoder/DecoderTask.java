@@ -10,17 +10,17 @@ import ru.r2cloud.cloud.R2ServerService;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.satellite.ObservationResultDao;
+import ru.r2cloud.satellite.ObservationDao;
 
 public class DecoderTask {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(DecoderTask.class);
 
 	private final Map<String, Decoder> decoders;
-	private final ObservationResultDao dao;
+	private final ObservationDao dao;
 	private final R2ServerService r2cloudService;
 
-	public DecoderTask(Map<String, Decoder> decoders, ObservationResultDao dao, R2ServerService r2cloudService) {
+	public DecoderTask(Map<String, Decoder> decoders, ObservationDao dao, R2ServerService r2cloudService) {
 		this.decoders = decoders;
 		this.dao = dao;
 		this.r2cloudService = r2cloudService;

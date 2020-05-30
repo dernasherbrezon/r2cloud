@@ -15,7 +15,7 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.model.Observation;
-import ru.r2cloud.satellite.ObservationResultDao;
+import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.decoder.Decoder;
 import ru.r2cloud.satellite.decoder.TelemetryDecoder;
 import ru.r2cloud.util.SignedURL;
@@ -32,11 +32,11 @@ public class ObservationLoad extends AbstractHttpController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationLoad.class);
 
-	private final ObservationResultDao resultDao;
+	private final ObservationDao resultDao;
 	private final SignedURL signed;
 	private final Map<String, Decoder> decoders;
 
-	public ObservationLoad(ObservationResultDao resultDao, SignedURL signed, Map<String, Decoder> decoders) {
+	public ObservationLoad(ObservationDao resultDao, SignedURL signed, Map<String, Decoder> decoders) {
 		this.resultDao = resultDao;
 		this.signed = signed;
 		this.decoders = decoders;

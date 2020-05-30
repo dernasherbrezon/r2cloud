@@ -25,13 +25,13 @@ import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Tle;
 
-public class ObservationResultDaoTest {
+public class ObservationDaoTest {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private TestConfiguration config;
-	private ObservationResultDao dao;
+	private ObservationDao dao;
 
 	@Test
 	public void testCrud() throws Exception {
@@ -109,6 +109,6 @@ public class ObservationResultDaoTest {
 		config.setProperty("satellites.basepath.location", tempFolder.getRoot().getAbsolutePath());
 		config.update();
 
-		dao = new ObservationResultDao(config);
+		dao = new ObservationDao(config);
 	}
 }

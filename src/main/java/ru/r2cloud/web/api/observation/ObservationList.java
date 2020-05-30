@@ -11,7 +11,7 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.ObservationFullComparator;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Satellite;
-import ru.r2cloud.satellite.ObservationResultDao;
+import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
@@ -19,9 +19,9 @@ import ru.r2cloud.web.ModelAndView;
 public class ObservationList extends AbstractHttpController {
 
 	private final SatelliteDao dao;
-	private final ObservationResultDao resultDao;
+	private final ObservationDao resultDao;
 
-	public ObservationList(SatelliteDao dao, ObservationResultDao resultDao) {
+	public ObservationList(SatelliteDao dao, ObservationDao resultDao) {
 		this.dao = dao;
 		this.resultDao = resultDao;
 	}
