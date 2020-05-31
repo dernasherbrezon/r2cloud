@@ -20,8 +20,8 @@ import ru.r2cloud.jradio.fox.Fox1DBeacon;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.predict.PredictOreKit;
-import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.ObservationDao;
+import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.Schedule;
 import ru.r2cloud.satellite.Scheduler;
@@ -33,7 +33,7 @@ import ru.r2cloud.satellite.decoder.AstrocastDecoder;
 import ru.r2cloud.satellite.decoder.Atl1Decoder;
 import ru.r2cloud.satellite.decoder.ChompttDecoder;
 import ru.r2cloud.satellite.decoder.Decoder;
-import ru.r2cloud.satellite.decoder.DecoderTask;
+import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.decoder.DelfiC3Decoder;
 import ru.r2cloud.satellite.decoder.Dstar1Decoder;
 import ru.r2cloud.satellite.decoder.EseoDecoder;
@@ -118,6 +118,7 @@ public class R2Cloud {
 	private final SatelliteDao satelliteDao;
 	private final TLEDao tleDao;
 	private final TLEReloader tleReloader;
+	private final DecoderService decoderService;
 	private final Scheduler scheduler;
 	private final RtlSdrLock rtlsdrLock;
 	private final PredictOreKit predict;
@@ -202,10 +203,10 @@ public class R2Cloud {
 		decoders.put("43855", new ChompttDecoder(predict, props));
 
 		validateDecoders();
-		DecoderTask decoderTask = new DecoderTask(decoders, resultDao, r2cloudService);
+		decoderService = new DecoderService(props, decoders, resultDao, r2cloudService, threadFactory);
 
 		observationFactory = new ObservationFactory(predict, tleDao);
-		scheduler = new Scheduler(new Schedule<>(), props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, processFactory, resultDao, decoderTask);
+		scheduler = new Scheduler(new Schedule<>(), props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, processFactory, resultDao, decoderService);
 
 		// setup web server
 		index(new Health());
@@ -237,6 +238,7 @@ public class R2Cloud {
 		rtlsdrStatusDao.start();
 		tleDao.start();
 		tleReloader.start();
+		decoderService.start();
 		// scheduler should start after tle (it uses TLE to schedule
 		// observations)
 		scheduler.start();
@@ -251,6 +253,7 @@ public class R2Cloud {
 		webServer.stop();
 		metrics.stop();
 		scheduler.stop();
+		decoderService.stop();
 		tleReloader.stop();
 		tleDao.stop();
 		rtlsdrStatusDao.stop();

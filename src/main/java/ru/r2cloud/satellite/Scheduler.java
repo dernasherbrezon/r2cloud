@@ -16,7 +16,7 @@ import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
-import ru.r2cloud.satellite.decoder.DecoderTask;
+import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.reader.IQReader;
 import ru.r2cloud.satellite.reader.RtlFmReader;
 import ru.r2cloud.satellite.reader.RtlSdrReader;
@@ -25,6 +25,7 @@ import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
 import ru.r2cloud.util.ProcessFactory;
+import ru.r2cloud.util.SafeRunnable;
 import ru.r2cloud.util.ThreadPoolFactory;
 import ru.r2cloud.util.Util;
 
@@ -40,14 +41,13 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private final Clock clock;
 	private final ProcessFactory processFactory;
 	private final ObservationDao dao;
-	private final DecoderTask decoderTask;
+	private final DecoderService decoderTask;
 	private final Schedule<ScheduledObservation> schedule;
 
 	private ScheduledExecutorService startThread = null;
 	private ScheduledExecutorService stopThread = null;
-	private ScheduledExecutorService decoderThread = null;
 
-	public Scheduler(Schedule<ScheduledObservation> schedule, Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderTask decoderTask) {
+	public Scheduler(Schedule<ScheduledObservation> schedule, Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderService decoderTask) {
 		this.schedule = schedule;
 		this.config = config;
 		this.config.subscribe(this, "locaiton.lat");
@@ -96,7 +96,6 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		}
 		startThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("sch-start"));
 		stopThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("sch-stop"));
-		decoderThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("decoder"));
 		onConfigUpdated();
 
 		LOG.info("started");
@@ -106,12 +105,12 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		long current = clock.millis();
 		return schedule(cur, immediately, current);
 	}
-	
+
 	private ObservationRequest scheduleNext(Satellite cur, ObservationRequest previous) {
 		// add 1 second just in case
 		return schedule(cur, false, previous.getEndTimeMillis() + 1000);
 	}
-	
+
 	private ObservationRequest schedule(Satellite cur, boolean immediately, long current) {
 		ObservationRequest observation = create(current, cur, immediately);
 		if (observation == null) {
@@ -119,10 +118,10 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		}
 		LOG.info("scheduled next pass for {}. start: {} end: {}", cur.getId(), new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
 		IQReader reader = createReader(observation);
-		Runnable readTask = new Runnable() {
+		Runnable readTask = new SafeRunnable() {
 
 			@Override
-			public void run() {
+			public void safeRun() {
 				if (clock.millis() > observation.getEndTimeMillis()) {
 					LOG.info("[{}] observation time passed. skip {}", observation.getId(), cur.getId());
 					scheduleNext(cur, observation);
@@ -162,13 +161,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 						return;
 					}
 
-					decoderThread.execute(new Runnable() {
-
-						@Override
-						public void run() {
-							decoderTask.run(dataFile, observation);
-						}
-					});
+					decoderTask.run(dataFile, observation);
 				}
 
 			}
@@ -178,10 +171,10 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				return null;
 			}
 			Future<?> startFuture = startThread.schedule(readTask, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
-			Runnable stopRtlSdrTask = new Runnable() {
+			Runnable stopRtlSdrTask = new SafeRunnable() {
 
 				@Override
-				public void run() {
+				public void safeRun() {
 					reader.complete();
 				}
 			};
@@ -237,7 +230,6 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	public synchronized void stop() {
 		Util.shutdown(startThread, config.getThreadPoolShutdownMillis());
 		Util.shutdown(stopThread, config.getThreadPoolShutdownMillis());
-		Util.shutdown(decoderThread, config.getThreadPoolShutdownMillis());
 		startThread = null;
 		LOG.info("stopped");
 	}
