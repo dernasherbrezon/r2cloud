@@ -44,10 +44,9 @@ public class R2ServerService {
 		} else if (observation.getImagePath() != null) {
 			client.saveJpeg(id, observation.getImagePath());
 		}
-		// update status to UPLOADED even if spectogram not
-		// in case of failure spectogram is not necessary to upload
-		// + I'm a bit lazy to introduce new status: SPECTOGRAM_UPLOADED
-		// FIXME check the real response code from client.save* and update status based on it
+		// update status to UPLOADED even if data or spectogram not
+		// in future UPLOADED might be split into UPLOADED_META, UPLOADED_DATA, UPLOADED_SPECTOGRAM
+		// right now, this seems too complicated
 		observation.setStatus(ObservationStatus.UPLOADED);
 		dao.update(observation);
 
