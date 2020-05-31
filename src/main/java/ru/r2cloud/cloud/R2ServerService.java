@@ -41,8 +41,8 @@ public class R2ServerService {
 		}
 		if (observation.getDataPath() != null) {
 			client.saveBinary(id, observation.getDataPath());
-		} else if (observation.getaPath() != null) {
-			client.saveJpeg(id, observation.getaPath());
+		} else if (observation.getImagePath() != null) {
+			client.saveJpeg(id, observation.getImagePath());
 		}
 		// update status to UPLOADED even if spectogram not
 		// in case of failure spectogram is not necessary to upload

@@ -63,7 +63,7 @@ public class APTDecoder implements Decoder {
 			tis.start();
 			process.waitFor();
 			if (convert(result, lines)) {
-				result.setaPath(image);
+				result.setImagePath(image);
 			} else {
 				Util.deleteQuietly(image);
 			}

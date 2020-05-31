@@ -83,7 +83,7 @@ public class FoxDecoder<T extends Beacon> extends FoxSlowDecoder<T> {
 					}
 					File imageFile = saveImage("fox1d-" + req.getId() + ".jpg", cur);
 					if (imageFile != null) {
-						result.setaPath(imageFile);
+						result.setImagePath(imageFile);
 						// interested only in the first image
 						break;
 					}

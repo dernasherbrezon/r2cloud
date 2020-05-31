@@ -11,7 +11,7 @@ public class DecoderResult {
 	private String channelB;
 	private Long numberOfDecodedPackets = 0L;
 
-	private File aPath;
+	private File imagePath;
 	private File dataPath;
 
 	public File getRawPath() {
@@ -54,12 +54,12 @@ public class DecoderResult {
 		this.numberOfDecodedPackets = numberOfDecodedPackets;
 	}
 
-	public File getaPath() {
-		return aPath;
+	public File getImagePath() {
+		return imagePath;
 	}
 
-	public void setaPath(File aPath) {
-		this.aPath = aPath;
+	public void setImagePath(File imagePath) {
+		this.imagePath = imagePath;
 	}
 
 	public File getDataPath() {

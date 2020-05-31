@@ -55,7 +55,7 @@ public class ObservationDaoTest {
 		assertNotNull(actual.getRawPath());
 		assertEquals(req.getSource(), actual.getSource());
 		assertNull(actual.getDataPath());
-		assertNull(actual.getaPath());
+		assertNull(actual.getImagePath());
 		assertNull(actual.getSpectogramPath());
 		assertEquals(1, actual.getSatelliteFrequency());
 		assertEquals(2, actual.getActualFrequency());

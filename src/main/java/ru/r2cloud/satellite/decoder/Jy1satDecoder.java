@@ -42,7 +42,7 @@ public class Jy1satDecoder extends TelemetryDecoder {
 				while (decoder.hasNext()) {
 					File imageFile = saveImage("ssdv-" + req.getId() + ".jpg", decoder.next());
 					if (imageFile != null) {
-						result.setaPath(imageFile);
+						result.setImagePath(imageFile);
 						// interested only in the first image
 						break;
 					}

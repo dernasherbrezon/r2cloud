@@ -30,7 +30,7 @@ public class Jy1satDecoderTest {
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/jy1sat.raw.gz.json").getReq());
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
-		assertNotNull(result.getaPath());
+		assertNotNull(result.getImagePath());
 		assertNotNull(result.getRawPath());
 	}
 

@@ -74,21 +74,21 @@ public class DecoderService implements Lifecycle {
 		});
 	}
 
-	private void runInternally(File dataFile, ObservationRequest request) {
+	private void runInternally(File rawFile, ObservationRequest request) {
 		Decoder decoder = decoders.get(request.getSatelliteId());
 		if (decoder == null) {
 			LOG.error("[{}] unknown decoder for {}", request.getId(), request.getSatelliteId());
 			return;
 		}
 		LOG.info("[{}] decoding", request.getId());
-		DecoderResult result = decoder.decode(dataFile, request);
+		DecoderResult result = decoder.decode(rawFile, request);
 		LOG.info("[{}] decoded", request.getId());
 
 		if (result.getDataPath() != null) {
 			result.setDataPath(dao.saveData(request.getSatelliteId(), request.getId(), result.getDataPath()));
 		}
-		if (result.getaPath() != null) {
-			result.setaPath(dao.saveImage(request.getSatelliteId(), request.getId(), result.getaPath()));
+		if (result.getImagePath() != null) {
+			result.setImagePath(dao.saveImage(request.getSatelliteId(), request.getId(), result.getImagePath()));
 		}
 
 		Observation observation = dao.find(request.getSatelliteId(), request.getId());
@@ -97,7 +97,7 @@ public class DecoderService implements Lifecycle {
 		observation.setChannelA(result.getChannelA());
 		observation.setChannelB(result.getChannelB());
 		observation.setNumberOfDecodedPackets(result.getNumberOfDecodedPackets());
-		observation.setaPath(result.getaPath());
+		observation.setImagePath(result.getImagePath());
 		observation.setDataPath(result.getDataPath());
 		observation.setStatus(ObservationStatus.DECODED);
 

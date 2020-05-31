@@ -37,7 +37,7 @@ public class Observation {
 	private Long numberOfDecodedPackets = 0L;
 
 	private String aURL;
-	private File aPath;
+	private File imagePath;
 
 	private String spectogramURL;
 	private File spectogramPath;
@@ -235,12 +235,12 @@ public class Observation {
 		this.aURL = aURL;
 	}
 
-	public File getaPath() {
-		return aPath;
+	public File getImagePath() {
+		return imagePath;
 	}
 
-	public void setaPath(File aPath) {
-		this.aPath = aPath;
+	public void setImagePath(File imagePath) {
+		this.imagePath = imagePath;
 	}
 
 	public String getSpectogramURL() {

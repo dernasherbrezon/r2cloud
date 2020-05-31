@@ -102,7 +102,7 @@ public class ObservationDao {
 
 		Path a = curDirectory.resolve("a.jpg");
 		if (Files.exists(a)) {
-			full.setaPath(a.toFile());
+			full.setImagePath(a.toFile());
 			full.setaURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/a.jpg");
 		}
 		Path data = curDirectory.resolve("data.bin");

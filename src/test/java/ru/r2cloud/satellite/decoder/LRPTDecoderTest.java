@@ -35,7 +35,7 @@ public class LRPTDecoderTest {
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("decodertests/LRPTDecoderTest.json").getReq());
 		assertEquals(6, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
-		assertNotNull(result.getaPath());
+		assertNotNull(result.getImagePath());
 		assertNotNull(result.getRawPath());
 	}
 
@@ -56,7 +56,7 @@ public class LRPTDecoderTest {
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("decodertests/LRPTDecoderTest.json").getReq());
 		assertEquals(0, result.getNumberOfDecodedPackets().longValue());
 		assertNull(result.getDataPath());
-		assertNull(result.getaPath());
+		assertNull(result.getImagePath());
 		assertNotNull(result.getRawPath());
 	}
 

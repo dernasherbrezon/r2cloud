@@ -75,7 +75,7 @@ public class LRPTDecoder implements Decoder {
 				if (actual != null) {
 					File imageFile = new File(config.getTempDirectory(), "lrpt-" + req.getId() + ".jpg");
 					ImageIO.write(actual, "jpg", imageFile);
-					result.setaPath(imageFile);
+					result.setImagePath(imageFile);
 				}
 			} catch (IOException e) {
 				LOG.error("unable to generate image", e);
