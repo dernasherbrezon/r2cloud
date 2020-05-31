@@ -4,8 +4,7 @@ import java.io.File;
 
 public class DecoderResult {
 
-	private File wavPath;
-	private File iqPath;
+	private File rawPath;
 
 	private String gain;
 	private String channelA;
@@ -15,20 +14,12 @@ public class DecoderResult {
 	private File aPath;
 	private File dataPath;
 
-	public File getIqPath() {
-		return iqPath;
+	public File getRawPath() {
+		return rawPath;
 	}
-
-	public void setIqPath(File iqPath) {
-		this.iqPath = iqPath;
-	}
-
-	public File getWavPath() {
-		return wavPath;
-	}
-
-	public void setWavPath(File wavPath) {
-		this.wavPath = wavPath;
+	
+	public void setRawPath(File rawPath) {
+		this.rawPath = rawPath;
 	}
 
 	public String getGain() {

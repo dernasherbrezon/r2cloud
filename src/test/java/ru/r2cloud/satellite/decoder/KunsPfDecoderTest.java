@@ -30,7 +30,7 @@ public class KunsPfDecoderTest {
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/1kuns-pf.raw.gz.json").getReq());
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
-		assertNotNull(result.getIqPath());
+		assertNotNull(result.getRawPath());
 	}
 
 	@Before

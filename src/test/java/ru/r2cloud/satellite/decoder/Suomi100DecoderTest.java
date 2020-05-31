@@ -30,7 +30,7 @@ public class Suomi100DecoderTest {
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/suomi.raw.gz.json").getReq());
 		assertEquals(3, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
-		assertNotNull(result.getIqPath());
+		assertNotNull(result.getRawPath());
 	}
 
 	@Before

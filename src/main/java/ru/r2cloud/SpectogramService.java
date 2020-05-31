@@ -35,12 +35,14 @@ public class SpectogramService {
 		if (observation == null) {
 			return null;
 		}
-		if (observation.getWavPath() != null) {
-			return createFromWav(observation.getWavPath());
-		} else if (observation.getIqPath() != null) {
-			return createFromIq(observation.getIqPath(), observation.getInputSampleRate());
+		if (observation.getRawPath() == null) {
+			return null;
 		}
-		return null;
+		if (observation.getRawPath().getName().endsWith(".wav")) {
+			return createFromWav(observation.getRawPath());
+		} else {
+			return createFromIq(observation.getRawPath(), observation.getInputSampleRate());
+		}
 	}
 
 	private File createFromWav(File file) {

@@ -29,8 +29,7 @@ public class Observation {
 	private long actualFrequency;
 
 	// observation status
-	private File wavPath;
-	private File iqPath;
+	private File rawPath;
 
 	private String gain;
 	private String channelA;
@@ -188,20 +187,12 @@ public class Observation {
 		this.actualFrequency = actualFrequency;
 	}
 
-	public File getWavPath() {
-		return wavPath;
+	public File getRawPath() {
+		return rawPath;
 	}
 
-	public void setWavPath(File wavPath) {
-		this.wavPath = wavPath;
-	}
-
-	public File getIqPath() {
-		return iqPath;
-	}
-
-	public void setIqPath(File iqPath) {
-		this.iqPath = iqPath;
+	public void setRawPath(File rawPath) {
+		this.rawPath = rawPath;
 	}
 
 	public String getGain() {
@@ -320,6 +311,8 @@ public class Observation {
 		String statusStr = meta.getString("status", null);
 		if (statusStr != null) {
 			result.setStatus(ObservationStatus.valueOf(statusStr));
+		} else {
+			result.setStatus(ObservationStatus.UPLOADED);
 		}
 		return result;
 	}
@@ -378,6 +371,7 @@ public class Observation {
 		}
 		ObservationStatus status = getStatus();
 		if (status == null) {
+			// this would avoid double upload/decode of old observations
 			status = ObservationStatus.UPLOADED;
 		}
 		json.add("status", status.name());
@@ -399,10 +393,6 @@ public class Observation {
 
 	public boolean hasData() {
 		return aURL != null || dataURL != null;
-	}
-
-	public boolean hasRawFile() {
-		return wavPath != null || iqPath != null;
 	}
 
 }

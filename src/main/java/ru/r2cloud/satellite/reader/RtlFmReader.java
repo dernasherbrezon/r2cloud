@@ -71,7 +71,7 @@ public class RtlFmReader implements IQReader {
 		IQData result = new IQData();
 
 		if (wavPath.exists()) {
-			result.setWavFile(wavPath);
+			result.setDataFile(wavPath);
 		}
 		if (startTimeMillis != null) {
 			result.setActualStart(startTimeMillis);

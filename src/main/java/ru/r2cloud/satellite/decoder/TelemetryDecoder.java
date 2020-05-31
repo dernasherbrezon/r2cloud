@@ -34,7 +34,7 @@ public abstract class TelemetryDecoder implements Decoder {
 	@Override
 	public DecoderResult decode(File rawIq, ObservationRequest req) {
 		DecoderResult result = new DecoderResult();
-		result.setIqPath(rawIq);
+		result.setRawPath(rawIq);
 
 		long numberOfDecodedPackets = 0;
 		float sampleRate = req.getInputSampleRate();

@@ -127,7 +127,7 @@ public class R2ServerClientTest {
 		JsonHttpResponse handler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
 		server.setDataMock(id, handler);
 		client.saveBinary(id, new File(tempFolder.getRoot(), UUID.randomUUID().toString()));
-		handler.awaitRequest();
+		handler.awaitRequestSilently();
 		assertNull(handler.getRequest());
 	}
 

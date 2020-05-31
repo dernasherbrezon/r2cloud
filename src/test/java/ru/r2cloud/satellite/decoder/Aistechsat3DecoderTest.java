@@ -30,7 +30,7 @@ public class Aistechsat3DecoderTest {
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/aistechsat3.raw.gz.json").getReq());
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
-		assertNotNull(result.getIqPath());
+		assertNotNull(result.getRawPath());
 	}
 
 	@Before

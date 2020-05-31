@@ -30,7 +30,7 @@ public class PegasusDecoderTest {
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/pegasus.raw.gz.json").getReq());
 		assertEquals(2, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
-		assertNotNull(result.getIqPath());
+		assertNotNull(result.getRawPath());
 	}
 
 	@Before

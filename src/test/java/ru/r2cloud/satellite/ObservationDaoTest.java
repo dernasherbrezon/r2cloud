@@ -52,7 +52,7 @@ public class ObservationDaoTest {
 		req.setGroundStation(createGroundStation());
 		assertNotNull(dao.insert(req, createTempFile("wav")));
 		Observation actual = dao.find(req.getSatelliteId(), req.getId());
-		assertNotNull(actual.getWavPath());
+		assertNotNull(actual.getRawPath());
 		assertEquals(req.getSource(), actual.getSource());
 		assertNull(actual.getDataPath());
 		assertNull(actual.getaPath());

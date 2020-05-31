@@ -56,7 +56,7 @@ public class ObservationSpectrogram extends AbstractHttpController {
 			return new NotFound();
 		}
 
-		if (!observation.hasRawFile()) {
+		if (observation.getRawPath() == null) {
 			LOG.info("data file not found");
 			return new NotFound();
 		}

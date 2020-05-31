@@ -30,7 +30,7 @@ public class Atl1DecoderTest {
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/atl1.raw.gz.json").getReq());
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
-		assertNotNull(result.getIqPath());
+		assertNotNull(result.getRawPath());
 	}
 
 	@Before

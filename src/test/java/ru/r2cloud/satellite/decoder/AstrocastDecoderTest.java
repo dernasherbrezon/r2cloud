@@ -30,7 +30,7 @@ public class AstrocastDecoderTest {
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/astrocast.raw.gz.json").getReq());
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
-		assertNotNull(result.getIqPath());
+		assertNotNull(result.getRawPath());
 	}
 
 	@Before

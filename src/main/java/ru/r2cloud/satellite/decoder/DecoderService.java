@@ -1,6 +1,7 @@
 package ru.r2cloud.satellite.decoder;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -16,6 +17,7 @@ import ru.r2cloud.model.ObservationStatus;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
+import ru.r2cloud.util.SafeRunnable;
 import ru.r2cloud.util.ThreadPoolFactory;
 import ru.r2cloud.util.Util;
 
@@ -42,13 +44,31 @@ public class DecoderService implements Lifecycle {
 	@Override
 	public synchronized void start() {
 		decoderThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("decoder"));
+		List<Observation> all = dao.findAll();
+		String apiKey = config.getProperty("r2cloud.apiKey");
+		for (Observation cur : all) {
+			if (cur.getStatus().equals(ObservationStatus.NEW)) {
+				LOG.info("resuming decoding: {}", cur.getId());
+				run(cur.getRawPath(), cur.getReq());
+			}
+			if (apiKey != null && cur.getStatus().equals(ObservationStatus.DECODED)) {
+				LOG.info("resume uploading: {}", cur.getId());
+				decoderThread.execute(new SafeRunnable() {
+
+					@Override
+					public void safeRun() {
+						r2cloudService.uploadObservation(cur);
+					}
+				});
+			}
+		}
 	}
 
 	public void run(File dataFile, ObservationRequest request) {
-		decoderThread.execute(new Runnable() {
+		decoderThread.execute(new SafeRunnable() {
 
 			@Override
-			public void run() {
+			public void safeRun() {
 				runInternally(dataFile, request);
 			}
 		});
@@ -72,8 +92,7 @@ public class DecoderService implements Lifecycle {
 		}
 
 		Observation observation = dao.find(request.getSatelliteId(), request.getId());
-		observation.setWavPath(result.getWavPath());
-		observation.setIqPath(result.getIqPath());
+		observation.setRawPath(result.getRawPath());
 		observation.setGain(result.getGain());
 		observation.setChannelA(result.getChannelA());
 		observation.setChannelB(result.getChannelB());

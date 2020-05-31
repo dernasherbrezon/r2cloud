@@ -61,7 +61,7 @@ public class RtlSdrReader implements IQReader {
 		result.setActualEnd(endTimeMillis);
 
 		if (rawFile.exists()) {
-			result.setIqFile(rawFile);
+			result.setDataFile(rawFile);
 		}
 		return result;
 	}

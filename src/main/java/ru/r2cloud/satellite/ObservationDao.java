@@ -40,6 +40,19 @@ public class ObservationDao {
 		this.maxCount = config.getInteger("scheduler.data.retention.count");
 	}
 
+	public List<Observation> findAll() {
+		try {
+			List<Observation> result = new ArrayList<>();
+			for (Path curSatellite : Files.newDirectoryStream(basepath)) {
+				result.addAll(findAllBySatelliteId(curSatellite.getFileName().toString()));
+			}
+			return result;
+		} catch (IOException e) {
+			LOG.error("unable to find all", e);
+			return Collections.emptyList();
+		}
+	}
+
 	public List<Observation> findAllBySatelliteId(String satelliteId) {
 		Path dataRoot = basepath.resolve(satelliteId).resolve("data");
 		if (!Files.exists(dataRoot)) {
@@ -99,11 +112,12 @@ public class ObservationDao {
 		}
 		Path wav = curDirectory.resolve(OUTPUT_WAV_FILENAME);
 		if (Files.exists(wav)) {
-			full.setWavPath(wav.toFile());
-		}
-		Path tarGz = curDirectory.resolve(OUTPUT_RAW_FILENAME);
-		if (Files.exists(tarGz)) {
-			full.setIqPath(tarGz.toFile());
+			full.setRawPath(wav.toFile());
+		} else {
+			Path tarGz = curDirectory.resolve(OUTPUT_RAW_FILENAME);
+			if (Files.exists(tarGz)) {
+				full.setRawPath(tarGz.toFile());
+			}
 		}
 		Path spectogram = curDirectory.resolve(SPECTOGRAM_FILENAME);
 		if (Files.exists(spectogram)) {

@@ -30,7 +30,7 @@ public class Lume1DecoderTest {
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/lume1.raw.gz.json").getReq());
 		assertEquals(5, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
-		assertNotNull(result.getIqPath());
+		assertNotNull(result.getRawPath());
 	}
 
 	@Before

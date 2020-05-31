@@ -30,7 +30,7 @@ public class DelfiC3DecoderTest {
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/delfic3.raw.gz.json").getReq());
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
-		assertNotNull(result.getIqPath());
+		assertNotNull(result.getRawPath());
 	}
 
 	@Before

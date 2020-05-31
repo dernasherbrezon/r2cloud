@@ -34,7 +34,7 @@ public class APTDecoder implements Decoder {
 	@Override
 	public DecoderResult decode(final File wavFile, final ObservationRequest request) {
 		DecoderResult result = new DecoderResult();
-		result.setWavPath(wavFile);
+		result.setRawPath(wavFile);
 		File image = new File(config.getTempDirectory(), "apt-" + request.getId() + ".jpg");
 		ProcessWrapper process = null;
 		try {

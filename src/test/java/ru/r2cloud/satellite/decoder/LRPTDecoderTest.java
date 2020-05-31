@@ -36,7 +36,7 @@ public class LRPTDecoderTest {
 		assertEquals(6, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
 		assertNotNull(result.getaPath());
-		assertNotNull(result.getIqPath());
+		assertNotNull(result.getRawPath());
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class LRPTDecoderTest {
 		assertEquals(0, result.getNumberOfDecodedPackets().longValue());
 		assertNull(result.getDataPath());
 		assertNull(result.getaPath());
-		assertNotNull(result.getIqPath());
+		assertNotNull(result.getRawPath());
 	}
 
 	@Before

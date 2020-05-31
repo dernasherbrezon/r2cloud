@@ -144,7 +144,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 				scheduleNext(cur, observation);
 
-				if (data == null || !data.hasDataFile()) {
+				if (data == null || data.getDataFile() == null) {
 					return;
 				}
 				// actual start/end might be different

@@ -4,26 +4,9 @@ import java.io.File;
 
 public class IQData {
 
-	private File wavFile;
-	private File iqFile;
+	private File dataFile;
 	private long actualStart;
 	private long actualEnd;
-
-	public File getIqFile() {
-		return iqFile;
-	}
-
-	public void setIqFile(File iqFile) {
-		this.iqFile = iqFile;
-	}
-
-	public File getWavFile() {
-		return wavFile;
-	}
-
-	public void setWavFile(File wavFile) {
-		this.wavFile = wavFile;
-	}
 
 	public long getActualStart() {
 		return actualStart;
@@ -41,18 +24,12 @@ public class IQData {
 		this.actualEnd = actualEnd;
 	}
 
-	public boolean hasDataFile() {
-		if (wavFile != null && wavFile.exists()) {
-			return true;
-		}
-		return iqFile != null && iqFile.exists();
-	}
-
 	public File getDataFile() {
-		if (wavFile != null) {
-			return wavFile;
-		}
-		return iqFile;
+		return dataFile;
+	}
+	
+	public void setDataFile(File dataFile) {
+		this.dataFile = dataFile;
 	}
 
 }

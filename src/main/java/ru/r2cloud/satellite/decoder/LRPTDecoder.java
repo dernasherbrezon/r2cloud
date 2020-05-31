@@ -43,7 +43,7 @@ public class LRPTDecoder implements Decoder {
 		int symbolRate = 72000;
 		MeteorM lrpt = null;
 		DecoderResult result = new DecoderResult();
-		result.setIqPath(rawIq);
+		result.setRawPath(rawIq);
 
 		long numberOfDecodedPackets = 0;
 		File binFile = new File(config.getTempDirectory(), "lrpt-" + req.getId() + ".bin");

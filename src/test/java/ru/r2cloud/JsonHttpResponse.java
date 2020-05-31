@@ -56,6 +56,10 @@ public class JsonHttpResponse implements HttpHandler {
 		return requestContentType;
 	}
 
+	public void awaitRequestSilently() throws InterruptedException {
+		latch.await(10000, TimeUnit.MILLISECONDS);
+	}
+	
 	public void awaitRequest() throws InterruptedException {
 		if (!latch.await(10000, TimeUnit.MILLISECONDS)) {
 			throw new RuntimeException("timeout waiting for response");

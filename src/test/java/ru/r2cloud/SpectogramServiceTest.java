@@ -62,7 +62,7 @@ public class SpectogramServiceTest {
 
 	private static Observation createWav(File wav) {
 		Observation result = new Observation(new ObservationRequest());
-		result.setWavPath(wav);
+		result.setRawPath(wav);
 		return result;
 	}
 
@@ -70,7 +70,7 @@ public class SpectogramServiceTest {
 		ObservationRequest req = new ObservationRequest();
 		req.setInputSampleRate(sampleRate);
 		Observation result = new Observation(req);
-		result.setIqPath(iq);
+		result.setRawPath(iq);
 		return result;
 	}
 

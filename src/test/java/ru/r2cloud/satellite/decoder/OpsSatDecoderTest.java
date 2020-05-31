@@ -30,7 +30,7 @@ public class OpsSatDecoderTest {
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/opssat.raw.gz.json").getReq());
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
-		assertNotNull(result.getIqPath());
+		assertNotNull(result.getRawPath());
 	}
 
 	@Before
