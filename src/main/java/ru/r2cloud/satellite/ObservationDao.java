@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -41,9 +42,9 @@ public class ObservationDao {
 	}
 
 	public List<Observation> findAll() {
-		try {
+		try (DirectoryStream<Path> ds = Files.newDirectoryStream(basepath)) {
 			List<Observation> result = new ArrayList<>();
-			for (Path curSatellite : Files.newDirectoryStream(basepath)) {
+			for (Path curSatellite : ds) {
 				result.addAll(findAllBySatelliteId(curSatellite.getFileName().toString()));
 			}
 			return result;
