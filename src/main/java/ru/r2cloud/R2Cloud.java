@@ -62,6 +62,7 @@ import ru.r2cloud.satellite.decoder.SnetDecoder;
 import ru.r2cloud.satellite.decoder.Suomi100Decoder;
 import ru.r2cloud.satellite.decoder.Swampsat2Decoder;
 import ru.r2cloud.satellite.decoder.TechnosatDecoder;
+import ru.r2cloud.satellite.decoder.Uwe4Decoder;
 import ru.r2cloud.ssl.AcmeClient;
 import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.tle.TLEDao;
@@ -201,6 +202,7 @@ public class R2Cloud {
 		decoders.put("45119", new Huskysat1Decoder(predict, props));
 		decoders.put("44365", new Painani1Decoder(predict, props));
 		decoders.put("43855", new ChompttDecoder(predict, props));
+		decoders.put("43880", new Uwe4Decoder(predict, props));
 
 		validateDecoders();
 		decoderService = new DecoderService(props, decoders, resultDao, r2cloudService, threadFactory);
