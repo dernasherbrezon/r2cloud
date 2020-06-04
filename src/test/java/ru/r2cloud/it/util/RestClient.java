@@ -286,6 +286,12 @@ public class RestClient {
 		if (config.getPpm() != null) {
 			json.add("ppm", config.getPpm());
 		}
+		if (config.getElevationMin() != null) {
+			json.add("elevationMin", config.getElevationMin());
+		}
+		if (config.getElevationGuaranteed() != null) {
+			json.add("elevationGuaranteed", config.getElevationGuaranteed());
+		}
 		HttpRequest request = createJsonPost("/api/v1/admin/config/general", json).build();
 		try {
 			return httpclient.send(request, BodyHandlers.ofString());

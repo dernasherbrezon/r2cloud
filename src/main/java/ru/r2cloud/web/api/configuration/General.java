@@ -37,6 +37,8 @@ public class General extends AbstractHttpController {
 		entity.add("lng", config.getDouble("locaiton.lon"));
 		entity.add("autoUpdate", autoUpdate.isEnabled());
 		entity.add("ppmType", config.getPpmType().toString());
+		entity.add("elevationMin", config.getDouble("scheduler.elevation.min"));
+		entity.add("elevationGuaranteed", config.getDouble("scheduler.elevation.guaranteed"));
 		Integer currentPpm = config.getInteger("ppm.current");
 		if (currentPpm != null) {
 			entity.add("ppm", currentPpm);
@@ -50,11 +52,19 @@ public class General extends AbstractHttpController {
 		ValidationResult errors = new ValidationResult();
 		Double lat = WebServer.getDouble(request, "lat");
 		Double lon = WebServer.getDouble(request, "lng");
+		Double elevationMin = WebServer.getDouble(request, "elevationMin");
+		Double elevationGuaranteed = WebServer.getDouble(request, "elevationGuaranteed");
 		if (lat == null) {
 			errors.put("lat", Messages.CANNOT_BE_EMPTY);
 		}
 		if (lon == null) {
 			errors.put("lng", Messages.CANNOT_BE_EMPTY);
+		}
+		if (elevationMin == null) {
+			errors.put("elevationMin", Messages.CANNOT_BE_EMPTY);
+		}
+		if (elevationGuaranteed == null) {
+			errors.put("elevationGuaranteed", Messages.CANNOT_BE_EMPTY);
 		}
 		String ppmTypeStr = WebServer.getString(request, "ppmType");
 		PpmType ppmType = null;
@@ -87,6 +97,8 @@ public class General extends AbstractHttpController {
 		config.setProperty("locaiton.lat", String.valueOf(lat));
 		config.setProperty("locaiton.lon", String.valueOf(lon));
 		config.setProperty("ppm.calculate.type", ppmTypeStr);
+		config.setProperty("scheduler.elevation.min", String.valueOf(elevationMin));
+		config.setProperty("scheduler.elevation.guaranteed", String.valueOf(elevationGuaranteed));
 		if (ppm != null) {
 			config.setProperty("ppm.current", ppm);
 		}

@@ -7,6 +7,24 @@ public class GeneralConfiguration {
 	private boolean autoUpdate;
 	private String ppmType;
 	private Integer ppm;
+	private Double elevationMin;
+	private Double elevationGuaranteed;
+	
+	public Double getElevationGuaranteed() {
+		return elevationGuaranteed;
+	}
+	
+	public void setElevationGuaranteed(Double elevationGuaranteed) {
+		this.elevationGuaranteed = elevationGuaranteed;
+	}
+	
+	public Double getElevationMin() {
+		return elevationMin;
+	}
+	
+	public void setElevationMin(Double elevationMin) {
+		this.elevationMin = elevationMin;
+	}
 
 	public Double getLat() {
 		return lat;

@@ -24,6 +24,8 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		assertEquals(config.isAutoUpdate(), configuration.getBoolean("autoUpdate", !config.isAutoUpdate()));
 		assertEquals(config.getPpmType(), configuration.getString("ppmType", null));
 		assertEquals(config.getPpm().intValue(), configuration.getInt("ppm", -1));
+		assertEquals(config.getElevationMin(), configuration.getDouble("elevationMin", 0.0), 0.0);
+		assertEquals(config.getElevationGuaranteed(), configuration.getDouble("elevationGuaranteed", 0.0), 0.0);
 	}
 
 	@Test
@@ -36,6 +38,8 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		assertEquals(config.getLng(), configuration.getDouble("lng", 0.0), 0.0);
 		assertEquals(config.isAutoUpdate(), configuration.getBoolean("autoUpdate", !config.isAutoUpdate()));
 		assertEquals("AUTO", configuration.getString("ppmType", null));
+		assertEquals(config.getElevationMin(), configuration.getDouble("elevationMin", 0.0), 0.0);
+		assertEquals(config.getElevationGuaranteed(), configuration.getDouble("elevationGuaranteed", 0.0), 0.0);
 	}
 
 	@Test
@@ -82,6 +86,8 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		config.setAutoUpdate(true);
 		config.setPpmType("MANUAL");
 		config.setPpm(10);
+		config.setElevationMin(8d);
+		config.setElevationGuaranteed(20d);
 		return config;
 	}
 }
