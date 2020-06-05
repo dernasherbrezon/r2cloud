@@ -12,10 +12,11 @@ import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
+import ru.r2cloud.jradio.swampsat2.Swampsat2Beacon;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.predict.PredictOreKit;
 
-public class Swampsat2DecoderTest {
+public class FskAx25G3ruhDecoderTest {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -26,7 +27,7 @@ public class Swampsat2DecoderTest {
 	public void testSomeData() throws Exception {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/swampsat2.raw.gz");
 		PredictOreKit predict = new PredictOreKit(config);
-		Swampsat2Decoder decoder = new Swampsat2Decoder(predict, config);
+		FskAx25G3ruhDecoder decoder = new FskAx25G3ruhDecoder(predict, config, 9600, Swampsat2Beacon.class);
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/swampsat2.raw.gz.json").getReq());
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
