@@ -13,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 import org.hipparchus.util.FastMath;
 import org.junit.After;
@@ -39,6 +40,7 @@ import ru.r2cloud.util.ThreadPoolFactoryImpl;
 
 public class RotatorServiceTest {
 
+	private static final Pattern SPACE = Pattern.compile(" ");
 	private static final Logger LOG = LoggerFactory.getLogger(RotatorServiceTest.class);
 
 	@Rule
@@ -98,11 +100,18 @@ public class RotatorServiceTest {
 			String curLine = null;
 			int i = 0;
 			while ((curLine = r.readLine()) != null) {
-				assertEquals(curLine, requestHandler.getRequests().get(i));
+				assertPosition(curLine, requestHandler.getRequests().get(i));
 				i++;
 			}
 			assertEquals(i, requestHandler.getRequests().size());
 		}
+	}
+
+	private static void assertPosition(String expected, String actual) {
+		String[] expectedParts = SPACE.split(expected);
+		String[] actualParts = SPACE.split(actual);
+		assertEquals(Double.valueOf(expectedParts[1]), Double.valueOf(actualParts[1]), 0.0001);
+		assertEquals(Double.valueOf(expectedParts[2]), Double.valueOf(actualParts[2]), 0.0001);
 	}
 
 	@Test
