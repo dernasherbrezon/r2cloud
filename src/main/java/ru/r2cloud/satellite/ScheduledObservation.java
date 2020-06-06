@@ -9,13 +9,15 @@ public class ScheduledObservation implements ScheduleEntry {
 	private final ObservationRequest req;
 	private final Future<?> future;
 	private final Future<?> reaperFuture;
+	private final Future<?> rotatorFuture;
 	private final Runnable completeTask;
 
-	ScheduledObservation(ObservationRequest req, Future<?> future, Future<?> reaperFuture, Runnable completeTask) {
+	ScheduledObservation(ObservationRequest req, Future<?> future, Future<?> reaperFuture, Runnable completeTask, Future<?> rotatorFuture) {
 		this.req = req;
 		this.future = future;
 		this.reaperFuture = reaperFuture;
 		this.completeTask = completeTask;
+		this.rotatorFuture = rotatorFuture;
 	}
 
 	public ObservationRequest getReq() {
@@ -56,6 +58,9 @@ public class ScheduledObservation implements ScheduleEntry {
 		}
 		if (reaperFuture != null) {
 			reaperFuture.cancel(true);
+		}
+		if (rotatorFuture != null) {
+			rotatorFuture.cancel(true);
 		}
 	}
 }

@@ -27,6 +27,7 @@ import ru.r2cloud.model.Satellite;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.ObservationFactory;
+import ru.r2cloud.satellite.RotatorService;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.Schedule;
 import ru.r2cloud.satellite.Scheduler;
@@ -134,6 +135,7 @@ public class R2Cloud {
 	private final SpectogramService spectogramService;
 	private final Map<String, Decoder> decoders = new HashMap<>();
 	private final SignedURL signed;
+	private final RotatorService rotatorService;
 
 	public R2Cloud(Configuration props) {
 		threadFactory = new ThreadPoolFactoryImpl();
@@ -159,6 +161,7 @@ public class R2Cloud {
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient(props.getProperty("celestrak.hostname")));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
 		signed = new SignedURL(props, clock);
+		rotatorService = new RotatorService(props, predict, threadFactory, clock);
 		APTDecoder aptDecoder = new APTDecoder(props, processFactory);
 		decoders.put("25338", aptDecoder);
 		decoders.put("28654", aptDecoder);
@@ -209,7 +212,7 @@ public class R2Cloud {
 		decoderService = new DecoderService(props, decoders, resultDao, r2cloudService, threadFactory);
 
 		observationFactory = new ObservationFactory(predict, tleDao);
-		scheduler = new Scheduler(new Schedule<>(), props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, processFactory, resultDao, decoderService);
+		scheduler = new Scheduler(new Schedule<>(), props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, processFactory, resultDao, decoderService, rotatorService);
 
 		// setup web server
 		index(new Health());
@@ -242,6 +245,7 @@ public class R2Cloud {
 		tleDao.start();
 		tleReloader.start();
 		decoderService.start();
+		rotatorService.start();
 		// scheduler should start after tle (it uses TLE to schedule
 		// observations)
 		scheduler.start();
@@ -256,6 +260,7 @@ public class R2Cloud {
 		webServer.stop();
 		metrics.stop();
 		scheduler.stop();
+		rotatorService.stop();
 		decoderService.stop();
 		tleReloader.stop();
 		tleDao.stop();

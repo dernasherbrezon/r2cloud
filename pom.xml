@@ -46,10 +46,15 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>ru.r2cloud</groupId>
+			<artifactId>rotctrldClient</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
 			<groupId>org.orekit</groupId>
 			<artifactId>orekit</artifactId>
 			<version>10.1</version>
-		</dependency>	
+		</dependency>
 		<dependency>
 			<groupId>ru.r2cloud</groupId>
 			<artifactId>journald-formatter</artifactId>
@@ -384,36 +389,36 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<profiles>
 		<profile>
-            <id>coverage</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.3</version>
-                        <executions>
-                            <execution>
-                                <id>prepare-agent</id>
-                                <goals>
-                                    <goal>prepare-agent</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>report</id>
-                                <goals>
-                                    <goal>report</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>		
+			<id>coverage</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>0.8.3</version>
+						<executions>
+							<execution>
+								<id>prepare-agent</id>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>report</id>
+								<goals>
+									<goal>report</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
-	
+
 	<scm>
 		<url>https://github.com/dernasherbrezon/r2cloud</url>
 		<connection>scm:git:git@github.com/dernasherbrezon/r2cloud.git</connection>

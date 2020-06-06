@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.SatPass;
+import ru.r2cloud.rotctrld.Position;
 import ru.r2cloud.util.Configuration;
 
 public class PredictOreKit {
@@ -69,6 +70,17 @@ public class PredictOreKit {
 		PVCoordinates currentState = tlePropagator.getPVCoordinates(date);
 		final double rangeRate = currentLocation.getRangeRate(currentState, tlePropagator.getFrame(), date);
 		return (long) ((double) freq * (SPEED_OF_LIGHT - rangeRate) / SPEED_OF_LIGHT);
+	}
+
+	public Position getSatellitePosition(long utcTimeMillis, TopocentricFrame currentLocation, final TLEPropagator tlePropagator) {
+		AbsoluteDate date = new AbsoluteDate(new Date(utcTimeMillis), TimeScalesFactory.getUTC());
+		PVCoordinates currentState = tlePropagator.getPVCoordinates(date);
+		double azimuth = currentLocation.getAzimuth(currentState.getPosition(), tlePropagator.getFrame(), date);
+		double elevation = currentLocation.getElevation(currentState.getPosition(), tlePropagator.getFrame(), date);
+		Position result = new Position();
+		result.setAzimuth(azimuth);
+		result.setElevation(elevation);
+		return result;
 	}
 
 	public SatPass calculateNext(Date current, TLEPropagator tlePropagator) {

@@ -43,11 +43,12 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private final ObservationDao dao;
 	private final DecoderService decoderService;
 	private final Schedule<ScheduledObservation> schedule;
+	private final RotatorService rotatorService;
 
 	private ScheduledExecutorService startThread = null;
 	private ScheduledExecutorService stopThread = null;
 
-	public Scheduler(Schedule<ScheduledObservation> schedule, Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderService decoderService) {
+	public Scheduler(Schedule<ScheduledObservation> schedule, Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderService decoderService, RotatorService rotatorService) {
 		this.schedule = schedule;
 		this.config = config;
 		this.config.subscribe(this, "locaiton.lat");
@@ -60,6 +61,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		this.processFactory = processFactory;
 		this.dao = dao;
 		this.decoderService = decoderService;
+		this.rotatorService = rotatorService;
 	}
 
 	@Override
@@ -171,6 +173,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				return null;
 			}
 			Future<?> startFuture = startThread.schedule(readTask, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
+			Future<?> rotatorFuture = rotatorService.schedule(observation, current);
 			Runnable stopRtlSdrTask = new SafeRunnable() {
 
 				@Override
@@ -179,7 +182,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				}
 			};
 			Future<?> stopRtlSdrFuture = stopThread.schedule(stopRtlSdrTask, observation.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
-			schedule.add(new ScheduledObservation(observation, startFuture, stopRtlSdrFuture, stopRtlSdrTask));
+			schedule.add(new ScheduledObservation(observation, startFuture, stopRtlSdrFuture, stopRtlSdrTask, rotatorFuture));
 			return observation;
 		}
 	}
