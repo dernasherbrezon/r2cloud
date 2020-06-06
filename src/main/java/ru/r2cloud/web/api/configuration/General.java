@@ -1,5 +1,7 @@
 package ru.r2cloud.web.api.configuration;
 
+import java.net.InetAddress;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +41,11 @@ public class General extends AbstractHttpController {
 		entity.add("ppmType", config.getPpmType().toString());
 		entity.add("elevationMin", config.getDouble("scheduler.elevation.min"));
 		entity.add("elevationGuaranteed", config.getDouble("scheduler.elevation.guaranteed"));
+		entity.add("rotationEnabled", config.getBoolean("rotator.enabled"));
+		entity.add("rotctrldHostname", config.getProperty("rotator.rotctrld.hostname"));
+		entity.add("rotctrldPort", config.getInteger("rotator.rotctrld.port"));
+		entity.add("rotatorTolerance", config.getDouble("rotator.tolerance"));
+		entity.add("rotatorCycle", config.getInteger("rotator.cycleMillis"));
 		Integer currentPpm = config.getInteger("ppm.current");
 		if (currentPpm != null) {
 			entity.add("ppm", currentPpm);
@@ -54,6 +61,11 @@ public class General extends AbstractHttpController {
 		Double lon = WebServer.getDouble(request, "lng");
 		Double elevationMin = WebServer.getDouble(request, "elevationMin");
 		Double elevationGuaranteed = WebServer.getDouble(request, "elevationGuaranteed");
+		boolean rotationEnabled = WebServer.getBoolean(request, "rotationEnabled");
+		String rotctrldHostname = WebServer.getString(request, "rotctrldHostname");
+		Integer rotctrldPort = WebServer.getInteger(request, "rotctrldPort");
+		Double rotatorTolerance = WebServer.getDouble(request, "rotatorTolerance");
+		Integer rotatorCycleMillis = WebServer.getInteger(request, "rotatorCycle");
 		if (lat == null) {
 			errors.put("lat", Messages.CANNOT_BE_EMPTY);
 		}
@@ -65,6 +77,26 @@ public class General extends AbstractHttpController {
 		}
 		if (elevationGuaranteed == null) {
 			errors.put("elevationGuaranteed", Messages.CANNOT_BE_EMPTY);
+		}
+		if (rotationEnabled) {
+			if (rotctrldHostname == null) {
+				errors.put("rotctrldHostname", Messages.CANNOT_BE_EMPTY);
+			} else {
+				try {
+					InetAddress.getByName(rotctrldHostname);
+				} catch (Exception e) {
+					errors.put("rotctrldHostname", "invalid hostname");
+				}
+			}
+			if (rotctrldPort == null) {
+				errors.put("rotctrldPort", Messages.CANNOT_BE_EMPTY);
+			}
+			if (rotatorTolerance == null) {
+				errors.put("rotatorTolerance", Messages.CANNOT_BE_EMPTY);
+			}
+			if (rotatorCycleMillis == null) {
+				errors.put("rotatorCycle", Messages.CANNOT_BE_EMPTY);
+			}
 		}
 		String ppmTypeStr = WebServer.getString(request, "ppmType");
 		PpmType ppmType = null;
@@ -94,11 +126,24 @@ public class General extends AbstractHttpController {
 			return new BadRequest(errors);
 		}
 		autoUpdate.setEnabled(WebServer.getBoolean(request, "autoUpdate"));
-		config.setProperty("locaiton.lat", String.valueOf(lat));
-		config.setProperty("locaiton.lon", String.valueOf(lon));
+		config.setProperty("locaiton.lat", lat);
+		config.setProperty("locaiton.lon", lon);
 		config.setProperty("ppm.calculate.type", ppmTypeStr);
 		config.setProperty("scheduler.elevation.min", String.valueOf(elevationMin));
 		config.setProperty("scheduler.elevation.guaranteed", String.valueOf(elevationGuaranteed));
+		config.setProperty("rotator.enabled", rotationEnabled);
+		if (rotctrldHostname != null) {
+			config.setProperty("rotator.rotctrld.hostname", rotctrldHostname);
+		}
+		if (rotctrldPort != null) {
+			config.setProperty("rotator.rotctrld.port", rotctrldPort);
+		}
+		if (rotatorTolerance != null) {
+			config.setProperty("rotator.tolerance", rotatorTolerance);
+		}
+		if (rotatorCycleMillis != null) {
+			config.setProperty("rotator.cycleMillis", rotatorCycleMillis);
+		}
 		if (ppm != null) {
 			config.setProperty("ppm.current", ppm);
 		}

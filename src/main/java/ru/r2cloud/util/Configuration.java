@@ -62,6 +62,10 @@ public class Configuration {
 		}
 	}
 
+	public String setProperty(String key, Double value) {
+		return setProperty(key, String.valueOf(value));
+	}
+	
 	public String setProperty(String key, Long value) {
 		return setProperty(key, String.valueOf(value));
 	}
