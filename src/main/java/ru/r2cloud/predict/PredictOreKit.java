@@ -75,8 +75,8 @@ public class PredictOreKit {
 	public Position getSatellitePosition(long utcTimeMillis, TopocentricFrame currentLocation, final TLEPropagator tlePropagator) {
 		AbsoluteDate date = new AbsoluteDate(new Date(utcTimeMillis), TimeScalesFactory.getUTC());
 		PVCoordinates currentState = tlePropagator.getPVCoordinates(date);
-		double azimuth = currentLocation.getAzimuth(currentState.getPosition(), tlePropagator.getFrame(), date);
-		double elevation = currentLocation.getElevation(currentState.getPosition(), tlePropagator.getFrame(), date);
+		double azimuth = FastMath.toDegrees(currentLocation.getAzimuth(currentState.getPosition(), tlePropagator.getFrame(), date));
+		double elevation = FastMath.toDegrees(currentLocation.getElevation(currentState.getPosition(), tlePropagator.getFrame(), date));
 		Position result = new Position();
 		result.setAzimuth(azimuth);
 		result.setElevation(elevation);
