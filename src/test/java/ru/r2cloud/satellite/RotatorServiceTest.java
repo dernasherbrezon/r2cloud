@@ -113,6 +113,7 @@ public class RotatorServiceTest {
 		assertEquals(Double.valueOf(expectedParts[1]), Double.valueOf(actualParts[1]), 0.0001);
 		assertEquals(Double.valueOf(expectedParts[2]), Double.valueOf(actualParts[2]), 0.0001);
 	}
+	
 
 	@Test
 	public void testDisabled() {
