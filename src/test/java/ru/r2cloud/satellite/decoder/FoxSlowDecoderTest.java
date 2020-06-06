@@ -16,7 +16,7 @@ import ru.r2cloud.jradio.fox.Fox1CBeacon;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.predict.PredictOreKit;
 
-public class FoxDecoderTest {
+public class FoxSlowDecoderTest {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
