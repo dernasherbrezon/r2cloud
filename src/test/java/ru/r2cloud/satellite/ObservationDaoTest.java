@@ -35,21 +35,58 @@ public class ObservationDaoTest {
 	private ObservationDao dao;
 
 	@Test
+	public void testFindUnknownObservation() throws Exception {
+		assertNull(dao.find(UUID.randomUUID().toString(), UUID.randomUUID().toString()));
+	}
+
+	@Test
+	public void testFindAll() throws Exception {
+		int expectedObservations = 5;
+		for (int i = 0; i < expectedObservations; i++) {
+			ObservationRequest req = createRequest();
+			assertNotNull(dao.insert(req, createTempFile("wav")));
+		}
+		assertEquals(expectedObservations, dao.findAll().size());
+	}
+
+	@Test
+	public void testRetention() throws Exception {
+		String satelliteId = UUID.randomUUID().toString();
+		for (int i = 0; i < 5; i++) {
+			ObservationRequest req = createRequest();
+			req.setSatelliteId(satelliteId);
+			assertNotNull(dao.insert(req, createTempFile("wav")));
+		}
+		assertEquals(3, dao.findAllBySatelliteId(satelliteId).size());
+	}
+
+	@Test
+	public void saveSpectogramTwice() throws Exception {
+		ObservationRequest req = createRequest();
+		assertNotNull(dao.insert(req, createTempFile("wav")));
+		assertNotNull(dao.saveSpectogram(req.getSatelliteId(), req.getId(), createTempFile("data")));
+		assertNull(dao.saveSpectogram(req.getSatelliteId(), req.getId(), createTempFile("dup")));
+	}
+
+	@Test
+	public void saveImageTwice() throws Exception {
+		ObservationRequest req = createRequest();
+		assertNotNull(dao.insert(req, createTempFile("wav")));
+		assertNotNull(dao.saveImage(req.getSatelliteId(), req.getId(), createTempFile("data")));
+		assertNull(dao.saveImage(req.getSatelliteId(), req.getId(), createTempFile("dup")));
+	}
+
+	@Test
+	public void saveDataTwice() throws Exception {
+		ObservationRequest req = createRequest();
+		assertNotNull(dao.insert(req, createTempFile("wav")));
+		assertNotNull(dao.saveData(req.getSatelliteId(), req.getId(), createTempFile("data")));
+		assertNull(dao.saveData(req.getSatelliteId(), req.getId(), createTempFile("dup")));
+	}
+
+	@Test
 	public void testCrud() throws Exception {
-		ObservationRequest req = new ObservationRequest();
-		req.setActualFrequency(1L);
-		req.setSource(FrequencySource.APT);
-		req.setEndTimeMillis(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5));
-		req.setId(UUID.randomUUID().toString());
-		req.setInputSampleRate(1);
-		req.setTle(create());
-		req.setOutputSampleRate(1);
-		req.setSatelliteFrequency(1);
-		req.setActualFrequency(2);
-		req.setSatelliteId(UUID.randomUUID().toString());
-		req.setStartTimeMillis(System.currentTimeMillis());
-		req.setBandwidth(4_000);
-		req.setGroundStation(createGroundStation());
+		ObservationRequest req = createRequest();
 		assertNotNull(dao.insert(req, createTempFile("wav")));
 		Observation actual = dao.find(req.getSatelliteId(), req.getId());
 		assertNotNull(actual.getRawPath());
@@ -66,10 +103,9 @@ public class ObservationDaoTest {
 		assertEquals(ObservationStatus.NEW, actual.getStatus());
 
 		assertNotNull(dao.saveData(req.getSatelliteId(), req.getId(), createTempFile("data")));
-
 		assertNotNull(dao.saveImage(req.getSatelliteId(), req.getId(), createTempFile("image")));
+		assertNotNull(dao.saveSpectogram(req.getSatelliteId(), req.getId(), createTempFile("spectogram")));
 
-		assertTrue(dao.saveSpectogram(req.getSatelliteId(), req.getId(), createTempFile("spectogram")));
 		actual = dao.find(req.getSatelliteId(), req.getId());
 		assertNotNull(actual.getSpectogramPath());
 
@@ -88,6 +124,24 @@ public class ObservationDaoTest {
 
 		List<Observation> all = dao.findAllBySatelliteId(req.getSatelliteId());
 		assertEquals(1, all.size());
+	}
+
+	private static ObservationRequest createRequest() {
+		ObservationRequest req = new ObservationRequest();
+		req.setActualFrequency(1L);
+		req.setSource(FrequencySource.APT);
+		req.setEndTimeMillis(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5));
+		req.setId(UUID.randomUUID().toString());
+		req.setInputSampleRate(1);
+		req.setTle(create());
+		req.setOutputSampleRate(1);
+		req.setSatelliteFrequency(1);
+		req.setActualFrequency(2);
+		req.setSatelliteId(UUID.randomUUID().toString());
+		req.setStartTimeMillis(System.currentTimeMillis());
+		req.setBandwidth(4_000);
+		req.setGroundStation(createGroundStation());
+		return req;
 	}
 
 	private static Tle create() {

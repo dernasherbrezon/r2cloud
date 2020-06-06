@@ -66,7 +66,7 @@ public class ObservationSpectrogram extends AbstractHttpController {
 			return new InternalServerError();
 		}
 
-		if (!dao.saveSpectogram(satelliteId, id, spectogram)) {
+		if (dao.saveSpectogram(satelliteId, id, spectogram) == null) {
 			LOG.info("unable to save spectogram");
 			return new InternalServerError();
 		}

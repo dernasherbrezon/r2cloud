@@ -28,6 +28,9 @@ public class ObservationDao {
 
 	private static final String DEST_ALREADY_EXIST_MESSAGE = "unable to save. dest already exist: {}";
 	private static final String SPECTOGRAM_FILENAME = "spectogram.png";
+	private static final String DATA_FILENAME = "data.bin";
+	private static final String IMAGE_FILENAME = "a.jpg";
+	private static final String META_FILENAME = "meta.json";
 	private static final String OUTPUT_WAV_FILENAME = "output.wav";
 	private static final String OUTPUT_RAW_FILENAME = "output.raw.gz";
 
@@ -88,7 +91,7 @@ public class ObservationDao {
 	}
 
 	private static Observation find(String satelliteId, Path curDirectory) {
-		Path dest = curDirectory.resolve("meta.json");
+		Path dest = curDirectory.resolve(META_FILENAME);
 		if (!Files.exists(dest)) {
 			return null;
 		}
@@ -101,15 +104,15 @@ public class ObservationDao {
 			return null;
 		}
 
-		Path a = curDirectory.resolve("a.jpg");
+		Path a = curDirectory.resolve(IMAGE_FILENAME);
 		if (Files.exists(a)) {
 			full.setImagePath(a.toFile());
-			full.setaURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/a.jpg");
+			full.setaURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + IMAGE_FILENAME);
 		}
-		Path data = curDirectory.resolve("data.bin");
+		Path data = curDirectory.resolve(DATA_FILENAME);
 		if (Files.exists(data)) {
 			full.setDataPath(data.toFile());
-			full.setDataURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/data.bin");
+			full.setDataURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + DATA_FILENAME);
 		}
 		Path wav = curDirectory.resolve(OUTPUT_WAV_FILENAME);
 		if (Files.exists(wav)) {
@@ -130,7 +133,7 @@ public class ObservationDao {
 	}
 
 	public File saveImage(String satelliteId, String observationId, File a) {
-		Path dest = getObservationBasepath(satelliteId, observationId).resolve("a.jpg");
+		Path dest = getObservationBasepath(satelliteId, observationId).resolve(IMAGE_FILENAME);
 		if (Files.exists(dest)) {
 			LOG.info(DEST_ALREADY_EXIST_MESSAGE, dest.toAbsolutePath());
 			return null;
@@ -142,7 +145,7 @@ public class ObservationDao {
 	}
 
 	public File saveData(String satelliteId, String observationId, File a) {
-		Path dest = getObservationBasepath(satelliteId, observationId).resolve("data.bin");
+		Path dest = getObservationBasepath(satelliteId, observationId).resolve(DATA_FILENAME);
 		if (Files.exists(dest)) {
 			LOG.info(DEST_ALREADY_EXIST_MESSAGE, dest.toAbsolutePath());
 			return null;
@@ -153,16 +156,19 @@ public class ObservationDao {
 		return dest.toFile();
 	}
 
-	public boolean saveSpectogram(String satelliteId, String observationId, File a) {
+	public File saveSpectogram(String satelliteId, String observationId, File a) {
 		Path dest = getObservationBasepath(satelliteId, observationId).resolve(SPECTOGRAM_FILENAME);
 		if (Files.exists(dest)) {
 			LOG.info(DEST_ALREADY_EXIST_MESSAGE, dest.toAbsolutePath());
-			return false;
+			return null;
 		}
-		return a.renameTo(dest.toFile());
+		if (!a.renameTo(dest.toFile())) {
+			return null;
+		}
+		return dest.toFile();
 	}
 
-	public File insert(ObservationRequest request, File dataFile) {
+	public File insert(ObservationRequest request, File rawFile) {
 		try {
 			Path satelliteBasePath = basepath.resolve(request.getSatelliteId()).resolve("data");
 			if (Files.exists(satelliteBasePath)) {
@@ -189,12 +195,12 @@ public class ObservationDao {
 			return null;
 		}
 
-		return insertData(request, dataFile);
+		return insertRawFile(request, rawFile);
 	}
 
-	private File insertData(ObservationRequest observation, File dataFile) {
+	private File insertRawFile(ObservationRequest observation, File rawFile) {
 		String filename;
-		if (dataFile.getName().endsWith("wav")) {
+		if (rawFile.getName().endsWith("wav")) {
 			filename = OUTPUT_WAV_FILENAME;
 		} else {
 			filename = OUTPUT_RAW_FILENAME;
@@ -207,8 +213,8 @@ public class ObservationDao {
 			LOG.info(DEST_ALREADY_EXIST_MESSAGE, dest.toAbsolutePath());
 			return null;
 		}
-		if (!dataFile.renameTo(dest.toFile())) {
-			LOG.error("unable to save file from {} to {}. Check src and dst are on the same filesystem", dataFile.getAbsolutePath(), dest.toFile().getAbsolutePath());
+		if (!rawFile.renameTo(dest.toFile())) {
+			LOG.error("unable to save file from {} to {}. Check src and dst are on the same filesystem", rawFile.getAbsolutePath(), dest.toFile().getAbsolutePath());
 			return null;
 		}
 		return dest.toFile();
@@ -216,7 +222,7 @@ public class ObservationDao {
 
 	public boolean update(Observation cur) {
 		JsonObject meta = cur.toJson(null);
-		Path dest = getObservationBasepath(cur).resolve("meta.json");
+		Path dest = getObservationBasepath(cur).resolve(META_FILENAME);
 		try (BufferedWriter w = Files.newBufferedWriter(dest)) {
 			w.append(meta.toString());
 			return true;
