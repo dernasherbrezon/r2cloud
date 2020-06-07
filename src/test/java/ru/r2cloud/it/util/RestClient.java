@@ -292,6 +292,19 @@ public class RestClient {
 		if (config.getElevationGuaranteed() != null) {
 			json.add("elevationGuaranteed", config.getElevationGuaranteed());
 		}
+		json.add("rotationEnabled", config.isRotationEnabled());
+		if (config.getRotctrldHostname() != null) {
+			json.add("rotctrldHostname", config.getRotctrldHostname());
+		}
+		if (config.getRotctrldPort() != null) {
+			json.add("rotctrldPort", config.getRotctrldPort());
+		}
+		if (config.getRotatorTolerance() != null) {
+			json.add("rotatorTolerance", config.getRotatorTolerance());
+		}
+		if (config.getRotatorCycle() != null) {
+			json.add("rotatorCycle", config.getRotatorCycle());
+		}
 		HttpRequest request = createJsonPost("/api/v1/admin/config/general", json).build();
 		try {
 			return httpclient.send(request, BodyHandlers.ofString());

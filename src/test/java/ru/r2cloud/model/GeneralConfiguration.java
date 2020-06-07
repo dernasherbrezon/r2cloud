@@ -9,19 +9,64 @@ public class GeneralConfiguration {
 	private Integer ppm;
 	private Double elevationMin;
 	private Double elevationGuaranteed;
-	
+	private boolean rotationEnabled;
+	private String rotctrldHostname;
+	private Integer rotctrldPort;
+	private Double rotatorTolerance;
+	private Long rotatorCycle;
+
+	public boolean isRotationEnabled() {
+		return rotationEnabled;
+	}
+
+	public void setRotationEnabled(boolean rotationEnabled) {
+		this.rotationEnabled = rotationEnabled;
+	}
+
+	public String getRotctrldHostname() {
+		return rotctrldHostname;
+	}
+
+	public void setRotctrldHostname(String rotctrldHostname) {
+		this.rotctrldHostname = rotctrldHostname;
+	}
+
+	public Integer getRotctrldPort() {
+		return rotctrldPort;
+	}
+
+	public void setRotctrldPort(Integer rotctrldPort) {
+		this.rotctrldPort = rotctrldPort;
+	}
+
+	public Double getRotatorTolerance() {
+		return rotatorTolerance;
+	}
+
+	public void setRotatorTolerance(Double rotatorTolerance) {
+		this.rotatorTolerance = rotatorTolerance;
+	}
+
+	public Long getRotatorCycle() {
+		return rotatorCycle;
+	}
+
+	public void setRotatorCycle(Long rotatorCycle) {
+		this.rotatorCycle = rotatorCycle;
+	}
+
 	public Double getElevationGuaranteed() {
 		return elevationGuaranteed;
 	}
-	
+
 	public void setElevationGuaranteed(Double elevationGuaranteed) {
 		this.elevationGuaranteed = elevationGuaranteed;
 	}
-	
+
 	public Double getElevationMin() {
 		return elevationMin;
 	}
-	
+
 	public void setElevationMin(Double elevationMin) {
 		this.elevationMin = elevationMin;
 	}
