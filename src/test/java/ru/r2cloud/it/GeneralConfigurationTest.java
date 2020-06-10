@@ -57,9 +57,27 @@ public class GeneralConfigurationTest extends RegisteredTest {
 	}
 	
 	@Test
+	public void testInvalidElevationMin2() {
+		GeneralConfiguration config = createConfig();
+		config.setElevationMin(-1.0);
+		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
+		assertEquals(400, response.statusCode());
+		assertErrorInField("elevationMin", response);
+	}
+	
+	@Test
 	public void testInvalidElevationGuaranteed() {
 		GeneralConfiguration config = createConfig();
 		config.setElevationGuaranteed(null);
+		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
+		assertEquals(400, response.statusCode());
+		assertErrorInField("elevationGuaranteed", response);
+	}
+	
+	@Test
+	public void testInvalidElevationGuaranteed2() {
+		GeneralConfiguration config = createConfig();
+		config.setElevationGuaranteed(91.0);
 		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("elevationGuaranteed", response);

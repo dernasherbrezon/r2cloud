@@ -74,9 +74,17 @@ public class General extends AbstractHttpController {
 		}
 		if (elevationMin == null) {
 			errors.put("elevationMin", Messages.CANNOT_BE_EMPTY);
+		} else {
+			if (elevationMin < 0.0) {
+				errors.put("elevationMin", "Cannot be less than 0.0");
+			}
 		}
 		if (elevationGuaranteed == null) {
 			errors.put("elevationGuaranteed", Messages.CANNOT_BE_EMPTY);
+		} else {
+			if (elevationGuaranteed > 90.0) {
+				errors.put("elevationGuaranteed", "Cannot be more than 90.0");
+			}
 		}
 		if (rotationEnabled) {
 			if (rotctrldHostname == null) {
