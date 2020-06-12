@@ -37,6 +37,7 @@ public class StaticController {
 		mimeTypes.put("rrd", "application/octet-stream");
 		mimeTypes.put("jpg", "image/jpeg");
 		mimeTypes.put("png", "image/png");
+		mimeTypes.put("wav", "audio/wave");
 		this.signed = signed;
 		this.config = config;
 	}
@@ -68,6 +69,9 @@ public class StaticController {
 				response = NanoHTTPD.newFixedLengthResponse(fi.iki.elonen.NanoHTTPD.Response.Status.OK, getMimeType(uri), new FileInputStream(file), file.length());
 				// convert to seconds
 				response.addHeader("Cache-Control", "private, max-age=" + ((int) (config.getLong("server.static.signed.validMillis") / 1000)));
+			}
+			if (uri.endsWith("wav") || uri.endsWith("tar.gz")) {
+				response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
 			}
 			response.addHeader("Last-Modified", dateFormat.format(new Date(file.lastModified())));
 			return response;

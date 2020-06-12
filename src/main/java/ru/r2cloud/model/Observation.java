@@ -29,12 +29,13 @@ public class Observation {
 	private long actualFrequency;
 
 	// observation status
-	private File rawPath;
-
 	private String gain;
 	private String channelA;
 	private String channelB;
 	private Long numberOfDecodedPackets = 0L;
+
+	private String rawURL;
+	private File rawPath;
 
 	private String aURL;
 	private File imagePath;
@@ -187,6 +188,14 @@ public class Observation {
 		this.actualFrequency = actualFrequency;
 	}
 
+	public String getRawURL() {
+		return rawURL;
+	}
+
+	public void setRawURL(String rawURL) {
+		this.rawURL = rawURL;
+	}
+
 	public File getRawPath() {
 		return rawPath;
 	}
@@ -308,6 +317,7 @@ public class Observation {
 		result.setaURL(meta.getString("aURL", null));
 		result.setDataURL(meta.getString("data", null));
 		result.setSpectogramURL(meta.getString("spectogramURL", null));
+		result.setRawURL(meta.getString("rawURL", null));
 		String statusStr = meta.getString("status", null);
 		if (statusStr != null) {
 			result.setStatus(ObservationStatus.valueOf(statusStr));
@@ -367,6 +377,13 @@ public class Observation {
 				json.add("spectogramURL", signed.sign(getSpectogramURL()));
 			} else {
 				json.add("spectogramURL", getSpectogramURL());
+			}
+		}
+		if (getRawURL() != null) {
+			if (signed != null) {
+				json.add("rawURL", signed.sign(getRawURL()));
+			} else {
+				json.add("rawURL", getRawURL());
 			}
 		}
 		ObservationStatus status = getStatus();

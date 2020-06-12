@@ -117,10 +117,12 @@ public class ObservationDao {
 		Path wav = curDirectory.resolve(OUTPUT_WAV_FILENAME);
 		if (Files.exists(wav)) {
 			full.setRawPath(wav.toFile());
+			full.setRawURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + OUTPUT_WAV_FILENAME);
 		} else {
 			Path tarGz = curDirectory.resolve(OUTPUT_RAW_FILENAME);
 			if (Files.exists(tarGz)) {
 				full.setRawPath(tarGz.toFile());
+				full.setRawURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + OUTPUT_RAW_FILENAME);
 			}
 		}
 		Path spectogram = curDirectory.resolve(SPECTOGRAM_FILENAME);
