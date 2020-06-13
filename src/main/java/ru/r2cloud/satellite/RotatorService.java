@@ -103,7 +103,12 @@ public class RotatorService implements Lifecycle, ConfigListener {
 
 			@Override
 			public void run() {
-				Position currentPosition = predict.getSatellitePosition(clock.millis(), groundStation, tlePropagator);
+				long current = clock.millis();
+				if (current > req.getEndTimeMillis()) {
+					LOG.info("[{}] observation time passed. cancelling rotation", req.getId());
+					throw new RuntimeException("observation time passed");
+				}
+				Position currentPosition = predict.getSatellitePosition(current, groundStation, tlePropagator);
 				if (previousPosition != null) {
 					double tolerance = config.getDouble("rotator.tolerance");
 					double azimuthDelta = Math.abs(currentPosition.getAzimuth() - previousPosition.getAzimuth());
