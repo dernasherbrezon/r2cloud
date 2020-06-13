@@ -42,7 +42,7 @@ public class R2ServerClient {
 		this.hostname = config.getProperty("r2server.hostname");
 		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMillis(config.getInteger("r2server.connectionTimeout"))).build();
 	}
-	
+
 	public Long saveMeta(Observation observation) {
 		if (observation == null) {
 			return null;
@@ -58,7 +58,7 @@ public class R2ServerClient {
 			}
 			return readObservationId(response.body());
 		} catch (IOException e) {
-			LOG.error("unable to save meta", e);
+			LOG.error("[{}] unable to save meta", observation.getId(), e);
 			return null;
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();

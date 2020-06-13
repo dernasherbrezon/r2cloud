@@ -100,7 +100,7 @@ public class ObservationDao {
 			JsonObject meta = Json.parse(r).asObject();
 			full = Observation.fromJson(meta);
 		} catch (Exception e) {
-			LOG.error("unable to load meta", e);
+			LOG.error("unable to load meta from {}", dest, e);
 			return null;
 		}
 
