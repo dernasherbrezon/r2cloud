@@ -111,6 +111,8 @@ public class RotatorService implements Lifecycle, ConfigListener {
 					if (azimuthDelta < tolerance && elevationDelta < tolerance) {
 						return;
 					}
+				} else {
+					LOG.info("[{}] moving rotator to {}", req.getId(), currentPosition);
 				}
 
 				try {
