@@ -13,6 +13,8 @@ import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.R2Cloud;
+
 final class ExternalIpClient {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ExternalIpClient.class);
@@ -28,7 +30,7 @@ final class ExternalIpClient {
 	public String getExternalIp() {
 		HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(host));
 		builder.timeout(Duration.ofMinutes(1L));
-		builder.header("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
+		builder.header("User-Agent", R2Cloud.VERSION + " info@r2cloud.ru");
 		HttpResponse<String> response;
 
 		try {

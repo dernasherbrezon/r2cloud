@@ -7,6 +7,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.file.FileSystems;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,6 +78,7 @@ import ru.r2cloud.util.ShutdownLoggingManager;
 import ru.r2cloud.util.SignedURL;
 import ru.r2cloud.util.ThreadPoolFactory;
 import ru.r2cloud.util.ThreadPoolFactoryImpl;
+import ru.r2cloud.util.Util;
 import ru.r2cloud.web.Authenticator;
 import ru.r2cloud.web.HttpContoller;
 import ru.r2cloud.web.WebServer;
@@ -109,6 +111,8 @@ public class R2Cloud {
 	}
 
 	private static final Logger LOG = LoggerFactory.getLogger(R2Cloud.class);
+
+	public static String VERSION;
 
 	private final Map<String, HttpContoller> controllers = new HashMap<>();
 	private final WebServer webServer;
@@ -274,6 +278,7 @@ public class R2Cloud {
 			LOG.info("invalid arguments. expected: config.properties");
 			return;
 		}
+		VERSION = readVersion();
 		R2Cloud app;
 		String userPropertiesFilename = System.getProperty("user.home") + File.separator + ".r2cloud";
 		try (InputStream is = new FileInputStream(args[0])) {
@@ -310,6 +315,26 @@ public class R2Cloud {
 			// this will execute ShutdownHook and graceful shutdown
 			System.exit(1);
 		}
+	}
+
+	private static String readVersion() {
+		InputStream is = null;
+		try {
+			is = R2Cloud.class.getClassLoader().getResourceAsStream("version.properties");
+			if (is != null) {
+				Properties props = new Properties();
+				props.load(is);
+				String result = props.getProperty("version", null);
+				if (result != null) {
+					return result;
+				}
+			}
+		} catch (Exception e) {
+			LOG.info("unable to read version. fallback to unknown. reason: {}", e.getMessage());
+		} finally {
+			Util.closeQuietly(is);
+		}
+		return "unknown";
 	}
 
 	private void index(HttpContoller controller) {

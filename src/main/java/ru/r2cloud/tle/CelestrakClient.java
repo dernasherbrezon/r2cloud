@@ -10,6 +10,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.R2Cloud;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.util.Util;
 
@@ -36,7 +37,7 @@ public class CelestrakClient {
 			con.setRequestMethod("GET");
 			con.setConnectTimeout(TIMEOUT);
 			con.setReadTimeout(TIMEOUT);
-			con.setRequestProperty("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
+			con.setRequestProperty("User-Agent", R2Cloud.VERSION + " info@r2cloud.ru");
 			int responseCode = con.getResponseCode();
 			if (responseCode != 200) {
 				LOG.error("unable to get weather tle. response code: {}. See logs for details", responseCode);

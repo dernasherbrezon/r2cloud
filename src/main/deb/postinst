@@ -19,6 +19,8 @@ if [ -f /etc/cron.daily/r2cloud ]; then
 	chmod 755 /etc/cron.daily/r2cloud
 fi
 
+echo "version=${config.version}" > ${config.installDir}/etc/version.properties
+
 if [ ! -f ${config.installDir}/ssl/domain-chain.crt ]; then
     echo "Certificate is not found at ${config.installDir}/ssl/domain-chain.crt. Generating new"
     mkdir -p ${config.installDir}/ssl

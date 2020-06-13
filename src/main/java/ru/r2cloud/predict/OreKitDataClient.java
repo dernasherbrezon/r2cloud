@@ -22,13 +22,13 @@ import java.util.zip.ZipInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.R2Cloud;
 import ru.r2cloud.util.Util;
 
 class OreKitDataClient {
 
 	private static final Logger LOG = LoggerFactory.getLogger(OreKitDataClient.class);
 	private static final int TIMEOUT = 10000;
-	private static final String USER_AGENT = "r2cloud/0.1 info@r2cloud.ru";
 
 	private final HttpClient httpclient;
 	private final List<String> urls;
@@ -66,7 +66,7 @@ class OreKitDataClient {
 		Files.createDirectories(tempPath);
 		Builder result = HttpRequest.newBuilder().uri(URI.create(url));
 		result.timeout(Duration.ofMillis(TIMEOUT));
-		result.header("User-Agent", USER_AGENT);
+		result.header("User-Agent", R2Cloud.VERSION + " info@r2cloud.ru");
 		HttpRequest request = result.build();
 		try {
 			HttpResponse<InputStream> response = httpclient.send(request, BodyHandlers.ofInputStream());

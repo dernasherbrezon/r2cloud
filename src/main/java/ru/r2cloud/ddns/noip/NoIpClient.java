@@ -16,6 +16,8 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.R2Cloud;
+
 public class NoIpClient {
 
 	private static final Logger LOG = LoggerFactory.getLogger(NoIpClient.class);
@@ -36,7 +38,7 @@ public class NoIpClient {
 	public String update(String domain) throws NoIpException, RetryException, InterruptedException {
 		HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(hostname + "/nic/update?hostname=" + domain));
 		builder.timeout(Duration.ofMinutes(1L));
-		builder.header("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
+		builder.header("User-Agent", R2Cloud.VERSION + " info@r2cloud.ru");
 		builder.header("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.US_ASCII)));
 		HttpResponse<String> response;
 		try {
