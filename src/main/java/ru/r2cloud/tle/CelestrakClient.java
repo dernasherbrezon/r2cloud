@@ -37,7 +37,7 @@ public class CelestrakClient {
 			con.setRequestMethod("GET");
 			con.setConnectTimeout(TIMEOUT);
 			con.setReadTimeout(TIMEOUT);
-			con.setRequestProperty("User-Agent", R2Cloud.VERSION + " info@r2cloud.ru");
+			con.setRequestProperty("User-Agent", R2Cloud.getVersion() + " info@r2cloud.ru");
 			int responseCode = con.getResponseCode();
 			if (responseCode != 200) {
 				LOG.error("unable to get weather tle. response code: {}. See logs for details", responseCode);

@@ -30,7 +30,7 @@ final class ExternalIpClient {
 	public String getExternalIp() {
 		HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(host));
 		builder.timeout(Duration.ofMinutes(1L));
-		builder.header("User-Agent", R2Cloud.VERSION + " info@r2cloud.ru");
+		builder.header("User-Agent", R2Cloud.getVersion() + " info@r2cloud.ru");
 		HttpResponse<String> response;
 
 		try {

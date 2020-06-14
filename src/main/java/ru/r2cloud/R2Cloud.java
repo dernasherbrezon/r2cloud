@@ -112,7 +112,7 @@ public class R2Cloud {
 
 	private static final Logger LOG = LoggerFactory.getLogger(R2Cloud.class);
 
-	public static String VERSION;
+	private static String version;
 
 	private final Map<String, HttpContoller> controllers = new HashMap<>();
 	private final WebServer webServer;
@@ -278,7 +278,7 @@ public class R2Cloud {
 			LOG.info("invalid arguments. expected: config.properties");
 			return;
 		}
-		VERSION = readVersion();
+		version = readVersion();
 		R2Cloud app;
 		String userPropertiesFilename = System.getProperty("user.home") + File.separator + ".r2cloud";
 		try (InputStream is = new FileInputStream(args[0])) {
@@ -334,7 +334,7 @@ public class R2Cloud {
 		} finally {
 			Util.closeQuietly(is);
 		}
-		return "unknown";
+		return null;
 	}
 
 	private void index(HttpContoller controller) {
@@ -355,5 +355,12 @@ public class R2Cloud {
 				throw new IllegalStateException("missing satellite configuration for: " + id);
 			}
 		}
+	}
+
+	public static String getVersion() {
+		if (version == null) {
+			return "unknown";
+		}
+		return version;
 	}
 }
