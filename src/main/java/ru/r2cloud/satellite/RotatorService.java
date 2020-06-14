@@ -70,7 +70,7 @@ public class RotatorService implements Lifecycle, ConfigListener {
 			String modelName = rotClient.getModelName();
 			LOG.info("initialized for model: {}", modelName);
 		} catch (Exception e) {
-			LOG.error("unable to connect to rotctrld", e);
+			Util.logIOException(LOG, "unable to connect to rotctrld", e);
 			enabled = false;
 			return;
 		}

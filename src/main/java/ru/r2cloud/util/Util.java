@@ -244,6 +244,27 @@ public final class Util {
 		}
 	}
 
+	// do not log whole stacktrace for IOExceptions
+	// they are expected because base station can work without internet
+	public static void logIOException(Logger log, String message, Throwable e) {
+		IOException cause = findIOExceptionCause(e);
+		if (cause != null) {
+			log.error(message + ": " + cause.getMessage());
+		} else {
+			log.error(message, e);
+		}
+	}
+
+	private static IOException findIOExceptionCause(Throwable e) {
+		if (e.getCause() != null) {
+			return findIOExceptionCause(e.getCause());
+		}
+		if (e instanceof IOException) {
+			return (IOException) e;
+		}
+		return null;
+	}
+
 	public static void readFully(ReadableByteChannel channel, ByteBuffer b) throws IOException {
 		final int expectedLength = b.remaining();
 		int read = 0;

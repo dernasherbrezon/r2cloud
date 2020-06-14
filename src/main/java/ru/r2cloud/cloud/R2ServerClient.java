@@ -27,6 +27,7 @@ import com.eclipsesource.json.ParseException;
 import ru.r2cloud.R2Cloud;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 
 public class R2ServerClient {
 
@@ -59,7 +60,7 @@ public class R2ServerClient {
 			}
 			return readObservationId(response.body());
 		} catch (IOException e) {
-			LOG.error("[{}] unable to save meta", observation.getId(), e);
+			Util.logIOException(LOG, "[" + observation.getId() + "] unable to save meta", e);
 			return null;
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
@@ -88,7 +89,7 @@ public class R2ServerClient {
 			return;
 		}
 		httpclient.sendAsync(request, BodyHandlers.ofString()).exceptionally(ex -> {
-			LOG.error("unable to upload: {}", url, ex);
+			Util.logIOException(LOG, "unable to upload: " + url, ex);
 			return null;
 		}).thenAccept(response -> {
 			if (response != null && response.statusCode() != 200 && LOG.isErrorEnabled()) {
@@ -128,7 +129,7 @@ public class R2ServerClient {
 		}
 		HttpRequest request = createJsonRequest("/api/v1/metrics", o).build();
 		httpclient.sendAsync(request, BodyHandlers.ofString()).exceptionally(ex -> {
-			LOG.error("unable to save metrics", ex);
+			Util.logIOException(LOG, "unable to save metrics", ex);
 			return null;
 		}).thenAccept(response -> {
 			if (response != null && response.statusCode() != 200 && LOG.isErrorEnabled()) {
