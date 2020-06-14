@@ -24,6 +24,7 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
 
+import ru.r2cloud.R2Cloud;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.util.Configuration;
 
@@ -143,7 +144,7 @@ public class R2ServerClient {
 	private HttpRequest.Builder createRequest(String path) {
 		Builder result = HttpRequest.newBuilder().uri(URI.create(hostname + path));
 		result.timeout(Duration.ofMinutes(1L));
-		result.header("User-Agent", "r2cloud/0.2 info@r2cloud.ru");
+		result.header("User-Agent", R2Cloud.getVersion() + " info@r2cloud.ru");
 		result.header("Authorization", config.getProperty("r2cloud.apiKey"));
 		return result;
 	}
