@@ -51,23 +51,27 @@ public class R2ServerService {
 		dao.update(observation);
 
 		if (config.getBoolean("r2cloud.syncSpectogram")) {
-			File spectogram;
-			if (observation.getSpectogramPath() == null) {
-				spectogram = spectogramService.create(observation);
-				if (spectogram != null) {
-					spectogram = dao.saveSpectogram(observation.getSatelliteId(), observation.getId(), spectogram);
-				}
-				if (spectogram == null) {
-					LOG.info("[{}] unable to save spectogram", observation.getId());
-				}
-			} else {
-				spectogram = observation.getSpectogramPath();
-			}
-			if (spectogram != null) {
-				client.saveSpectogram(id, spectogram);
-			}
+			uploadSpectogram(observation, id);
 		}
 		LOG.info("[{}] observation uploaded", observation.getId());
+	}
+
+	private void uploadSpectogram(Observation observation, Long id) {
+		File spectogram;
+		if (observation.getSpectogramPath() == null) {
+			spectogram = spectogramService.create(observation);
+			if (spectogram != null) {
+				spectogram = dao.saveSpectogram(observation.getSatelliteId(), observation.getId(), spectogram);
+			}
+			if (spectogram == null) {
+				LOG.info("[{}] unable to save spectogram", observation.getId());
+			}
+		} else {
+			spectogram = observation.getSpectogramPath();
+		}
+		if (spectogram != null) {
+			client.saveSpectogram(id, spectogram);
+		}
 	}
 
 	public void saveMetrics(JsonArray metrics) {
