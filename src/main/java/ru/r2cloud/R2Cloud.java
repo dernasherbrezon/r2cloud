@@ -214,7 +214,6 @@ public class R2Cloud {
 		decoders.put("44365", new FskAx25G3ruhDecoder(predict, props, 9600, Painani1Beacon.class));
 		decoders.put("43855", new ChompttDecoder(predict, props));
 		decoders.put("43880", new FskAx25G3ruhDecoder(predict, props, 9600, Uwe4Beacon.class));
-		decoders.put("43880", new FskAx25G3ruhDecoder(predict, props, 9600, Uwe4Beacon.class));
 		decoders.put("40012", new FskAx25G3ruhDecoder(predict, props, 9600, Unisat6Beacon.class));
 		decoders.put("40042", new FskAx25G3ruhDecoder(predict, props, 9600, PolyItan1Beacon.class));
 		decoders.put("42775", new FskAx25G3ruhDecoder(predict, props, 9600, Ax25Beacon.class));
