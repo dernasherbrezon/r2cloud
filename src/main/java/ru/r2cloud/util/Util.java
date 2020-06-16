@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.channels.UnresolvedAddressException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -244,23 +245,26 @@ public final class Util {
 		}
 	}
 
-	// do not log whole stacktrace for IOExceptions
+	// do not log whole stacktrace for network-based exceptions
 	// they are expected because base station can work without internet
 	public static void logIOException(Logger log, String message, Throwable e) {
-		IOException cause = findIOExceptionCause(e);
+		String cause = getShortMessageToLog(e);
 		if (cause != null) {
-			log.error(message + ": " + cause.getMessage());
+			log.error(message + ": " + cause);
 		} else {
 			log.error(message, e);
 		}
 	}
 
-	private static IOException findIOExceptionCause(Throwable e) {
+	private static String getShortMessageToLog(Throwable e) {
 		if (e.getCause() != null) {
-			return findIOExceptionCause(e.getCause());
+			return getShortMessageToLog(e.getCause());
 		}
 		if (e instanceof IOException) {
-			return (IOException) e;
+			return e.getMessage();
+		}
+		if (e instanceof UnresolvedAddressException) {
+			return e.toString();
 		}
 		return null;
 	}

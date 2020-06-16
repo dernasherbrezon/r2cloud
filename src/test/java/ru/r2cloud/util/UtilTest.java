@@ -12,16 +12,21 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.ConnectException;
+import java.nio.channels.UnresolvedAddressException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletionException;
 import java.util.zip.GZIPOutputStream;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.Mockito;
+import org.slf4j.Logger;
 
 import com.aerse.mockfs.FailingByteChannelCallback;
 import com.aerse.mockfs.MockFileSystem;
@@ -33,6 +38,20 @@ public class UtilTest {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
+
+	@Test
+	public void testLogErrorShortMessage() {
+		Logger mock = Mockito.mock(Logger.class);
+		Util.logIOException(mock, "unable to save", new CompletionException(createConnectException(new UnresolvedAddressException())));
+		Mockito.verify(mock).error("unable to save: java.nio.channels.UnresolvedAddressException");
+	}
+	
+	@Test
+	public void testLogErrorShortMessage2() {
+		Logger mock = Mockito.mock(Logger.class);
+		Util.logIOException(mock, "unable to save", new CompletionException(createConnectException(new IOException("connection refused"))));
+		Mockito.verify(mock).error("unable to save: connection refused");
+	}
 
 	@Test
 	public void testRotateImage() throws Exception {
@@ -122,5 +141,11 @@ public class UtilTest {
 				fos.write(0x01);
 			}
 		}
+	}
+
+	private static ConnectException createConnectException(Throwable e) {
+		ConnectException result = new ConnectException("connect failed");
+		result.initCause(e);
+		return result;
 	}
 }
