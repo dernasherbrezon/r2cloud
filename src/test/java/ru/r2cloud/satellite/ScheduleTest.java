@@ -117,6 +117,15 @@ public class ScheduleTest {
 		schedule.add(entry);
 		assertNotNull(schedule.getOverlap(1, 3));
 	}
+	
+	@Test
+	public void testFullOverlap2() {
+		DefaultScheduleEntry entry = create();
+		entry.setStartTimeMillis(1);
+		entry.setEndTimeMillis(3);
+		schedule.add(entry);
+		assertNotNull(schedule.getOverlap(0, 4));
+	}
 
 	private static DefaultScheduleEntry create() {
 		DefaultScheduleEntry entry = new DefaultScheduleEntry();

@@ -60,6 +60,9 @@ public class Schedule<T extends ScheduleEntry> {
 			if (cur.getStartTimeMillis() < end && end < cur.getEndTimeMillis()) {
 				return cur;
 			}
+			if (start < cur.getStartTimeMillis() && cur.getEndTimeMillis() < end) {
+				return cur;
+			}
 		}
 		return null;
 	}
