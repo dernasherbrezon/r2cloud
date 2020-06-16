@@ -60,7 +60,7 @@ public class CelestrakClient {
 				}
 			}
 		} catch (Exception e) {
-			LOG.error("unable to get weather tle", e);
+			Util.logIOException(LOG, "unable to get tle", e);
 		} finally {
 			if (con != null) {
 				con.disconnect();
