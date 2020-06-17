@@ -64,7 +64,6 @@ public abstract class TelemetryDecoder implements Decoder {
 			LOG.error("unable to process: {}", rawIq, e);
 			return result;
 		}
-		// FIXME only these are required in the observationresult
 		result.setNumberOfDecodedPackets(numberOfDecodedPackets);
 		if (numberOfDecodedPackets <= 0) {
 			Util.deleteQuietly(binFile);
