@@ -108,6 +108,13 @@ public class ObservationDaoTest {
 
 		actual = dao.find(req.getSatelliteId(), req.getId());
 		assertNotNull(actual.getSpectogramPath());
+		assertNotNull(actual.getDataPath());
+		assertNotNull(actual.getImagePath());
+		assertNotNull(actual.getRawPath());
+		assertNotNull(actual.getSpectogramURL());
+		assertNotNull(actual.getDataURL());
+		assertNotNull(actual.getaURL());
+		assertNotNull(actual.getRawURL());
 
 		String gain = UUID.randomUUID().toString();
 		Observation full = new Observation(req);

@@ -358,41 +358,28 @@ public class Observation {
 		if (getNumberOfDecodedPackets() != null) {
 			json.add("numberOfDecodedPackets", getNumberOfDecodedPackets());
 		}
-		if (getaURL() != null) {
-			if (signed != null) {
-				json.add("aURL", signed.sign(getaURL()));
-			} else {
-				json.add("aURL", getaURL());
-			}
-		}
-		if (getDataURL() != null) {
-			if (signed != null) {
-				json.add("data", signed.sign(getDataURL()));
-			} else {
-				json.add("data", getDataURL());
-			}
-		}
-		if (getSpectogramURL() != null) {
-			if (signed != null) {
-				json.add("spectogramURL", signed.sign(getSpectogramURL()));
-			} else {
-				json.add("spectogramURL", getSpectogramURL());
-			}
-		}
-		if (getRawURL() != null) {
-			if (signed != null) {
-				json.add("rawURL", signed.sign(getRawURL()));
-			} else {
-				json.add("rawURL", getRawURL());
-			}
-		}
-		ObservationStatus status = getStatus();
-		if (status == null) {
+		addNullable("aURL", getaURL(), signed, json);
+		addNullable("data", getDataURL(), signed, json);
+		addNullable("spectogramURL", getSpectogramURL(), signed, json);
+		addNullable("rawURL", getRawURL(), signed, json);
+		ObservationStatus statusToSave = getStatus();
+		if (statusToSave == null) {
 			// this would avoid double upload/decode of old observations
-			status = ObservationStatus.UPLOADED;
+			statusToSave = ObservationStatus.UPLOADED;
 		}
-		json.add("status", status.name());
+		json.add("status", statusToSave.name());
 		return json;
+	}
+
+	private static void addNullable(String name, String url, SignedURL signed, JsonObject json) {
+		if (url == null) {
+			return;
+		}
+		if (signed != null) {
+			json.add(name, signed.sign(url));
+		} else {
+			json.add(name, url);
+		}
 	}
 
 	private static GeodeticPoint groundStationFromJson(JsonObject json) {
