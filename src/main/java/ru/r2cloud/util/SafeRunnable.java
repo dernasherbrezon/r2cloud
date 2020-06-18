@@ -13,7 +13,7 @@ public abstract class SafeRunnable implements Runnable {
 			safeRun();
 		} catch (Exception e) {
 			if (hasInterruptedCause(e)) {
-				LOG.info("unable to continue: " + e.getMessage());
+				LOG.info("unable to continue: {}", e.getMessage());
 			} else {
 				LOG.error("unable to run", e);
 			}
