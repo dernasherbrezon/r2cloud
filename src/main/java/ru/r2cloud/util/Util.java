@@ -250,7 +250,7 @@ public final class Util {
 	public static void logIOException(Logger log, String message, Throwable e) {
 		String cause = getShortMessageToLog(e);
 		if (cause != null) {
-			log.error(message + ": " + cause);
+			log.error("{}: {}", message, cause);
 		} else {
 			log.error(message, e);
 		}
