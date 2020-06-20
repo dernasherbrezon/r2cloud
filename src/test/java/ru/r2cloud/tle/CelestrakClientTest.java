@@ -3,7 +3,6 @@ package ru.r2cloud.tle;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.net.BindException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,21 +49,7 @@ public class CelestrakClientTest {
 	@Before
 	public void start() throws Exception {
 		server = new CelestrakServer();
-		int port = 8000;
-		Exception last = null;
-		for (int i = 0; i < 10; i++) {
-			try {
-				server.start(port + i);
-				last = null;
-				break;
-			} catch (BindException e) {
-				last = e;
-				continue;
-			}
-		}
-		if (last != null) {
-			throw last;
-		}
+		server.start();
 	}
 
 	@After

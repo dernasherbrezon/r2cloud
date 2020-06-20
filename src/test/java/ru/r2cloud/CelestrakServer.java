@@ -2,6 +2,7 @@ package ru.r2cloud;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 
@@ -18,7 +19,25 @@ public class CelestrakServer {
 		this.data = data;
 	}
 
-	public void start(int port) throws IOException {
+	public void start() throws IOException {
+		int port = 8000;
+		IOException last = null;
+		for (int i = 0; i < 10; i++) {
+			try {
+				start(port + i);
+				last = null;
+				break;
+			} catch (BindException e) {
+				last = e;
+				continue;
+			}
+		}
+		if (last != null) {
+			throw last;
+		}
+	}
+
+	private void start(int port) throws IOException {
 		server = HttpServer.create(new InetSocketAddress("localhost", port), 0);
 		server.start();
 		server.createContext("/NORAD/elements/active.txt", new HttpHandler() {
