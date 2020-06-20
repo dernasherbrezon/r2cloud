@@ -18,8 +18,8 @@ public class CelestrakServer {
 		this.data = data;
 	}
 
-	public void start() throws IOException {
-		server = HttpServer.create(new InetSocketAddress("localhost", 8000), 0);
+	public void start(int port) throws IOException {
+		server = HttpServer.create(new InetSocketAddress("localhost", port), 0);
 		server.start();
 		server.createContext("/NORAD/elements/active.txt", new HttpHandler() {
 
