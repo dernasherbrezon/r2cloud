@@ -43,14 +43,14 @@ public class UtilTest {
 	public void testLogErrorShortMessage() {
 		Logger mock = Mockito.mock(Logger.class);
 		Util.logIOException(mock, "unable to save", new CompletionException(createConnectException(new UnresolvedAddressException())));
-		Mockito.verify(mock).error("unable to save: java.nio.channels.UnresolvedAddressException");
+		Mockito.verify(mock).error("{}: {}", "unable to save", "java.nio.channels.UnresolvedAddressException");
 	}
 	
 	@Test
 	public void testLogErrorShortMessage2() {
 		Logger mock = Mockito.mock(Logger.class);
 		Util.logIOException(mock, "unable to save", new CompletionException(createConnectException(new IOException("connection refused"))));
-		Mockito.verify(mock).error("unable to save: connection refused");
+		Mockito.verify(mock).error("{}: {}", "unable to save", "connection refused");
 	}
 
 	@Test
