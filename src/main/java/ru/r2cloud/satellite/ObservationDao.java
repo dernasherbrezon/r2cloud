@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -224,9 +225,16 @@ public class ObservationDao {
 
 	public boolean update(Observation cur) {
 		JsonObject meta = cur.toJson(null);
-		Path dest = getObservationBasepath(cur).resolve(META_FILENAME);
-		try (BufferedWriter w = Files.newBufferedWriter(dest)) {
+		Path temp = getObservationBasepath(cur).resolve(META_FILENAME + ".tmp");
+		try (BufferedWriter w = Files.newBufferedWriter(temp)) {
 			w.append(meta.toString());
+		} catch (IOException e) {
+			LOG.error("unable to write meta", e);
+			return false;
+		}
+		Path dest = getObservationBasepath(cur).resolve(META_FILENAME);
+		try {
+			Files.move(temp, dest, StandardCopyOption.ATOMIC_MOVE);
 			return true;
 		} catch (IOException e) {
 			LOG.error("unable to write meta", e);

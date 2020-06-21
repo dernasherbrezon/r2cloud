@@ -1,6 +1,7 @@
 package ru.r2cloud.satellite;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -9,6 +10,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +21,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.orekit.bodies.GeodeticPoint;
+
+import com.aerse.mockfs.FailingByteChannelCallback;
+import com.aerse.mockfs.MockFileSystem;
 
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.model.FrequencySource;
@@ -33,6 +39,24 @@ public class ObservationDaoTest {
 
 	private TestConfiguration config;
 	private ObservationDao dao;
+	private MockFileSystem fs;
+
+	@Test
+	public void testFailedToUpdate() throws Exception {
+		ObservationRequest req = createRequest();
+		assertNotNull(dao.insert(req, createTempFile("wav")));
+		Observation observation = dao.find(req.getSatelliteId(), req.getId());
+		// corrupt writing
+		Path pathToMock = config.getSatellitesBasePath().resolve(req.getSatelliteId()).resolve("data").resolve(req.getId());
+		fs.mock(pathToMock, new FailingByteChannelCallback(3));
+		observation.setStatus(ObservationStatus.DECODED);
+		assertFalse(dao.update(observation));
+		fs.removeMock(pathToMock);
+		// ensure meta in the state before corruption
+		observation = dao.find(req.getSatelliteId(), req.getId());
+		assertNotNull(observation);
+		assertEquals(ObservationStatus.NEW, observation.getStatus());
+	}
 
 	@Test
 	public void testFindUnknownObservation() throws Exception {
@@ -170,7 +194,8 @@ public class ObservationDaoTest {
 
 	@Before
 	public void start() throws Exception {
-		config = new TestConfiguration(tempFolder);
+		fs = new MockFileSystem(FileSystems.getDefault());
+		config = new TestConfiguration(tempFolder, fs);
 		config.setProperty("satellites.basepath.location", tempFolder.getRoot().getAbsolutePath());
 		config.update();
 
