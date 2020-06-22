@@ -8,6 +8,15 @@ public class Satellite {
 	private long frequency;
 	private boolean enabled;
 	private long bandwidth;
+	private Integer baud;
+
+	public Integer getBaud() {
+		return baud;
+	}
+	
+	public void setBaud(Integer baud) {
+		this.baud = baud;
+	}
 	
 	public long getBandwidth() {
 		return bandwidth;

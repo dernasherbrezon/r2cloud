@@ -65,6 +65,7 @@ public class ObservationFactory {
 			result.setOutputSampleRate(144_000);
 			result.setActualFrequency(satellite.getFrequency());
 			break;
+		case FSK_AX25_G3RUH:
 		case TELEMETRY:
 			result.setInputSampleRate(240_000);
 			result.setOutputSampleRate(48_000);

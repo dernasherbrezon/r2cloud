@@ -27,6 +27,7 @@ import ru.r2cloud.jradio.swampsat2.Swampsat2Beacon;
 import ru.r2cloud.jradio.unisat6.Unisat6Beacon;
 import ru.r2cloud.jradio.uwe4.Uwe4Beacon;
 import ru.r2cloud.metrics.Metrics;
+import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.ObservationDao;
@@ -216,16 +217,16 @@ public class R2Cloud {
 		decoders.put("43880", new FskAx25G3ruhDecoder(predict, props, 9600, Uwe4Beacon.class));
 		decoders.put("40012", new FskAx25G3ruhDecoder(predict, props, 9600, Unisat6Beacon.class));
 		decoders.put("40042", new FskAx25G3ruhDecoder(predict, props, 9600, PolyItan1Beacon.class));
-		decoders.put("42775", new FskAx25G3ruhDecoder(predict, props, 9600, Ax25Beacon.class));
-		decoders.put("44352", new FskAx25G3ruhDecoder(predict, props, 19200, Ax25Beacon.class));
-		decoders.put("44355", new FskAx25G3ruhDecoder(predict, props, 9600, Ax25Beacon.class));
-		decoders.put("40014", new FskAx25G3ruhDecoder(predict, props, 9600, Ax25Beacon.class));
-		decoders.put("42761", new FskAx25G3ruhDecoder(predict, props, 4800, Ax25Beacon.class));
-		decoders.put("42759", new FskAx25G3ruhDecoder(predict, props, 4800, Ax25Beacon.class));
-		decoders.put("40379", new FskAx25G3ruhDecoder(predict, props, 9600, Ax25Beacon.class));
-		decoders.put("43793", new FskAx25G3ruhDecoder(predict, props, 9600, Ax25Beacon.class));
-		decoders.put("43666", new FskAx25G3ruhDecoder(predict, props, 9600, Ax25Beacon.class));
-		
+
+		for (Satellite cur : satelliteDao.findAll()) {
+			if (cur.getSource().equals(FrequencySource.FSK_AX25_G3RUH)) {
+				if (cur.getBaud() == null) {
+					throw new IllegalStateException("baud is missing for generic ax25 satellite: " + cur.getId());
+				}
+				decoders.put(cur.getId(), new FskAx25G3ruhDecoder(predict, props, cur.getBaud(), Ax25Beacon.class));
+			}
+		}
+
 		validateDecoders();
 		decoderService = new DecoderService(props, decoders, resultDao, r2cloudService, threadFactory);
 
