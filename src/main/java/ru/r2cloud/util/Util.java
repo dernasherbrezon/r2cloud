@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.security.cert.CertPathBuilderException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -265,6 +266,9 @@ public final class Util {
 		}
 		if (e instanceof UnresolvedAddressException) {
 			return e.toString();
+		}
+		if (e instanceof CertPathBuilderException) {
+			return e.getMessage();
 		}
 		return null;
 	}
