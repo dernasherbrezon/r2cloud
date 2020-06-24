@@ -146,7 +146,7 @@ public class WebServer extends NanoHTTPD {
 		Map<String, List<String>> parameters = session.getParameters();
 		if (parameters.isEmpty()) {
 			try {
-				session.parseBody(new HashMap<String, String>());
+				session.parseBody(new HashMap<>());
 				parameters = session.getParameters();
 			} catch (IOException e) {
 				throw new RuntimeException(e);
