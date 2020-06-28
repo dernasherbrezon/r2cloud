@@ -32,6 +32,7 @@ import ru.r2cloud.SequentialRequestHandler;
 import ru.r2cloud.SimpleRequestHandler;
 import ru.r2cloud.SteppingClock;
 import ru.r2cloud.TestConfiguration;
+import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.predict.PredictOreKit;
@@ -52,6 +53,7 @@ public class RotatorServiceTest {
 	private RotatorService service;
 	private int serverPort;
 	private CollectingRequestHandler requestHandler;
+	private Metrics metrics;
 
 	@Test(expected = RuntimeException.class)
 	public void testRotctrldUnavailableDuringThePass() {
@@ -59,7 +61,7 @@ public class RotatorServiceTest {
 		config.setProperty("rotator.enabled", true);
 		DefaultClock clock = new DefaultClock();
 		ObservationRequest req = createRequest();
-		service = new RotatorService(config, predict, new ScheduleFixedTimesTheadPoolFactory(1), new SteppingClock(req.getStartTimeMillis(), 1000));
+		service = new RotatorService(config, predict, new ScheduleFixedTimesTheadPoolFactory(1), new SteppingClock(req.getStartTimeMillis(), 1000), metrics);
 		service.start();
 		service.schedule(req, clock.millis());
 	}
@@ -68,7 +70,7 @@ public class RotatorServiceTest {
 	public void disableEnableService() {
 		config.setProperty("rotator.enabled", true);
 		DefaultClock clock = new DefaultClock();
-		service = new RotatorService(config, predict, new ScheduleFixedTimesTheadPoolFactory(0), clock);
+		service = new RotatorService(config, predict, new ScheduleFixedTimesTheadPoolFactory(0), clock, metrics);
 		service.start();
 		config.setProperty("rotator.enabled", false);
 		config.update();
@@ -83,7 +85,7 @@ public class RotatorServiceTest {
 		config.setProperty("rotator.enabled", true);
 		config.setProperty("rotator.rotctrld.port", serverPort + 1);
 		DefaultClock clock = new DefaultClock();
-		service = new RotatorService(config, predict, new ThreadPoolFactoryImpl(), clock);
+		service = new RotatorService(config, predict, new ThreadPoolFactoryImpl(), clock, metrics);
 		service.start();
 		assertNull(service.schedule(createRequest(), clock.millis()));
 	}
@@ -93,7 +95,7 @@ public class RotatorServiceTest {
 		ObservationRequest req = createRequest();
 		int times = (int) ((req.getEndTimeMillis() - req.getStartTimeMillis()) / 1000);
 		config.setProperty("rotator.enabled", true);
-		service = new RotatorService(config, predict, new ScheduleFixedTimesTheadPoolFactory(times), new SteppingClock(req.getStartTimeMillis(), 1000));
+		service = new RotatorService(config, predict, new ScheduleFixedTimesTheadPoolFactory(times), new SteppingClock(req.getStartTimeMillis(), 1000), metrics);
 		service.start();
 		assertNotNull(service.schedule(req, req.getStartTimeMillis()));
 		try (BufferedReader r = new BufferedReader(new InputStreamReader(RotatorService.class.getClassLoader().getResourceAsStream("expected/rotctrld-requests.txt"), StandardCharsets.UTF_8))) {
@@ -119,7 +121,7 @@ public class RotatorServiceTest {
 	public void testDisabled() {
 		config.setProperty("rotator.enabled", false);
 		DefaultClock clock = new DefaultClock();
-		service = new RotatorService(config, predict, new ThreadPoolFactoryImpl(), clock);
+		service = new RotatorService(config, predict, new ThreadPoolFactoryImpl(), clock, metrics);
 		service.start();
 		assertNull(service.schedule(createRequest(), clock.millis()));
 	}
@@ -168,6 +170,7 @@ public class RotatorServiceTest {
 		config.setProperty("scheduler.orekit.path", "./src/test/resources/data/orekit-data");
 
 		predict = new PredictOreKit(config);
+		metrics = new Metrics(config, null, new DefaultClock());
 	}
 
 	private void startMockServer() throws IOException {

@@ -169,7 +169,7 @@ public class R2Cloud {
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient(props.getProperty("celestrak.hostname")));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
 		signed = new SignedURL(props, clock);
-		rotatorService = new RotatorService(props, predict, threadFactory, clock);
+		rotatorService = new RotatorService(props, predict, threadFactory, clock, metrics);
 		APTDecoder aptDecoder = new APTDecoder(props, processFactory);
 		decoders.put("25338", aptDecoder);
 		decoders.put("28654", aptDecoder);

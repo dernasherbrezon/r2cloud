@@ -9,7 +9,10 @@ import org.orekit.propagation.analytical.tle.TLEPropagator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.health.HealthCheck;
+
 import ru.r2cloud.Lifecycle;
+import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.rotctrld.Position;
@@ -18,6 +21,7 @@ import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
+import ru.r2cloud.util.ResultUtil;
 import ru.r2cloud.util.ThreadPoolFactory;
 import ru.r2cloud.util.Util;
 
@@ -30,13 +34,14 @@ public class RotatorService implements Lifecycle, ConfigListener {
 	private String rotatorHostname;
 	private int rotatorPort;
 	private RotctrldClient rotClient;
+	private String failureMessage;
 
 	private final Configuration config;
 	private final PredictOreKit predict;
 	private final ThreadPoolFactory threadpoolFactory;
 	private final Clock clock;
 
-	public RotatorService(Configuration config, PredictOreKit predict, ThreadPoolFactory threadpoolFactory, Clock clock) {
+	public RotatorService(Configuration config, PredictOreKit predict, ThreadPoolFactory threadpoolFactory, Clock clock, Metrics metrics) {
 		this.config = config;
 		this.predict = predict;
 		this.threadpoolFactory = threadpoolFactory;
@@ -46,6 +51,21 @@ public class RotatorService implements Lifecycle, ConfigListener {
 		this.rotClient = new RotctrldClient(rotatorHostname, rotatorPort, config.getInteger("rotator.rotctrld.timeout"));
 		this.enabled = config.getBoolean("rotator.enabled");
 		this.config.subscribe(this, "rotator.enabled", "rotator.rotctrld.hostname", "rotator.rotctrld.port");
+		metrics.getHealthRegistry().register("rotctrld", new HealthCheck() {
+
+			@Override
+			protected Result check() throws Exception {
+				if (failureMessage == null) {
+					if (enabled) {
+						return ResultUtil.healthy();
+					} else {
+						return ResultUtil.unknown();
+					}
+				} else {
+					return ResultUtil.unhealthy(failureMessage);
+				}
+			}
+		});
 	}
 
 	@Override
@@ -70,7 +90,8 @@ public class RotatorService implements Lifecycle, ConfigListener {
 			String modelName = rotClient.getModelName();
 			LOG.info("initialized for model: {}", modelName);
 		} catch (Exception e) {
-			Util.logIOException(LOG, "unable to connect to rotctrld", e);
+			failureMessage = "unable to connect to rotctrld";
+			Util.logIOException(LOG, failureMessage, e);
 			enabled = false;
 			return;
 		}
