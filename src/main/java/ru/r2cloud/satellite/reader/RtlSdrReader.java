@@ -24,6 +24,8 @@ public class RtlSdrReader implements IQReader {
 	private final ProcessFactory factory;
 	private final ObservationRequest req;
 
+	private boolean completed = false;
+
 	public RtlSdrReader(Configuration config, ProcessFactory factory, ObservationRequest req) {
 		this.config = config;
 		this.factory = factory;
@@ -31,7 +33,10 @@ public class RtlSdrReader implements IQReader {
 	}
 
 	@Override
-	public IQData start() throws InterruptedException {
+	public synchronized IQData start() throws InterruptedException {
+		if (completed) {
+			return null;
+		}
 		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw.gz");
 		Long startTimeMillis = null;
 		Long endTimeMillis = null;
@@ -67,9 +72,10 @@ public class RtlSdrReader implements IQReader {
 	}
 
 	@Override
-	public void complete() {
+	public synchronized void complete() {
 		Util.shutdown("rtl_sdr for " + req.getId(), rtlSdr, 10000);
 		rtlSdr = null;
+		completed = true;
 	}
 
 }
