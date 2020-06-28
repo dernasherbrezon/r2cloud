@@ -33,7 +33,7 @@ public class RtlSdrReader implements IQReader {
 	}
 
 	@Override
-	public synchronized IQData start() throws InterruptedException {
+	public IQData start() throws InterruptedException {
 		if (completed) {
 			return null;
 		}
@@ -72,7 +72,7 @@ public class RtlSdrReader implements IQReader {
 	}
 
 	@Override
-	public synchronized void complete() {
+	public void complete() {
 		Util.shutdown("rtl_sdr for " + req.getId(), rtlSdr, 10000);
 		rtlSdr = null;
 		completed = true;
