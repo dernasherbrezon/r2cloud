@@ -35,7 +35,7 @@ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A5A70917
 sudo bash -c "echo 'deb [arch=armhf] http://s3.amazonaws.com/r2cloud r2cloud main' > /etc/apt/sources.list.d/r2cloud.list"
 sudo apt-get update
 sudo apt-get install r2cloud
-```   
+```
 2. Insert SD card into the RaspberryPi and open [https://raspberrypi.local](https://raspberrypi.local) address.
 3. Accept self-signed certificate. This is unique certificate that was generated during installation. Once setup is complete, you could enable proper SSL using [Letsencrypt](https://letsencrypt.org). 
 
