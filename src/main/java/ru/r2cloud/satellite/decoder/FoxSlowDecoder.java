@@ -53,7 +53,7 @@ public class FoxSlowDecoder<T extends Beacon> extends TelemetryDecoder {
 		codes.add("1100000101");
 		CorrelateAccessCodeTag correlate = new CorrelateAccessCodeTag(s2h, 0, codes, false);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new FixedLengthTagger(correlate, Fox.SLOW_FRAME_SIZE * 10));
-		return new Fox<T>(pdu, clazz);
+		return new Fox<>(pdu, clazz);
 	}
 
 	@Override
