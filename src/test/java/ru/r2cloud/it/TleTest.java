@@ -23,7 +23,7 @@ public class TleTest extends RegisteredTest {
 		Tle first = new Tle(createTle().toArray(new String[0]));
 		Tle second = new Tle(createTle().toArray(new String[0]));
 		assertEquals(first.hashCode(), second.hashCode());
-		assertTrue(first.equals(second));
+		assertEquals(first, second);
 	}
 
 	@Test
