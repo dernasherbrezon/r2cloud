@@ -16,9 +16,11 @@ import ru.r2cloud.cloud.R2ServerClient;
 import ru.r2cloud.cloud.R2ServerService;
 import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.jradio.ax25.Ax25Beacon;
+import ru.r2cloud.jradio.bsusat1.Bsusat1Beacon;
 import ru.r2cloud.jradio.fox.Fox1BBeacon;
 import ru.r2cloud.jradio.fox.Fox1CBeacon;
 import ru.r2cloud.jradio.fox.Fox1DBeacon;
+import ru.r2cloud.jradio.ls2.Lightsail2Beacon;
 import ru.r2cloud.jradio.painani1.Painani1Beacon;
 import ru.r2cloud.jradio.polyitan1.PolyItan1Beacon;
 import ru.r2cloud.jradio.qarman.QarmanBeacon;
@@ -217,6 +219,8 @@ public class R2Cloud {
 		decoders.put("43880", new FskAx25G3ruhDecoder(predict, props, 9600, Uwe4Beacon.class));
 		decoders.put("40012", new FskAx25G3ruhDecoder(predict, props, 9600, Unisat6Beacon.class));
 		decoders.put("40042", new FskAx25G3ruhDecoder(predict, props, 9600, PolyItan1Beacon.class));
+		decoders.put("43666", new FskAx25G3ruhDecoder(predict, props, 9600, Bsusat1Beacon.class));
+		decoders.put("44420", new FskAx25G3ruhDecoder(predict, props, 9600, Lightsail2Beacon.class));
 
 		for (Satellite cur : satelliteDao.findAll()) {
 			if (cur.getSource().equals(FrequencySource.FSK_AX25_G3RUH)) {
