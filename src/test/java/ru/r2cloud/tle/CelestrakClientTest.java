@@ -1,7 +1,6 @@
 package ru.r2cloud.tle;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +27,7 @@ public class CelestrakClientTest {
 		CelestrakClient client = new CelestrakClient(server.getUrl());
 		Map<String, Tle> actual = client.getTleForActiveSatellites();
 		assertEquals(expected.size(), actual.size());
-		assertTrue(expected.equals(actual));
+		assertEquals(expected, actual);
 	}
 
 	@Test
