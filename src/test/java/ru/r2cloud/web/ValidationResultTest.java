@@ -36,7 +36,7 @@ public class ValidationResultTest {
 		ValidationResult first = create();
 		ValidationResult second = create();
 		assertEquals(first.hashCode(), second.hashCode());
-		assertTrue(first.equals(second));
+		assertEquals(first, second);
 	}
 
 	private static ValidationResult create() {
