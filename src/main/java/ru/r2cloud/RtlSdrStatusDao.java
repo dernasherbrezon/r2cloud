@@ -77,7 +77,6 @@ public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public synchronized void start() {
 		if (executor != null) {
@@ -118,7 +117,7 @@ public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
 				}
 			}
 		});
-		metrics.getRegistry().gauge("ppm", new MetricSupplier<Gauge>() {
+		metrics.getRegistry().gauge("ppm", new MetricSupplier<>() {
 
 			@Override
 			public Gauge<Integer> newMetric() {
