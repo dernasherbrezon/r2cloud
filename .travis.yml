@@ -27,7 +27,7 @@ before_install:
     
 script:
   - set -e
-  - license_finder --debug
+  - license_finder
   - mvn clean verify sonar:sonar -Pcoverage -Dsonar.scm.disabled=true -Dsonar.language=java -Dsonar.java.source=1.8
   - cp ./target/*.deb ./target/it-tests
   - docker run --rm --privileged multiarch/qemu-user-static:register

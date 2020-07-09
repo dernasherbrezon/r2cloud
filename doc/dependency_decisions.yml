@@ -1,41 +1,41 @@
 ---
-- - :whitelist
+- - :permit
   - Apache 2.0
   - :who: 
     :why: 
     :versions: []
     :when: 2020-07-09 20:46:05.309190000 Z
-- - :whitelist
+- - :permit
   - MIT
   - :who: 
     :why: 
     :versions: []
     :when: 2020-07-09 20:46:45.513067000 Z
-- - :whitelist
+- - :permit
   - Simplified BSD
   - :who: 
     :why: 
     :versions: []
     :when: 2020-07-09 20:46:56.297587000 Z
-- - :whitelist
+- - :permit
   - Bouncy Castle Licence
   - :who: 
     :why: 
     :versions: []
     :when: 2020-07-09 20:47:13.295966000 Z
-- - :whitelist
+- - :permit
   - BSD style
   - :who: 
     :why: 
     :versions: []
     :when: 2020-07-09 20:47:23.141414000 Z
-- - :whitelist
+- - :permit
   - New BSD
   - :who: 
     :why: 
     :versions: []
     :when: 2020-07-09 20:47:43.789081000 Z
-- - :whitelist
+- - :permit
   - Common Public License Version 1.0
   - :who: 
     :why: 
