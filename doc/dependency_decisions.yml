@@ -1,0 +1,43 @@
+---
+- - :whitelist
+  - Apache 2.0
+  - :who: 
+    :why: 
+    :versions: []
+    :when: 2020-07-09 20:46:05.309190000 Z
+- - :whitelist
+  - MIT
+  - :who: 
+    :why: 
+    :versions: []
+    :when: 2020-07-09 20:46:45.513067000 Z
+- - :whitelist
+  - Simplified BSD
+  - :who: 
+    :why: 
+    :versions: []
+    :when: 2020-07-09 20:46:56.297587000 Z
+- - :whitelist
+  - Bouncy Castle Licence
+  - :who: 
+    :why: 
+    :versions: []
+    :when: 2020-07-09 20:47:13.295966000 Z
+- - :whitelist
+  - BSD style
+  - :who: 
+    :why: 
+    :versions: []
+    :when: 2020-07-09 20:47:23.141414000 Z
+- - :whitelist
+  - New BSD
+  - :who: 
+    :why: 
+    :versions: []
+    :when: 2020-07-09 20:47:43.789081000 Z
+- - :whitelist
+  - Common Public License Version 1.0
+  - :who: 
+    :why: 
+    :versions: []
+    :when: 2020-07-09 20:47:50.386882000 Z
