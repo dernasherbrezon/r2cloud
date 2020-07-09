@@ -50,9 +50,9 @@ public class Metrics {
 		LOG.info("total memory: {}", Runtime.getRuntime().totalMemory());
 		LOG.info("CPU count: {}", Runtime.getRuntime().availableProcessors());
 
-		registry.gauge("heap", new MetricSupplier<Gauge>() {
+		registry.gauge("heap", new MetricSupplier<>() {
 			@Override
-			public Gauge<?> newMetric() {
+			public Gauge<Long> newMetric() {
 				return new FormattedGauge<Long>(MetricFormat.BYTES) {
 
 					@Override
@@ -67,9 +67,9 @@ public class Metrics {
 			sigar = new Sigar();
 			File f = sigar.getNativeLibrary();
 			if (f != null && f.exists()) {
-				registry.gauge("load-average", new MetricSupplier<Gauge>() {
+				registry.gauge("load-average", new MetricSupplier<>() {
 					@Override
-					public Gauge<?> newMetric() {
+					public Gauge<Double> newMetric() {
 						return new FormattedGauge<Double>(MetricFormat.NORMAL) {
 
 							@Override
@@ -83,9 +83,9 @@ public class Metrics {
 						};
 					}
 				});
-				registry.gauge("ram-used", new MetricSupplier<Gauge>() {
+				registry.gauge("ram-used", new MetricSupplier<>() {
 					@Override
-					public Gauge<?> newMetric() {
+					public Gauge<Double> newMetric() {
 						return new FormattedGauge<Double>(MetricFormat.NORMAL) {
 
 							@Override
@@ -99,9 +99,9 @@ public class Metrics {
 						};
 					}
 				});
-				registry.gauge("disk-used", new MetricSupplier<Gauge>() {
+				registry.gauge("disk-used", new MetricSupplier<>() {
 					@Override
-					public Gauge<?> newMetric() {
+					public Gauge<Double> newMetric() {
 						return new FormattedGauge<Double>(MetricFormat.NORMAL) {
 
 							@Override
