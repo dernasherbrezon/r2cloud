@@ -37,7 +37,6 @@ public class Metrics {
 		this.clock = clock;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public void start() {
 		Temperature temp = new Temperature(config.getPath("/sys/class/thermal/thermal_zone0/temp"));
 		if (temp.isAvailable()) {
