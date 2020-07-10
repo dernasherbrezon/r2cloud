@@ -2,7 +2,6 @@ package ru.r2cloud.metrics;
 
 import java.io.File;
 
-import org.hyperic.sigar.FileSystemUsage;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
@@ -106,8 +105,7 @@ public class Metrics {
 							@Override
 							public Double getValue() {
 								try {
-									FileSystemUsage fileSystemUsage = sigar.getFileSystemUsage("/");
-									return fileSystemUsage.getUsePercent() * 100;
+									return sigar.getFileSystemUsage("/").getUsePercent() * 100;
 								} catch (SigarException e) {
 									return null;
 								}
