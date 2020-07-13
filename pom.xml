@@ -344,7 +344,7 @@
 						<r2cloud-jdk>>=20191226160628</r2cloud-jdk>
 						<nginx-light>>=1.10.3</nginx-light>
 						<libhyperic-sigar-java>>=1.6.4</libhyperic-sigar-java>
-						<rtl-sdr>>=0.6</rtl-sdr>
+						<r2cloud-rtl-sdr>>=0.6.1</r2cloud-rtl-sdr>
 						<!-- required for stdbuf to force stderr flushing -->
 						<coreutils>>=8.26</coreutils>
 						<wxtoimg>>=2.11.2</wxtoimg>
