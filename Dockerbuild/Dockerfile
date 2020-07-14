@@ -2,7 +2,7 @@ FROM r2cloud/it:latest
 
 COPY *.deb /usr/share/
 
-RUN apt-get update && apt-get install /usr/share/*.deb \
+RUN apt-get update && apt-get install r2cloud-rtl-sdr && apt-get -f install /usr/share/*.deb \
     && apt clean \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /home/pi/r2cloud-tests/bin \
