@@ -32,11 +32,14 @@ public class RtlFmReader implements IQReader {
 	}
 
 	@Override
-	public IQData start() {
+	public IQData start() throws InterruptedException {
 		File wavPath = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".wav");
 		ProcessWrapper sox = null;
 		Long startTimeMillis = null;
 		Long endTimeMillis = null;
+		if (!RtlSdrReader.startBiasT(config, factory, req.getId())) {
+			return null;
+		}
 		try {
 			Integer ppm = config.getInteger("ppm.current");
 			if (ppm == null) {
@@ -66,6 +69,7 @@ public class RtlFmReader implements IQReader {
 			Util.shutdown("rtl_sdr for satellites", rtlfm, 10000);
 			Util.shutdown("sox", sox, 10000);
 			endTimeMillis = System.currentTimeMillis();
+			RtlSdrReader.stopBiasT(config, factory, req.getId());
 		}
 
 		IQData result = new IQData();

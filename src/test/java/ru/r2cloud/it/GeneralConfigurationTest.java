@@ -31,6 +31,8 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		assertEquals(config.getRotctrldPort().intValue(), configuration.getInt("rotctrldPort", 0));
 		assertEquals(config.getRotatorTolerance(), configuration.getDouble("rotatorTolerance", 0.0), 0.0);
 		assertEquals(config.getRotatorCycle().longValue(), configuration.getLong("rotatorCycle", 0));
+		assertEquals(config.getGain().doubleValue(), configuration.getDouble("gain", 0.0), 0.0);
+		assertEquals(config.isBiast(), configuration.getBoolean("biast", false));
 	}
 
 	@Test
@@ -152,6 +154,8 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		config.setRotctrldPort(4533);
 		config.setRotatorTolerance(5.1);
 		config.setRotatorCycle(1000L);
+		config.setGain(44.5);
+		config.setBiast(false);
 		return config;
 	}
 }

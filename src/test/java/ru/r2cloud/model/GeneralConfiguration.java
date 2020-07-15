@@ -14,6 +14,24 @@ public class GeneralConfiguration {
 	private Integer rotctrldPort;
 	private Double rotatorTolerance;
 	private Long rotatorCycle;
+	private Double gain;
+	private boolean biast;
+
+	public Double getGain() {
+		return gain;
+	}
+
+	public void setGain(Double gain) {
+		this.gain = gain;
+	}
+
+	public boolean isBiast() {
+		return biast;
+	}
+
+	public void setBiast(boolean biast) {
+		this.biast = biast;
+	}
 
 	public boolean isRotationEnabled() {
 		return rotationEnabled;

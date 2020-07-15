@@ -305,6 +305,10 @@ public class RestClient {
 		if (config.getRotatorCycle() != null) {
 			json.add("rotatorCycle", config.getRotatorCycle());
 		}
+		if (config.getGain() != null) {
+			json.add("gain", config.getGain());
+		}
+		json.add("biast", config.isBiast());
 		HttpRequest request = createJsonPost("/api/v1/admin/config/general", json).build();
 		try {
 			return httpclient.send(request, BodyHandlers.ofString());

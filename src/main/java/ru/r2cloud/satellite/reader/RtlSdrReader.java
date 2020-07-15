@@ -35,6 +35,9 @@ public class RtlSdrReader implements IQReader {
 		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw.gz");
 		Long startTimeMillis = null;
 		Long endTimeMillis = null;
+		if (!startBiasT(config, factory, req.getId())) {
+			return null;
+		}
 		try {
 			Integer ppm = config.getInteger("ppm.current");
 			if (ppm == null) {
@@ -55,6 +58,7 @@ public class RtlSdrReader implements IQReader {
 			LOG.error("[{}] unable to run", req.getId(), e);
 		} finally {
 			endTimeMillis = System.currentTimeMillis();
+			stopBiasT(config, factory, req.getId());
 		}
 		IQData result = new IQData();
 		result.setActualStart(startTimeMillis);
@@ -64,6 +68,43 @@ public class RtlSdrReader implements IQReader {
 			result.setDataFile(rawFile);
 		}
 		return result;
+	}
+
+	static boolean startBiasT(Configuration config, ProcessFactory factory, String requestId) throws InterruptedException {
+		boolean biast = config.getBoolean("satellites.rtlsdr.biast");
+		if (!biast) {
+			return true;
+		}
+		ProcessWrapper rtlBiast;
+		try {
+			rtlBiast = factory.create(config.getProperty("satellites.rtlsdr.biast.path") + " -b 1", Redirect.INHERIT, false);
+			int responseCode = rtlBiast.waitFor();
+			if (responseCode != 0) {
+				LOG.error("[{}] invalid response code rtl_biast: {}", requestId, responseCode);
+				return false;
+			}
+			return true;
+		} catch (IOException e) {
+			LOG.error("[{}] unable to run rtl_biast", requestId, e);
+			return false;
+		}
+	}
+
+	static void stopBiasT(Configuration config, ProcessFactory factory, String requestId) throws InterruptedException {
+		boolean biast = config.getBoolean("satellites.rtlsdr.biast");
+		if (!biast) {
+			return;
+		}
+		ProcessWrapper rtlBiast;
+		try {
+			rtlBiast = factory.create(config.getProperty("satellites.rtlsdr.biast.path") + " -b 0", Redirect.INHERIT, false);
+			int responseCode = rtlBiast.waitFor();
+			if (responseCode != 0) {
+				LOG.error("[{}] invalid response code rtl_biast: {}", requestId, responseCode);
+			}
+		} catch (IOException e) {
+			LOG.error("[{}] unable to stop rtl_biast", requestId, e);
+		}
 	}
 
 	@Override

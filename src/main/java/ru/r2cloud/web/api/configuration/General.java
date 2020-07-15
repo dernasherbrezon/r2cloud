@@ -50,6 +50,8 @@ public class General extends AbstractHttpController {
 		if (currentPpm != null) {
 			entity.add("ppm", currentPpm);
 		}
+		entity.add("gain", config.getDouble("satellites.rtlsdr.gain"));
+		entity.add("biast", config.getBoolean("satellites.rtlsdr.biast"));
 		result.setData(entity.toString());
 		return result;
 	}
@@ -66,6 +68,11 @@ public class General extends AbstractHttpController {
 		Integer rotctrldPort = WebServer.getInteger(request, "rotctrldPort");
 		Double rotatorTolerance = WebServer.getDouble(request, "rotatorTolerance");
 		Integer rotatorCycleMillis = WebServer.getInteger(request, "rotatorCycle");
+		Double gain = WebServer.getDouble(request, "gain");
+		boolean biast = WebServer.getBoolean(request, "biast");
+		if( gain == null ) {
+			errors.put("gain", Messages.CANNOT_BE_EMPTY);
+		}
 		if (lat == null) {
 			errors.put("lat", Messages.CANNOT_BE_EMPTY);
 		}
@@ -134,6 +141,8 @@ public class General extends AbstractHttpController {
 			return new BadRequest(errors);
 		}
 		autoUpdate.setEnabled(WebServer.getBoolean(request, "autoUpdate"));
+		config.setProperty("satellites.rtlsdr.gain", gain);
+		config.setProperty("satellites.rtlsdr.biast", biast);
 		config.setProperty("locaiton.lat", lat);
 		config.setProperty("locaiton.lon", lon);
 		config.setProperty("ppm.calculate.type", ppmTypeStr);
