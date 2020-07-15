@@ -176,6 +176,7 @@ public class R2ServerClientTest {
 		result.setaURL("1");
 		result.setDataURL("1");
 		result.setSpectogramURL("1");
+		result.setBiast(true);
 		return result;
 	}
 

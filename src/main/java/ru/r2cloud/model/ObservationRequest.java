@@ -17,27 +17,45 @@ public class ObservationRequest {
 	private int inputSampleRate;
 	private int outputSampleRate;
 	private long actualFrequency;
-	
+	private double gain;
+	private boolean biast;
+
+	public double getGain() {
+		return gain;
+	}
+
+	public void setGain(double gain) {
+		this.gain = gain;
+	}
+
+	public boolean isBiast() {
+		return biast;
+	}
+
+	public void setBiast(boolean biast) {
+		this.biast = biast;
+	}
+
 	public GeodeticPoint getGroundStation() {
 		return groundStation;
 	}
-	
+
 	public void setGroundStation(GeodeticPoint groundStation) {
 		this.groundStation = groundStation;
 	}
-	
+
 	public Tle getTle() {
 		return tle;
 	}
-	
+
 	public void setTle(Tle tle) {
 		this.tle = tle;
 	}
-	
+
 	public long getBandwidth() {
 		return bandwidth;
 	}
-	
+
 	public void setBandwidth(long bandwidth) {
 		this.bandwidth = bandwidth;
 	}

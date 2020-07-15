@@ -47,6 +47,7 @@ public class Observation {
 	private File dataPath;
 
 	private ObservationStatus status;
+	private boolean biast;
 
 	public Observation() {
 		// do nothing
@@ -65,6 +66,8 @@ public class Observation {
 		inputSampleRate = req.getInputSampleRate();
 		outputSampleRate = req.getOutputSampleRate();
 		actualFrequency = req.getActualFrequency();
+		gain = String.valueOf(req.getGain());
+		biast = req.isBiast();
 	}
 
 	public ObservationRequest getReq() {
@@ -81,7 +84,21 @@ public class Observation {
 		result.setInputSampleRate(inputSampleRate);
 		result.setOutputSampleRate(outputSampleRate);
 		result.setActualFrequency(actualFrequency);
+		if (gain != null) {
+			result.setGain(Double.valueOf(gain));
+		} else {
+			result.setGain(45.0);
+		}
+		result.setBiast(biast);
 		return result;
+	}
+
+	public boolean isBiast() {
+		return biast;
+	}
+
+	public void setBiast(boolean biast) {
+		this.biast = biast;
 	}
 
 	public ObservationStatus getStatus() {
@@ -324,6 +341,7 @@ public class Observation {
 		} else {
 			result.setStatus(ObservationStatus.UPLOADED);
 		}
+		result.setBiast(meta.getBoolean("biast", false));
 		return result;
 	}
 
@@ -368,6 +386,7 @@ public class Observation {
 			statusToSave = ObservationStatus.UPLOADED;
 		}
 		json.add("status", statusToSave.name());
+		json.add("biast", isBiast());
 		return json;
 	}
 

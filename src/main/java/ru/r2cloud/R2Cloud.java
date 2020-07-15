@@ -234,7 +234,7 @@ public class R2Cloud {
 		validateDecoders();
 		decoderService = new DecoderService(props, decoders, resultDao, r2cloudService, threadFactory);
 
-		observationFactory = new ObservationFactory(predict, tleDao);
+		observationFactory = new ObservationFactory(predict, tleDao, props);
 		scheduler = new Scheduler(new Schedule<>(), props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, processFactory, resultDao, decoderService, rotatorService);
 
 		// setup web server

@@ -172,6 +172,8 @@ public class ObservationDaoTest {
 		req.setStartTimeMillis(System.currentTimeMillis());
 		req.setBandwidth(4_000);
 		req.setGroundStation(createGroundStation());
+		req.setGain(45.0);
+		req.setBiast(false);
 		return req;
 	}
 

@@ -70,8 +70,14 @@ public class General extends AbstractHttpController {
 		Integer rotatorCycleMillis = WebServer.getInteger(request, "rotatorCycle");
 		Double gain = WebServer.getDouble(request, "gain");
 		boolean biast = WebServer.getBoolean(request, "biast");
-		if( gain == null ) {
+		if (gain == null) {
 			errors.put("gain", Messages.CANNOT_BE_EMPTY);
+		} else {
+			if (gain < 0) {
+				errors.put("gain", Messages.CANNOT_BE_NEGATIVE);
+			} else if (gain > 50) {
+				errors.put("gain", "Cannot be more than 50");
+			}
 		}
 		if (lat == null) {
 			errors.put("lat", Messages.CANNOT_BE_EMPTY);
@@ -83,7 +89,7 @@ public class General extends AbstractHttpController {
 			errors.put("elevationMin", Messages.CANNOT_BE_EMPTY);
 		} else {
 			if (elevationMin < 0.0) {
-				errors.put("elevationMin", "Cannot be less than 0.0");
+				errors.put("elevationMin", Messages.CANNOT_BE_NEGATIVE);
 			}
 		}
 		if (elevationGuaranteed == null) {

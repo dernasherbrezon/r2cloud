@@ -12,6 +12,7 @@ import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.tle.TLEDao;
+import ru.r2cloud.util.Configuration;
 
 public class ObservationFactory {
 
@@ -20,10 +21,12 @@ public class ObservationFactory {
 
 	private final TLEDao tleDao;
 	private final PredictOreKit predict;
+	private final Configuration config;
 
-	public ObservationFactory(PredictOreKit predict, TLEDao tleDao) {
+	public ObservationFactory(PredictOreKit predict, TLEDao tleDao, Configuration config) {
 		this.predict = predict;
 		this.tleDao = tleDao;
+		this.config = config;
 	}
 
 	public ObservationRequest create(Date date, Satellite satellite, boolean immediately) {
@@ -53,6 +56,8 @@ public class ObservationFactory {
 			result.setEndTimeMillis(nextPass.getEndMillis());
 		}
 		result.setId(String.valueOf(result.getStartTimeMillis()));
+		result.setGain(config.getDouble("satellites.rtlsdr.gain"));
+		result.setBiast(config.getBoolean("satellites.rtlsdr.biast"));
 
 		switch (satellite.getSource()) {
 		case APT:

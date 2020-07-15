@@ -37,7 +37,7 @@ public class RtlFmReader implements IQReader {
 		ProcessWrapper sox = null;
 		Long startTimeMillis = null;
 		Long endTimeMillis = null;
-		if (!RtlSdrReader.startBiasT(config, factory, req.getId())) {
+		if (!RtlSdrReader.startBiasT(config, factory, req)) {
 			return null;
 		}
 		try {
@@ -46,7 +46,7 @@ public class RtlFmReader implements IQReader {
 				ppm = 0;
 			}
 			sox = factory.create(config.getProperty("satellites.sox.path") + " -t raw -r " + req.getInputSampleRate() + " -es -b 16 - " + wavPath.getAbsolutePath() + " rate " + req.getOutputSampleRate(), Redirect.INHERIT, false);
-			rtlfm = factory.create(config.getProperty("satellites.rtlfm.path") + " -f " + req.getActualFrequency() + " -s " + req.getInputSampleRate() + " -g " + config.getProperty("satellites.rtlsdr.gain") + " -p " + ppm + " -E deemp -F 9 -", Redirect.INHERIT, false);
+			rtlfm = factory.create(config.getProperty("satellites.rtlfm.path") + " -f " + req.getActualFrequency() + " -s " + req.getInputSampleRate() + " -g " + req.getGain() + " -p " + ppm + " -E deemp -F 9 -", Redirect.INHERIT, false);
 			byte[] buf = new byte[BUF_SIZE];
 			while (!Thread.currentThread().isInterrupted()) {
 				int r = rtlfm.getInputStream().read(buf);
@@ -69,7 +69,7 @@ public class RtlFmReader implements IQReader {
 			Util.shutdown("rtl_sdr for satellites", rtlfm, 10000);
 			Util.shutdown("sox", sox, 10000);
 			endTimeMillis = System.currentTimeMillis();
-			RtlSdrReader.stopBiasT(config, factory, req.getId());
+			RtlSdrReader.stopBiasT(config, factory, req);
 		}
 
 		IQData result = new IQData();

@@ -35,7 +35,7 @@ public class RtlSdrReader implements IQReader {
 		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw.gz");
 		Long startTimeMillis = null;
 		Long endTimeMillis = null;
-		if (!startBiasT(config, factory, req.getId())) {
+		if (!startBiasT(config, factory, req)) {
 			return null;
 		}
 		try {
@@ -44,7 +44,7 @@ public class RtlSdrReader implements IQReader {
 				ppm = 0;
 			}
 			startTimeMillis = System.currentTimeMillis();
-			rtlSdr = factory.create(config.getProperty("satellites.rtlsdrwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getActualFrequency() + " -s " + req.getInputSampleRate() + " -g " + config.getProperty("satellites.rtlsdr.gain") + " -p " + ppm + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
+			rtlSdr = factory.create(config.getProperty("satellites.rtlsdrwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getActualFrequency() + " -s " + req.getInputSampleRate() + " -g " + req.getGain() + " -p " + ppm + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
 			int responseCode = rtlSdr.waitFor();
 			// rtl_sdr should be killed by the reaper process
 			// all other codes are invalid. even 0
@@ -58,7 +58,7 @@ public class RtlSdrReader implements IQReader {
 			LOG.error("[{}] unable to run", req.getId(), e);
 		} finally {
 			endTimeMillis = System.currentTimeMillis();
-			stopBiasT(config, factory, req.getId());
+			stopBiasT(config, factory, req);
 		}
 		IQData result = new IQData();
 		result.setActualStart(startTimeMillis);
@@ -70,9 +70,8 @@ public class RtlSdrReader implements IQReader {
 		return result;
 	}
 
-	static boolean startBiasT(Configuration config, ProcessFactory factory, String requestId) throws InterruptedException {
-		boolean biast = config.getBoolean("satellites.rtlsdr.biast");
-		if (!biast) {
+	static boolean startBiasT(Configuration config, ProcessFactory factory, ObservationRequest req) throws InterruptedException {
+		if (!req.isBiast()) {
 			return true;
 		}
 		ProcessWrapper rtlBiast;
@@ -80,19 +79,18 @@ public class RtlSdrReader implements IQReader {
 			rtlBiast = factory.create(config.getProperty("satellites.rtlsdr.biast.path") + " -b 1", Redirect.INHERIT, false);
 			int responseCode = rtlBiast.waitFor();
 			if (responseCode != 0) {
-				LOG.error("[{}] invalid response code rtl_biast: {}", requestId, responseCode);
+				LOG.error("[{}] invalid response code rtl_biast: {}", req.getId(), responseCode);
 				return false;
 			}
 			return true;
 		} catch (IOException e) {
-			LOG.error("[{}] unable to run rtl_biast", requestId, e);
+			LOG.error("[{}] unable to run rtl_biast", req.getId(), e);
 			return false;
 		}
 	}
 
-	static void stopBiasT(Configuration config, ProcessFactory factory, String requestId) throws InterruptedException {
-		boolean biast = config.getBoolean("satellites.rtlsdr.biast");
-		if (!biast) {
+	static void stopBiasT(Configuration config, ProcessFactory factory, ObservationRequest req) throws InterruptedException {
+		if (!req.isBiast()) {
 			return;
 		}
 		ProcessWrapper rtlBiast;
@@ -100,10 +98,10 @@ public class RtlSdrReader implements IQReader {
 			rtlBiast = factory.create(config.getProperty("satellites.rtlsdr.biast.path") + " -b 0", Redirect.INHERIT, false);
 			int responseCode = rtlBiast.waitFor();
 			if (responseCode != 0) {
-				LOG.error("[{}] invalid response code rtl_biast: {}", requestId, responseCode);
+				LOG.error("[{}] invalid response code rtl_biast: {}", req.getId(), responseCode);
 			}
 		} catch (IOException e) {
-			LOG.error("[{}] unable to stop rtl_biast", requestId, e);
+			LOG.error("[{}] unable to stop rtl_biast", req.getId(), e);
 		}
 	}
 
