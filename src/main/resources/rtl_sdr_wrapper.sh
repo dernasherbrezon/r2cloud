@@ -33,6 +33,7 @@ done
 
 _term() {
   kill -TERM "$rtl" 2>/dev/null
+  tail --pid=$rtl -f /dev/null
 }
 
 trap _term SIGTERM
