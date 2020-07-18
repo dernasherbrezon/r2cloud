@@ -32,13 +32,13 @@ public class ObservationFactory {
 	public ObservationRequest create(Date date, Satellite satellite, boolean immediately) {
 		Tle tle = tleDao.findById(satellite.getId());
 		if (tle == null) {
-			LOG.error("unable to find tle for: {}", satellite.getName());
+			LOG.error("unable to find tle for: {}", satellite);
 			return null;
 		}
 		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(tle.getRaw()[1], tle.getRaw()[2]));
 		SatPass nextPass = predict.calculateNext(date, tlePropagator);
 		if (nextPass == null) {
-			LOG.info("can't find next pass for {}", satellite.getName());
+			LOG.info("can't find next pass for {}", satellite);
 			return null;
 		}
 		ObservationRequest result = new ObservationRequest();

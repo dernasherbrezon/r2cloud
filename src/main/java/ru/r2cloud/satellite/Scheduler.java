@@ -118,7 +118,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		if (observation == null) {
 			return null;
 		}
-		LOG.info("scheduled next pass for {}. start: {} end: {}", cur.getId(), new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
+		LOG.info("scheduled next pass for {}. start: {} end: {}", cur, new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
 		IQReader reader = createReader(observation);
 		Runnable readTask = new SafeRunnable() {
 
