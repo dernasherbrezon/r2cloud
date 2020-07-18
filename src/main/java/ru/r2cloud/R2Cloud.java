@@ -62,7 +62,6 @@ import ru.r2cloud.satellite.decoder.KunsPfDecoder;
 import ru.r2cloud.satellite.decoder.LRPTDecoder;
 import ru.r2cloud.satellite.decoder.Lucky7Decoder;
 import ru.r2cloud.satellite.decoder.Lume1Decoder;
-import ru.r2cloud.satellite.decoder.Mysat1Decoder;
 import ru.r2cloud.satellite.decoder.Nayif1Decoder;
 import ru.r2cloud.satellite.decoder.OpsSatDecoder;
 import ru.r2cloud.satellite.decoder.PegasusDecoder;
@@ -200,7 +199,6 @@ public class R2Cloud {
 		decoders.put("43814", new PwSat2Decoder(predict, props));
 		decoders.put("43881", new Dstar1Decoder(predict, props));
 		decoders.put("43908", new Lume1Decoder(predict, props));
-		decoders.put("44045", new Mysat1Decoder(predict, props));
 		decoders.put("44103", new Aistechsat3Decoder(predict, props));
 		decoders.put("44406", new Lucky7Decoder(predict, props));
 		decoders.put("44830", new Atl1Decoder(predict, props));
