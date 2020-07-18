@@ -93,7 +93,6 @@ public class DecoderService implements Lifecycle {
 
 		Observation observation = dao.find(request.getSatelliteId(), request.getId());
 		observation.setRawPath(result.getRawPath());
-		observation.setGain(result.getGain());
 		observation.setChannelA(result.getChannelA());
 		observation.setChannelB(result.getChannelB());
 		observation.setNumberOfDecodedPackets(result.getNumberOfDecodedPackets());

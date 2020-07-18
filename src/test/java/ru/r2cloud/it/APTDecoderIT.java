@@ -32,7 +32,6 @@ public class APTDecoderIT {
 		APTDecoder decoder = new APTDecoder(config, factory);
 		DecoderResult result = decoder.decode(wav, request);
 		assertNull(result.getImagePath());
-		assertEquals("12.0", result.getGain());
 		assertEquals("3/3B (mid infrared)", result.getChannelA());
 		assertEquals("4 (thermal infrared)", result.getChannelB());
 	}

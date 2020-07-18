@@ -6,7 +6,6 @@ public class DecoderResult {
 
 	private File rawPath;
 
-	private String gain;
 	private String channelA;
 	private String channelB;
 	private Long numberOfDecodedPackets = 0L;
@@ -20,14 +19,6 @@ public class DecoderResult {
 	
 	public void setRawPath(File rawPath) {
 		this.rawPath = rawPath;
-	}
-
-	public String getGain() {
-		return gain;
-	}
-
-	public void setGain(String gain) {
-		this.gain = gain;
 	}
 
 	public String getChannelA() {

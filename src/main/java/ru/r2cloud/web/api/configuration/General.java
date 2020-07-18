@@ -99,6 +99,9 @@ public class General extends AbstractHttpController {
 				errors.put("elevationGuaranteed", "Cannot be more than 90.0");
 			}
 		}
+		if (elevationMin != null && elevationGuaranteed != null && elevationMin > elevationGuaranteed) {
+			errors.put("elevationMin", "Cannot be more than guaranteed elevation");
+		}
 		if (rotationEnabled) {
 			if (rotctrldHostname == null) {
 				errors.put("rotctrldHostname", Messages.CANNOT_BE_EMPTY);

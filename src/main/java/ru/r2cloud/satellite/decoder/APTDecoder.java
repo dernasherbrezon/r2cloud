@@ -103,10 +103,6 @@ public class APTDecoder implements Decoder {
 				success = false;
 				continue;
 			}
-			if (name.equalsIgnoreCase("gain")) {
-				observation.setGain(value);
-				continue;
-			}
 			if (name.equalsIgnoreCase("Channel A")) {
 				observation.setChannelA(value);
 				continue;
