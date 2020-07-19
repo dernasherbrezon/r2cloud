@@ -50,23 +50,49 @@ public class GeneralConfigurationTest extends RegisteredTest {
 	}
 
 	@Test
+	public void testInvalidGain() {
+		GeneralConfiguration config = createConfig();
+		config.setGain(null);
+		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
+		assertEquals(400, response.statusCode());
+		assertErrorInField("gain", response);
+		
+		config = createConfig();
+		config.setGain(-1.0);
+		response = client.setGeneralConfigurationWithResponse(config);
+		assertEquals(400, response.statusCode());
+		assertErrorInField("gain", response);
+		
+		config = createConfig();
+		config.setGain(51.0);
+		response = client.setGeneralConfigurationWithResponse(config);
+		assertEquals(400, response.statusCode());
+		assertErrorInField("gain", response);
+	}
+	
+	@Test
 	public void testInvalidElevationMin() {
 		GeneralConfiguration config = createConfig();
 		config.setElevationMin(null);
 		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("elevationMin", response);
-	}
-	
-	@Test
-	public void testInvalidElevationMin2() {
-		GeneralConfiguration config = createConfig();
+		
+		config = createConfig();
 		config.setElevationMin(-1.0);
-		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
+		response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("elevationMin", response);
+		
+		config = createConfig();
+		config.setElevationMin(10.0);
+		config.setElevationGuaranteed(5.0);
+		response = client.setGeneralConfigurationWithResponse(config);
+		assertEquals(400, response.statusCode());
+		assertErrorInField("elevationMin", response);		
 	}
 	
+
 	@Test
 	public void testInvalidElevationGuaranteed() {
 		GeneralConfiguration config = createConfig();
@@ -74,15 +100,12 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("elevationGuaranteed", response);
-	}
-	
-	@Test
-	public void testInvalidElevationGuaranteed2() {
-		GeneralConfiguration config = createConfig();
+		
+		config = createConfig();
 		config.setElevationGuaranteed(91.0);
-		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
+		response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
-		assertErrorInField("elevationGuaranteed", response);
+		assertErrorInField("elevationGuaranteed", response);		
 	}
 	
 	@Test
@@ -92,15 +115,12 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("rotctrldHostname", response);
-	}
-	
-	@Test
-	public void testInvalidRotctrldHostname2() {
-		GeneralConfiguration config = createConfig();
+		
+		config = createConfig();
 		config.setRotctrldHostname(UUID.randomUUID().toString());
-		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
+		response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
-		assertErrorInField("rotctrldHostname", response);
+		assertErrorInField("rotctrldHostname", response);		
 	}
 	
 	@Test
