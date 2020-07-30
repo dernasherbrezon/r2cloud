@@ -109,7 +109,7 @@ public class GeneralConfigurationTest extends RegisteredTest {
 	}
 	
 	@Test
-	public void testInvalidRotctrldHostname() {
+	public void testRotctldConfiguration() {
 		GeneralConfiguration config = createConfig();
 		config.setRotctrldHostname(null);
 		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
@@ -120,7 +120,25 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		config.setRotctrldHostname(UUID.randomUUID().toString());
 		response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
-		assertErrorInField("rotctrldHostname", response);		
+		assertErrorInField("rotctrldHostname", response);
+		
+		config = createConfig();
+		config.setRotctrldPort(null);
+		response = client.setGeneralConfigurationWithResponse(config);
+		assertEquals(400, response.statusCode());
+		assertErrorInField("rotctrldPort", response);
+
+		config = createConfig();
+		config.setRotatorTolerance(null);
+		response = client.setGeneralConfigurationWithResponse(config);
+		assertEquals(400, response.statusCode());
+		assertErrorInField("rotatorTolerance", response);
+
+		config = createConfig();
+		config.setRotatorCycle(null);
+		response = client.setGeneralConfigurationWithResponse(config);
+		assertEquals(400, response.statusCode());
+		assertErrorInField("rotatorCycle", response);
 	}
 	
 	@Test
