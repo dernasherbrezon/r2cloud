@@ -16,19 +16,25 @@ public class ProcessWrapperMock implements ProcessWrapper {
 
 	private final InputStream is;
 	private final OutputStream os;
+	private final int statusCode;
 
 	private boolean alive;
 
 	public ProcessWrapperMock(InputStream is, OutputStream os) {
+		this(is, os, 0);
+	}
+
+	public ProcessWrapperMock(InputStream is, OutputStream os, int statusCode) {
 		this.is = is;
 		this.os = os;
 		alive = true;
+		this.statusCode = statusCode;
 	}
 
 	@Override
 	public int waitFor() throws InterruptedException {
 		stop();
-		return 0;
+		return statusCode;
 	}
 
 	@Override
@@ -62,7 +68,7 @@ public class ProcessWrapperMock implements ProcessWrapper {
 	public InputStream getInputStream() {
 		return is;
 	}
-	
+
 	@Override
 	public InputStream getErrorStream() {
 		return null;
