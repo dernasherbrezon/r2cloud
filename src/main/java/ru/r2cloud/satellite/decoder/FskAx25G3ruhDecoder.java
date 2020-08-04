@@ -22,7 +22,7 @@ public class FskAx25G3ruhDecoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		FskDemodulator demodulator = new FskDemodulator(source, baudRate, 0.175f * 3);
+		FskDemodulator demodulator = new FskDemodulator(source, baudRate, 5000.0f, 1, 1000);
 		return new Ax25G3ruhBeaconSource<>(demodulator, beacon);
 	}
 

@@ -18,7 +18,7 @@ public class ChompttDecoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		AfskDemodulator demod = new AfskDemodulator(source, 1200, 500, 1700, 0.175f * 3);
+		AfskDemodulator demod = new AfskDemodulator(source, 1200, 500, 1600, 7);
 		return new Chomptt(demod);
 	}
 
