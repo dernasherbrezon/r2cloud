@@ -16,7 +16,7 @@ import ru.r2cloud.AssertJson;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.jradio.BeaconInputStream;
-import ru.r2cloud.jradio.aausat4.AAUSAT4Beacon;
+import ru.r2cloud.jradio.aausat4.Aausat4Beacon;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.predict.PredictOreKit;
 
@@ -35,7 +35,7 @@ public class Aausat4DecoderTest {
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/aausat.raw.gz.json").getReq());
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
-		try (BeaconInputStream<AAUSAT4Beacon> is = new BeaconInputStream<>(new FileInputStream(result.getDataPath()), AAUSAT4Beacon.class)) {
+		try (BeaconInputStream<Aausat4Beacon> is = new BeaconInputStream<>(new FileInputStream(result.getDataPath()), Aausat4Beacon.class)) {
 			assertTrue(is.hasNext());
 			AssertJson.assertObjectsEqual("AAUSAT4Beacon.json", is.next());
 		}
