@@ -8,8 +8,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Counter;
+
 import ru.r2cloud.Lifecycle;
 import ru.r2cloud.cloud.R2ServerService;
+import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
@@ -32,17 +35,25 @@ public class DecoderService implements Lifecycle {
 	private final R2ServerService r2cloudService;
 	private final ThreadPoolFactory threadpoolFactory;
 	private final Configuration config;
+	private final Metrics metrics;
 
-	public DecoderService(Configuration config, Map<String, Decoder> decoders, ObservationDao dao, R2ServerService r2cloudService, ThreadPoolFactory threadpoolFactory) {
+	private Counter lrpt;
+	private Counter telemetry;
+
+	public DecoderService(Configuration config, Map<String, Decoder> decoders, ObservationDao dao, R2ServerService r2cloudService, ThreadPoolFactory threadpoolFactory, Metrics metrics) {
 		this.config = config;
 		this.decoders = decoders;
 		this.dao = dao;
 		this.r2cloudService = r2cloudService;
 		this.threadpoolFactory = threadpoolFactory;
+		this.metrics = metrics;
 	}
 
 	@Override
 	public synchronized void start() {
+		lrpt = metrics.getRegistry().counter("lrpt");
+		telemetry = metrics.getRegistry().counter("telemetry");
+
 		decoderThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("decoder"));
 		List<Observation> all = dao.findAll();
 		String apiKey = config.getProperty("r2cloud.apiKey");
@@ -102,6 +113,18 @@ public class DecoderService implements Lifecycle {
 
 		dao.update(observation);
 		r2cloudService.uploadObservation(observation);
+
+		switch (observation.getSource()) {
+		case LRPT:
+			lrpt.inc(observation.getNumberOfDecodedPackets());
+			break;
+		case FSK_AX25_G3RUH:
+		case TELEMETRY:
+			telemetry.inc(observation.getNumberOfDecodedPackets());
+			break;
+		default:
+			break;
+		}
 	}
 
 	@Override

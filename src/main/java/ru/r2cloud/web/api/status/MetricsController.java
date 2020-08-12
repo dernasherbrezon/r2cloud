@@ -2,6 +2,8 @@ package ru.r2cloud.web.api.status;
 
 import java.util.Map.Entry;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Metric;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
@@ -33,6 +35,12 @@ public class MetricsController extends AbstractHttpController {
 			curObject.add("url", signed.sign("/api/v1/admin/static/rrd/" + cur.getKey() + ".rrd"));
 			if (cur.getValue() instanceof FormattedGauge<?>) {
 				curObject.add("format", ((FormattedGauge<?>) cur.getValue()).getFormat().toString());
+			}
+			if (cur.getValue() instanceof Gauge<?>) {
+				curObject.add("type", "gauge");
+			}
+			if (cur.getValue() instanceof Counter) {
+				curObject.add("type", "counter");
 			}
 			array.add(curObject);
 		}

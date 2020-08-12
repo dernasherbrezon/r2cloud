@@ -82,7 +82,7 @@ public class RRD4JReporter extends ScheduledReporter {
 		// restarts/upgrades
 		RrdDb result = dbPerMetric.get(cur.getKey());
 		if (result == null) {
-			result = create(cur.getKey(), DsType.COUNTER);
+			result = create(cur.getKey(), DsType.COUNTER, ConsolFun.AVERAGE);
 			if (result != null) {
 				try {
 					double lastValue = result.getLastDatasourceValue("data");
@@ -108,7 +108,7 @@ public class RRD4JReporter extends ScheduledReporter {
 	@SuppressWarnings("rawtypes")
 	private JsonObject convertGauge(Entry<String, Gauge> cur) {
 		Object value = cur.getValue().getValue();
-		update(getOrCreate(cur.getKey(), DsType.GAUGE), convertToDouble(value));
+		update(getOrCreate(cur.getKey(), DsType.GAUGE, ConsolFun.AVERAGE), convertToDouble(value));
 		JsonObject metric = new JsonObject();
 		metric.add("name", cur.getKey());
 		metric.add("value", convertToDouble(value));
@@ -150,29 +150,29 @@ public class RRD4JReporter extends ScheduledReporter {
 		}
 	}
 
-	private RrdDb getOrCreate(String metricName, DsType type) {
+	private RrdDb getOrCreate(String metricName, DsType type, ConsolFun fun) {
 		RrdDb result = dbPerMetric.get(metricName);
 		if (result != null) {
 			return result;
 		}
-		return create(metricName, type);
+		return create(metricName, type, fun);
 	}
 
-	private RrdDb create(String metricName, DsType type) {
+	private RrdDb create(String metricName, DsType type, ConsolFun fun) {
 		RrdDb result;
 		File path = new File(basepath, metricName + ".rrd");
 		if (!path.exists()) {
 			RrdDef rrdDef = new RrdDef(new File(basepath, metricName + ".rrd").getAbsolutePath(), System.currentTimeMillis() / 1000 - 1, STEP);
 			rrdDef.setVersion(2);
 			rrdDef.addDatasource("data", type, 2 * STEP, 0, Double.NaN);
-			rrdDef.addArchive(ConsolFun.AVERAGE, 0.5, 1, 600); // ~last 2 days.
-																// each point
+			rrdDef.addArchive(fun, 0.5, 1, 600); // ~last 2 days.
+													// each point
 			// is a 300 seconds
-			rrdDef.addArchive(ConsolFun.AVERAGE, 0.5, 24, 775); // ~last 2
-																// months.
-			rrdDef.addArchive(ConsolFun.AVERAGE, 0.5, 288, 797); // ~last 2
-																	// years.
-																	// each
+			rrdDef.addArchive(fun, 0.5, 24, 775); // ~last 2
+													// months.
+			rrdDef.addArchive(fun, 0.5, 288, 797); // ~last 2
+													// years.
+													// each
 			// point is a day
 			try {
 				result = new RrdDb(rrdDef);
