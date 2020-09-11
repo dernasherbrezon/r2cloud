@@ -38,11 +38,16 @@ public class ObservationDao {
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationDao.class);
 
 	private final Path basepath;
-	private final Integer maxCount;
+	private final int maxCount;
+	private final int maxCountRawData;
 
 	public ObservationDao(Configuration config) {
 		this.basepath = config.getSatellitesBasePath();
 		this.maxCount = config.getInteger("scheduler.data.retention.count");
+		this.maxCountRawData = config.getInteger("scheduler.data.retention.raw.count");
+		if (maxCountRawData > maxCount) {
+			LOG.error("scheduler.data.retention.raw.count: " + maxCountRawData + " is more than scheduler.data.retention.count: " + maxCount + ". did you mean the opposite?");
+		}
 	}
 
 	public List<Observation> findAll() {
@@ -115,16 +120,10 @@ public class ObservationDao {
 			full.setDataPath(data.toFile());
 			full.setDataURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + DATA_FILENAME);
 		}
-		Path wav = curDirectory.resolve(OUTPUT_WAV_FILENAME);
-		if (Files.exists(wav)) {
-			full.setRawPath(wav.toFile());
-			full.setRawURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + OUTPUT_WAV_FILENAME);
-		} else {
-			Path tarGz = curDirectory.resolve(OUTPUT_RAW_FILENAME);
-			if (Files.exists(tarGz)) {
-				full.setRawPath(tarGz.toFile());
-				full.setRawURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + OUTPUT_RAW_FILENAME);
-			}
+		Path rawPath = resolveRawPath(curDirectory);
+		if (Files.exists(rawPath)) {
+			full.setRawPath(rawPath.toFile());
+			full.setRawURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + rawPath.getFileName());
 		}
 		Path spectogram = curDirectory.resolve(SPECTOGRAM_FILENAME);
 		if (Files.exists(spectogram)) {
@@ -133,6 +132,14 @@ public class ObservationDao {
 		}
 
 		return full;
+	}
+
+	private static Path resolveRawPath(Path baseDir) {
+		Path wav = baseDir.resolve(OUTPUT_WAV_FILENAME);
+		if (Files.exists(wav)) {
+			return wav;
+		}
+		return baseDir.resolve(OUTPUT_RAW_FILENAME);
 	}
 
 	public File saveImage(String satelliteId, String observationId, File a) {
@@ -176,8 +183,16 @@ public class ObservationDao {
 			Path satelliteBasePath = basepath.resolve(request.getSatelliteId()).resolve("data");
 			if (Files.exists(satelliteBasePath)) {
 				List<Path> dataDirs = Util.toList(Files.newDirectoryStream(satelliteBasePath));
+				Collections.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
+				if (dataDirs.size() > maxCountRawData) {
+					for (int i = 0; i < (dataDirs.size() - maxCountRawData); i++) {
+						Path oldRawPath = resolveRawPath(dataDirs.get(i));
+						if (!Files.deleteIfExists(oldRawPath)) {
+							LOG.error("unable to delete: " + oldRawPath);
+						}
+					}
+				}
 				if (dataDirs.size() > maxCount) {
-					Collections.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
 					for (int i = 0; i < (dataDirs.size() - maxCount); i++) {
 						Util.deleteDirectory(dataDirs.get(i));
 					}
