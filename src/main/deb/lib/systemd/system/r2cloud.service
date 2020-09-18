@@ -1,7 +1,7 @@
 [Unit]
 Description=R2Cloud Service
 Requires=nginx.service
-After=time-sync.target
+After=time-sync.target network.target
 
 [Service]
 WorkingDirectory=/home/pi/r2cloud/
