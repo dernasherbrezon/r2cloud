@@ -187,8 +187,12 @@ public class ObservationDao {
 				if (dataDirs.size() > maxCountRawData) {
 					for (int i = 0; i < (dataDirs.size() - maxCountRawData); i++) {
 						Path oldRawPath = resolveRawPath(dataDirs.get(i));
-						if (!Files.deleteIfExists(oldRawPath)) {
-							LOG.error("unable to delete: " + oldRawPath);
+						if (Files.exists(oldRawPath)) {
+							try {
+								Files.delete(oldRawPath);
+							} catch (IOException e) {
+								LOG.error("unable to delete file", e);
+							}
 						}
 					}
 				}
