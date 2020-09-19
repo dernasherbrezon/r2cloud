@@ -4,3 +4,8 @@ fi
 if systemctl is-enabled r2cloud; then
 	systemctl disable r2cloud.service
 fi
+
+# restore old nginx configuration if exists
+if [ -f /etc/nginx/nginx.conf.backup ]; then
+	cp /etc/nginx/nginx.conf.backup /etc/nginx/nginx.conf
+fi
