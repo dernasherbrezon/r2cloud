@@ -11,7 +11,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import ru.r2cloud.CelestrakServer;
@@ -46,7 +49,7 @@ public class UtilizationTest {
 
 		List<Satellite> enabledByDefault = getDefaultEnabled(satelliteDao);
 
-		System.out.println("defualt: ");
+		System.out.println("default: ");
 		while (!enabledByDefault.isEmpty()) {
 			float utilization = calculateUtilization(satelliteDao, factory, enabledByDefault);
 			System.out.println(enabledByDefault.size() + " " + utilization);
@@ -54,6 +57,9 @@ public class UtilizationTest {
 		}
 		System.out.println("70cm: ");
 		List<Satellite> cm = loadFromFile(satelliteDao, "70cm-satellites.txt");
+
+		calculatePercentTotal(satelliteDao, factory, cm);
+
 		while (!cm.isEmpty()) {
 			float utilization = calculateUtilization(satelliteDao, factory, cm);
 			System.out.println(cm.size() + " " + utilization);
@@ -74,14 +80,58 @@ public class UtilizationTest {
 		return result;
 	}
 
+	private static void calculatePercentTotal(SatelliteDao satelliteDao, ObservationFactory factory, List<Satellite> satellites) throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+		long start = sdf.parse("2020-09-27 11:13:00").getTime();
+		long end = start + 2 * 24 * 60 * 60 * 1000;
+		for (int i = 0; i < 5; i++) {
+			long total = 0;
+			List<ObservationRequest> happened = calculateObservations(satelliteDao, factory, satellites, start, end);
+			Map<Long, Long> totalBySatellite = new TreeMap<>();
+			for (ObservationRequest req : happened) {
+				long observationTime = req.getEndTimeMillis() - req.getStartTimeMillis();
+				total += observationTime;
+
+				Long prevSat = totalBySatellite.get(Long.valueOf(req.getSatelliteId()));
+				if (prevSat == null) {
+					prevSat = 0L;
+				}
+				prevSat += observationTime;
+				totalBySatellite.put(Long.valueOf(req.getSatelliteId()), prevSat);
+			}
+
+			StringBuilder str = new StringBuilder();
+			for (Entry<Long, Long> cur : totalBySatellite.entrySet()) {
+				str.append(cur.getValue() / (float) total).append(" ");
+			}
+			System.out.println(str.toString().trim());
+
+			start = end;
+			end += 2 * 24 * 60 * 60 * 1000;
+		}
+	}
+
 	private static float calculateUtilization(SatelliteDao satelliteDao, ObservationFactory factory, List<Satellite> satellites) throws ParseException {
-		Schedule<ScheduledObservation> schedule = new Schedule<>();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
 		long start = sdf.parse("2020-09-27 11:13:00").getTime();
 		long end = sdf.parse("2020-09-29 11:13:00").getTime(); // +2 days
 
+		List<ObservationRequest> happened = calculateObservations(satelliteDao, factory, satellites, start, end);
+
+		long total = end - start;
+		long utilized = 0;
+		for (ObservationRequest cur : happened) {
+			utilized += (cur.getEndTimeMillis() - cur.getStartTimeMillis());
+		}
+		return (utilized / (float) total);
+	}
+
+	private static List<ObservationRequest> calculateObservations(SatelliteDao satelliteDao, ObservationFactory factory, List<Satellite> satellites, long start, long end) {
+		Schedule<ScheduledObservation> schedule = new Schedule<>();
 		List<ObservationRequest> initialRequests = new ArrayList<>();
 		for (Satellite cur : satellites) {
 			ObservationRequest req = create(factory, schedule, start, cur, false);
@@ -108,13 +158,7 @@ public class UtilizationTest {
 			schedule.add(new ScheduledObservation(next, null, null, null, null));
 			Collections.sort(initialRequests, ObservationRequestComparator.INSTANCE);
 		}
-
-		long total = end - start;
-		long utilized = 0;
-		for (ObservationRequest cur : happened) {
-			utilized += (cur.getEndTimeMillis() - cur.getStartTimeMillis());
-		}
-		return (utilized / (float) total);
+		return happened;
 	}
 
 	private static List<Satellite> getDefaultEnabled(SatelliteDao dao) {
