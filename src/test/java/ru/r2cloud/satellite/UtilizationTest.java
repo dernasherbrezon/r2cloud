@@ -84,14 +84,12 @@ public class UtilizationTest {
 
 		List<ObservationRequest> initialRequests = new ArrayList<>();
 		for (Satellite cur : satellites) {
-			if (!cur.isEnabled()) {
-				continue;
-			}
 			ObservationRequest req = create(factory, schedule, start, cur, false);
 			if (req == null) {
 				continue;
 			}
 			initialRequests.add(req);
+			schedule.add(new ScheduledObservation(req, null, null, null, null));
 		}
 		Collections.sort(initialRequests, ObservationRequestComparator.INSTANCE);
 		List<ObservationRequest> happened = new ArrayList<>();
@@ -107,10 +105,9 @@ public class UtilizationTest {
 				continue;
 			}
 			initialRequests.add(next);
+			schedule.add(new ScheduledObservation(next, null, null, null, null));
 			Collections.sort(initialRequests, ObservationRequestComparator.INSTANCE);
 		}
-
-		// System.out.println("total: " + happened.size());
 
 		long total = end - start;
 		long utilized = 0;
@@ -124,6 +121,10 @@ public class UtilizationTest {
 		List<Satellite> result = new ArrayList<>();
 		for (Satellite cur : dao.findAll()) {
 			if (!cur.isEnabled()) {
+				continue;
+			}
+			// this satellite can't be visible on the tested ground station
+			if (cur.getId().equals("44365")) {
 				continue;
 			}
 			result.add(cur);
