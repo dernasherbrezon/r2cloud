@@ -1,6 +1,7 @@
 package ru.r2cloud.satellite;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -76,16 +77,28 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		} else {
 			updateSchedule = false;
 		}
-		List<Satellite> supportedSatellites = satellites.findAll();
-		for (Satellite cur : supportedSatellites) {
-			if (!cur.isEnabled()) {
-				continue;
+		List<Satellite> allSatellites = satellites.findAll();
+		// cancel previous schedule
+		for (Satellite cur : allSatellites) {
+			cancel(cur);
+		}
+
+		if (updateSchedule) {
+			List<ObservationRequest> requests = new ArrayList<>();
+			long current = clock.millis();
+			for (Satellite cur : allSatellites) {
+				if (!cur.isEnabled()) {
+					continue;
+				}
+				ObservationRequest observation = create(current, cur, false);
+				if (observation == null) {
+					continue;
+				}
+				requests.add(observation);
 			}
-			if (updateSchedule) {
-				cancel(cur);
-				schedule(cur, false);
-			} else {
-				cancel(cur);
+
+			for (ObservationRequest cur : requests) {
+				schedule(cur, current);
 			}
 		}
 	}
@@ -108,30 +121,26 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		return schedule(cur, immediately, current);
 	}
 
-	private ObservationRequest scheduleNext(Satellite cur, ObservationRequest previous) {
+	private ObservationRequest scheduleNext(ObservationRequest previous) {
 		// add 1 second just in case
-		return schedule(cur, false, previous.getEndTimeMillis() + 1000);
+		return schedule(satellites.findById(previous.getSatelliteId()), false, previous.getEndTimeMillis() + 1000);
 	}
 
-	private ObservationRequest schedule(Satellite cur, boolean immediately, long current) {
-		ObservationRequest observation = create(current, cur, immediately);
-		if (observation == null) {
-			return null;
-		}
-		LOG.info("scheduled next pass for {}. start: {} end: {}", cur, new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
+	private void schedule(ObservationRequest observation, long current) {
+		LOG.info("scheduled next pass for {}. start: {} end: {}", observation.getSatelliteId(), new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
 		IQReader reader = createReader(observation);
 		Runnable readTask = new SafeRunnable() {
 
 			@Override
 			public void safeRun() {
 				if (clock.millis() > observation.getEndTimeMillis()) {
-					LOG.info("[{}] observation time passed. skip {}", observation.getId(), cur.getId());
-					scheduleNext(cur, observation);
+					LOG.info("[{}] observation time passed. skip {}", observation.getId(), observation.getSatelliteId());
+					scheduleNext(observation);
 					return;
 				}
 				if (!lock.tryLock(Scheduler.this)) {
-					LOG.info("[{}] unable to acquire lock for {}", observation.getId(), cur.getId());
-					scheduleNext(cur, observation);
+					LOG.info("[{}] unable to acquire lock for {}", observation.getId(), observation.getSatelliteId());
+					scheduleNext(observation);
 					return;
 				}
 				IQData data;
@@ -144,7 +153,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 					lock.unlock(Scheduler.this);
 				}
 
-				scheduleNext(cur, observation);
+				scheduleNext(observation);
 
 				if (data == null || data.getDataFile() == null) {
 					return;
@@ -170,7 +179,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		};
 		synchronized (this) {
 			if (startThread == null) {
-				return null;
+				return;
 			}
 			Future<?> startFuture = startThread.schedule(readTask, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
 			Future<?> rotatorFuture = rotatorService.schedule(observation, current);
@@ -183,8 +192,16 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			};
 			Future<?> stopRtlSdrFuture = stopThread.schedule(stopRtlSdrTask, observation.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
 			schedule.add(new ScheduledObservation(observation, startFuture, stopRtlSdrFuture, stopRtlSdrTask, rotatorFuture));
-			return observation;
 		}
+	}
+
+	private ObservationRequest schedule(Satellite cur, boolean immediately, long current) {
+		ObservationRequest observation = create(current, cur, immediately);
+		if (observation == null) {
+			return null;
+		}
+		schedule(observation, current);
+		return observation;
 	}
 
 	private ObservationRequest create(long current, Satellite cur, boolean immediately) {
