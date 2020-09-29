@@ -2,8 +2,11 @@ package ru.r2cloud.predict;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import org.hipparchus.ode.events.Action;
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.BodyShape;
 import org.orekit.bodies.GeodeticPoint;
@@ -14,12 +17,14 @@ import org.orekit.data.DirectoryCrawler;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
 import org.orekit.frames.TopocentricFrame;
+import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.analytical.tle.TLEPropagator;
 import org.orekit.propagation.events.ElevationDetector;
 import org.orekit.propagation.events.ElevationExtremumDetector;
 import org.orekit.propagation.events.EventDetector;
 import org.orekit.propagation.events.EventSlopeFilter;
 import org.orekit.propagation.events.FilterType;
+import org.orekit.propagation.events.handlers.EventHandler;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
@@ -34,6 +39,7 @@ import ru.r2cloud.util.Configuration;
 
 public class PredictOreKit {
 
+	private static final double PREDICT_INTERVAL = 3600. * 24 * 2;
 	private static final Logger LOG = LoggerFactory.getLogger(PredictOreKit.class);
 	private static final double SPEED_OF_LIGHT = 2.99792458E8;
 
@@ -83,6 +89,37 @@ public class PredictOreKit {
 		return result;
 	}
 
+	public List<SatPass> calculateSchedule(Date current, TLEPropagator tlePropagator) {
+		List<SatPass> result = new ArrayList<>();
+		TopocentricFrame baseStationFrame = getPosition();
+		if (baseStationFrame == null) {
+			return null;
+		}
+		AbsoluteDate initialDate = new AbsoluteDate(current, TimeScalesFactory.getUTC());
+		List<AbsoluteDate> max = new ArrayList<>();
+		ElevationExtremumDetector maxDetector = new ElevationExtremumDetector(600, 1, baseStationFrame).withMaxIter(48 * 60).withHandler(new EventHandler<ElevationExtremumDetector>() {
+			@Override
+			public Action eventOccurred(SpacecraftState s, ElevationExtremumDetector detector, boolean increasing) {
+				if (FastMath.toDegrees(detector.getElevation(s)) > guaranteedElevation) {
+					max.add(s.getDate());
+				}
+				return Action.CONTINUE;
+			}
+		});
+		tlePropagator.clearEventsDetectors();
+		tlePropagator.addEventDetector(new EventSlopeFilter<EventDetector>(maxDetector, FilterType.TRIGGER_ONLY_DECREASING_EVENTS));
+		tlePropagator.setSlaveMode();
+		tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, PREDICT_INTERVAL));
+		for (AbsoluteDate curMax : max) {
+			SatPass cur = findStartEnd(tlePropagator, baseStationFrame, curMax);
+			if (cur != null) {
+				result.add(cur);
+			}
+		}
+
+		return result;
+	}
+
 	public SatPass calculateNext(Date current, TLEPropagator tlePropagator) {
 		TopocentricFrame baseStationFrame = getPosition();
 		if (baseStationFrame == null) {
@@ -91,21 +128,25 @@ public class PredictOreKit {
 		AbsoluteDate initialDate = new AbsoluteDate(current, TimeScalesFactory.getUTC());
 
 		MaxElevationHandler maxElevationHandler = new MaxElevationHandler(guaranteedElevation);
-		ElevationExtremumDetector maxDetector = new ElevationExtremumDetector(60, 0.001, baseStationFrame).withMaxIter(48 * 60).withHandler(maxElevationHandler);
+		ElevationExtremumDetector maxDetector = new ElevationExtremumDetector(600, 1, baseStationFrame).withMaxIter(48 * 60).withHandler(maxElevationHandler);
 		tlePropagator.clearEventsDetectors();
 		tlePropagator.addEventDetector(new EventSlopeFilter<EventDetector>(maxDetector, FilterType.TRIGGER_ONLY_DECREASING_EVENTS));
 		tlePropagator.setSlaveMode();
-		tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, 3600. * 24 * 2));
+		tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, PREDICT_INTERVAL));
 		if (maxElevationHandler.getDate() == null) {
 			return null;
 		}
 
+		return findStartEnd(tlePropagator, baseStationFrame, maxElevationHandler.getDate());
+	}
+
+	private SatPass findStartEnd(TLEPropagator tlePropagator, TopocentricFrame baseStationFrame, AbsoluteDate maxElevationTime) {
 		MinElevationHandler minElevationHandler = new MinElevationHandler();
-		ElevationDetector boundsDetector = new ElevationDetector(60, 0.001, baseStationFrame).withConstantElevation(FastMath.toRadians(minElevation)).withHandler(minElevationHandler);
+		ElevationDetector boundsDetector = new ElevationDetector(600, 1, baseStationFrame).withConstantElevation(FastMath.toRadians(minElevation)).withHandler(minElevationHandler);
 		tlePropagator.clearEventsDetectors();
 		tlePropagator.addEventDetector(boundsDetector);
 		// 20 mins before and 20 mins later
-		AbsoluteDate startDate = maxElevationHandler.getDate().shiftedBy(-20 * 60.0);
+		AbsoluteDate startDate = maxElevationTime.shiftedBy(-20 * 60.0);
 		tlePropagator.propagate(startDate, startDate.shiftedBy(40 * 60.0));
 
 		if (minElevationHandler.getStart() == null || minElevationHandler.getEnd() == null) {

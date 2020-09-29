@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.junit.Before;
@@ -23,29 +24,36 @@ public class PredictOreKitTest {
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private TestConfiguration config;
+	private TLEPropagator noaa15;
+	private PredictOreKit predict;
+
+	@Test
+	public void testCalculateBatch() throws Exception {
+		List<SatPass> next2Days = predict.calculateSchedule(getDate("29-09-2017 14:54:00"), noaa15);
+		assertPosition("18:05:57", "18:17:12", next2Days.get(0));
+		assertEquals(8, next2Days.size());
+	}
 
 	// happens on initial startup
 	@Test
-	public void testPrediectWithoutBaseStationCoordinates() throws Exception {
+	public void testPredictWithoutBaseStationCoordinates() throws Exception {
 		config.remove("locaiton.lat");
 		config.remove("locaiton.lon");
 
-		PredictOreKit s = new PredictOreKit(config);
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-		sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
-		TLEPropagator noaa15 = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE("1 25338U 98030A   17271.51297398  .00000037  00000-0  34305-4 0  9992", "2 25338  98.7817 282.6269 0009465 266.6019  93.4077 14.25818111  7720"));
-		assertNull(s.calculateNext(sdf.parse("29-09-2017 14:54:00"), noaa15));
+		assertNull(predict.calculateNext(getDate("29-09-2017 14:54:00"), noaa15));
 	}
 
 	// expected pass times taken from wxtoimg
 	@Test
 	public void testSameAsWxToImg() throws Exception {
-		PredictOreKit s = new PredictOreKit(config);
+		assertPosition("18:05:57", "18:17:12", predict.calculateNext(getDate("29-09-2017 14:54:00"), noaa15));
+		assertPosition("19:46:56", "19:56:34", predict.calculateNext(getDate("29-09-2017 19:00:00"), noaa15));
+	}
+
+	private static Date getDate(String str) throws Exception {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
-		TLEPropagator noaa15 = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE("1 25338U 98030A   17271.51297398  .00000037  00000-0  34305-4 0  9992", "2 25338  98.7817 282.6269 0009465 266.6019  93.4077 14.25818111  7720"));
-		assertPosition("18:05:57", "18:17:13", s.calculateNext(sdf.parse("29-09-2017 14:54:00"), noaa15));
-		assertPosition("19:46:56", "19:56:34", s.calculateNext(sdf.parse("29-09-2017 19:00:00"), noaa15));
+		return sdf.parse(str);
 	}
 
 	private static void assertPosition(String start, String end, SatPass pass) throws Exception {
@@ -61,6 +69,9 @@ public class PredictOreKitTest {
 		config.setProperty("locaiton.lat", "51.49");
 		config.setProperty("locaiton.lon", "0.01");
 		config.setProperty("scheduler.orekit.path", "./src/test/resources/data/orekit-data");
+
+		predict = new PredictOreKit(config);
+		noaa15 = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE("1 25338U 98030A   17271.51297398  .00000037  00000-0  34305-4 0  9992", "2 25338  98.7817 282.6269 0009465 266.6019  93.4077 14.25818111  7720"));
 	}
 
 }
