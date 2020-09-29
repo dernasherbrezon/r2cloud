@@ -11,6 +11,8 @@ public class ScheduledObservation implements ScheduleEntry {
 	private final Future<?> completeTaskFuture;
 	private final Future<?> rotatorFuture;
 	private final Runnable completeTask;
+	
+	private boolean cancelled = false;
 
 	ScheduledObservation(ObservationRequest req, Future<?> future, Future<?> completeTaskFuture, Runnable completeTask, Future<?> rotatorFuture) {
 		this.req = req;
@@ -65,5 +67,10 @@ public class ScheduledObservation implements ScheduleEntry {
 		if (rotatorFuture != null) {
 			rotatorFuture.cancel(true);
 		}
+		cancelled = true;
+	}
+	
+	public boolean isCancelled() {
+		return cancelled;
 	}
 }

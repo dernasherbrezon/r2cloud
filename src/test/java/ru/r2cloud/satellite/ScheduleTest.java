@@ -11,33 +11,33 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 
-import ru.r2cloud.DefaultScheduleEntry;
+import ru.r2cloud.model.ObservationRequest;
 
 public class ScheduleTest {
 
-	private Schedule<DefaultScheduleEntry> schedule;
+	private Schedule schedule;
 
 	@Test
 	public void testAddAndGet() {
-		DefaultScheduleEntry entry = create();
+		ScheduledObservation entry = create();
 		schedule.add(entry);
 		assertEquals(entry, schedule.get(entry.getId()));
 	}
 
-	@Test
-	public void testAddingNewWillCancelPrevious() {
-		DefaultScheduleEntry entry1 = create();
-		DefaultScheduleEntry entry2 = create();
-		entry2.setId(entry1.getId());
-		schedule.add(entry1);
-		schedule.add(entry2);
-		assertTrue(entry1.isCancelled());
-		assertFalse(entry2.isCancelled());
-	}
+	// @Test
+	// public void testAddingNewWillCancelPrevious() {
+	// ScheduledObservation entry1 = create();
+	// ScheduledObservation entry2 = create();
+	// entry2.setId(entry1.getId());
+	// schedule.add(entry1);
+	// schedule.add(entry2);
+	// assertTrue(entry1.isCancelled());
+	// assertFalse(entry2.isCancelled());
+	// }
 
 	@Test
 	public void testAddingTheSameIsNoOp() {
-		DefaultScheduleEntry entry = create();
+		ScheduledObservation entry = create();
 		schedule.add(entry);
 		schedule.add(entry);
 		assertFalse(entry.isCancelled());
@@ -45,7 +45,7 @@ public class ScheduleTest {
 
 	@Test
 	public void testCancelAndRemove() {
-		DefaultScheduleEntry entry = create();
+		ScheduledObservation entry = create();
 		schedule.add(entry);
 		schedule.cancel(entry.getId());
 		assertTrue(entry.isCancelled());
@@ -72,17 +72,8 @@ public class ScheduleTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testValidateInput() {
-		DefaultScheduleEntry entry = create();
-		entry.setId(null);
-		schedule.add(entry);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
 	public void testValidateInput2() {
-		DefaultScheduleEntry entry = create();
-		entry.setEndTimeMillis(0);
-		entry.setStartTimeMillis(1);
+		ScheduledObservation entry = create(1, 0);
 		schedule.add(entry);
 	}
 
@@ -93,51 +84,49 @@ public class ScheduleTest {
 
 	@Test
 	public void testPartialOverlap() {
-		DefaultScheduleEntry entry = create();
-		entry.setStartTimeMillis(0);
-		entry.setEndTimeMillis(2);
+		ScheduledObservation entry = create(0, 2);
 		schedule.add(entry);
 		assertNotNull(schedule.getOverlap(1, 3));
 	}
 
 	@Test
 	public void testPartialOverlap2() {
-		DefaultScheduleEntry entry = create();
-		entry.setStartTimeMillis(1);
-		entry.setEndTimeMillis(3);
+		ScheduledObservation entry = create(1, 3);
 		schedule.add(entry);
 		assertNotNull(schedule.getOverlap(0, 2));
 	}
 
 	@Test
 	public void testFullOverlap() {
-		DefaultScheduleEntry entry = create();
-		entry.setStartTimeMillis(0);
-		entry.setEndTimeMillis(4);
+		ScheduledObservation entry = create(0, 4);
 		schedule.add(entry);
 		assertNotNull(schedule.getOverlap(1, 3));
 	}
-	
+
 	@Test
 	public void testFullOverlap2() {
-		DefaultScheduleEntry entry = create();
-		entry.setStartTimeMillis(1);
-		entry.setEndTimeMillis(3);
+		ScheduledObservation entry = create(1, 3);
 		schedule.add(entry);
 		assertNotNull(schedule.getOverlap(0, 4));
 	}
 
-	private static DefaultScheduleEntry create() {
-		DefaultScheduleEntry entry = new DefaultScheduleEntry();
-		entry.setStartTimeMillis(0);
-		entry.setEndTimeMillis(1);
-		entry.setId(UUID.randomUUID().toString());
+	private static ScheduledObservation create() {
+		return create(0, 1);
+	}
+
+	private static ScheduledObservation create(long start, long end) {
+		ObservationRequest req = new ObservationRequest();
+		req.setStartTimeMillis(start);
+		req.setEndTimeMillis(end);
+		req.setId(UUID.randomUUID().toString());
+		req.setSatelliteId(UUID.randomUUID().toString());
+		ScheduledObservation entry = new ScheduledObservation(req, null, null, null, null);
 		return entry;
 	}
 
 	@Before
 	public void start() {
-		schedule = new Schedule<>();
+		schedule = new Schedule(null);
 	}
 
 }

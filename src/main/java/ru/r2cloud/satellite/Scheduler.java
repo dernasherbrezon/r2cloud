@@ -1,7 +1,6 @@
 package ru.r2cloud.satellite;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -34,7 +33,6 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 
-	private final ObservationFactory factory;
 	private final SatelliteDao satellites;
 	private final Configuration config;
 	private final RtlSdrLock lock;
@@ -43,20 +41,19 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private final ProcessFactory processFactory;
 	private final ObservationDao dao;
 	private final DecoderService decoderService;
-	private final Schedule<ScheduledObservation> schedule;
+	private final Schedule schedule;
 	private final RotatorService rotatorService;
 
 	private ScheduledExecutorService startThread = null;
 	private ScheduledExecutorService stopThread = null;
 
-	public Scheduler(Schedule<ScheduledObservation> schedule, Configuration config, SatelliteDao satellites, RtlSdrLock lock, ObservationFactory factory, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderService decoderService, RotatorService rotatorService) {
+	public Scheduler(Schedule schedule, Configuration config, SatelliteDao satellites, RtlSdrLock lock, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderService decoderService, RotatorService rotatorService) {
 		this.schedule = schedule;
 		this.config = config;
 		this.config.subscribe(this, "locaiton.lat");
 		this.config.subscribe(this, "locaiton.lon");
 		this.satellites = satellites;
 		this.lock = lock;
-		this.factory = factory;
 		this.threadpoolFactory = threadpoolFactory;
 		this.clock = clock;
 		this.processFactory = processFactory;
@@ -84,21 +81,8 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		}
 
 		if (updateSchedule) {
-			List<ObservationRequest> requests = new ArrayList<>();
-			long current = clock.millis();
-			for (Satellite cur : allSatellites) {
-				if (!cur.isEnabled()) {
-					continue;
-				}
-				ObservationRequest observation = create(current, cur, false);
-				if (observation == null) {
-					continue;
-				}
-				requests.add(observation);
-			}
-
-			for (ObservationRequest cur : requests) {
-				schedule(cur, current);
+			for (ObservationRequest cur : schedule.createInitialSchedule(allSatellites, clock.millis())) {
+				schedule(cur, clock.millis());
 			}
 		}
 	}
@@ -127,19 +111,20 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	}
 
 	private void schedule(ObservationRequest observation, long current) {
-		LOG.info("scheduled next pass for {}. start: {} end: {}", observation.getSatelliteId(), new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
+		Satellite satellite = satellites.findById(observation.getSatelliteId());
+		LOG.info("scheduled next pass for {}. start: {} end: {}", satellite, new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
 		IQReader reader = createReader(observation);
 		Runnable readTask = new SafeRunnable() {
 
 			@Override
 			public void safeRun() {
 				if (clock.millis() > observation.getEndTimeMillis()) {
-					LOG.info("[{}] observation time passed. skip {}", observation.getId(), observation.getSatelliteId());
+					LOG.info("[{}] observation time passed. skip {}", observation.getId(), satellite);
 					scheduleNext(observation);
 					return;
 				}
 				if (!lock.tryLock(Scheduler.this)) {
-					LOG.info("[{}] unable to acquire lock for {}", observation.getId(), observation.getSatelliteId());
+					LOG.info("[{}] unable to acquire lock for {}", observation.getId(), satellite);
 					scheduleNext(observation);
 					return;
 				}
@@ -196,36 +181,12 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	}
 
 	private ObservationRequest schedule(Satellite cur, boolean immediately, long current) {
-		ObservationRequest observation = create(current, cur, immediately);
+		ObservationRequest observation = schedule.getNextAvailableSlot(cur, current, immediately);
 		if (observation == null) {
 			return null;
 		}
 		schedule(observation, current);
 		return observation;
-	}
-
-	private ObservationRequest create(long current, Satellite cur, boolean immediately) {
-		long next = current;
-		while (!Thread.currentThread().isInterrupted()) {
-			ObservationRequest observation = factory.create(new Date(next), cur, immediately);
-			if (observation == null) {
-				return null;
-			}
-
-			ScheduledObservation overlapped = schedule.getOverlap(observation.getStartTimeMillis(), observation.getEndTimeMillis());
-			if (overlapped == null) {
-				return observation;
-			}
-
-			if (immediately) {
-				overlapped.cancel();
-				return observation;
-			}
-
-			// find next
-			next = observation.getEndTimeMillis();
-		}
-		return null;
 	}
 
 	private IQReader createReader(ObservationRequest req) {
