@@ -121,4 +121,11 @@ public class Timetable {
 	public void clear() {
 		slots.clear();
 	}
+
+	public boolean remove(TimeSlot slot) {
+		if (slot == null) {
+			return false;
+		}
+		return slots.remove(slot);
+	}
 }
