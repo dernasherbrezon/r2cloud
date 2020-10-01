@@ -134,6 +134,7 @@ public class R2Cloud {
 	private final TLEDao tleDao;
 	private final TLEReloader tleReloader;
 	private final DecoderService decoderService;
+	private final Schedule schedule;
 	private final Scheduler scheduler;
 	private final RtlSdrLock rtlsdrLock;
 	private final PredictOreKit predict;
@@ -240,7 +241,8 @@ public class R2Cloud {
 		decoderService = new DecoderService(props, decoders, resultDao, r2cloudService, threadFactory, metrics);
 
 		observationFactory = new ObservationFactory(predict, tleDao, props);
-		scheduler = new Scheduler(new Schedule<>(), props, satelliteDao, rtlsdrLock, observationFactory, threadFactory, clock, processFactory, resultDao, decoderService, rotatorService);
+		schedule = new Schedule(observationFactory);
+		scheduler = new Scheduler(schedule, props, satelliteDao, rtlsdrLock, threadFactory, clock, processFactory, resultDao, decoderService, rotatorService);
 
 		// setup web server
 		index(new Health());
@@ -259,7 +261,7 @@ public class R2Cloud {
 		index(new ObservationSpectrogram(resultDao, spectogramService, signed));
 		index(new ObservationList(satelliteDao, resultDao));
 		index(new ObservationLoad(resultDao, signed, decoders));
-		index(new ScheduleList(satelliteDao, scheduler));
+		index(new ScheduleList(satelliteDao, schedule));
 		index(new ScheduleSave(satelliteDao, scheduler));
 		index(new ScheduleStart(satelliteDao, scheduler));
 		index(new ScheduleComplete(scheduler));

@@ -27,9 +27,9 @@ public class ScheduleComplete extends AbstractHttpController {
 
 	@Override
 	public ModelAndView doPost(JsonObject request) {
-		String id = WebServer.getString(request, "id");
+		String observationId = WebServer.getString(request, "id");
 		ValidationResult errors = new ValidationResult();
-		if (id == null || id.trim().length() == 0) {
+		if (observationId == null || observationId.trim().length() == 0) {
 			errors.put("id", Messages.CANNOT_BE_EMPTY);
 		}
 
@@ -38,7 +38,7 @@ public class ScheduleComplete extends AbstractHttpController {
 			return new BadRequest(errors);
 		}
 
-		if (scheduler.completeImmediately(id)) {
+		if (scheduler.completeImmediately(observationId)) {
 			return new Success();
 		} else {
 			return new NotFound();

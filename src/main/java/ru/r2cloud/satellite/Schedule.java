@@ -1,8 +1,10 @@
 package ru.r2cloud.satellite;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -17,103 +19,264 @@ public class Schedule {
 	private static final Logger LOG = LoggerFactory.getLogger(Schedule.class);
 
 	private final ObservationFactory factory;
-	private final Map<String, ScheduledObservation> scheduledObservations = new HashMap<>();
+	private final Timetable timetable = new Timetable(60 * 4 * 1000);
+
+	private final Map<String, ScheduledObservation> tasksById = new HashMap<>();
+	private final Map<String, ObservationRequest> observationsById = new HashMap<>();
+	private final Map<String, TimeSlot> timeSlotById = new HashMap<>();
+	private final Map<String, List<ObservationRequest>> observationsBySatelliteId = new HashMap<>();
 
 	public Schedule(ObservationFactory factory) {
 		this.factory = factory;
 	}
 
-	public synchronized void add(ScheduledObservation entry) {
-		if (entry == null) {
-			return;
+	public synchronized void assignTasksToSlot(String observationId, ScheduledObservation entry) {
+		if (!observationsById.containsKey(observationId)) {
+			throw new IllegalArgumentException("unknown observation");
 		}
-		if (entry.getId() == null) {
-			throw new IllegalArgumentException("id cannot be null");
-		}
-		if (entry.getEndTimeMillis() < entry.getStartTimeMillis()) {
-			throw new IllegalArgumentException("end is less than start: " + entry.getEndTimeMillis() + " start: " + entry.getStartTimeMillis());
-		}
-		ScheduledObservation previous = scheduledObservations.put(entry.getId(), entry);
+		ScheduledObservation previous = tasksById.put(observationId, entry);
 		if (previous != null && previous != entry) {
-			LOG.info("cancelling previous: {}", previous.getStartTimeMillis());
+			LOG.info("cancelling previous scheduled tasks for observation: {}", observationId);
 			previous.cancel();
 		}
 	}
 
-	public synchronized ScheduledObservation cancel(String id) {
-		if (id == null) {
+	// scheduled observation might not exist
+	public synchronized ScheduledObservation cancel(String observationId) {
+		if (observationId == null) {
 			return null;
 		}
-		ScheduledObservation previous = scheduledObservations.remove(id);
+		ObservationRequest previousReq = observationsById.remove(observationId);
+		if (previousReq == null) {
+			return null;
+		}
+		removeFromIndex(previousReq);
+		timetable.remove(timeSlotById.remove(observationId));
+		ScheduledObservation previous = tasksById.remove(observationId);
 		if (previous == null) {
 			return null;
 		}
-		LOG.info("cancelling {}: {}", id, previous.getStartTimeMillis());
+		LOG.info("cancelling {}: {}", observationId, previousReq.getStartTimeMillis());
 		previous.cancel();
 		return previous;
 	}
 
-	public synchronized ScheduledObservation get(String id) {
-		if (id == null) {
+	public synchronized void cancelAll() {
+		for (ObservationRequest cur : observationsById.values()) {
+			removeFromIndex(cur);
+			timetable.remove(timeSlotById.remove(cur.getId()));
+			ScheduledObservation previous = tasksById.remove(cur.getId());
+			if (previous == null) {
+				continue;
+			}
+			previous.cancel();
+		}
+		observationsById.clear();
+	}
+
+	public synchronized List<ObservationRequest> createInitialSchedule(List<Satellite> allSatellites, long current) {
+		Map<String, List<ObservationRequest>> passesBySatellite = new HashMap<>();
+		for (Satellite cur : allSatellites) {
+			List<ObservationRequest> passes = factory.createSchedule(new Date(current), cur);
+			if (passes.isEmpty()) {
+				continue;
+			}
+			passesBySatellite.put(cur.getId(), passes);
+		}
+
+		List<ObservationRequest> result = new ArrayList<>();
+
+		// fill-in full observations
+		while (!Thread.currentThread().isInterrupted()) {
+			boolean moreObservationsToCheck = false;
+			for (Satellite cur : allSatellites) {
+				List<ObservationRequest> allPasses = passesBySatellite.get(cur.getId());
+				if (allPasses == null) {
+					continue;
+				}
+				ObservationRequest reserved = reserveFullSlot(allPasses);
+				if (reserved == null) {
+					continue;
+				}
+				moreObservationsToCheck = true;
+				result.add(reserved);
+				allPasses.remove(reserved);
+			}
+
+			if (!moreObservationsToCheck) {
+				break;
+			}
+		}
+
+		// fill-in partial observations
+		while (!Thread.currentThread().isInterrupted()) {
+			boolean moreObservationsToCheck = false;
+			for (Satellite cur : allSatellites) {
+				List<ObservationRequest> allPasses = passesBySatellite.get(cur.getId());
+				if (allPasses == null) {
+					continue;
+				}
+				ObservationRequest reserved = reservePartialSlot(allPasses);
+				if (reserved == null) {
+					continue;
+				}
+				moreObservationsToCheck = true;
+				result.add(reserved);
+				allPasses.remove(reserved);
+			}
+
+			if (!moreObservationsToCheck) {
+				break;
+			}
+		}
+
+		index(result);
+		return result;
+	}
+
+	public synchronized List<ObservationRequest> getBySatelliteId(String satelliteId) {
+		List<ObservationRequest> previous = observationsBySatelliteId.get(satelliteId);
+		if (previous == null) {
+			return Collections.emptyList();
+		}
+		return previous;
+	}
+
+	// even if this satellite will be scheduled well forward the rest of satellites
+	// whole schedule will be cleared on next re-schedule
+	public synchronized List<ObservationRequest> addSatelliteToSchedule(Satellite satellite, long current) {
+		List<ObservationRequest> previous = observationsBySatelliteId.get(satellite.getId());
+		if (previous != null && !previous.isEmpty()) {
+			return previous;
+		}
+		List<ObservationRequest> allPasses = factory.createSchedule(new Date(current), satellite);
+		List<ObservationRequest> batch = new ArrayList<>();
+		for (ObservationRequest cur : allPasses) {
+			TimeSlot slot = new TimeSlot();
+			slot.setStart(cur.getStartTimeMillis());
+			slot.setEnd(cur.getEndTimeMillis());
+			if (timetable.addFully(slot)) {
+				batch.add(cur);
+				timeSlotById.put(cur.getId(), slot);
+				continue;
+			}
+			TimeSlot partial = timetable.addPatially(slot);
+			if (partial != null) {
+				cur.setStartTimeMillis(partial.getStart());
+				cur.setEndTimeMillis(partial.getEnd());
+				batch.add(cur);
+				timeSlotById.put(cur.getId(), partial);
+				continue;
+			}
+		}
+		index(batch);
+		return batch;
+	}
+
+	public synchronized ObservationRequest findFirstBySatelliteId(String id, long current) {
+		List<ObservationRequest> curList = observationsBySatelliteId.get(id);
+		if (curList == null || curList.isEmpty()) {
 			return null;
 		}
-		return scheduledObservations.get(id);
-	}
-
-	public synchronized ScheduledObservation getOverlap(long start, long end) {
-		if (end < start) {
-			throw new IllegalArgumentException("end is less than start: " + end + " start: " + start);
-		}
-		for (ScheduledObservation cur : scheduledObservations.values()) {
-			if (cur.getStartTimeMillis() < start && start < cur.getEndTimeMillis()) {
-				return cur;
-			}
-			if (cur.getStartTimeMillis() < end && end < cur.getEndTimeMillis()) {
-				return cur;
-			}
-			if (start < cur.getStartTimeMillis() && cur.getEndTimeMillis() < end) {
+		for (ObservationRequest cur : curList) {
+			// the list is sorted so it is safe to do that
+			if (cur.getStartTimeMillis() > current) {
 				return cur;
 			}
 		}
 		return null;
 	}
 
-	public List<ObservationRequest> createInitialSchedule(List<Satellite> allSatellites, long current) {
-		List<ObservationRequest> requests = new ArrayList<>();
-		for (Satellite cur : allSatellites) {
-			if (!cur.isEnabled()) {
-				continue;
-			}
-			ObservationRequest observation = getNextAvailableSlot(cur, current, false);
-			if (observation == null) {
-				continue;
-			}
-			requests.add(observation);
+	public synchronized ObservationRequest moveObservation(ObservationRequest req, long startTime) {
+		cancel(req.getId());
+		long previousPeriod = req.getEndTimeMillis() - req.getStartTimeMillis();
+		req.setStartTimeMillis(startTime);
+		req.setEndTimeMillis(startTime + previousPeriod);
+
+		TimeSlot slot = new TimeSlot();
+		slot.setStart(req.getStartTimeMillis());
+		slot.setEnd(req.getEndTimeMillis());
+		if (!timetable.addFully(slot)) {
+			return null;
 		}
-		return requests;
+		index(Collections.singletonList(req));
+		return req;
 	}
 
-	public ObservationRequest getNextAvailableSlot(Satellite cur, long current, boolean immediately) {
-		long next = current;
-		while (!Thread.currentThread().isInterrupted()) {
-			ObservationRequest observation = factory.create(new Date(next), cur, immediately);
-			if (observation == null) {
-				return null;
+	public synchronized List<ObservationRequest> findObservations(long startTimeMillis, long endTimeMillis) {
+		List<ObservationRequest> sorted = new ArrayList<>(observationsById.values());
+		Collections.sort(sorted, ObservationRequestComparator.INSTANCE);
+		List<ObservationRequest> result = new ArrayList<>();
+		for (ObservationRequest cur : sorted) {
+			if (cur.getStartTimeMillis() > startTimeMillis && cur.getStartTimeMillis() < endTimeMillis) {
+				result.add(cur);
+			} else if (cur.getEndTimeMillis() > startTimeMillis && cur.getEndTimeMillis() < endTimeMillis) {
+				result.add(cur);
+			} else if (cur.getStartTimeMillis() < startTimeMillis && endTimeMillis < cur.getEndTimeMillis()) {
+				result.add(cur);
 			}
+		}
+		return result;
+	}
 
-			ScheduledObservation overlapped = getOverlap(observation.getStartTimeMillis(), observation.getEndTimeMillis());
-			if (overlapped == null) {
-				return observation;
+	private ObservationRequest reserveFullSlot(List<ObservationRequest> allPasses) {
+		for (ObservationRequest curObservation : allPasses) {
+			TimeSlot slot = new TimeSlot();
+			slot.setStart(curObservation.getStartTimeMillis());
+			slot.setEnd(curObservation.getEndTimeMillis());
+			if (timetable.addFully(slot)) {
+				timeSlotById.put(curObservation.getId(), slot);
+				return curObservation;
 			}
-
-			if (immediately) {
-				overlapped.cancel();
-				return observation;
-			}
-
-			// find next
-			next = observation.getEndTimeMillis();
 		}
 		return null;
 	}
+
+	private ObservationRequest reservePartialSlot(List<ObservationRequest> allPasses) {
+		for (ObservationRequest curObservation : allPasses) {
+			TimeSlot slot = new TimeSlot();
+			slot.setStart(curObservation.getStartTimeMillis());
+			slot.setEnd(curObservation.getEndTimeMillis());
+			TimeSlot partial = timetable.addPatially(slot);
+			if (partial != null) {
+				curObservation.setStartTimeMillis(partial.getStart());
+				curObservation.setEndTimeMillis(partial.getEnd());
+				timeSlotById.put(curObservation.getId(), partial);
+				return curObservation;
+			}
+		}
+		return null;
+	}
+
+	private void removeFromIndex(ObservationRequest req) {
+		List<ObservationRequest> curList = observationsBySatelliteId.get(req.getSatelliteId());
+		if (curList == null) {
+			return;
+		}
+		Iterator<ObservationRequest> it = curList.iterator();
+		while (it.hasNext()) {
+			ObservationRequest cur = it.next();
+			if (cur.getId().equals(req.getId())) {
+				it.remove();
+				break;
+			}
+		}
+	}
+
+	private void index(List<ObservationRequest> req) {
+		for (ObservationRequest cur : req) {
+			List<ObservationRequest> curList = observationsBySatelliteId.get(cur.getSatelliteId());
+			if (curList == null) {
+				curList = new ArrayList<>();
+				observationsBySatelliteId.put(cur.getSatelliteId(), curList);
+			}
+			curList.add(cur);
+			observationsById.put(cur.getId(), cur);
+		}
+
+		for (List<ObservationRequest> values : observationsBySatelliteId.values()) {
+			Collections.sort(values, ObservationRequestComparator.INSTANCE);
+		}
+	}
+
 }

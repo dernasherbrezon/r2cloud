@@ -444,10 +444,10 @@ public class RestClient {
 		return json.getString("id", null);
 	}
 
-	public HttpResponse<String> scheduleCompleteResponse(String satelliteId) {
+	public HttpResponse<String> scheduleCompleteResponse(String observationId) {
 		JsonObject entity = new JsonObject();
-		if (satelliteId != null) {
-			entity.add("id", satelliteId);
+		if (observationId != null) {
+			entity.add("id", observationId);
 		}
 		HttpRequest request = createJsonPost("/api/v1/admin/schedule/immediately/complete", entity).build();
 		try {
@@ -460,8 +460,8 @@ public class RestClient {
 		}
 	}
 
-	public void scheduleComplete(String satelliteId) {
-		HttpResponse<String> response = scheduleCompleteResponse(satelliteId);
+	public void scheduleComplete(String observationId) {
+		HttpResponse<String> response = scheduleCompleteResponse(observationId);
 		if (response.statusCode() != 200) {
 			LOG.info("response: {}", response.body());
 			throw new RuntimeException("invalid status code: " + response.statusCode());

@@ -13,9 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TimeZone;
-import java.util.TreeMap;
 import java.util.UUID;
 
 import ru.r2cloud.CelestrakServer;
@@ -50,21 +48,6 @@ public class UtilizationTest {
 
 		List<Satellite> enabledByDefault = getDefaultEnabled(satelliteDao);
 
-		System.out.println("default: ");
-		while (!enabledByDefault.isEmpty()) {
-			float utilization = calculateUtilization(satelliteDao, factory, enabledByDefault);
-			System.out.println(enabledByDefault.size() + " " + utilization);
-			enabledByDefault.remove(0);
-		}
-		System.out.println("70cm: ");
-		List<Satellite> cm = loadFromFile(satelliteDao, "70cm-satellites.txt");
-		calculatePercentTotal(satelliteDao, factory, cm);
-		while (!cm.isEmpty()) {
-			float utilization = calculateUtilization(satelliteDao, factory, cm);
-			System.out.println(cm.size() + " " + utilization);
-			cm.remove(0);
-		}
-
 		System.out.println("partial default: ");
 		enabledByDefault = getDefaultEnabled(satelliteDao);
 		while (!enabledByDefault.isEmpty()) {
@@ -73,7 +56,7 @@ public class UtilizationTest {
 			enabledByDefault.remove(0);
 		}
 		System.out.println("partial 70cm: ");
-		cm = loadFromFile(satelliteDao, "70cm-satellites.txt");
+		List<Satellite> cm = loadFromFile(satelliteDao, "70cm-satellites.txt");
 		while (!cm.isEmpty()) {
 			float utilization = calculatePartialUtilization(satelliteDao, factory, cm);
 			System.out.println(cm.size() + " " + utilization);
@@ -93,58 +76,6 @@ public class UtilizationTest {
 		return result;
 	}
 
-	private static void calculatePercentTotal(SatelliteDao satelliteDao, ObservationFactory factory, List<Satellite> satellites) throws ParseException {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-		long start = sdf.parse("2020-09-27 11:13:00").getTime();
-		long end = start + 2 * 24 * 60 * 60 * 1000;
-		for (int i = 0; i < 5; i++) {
-			long total = 0;
-			List<ObservationRequest> happened = calculateObservations(satelliteDao, factory, satellites, start, end);
-			Map<Long, Long> totalBySatellite = new TreeMap<>();
-			for (ObservationRequest req : happened) {
-				long observationTime = req.getEndTimeMillis() - req.getStartTimeMillis();
-				total += observationTime;
-
-				Long prevSat = totalBySatellite.get(Long.valueOf(req.getSatelliteId()));
-				if (prevSat == null) {
-					prevSat = 0L;
-				}
-				prevSat += observationTime;
-				totalBySatellite.put(Long.valueOf(req.getSatelliteId()), prevSat);
-			}
-
-			StringBuilder str = new StringBuilder();
-			for (Entry<Long, Long> cur : totalBySatellite.entrySet()) {
-				str.append(cur.getValue() / (float) total).append(" ");
-			}
-			System.out.println(str.toString().trim());
-
-			start = end;
-			end += 2 * 24 * 60 * 60 * 1000;
-		}
-	}
-
-	private static float calculateUtilization(SatelliteDao satelliteDao, ObservationFactory factory, List<Satellite> satellites) throws ParseException {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-		long start = sdf.parse("2020-09-27 11:13:00").getTime();
-		long end = sdf.parse("2020-09-29 11:13:00").getTime(); // +2 days
-
-		List<ObservationRequest> happened = calculateObservations(satelliteDao, factory, satellites, start, end);
-		Collections.sort(happened, ObservationRequestComparator.INSTANCE);
-
-		long total = end - start;
-		long utilized = 0;
-		for (ObservationRequest cur : happened) {
-			System.out.println(satelliteDao.findById(cur.getSatelliteId()).getName() + "\t\t\t" + new Date(cur.getStartTimeMillis()) + " - " + new Date(cur.getEndTimeMillis()));
-			utilized += (cur.getEndTimeMillis() - cur.getStartTimeMillis());
-		}
-		return (utilized / (float) total);
-	}
-
 	private static float calculatePartialUtilization(SatelliteDao satelliteDao, ObservationFactory factory, List<Satellite> satellites) throws ParseException {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -152,7 +83,7 @@ public class UtilizationTest {
 		long start = sdf.parse("2020-09-27 11:13:00").getTime();
 		long end = sdf.parse("2020-09-29 11:13:00").getTime(); // +2 days
 
-		List<ObservationRequest> happened = calculatePartialObservations(satelliteDao, factory, satellites, start, end);
+		List<ObservationRequest> happened = calculatePartialObservations(factory, satellites, start, end);
 		Collections.sort(happened, ObservationRequestComparator.INSTANCE);
 
 		long total = end - start;
@@ -164,7 +95,7 @@ public class UtilizationTest {
 		return (utilized / (float) total);
 	}
 
-	private static List<ObservationRequest> calculatePartialObservations(SatelliteDao satelliteDao, ObservationFactory factory, List<Satellite> satellites, long start, long end) {
+	private static List<ObservationRequest> calculatePartialObservations(ObservationFactory factory, List<Satellite> satellites, long start, long end) {
 		Timetable timeTable = new Timetable(4 * 60 * 1000);
 		List<ObservationRequest> observations = new ArrayList<>();
 		// find all full observations
@@ -232,7 +163,7 @@ public class UtilizationTest {
 	private static ObservationRequest createObservation(ObservationFactory factory, long start, Timetable timeTable, Satellite cur, boolean partial) {
 		long next = start;
 		while (!Thread.currentThread().isInterrupted()) {
-			ObservationRequest observation = factory.create(new Date(next), cur, false);
+			ObservationRequest observation = factory.create(new Date(next), cur);
 			if (observation == null) {
 				return null;
 			}
@@ -259,43 +190,9 @@ public class UtilizationTest {
 		return null;
 	}
 
-	private static List<ObservationRequest> calculateObservations(SatelliteDao satelliteDao, ObservationFactory factory, List<Satellite> satellites, long start, long end) {
-		Schedule<ScheduledObservation> schedule = new Schedule<>();
-		List<ObservationRequest> initialRequests = new ArrayList<>();
-		for (Satellite cur : satellites) {
-			ObservationRequest req = create(factory, schedule, start, cur, false);
-			if (req == null) {
-				continue;
-			}
-			initialRequests.add(req);
-			schedule.add(new ScheduledObservation(req, null, null, null, null));
-		}
-		Collections.sort(initialRequests, ObservationRequestComparator.INSTANCE);
-		List<ObservationRequest> happened = new ArrayList<>();
-		while (!initialRequests.isEmpty()) {
-			ObservationRequest cur = initialRequests.remove(0);
-			happened.add(cur);
-
-			ObservationRequest next = create(factory, schedule, cur.getEndTimeMillis(), satelliteDao.findById(cur.getSatelliteId()), false);
-			if (next == null) {
-				continue;
-			}
-			if (next.getStartTimeMillis() > end) {
-				continue;
-			}
-			initialRequests.add(next);
-			schedule.add(new ScheduledObservation(next, null, null, null, null));
-			Collections.sort(initialRequests, ObservationRequestComparator.INSTANCE);
-		}
-		return happened;
-	}
-
 	private static List<Satellite> getDefaultEnabled(SatelliteDao dao) {
 		List<Satellite> result = new ArrayList<>();
-		for (Satellite cur : dao.findAll()) {
-			if (!cur.isEnabled()) {
-				continue;
-			}
+		for (Satellite cur : dao.findEnabled()) {
 			// this satellite can't be visible on the tested ground station
 			if (cur.getId().equals("44365") || cur.getId().equals("44832")) {
 				continue;
@@ -305,28 +202,4 @@ public class UtilizationTest {
 		return result;
 	}
 
-	// copy from scheduler to simulate utilization
-	private static ObservationRequest create(ObservationFactory factory, Schedule<ScheduledObservation> schedule, long current, Satellite cur, boolean immediately) {
-		long next = current;
-		while (!Thread.currentThread().isInterrupted()) {
-			ObservationRequest observation = factory.create(new Date(next), cur, immediately);
-			if (observation == null) {
-				return null;
-			}
-
-			ScheduledObservation overlapped = schedule.getOverlap(observation.getStartTimeMillis(), observation.getEndTimeMillis());
-			if (overlapped == null) {
-				return observation;
-			}
-
-			if (immediately) {
-				overlapped.cancel();
-				return observation;
-			}
-
-			// find next
-			next = observation.getEndTimeMillis();
-		}
-		return null;
-	}
 }

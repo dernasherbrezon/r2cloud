@@ -51,6 +51,17 @@ public class SatelliteDao {
 		return satellites;
 	}
 
+	public List<Satellite> findEnabled() {
+		List<Satellite> result = new ArrayList<>();
+		for (Satellite cur : satellites) {
+			if (!cur.isEnabled()) {
+				continue;
+			}
+			result.add(cur);
+		}
+		return result;
+	}
+
 	private void index(Satellite satellite) {
 		satellites.add(satellite);
 		satelliteByName.put(satellite.getName(), satellite);

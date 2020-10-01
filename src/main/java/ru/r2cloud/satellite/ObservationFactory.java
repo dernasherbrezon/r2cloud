@@ -1,6 +1,9 @@
 package ru.r2cloud.satellite;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import org.orekit.propagation.analytical.tle.TLEPropagator;
 import org.slf4j.Logger;
@@ -29,7 +32,25 @@ public class ObservationFactory {
 		this.config = config;
 	}
 
-	public ObservationRequest create(Date date, Satellite satellite, boolean immediately) {
+	public List<ObservationRequest> createSchedule(Date date, Satellite satellite) {
+		Tle tle = tleDao.findById(satellite.getId());
+		if (tle == null) {
+			LOG.error("unable to find tle for: {}", satellite);
+			return Collections.emptyList();
+		}
+		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(tle.getRaw()[1], tle.getRaw()[2]));
+		List<SatPass> batch = predict.calculateSchedule(date, tlePropagator);
+		if (batch == null || batch.isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<ObservationRequest> result = new ArrayList<>();
+		for (SatPass cur : batch) {
+			result.add(convert(satellite, tle, tlePropagator, cur));
+		}
+		return result;
+	}
+
+	public ObservationRequest create(Date date, Satellite satellite) {
 		Tle tle = tleDao.findById(satellite.getId());
 		if (tle == null) {
 			LOG.error("unable to find tle for: {}", satellite);
@@ -41,6 +62,10 @@ public class ObservationFactory {
 			LOG.info("can't find next pass for {}", satellite);
 			return null;
 		}
+		return convert(satellite, tle, tlePropagator, nextPass);
+	}
+
+	private ObservationRequest convert(Satellite satellite, Tle tle, TLEPropagator tlePropagator, SatPass nextPass) {
 		ObservationRequest result = new ObservationRequest();
 		result.setSatelliteFrequency(satellite.getFrequency());
 		result.setSatelliteId(satellite.getId());
@@ -48,13 +73,8 @@ public class ObservationFactory {
 		result.setBandwidth(satellite.getBandwidth());
 		result.setTle(tle);
 		result.setGroundStation(predict.getPosition().getPoint());
-		if (immediately) {
-			result.setStartTimeMillis(date.getTime());
-			result.setEndTimeMillis(result.getStartTimeMillis() + (nextPass.getEndMillis() - nextPass.getStartMillis()));
-		} else {
-			result.setStartTimeMillis(nextPass.getStartMillis());
-			result.setEndTimeMillis(nextPass.getEndMillis());
-		}
+		result.setStartTimeMillis(nextPass.getStartMillis());
+		result.setEndTimeMillis(nextPass.getEndMillis());
 		result.setId(String.valueOf(result.getStartTimeMillis()));
 		result.setGain(config.getDouble("satellites.rtlsdr.gain"));
 		result.setBiast(config.getBoolean("satellites.rtlsdr.biast"));

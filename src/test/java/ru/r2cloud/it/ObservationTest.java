@@ -42,7 +42,7 @@ public class ObservationTest extends RegisteredTest {
 		assertNotNull(observationId);
 		Thread.sleep(1000);
 		// complete observation
-		client.scheduleComplete(METEOR_ID);
+		client.scheduleComplete(observationId);
 
 		// get observation and assert
 		assertObservation(awaitObservation(observationId));

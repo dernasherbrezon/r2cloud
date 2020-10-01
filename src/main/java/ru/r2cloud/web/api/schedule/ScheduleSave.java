@@ -5,9 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import com.eclipsesource.json.JsonObject;
 
+import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.satellite.SatelliteDao;
-import ru.r2cloud.satellite.ScheduleEntry;
 import ru.r2cloud.satellite.Scheduler;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
@@ -51,10 +51,11 @@ public class ScheduleSave extends AbstractHttpController {
 		satelliteToEdit.setEnabled(enabled);
 		dao.update(satelliteToEdit);
 
+		ObservationRequest nextObservation = null;
 		if (enabled) {
-			scheduler.schedule(satelliteToEdit, false);
+			nextObservation = scheduler.schedule(satelliteToEdit);
 		} else {
-			scheduler.cancel(satelliteToEdit);
+			scheduler.reschedule();
 		}
 
 		JsonObject entity = new JsonObject();
@@ -62,7 +63,6 @@ public class ScheduleSave extends AbstractHttpController {
 		entity.add("name", satelliteToEdit.getName());
 		entity.add("enabled", satelliteToEdit.isEnabled());
 		entity.add("frequency", satelliteToEdit.getFrequency());
-		ScheduleEntry nextObservation = scheduler.getNextObservation(satelliteToEdit.getId());
 		if (nextObservation != null) {
 			entity.add("nextPass", nextObservation.getStartTimeMillis());
 		}

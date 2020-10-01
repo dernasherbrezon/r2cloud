@@ -1,6 +1,7 @@
 package ru.r2cloud.satellite;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -33,7 +34,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 
-	private final SatelliteDao satellites;
+	private final SatelliteDao satelliteDao;
 	private final Configuration config;
 	private final RtlSdrLock lock;
 	private final ThreadPoolFactory threadpoolFactory;
@@ -46,13 +47,15 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	private ScheduledExecutorService startThread = null;
 	private ScheduledExecutorService stopThread = null;
+	private ScheduledExecutorService rescheduleThread = null;
+	private Future<?> rescheduleTask;
 
 	public Scheduler(Schedule schedule, Configuration config, SatelliteDao satellites, RtlSdrLock lock, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderService decoderService, RotatorService rotatorService) {
 		this.schedule = schedule;
 		this.config = config;
 		this.config.subscribe(this, "locaiton.lat");
 		this.config.subscribe(this, "locaiton.lon");
-		this.satellites = satellites;
+		this.satelliteDao = satellites;
 		this.lock = lock;
 		this.threadpoolFactory = threadpoolFactory;
 		this.clock = clock;
@@ -68,22 +71,11 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			return;
 		}
 
-		boolean updateSchedule;
 		if (config.getProperty("locaiton.lat") != null && config.getProperty("locaiton.lon") != null) {
-			updateSchedule = true;
+			reschedule();
 		} else {
-			updateSchedule = false;
-		}
-		List<Satellite> allSatellites = satellites.findAll();
-		// cancel previous schedule
-		for (Satellite cur : allSatellites) {
-			cancel(cur);
-		}
-
-		if (updateSchedule) {
-			for (ObservationRequest cur : schedule.createInitialSchedule(allSatellites, clock.millis())) {
-				schedule(cur, clock.millis());
-			}
+			LOG.info("missing location. cancelling all observations");
+			schedule.cancelAll();
 		}
 	}
 
@@ -95,23 +87,33 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		}
 		startThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("sch-start"));
 		stopThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("sch-stop"));
+		rescheduleThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("re-schedule"));
 		onConfigUpdated();
 
 		LOG.info("started");
 	}
 
-	public ObservationRequest schedule(Satellite cur, boolean immediately) {
-		long current = clock.millis();
-		return schedule(cur, immediately, current);
-	}
+	public ObservationRequest schedule(Satellite satellite) {
+		List<ObservationRequest> batch = schedule.getBySatelliteId(satellite.getId());
+		if (batch.isEmpty()) {
+			long current = clock.millis();
+			batch = schedule.addSatelliteToSchedule(satellite, current);
+			if (batch.isEmpty()) {
+				return null;
+			}
 
-	private ObservationRequest scheduleNext(ObservationRequest previous) {
-		// add 1 second just in case
-		return schedule(satellites.findById(previous.getSatelliteId()), false, previous.getEndTimeMillis() + 1000);
+			for (ObservationRequest cur : batch) {
+				schedule(cur, current);
+			}
+		}
+
+		// return first
+		Collections.sort(batch, ObservationRequestComparator.INSTANCE);
+		return batch.get(0);
 	}
 
 	private void schedule(ObservationRequest observation, long current) {
-		Satellite satellite = satellites.findById(observation.getSatelliteId());
+		Satellite satellite = satelliteDao.findById(observation.getSatelliteId());
 		LOG.info("scheduled next pass for {}. start: {} end: {}", satellite, new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
 		IQReader reader = createReader(observation);
 		Runnable readTask = new SafeRunnable() {
@@ -120,12 +122,10 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			public void safeRun() {
 				if (clock.millis() > observation.getEndTimeMillis()) {
 					LOG.info("[{}] observation time passed. skip {}", observation.getId(), satellite);
-					scheduleNext(observation);
 					return;
 				}
 				if (!lock.tryLock(Scheduler.this)) {
 					LOG.info("[{}] unable to acquire lock for {}", observation.getId(), satellite);
-					scheduleNext(observation);
 					return;
 				}
 				IQData data;
@@ -137,8 +137,6 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				} finally {
 					lock.unlock(Scheduler.this);
 				}
-
-				scheduleNext(observation);
 
 				if (data == null || data.getDataFile() == null) {
 					return;
@@ -168,25 +166,16 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			}
 			Future<?> startFuture = startThread.schedule(readTask, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
 			Future<?> rotatorFuture = rotatorService.schedule(observation, current);
-			Runnable stopRtlSdrTask = new SafeRunnable() {
+			Runnable completeTask = new SafeRunnable() {
 
 				@Override
 				public void safeRun() {
 					reader.complete();
 				}
 			};
-			Future<?> stopRtlSdrFuture = stopThread.schedule(stopRtlSdrTask, observation.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
-			schedule.add(new ScheduledObservation(observation, startFuture, stopRtlSdrFuture, stopRtlSdrTask, rotatorFuture));
+			Future<?> stopRtlSdrFuture = stopThread.schedule(completeTask, observation.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
+			schedule.assignTasksToSlot(observation.getId(), new ScheduledObservation(startFuture, stopRtlSdrFuture, completeTask, rotatorFuture));
 		}
-	}
-
-	private ObservationRequest schedule(Satellite cur, boolean immediately, long current) {
-		ObservationRequest observation = schedule.getNextAvailableSlot(cur, current, immediately);
-		if (observation == null) {
-			return null;
-		}
-		schedule(observation, current);
-		return observation;
 	}
 
 	private IQReader createReader(ObservationRequest req) {
@@ -203,30 +192,67 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		}
 	}
 
-	public ScheduleEntry getNextObservation(String id) {
-		return schedule.get(id);
-	}
-
 	// protection from calling stop 2 times and more
 	@Override
 	public synchronized void stop() {
 		Util.shutdown(startThread, config.getThreadPoolShutdownMillis());
 		Util.shutdown(stopThread, config.getThreadPoolShutdownMillis());
+		Util.shutdown(rescheduleThread, config.getThreadPoolShutdownMillis());
 		startThread = null;
 		LOG.info("stopped");
 	}
 
-	public void cancel(Satellite satelliteToEdit) {
-		schedule.cancel(satelliteToEdit.getId());
+	public void reschedule() {
+		schedule.cancelAll();
+		List<Satellite> allSatellites = satelliteDao.findEnabled();
+		long current = clock.millis();
+		List<ObservationRequest> newSchedule = schedule.createInitialSchedule(allSatellites, current);
+		for (ObservationRequest cur : newSchedule) {
+			schedule(cur, current);
+		}
+		long delay;
+		if (!newSchedule.isEmpty()) {
+			Collections.sort(newSchedule, ObservationRequestComparator.INSTANCE);
+			delay = newSchedule.get(newSchedule.size() - 1).getEndTimeMillis() + 1000 - current;
+		} else {
+			delay = TimeUnit.DAYS.toMillis(2);
+		}
+		LOG.info("observations rescheduled. next update at: {}", new Date(current + delay));
+		synchronized (this) {
+			if (rescheduleTask != null) {
+				rescheduleTask.cancel(true);
+			}
+			rescheduleTask = rescheduleThread.schedule(new SafeRunnable() {
+
+				@Override
+				public void safeRun() {
+					reschedule();
+				}
+			}, delay, TimeUnit.MILLISECONDS);
+		}
 	}
 
-	public ObservationRequest startImmediately(Satellite cur) {
-		schedule.cancel(cur.getId());
-		return schedule(cur, true);
+	public ObservationRequest startImmediately(Satellite satellite) {
+		long startTime = clock.millis();
+		ObservationRequest closest = schedule.findFirstBySatelliteId(satellite.getId(), startTime);
+		if (closest == null) {
+			return null;
+		}
+		long endTime = startTime + (closest.getEndTimeMillis() - closest.getStartTimeMillis());
+		List<ObservationRequest> requests = schedule.findObservations(startTime, endTime);
+		for (ObservationRequest cur : requests) {
+			completeImmediately(cur.getId());
+		}
+		ObservationRequest movedTo = schedule.moveObservation(closest, startTime);
+		if (movedTo == null) {
+			return null;
+		}
+		schedule(closest, startTime);
+		return closest;
 	}
 
-	public boolean completeImmediately(String id) {
-		ScheduledObservation previous = schedule.cancel(id);
+	public boolean completeImmediately(String observationId) {
+		ScheduledObservation previous = schedule.cancel(observationId);
 		if (previous == null) {
 			return false;
 		}
