@@ -25,7 +25,9 @@ public class CelestrakClient {
 	}
 
 	public Map<String, Tle> getTleForActiveSatellites() {
-		return loadTle("/NORAD/elements/active.txt");
+		Map<String, Tle> result = loadTle("/NORAD/elements/satnogs.txt");
+		result.putAll(loadTle("/NORAD/elements/active.txt"));
+		return result;
 	}
 
 	private Map<String, Tle> loadTle(String location) {
@@ -54,6 +56,9 @@ public class CelestrakClient {
 						String line2 = in.readLine();
 						if (line2 == null) {
 							break;
+						}
+						if (curLine.equalsIgnoreCase("ACRUX 1")) {
+							System.out.println("here");
 						}
 						result.put(curLine.trim(), new Tle(new String[] { curLine.trim(), line1, line2 }));
 					}
