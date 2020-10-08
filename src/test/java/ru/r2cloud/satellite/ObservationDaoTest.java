@@ -81,7 +81,7 @@ public class ObservationDaoTest {
 			req.setSatelliteId(satelliteId);
 			assertNotNull(dao.insert(req, createTempFile("wav")));
 		}
-		assertEquals(3, dao.findAllBySatelliteId(satelliteId).size());
+		assertEquals(2, dao.findAllBySatelliteId(satelliteId).size());
 	}
 
 	@Test

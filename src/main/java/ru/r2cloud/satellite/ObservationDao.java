@@ -184,8 +184,11 @@ public class ObservationDao {
 			if (Files.exists(satelliteBasePath)) {
 				List<Path> dataDirs = Util.toList(Files.newDirectoryStream(satelliteBasePath));
 				Collections.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
-				if (dataDirs.size() > maxCountRawData) {
-					for (int i = 0; i < (dataDirs.size() - maxCountRawData); i++) {
+				// the new observation will be added after the cleanup
+				// see below
+				int currentPlusNew = dataDirs.size() + 1;
+				if (currentPlusNew > maxCountRawData) {
+					for (int i = 0; i < (currentPlusNew - maxCountRawData); i++) {
 						Path oldRawPath = resolveRawPath(dataDirs.get(i));
 						if (Files.exists(oldRawPath)) {
 							try {
@@ -196,8 +199,8 @@ public class ObservationDao {
 						}
 					}
 				}
-				if (dataDirs.size() > maxCount) {
-					for (int i = 0; i < (dataDirs.size() - maxCount); i++) {
+				if (currentPlusNew > maxCount) {
+					for (int i = 0; i < (currentPlusNew - maxCount); i++) {
 						Util.deleteDirectory(dataDirs.get(i));
 					}
 				}
