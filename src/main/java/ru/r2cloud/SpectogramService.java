@@ -12,7 +12,9 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.jradio.FloatInput;
 import ru.r2cloud.jradio.sink.Spectogram;
+import ru.r2cloud.jradio.source.PlutoSdr;
 import ru.r2cloud.jradio.source.RtlSdr;
 import ru.r2cloud.jradio.source.WavFileSource;
 import ru.r2cloud.model.Observation;
@@ -41,7 +43,7 @@ public class SpectogramService {
 		if (observation.getRawPath().getName().endsWith(".wav")) {
 			return createFromWav(observation.getRawPath());
 		} else {
-			return createFromIq(observation.getRawPath(), observation.getInputSampleRate());
+			return createFromIq(observation);
 		}
 	}
 
@@ -59,26 +61,39 @@ public class SpectogramService {
 			return null;
 		}
 	}
-
-	private File createFromIq(File file, float sampleRate) {
-		Long totalSamples = Util.readTotalSamples(file.toPath());
+	
+	private File createFromIq(Observation req) {
+		Long totalSamples = Util.readTotalSamples(req.getRawPath().toPath());
 		if (totalSamples == null) {
 			return null;
 		}
 		if (totalSamples < 0) {
-			LOG.error("corrupted raw file: {}", file.getAbsolutePath());
+			LOG.error("corrupted raw file: {}", req.getRawPath().getAbsolutePath());
 			return null;
 		}
-		try (RtlSdr sdr = new RtlSdr(new GZIPInputStream(new FileInputStream(file)), sampleRate, totalSamples)) {
-			Spectogram spectogram = new Spectogram((int) (sdr.getContext().getSampleRate() / OPTIMAL_WIDTH));
-			BufferedImage image = spectogram.process(sdr);
-			File tmp = new File(config.getTempDirectory(), "spectogram-" + file.getName() + ".png");
+		FloatInput source = null;
+		try {
+			switch (req.getSdrType()) {
+			case RTLSDR:
+				source = new RtlSdr(new GZIPInputStream(new FileInputStream(req.getRawPath())), req.getInputSampleRate(), totalSamples);
+				break;
+			case PLUTOSDR:
+				source = new PlutoSdr(new GZIPInputStream(new FileInputStream(req.getRawPath())), req.getInputSampleRate(), totalSamples / 2);
+				break;
+			default:
+				throw new IllegalArgumentException("unsupported sdr type: " + req.getSdrType());
+			}
+			Spectogram spectogram = new Spectogram((int) (source.getContext().getSampleRate() / OPTIMAL_WIDTH));
+			BufferedImage image = spectogram.process(source);
+			File tmp = new File(config.getTempDirectory(), "spectogram-" + req.getRawPath().getName() + ".png");
 			ImageIO.write(image, "png", tmp);
 			LOG.info("spectogram created");
 			return tmp;
 		} catch (Exception e) {
 			LOG.error("unable to create spectogram", e);
 			return null;
+		} finally {
+			Util.closeQuietly(source);
 		}
 	}
 

@@ -17,8 +17,10 @@ import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SdrType;
 import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.reader.IQReader;
+import ru.r2cloud.satellite.reader.PlutoSdrReader;
 import ru.r2cloud.satellite.reader.RtlFmReader;
 import ru.r2cloud.satellite.reader.RtlSdrReader;
 import ru.r2cloud.util.Clock;
@@ -186,7 +188,13 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		case LRPT:
 		case TELEMETRY:
 		case FSK_AX25_G3RUH:
-			return new RtlSdrReader(config, processFactory, req);
+			if (req.getSdrType().equals(SdrType.RTLSDR)) {
+				return new RtlSdrReader(config, processFactory, req);
+			} else if (req.getSdrType().equals(SdrType.PLUTOSDR)) {
+				return new PlutoSdrReader(config, processFactory, req);
+			} else {
+				throw new IllegalArgumentException("unsupported sdr type: " + req.getSdrType());
+			}
 		default:
 			throw new IllegalArgumentException("unsupported source: " + source);
 		}
@@ -207,12 +215,12 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		List<Satellite> allSatellites = satelliteDao.findEnabled();
 		long current = clock.millis();
 		List<ObservationRequest> newSchedule = schedule.createInitialSchedule(allSatellites, current);
+		Collections.sort(newSchedule, ObservationRequestComparator.INSTANCE);
 		for (ObservationRequest cur : newSchedule) {
 			schedule(cur, current);
 		}
 		long delay;
 		if (!newSchedule.isEmpty()) {
-			Collections.sort(newSchedule, ObservationRequestComparator.INSTANCE);
 			delay = newSchedule.get(newSchedule.size() - 1).getEndTimeMillis() + 1000 - current;
 		} else {
 			delay = TimeUnit.DAYS.toMillis(2);

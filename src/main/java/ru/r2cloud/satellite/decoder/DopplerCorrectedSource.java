@@ -15,6 +15,7 @@ import ru.r2cloud.jradio.blocks.Firdes;
 import ru.r2cloud.jradio.blocks.FrequencyXlatingFIRFilter;
 import ru.r2cloud.jradio.blocks.Multiply;
 import ru.r2cloud.jradio.blocks.Window;
+import ru.r2cloud.jradio.source.PlutoSdr;
 import ru.r2cloud.jradio.source.RtlSdr;
 import ru.r2cloud.jradio.source.SigSource;
 import ru.r2cloud.jradio.source.Waveform;
@@ -32,7 +33,17 @@ public class DopplerCorrectedSource implements FloatInput {
 			throw new IllegalArgumentException("unable to read total samples");
 		}
 
-		RtlSdr sdr = new RtlSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalSamples);
+		FloatInput source;
+		switch (req.getSdrType()) {
+		case RTLSDR:
+			source = new RtlSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalSamples);
+			break;
+		case PLUTOSDR:
+			source = new PlutoSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalSamples / 2);
+			break;
+		default:
+			throw new IllegalArgumentException("unsupported sdr type: " + req.getSdrType());
+		}
 		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(req.getTle().getRaw()[1], req.getTle().getRaw()[2]));
 		TopocentricFrame groundStation = predict.getPosition(req.getGroundStation());
 		long startFrequency = predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getStartTimeMillis(), groundStation, tlePropagator);
@@ -42,8 +53,8 @@ public class DopplerCorrectedSource implements FloatInput {
 
 		long finalBandwidth = maxOffset + req.getBandwidth() / 2;
 
-		float[] taps = Firdes.lowPass(1.0, sdr.getContext().getSampleRate(), finalBandwidth, 1600, Window.WIN_HAMMING, 6.76);
-		FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(sdr, taps, req.getInputSampleRate() / req.getOutputSampleRate(), (double) req.getSatelliteFrequency() - req.getActualFrequency());
+		float[] taps = Firdes.lowPass(1.0, source.getContext().getSampleRate(), finalBandwidth, 1600, Window.WIN_HAMMING, 6.76);
+		FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(source, taps, req.getInputSampleRate() / req.getOutputSampleRate(), (double) req.getSatelliteFrequency() - req.getActualFrequency());
 		SigSource source2 = new SigSource(Waveform.COMPLEX, (long) xlating.getContext().getSampleRate(), new DopplerValueSource(xlating.getContext().getSampleRate(), req.getSatelliteFrequency(), 1000L, req.getStartTimeMillis()) {
 
 			@Override
