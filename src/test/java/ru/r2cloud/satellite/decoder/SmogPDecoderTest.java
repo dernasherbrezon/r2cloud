@@ -28,7 +28,7 @@ public class SmogPDecoderTest {
 		PredictOreKit predict = new PredictOreKit(config);
 		SmogPDecoder decoder = new SmogPDecoder(predict, config);
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/smogp.raw.gz.json").getReq());
-		assertEquals(2, result.getNumberOfDecodedPackets().longValue());
+		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
 		assertNotNull(result.getRawPath());
 	}
