@@ -33,7 +33,7 @@ public class LRPTDecoderTest {
 		PredictOreKit predict = new PredictOreKit(config);
 		LRPTDecoder decoder = new LRPTDecoder(predict, config);
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("decodertests/LRPTDecoderTest.json").getReq());
-		assertEquals(6, result.getNumberOfDecodedPackets().longValue());
+		assertEquals(4, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
 		assertNotNull(result.getImagePath());
 		assertNotNull(result.getRawPath());
