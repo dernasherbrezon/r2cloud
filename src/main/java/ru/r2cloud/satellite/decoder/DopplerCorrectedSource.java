@@ -28,18 +28,18 @@ public class DopplerCorrectedSource implements FloatInput {
 	private final FloatInput input;
 
 	public DopplerCorrectedSource(PredictOreKit predict, File rawIq, ObservationRequest req) throws IOException {
-		Long totalSamples = Util.readTotalSamples(rawIq.toPath());
-		if (totalSamples == null) {
+		Long totalBytes = Util.readTotalBytes(rawIq.toPath());
+		if (totalBytes == null) {
 			throw new IllegalArgumentException("unable to read total samples");
 		}
 
 		FloatInput source;
 		switch (req.getSdrType()) {
 		case RTLSDR:
-			source = new RtlSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalSamples);
+			source = new RtlSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalBytes / 2);
 			break;
 		case PLUTOSDR:
-			source = new PlutoSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalSamples / 2);
+			source = new PlutoSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalBytes / 4);
 			break;
 		default:
 			throw new IllegalArgumentException("unsupported sdr type: " + req.getSdrType());

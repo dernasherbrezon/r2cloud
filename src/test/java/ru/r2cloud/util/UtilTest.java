@@ -64,7 +64,7 @@ public class UtilTest {
 	@Test
 	public void testTotalSamples() throws Exception {
 		long totalSamplesExpected = 50;
-		assertEquals(totalSamplesExpected / 2, Util.readTotalSamples(setupGzippedFile(totalSamplesExpected)).longValue());
+		assertEquals(totalSamplesExpected, Util.readTotalBytes(setupGzippedFile(totalSamplesExpected)).longValue());
 	}
 
 	@Test
@@ -75,25 +75,25 @@ public class UtilTest {
 		long totalSamplesExpected = 50;
 		setupGzippedFile(totalSamplesExpected, file);
 		fs.mock(file, new FailingByteChannelCallback(3));
-		assertNull(Util.readTotalSamples(file));
+		assertNull(Util.readTotalBytes(file));
 	}
 
 	@Test
 	public void testUnknownFile() {
-		assertNull(Util.readTotalSamples(tempFolder.getRoot().toPath().resolve(UUID.randomUUID().toString())));
+		assertNull(Util.readTotalBytes(tempFolder.getRoot().toPath().resolve(UUID.randomUUID().toString())));
 	}
 
 	@Test
 	public void testSmallFile() throws Exception {
 		// only 3 bytes
 		File file = setupTempFile(new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF });
-		assertNull(Util.readTotalSamples(file.toPath()));
+		assertNull(Util.readTotalBytes(file.toPath()));
 	}
 
 	@Test
 	public void testUnsignedInt() throws Exception {
 		File file = setupTempFile(new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF });
-		assertEquals((4294967295L / 2), Util.readTotalSamples(file.toPath()).longValue());
+		assertEquals(4294967295L, Util.readTotalBytes(file.toPath()).longValue());
 	}
 
 	@Test

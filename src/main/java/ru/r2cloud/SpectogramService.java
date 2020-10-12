@@ -63,11 +63,11 @@ public class SpectogramService {
 	}
 	
 	private File createFromIq(Observation req) {
-		Long totalSamples = Util.readTotalSamples(req.getRawPath().toPath());
-		if (totalSamples == null) {
+		Long totalBytes = Util.readTotalBytes(req.getRawPath().toPath());
+		if (totalBytes == null) {
 			return null;
 		}
-		if (totalSamples < 0) {
+		if (totalBytes < 0) {
 			LOG.error("corrupted raw file: {}", req.getRawPath().getAbsolutePath());
 			return null;
 		}
@@ -75,10 +75,10 @@ public class SpectogramService {
 		try {
 			switch (req.getSdrType()) {
 			case RTLSDR:
-				source = new RtlSdr(new GZIPInputStream(new FileInputStream(req.getRawPath())), req.getInputSampleRate(), totalSamples);
+				source = new RtlSdr(new GZIPInputStream(new FileInputStream(req.getRawPath())), req.getInputSampleRate(), totalBytes / 2);
 				break;
 			case PLUTOSDR:
-				source = new PlutoSdr(new GZIPInputStream(new FileInputStream(req.getRawPath())), req.getInputSampleRate(), totalSamples / 2);
+				source = new PlutoSdr(new GZIPInputStream(new FileInputStream(req.getRawPath())), req.getInputSampleRate(), totalBytes / 4);
 				break;
 			default:
 				throw new IllegalArgumentException("unsupported sdr type: " + req.getSdrType());
