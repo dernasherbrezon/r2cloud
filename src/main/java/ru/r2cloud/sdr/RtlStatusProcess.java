@@ -1,4 +1,4 @@
-package ru.r2cloud;
+package ru.r2cloud.sdr;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,13 +9,13 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.r2cloud.model.RtlSdrStatus;
+import ru.r2cloud.model.SdrStatus;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ProcessWrapper;
 import ru.r2cloud.util.Util;
 
-class RtlStatusProcess {
+class RtlStatusProcess implements SdrStatusProcess {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RtlStatusProcess.class);
 	private static final Pattern DEVICEPATTERN = Pattern.compile("^  0:  (.*?), (.*?), SN: (.*?)$");
@@ -30,8 +30,9 @@ class RtlStatusProcess {
 		this.factory = factory;
 	}
 
-	RtlSdrStatus getStatus() {
-		RtlSdrStatus result = null;
+	@Override
+	public SdrStatus getStatus() {
+		SdrStatus result = null;
 		try {
 			BufferedReader r = null;
 			synchronized (this) {
@@ -46,24 +47,22 @@ class RtlStatusProcess {
 			String curLine = null;
 			while ((curLine = r.readLine()) != null && !Thread.currentThread().isInterrupted()) {
 				if (curLine.startsWith("No supported")) {
-					result = new RtlSdrStatus();
+					result = new SdrStatus();
 					result.setDongleConnected(false);
 					break;
 				} else {
 					Matcher m = DEVICEPATTERN.matcher(curLine);
 					if (m.find()) {
-						result = new RtlSdrStatus();
+						result = new SdrStatus();
 						result.setDongleConnected(true);
-						result.setVendor(m.group(1));
-						result.setChip(m.group(2));
-						result.setSerialNumber(m.group(3));
 						break;
 					}
 				}
 			}
 		} catch (IOException e) {
 			String error = "unable to read status";
-			result = new RtlSdrStatus();
+			result = new SdrStatus();
+			result.setDongleConnected(false);
 			result.setError(error);
 			LOG.error(error, e);
 		} finally {
@@ -72,7 +71,8 @@ class RtlStatusProcess {
 		return result;
 	}
 
-	synchronized void terminate(long timeout) {
+	@Override
+	public synchronized void terminate(long timeout) {
 		shutdown(timeout);
 		terminated = true;
 	}

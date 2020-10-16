@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.Lifecycle;
-import ru.r2cloud.RtlSdrLock;
 import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
@@ -23,6 +22,7 @@ import ru.r2cloud.satellite.reader.IQReader;
 import ru.r2cloud.satellite.reader.PlutoSdrReader;
 import ru.r2cloud.satellite.reader.RtlFmReader;
 import ru.r2cloud.satellite.reader.RtlSdrReader;
+import ru.r2cloud.sdr.SdrLock;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
@@ -38,7 +38,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	private final SatelliteDao satelliteDao;
 	private final Configuration config;
-	private final RtlSdrLock lock;
+	private final SdrLock lock;
 	private final ThreadPoolFactory threadpoolFactory;
 	private final Clock clock;
 	private final ProcessFactory processFactory;
@@ -52,7 +52,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private ScheduledExecutorService rescheduleThread = null;
 	private Future<?> rescheduleTask;
 
-	public Scheduler(Schedule schedule, Configuration config, SatelliteDao satellites, RtlSdrLock lock, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderService decoderService, RotatorService rotatorService) {
+	public Scheduler(Schedule schedule, Configuration config, SatelliteDao satellites, SdrLock lock, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderService decoderService, RotatorService rotatorService) {
 		this.schedule = schedule;
 		this.config = config;
 		this.config.subscribe(this, "locaiton.lat");

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import org.orekit.propagation.analytical.tle.TLEPropagator;
 import org.slf4j.Logger;
@@ -80,7 +79,7 @@ public class ObservationFactory {
 		result.setId(String.valueOf(result.getStartTimeMillis()));
 		result.setGain(config.getDouble("satellites.rtlsdr.gain"));
 		result.setBiast(config.getBoolean("satellites.rtlsdr.biast"));
-		result.setSdrType(SdrType.valueOf(config.getProperty("satellites.sdr").toUpperCase(Locale.UK)));
+		result.setSdrType(config.getSdrType());
 
 		switch (satellite.getSource()) {
 		case APT:

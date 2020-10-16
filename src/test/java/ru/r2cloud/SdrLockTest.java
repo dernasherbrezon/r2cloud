@@ -5,11 +5,13 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class RtlSdrLockTest {
+import ru.r2cloud.sdr.SdrLock;
+
+public class SdrLockTest {
 
 	@Test
 	public void testLockByUnknown() {
-		RtlSdrLock lock = new RtlSdrLock();
+		SdrLock lock = new SdrLock();
 		lock.register(RtlSdrListener1.class, 1);
 		
 		assertFalse(lock.tryLock(new RtlSdrListener2()));
@@ -17,7 +19,7 @@ public class RtlSdrLockTest {
 	
 	@Test
 	public void testBasic() {
-		RtlSdrLock lock = new RtlSdrLock();
+		SdrLock lock = new SdrLock();
 		lock.register(RtlSdrListener1.class, 1);
 		lock.register(RtlSdrListener2.class, 2);
 
@@ -33,7 +35,7 @@ public class RtlSdrLockTest {
 
 	@Test
 	public void testSingleListener() {
-		RtlSdrLock lock = new RtlSdrLock();
+		SdrLock lock = new SdrLock();
 		lock.register(RtlSdrListener1.class, 1);
 
 		RtlSdrListener1 listener1 = new RtlSdrListener1();
@@ -45,7 +47,7 @@ public class RtlSdrLockTest {
 
 	@Test
 	public void testPriority() {
-		RtlSdrLock lock = new RtlSdrLock();
+		SdrLock lock = new SdrLock();
 		lock.register(RtlSdrListener1.class, 1);
 		lock.register(RtlSdrListener2.class, 2);
 

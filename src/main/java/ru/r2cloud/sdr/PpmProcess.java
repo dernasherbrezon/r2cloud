@@ -1,4 +1,4 @@
-package ru.r2cloud;
+package ru.r2cloud.sdr;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -22,25 +22,27 @@ import com.codahale.metrics.health.HealthCheck.Result;
 
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.metrics.Status;
+import ru.r2cloud.sdr.SdrLock;
+import ru.r2cloud.sdr.SdrStatusDao;
 import ru.r2cloud.util.DefaultClock;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ThreadPoolFactory;
 
-public class RtlSdrStatusDaoTest {
+public class SdrStatusDaoTest {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private TestConfiguration config;
-	private RtlSdrStatusDao dao;
+	private SdrStatusDao dao;
 	private RtlTestServer rtlTestServer;
 	private Metrics metrics;
 
 	@Test
 	public void testInitialStatus() {
-		RtlSdrLock lock = new RtlSdrLock();
-		dao = new RtlSdrStatusDao(config, lock, createNoOpThreadFactory(), metrics, new ProcessFactory());
-		lock.register(RtlSdrStatusDao.class, 1);
+		SdrLock lock = new SdrLock();
+		dao = new SdrStatusDao(config, lock, createNoOpThreadFactory(), metrics, new ProcessFactory());
+		lock.register(SdrStatusDao.class, 1);
 		dao.start();
 
 		assertUnknown();
@@ -84,9 +86,9 @@ public class RtlSdrStatusDaoTest {
 		config.setProperty("rtltest.path", TestUtil.setupScript(new File(tempFolder.getRoot().getAbsoluteFile(), "rtl_test_mock_timeouted.sh")).getAbsolutePath());
 		config.update();
 
-		RtlSdrLock lock = new RtlSdrLock();
-		dao = new RtlSdrStatusDao(config, lock, new ExecuteNowThreadFactory(false), metrics, new ProcessFactory());
-		lock.register(RtlSdrStatusDao.class, 1);
+		SdrLock lock = new SdrLock();
+		dao = new SdrStatusDao(config, lock, new ExecuteNowThreadFactory(false), metrics, new ProcessFactory());
+		lock.register(SdrStatusDao.class, 1);
 		dao.start();
 
 		long startTerminationMillis = System.currentTimeMillis();
@@ -103,9 +105,9 @@ public class RtlSdrStatusDaoTest {
 	}
 
 	private void createExecuteNowRtlSdrDao() {
-		RtlSdrLock lock = new RtlSdrLock();
-		dao = new RtlSdrStatusDao(config, lock, new ExecuteNowThreadFactory(), metrics, new ProcessFactory());
-		lock.register(RtlSdrStatusDao.class, 1);
+		SdrLock lock = new SdrLock();
+		dao = new SdrStatusDao(config, lock, new ExecuteNowThreadFactory(), metrics, new ProcessFactory());
+		lock.register(SdrStatusDao.class, 1);
 		dao.start();
 	}
 
@@ -148,6 +150,7 @@ public class RtlSdrStatusDaoTest {
 		config.setProperty("rtltest.path", TestUtil.setupScript(new File(tempFolder.getRoot().getAbsoluteFile(), "rtl_test_mock.sh")).getAbsolutePath());
 		config.setProperty("stdbuf.path", TestUtil.setupScript(new File(tempFolder.getRoot().getAbsoluteFile(), "stdbuf_mock.sh")).getAbsolutePath());
 		config.setProperty("threadpool.shutdown.millis", "15000");
+		config.setProperty("satellites.sdr", "rtlsdr");
 		config.update();
 
 		rtlTestServer = new RtlTestServer();
