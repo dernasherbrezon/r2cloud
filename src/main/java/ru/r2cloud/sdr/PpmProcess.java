@@ -41,7 +41,7 @@ class PpmProcess {
 					terminated = false;
 					return result;
 				}
-				process = factory.create(config.getProperty("stdbuf.path") + " -i 0 -o 0 -e 0 " + config.getProperty("rtltest.path")+ " -p2", true, false);
+				process = factory.create(config.getProperty("stdbuf.path") + " -i 0 -o 0 -e 0 " + config.getProperty("satellites.rtlsdr.test.path")+ " -p2", true, false);
 				r = new BufferedReader(new InputStreamReader(process.getInputStream()));
 				terminated = false;
 			}

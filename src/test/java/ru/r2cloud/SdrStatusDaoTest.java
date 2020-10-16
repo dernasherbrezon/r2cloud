@@ -83,7 +83,7 @@ public class SdrStatusDaoTest {
 
 	@Test
 	public void shutdownProcessProperly() throws Exception {
-		config.setProperty("rtltest.path", TestUtil.setupScript(new File(tempFolder.getRoot().getAbsoluteFile(), "rtl_test_mock_timeouted.sh")).getAbsolutePath());
+		config.setProperty("satellites.rtlsdr.test.path", TestUtil.setupScript(new File(tempFolder.getRoot().getAbsoluteFile(), "rtl_test_mock_timeouted.sh")).getAbsolutePath());
 		config.update();
 
 		SdrLock lock = new SdrLock();
@@ -147,7 +147,7 @@ public class SdrStatusDaoTest {
 	public void start() throws Exception {
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
-		config.setProperty("rtltest.path", TestUtil.setupScript(new File(tempFolder.getRoot().getAbsoluteFile(), "rtl_test_mock.sh")).getAbsolutePath());
+		config.setProperty("satellites.rtlsdr.test.path", TestUtil.setupScript(new File(tempFolder.getRoot().getAbsoluteFile(), "rtl_test_mock.sh")).getAbsolutePath());
 		config.setProperty("stdbuf.path", TestUtil.setupScript(new File(tempFolder.getRoot().getAbsoluteFile(), "stdbuf_mock.sh")).getAbsolutePath());
 		config.setProperty("threadpool.shutdown.millis", "15000");
 		config.setProperty("satellites.sdr", "rtlsdr");

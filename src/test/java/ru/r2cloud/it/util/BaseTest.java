@@ -83,7 +83,7 @@ public abstract class BaseTest {
 		config.setProperty("locaiton.lat", "56.189");
 		config.setProperty("locaiton.lon", "38.174");
 		config.setProperty("satellites.rtlsdr.path", rtlSdrMock.getAbsolutePath());
-		config.setProperty("rtltest.path", rtlTestMock.getAbsolutePath());
+		config.setProperty("satellites.rtlsdr.test.path", rtlTestMock.getAbsolutePath());
 		config.setProperty("satellites.sox.path", "sox");
 		config.setProperty("r2server.hostname", "http://localhost:8001");
 		config.setProperty("server.tmp.directory", tempDirectory.getAbsolutePath());

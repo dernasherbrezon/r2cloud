@@ -40,7 +40,7 @@ class PlutoStatusProcess implements SdrStatusProcess {
 					terminated = false;
 					return result;
 				}
-				process = factory.create(config.getProperty("rtltest.path") + " -t", false, false);
+				process = factory.create(config.getProperty("satellites.rtlsdr.test.path") + " -t", false, false);
 				r = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 				terminated = false;
 			}
