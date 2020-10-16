@@ -49,6 +49,7 @@ class RtlStatusProcess implements SdrStatusProcess {
 				if (curLine.startsWith("No supported")) {
 					result = new SdrStatus();
 					result.setDongleConnected(false);
+					result.setError(curLine);
 					break;
 				} else {
 					Matcher m = DEVICEPATTERN.matcher(curLine);

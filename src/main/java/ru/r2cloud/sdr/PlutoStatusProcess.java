@@ -3,8 +3,6 @@ package ru.r2cloud.sdr;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +16,6 @@ import ru.r2cloud.util.Util;
 class PlutoStatusProcess implements SdrStatusProcess {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PlutoStatusProcess.class);
-	private static final Pattern DEVICEPATTERN = Pattern.compile("^  0:  (.*?), (.*?), SN: (.*?)$");
 
 	private ProcessWrapper process;
 	private boolean terminated = false;
@@ -40,24 +37,22 @@ class PlutoStatusProcess implements SdrStatusProcess {
 					terminated = false;
 					return result;
 				}
-				process = factory.create(config.getProperty("satellites.rtlsdr.test.path") + " -t", false, false);
-				r = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+				process = factory.create(config.getProperty("satellites.plutosdr.test.path") + " -a", false, false);
+				r = new BufferedReader(new InputStreamReader(process.getInputStream()));
 				terminated = false;
 			}
 			String curLine = null;
 			while ((curLine = r.readLine()) != null && !Thread.currentThread().isInterrupted()) {
-				if (curLine.startsWith("No supported")) {
+				if (curLine.startsWith("No IIO context")) {
 					result = new SdrStatus();
 					result.setDongleConnected(false);
+					result.setError(curLine);
 					break;
-				} else {
-					Matcher m = DEVICEPATTERN.matcher(curLine);
-					if (m.find()) {
-						result = new SdrStatus();
-						result.setDongleConnected(true);
-						break;
-					}
 				}
+			}
+			if (result == null) {
+				result = new SdrStatus();
+				result.setDongleConnected(true);
 			}
 		} catch (IOException e) {
 			String error = "unable to read status";
