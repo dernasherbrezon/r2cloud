@@ -98,14 +98,13 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	public ObservationRequest schedule(Satellite satellite) {
 		List<ObservationRequest> batch = schedule.getBySatelliteId(satellite.getId());
 		if (batch.isEmpty()) {
-			long current = clock.millis();
-			batch = schedule.addSatelliteToSchedule(satellite, current);
+			batch = schedule.addSatelliteToSchedule(satellite, clock.millis());
 			if (batch.isEmpty()) {
 				return null;
 			}
 
 			for (ObservationRequest cur : batch) {
-				schedule(cur, current);
+				schedule(cur);
 			}
 		}
 
@@ -114,7 +113,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		return batch.get(0);
 	}
 
-	private void schedule(ObservationRequest observation, long current) {
+	private void schedule(ObservationRequest observation) {
 		Satellite satellite = satelliteDao.findById(observation.getSatelliteId());
 		LOG.info("scheduled next pass for {}. start: {} end: {}", satellite, new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
 		IQReader reader = createReader(observation);
@@ -166,6 +165,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			if (startThread == null) {
 				return;
 			}
+			long current = clock.millis();
 			Future<?> startFuture = startThread.schedule(readTask, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
 			Future<?> rotatorFuture = rotatorService.schedule(observation, current);
 			Runnable completeTask = new SafeRunnable() {
@@ -218,7 +218,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		long current = clock.millis();
 		List<ObservationRequest> newSchedule = schedule.createInitialSchedule(allSatellites, current);
 		for (ObservationRequest cur : newSchedule) {
-			schedule(cur, current);
+			schedule(cur);
 		}
 		long delay;
 		if (!newSchedule.isEmpty()) {
@@ -256,7 +256,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		if (movedTo == null) {
 			return null;
 		}
-		schedule(closest, startTime);
+		schedule(closest);
 		return closest;
 	}
 
