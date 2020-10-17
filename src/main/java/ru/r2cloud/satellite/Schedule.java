@@ -131,6 +131,7 @@ public class Schedule {
 		}
 
 		index(result);
+		Collections.sort(result, ObservationRequestComparator.INSTANCE);
 		return result;
 	}
 

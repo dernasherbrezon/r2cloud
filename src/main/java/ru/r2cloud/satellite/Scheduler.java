@@ -217,7 +217,6 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		List<Satellite> allSatellites = satelliteDao.findEnabled();
 		long current = clock.millis();
 		List<ObservationRequest> newSchedule = schedule.createInitialSchedule(allSatellites, current);
-		Collections.sort(newSchedule, ObservationRequestComparator.INSTANCE);
 		for (ObservationRequest cur : newSchedule) {
 			schedule(cur, current);
 		}
