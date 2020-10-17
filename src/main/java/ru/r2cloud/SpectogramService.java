@@ -33,18 +33,23 @@ public class SpectogramService {
 	}
 
 	public File create(Observation observation) {
-		LOG.info("generating spectogram");
 		if (observation == null) {
 			return null;
 		}
+		LOG.info("[{}] generating spectogram", observation.getId());
 		if (observation.getRawPath() == null) {
 			return null;
 		}
+		File result;
 		if (observation.getRawPath().getName().endsWith(".wav")) {
-			return createFromWav(observation.getRawPath());
+			result = createFromWav(observation.getRawPath());
 		} else {
-			return createFromIq(observation);
+			result = createFromIq(observation);
 		}
+		if (result != null) {
+			LOG.info("[{}] spectogram created", observation.getId());
+		}
+		return result;
 	}
 
 	private File createFromWav(File file) {
@@ -54,14 +59,13 @@ public class SpectogramService {
 			BufferedImage image = spectogram.process(source);
 			File tmp = new File(config.getTempDirectory(), "spectogram-" + file.getName() + ".png");
 			ImageIO.write(image, "png", tmp);
-			LOG.info("spectogram created");
 			return tmp;
 		} catch (Exception e) {
 			LOG.error("unable to create spectogram", e);
 			return null;
 		}
 	}
-	
+
 	private File createFromIq(Observation req) {
 		Long totalBytes = Util.readTotalBytes(req.getRawPath().toPath());
 		if (totalBytes == null) {
@@ -87,7 +91,6 @@ public class SpectogramService {
 			BufferedImage image = spectogram.process(source);
 			File tmp = new File(config.getTempDirectory(), "spectogram-" + req.getRawPath().getName() + ".png");
 			ImageIO.write(image, "png", tmp);
-			LOG.info("spectogram created");
 			return tmp;
 		} catch (Exception e) {
 			LOG.error("unable to create spectogram", e);
