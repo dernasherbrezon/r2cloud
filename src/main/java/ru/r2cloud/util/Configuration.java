@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.ddns.DDNSType;
 import ru.r2cloud.model.PpmType;
+import ru.r2cloud.model.SdrType;
 
 public class Configuration {
 
@@ -65,7 +67,7 @@ public class Configuration {
 	public String setProperty(String key, Double value) {
 		return setProperty(key, String.valueOf(value));
 	}
-	
+
 	public String setProperty(String key, Long value) {
 		return setProperty(key, String.valueOf(value));
 	}
@@ -192,6 +194,10 @@ public class Configuration {
 			return null;
 		}
 		return result;
+	}
+
+	public SdrType getSdrType() {
+		return SdrType.valueOf(getProperty("satellites.sdr").toUpperCase(Locale.UK));
 	}
 
 	public List<String> getProperties(String name) {

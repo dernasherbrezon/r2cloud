@@ -103,13 +103,13 @@ public class RotatorService implements Lifecycle, ConfigListener {
 		if (!enabled) {
 			return;
 		}
-		LOG.info("shutting down rotator service");
 		if (executor != null) {
 			Util.shutdown(executor, config.getThreadPoolShutdownMillis());
 		}
 		if (rotClient != null) {
 			rotClient.stop();
 		}
+		LOG.info("stopped");
 	}
 
 	public Future<?> schedule(ObservationRequest req, long current) {

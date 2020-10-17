@@ -227,7 +227,7 @@ public final class Util {
 	}
 
 	// works well for files less than 4Gb
-	public static Long readTotalSamples(Path rawFile) {
+	public static Long readTotalBytes(Path rawFile) {
 		try (SeekableByteChannel bch = Files.newByteChannel(rawFile, StandardOpenOption.READ)) {
 			if (bch.size() < 4) {
 				return null;
@@ -239,7 +239,7 @@ public final class Util {
 			long b3 = dst.get(1) & 0xFF;
 			long b2 = dst.get(2) & 0xFF;
 			long b1 = dst.get(3) & 0xFF;
-			return ((b1 << 24) | (b2 << 16) + (b3 << 8) + b4) / 2;
+			return ((b1 << 24) | (b2 << 16) + (b3 << 8) + b4);
 		} catch (IOException e1) {
 			LOG.error("unable to get total number of samples", e1);
 			return null;

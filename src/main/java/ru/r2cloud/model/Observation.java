@@ -48,6 +48,7 @@ public class Observation {
 
 	private ObservationStatus status;
 	private boolean biast;
+	private SdrType sdrType;
 
 	public Observation() {
 		// do nothing
@@ -68,6 +69,7 @@ public class Observation {
 		actualFrequency = req.getActualFrequency();
 		gain = String.valueOf(req.getGain());
 		biast = req.isBiast();
+		sdrType = req.getSdrType();
 	}
 
 	public ObservationRequest getReq() {
@@ -90,7 +92,16 @@ public class Observation {
 			result.setGain(45.0);
 		}
 		result.setBiast(biast);
+		result.setSdrType(sdrType);
 		return result;
+	}
+
+	public SdrType getSdrType() {
+		return sdrType;
+	}
+
+	public void setSdrType(SdrType sdrType) {
+		this.sdrType = sdrType;
 	}
 
 	public boolean isBiast() {
@@ -342,6 +353,14 @@ public class Observation {
 			result.setStatus(ObservationStatus.UPLOADED);
 		}
 		result.setBiast(meta.getBoolean("biast", false));
+		String sdrTypeStr = meta.getString("sdrType", null);
+		SdrType sdrType;
+		if (sdrTypeStr != null) {
+			sdrType = SdrType.valueOf(sdrTypeStr);
+		} else {
+			sdrType = SdrType.RTLSDR;
+		}
+		result.setSdrType(sdrType);
 		return result;
 	}
 
@@ -387,6 +406,7 @@ public class Observation {
 		}
 		json.add("status", statusToSave.name());
 		json.add("biast", isBiast());
+		json.add("sdrType", sdrType.name());
 		return json;
 	}
 

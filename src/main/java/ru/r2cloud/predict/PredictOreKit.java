@@ -113,6 +113,9 @@ public class PredictOreKit {
 		for (AbsoluteDate curMax : max) {
 			SatPass cur = findStartEnd(tlePropagator, baseStationFrame, curMax);
 			if (cur != null) {
+				if (cur.getStartMillis() < current.getTime()) {
+					cur.setStart(initialDate);
+				}
 				result.add(cur);
 			}
 		}

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.SatPass;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.tle.TLEDao;
@@ -78,6 +79,7 @@ public class ObservationFactory {
 		result.setId(String.valueOf(result.getStartTimeMillis()));
 		result.setGain(config.getDouble("satellites.rtlsdr.gain"));
 		result.setBiast(config.getBoolean("satellites.rtlsdr.biast"));
+		result.setSdrType(config.getSdrType());
 
 		switch (satellite.getSource()) {
 		case APT:
@@ -92,7 +94,13 @@ public class ObservationFactory {
 			break;
 		case FSK_AX25_G3RUH:
 		case TELEMETRY:
-			result.setInputSampleRate(240_000);
+			if (result.getSdrType().equals(SdrType.RTLSDR)) {
+				result.setInputSampleRate(240_000);
+			} else if (result.getSdrType().equals(SdrType.PLUTOSDR)) {
+				result.setInputSampleRate(528_000);
+			} else {
+				throw new IllegalArgumentException("unsupported sdr type: " + result.getSdrType());
+			}
 			result.setOutputSampleRate(48_000);
 			// at the beginning doppler freq is the max
 			long initialDopplerFrequency = predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStartMillis(), predict.getPosition(), tlePropagator);

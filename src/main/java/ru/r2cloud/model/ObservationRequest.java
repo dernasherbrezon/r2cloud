@@ -19,6 +19,15 @@ public class ObservationRequest {
 	private long actualFrequency;
 	private double gain;
 	private boolean biast;
+	private SdrType sdrType;
+	
+	public SdrType getSdrType() {
+		return sdrType;
+	}
+	
+	public void setSdrType(SdrType sdrType) {
+		this.sdrType = sdrType;
+	}
 
 	public double getGain() {
 		return gain;

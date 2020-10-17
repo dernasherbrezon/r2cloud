@@ -1,4 +1,4 @@
-package ru.r2cloud;
+package ru.r2cloud.sdr;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,11 +15,12 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry.MetricSupplier;
 import com.codahale.metrics.health.HealthCheck;
 
+import ru.r2cloud.Lifecycle;
 import ru.r2cloud.metrics.FormattedGauge;
 import ru.r2cloud.metrics.MetricFormat;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.PpmType;
-import ru.r2cloud.model.RtlSdrStatus;
+import ru.r2cloud.model.SdrStatus;
 import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
@@ -28,33 +29,42 @@ import ru.r2cloud.util.ResultUtil;
 import ru.r2cloud.util.ThreadPoolFactory;
 import ru.r2cloud.util.Util;
 
-public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
+public class SdrStatusDao implements Lifecycle, ConfigListener {
 
 	private static final String PPM_CURRENT_PROPERTY_NAME = "ppm.current";
-	private static final Logger LOG = LoggerFactory.getLogger(RtlSdrStatusDao.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SdrStatusDao.class);
 
 	private final Configuration config;
-	private final RtlSdrLock lock;
+	private final SdrLock lock;
 	private final ThreadPoolFactory threadpoolFactory;
 	private final Metrics metrics;
 
 	private ScheduledExecutorService executor;
-	private RtlSdrStatus status;
+	private SdrStatus status;
 
-	private RtlStatusProcess statusProcess;
+	private SdrStatusProcess statusProcess;
 	private PpmProcess ppmProcess;
 	private Integer currentPpm;
 	private PpmType previousType;
 	private ScheduledFuture<?> ppmTask;
 
-	public RtlSdrStatusDao(Configuration config, RtlSdrLock lock, ThreadPoolFactory threadpoolFactory, Metrics metrics, ProcessFactory processFactory) {
+	public SdrStatusDao(Configuration config, SdrLock lock, ThreadPoolFactory threadpoolFactory, Metrics metrics, ProcessFactory processFactory) {
 		this.config = config;
 		this.config.subscribe(this, "ppm.calculate.type", PPM_CURRENT_PROPERTY_NAME);
 		this.lock = lock;
 		this.threadpoolFactory = threadpoolFactory;
 		this.metrics = metrics;
-		statusProcess = new RtlStatusProcess(config, processFactory);
-		ppmProcess = new PpmProcess(config, processFactory);
+		switch (config.getSdrType()) {
+		case RTLSDR:
+			statusProcess = new RtlStatusProcess(config, processFactory);
+			ppmProcess = new PpmProcess(config, processFactory);
+			break;
+		case PLUTOSDR:
+			statusProcess = new PlutoStatusProcess(config, processFactory);
+			break;
+		default:
+			throw new IllegalArgumentException("unsupported sdr type: " + config.getSdrType());
+		}
 	}
 
 	@Override
@@ -85,11 +95,9 @@ public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
 		currentPpm = config.getInteger(PPM_CURRENT_PROPERTY_NAME);
 		executor = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("rtlsdr-tester"));
 		previousType = config.getPpmType();
-		if (PpmType.AUTO.equals(previousType)) {
-			if (config.getBoolean("ppm.calculate")) {
-				scheduleAutoPpm();
-			}
-		} else if (PpmType.MANUAL.equals(previousType)) {
+		if (PpmType.AUTO.equals(previousType) && ppmProcess != null && config.getBoolean("ppm.calculate")) {
+			scheduleAutoPpm();
+		} else {
 			LOG.info("ppm configured manually: {}", currentPpm);
 		}
 		metrics.getHealthRegistry().register("rtltest", new HealthCheck() {
@@ -103,16 +111,16 @@ public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
 
 			@Override
 			protected Result check() throws Exception {
-				RtlSdrStatus curStatus = statusProcess.getStatus();
+				SdrStatus curStatus = statusProcess.getStatus();
 				if (curStatus == null) {
 					return ResultUtil.unknown();
 				}
-				synchronized (RtlSdrStatusDao.this) {
+				synchronized (SdrStatusDao.this) {
 					status = curStatus;
 					if (status.isDongleConnected()) {
 						return ResultUtil.healthy();
 					} else {
-						return ResultUtil.unhealthy("No supported devices found");
+						return ResultUtil.unhealthy(status.getError());
 					}
 				}
 			}
@@ -127,7 +135,7 @@ public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
 					public Integer getValue() {
 						// graph will be displayed anyway.
 						// fill it with 0
-						synchronized (RtlSdrStatusDao.this) {
+						synchronized (SdrStatusDao.this) {
 							if (currentPpm == null) {
 								return 0;
 							}
@@ -168,7 +176,7 @@ public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
 
 				@Override
 				public void run() {
-					if (!lock.tryLock(RtlSdrStatusDao.this)) {
+					if (!lock.tryLock(SdrStatusDao.this)) {
 						LOG.info("unable to lock for ppm calculation");
 						return;
 					}
@@ -176,12 +184,12 @@ public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
 					try {
 						ppm = ppmProcess.getPpm();
 					} finally {
-						lock.unlock(RtlSdrStatusDao.this);
+						lock.unlock(SdrStatusDao.this);
 					}
 					if (ppm == null) {
 						return;
 					}
-					synchronized (RtlSdrStatusDao.this) {
+					synchronized (SdrStatusDao.this) {
 						currentPpm = ppm;
 					}
 					config.setProperty(PPM_CURRENT_PROPERTY_NAME, ppm);
@@ -196,7 +204,9 @@ public class RtlSdrStatusDao implements Lifecycle, ConfigListener {
 
 	@Override
 	public synchronized void stop() {
-		ppmProcess.terminate(1000);
+		if (ppmProcess != null) {
+			ppmProcess.terminate(1000);
+		}
 		statusProcess.terminate(1000);
 		Util.shutdown(executor, config.getThreadPoolShutdownMillis());
 		executor = null;

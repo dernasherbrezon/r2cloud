@@ -1,13 +1,15 @@
-package ru.r2cloud;
+package ru.r2cloud.sdr;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.LoggerFactory;
 
-public class RtlSdrLock {
+import ru.r2cloud.Lifecycle;
 
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(RtlSdrLock.class);
+public class SdrLock {
+
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SdrLock.class);
 
 	private final Map<Class<?>, Integer> priorities = new HashMap<>();
 	private final Map<Class<?>, Lifecycle> listeners = new HashMap<>();

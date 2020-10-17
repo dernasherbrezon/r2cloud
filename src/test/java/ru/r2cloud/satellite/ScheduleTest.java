@@ -108,6 +108,10 @@ public class ScheduleTest {
 		assertEquals(getTime("2020-10-02 00:00:00.000"), movedTo.getStartTimeMillis());
 		assertEquals(getTime("2020-10-02 00:05:37.617"), movedTo.getEndTimeMillis());
 
+		schedule.cancelAll();
+		long partialStart = getTime("2020-09-30 23:00:46.872");
+		actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), partialStart);
+		assertEquals(partialStart, actual.get(0).getStartTimeMillis());
 	}
 
 	@Before

@@ -12,15 +12,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.Lifecycle;
-import ru.r2cloud.RtlSdrLock;
 import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SdrType;
 import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.reader.IQReader;
+import ru.r2cloud.satellite.reader.PlutoSdrReader;
 import ru.r2cloud.satellite.reader.RtlFmReader;
 import ru.r2cloud.satellite.reader.RtlSdrReader;
+import ru.r2cloud.sdr.SdrLock;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
@@ -36,7 +38,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	private final SatelliteDao satelliteDao;
 	private final Configuration config;
-	private final RtlSdrLock lock;
+	private final SdrLock lock;
 	private final ThreadPoolFactory threadpoolFactory;
 	private final Clock clock;
 	private final ProcessFactory processFactory;
@@ -50,7 +52,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private ScheduledExecutorService rescheduleThread = null;
 	private Future<?> rescheduleTask;
 
-	public Scheduler(Schedule schedule, Configuration config, SatelliteDao satellites, RtlSdrLock lock, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderService decoderService, RotatorService rotatorService) {
+	public Scheduler(Schedule schedule, Configuration config, SatelliteDao satellites, SdrLock lock, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderService decoderService, RotatorService rotatorService) {
 		this.schedule = schedule;
 		this.config = config;
 		this.config.subscribe(this, "locaiton.lat");
@@ -96,14 +98,13 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	public ObservationRequest schedule(Satellite satellite) {
 		List<ObservationRequest> batch = schedule.getBySatelliteId(satellite.getId());
 		if (batch.isEmpty()) {
-			long current = clock.millis();
-			batch = schedule.addSatelliteToSchedule(satellite, current);
+			batch = schedule.addSatelliteToSchedule(satellite, clock.millis());
 			if (batch.isEmpty()) {
 				return null;
 			}
 
 			for (ObservationRequest cur : batch) {
-				schedule(cur, current);
+				schedule(cur);
 			}
 		}
 
@@ -112,7 +113,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		return batch.get(0);
 	}
 
-	private void schedule(ObservationRequest observation, long current) {
+	private void schedule(ObservationRequest observation) {
 		Satellite satellite = satelliteDao.findById(observation.getSatelliteId());
 		LOG.info("scheduled next pass for {}. start: {} end: {}", satellite, new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
 		IQReader reader = createReader(observation);
@@ -164,6 +165,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			if (startThread == null) {
 				return;
 			}
+			long current = clock.millis();
 			Future<?> startFuture = startThread.schedule(readTask, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
 			Future<?> rotatorFuture = rotatorService.schedule(observation, current);
 			Runnable completeTask = new SafeRunnable() {
@@ -186,7 +188,13 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		case LRPT:
 		case TELEMETRY:
 		case FSK_AX25_G3RUH:
-			return new RtlSdrReader(config, processFactory, req);
+			if (req.getSdrType().equals(SdrType.RTLSDR)) {
+				return new RtlSdrReader(config, processFactory, req);
+			} else if (req.getSdrType().equals(SdrType.PLUTOSDR)) {
+				return new PlutoSdrReader(config, processFactory, req);
+			} else {
+				throw new IllegalArgumentException("unsupported sdr type: " + req.getSdrType());
+			}
 		default:
 			throw new IllegalArgumentException("unsupported source: " + source);
 		}
@@ -195,6 +203,8 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	// protection from calling stop 2 times and more
 	@Override
 	public synchronized void stop() {
+		// cancel all tasks and complete active sdr readers
+		schedule.cancelAll();
 		Util.shutdown(startThread, config.getThreadPoolShutdownMillis());
 		Util.shutdown(stopThread, config.getThreadPoolShutdownMillis());
 		Util.shutdown(rescheduleThread, config.getThreadPoolShutdownMillis());
@@ -208,11 +218,10 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		long current = clock.millis();
 		List<ObservationRequest> newSchedule = schedule.createInitialSchedule(allSatellites, current);
 		for (ObservationRequest cur : newSchedule) {
-			schedule(cur, current);
+			schedule(cur);
 		}
 		long delay;
 		if (!newSchedule.isEmpty()) {
-			Collections.sort(newSchedule, ObservationRequestComparator.INSTANCE);
 			delay = newSchedule.get(newSchedule.size() - 1).getEndTimeMillis() + 1000 - current;
 		} else {
 			delay = TimeUnit.DAYS.toMillis(2);
@@ -247,7 +256,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		if (movedTo == null) {
 			return null;
 		}
-		schedule(closest, startTime);
+		schedule(closest);
 		return closest;
 	}
 

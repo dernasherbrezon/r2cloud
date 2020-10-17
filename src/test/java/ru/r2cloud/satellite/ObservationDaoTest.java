@@ -30,6 +30,7 @@ import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationStatus;
+import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.Tle;
 
 public class ObservationDaoTest {
@@ -174,6 +175,7 @@ public class ObservationDaoTest {
 		req.setGroundStation(createGroundStation());
 		req.setGain(45.0);
 		req.setBiast(false);
+		req.setSdrType(SdrType.RTLSDR);
 		return req;
 	}
 

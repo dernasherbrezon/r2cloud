@@ -76,6 +76,8 @@ import ru.r2cloud.satellite.decoder.SmogPDecoder;
 import ru.r2cloud.satellite.decoder.SnetDecoder;
 import ru.r2cloud.satellite.decoder.Suomi100Decoder;
 import ru.r2cloud.satellite.decoder.TechnosatDecoder;
+import ru.r2cloud.sdr.SdrLock;
+import ru.r2cloud.sdr.SdrStatusDao;
 import ru.r2cloud.ssl.AcmeClient;
 import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.tle.TLEDao;
@@ -128,7 +130,7 @@ public class R2Cloud {
 	private final WebServer webServer;
 	private final Authenticator auth;
 	private final Metrics metrics;
-	private final RtlSdrStatusDao rtlsdrStatusDao;
+	private final SdrStatusDao rtlsdrStatusDao;
 	private final AutoUpdate autoUpdate;
 	private final DDNSClient ddnsClient;
 	private final AcmeClient acmeClient;
@@ -138,7 +140,7 @@ public class R2Cloud {
 	private final DecoderService decoderService;
 	private final Schedule schedule;
 	private final Scheduler scheduler;
-	private final RtlSdrLock rtlsdrLock;
+	private final SdrLock rtlsdrLock;
 	private final PredictOreKit predict;
 	private final ThreadPoolFactory threadFactory;
 	private final ObservationFactory observationFactory;
@@ -157,9 +159,9 @@ public class R2Cloud {
 		processFactory = new ProcessFactory();
 		clock = new DefaultClock();
 
-		rtlsdrLock = new RtlSdrLock();
+		rtlsdrLock = new SdrLock();
 		rtlsdrLock.register(Scheduler.class, 3);
-		rtlsdrLock.register(RtlSdrStatusDao.class, 2);
+		rtlsdrLock.register(SdrStatusDao.class, 2);
 
 		r2cloudClient = new R2ServerClient(props);
 		spectogramService = new SpectogramService(props);
@@ -168,7 +170,7 @@ public class R2Cloud {
 		metrics = new Metrics(props, r2cloudService, clock);
 		predict = new PredictOreKit(props);
 		auth = new Authenticator(props);
-		rtlsdrStatusDao = new RtlSdrStatusDao(props, rtlsdrLock, threadFactory, metrics, processFactory);
+		rtlsdrStatusDao = new SdrStatusDao(props, rtlsdrLock, threadFactory, metrics, processFactory);
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
 		acmeClient = new AcmeClient(props);

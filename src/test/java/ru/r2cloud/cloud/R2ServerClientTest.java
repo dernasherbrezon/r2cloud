@@ -24,6 +24,7 @@ import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.SdrType;
 
 public class R2ServerClientTest {
 
@@ -177,6 +178,7 @@ public class R2ServerClientTest {
 		result.setDataURL("1");
 		result.setSpectogramURL("1");
 		result.setBiast(true);
+		result.setSdrType(SdrType.RTLSDR);
 		return result;
 	}
 

@@ -8,7 +8,6 @@ import java.nio.file.FileSystems;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -82,7 +81,6 @@ public class UtilizationTest {
 
 		Schedule schedule = new Schedule(factory);
 		List<ObservationRequest> happened = schedule.createInitialSchedule(satellites, start);
-		Collections.sort(happened, ObservationRequestComparator.INSTANCE);
 
 		long total = end - start;
 		long utilized = 0;
