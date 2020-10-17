@@ -203,6 +203,8 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	// protection from calling stop 2 times and more
 	@Override
 	public synchronized void stop() {
+		// cancel all tasks and complete active sdr readers
+		schedule.cancelAll();
 		Util.shutdown(startThread, config.getThreadPoolShutdownMillis());
 		Util.shutdown(stopThread, config.getThreadPoolShutdownMillis());
 		Util.shutdown(rescheduleThread, config.getThreadPoolShutdownMillis());
