@@ -74,6 +74,7 @@ import ru.r2cloud.satellite.decoder.PwSat2Decoder;
 import ru.r2cloud.satellite.decoder.ReaktorHelloWorldDecoder;
 import ru.r2cloud.satellite.decoder.SmogPDecoder;
 import ru.r2cloud.satellite.decoder.SnetDecoder;
+import ru.r2cloud.satellite.decoder.Strand1Decoder;
 import ru.r2cloud.satellite.decoder.Suomi100Decoder;
 import ru.r2cloud.satellite.decoder.TechnosatDecoder;
 import ru.r2cloud.sdr.SdrLock;
@@ -233,6 +234,7 @@ public class R2Cloud {
 		decoders.put("43596", new FskAx25G3ruhDecoder(predict, props, 4800, SiriusSatBeacon.class));
 		decoders.put("43768", new Aistechsat2Decoder(predict, props));
 		decoders.put("41789", new Alsat1nDecoder(predict, props));
+		decoders.put("39090", new Strand1Decoder(predict, props));
 
 		for (Satellite cur : satelliteDao.findAll()) {
 			if (cur.getSource().equals(FrequencySource.FSK_AX25_G3RUH)) {
