@@ -36,7 +36,7 @@ trap _term SIGTERM
 
 set -o pipefail
 
-CMD="${PLUTO_CLI} -f ${FREQUENCY} -s ${SAMPLE_RATE} -b 4096 -g ${GAIN} -"
+CMD="${PLUTO_CLI} -f ${FREQUENCY} -s ${SAMPLE_RATE} -b 16384 -g ${GAIN} -"
 ${CMD} | gzip > ${OUTPUT} &
 
 rtl=$(jobs -p)

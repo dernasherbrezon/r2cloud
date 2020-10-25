@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.SatPass;
 import ru.r2cloud.model.Satellite;
-import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.tle.TLEDao;
@@ -94,13 +93,7 @@ public class ObservationFactory {
 			break;
 		case FSK_AX25_G3RUH:
 		case TELEMETRY:
-			if (result.getSdrType().equals(SdrType.RTLSDR)) {
-				result.setInputSampleRate(240_000);
-			} else if (result.getSdrType().equals(SdrType.PLUTOSDR)) {
-				result.setInputSampleRate(528_000);
-			} else {
-				throw new IllegalArgumentException("unsupported sdr type: " + result.getSdrType());
-			}
+			result.setInputSampleRate(240_000);
 			result.setOutputSampleRate(48_000);
 			// at the beginning doppler freq is the max
 			long initialDopplerFrequency = predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStartMillis(), predict.getPosition(), tlePropagator);
