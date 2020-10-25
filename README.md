@@ -1,10 +1,10 @@
 ## About [![Build Status](https://travis-ci.org/dernasherbrezon/r2cloud.svg?branch=master)](https://travis-ci.org/dernasherbrezon/r2cloud) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ru.r2cloud%3Ar2cloud&metric=alert_status)](https://sonarcloud.io/dashboard?id=ru.r2cloud%3Ar2cloud) [![Known Vulnerabilities](https://snyk.io/test/github/dernasherbrezon/r2cloud/badge.svg)](https://snyk.io/test/github/dernasherbrezon/r2cloud) [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/r2cloud/Lobby)
 
-r2cloud converts Raspberry PI into the base station which supports various radio signals, such as:
+r2cloud can track and decode various radio signals from satellites such as:
 
   - APT (weather satellite)
   - LRPT (weather satellite)
-  - Cubesats 
+  - Cubesats (FSK, BPSK, QPSK, AFSK, AX.25, AX100 &etc)
  
 ## Screenshots ([r2cloud-ui](https://github.com/dernasherbrezon/r2cloud-ui)) 
 
@@ -21,22 +21,22 @@ Base station might include different hardware components. Please check recommend
 ## Installation 
 
 1. Install r2cloud
-  - From the image. This is simpliest way and require brand new SD card
+  - From the image. This is the easiest way to install r2cloud on Raspberry PI. It will require brand new SD card:
     - Download the [latest](https://s3.amazonaws.com/r2cloud/dist/image_2020-08-13-r2cloud-lite.zip) official image
     - Insert SD card into the card reader and flash it. You could use [Etcher](https://etcher.io) to do this
     - Insert SD card into the card reader and create file ```r2cloud.txt``` in the root directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
   
-  - Or from repository binaries. Use this way if you have something already installed on SD card.
+  - Or from repository binaries:
     - Login via SSH and create ```r2cloud.txt``` file in /boot directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
     - Execute the following commands:
 ```
 sudo apt-get install dirmngr
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A5A70917
-sudo bash -c "echo 'deb [arch=armhf] http://s3.amazonaws.com/r2cloud r2cloud main' > /etc/apt/sources.list.d/r2cloud.list"
+sudo bash -c "echo 'deb http://s3.amazonaws.com/r2cloud r2cloud main' > /etc/apt/sources.list.d/r2cloud.list"
 sudo apt-get update
 sudo apt-get install r2cloud
 ```
-2. Insert SD card into the RaspberryPi and open [https://raspberrypi.local](https://raspberrypi.local) address.
+2. Open [https://raspberrypi.local](https://raspberrypi.local) address.
 3. Accept self-signed certificate. This is unique certificate that was generated during installation. Once setup is complete, you could enable proper SSL using [Letsencrypt](https://letsencrypt.org). 
 
 ## Design guidelines
