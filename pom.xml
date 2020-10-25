@@ -337,7 +337,7 @@
 				<configuration>
 					<unixUserId>pi</unixUserId>
 					<unixGroupId>pi</unixGroupId>
-					<arch>armhf</arch>
+					<arch>all</arch>
 					<section>embedded</section>
 					<osDependencies>
 						<r2cloud-ui>>=1513613469</r2cloud-ui>
