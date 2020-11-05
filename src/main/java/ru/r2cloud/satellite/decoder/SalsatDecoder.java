@@ -3,27 +3,28 @@ package ru.r2cloud.satellite.decoder;
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconSource;
 import ru.r2cloud.jradio.FloatInput;
-import ru.r2cloud.jradio.chomptt.Chomptt;
-import ru.r2cloud.jradio.chomptt.ChompttBeacon;
 import ru.r2cloud.jradio.demod.AfskDemodulator;
+import ru.r2cloud.jradio.salsat.Salsat;
+import ru.r2cloud.jradio.snet.SnetBeacon;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
-public class ChompttDecoder extends TelemetryDecoder {
+public class SalsatDecoder extends TelemetryDecoder {
 
-	public ChompttDecoder(PredictOreKit predict, Configuration config) {
+	public SalsatDecoder(PredictOreKit predict, Configuration config) {
 		super(predict, config);
 	}
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		AfskDemodulator demod = new AfskDemodulator(source, 1200, 500, 1700, 5);
-		return new Chomptt(demod);
+		AfskDemodulator demod = new AfskDemodulator(source, 1200, -600, 1500, 8);
+		return new Salsat(demod);
 	}
 
 	@Override
 	public Class<? extends Beacon> getBeaconClass() {
-		return ChompttBeacon.class;
+		return SnetBeacon.class;
 	}
+
 }
