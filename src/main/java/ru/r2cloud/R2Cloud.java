@@ -54,6 +54,7 @@ import ru.r2cloud.satellite.decoder.ChompttDecoder;
 import ru.r2cloud.satellite.decoder.Decoder;
 import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.decoder.DelfiC3Decoder;
+import ru.r2cloud.satellite.decoder.Delphini1Decoder;
 import ru.r2cloud.satellite.decoder.Dstar1Decoder;
 import ru.r2cloud.satellite.decoder.EseoDecoder;
 import ru.r2cloud.satellite.decoder.Floripasat1Decoder;
@@ -237,6 +238,7 @@ public class R2Cloud {
 		decoders.put("41789", new Alsat1nDecoder(predict, props));
 		decoders.put("39090", new Strand1Decoder(predict, props));
 		decoders.put("46495", new SalsatDecoder(predict, props));
+		decoders.put("44030", new Delphini1Decoder(predict, props));
 
 		for (Satellite cur : satelliteDao.findAll()) {
 			if (cur.getSource().equals(FrequencySource.FSK_AX25_G3RUH)) {
