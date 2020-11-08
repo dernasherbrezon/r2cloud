@@ -75,7 +75,6 @@ import ru.r2cloud.satellite.decoder.PegasusDecoder;
 import ru.r2cloud.satellite.decoder.PwSat2Decoder;
 import ru.r2cloud.satellite.decoder.ReaktorHelloWorldDecoder;
 import ru.r2cloud.satellite.decoder.SalsatDecoder;
-import ru.r2cloud.satellite.decoder.SmogPDecoder;
 import ru.r2cloud.satellite.decoder.SnetDecoder;
 import ru.r2cloud.satellite.decoder.Strand1Decoder;
 import ru.r2cloud.satellite.decoder.Suomi100Decoder;
@@ -213,7 +212,6 @@ public class R2Cloud {
 		decoders.put("44103", new Aistechsat3Decoder(predict, props));
 		decoders.put("44406", new Lucky7Decoder(predict, props));
 		decoders.put("44830", new Atl1Decoder(predict, props));
-		decoders.put("44832", new SmogPDecoder(predict, props));
 		decoders.put("44878", new OpsSatDecoder(predict, props));
 		decoders.put("44885", new Floripasat1Decoder(predict, props));
 		decoders.put("45115", new FskAx25G3ruhDecoder(predict, props, 9600, Swampsat2Beacon.class));
