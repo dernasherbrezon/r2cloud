@@ -76,13 +76,13 @@ public class SpectogramService {
 			return null;
 		}
 		FloatInput source = null;
-		try {
+		try (GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(req.getRawPath()))) {
 			switch (req.getSdrType()) {
 			case RTLSDR:
-				source = new RtlSdr(new GZIPInputStream(new FileInputStream(req.getRawPath())), req.getInputSampleRate(), totalBytes / 2);
+				source = new RtlSdr(gzip, req.getInputSampleRate(), totalBytes / 2);
 				break;
 			case PLUTOSDR:
-				source = new PlutoSdr(new GZIPInputStream(new FileInputStream(req.getRawPath())), req.getInputSampleRate(), totalBytes / 4);
+				source = new PlutoSdr(gzip, req.getInputSampleRate(), totalBytes / 4);
 				break;
 			default:
 				throw new IllegalArgumentException("unsupported sdr type: " + req.getSdrType());

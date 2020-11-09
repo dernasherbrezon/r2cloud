@@ -19,7 +19,7 @@ public class Schedule {
 	private static final Logger LOG = LoggerFactory.getLogger(Schedule.class);
 
 	private final ObservationFactory factory;
-	private final Timetable timetable = new Timetable(60 * 4 * 1000);
+	private final Timetable timetable = new Timetable(60 * 4 * 1000L);
 
 	private final Map<String, ScheduledObservation> tasksById = new HashMap<>();
 	private final Map<String, ObservationRequest> observationsById = new HashMap<>();
