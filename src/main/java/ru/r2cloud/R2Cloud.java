@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.cloud.R2ServerClient;
 import ru.r2cloud.cloud.R2ServerService;
 import ru.r2cloud.ddns.DDNSClient;
+import ru.r2cloud.jradio.armadillo.ArmadilloBeacon;
 import ru.r2cloud.jradio.ax25.Ax25Beacon;
 import ru.r2cloud.jradio.bsusat1.Bsusat1Beacon;
 import ru.r2cloud.jradio.falconsat3.Falconsat3Beacon;
@@ -47,6 +48,7 @@ import ru.r2cloud.satellite.decoder.Aausat4Decoder;
 import ru.r2cloud.satellite.decoder.Aistechsat2Decoder;
 import ru.r2cloud.satellite.decoder.Aistechsat3Decoder;
 import ru.r2cloud.satellite.decoder.Alsat1nDecoder;
+import ru.r2cloud.satellite.decoder.AmicalDecoder;
 import ru.r2cloud.satellite.decoder.Ao73Decoder;
 import ru.r2cloud.satellite.decoder.AstrocastDecoder;
 import ru.r2cloud.satellite.decoder.Atl1Decoder;
@@ -239,6 +241,8 @@ public class R2Cloud {
 		decoders.put("46495", new SalsatDecoder(predict, props));
 		decoders.put("44030", new Delphini1Decoder(predict, props));
 		decoders.put("43199", new BpskAx25G3ruhDecoder(predict, props, 9600, Ax25Beacon.class));
+		decoders.put("44352", new FskAx25G3ruhDecoder(predict, props, 19200, ArmadilloBeacon.class));
+		decoders.put("46287", new AmicalDecoder(predict, props));
 
 		for (Satellite cur : satelliteDao.findAll()) {
 			if (cur.getSource().equals(FrequencySource.FSK_AX25_G3RUH)) {

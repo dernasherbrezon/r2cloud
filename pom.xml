@@ -63,7 +63,7 @@
 		<dependency>
 			<groupId>ru.r2cloud</groupId>
 			<artifactId>jradio</artifactId>
-			<version>1.51</version>
+			<version>1.52</version>
 		</dependency>
 		<dependency>
 			<groupId>org.shredzone.acme4j</groupId>
