@@ -83,7 +83,6 @@ import ru.r2cloud.satellite.decoder.Suomi100Decoder;
 import ru.r2cloud.satellite.decoder.TechnosatDecoder;
 import ru.r2cloud.sdr.SdrLock;
 import ru.r2cloud.sdr.SdrStatusDao;
-import ru.r2cloud.ssl.AcmeClient;
 import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.tle.TLEDao;
 import ru.r2cloud.tle.TLEReloader;
@@ -106,8 +105,6 @@ import ru.r2cloud.web.api.configuration.Configured;
 import ru.r2cloud.web.api.configuration.DDNS;
 import ru.r2cloud.web.api.configuration.General;
 import ru.r2cloud.web.api.configuration.R2CloudSave;
-import ru.r2cloud.web.api.configuration.SSL;
-import ru.r2cloud.web.api.configuration.SSLLog;
 import ru.r2cloud.web.api.observation.ObservationList;
 import ru.r2cloud.web.api.observation.ObservationLoad;
 import ru.r2cloud.web.api.observation.ObservationSpectrogram;
@@ -138,7 +135,6 @@ public class R2Cloud {
 	private final SdrStatusDao rtlsdrStatusDao;
 	private final AutoUpdate autoUpdate;
 	private final DDNSClient ddnsClient;
-	private final AcmeClient acmeClient;
 	private final SatelliteDao satelliteDao;
 	private final TLEDao tleDao;
 	private final TLEReloader tleReloader;
@@ -178,7 +174,6 @@ public class R2Cloud {
 		rtlsdrStatusDao = new SdrStatusDao(props, rtlsdrLock, threadFactory, metrics, processFactory);
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
-		acmeClient = new AcmeClient(props);
 		satelliteDao = new SatelliteDao(props);
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient(props.getProperty("celestrak.hostname")));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
@@ -270,8 +265,6 @@ public class R2Cloud {
 		index(new Overview(metrics));
 		index(new General(props, autoUpdate));
 		index(new DDNS(props, ddnsClient));
-		index(new SSL(props, acmeClient));
-		index(new SSLLog(acmeClient));
 		index(new TLE(props, tleDao));
 		index(new R2CloudSave(props));
 		index(new ObservationSpectrogram(resultDao, spectogramService, signed));
@@ -285,7 +278,6 @@ public class R2Cloud {
 	}
 
 	public void start() {
-		acmeClient.start();
 		ddnsClient.start();
 		rtlsdrStatusDao.start();
 		tleDao.start();
@@ -312,7 +304,6 @@ public class R2Cloud {
 		tleDao.stop();
 		rtlsdrStatusDao.stop();
 		ddnsClient.stop();
-		acmeClient.stop();
 	}
 
 	public static void main(String[] args) {

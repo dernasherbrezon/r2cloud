@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bouncycastle.crypto.RuntimeCryptoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +86,7 @@ public class RestClient {
 			throw new RuntimeException(e);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			throw new RuntimeCryptoException();
+			throw new RuntimeException();
 		}
 	}
 
