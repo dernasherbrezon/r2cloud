@@ -40,10 +40,6 @@ public class ObservationTest extends RegisteredTest {
 		// start observation
 		String observationId = client.scheduleStart(METEOR_ID);
 		assertNotNull(observationId);
-		Thread.sleep(1000);
-		// complete observation
-		client.scheduleComplete(observationId);
-
 		// get observation and assert
 		assertObservation(awaitObservation(observationId));
 
