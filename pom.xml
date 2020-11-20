@@ -194,7 +194,7 @@
 			<plugin>
 				<groupId>com.aerse.maven</groupId>
 				<artifactId>apt-maven-plugin</artifactId>
-				<version>1.14</version>
+				<version>1.17</version>
 				<executions>
 					<execution>
 						<id>deploy</id>
