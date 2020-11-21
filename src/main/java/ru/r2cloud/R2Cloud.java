@@ -29,6 +29,7 @@ import ru.r2cloud.jradio.fox.Fox1DBeacon;
 import ru.r2cloud.jradio.ls2.Lightsail2Beacon;
 import ru.r2cloud.jradio.lume1.Lume1Beacon;
 import ru.r2cloud.jradio.nexus.NexusBeacon;
+import ru.r2cloud.jradio.norbi.NorbiBeacon;
 import ru.r2cloud.jradio.painani1.Painani1Beacon;
 import ru.r2cloud.jradio.polyitan1.PolyItan1Beacon;
 import ru.r2cloud.jradio.qarman.QarmanBeacon;
@@ -245,7 +246,8 @@ public class R2Cloud {
 		decoders.put("44332", new FskAx100Decoder(predict, props, 4800, 512, Spooqy1Beacon.class));
 		decoders.put("46489", new BpskAx25G3ruhDecoder(predict, props, 2400, Ax25Beacon.class));
 		decoders.put("43738", new FskAx100Decoder(predict, props, 4800, 512, CspBeacon.class));
-		
+		decoders.put("46494", new FskAx25G3ruhDecoder(predict, props, 9600, NorbiBeacon.class));
+
 		for (Satellite cur : satelliteDao.findAll()) {
 			if (cur.getSource().equals(FrequencySource.FSK_AX25_G3RUH)) {
 				if (cur.getBaud() == null) {
