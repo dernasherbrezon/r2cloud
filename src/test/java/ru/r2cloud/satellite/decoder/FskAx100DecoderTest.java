@@ -12,10 +12,11 @@ import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
+import ru.r2cloud.jradio.csp.CspBeacon;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.predict.PredictOreKit;
 
-public class Lume1DecoderTest {
+public class FskAx100DecoderTest {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -24,11 +25,11 @@ public class Lume1DecoderTest {
 
 	@Test
 	public void testSomeData() throws Exception {
-		File wav = TestUtil.setupClasspathResource(tempFolder, "data/lume1.raw.gz");
+		File wav = TestUtil.setupClasspathResource(tempFolder, "data/delphini1.raw.gz");
 		PredictOreKit predict = new PredictOreKit(config);
-		Lume1Decoder decoder = new Lume1Decoder(predict, config);
-		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/lume1.raw.gz.json").getReq());
-		assertEquals(5, result.getNumberOfDecodedPackets().longValue());
+		FskAx100Decoder decoder = new FskAx100Decoder(predict, config, 9600, 255, CspBeacon.class);
+		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/delphini1.raw.gz.json").getReq());
+		assertEquals(2, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
 		assertNotNull(result.getRawPath());
 	}
