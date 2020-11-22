@@ -27,12 +27,12 @@ public class FoxSlowDecoder<T extends Beacon> extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		FskDemodulator byteInput = new FskDemodulator(source, 200, 5000.0f, 120, 200.0f);
+		FskDemodulator byteInput = new FskDemodulator(source, 200, 5000.0f, 60, 200.0f);
 		SoftToHard s2h = new SoftToHard(byteInput);
 		Set<String> codes = new HashSet<>();
 		codes.add("0011111010");
 		codes.add("1100000101");
-		CorrelateAccessCodeTag correlate = new CorrelateAccessCodeTag(s2h, 0, codes, false);
+		CorrelateAccessCodeTag correlate = new CorrelateAccessCodeTag(s2h, 2, codes, false);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new FixedLengthTagger(correlate, Fox.SLOW_FRAME_SIZE * 10));
 		return new Fox<>(pdu, clazz);
 	}
