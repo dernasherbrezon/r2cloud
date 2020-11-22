@@ -401,6 +401,20 @@ public final class Util {
 		}
 		return null;
 	}
+	
+	// good decimation factors for 48k sample rate and pre-defined baud rate
+	public static int convertDecimation(int baudRate) {
+		switch (baudRate) {
+		case 1200:
+			return 8;
+		case 2400:
+			return 4;
+		case 4800:
+			return 2;
+		default:
+			return 1;
+		}
+	}
 
 	private Util() {
 		// do nothing

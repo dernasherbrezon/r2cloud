@@ -8,6 +8,7 @@ import ru.r2cloud.jradio.demod.AfskDemodulator;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 
 public class AfskAx25Decoder extends TelemetryDecoder {
 
@@ -22,7 +23,7 @@ public class AfskAx25Decoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		AfskDemodulator demodulator = new AfskDemodulator(source, baudRate, 500, 1700, 5);
+		AfskDemodulator demodulator = new AfskDemodulator(source, baudRate, 500, 1700, Util.convertDecimation(baudRate));
 		return new Ax25BeaconSource<>(demodulator, beacon);
 	}
 

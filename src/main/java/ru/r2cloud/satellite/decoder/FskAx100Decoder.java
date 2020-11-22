@@ -8,6 +8,7 @@ import ru.r2cloud.jradio.csp.CspBeacon;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 
 public class FskAx100Decoder extends TelemetryDecoder {
 
@@ -25,7 +26,7 @@ public class FskAx100Decoder extends TelemetryDecoder {
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
 		float gainMu = 0.175f * 3;
-		GmskDemodulator demodulator = new GmskDemodulator(source, baudRate, req.getBandwidth(), gainMu, 0.02f, 1, 2000);
+		GmskDemodulator demodulator = new GmskDemodulator(source, baudRate, req.getBandwidth(), gainMu, 0.02f, Util.convertDecimation(baudRate), 2000);
 		return new Ax100BeaconSource<CspBeacon>(demodulator, beaconSizeBytes, CspBeacon.class);
 	}
 
