@@ -1,14 +1,11 @@
 package ru.r2cloud.satellite.decoder;
 
-import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.imageio.ImageIO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,17 +57,6 @@ public class Lucky7Decoder extends TelemetryDecoder {
 			}
 		}
 		return result;
-	}
-
-	private File saveImage(String path, BufferedImage image) {
-		File imageFile = new File(config.getTempDirectory(), path);
-		try {
-			ImageIO.write(image, "jpg", imageFile);
-			return imageFile;
-		} catch (IOException e) {
-			LOG.error("unable to write image", e);
-			return null;
-		}
 	}
 
 	@Override

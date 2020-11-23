@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,11 +16,10 @@ import ru.r2cloud.jradio.demod.BpskDemodulator;
 import ru.r2cloud.jradio.jy1sat.Jy1sat;
 import ru.r2cloud.jradio.jy1sat.Jy1satBeacon;
 import ru.r2cloud.jradio.jy1sat.Jy1satSsdvPacketSource;
-import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.DecoderResult;
+import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.ssdv.SsdvDecoder;
-import ru.r2cloud.ssdv.SsdvImage;
 import ru.r2cloud.util.Configuration;
 
 public class Jy1satDecoder extends TelemetryDecoder {
@@ -40,7 +37,7 @@ public class Jy1satDecoder extends TelemetryDecoder {
 			try (BeaconInputStream<Jy1satBeacon> bis = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(result.getDataPath())), Jy1satBeacon.class)) {
 				SsdvDecoder decoder = new SsdvDecoder(new Jy1satSsdvPacketSource(bis));
 				while (decoder.hasNext()) {
-					File imageFile = saveImage("ssdv-" + req.getId() + ".jpg", decoder.next());
+					File imageFile = saveImage("ssdv-" + req.getId() + ".jpg", decoder.next().getImage());
 					if (imageFile != null) {
 						result.setImagePath(imageFile);
 						// interested only in the first image
@@ -52,17 +49,6 @@ public class Jy1satDecoder extends TelemetryDecoder {
 			}
 		}
 		return result;
-	}
-
-	private File saveImage(String path, SsdvImage image) {
-		File imageFile = new File(config.getTempDirectory(), path);
-		try {
-			ImageIO.write(image.getImage(), "jpg", imageFile);
-			return imageFile;
-		} catch (IOException e) {
-			LOG.error("unable to write image", e);
-			return null;
-		}
 	}
 
 	@Override

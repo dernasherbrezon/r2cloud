@@ -1,10 +1,13 @@
 package ru.r2cloud.satellite.decoder;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +16,8 @@ import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconOutputStream;
 import ru.r2cloud.jradio.BeaconSource;
 import ru.r2cloud.jradio.FloatInput;
-import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.DecoderResult;
+import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
@@ -80,6 +83,20 @@ public abstract class TelemetryDecoder implements Decoder {
 			throw new IllegalArgumentException("at least one beacon source should be specified");
 		}
 		return Collections.singletonList(beaconSource);
+	}
+
+	protected File saveImage(String path, BufferedImage image) {
+		if (image == null) {
+			return null;
+		}
+		File imageFile = new File(config.getTempDirectory(), path);
+		try {
+			ImageIO.write(image, "jpg", imageFile);
+			return imageFile;
+		} catch (IOException e) {
+			LOG.error("unable to write image", e);
+			return null;
+		}
 	}
 
 	@SuppressWarnings("unused")

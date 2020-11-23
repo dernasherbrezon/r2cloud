@@ -10,8 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.imageio.ImageIO;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +24,8 @@ import ru.r2cloud.jradio.fox.Fox1DBeacon;
 import ru.r2cloud.jradio.fox.FoxPictureDecoder;
 import ru.r2cloud.jradio.fox.HighSpeedFox;
 import ru.r2cloud.jradio.fox.PictureScanLine;
-import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.DecoderResult;
+import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
@@ -93,17 +91,6 @@ public class FoxDecoder<T extends Beacon> extends FoxSlowDecoder<T> {
 			}
 		}
 		return result;
-	}
-
-	private File saveImage(String path, BufferedImage image) {
-		File imageFile = new File(config.getTempDirectory(), path);
-		try {
-			ImageIO.write(image, "jpg", imageFile);
-			return imageFile;
-		} catch (IOException e) {
-			LOG.error("unable to write image", e);
-			return null;
-		}
 	}
 
 	@Override
