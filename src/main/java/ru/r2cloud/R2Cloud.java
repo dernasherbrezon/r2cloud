@@ -28,6 +28,7 @@ import ru.r2cloud.jradio.fox.Fox1CBeacon;
 import ru.r2cloud.jradio.fox.Fox1DBeacon;
 import ru.r2cloud.jradio.ls2.Lightsail2Beacon;
 import ru.r2cloud.jradio.lume1.Lume1Beacon;
+import ru.r2cloud.jradio.meznsat.MeznsatBeacon;
 import ru.r2cloud.jradio.nexus.NexusBeacon;
 import ru.r2cloud.jradio.norbi.NorbiBeacon;
 import ru.r2cloud.jradio.painani1.Painani1Beacon;
@@ -244,7 +245,7 @@ public class R2Cloud {
 		decoders.put("46287", new AfskAx25Decoder(predict, props, 1200, Amical1Beacon.class));
 		decoders.put("40654", new AfskAx25Decoder(predict, props, 1200, Ax25Beacon.class));
 		decoders.put("44332", new FskAx100Decoder(predict, props, 4800, 512, Spooqy1Beacon.class));
-		decoders.put("46489", new BpskAx25G3ruhDecoder(predict, props, 2400, Ax25Beacon.class));
+		decoders.put("46489", new BpskAx25G3ruhDecoder(predict, props, 2400, MeznsatBeacon.class));
 		decoders.put("43738", new FskAx100Decoder(predict, props, 4800, 512, CspBeacon.class));
 		decoders.put("46494", new FskAx25G3ruhDecoder(predict, props, 9600, NorbiBeacon.class));
 		decoders.put("43721", new FskAx100Decoder(predict, props, 9600, 255, CspBeacon.class));

@@ -8,6 +8,11 @@
 	"actualFrequency": 437444309,
 	"decoder": "TELEMETRY",
 	"satellite": "41460",
+	"bandwidth": -1,
+	"numberOfDecodedPackets": 0,
+	"status": "UPLOADED",
+	"biast": false,
+	"sdrType": "RTLSDR",
 	"dataEntity": [
 		{
 			"name": 1562788405439,
@@ -45,11 +50,11 @@
 					"uptime": 3282266
 				},
 				"header": {
-					"destination": 31,
+					"destination": 10,
 					"destinationPort": 18,
-					"priority": "CSP_PRIO_LOW",
-					"source": 31,
-					"sourcePort": 62,
+					"priority": "CSP_PRIO_CRITICAL",
+					"source": 0,
+					"sourcePort": 18,
 					"fcrc32": false,
 					"ffrag": false,
 					"fhmac": true,

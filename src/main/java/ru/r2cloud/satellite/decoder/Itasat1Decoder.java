@@ -19,7 +19,7 @@ public class Itasat1Decoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		BpskDemodulator bpsk = new BpskDemodulator(source, 1200, 5, 200, false);
+		BpskDemodulator bpsk = new BpskDemodulator(source, 1200, 5, 0, false);
 		SoftToHard s2h = new SoftToHard(bpsk);
 		return new Itasat1(s2h);
 	}

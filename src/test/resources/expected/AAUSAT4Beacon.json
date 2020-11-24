@@ -1,10 +1,10 @@
 {
   "length": 86,
   "header": {
-    "priority": "CSP_PRIO_LOW",
-    "source": 31,
-    "destination": 31,
-    "sourcePort": 62,
+    "priority": "CSP_PRIO_CRITICAL",
+    "source": 0,
+    "destination": 11,
+    "sourcePort": 2,
     "destinationPort": 18,
     "ffrag": false,
     "fhmac": true,
@@ -142,6 +142,6 @@
     64,
     108
   ],
-  "beginSample": 239087,
+  "beginSample": 239167,
   "beginMillis": 1576269902776
 }
