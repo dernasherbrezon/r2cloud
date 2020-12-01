@@ -6,7 +6,7 @@ public abstract class FormattedGauge<T> implements Gauge<T> {
 
 	private final MetricFormat format;
 
-	public FormattedGauge(MetricFormat format) {
+	protected FormattedGauge(MetricFormat format) {
 		this.format = format;
 	}
 
