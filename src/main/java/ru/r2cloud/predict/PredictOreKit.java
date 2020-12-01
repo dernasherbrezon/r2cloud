@@ -3,6 +3,7 @@ package ru.r2cloud.predict;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -93,7 +94,7 @@ public class PredictOreKit {
 		List<SatPass> result = new ArrayList<>();
 		TopocentricFrame baseStationFrame = getPosition();
 		if (baseStationFrame == null) {
-			return null;
+			return Collections.emptyList();
 		}
 		AbsoluteDate initialDate = new AbsoluteDate(current, TimeScalesFactory.getUTC());
 		List<AbsoluteDate> max = new ArrayList<>();
