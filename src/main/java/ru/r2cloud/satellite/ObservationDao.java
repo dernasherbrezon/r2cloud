@@ -46,7 +46,7 @@ public class ObservationDao {
 		this.maxCount = config.getInteger("scheduler.data.retention.count");
 		this.maxCountRawData = config.getInteger("scheduler.data.retention.raw.count");
 		if (maxCountRawData > maxCount) {
-			LOG.error("scheduler.data.retention.raw.count: " + maxCountRawData + " is more than scheduler.data.retention.count: " + maxCount + ". did you mean the opposite?");
+			LOG.error("scheduler.data.retention.raw.count: {} is more than scheduler.data.retention.count: {}. did you mean the opposite?", maxCountRawData, maxCount);
 		}
 	}
 
@@ -179,6 +179,23 @@ public class ObservationDao {
 	}
 
 	public File insert(ObservationRequest request, File rawFile) {
+		cleanupPreviousObservations(request);
+
+		Path observationBasePath = getObservationBasepath(request);
+		if (!Util.initDirectory(observationBasePath)) {
+			return null;
+		}
+
+		Observation observation = new Observation(request);
+		observation.setStatus(ObservationStatus.NEW);
+		if (!update(observation)) {
+			return null;
+		}
+
+		return insertRawFile(request, rawFile);
+	}
+
+	private void cleanupPreviousObservations(ObservationRequest request) {
 		try {
 			Path satelliteBasePath = basepath.resolve(request.getSatelliteId()).resolve("data");
 			if (Files.exists(satelliteBasePath)) {
@@ -208,19 +225,6 @@ public class ObservationDao {
 		} catch (IOException e) {
 			LOG.error("unable to cleanup old observations", e);
 		}
-
-		Path observationBasePath = getObservationBasepath(request);
-		if (!Util.initDirectory(observationBasePath)) {
-			return null;
-		}
-
-		Observation observation = new Observation(request);
-		observation.setStatus(ObservationStatus.NEW);
-		if (!update(observation)) {
-			return null;
-		}
-
-		return insertRawFile(request, rawFile);
 	}
 
 	private File insertRawFile(ObservationRequest observation, File rawFile) {
