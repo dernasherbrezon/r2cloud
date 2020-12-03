@@ -206,14 +206,7 @@ public class ObservationDao {
 				int currentPlusNew = dataDirs.size() + 1;
 				if (currentPlusNew > maxCountRawData) {
 					for (int i = 0; i < (currentPlusNew - maxCountRawData); i++) {
-						Path oldRawPath = resolveRawPath(dataDirs.get(i));
-						if (Files.exists(oldRawPath)) {
-							try {
-								Files.delete(oldRawPath);
-							} catch (IOException e) {
-								LOG.error("unable to delete file", e);
-							}
-						}
+						Util.deleteQuietly(resolveRawPath(dataDirs.get(i)));
 					}
 				}
 				if (currentPlusNew > maxCount) {

@@ -141,13 +141,17 @@ public final class Util {
 	}
 
 	public static void deleteQuietly(File file) {
-		if (!file.exists()) {
+		deleteQuietly(file.toPath());
+	}
+
+	public static void deleteQuietly(Path file) {
+		if (!Files.exists(file)) {
 			return;
 		}
 		try {
-			Files.delete(file.toPath());
+			Files.delete(file);
 		} catch (IOException e) {
-			LOG.error("unable to delete temp file: {}", file.getAbsolutePath(), e);
+			LOG.error("unable to delete temp file: {}", file.toAbsolutePath(), e);
 		}
 	}
 
@@ -401,7 +405,7 @@ public final class Util {
 		}
 		return null;
 	}
-	
+
 	// good decimation factors for 48k sample rate and pre-defined baud rate
 	public static int convertDecimation(int baudRate) {
 		switch (baudRate) {
