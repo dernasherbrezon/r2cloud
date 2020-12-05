@@ -251,6 +251,7 @@ public class R2Cloud {
 		decoders.put("43721", new FskAx100Decoder(predict, props, 9600, 255, CspBeacon.class));
 		decoders.put("40931", new AfskAx25Decoder(predict, props, 1200, Ax25Beacon.class));
 		decoders.put("44426", new AfskAx25Decoder(predict, props, 1200, Ax25Beacon.class));
+		decoders.put("46923", new BpskAx25G3ruhDecoder(predict, props, 1200, Ax25Beacon.class));
 
 		for (Satellite cur : satelliteDao.findAll()) {
 			if (cur.getSource().equals(FrequencySource.FSK_AX25_G3RUH)) {
