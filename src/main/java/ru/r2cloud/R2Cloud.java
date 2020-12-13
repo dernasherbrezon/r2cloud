@@ -35,7 +35,6 @@ import ru.r2cloud.jradio.painani1.Painani1Beacon;
 import ru.r2cloud.jradio.polyitan1.PolyItan1Beacon;
 import ru.r2cloud.jradio.qarman.QarmanBeacon;
 import ru.r2cloud.jradio.quetzal1.Quetzal1Beacon;
-import ru.r2cloud.jradio.siriussat.SiriusSatBeacon;
 import ru.r2cloud.jradio.skcube.SkcubeBeacon;
 import ru.r2cloud.jradio.spooqy1.Spooqy1Beacon;
 import ru.r2cloud.jradio.swampsat2.Swampsat2Beacon;
@@ -233,8 +232,6 @@ public class R2Cloud {
 		decoders.put("42789", new FskAx25G3ruhDecoder(predict, props, 9600, SkcubeBeacon.class));
 		decoders.put("43937", new FskAx25G3ruhDecoder(predict, props, 9600, NexusBeacon.class));
 		decoders.put("30776", new FskAx25G3ruhDecoder(predict, props, 9600, Falconsat3Beacon.class));
-		decoders.put("43595", new FskAx25G3ruhDecoder(predict, props, 4800, SiriusSatBeacon.class));
-		decoders.put("43596", new FskAx25G3ruhDecoder(predict, props, 4800, SiriusSatBeacon.class));
 		decoders.put("43768", new FskAx100Decoder(predict, props, 9600, 255, Aistechsat2Beacon.class));
 		decoders.put("41789", new Alsat1nDecoder(predict, props));
 		decoders.put("39090", new Strand1Decoder(predict, props));
