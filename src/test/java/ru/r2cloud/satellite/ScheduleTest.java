@@ -162,7 +162,11 @@ public class ScheduleTest {
 		}
 		List<Satellite> result = new ArrayList<>();
 		for (String cur : ids) {
-			result.add(dao.findById(cur));
+			Satellite curSatellite = dao.findById(cur);
+			if (curSatellite == null) {
+				continue;
+			}
+			result.add(curSatellite);
 		}
 		return result;
 	}

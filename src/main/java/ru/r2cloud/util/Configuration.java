@@ -44,9 +44,9 @@ public class Configuration {
 		MODE600.add(PosixFilePermission.OWNER_WRITE);
 	}
 
-	public Configuration(InputStream systemSettingsLocation, String userSettingsLocation, FileSystem fs) throws IOException {
+	public Configuration(InputStream systemSettingsLocation, String userSettingsLocation, String commonSettingsLocation, FileSystem fs) throws IOException {
 		systemSettings.load(systemSettingsLocation);
-		try (InputStream is = Configuration.class.getClassLoader().getResourceAsStream("config-common.properties")) {
+		try (InputStream is = Configuration.class.getClassLoader().getResourceAsStream(commonSettingsLocation)) {
 			Properties commonProps = new Properties();
 			commonProps.load(is);
 			systemSettings.putAll(commonProps);
@@ -54,6 +54,10 @@ public class Configuration {
 		this.userSettingsLocation = fs.getPath(userSettingsLocation);
 		this.fs = fs;
 		loadUserSettings();
+	}
+	
+	public Configuration(InputStream systemSettingsLocation, String userSettingsLocation, FileSystem fs) throws IOException {
+		this(systemSettingsLocation, userSettingsLocation, "config-common.properties", fs);
 	}
 
 	private void loadUserSettings() throws IOException {

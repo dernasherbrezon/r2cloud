@@ -12,11 +12,11 @@ import ru.r2cloud.util.Configuration;
 public class TestConfiguration extends Configuration {
 
 	public TestConfiguration(TemporaryFolder tempFolder) throws IOException {
-		super(TestConfiguration.class.getClassLoader().getResourceAsStream("config-dev.properties"), getUserSettingsLocation(tempFolder), FileSystems.getDefault());
+		super(TestConfiguration.class.getClassLoader().getResourceAsStream("config-dev.properties"), getUserSettingsLocation(tempFolder), "config-common-test.properties", FileSystems.getDefault());
 	}
 
 	public TestConfiguration(TemporaryFolder tempFolder, FileSystem fs) throws IOException {
-		super(TestConfiguration.class.getClassLoader().getResourceAsStream("config-dev.properties"), getUserSettingsLocation(tempFolder), fs);
+		super(TestConfiguration.class.getClassLoader().getResourceAsStream("config-dev.properties"), getUserSettingsLocation(tempFolder), "config-common-test.properties", fs);
 	}
 
 	public static String getUserSettingsLocation(TemporaryFolder tempFolder) {
