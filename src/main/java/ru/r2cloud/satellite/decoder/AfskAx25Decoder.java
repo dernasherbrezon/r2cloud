@@ -13,17 +13,23 @@ import ru.r2cloud.util.Util;
 public class AfskAx25Decoder extends TelemetryDecoder {
 
 	private final int baudRate;
+	private final float deviation;
 	private final Class<? extends Beacon> beacon;
 
-	public AfskAx25Decoder(PredictOreKit predict, Configuration config, int baudRate, Class<? extends Beacon> beacon) {
+	public AfskAx25Decoder(PredictOreKit predict, Configuration config, int baudRate, float deviation, Class<? extends Beacon> beacon) {
 		super(predict, config);
 		this.baudRate = baudRate;
 		this.beacon = beacon;
+		this.deviation = deviation;
+	}
+	
+	public AfskAx25Decoder(PredictOreKit predict, Configuration config, int baudRate, Class<? extends Beacon> beacon) {
+		this(predict, config, baudRate, 500, beacon);
 	}
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		AfskDemodulator demodulator = new AfskDemodulator(source, baudRate, 500, 1700, Util.convertDecimation(baudRate));
+		AfskDemodulator demodulator = new AfskDemodulator(source, baudRate, deviation, 1700, Util.convertDecimation(baudRate));
 		return new Ax25BeaconSource<>(demodulator, beacon);
 	}
 
