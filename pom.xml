@@ -63,7 +63,7 @@
 		<dependency>
 			<groupId>ru.r2cloud</groupId>
 			<artifactId>jradio</artifactId>
-			<version>1.56</version>
+			<version>1.57</version>
 		</dependency>
 		<dependency>
 			<groupId>org.fusesource</groupId>

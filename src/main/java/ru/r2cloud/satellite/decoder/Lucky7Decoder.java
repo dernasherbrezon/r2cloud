@@ -18,6 +18,7 @@ import ru.r2cloud.jradio.blocks.CorrelateAccessCodeTag;
 import ru.r2cloud.jradio.blocks.FixedLengthTagger;
 import ru.r2cloud.jradio.blocks.SoftToHard;
 import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
+import ru.r2cloud.jradio.demod.FskDemodulator;
 import ru.r2cloud.jradio.lucky7.Lucky7;
 import ru.r2cloud.jradio.lucky7.Lucky7Beacon;
 import ru.r2cloud.jradio.lucky7.Lucky7PictureDecoder;
@@ -61,7 +62,7 @@ public class Lucky7Decoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		GmskDemodulator demodulator = new GmskDemodulator(source, 4800, req.getBandwidth(), 0.175f, null, 1, 2000);
+		FskDemodulator demodulator = new FskDemodulator(source, 4800);
 		SoftToHard bs = new SoftToHard(demodulator);
 		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(bs, 3, "0010110111010100", false);
 		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new FixedLengthTagger(correlateTag, 37 * 8));
