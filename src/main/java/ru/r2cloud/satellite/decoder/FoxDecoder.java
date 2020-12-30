@@ -16,10 +16,8 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.jradio.BeaconSource;
-import ru.r2cloud.jradio.blocks.CorrelateAccessCodeTag;
-import ru.r2cloud.jradio.blocks.FixedLengthTagger;
+import ru.r2cloud.jradio.blocks.CorrelateSyncword;
 import ru.r2cloud.jradio.blocks.SoftToHard;
-import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
 import ru.r2cloud.jradio.fox.Fox1DBeacon;
 import ru.r2cloud.jradio.fox.FoxPictureDecoder;
 import ru.r2cloud.jradio.fox.HighSpeedFox;
@@ -53,9 +51,8 @@ public class FoxDecoder<T extends Beacon> extends FoxSlowDecoder<T> {
 		Set<String> codes = new HashSet<>();
 		codes.add("0011111010");
 		codes.add("1100000101");
-		CorrelateAccessCodeTag correlate = new CorrelateAccessCodeTag(s2h, 0, codes, false);
-		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new FixedLengthTagger(correlate, HighSpeedFox.HIGH_SPEED_FRAME_SIZE * 10));
-		result.add(new HighSpeedFox<>(pdu, Fox1DBeacon.class));
+		CorrelateSyncword correlate = new CorrelateSyncword(s2h, 0, codes, HighSpeedFox.HIGH_SPEED_FRAME_SIZE * 10);
+		result.add(new HighSpeedFox<>(correlate, Fox1DBeacon.class));
 
 		return result;
 	}

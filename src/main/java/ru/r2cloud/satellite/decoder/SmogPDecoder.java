@@ -7,9 +7,7 @@ import java.util.List;
 
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconSource;
-import ru.r2cloud.jradio.blocks.CorrelateAccessCodeTag;
-import ru.r2cloud.jradio.blocks.FixedLengthTagger;
-import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
+import ru.r2cloud.jradio.blocks.CorrelateSyncword;
 import ru.r2cloud.jradio.smogp.SmogP;
 import ru.r2cloud.jradio.smogp.SmogPBeacon;
 import ru.r2cloud.jradio.smogp.SmogPRaCoded;
@@ -30,12 +28,12 @@ public class SmogPDecoder extends TelemetryDecoder {
 	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, ObservationRequest req) throws IOException {
 		List<BeaconSource<? extends Beacon>> result = new ArrayList<>();
 		for (int i = 0; i < DOWNLINK_SPEEDS.length; i++) {
-			CorrelateAccessCodeTag correlateTag128 = new CorrelateAccessCodeTag(createDemodulator(DOWNLINK_SPEEDS[i], rawIq, req), 0, "0010110111010100", true);
-			SmogPRaCoded raCoded128 = new SmogPRaCoded(new TaggedStreamToPdu(new FixedLengthTagger(correlateTag128, 260 * 8)), 128);
+			CorrelateSyncword correlateTag128 = new CorrelateSyncword(createDemodulator(DOWNLINK_SPEEDS[i], rawIq, req), 0, "0010110111010100", 260 * 8);
+			SmogPRaCoded raCoded128 = new SmogPRaCoded(correlateTag128, 128);
 			result.add(raCoded128);
 
-			CorrelateAccessCodeTag correlateTag256 = new CorrelateAccessCodeTag(createDemodulator(DOWNLINK_SPEEDS[i], rawIq, req), 0, "0010110111010100", true);
-			SmogPRaCoded raCoded256 = new SmogPRaCoded(new TaggedStreamToPdu(new FixedLengthTagger(correlateTag256, 514 * 8)), 256);
+			CorrelateSyncword correlateTag256 = new CorrelateSyncword(createDemodulator(DOWNLINK_SPEEDS[i], rawIq, req), 0, "0010110111010100", 514 * 8);
+			SmogPRaCoded raCoded256 = new SmogPRaCoded(correlateTag256, 256);
 			result.add(raCoded256);
 
 			result.add(new SmogPShort(createDemodulator(DOWNLINK_SPEEDS[i], rawIq, req)));

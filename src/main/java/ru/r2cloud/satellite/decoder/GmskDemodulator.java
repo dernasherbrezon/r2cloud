@@ -18,6 +18,7 @@ import ru.r2cloud.jradio.blocks.Window;
 public class GmskDemodulator implements ByteInput {
 
 	private final ByteInput source;
+	private final Context context;
 
 	public GmskDemodulator(FloatInput source, int baudRate, float bandwidth, float gainMu) {
 		this(source, baudRate, bandwidth, gainMu, 0.06f, 1, 2000);
@@ -34,6 +35,8 @@ public class GmskDemodulator implements ByteInput {
 		next = new ClockRecoveryMM(next, next.getContext().getSampleRate() / baudRate, (float) (0.25 * gainMu * gainMu), 0.5f, gainMu, 0.005f);
 		next = new Rail(next, -1.0f, 1.0f);
 		this.source = new FloatToChar(next, 127.0f);
+		this.context = new Context(this.source.getContext());
+		this.context.setSoftBits(true);
 	}
 
 	@Override
@@ -43,7 +46,7 @@ public class GmskDemodulator implements ByteInput {
 
 	@Override
 	public Context getContext() {
-		return source.getContext();
+		return context;
 	}
 
 	@Override

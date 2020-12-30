@@ -6,10 +6,8 @@ import java.util.Set;
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconSource;
 import ru.r2cloud.jradio.FloatInput;
-import ru.r2cloud.jradio.blocks.CorrelateAccessCodeTag;
-import ru.r2cloud.jradio.blocks.FixedLengthTagger;
+import ru.r2cloud.jradio.blocks.CorrelateSyncword;
 import ru.r2cloud.jradio.blocks.SoftToHard;
-import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
 import ru.r2cloud.jradio.demod.FskDemodulator;
 import ru.r2cloud.jradio.fox.Fox;
 import ru.r2cloud.model.ObservationRequest;
@@ -32,9 +30,8 @@ public class FoxSlowDecoder<T extends Beacon> extends TelemetryDecoder {
 		Set<String> codes = new HashSet<>();
 		codes.add("0011111010");
 		codes.add("1100000101");
-		CorrelateAccessCodeTag correlate = new CorrelateAccessCodeTag(s2h, 2, codes, false);
-		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new FixedLengthTagger(correlate, Fox.SLOW_FRAME_SIZE * 10));
-		return new Fox<>(pdu, clazz);
+		CorrelateSyncword correlate = new CorrelateSyncword(s2h, 2, codes, Fox.SLOW_FRAME_SIZE * 10);
+		return new Fox<>(correlate, clazz);
 	}
 
 	@Override

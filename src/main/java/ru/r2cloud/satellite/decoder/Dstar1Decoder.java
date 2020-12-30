@@ -2,14 +2,10 @@ package ru.r2cloud.satellite.decoder;
 
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconSource;
-import ru.r2cloud.jradio.Endianness;
 import ru.r2cloud.jradio.FloatInput;
-import ru.r2cloud.jradio.blocks.CorrelateAccessCodeTag;
-import ru.r2cloud.jradio.blocks.FixedLengthTagger;
+import ru.r2cloud.jradio.blocks.CorrelateSyncword;
 import ru.r2cloud.jradio.blocks.InvertBits;
 import ru.r2cloud.jradio.blocks.SoftToHard;
-import ru.r2cloud.jradio.blocks.TaggedStreamToPdu;
-import ru.r2cloud.jradio.blocks.UnpackedToPacked;
 import ru.r2cloud.jradio.dstar1.Dstar1;
 import ru.r2cloud.jradio.dstar1.Dstar1Beacon;
 import ru.r2cloud.model.ObservationRequest;
@@ -30,9 +26,8 @@ public class Dstar1Decoder extends TelemetryDecoder {
 		GmskDemodulator gmsk = new GmskDemodulator(source, 4800, req.getBandwidth(), gainMu);
 		SoftToHard s2h = new SoftToHard(gmsk);
 		InvertBits invert = new InvertBits(s2h);
-		CorrelateAccessCodeTag correlateTag = new CorrelateAccessCodeTag(invert, 6, "1100110011000101011101100101", false);
-		TaggedStreamToPdu pdu = new TaggedStreamToPdu(new UnpackedToPacked(new FixedLengthTagger(correlateTag, MAX_MESSAGE_SIZE_BYTES * 8), 1, Endianness.GR_MSB_FIRST));
-		return new Dstar1(pdu);
+		CorrelateSyncword correlate = new CorrelateSyncword(invert, 6, "1100110011000101011101100101", MAX_MESSAGE_SIZE_BYTES * 8);
+		return new Dstar1(correlate);
 	}
 
 	@Override
