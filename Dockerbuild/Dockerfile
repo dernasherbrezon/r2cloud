@@ -1,4 +1,4 @@
-FROM r2cloud/it:latest
+FROM r2cloud/stretch:latest
 
 COPY *.deb /usr/share/
 
