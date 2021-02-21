@@ -44,7 +44,10 @@ if [ -f /etc/sudoers.d/nginx ]; then
 	chmod 440 /etc/sudoers.d/nginx
 fi
 
-usermod -a -G systemd-journal pi
+if [ $(getent group systemd-journal) ]; then
+    usermod -a -G systemd-journal ${config.user}
+fi
+
 if [ ! -d /var/log/journal ]; then
     echo "enable persistent journald logs"
     mkdir -p /var/log/journal
