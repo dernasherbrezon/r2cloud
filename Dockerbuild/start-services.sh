@@ -1,5 +1,5 @@
 #!/bin/bash
 
-service r2cloud start
+systemctl start r2cloud
 
-service nginx start 
+systemctl start nginx 
