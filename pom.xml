@@ -10,6 +10,7 @@
 	<name>Decode satellite signals on Raspberry PI</name>
 	<description>This is a server-side component automatically recording satellite signals</description>
 	<inceptionYear>2014</inceptionYear>
+	<url>https://github.com/dernasherbrezon/r2cloud</url>
 	<organization>
 		<name>r2cloud</name>
 	</organization>
@@ -314,7 +315,7 @@
 			<plugin>
 				<groupId>com.aerse.maven</groupId>
 				<artifactId>deb-maven-plugin</artifactId>
-				<version>1.12</version>
+				<version>1.16</version>
 				<executions>
 					<execution>
 						<id>package</id>
