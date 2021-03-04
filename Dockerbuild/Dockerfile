@@ -18,4 +18,4 @@ RUN chmod +x /home/pi/r2cloud-tests/bin/*.sh
 
 WORKDIR /usr/share
 
-CMD ["bash", "/home/pi/r2cloud-tests/bin/start-services.sh"]
+ENTRYPOINT ["/lib/systemd/systemd"]
