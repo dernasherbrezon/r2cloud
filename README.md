@@ -30,9 +30,9 @@ Base station might include different hardware components. Please check recommend
     - Login via SSH and create ```r2cloud.txt``` file in /boot directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
     - Execute the following commands:
 ```
-sudo apt-get install dirmngr
+sudo apt-get install dirmngr lsb-release
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A5A70917
-sudo bash -c "echo 'deb http://s3.amazonaws.com/r2cloud r2cloud main' > /etc/apt/sources.list.d/r2cloud.list"
+sudo bash -c "echo 'deb http://s3.amazonaws.com/r2cloud $(lsb_release --codename --short) main' > /etc/apt/sources.list.d/r2cloud.list"
 sudo apt-get update
 sudo apt-get install r2cloud
 ```
