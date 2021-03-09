@@ -26,7 +26,7 @@ Base station might include different hardware components. Please check recommend
     - Insert SD card into the card reader and flash it. You could use [Etcher](https://etcher.io) to do this
     - Insert SD card into the card reader and create file ```r2cloud.txt``` in the root directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
   
-  - Or from repository binaries:
+  - Or from [repository binaries](https://r2server.ru/apt.html):
     - Login via SSH and create ```r2cloud.txt``` file in /boot directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
     - Execute the following commands:
 ```
