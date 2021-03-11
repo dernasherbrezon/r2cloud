@@ -28,7 +28,7 @@ public class UtilizationTest {
 		Configuration config;
 		File userSettingsLocation = new File("target/.r2cloud-" + UUID.randomUUID().toString());
 		try (InputStream is = BaseTest.class.getClassLoader().getResourceAsStream("config-dev.properties")) {
-			config = new Configuration(is, userSettingsLocation.getAbsolutePath(), FileSystems.getDefault());
+			config = new Configuration(is, userSettingsLocation.getAbsolutePath(), "config-common-test.properties", FileSystems.getDefault());
 		}
 		config.setProperty("locaiton.lat", "56.189");
 		config.setProperty("locaiton.lon", "38.174");
