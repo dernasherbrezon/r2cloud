@@ -13,21 +13,37 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SdrType;
+import ru.r2cloud.util.Configuration;
 
 public class Schedule {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Schedule.class);
+	private static final Long partialToleranceMillis = 60 * 4 * 1000L;
 
 	private final ObservationFactory factory;
-	private final Timetable timetable = new Timetable(60 * 4 * 1000L);
+	private final Timetable timetable;
 
 	private final Map<String, ScheduledObservation> tasksById = new HashMap<>();
 	private final Map<String, ObservationRequest> observationsById = new HashMap<>();
 	private final Map<String, TimeSlot> timeSlotById = new HashMap<>();
 	private final Map<String, List<ObservationRequest>> observationsBySatelliteId = new HashMap<>();
 
-	public Schedule(ObservationFactory factory) {
+	public Schedule(Configuration config, ObservationFactory factory) {
 		this.factory = factory;
+		boolean rotatorIsEnabled = config.getBoolean("rotator.enabled");
+		// this complicated if just to put some logging
+		if (config.getSdrType().equals(SdrType.SDRSERVER)) {
+			if (rotatorIsEnabled) {
+				LOG.info("concurrent observations are disabled because of rotator");
+				timetable = new SequentialTimetable(partialToleranceMillis);
+			} else {
+				timetable = new OverlappedTimetable(partialToleranceMillis);
+			}
+		} else {
+			timetable = new SequentialTimetable(partialToleranceMillis);
+		}
+
 	}
 
 	public synchronized void assignTasksToSlot(String observationId, ScheduledObservation entry) {
@@ -162,7 +178,7 @@ public class Schedule {
 				timeSlotById.put(cur.getId(), slot);
 				continue;
 			}
-			TimeSlot partial = timetable.addPatially(slot);
+			TimeSlot partial = timetable.addPartially(slot);
 			if (partial != null) {
 				cur.setStartTimeMillis(partial.getStart());
 				cur.setEndTimeMillis(partial.getEnd());
@@ -242,7 +258,7 @@ public class Schedule {
 			slot.setStart(curObservation.getStartTimeMillis());
 			slot.setEnd(curObservation.getEndTimeMillis());
 			slot.setFrequency(curObservation.getCenterBandFrequency());
-			TimeSlot partial = timetable.addPatially(slot);
+			TimeSlot partial = timetable.addPartially(slot);
 			if (partial != null) {
 				curObservation.setStartTimeMillis(partial.getStart());
 				curObservation.setEndTimeMillis(partial.getEnd());

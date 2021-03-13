@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class OverlappedTimetable {
+public class OverlappedTimetable implements Timetable {
 
 	private List<BandTimeSlot> bands = new LinkedList<>();
 
@@ -15,6 +15,7 @@ public class OverlappedTimetable {
 		this.partialToleranceMillis = partialToleranceMillis;
 	}
 
+	@Override
 	public boolean addFully(TimeSlot slot) {
 		if (bands.isEmpty()) {
 			bands.add(new BandTimeSlot(slot));
@@ -113,6 +114,7 @@ public class OverlappedTimetable {
 		return result;
 	}
 
+	@Override
 	public TimeSlot addPartially(TimeSlot slot) {
 		if (bands.isEmpty()) {
 			bands.add(new BandTimeSlot(slot));
@@ -194,10 +196,12 @@ public class OverlappedTimetable {
 		return result;
 	}
 
+	@Override
 	public void clear() {
 		bands.clear();
 	}
 
+	@Override
 	public boolean remove(TimeSlot slot) {
 		if (slot == null) {
 			return false;

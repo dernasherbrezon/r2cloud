@@ -128,7 +128,7 @@ public class ScheduleTest {
 		tleDao.start();
 		ObservationFactory factory = new ObservationFactory(predict, tleDao, config);
 
-		schedule = new Schedule(factory);
+		schedule = new Schedule(config, factory);
 
 		current = getTime("2020-09-30 22:17:01.000");
 	}

@@ -32,6 +32,9 @@ public class UtilizationTest {
 		}
 		config.setProperty("locaiton.lat", "56.189");
 		config.setProperty("locaiton.lon", "38.174");
+		//test overlapped observations
+//		config.setProperty("satellites.sdr", SdrType.SDRSERVER.name().toLowerCase());
+//		config.setProperty("rotator.enabled", false);
 
 		CelestrakServer celestrak = new CelestrakServer();
 		celestrak.start();
@@ -47,14 +50,14 @@ public class UtilizationTest {
 		System.out.println("partial default: ");
 		enabledByDefault = getDefaultEnabled(satelliteDao);
 		while (!enabledByDefault.isEmpty()) {
-			float utilization = calculatePartialUtilization(factory, enabledByDefault);
+			float utilization = calculatePartialUtilization(config, factory, enabledByDefault);
 			System.out.println(enabledByDefault.size() + " " + utilization);
 			enabledByDefault.remove(0);
 		}
 		System.out.println("partial 70cm: ");
 		List<Satellite> cm = loadFromFile(satelliteDao, "70cm-satellites.txt");
 		while (!cm.isEmpty()) {
-			float utilization = calculatePartialUtilization(factory, cm);
+			float utilization = calculatePartialUtilization(config, factory, cm);
 			System.out.println(cm.size() + " " + utilization);
 			cm.remove(0);
 		}
@@ -72,14 +75,14 @@ public class UtilizationTest {
 		return result;
 	}
 
-	private static float calculatePartialUtilization(ObservationFactory factory, List<Satellite> satellites) throws ParseException {
+	private static float calculatePartialUtilization(Configuration config, ObservationFactory factory, List<Satellite> satellites) throws ParseException {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
 		long start = sdf.parse("2020-09-27 11:13:00").getTime();
 		long end = sdf.parse("2020-09-29 11:13:00").getTime(); // +2 days
 
-		Schedule schedule = new Schedule(factory);
+		Schedule schedule = new Schedule(config, factory);
 		List<ObservationRequest> happened = schedule.createInitialSchedule(satellites, start);
 
 		long total = end - start;
