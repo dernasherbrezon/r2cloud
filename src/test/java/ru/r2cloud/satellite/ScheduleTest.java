@@ -45,10 +45,21 @@ public class ScheduleTest {
 	private SatelliteDao satelliteDao;
 	private long current;
 	private ObservationFactory factory;
+	
+	@Test
+	public void testSequentialTimetableForRotator() throws Exception {
+		config.setProperty("satellites.sdr", SdrType.SDRSERVER.name().toLowerCase());
+		config.setProperty("rotator.enabled", true);
+		schedule = new Schedule(config, factory);
+		List<ObservationRequest> expected = readExpected("expected/schedule.txt");
+		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
+		assertObservations(expected, actual);
+	}
 
 	@Test
 	public void testScheduleBasedOnOverlapedTimetable() throws Exception {
 		config.setProperty("satellites.sdr", SdrType.SDRSERVER.name().toLowerCase());
+		config.setProperty("rotator.enabled", false);
 		schedule = new Schedule(config, factory);
 		List<ObservationRequest> expected = readExpected("expected/scheduleOverlapedTimetable.txt");
 		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
