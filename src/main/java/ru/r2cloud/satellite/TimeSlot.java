@@ -2,9 +2,18 @@ package ru.r2cloud.satellite;
 
 public class TimeSlot {
 
+	private long frequency;
 	private long start;
 	private long end;
 
+	public long getFrequency() {
+		return frequency;
+	}
+	
+	public void setFrequency(long frequency) {
+		this.frequency = frequency;
+	}
+	
 	public long getStart() {
 		return start;
 	}
