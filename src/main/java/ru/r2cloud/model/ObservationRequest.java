@@ -20,6 +20,15 @@ public class ObservationRequest {
 	private double gain;
 	private boolean biast;
 	private SdrType sdrType;
+	private long centerBandFrequency;
+	
+	public long getCenterBandFrequency() {
+		return centerBandFrequency;
+	}
+	
+	public void setCenterBandFrequency(long centerBandFrequency) {
+		this.centerBandFrequency = centerBandFrequency;
+	}
 	
 	public SdrType getSdrType() {
 		return sdrType;

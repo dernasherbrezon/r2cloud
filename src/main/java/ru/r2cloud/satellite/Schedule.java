@@ -156,6 +156,7 @@ public class Schedule {
 			TimeSlot slot = new TimeSlot();
 			slot.setStart(cur.getStartTimeMillis());
 			slot.setEnd(cur.getEndTimeMillis());
+			slot.setFrequency(satellite.getFrequencyBand().getCenter());
 			if (timetable.addFully(slot)) {
 				batch.add(cur);
 				timeSlotById.put(cur.getId(), slot);
@@ -197,6 +198,7 @@ public class Schedule {
 		TimeSlot slot = new TimeSlot();
 		slot.setStart(req.getStartTimeMillis());
 		slot.setEnd(req.getEndTimeMillis());
+		slot.setFrequency(req.getCenterBandFrequency());
 		if (!timetable.addFully(slot)) {
 			return null;
 		}
@@ -225,6 +227,7 @@ public class Schedule {
 			TimeSlot slot = new TimeSlot();
 			slot.setStart(curObservation.getStartTimeMillis());
 			slot.setEnd(curObservation.getEndTimeMillis());
+			slot.setFrequency(curObservation.getCenterBandFrequency());
 			if (timetable.addFully(slot)) {
 				timeSlotById.put(curObservation.getId(), slot);
 				return curObservation;
@@ -238,6 +241,7 @@ public class Schedule {
 			TimeSlot slot = new TimeSlot();
 			slot.setStart(curObservation.getStartTimeMillis());
 			slot.setEnd(curObservation.getEndTimeMillis());
+			slot.setFrequency(curObservation.getCenterBandFrequency());
 			TimeSlot partial = timetable.addPatially(slot);
 			if (partial != null) {
 				curObservation.setStartTimeMillis(partial.getStart());

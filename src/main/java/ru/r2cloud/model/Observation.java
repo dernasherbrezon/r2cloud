@@ -49,7 +49,8 @@ public class Observation {
 	private ObservationStatus status;
 	private boolean biast;
 	private SdrType sdrType;
-
+	private long centerBandFrequency;
+	
 	public Observation() {
 		// do nothing
 	}
@@ -70,6 +71,7 @@ public class Observation {
 		gain = String.valueOf(req.getGain());
 		biast = req.isBiast();
 		sdrType = req.getSdrType();
+		centerBandFrequency = req.getCenterBandFrequency();
 	}
 
 	public ObservationRequest getReq() {
@@ -93,9 +95,18 @@ public class Observation {
 		}
 		result.setBiast(biast);
 		result.setSdrType(sdrType);
+		result.setCenterBandFrequency(centerBandFrequency);
 		return result;
 	}
 
+	public long getCenterBandFrequency() {
+		return centerBandFrequency;
+	}
+	
+	public void setCenterBandFrequency(long centerBandFrequency) {
+		this.centerBandFrequency = centerBandFrequency;
+	}
+	
 	public SdrType getSdrType() {
 		return sdrType;
 	}
@@ -361,6 +372,7 @@ public class Observation {
 			sdrType = SdrType.RTLSDR;
 		}
 		result.setSdrType(sdrType);
+		result.setCenterBandFrequency(meta.getLong("centerBandFrequency", 0));
 		return result;
 	}
 
@@ -407,6 +419,7 @@ public class Observation {
 		json.add("status", statusToSave.name());
 		json.add("biast", isBiast());
 		json.add("sdrType", sdrType.name());
+		json.add("centerBandFrequency", centerBandFrequency);
 		return json;
 	}
 

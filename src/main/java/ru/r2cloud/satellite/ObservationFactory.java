@@ -79,6 +79,7 @@ public class ObservationFactory {
 		result.setGain(config.getDouble("satellites.rtlsdr.gain"));
 		result.setBiast(config.getBoolean("satellites.rtlsdr.biast"));
 		result.setSdrType(config.getSdrType());
+		result.setCenterBandFrequency(satellite.getFrequencyBand().getCenter());
 
 		switch (satellite.getSource()) {
 		case APT:

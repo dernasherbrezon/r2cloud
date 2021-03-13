@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ru.r2cloud.model.BandFrequency;
 import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteComparator;
@@ -36,7 +37,24 @@ public class SatelliteDao {
 			curSatellite.setBaud(config.getInteger("satellites." + curSatellite.getId() + ".baud"));
 			index(curSatellite);
 		}
-		Collections.sort(satellites, SatelliteComparator.INSTANCE);
+		long sdrServerBandwidth = config.getLong("satellites.sdrserver.bandwidth");
+		long bandwidthCrop = config.getLong("satellites.sdrserver.bandwidth.crop");
+		Collections.sort(satellites, SatelliteComparator.FREQ_COMPARATOR);
+
+		BandFrequency currentBand = null;
+		for (Satellite cur : satellites) {
+			long lowerSatelliteFrequency = cur.getFrequency() - cur.getBandwidth() / 2;
+			long upperSatelliteFrequency = cur.getFrequency() + cur.getBandwidth() / 2;
+			// first satellite or upper frequency out of band
+			if (currentBand == null || (currentBand.getUpper() - bandwidthCrop) < upperSatelliteFrequency) {
+				currentBand = new BandFrequency();
+				currentBand.setLower(lowerSatelliteFrequency - bandwidthCrop);
+				currentBand.setUpper(currentBand.getLower() + sdrServerBandwidth);
+				currentBand.setCenter(currentBand.getLower() + (currentBand.getUpper() - currentBand.getLower()) / 2);
+			}
+			cur.setFrequencyBand(currentBand);
+		}
+		Collections.sort(satellites, SatelliteComparator.ID_COMPARATOR);
 	}
 
 	public Satellite findByName(String name) {

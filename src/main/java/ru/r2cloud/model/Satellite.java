@@ -9,6 +9,15 @@ public class Satellite {
 	private boolean enabled;
 	private long bandwidth;
 	private Integer baud;
+	private BandFrequency frequencyBand;
+	
+	public BandFrequency getFrequencyBand() {
+		return frequencyBand;
+	}
+	
+	public void setFrequencyBand(BandFrequency frequencyBand) {
+		this.frequencyBand = frequencyBand;
+	}
 
 	public Integer getBaud() {
 		return baud;
