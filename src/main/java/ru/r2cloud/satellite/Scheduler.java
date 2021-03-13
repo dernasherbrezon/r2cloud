@@ -1,9 +1,12 @@
 package ru.r2cloud.satellite;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -12,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.Lifecycle;
+import ru.r2cloud.model.BandFrequency;
+import ru.r2cloud.model.BandFrequencyComparator;
 import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
@@ -238,6 +243,22 @@ public class Scheduler implements Lifecycle, ConfigListener {
 					reschedule();
 				}
 			}, delay, TimeUnit.MILLISECONDS);
+		}
+		if (config.getSdrType().equals(SdrType.SDRSERVER)) {
+			logBandsForSdrServer(allSatellites);
+		}
+	}
+
+	private static void logBandsForSdrServer(List<Satellite> allSatellites) {
+		LOG.info("active bands are:");
+		Set<BandFrequency> unique = new HashSet<>();
+		for (Satellite cur : allSatellites) {
+			unique.add(cur.getFrequencyBand());
+		}
+		List<BandFrequency> sorted = new ArrayList<>(unique);
+		Collections.sort(sorted, BandFrequencyComparator.INSTANCE);
+		for (BandFrequency cur : sorted) {
+			LOG.info("  {} - {}", cur.getLower(), cur.getUpper());
 		}
 	}
 
