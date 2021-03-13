@@ -29,6 +29,7 @@ import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SdrType;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.tle.TLEDao;
@@ -43,6 +44,16 @@ public class ScheduleTest {
 	private TestConfiguration config;
 	private SatelliteDao satelliteDao;
 	private long current;
+	private ObservationFactory factory;
+
+	@Test
+	public void testScheduleBasedOnOverlapedTimetable() throws Exception {
+		config.setProperty("satellites.sdr", SdrType.SDRSERVER.name().toLowerCase());
+		schedule = new Schedule(config, factory);
+		List<ObservationRequest> expected = readExpected("expected/scheduleOverlapedTimetable.txt");
+		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
+		assertObservations(expected, actual);
+	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testInvalidObservationId() throws Exception {
@@ -126,8 +137,7 @@ public class ScheduleTest {
 		satelliteDao = new SatelliteDao(config);
 		TLEDao tleDao = new TLEDao(config, satelliteDao, new CelestrakClient(celestrak.getUrl()));
 		tleDao.start();
-		ObservationFactory factory = new ObservationFactory(predict, tleDao, config);
-
+		factory = new ObservationFactory(predict, tleDao, config);
 		schedule = new Schedule(config, factory);
 
 		current = getTime("2020-09-30 22:17:01.000");

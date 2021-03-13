@@ -67,17 +67,29 @@ public class OverlappedTimetableTest {
 		assertTrue(table.addFully(create("12:20", "12:30", 2)));
 		assertSlot("12:10", "12:20", 3, table.addPartially(create("12:08", "12:22", 3)));
 	}
-	
+
 	@Test
 	public void testRemoveLastSlot() throws Exception {
 		OverlappedTimetable table = new OverlappedTimetable(60_000);
-		TimeSlot slot1 = create("12:00", "12:10", 1);
-		assertTrue(table.addFully(slot1));
-		assertTrue(table.remove(slot1));
+		// remove unknown slot
+		assertFalse(table.remove(create("12:10", "12:20", 1)));
+		// remove null slot
+		assertFalse(table.remove(null));
+
+		assertTrue(table.addFully(create("12:00", "12:10", 1)));
+		assertTrue(table.remove(create("12:00", "12:10", 1)));
 		TimeSlot slot2 = create("12:00", "12:10", 2);
 		assertTrue(table.addFully(slot2));
 	}
-	
+
+	@Test
+	public void testClear() throws Exception {
+		OverlappedTimetable table = new OverlappedTimetable(60_000);
+		assertTrue(table.addFully(create("12:00", "12:10", 1)));
+		table.clear();
+		assertTrue(table.addFully(create("12:00", "12:10", 2)));
+	}
+
 	private static void assertSlot(String start, String end, long freq, TimeSlot actual) throws Exception {
 		assertNotNull(actual);
 		assertEquals(SDF.parse(start).getTime(), actual.getStart());
