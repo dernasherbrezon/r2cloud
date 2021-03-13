@@ -2,12 +2,12 @@ package ru.r2cloud.satellite.reader;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.concurrent.CountDownLatch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +25,7 @@ public class SdrServerReader implements IQReader {
 
 	private final Configuration config;
 	private final ObservationRequest req;
+	private final CountDownLatch latch = new CountDownLatch(1);
 
 	private Socket socket;
 
@@ -40,6 +41,7 @@ public class SdrServerReader implements IQReader {
 		Long endTimeMillis = null;
 		try {
 			socket = new Socket(config.getProperty("satellites.sdrserver.host"), config.getInteger("satellites.sdrserver.port"));
+			socket.setSoTimeout(config.getInteger("satellites.sdrserver.timeout"));
 			OutputStream os = socket.getOutputStream();
 			DataOutputStream dos = new DataOutputStream(os);
 			dos.writeByte(0x00); // protocol version
@@ -48,6 +50,7 @@ public class SdrServerReader implements IQReader {
 			dos.writeInt(req.getInputSampleRate()); // bandwidth
 			dos.writeInt((int) req.getCenterBandFrequency()); // band frequency
 			dos.writeByte(0); // destination=REQUEST_DESTINATION_FILE
+			dos.flush();
 
 			InputStream is = socket.getInputStream();
 			DataInputStream dis = new DataInputStream(is);
@@ -55,21 +58,20 @@ public class SdrServerReader implements IQReader {
 			if (response.getStatus().equals(ResponseStatus.SUCCESS)) {
 				LOG.info("[{}] response from sdr-server: {}", req.getId(), response);
 				startTimeMillis = System.currentTimeMillis();
-				String path = config.getProperty("satellites.sdrserver.basepath") + File.separator + response.getDetails() + ".cf32";
+				String basepath = config.getProperty("satellites.sdrserver.basepath");
+				if (basepath == null) {
+					basepath = System.getenv("TMPDIR");
+					if (basepath == null) {
+						basepath = "/tmp";
+					}
+				}
+				String path = basepath + File.separator + response.getDetails() + ".cf32";
 				if (config.getBoolean("satellites.sdrserver.usegzip")) {
 					path += ".gz";
 				}
 				rawFile = new File(path);
-				try {
-					while (true) {
-						response = new SdrServerResponse(dis);
-						LOG.warn("[{}] unsupported message received: {}", req.getId(), response);
-					}
-				} catch (EOFException e) {
-					LOG.info("[{}] terminating", req.getId());
-				} catch (Exception e) {
-					LOG.error("[{}] unable to receive the data", req.getId());
-				}
+				LOG.info("[{}] waiting for results at: {}", req.getId(), path);
+				latch.await();
 			} else {
 				LOG.error("[{}] unable to start: {}", req.getId(), response);
 				return null;
@@ -96,6 +98,7 @@ public class SdrServerReader implements IQReader {
 				Util.logIOException(LOG, "unable to close socket", e);
 			}
 		}
+		latch.countDown();
 	}
 
 }
