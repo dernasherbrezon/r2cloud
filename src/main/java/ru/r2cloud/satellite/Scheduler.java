@@ -27,6 +27,7 @@ import ru.r2cloud.satellite.reader.IQReader;
 import ru.r2cloud.satellite.reader.PlutoSdrReader;
 import ru.r2cloud.satellite.reader.RtlFmReader;
 import ru.r2cloud.satellite.reader.RtlSdrReader;
+import ru.r2cloud.satellite.reader.SdrServerReader;
 import ru.r2cloud.sdr.SdrLock;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.ConfigListener;
@@ -92,7 +93,11 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		if (startThread != null) {
 			return;
 		}
-		startThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("sch-start"));
+		int numberOfConcurrentObservations = 1;
+		if (config.getSdrType().equals(SdrType.SDRSERVER) && !config.getBoolean("rotator.enabled")) {
+			numberOfConcurrentObservations = 5;
+		}
+		startThread = threadpoolFactory.newScheduledThreadPool(numberOfConcurrentObservations, new NamingThreadFactory("sch-start"));
 		stopThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("sch-stop"));
 		rescheduleThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("re-schedule"));
 		onConfigUpdated();
@@ -197,6 +202,8 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				return new RtlSdrReader(config, processFactory, req);
 			} else if (req.getSdrType().equals(SdrType.PLUTOSDR)) {
 				return new PlutoSdrReader(config, processFactory, req);
+			} else if (req.getSdrType().equals(SdrType.SDRSERVER)) {
+				return new SdrServerReader(config, req);
 			} else {
 				throw new IllegalArgumentException("unsupported sdr type: " + req.getSdrType());
 			}

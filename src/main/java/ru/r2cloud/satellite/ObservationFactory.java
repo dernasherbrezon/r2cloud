@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.SatPass;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.tle.TLEDao;
@@ -94,11 +95,22 @@ public class ObservationFactory {
 			break;
 		case FSK_AX25_G3RUH:
 		case TELEMETRY:
-			result.setInputSampleRate(240_000);
+			// sdr-server supports very narrow bandwidths
+			if (result.getSdrType().equals(SdrType.SDRSERVER)) {
+				result.setInputSampleRate(48_000);
+			} else {
+				result.setInputSampleRate(240_000);
+			}
 			result.setOutputSampleRate(48_000);
-			// at the beginning doppler freq is the max
-			long initialDopplerFrequency = predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStartMillis(), predict.getPosition(), tlePropagator);
-			result.setActualFrequency(initialDopplerFrequency + DC_OFFSET);
+
+			// compensate DC offset only for non sdr-server observations
+			if (result.getSdrType().equals(SdrType.SDRSERVER)) {
+				result.setActualFrequency(result.getSatelliteFrequency());
+			} else {
+				// at the beginning doppler freq is the max
+				long initialDopplerFrequency = predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStartMillis(), predict.getPosition(), tlePropagator);
+				result.setActualFrequency(initialDopplerFrequency + DC_OFFSET);
+			}
 			break;
 		default:
 			throw new IllegalArgumentException("unsupported source: " + satellite.getSource());

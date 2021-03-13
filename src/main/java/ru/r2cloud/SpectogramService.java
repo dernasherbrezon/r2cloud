@@ -12,8 +12,10 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.jradio.Context;
 import ru.r2cloud.jradio.FloatInput;
 import ru.r2cloud.jradio.sink.Spectogram;
+import ru.r2cloud.jradio.source.InputStreamSource;
 import ru.r2cloud.jradio.source.PlutoSdr;
 import ru.r2cloud.jradio.source.RtlSdr;
 import ru.r2cloud.jradio.source.WavFileSource;
@@ -76,13 +78,25 @@ public class SpectogramService {
 			return null;
 		}
 		FloatInput source = null;
-		try (GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(req.getRawPath()))) {
+		try {
+			InputStream is = new FileInputStream(req.getRawPath());
+			if (req.getRawPath().toString().endsWith(".gz")) {
+				is = new GZIPInputStream(is);
+			}
 			switch (req.getSdrType()) {
 			case RTLSDR:
-				source = new RtlSdr(gzip, req.getInputSampleRate(), totalBytes / 2);
+				source = new RtlSdr(is, req.getInputSampleRate(), totalBytes / 2);
 				break;
 			case PLUTOSDR:
-				source = new PlutoSdr(gzip, req.getInputSampleRate(), totalBytes / 4);
+				source = new PlutoSdr(is, req.getInputSampleRate(), totalBytes / 4);
+				break;
+			case SDRSERVER:
+				Context ctx = new Context();
+				ctx.setChannels(2);
+				ctx.setSampleSizeInBits(4 * 8); // float = 4 bytes
+				ctx.setSampleRate(req.getInputSampleRate());
+				ctx.setTotalSamples(totalBytes / 8);
+				source = new InputStreamSource(is, ctx);
 				break;
 			default:
 				throw new IllegalArgumentException("unsupported sdr type: " + req.getSdrType());

@@ -62,6 +62,23 @@ public class SdrStatusDao implements Lifecycle, ConfigListener {
 		case PLUTOSDR:
 			statusProcess = new PlutoStatusProcess(config, processFactory);
 			break;
+		case SDRSERVER:
+			statusProcess = new SdrStatusProcess() {
+
+				@Override
+				public void terminate(long timeout) {
+					// do nothing
+				}
+
+				@Override
+				public SdrStatus getStatus() {
+					// sdr-server doesn't support health checks yet
+					SdrStatus result = new SdrStatus();
+					result.setDongleConnected(true);
+					return result;
+				}
+			};
+			break;
 		default:
 			throw new IllegalArgumentException("unsupported sdr type: " + config.getSdrType());
 		}
@@ -129,7 +146,7 @@ public class SdrStatusDao implements Lifecycle, ConfigListener {
 
 			@Override
 			public Gauge<Integer> newMetric() {
-				return new FormattedGauge<Integer>(MetricFormat.NORMAL) {
+				return new FormattedGauge<>(MetricFormat.NORMAL) {
 
 					@Override
 					public Integer getValue() {

@@ -3,6 +3,7 @@ package ru.r2cloud.satellite.decoder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
 import org.orekit.frames.TopocentricFrame;
@@ -15,6 +16,7 @@ import ru.r2cloud.jradio.blocks.Firdes;
 import ru.r2cloud.jradio.blocks.FrequencyXlatingFIRFilter;
 import ru.r2cloud.jradio.blocks.Multiply;
 import ru.r2cloud.jradio.blocks.Window;
+import ru.r2cloud.jradio.source.InputStreamSource;
 import ru.r2cloud.jradio.source.PlutoSdr;
 import ru.r2cloud.jradio.source.RtlSdr;
 import ru.r2cloud.jradio.source.SigSource;
@@ -34,14 +36,27 @@ public class DopplerCorrectedSource implements FloatInput {
 		}
 
 		FloatInput source;
+		InputStream is = new FileInputStream(rawIq);
+		if (rawIq.toString().endsWith(".gz")) {
+			is = new GZIPInputStream(is);
+		}
 		switch (req.getSdrType()) {
 		case RTLSDR:
-			source = new RtlSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalBytes / 2);
+			source = new RtlSdr(is, req.getInputSampleRate(), totalBytes / 2);
 			break;
 		case PLUTOSDR:
-			source = new PlutoSdr(new GZIPInputStream(new FileInputStream(rawIq)), req.getInputSampleRate(), totalBytes / 4);
+			source = new PlutoSdr(is, req.getInputSampleRate(), totalBytes / 4);
+			break;
+		case SDRSERVER:
+			Context ctx = new Context();
+			ctx.setChannels(2);
+			ctx.setSampleSizeInBits(4 * 8); // float = 4 bytes
+			ctx.setSampleRate(req.getInputSampleRate());
+			ctx.setTotalSamples(totalBytes / 8);
+			source = new InputStreamSource(is, ctx);
 			break;
 		default:
+			Util.closeQuietly(is);
 			throw new IllegalArgumentException("unsupported sdr type: " + req.getSdrType());
 		}
 		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(req.getTle().getRaw()[1], req.getTle().getRaw()[2]));
