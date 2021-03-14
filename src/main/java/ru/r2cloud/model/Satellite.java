@@ -10,6 +10,24 @@ public class Satellite {
 	private long bandwidth;
 	private Integer baud;
 	private BandFrequency frequencyBand;
+	private int inputSampleRate;
+	private int outputSampleRate;
+	
+	public int getInputSampleRate() {
+		return inputSampleRate;
+	}
+	
+	public void setInputSampleRate(int inputSampleRate) {
+		this.inputSampleRate = inputSampleRate;
+	}
+	
+	public int getOutputSampleRate() {
+		return outputSampleRate;
+	}
+	
+	public void setOutputSampleRate(int outputSampleRate) {
+		this.outputSampleRate = outputSampleRate;
+	}
 	
 	public BandFrequency getFrequencyBand() {
 		return frequencyBand;

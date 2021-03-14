@@ -33,7 +33,8 @@ public class ObservationDao {
 	private static final String IMAGE_FILENAME = "a.jpg";
 	private static final String META_FILENAME = "meta.json";
 	private static final String OUTPUT_WAV_FILENAME = "output.wav";
-	private static final String OUTPUT_RAW_FILENAME = "output.raw.gz";
+	private static final String OUTPUT_RAW_FILENAME_GZIPPED = "output.raw.gz";
+	private static final String OUTPUT_RAW_FILENAME = "output.raw";
 
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationDao.class);
 
@@ -135,9 +136,13 @@ public class ObservationDao {
 	}
 
 	private static Path resolveRawPath(Path baseDir) {
-		Path wav = baseDir.resolve(OUTPUT_WAV_FILENAME);
-		if (Files.exists(wav)) {
-			return wav;
+		Path result = baseDir.resolve(OUTPUT_WAV_FILENAME);
+		if (Files.exists(result)) {
+			return result;
+		}
+		result = baseDir.resolve(OUTPUT_RAW_FILENAME_GZIPPED);
+		if (Files.exists(result)) {
+			return result;
 		}
 		return baseDir.resolve(OUTPUT_RAW_FILENAME);
 	}
@@ -224,6 +229,8 @@ public class ObservationDao {
 		String filename;
 		if (rawFile.getName().endsWith("wav")) {
 			filename = OUTPUT_WAV_FILENAME;
+		} else if (rawFile.getName().endsWith(".gz")) {
+			filename = OUTPUT_RAW_FILENAME_GZIPPED;
 		} else {
 			filename = OUTPUT_RAW_FILENAME;
 		}

@@ -232,21 +232,30 @@ public final class Util {
 
 	// works well for files less than 4Gb
 	public static Long readTotalBytes(Path rawFile) {
-		try (SeekableByteChannel bch = Files.newByteChannel(rawFile, StandardOpenOption.READ)) {
-			if (bch.size() < 4) {
+		if (rawFile.getFileName().toString().endsWith(".gz")) {
+			try (SeekableByteChannel bch = Files.newByteChannel(rawFile, StandardOpenOption.READ)) {
+				if (bch.size() < 4) {
+					return null;
+				}
+				bch.position(bch.size() - 4);
+				ByteBuffer dst = ByteBuffer.allocate(4);
+				readFully(bch, dst);
+				long b4 = dst.get(0) & 0xFF;
+				long b3 = dst.get(1) & 0xFF;
+				long b2 = dst.get(2) & 0xFF;
+				long b1 = dst.get(3) & 0xFF;
+				return ((b1 << 24) | (b2 << 16) + (b3 << 8) + b4);
+			} catch (IOException e1) {
+				LOG.error("unable to get total number of samples", e1);
 				return null;
 			}
-			bch.position(bch.size() - 4);
-			ByteBuffer dst = ByteBuffer.allocate(4);
-			readFully(bch, dst);
-			long b4 = dst.get(0) & 0xFF;
-			long b3 = dst.get(1) & 0xFF;
-			long b2 = dst.get(2) & 0xFF;
-			long b1 = dst.get(3) & 0xFF;
-			return ((b1 << 24) | (b2 << 16) + (b3 << 8) + b4);
-		} catch (IOException e1) {
-			LOG.error("unable to get total number of samples", e1);
-			return null;
+		} else {
+			try {
+				return Files.size(rawFile);
+			} catch (IOException e) {
+				LOG.error("unable to get total number of samples", e);
+				return null;
+			}
 		}
 	}
 

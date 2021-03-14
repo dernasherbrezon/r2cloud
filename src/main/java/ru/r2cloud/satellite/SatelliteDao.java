@@ -10,6 +10,7 @@ import ru.r2cloud.model.BandFrequency;
 import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteComparator;
+import ru.r2cloud.model.SdrType;
 import ru.r2cloud.util.Configuration;
 
 public class SatelliteDao {
@@ -35,16 +36,38 @@ public class SatelliteDao {
 			curSatellite.setEnabled(config.getBoolean("satellites." + curSatellite.getId() + ".enabled"));
 			curSatellite.setBandwidth(config.getLong("satellites." + curSatellite.getId() + ".bandwidth"));
 			curSatellite.setBaud(config.getInteger("satellites." + curSatellite.getId() + ".baud"));
+			switch (curSatellite.getSource()) {
+			case APT:
+				curSatellite.setInputSampleRate(60_000);
+				curSatellite.setOutputSampleRate(11_025);
+				break;
+			case LRPT:
+				curSatellite.setInputSampleRate(288_000);
+				curSatellite.setOutputSampleRate(144_000);
+				break;
+			case FSK_AX25_G3RUH:
+			case TELEMETRY:
+				// sdr-server supports very narrow bandwidths
+				if (config.getSdrType().equals(SdrType.SDRSERVER)) {
+					curSatellite.setInputSampleRate(48_000);
+				} else {
+					curSatellite.setInputSampleRate(240_000);
+				}
+				curSatellite.setOutputSampleRate(48_000);
+				break;
+			default:
+				throw new IllegalArgumentException("unsupported source: " + curSatellite.getSource());
+			}
 			index(curSatellite);
 		}
 		long sdrServerBandwidth = config.getLong("satellites.sdrserver.bandwidth");
 		long bandwidthCrop = config.getLong("satellites.sdrserver.bandwidth.crop");
-		Collections.sort(satellites, SatelliteComparator.FREQ_COMPARATOR);
+		Collections.sort(satellites, SatelliteComparator.FREQ_BANDWIDTH_COMPARATOR);
 
 		BandFrequency currentBand = null;
 		for (Satellite cur : satellites) {
-			long lowerSatelliteFrequency = cur.getFrequency() - cur.getBandwidth() / 2;
-			long upperSatelliteFrequency = cur.getFrequency() + cur.getBandwidth() / 2;
+			long lowerSatelliteFrequency = cur.getFrequency() - cur.getInputSampleRate() / 2;
+			long upperSatelliteFrequency = cur.getFrequency() + cur.getInputSampleRate() / 2;
 			// first satellite or upper frequency out of band
 			if (currentBand == null || (currentBand.getUpper() - bandwidthCrop) < upperSatelliteFrequency) {
 				currentBand = new BandFrequency();

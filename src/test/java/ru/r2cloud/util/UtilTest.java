@@ -45,7 +45,7 @@ public class UtilTest {
 		Util.logIOException(mock, "unable to save", new CompletionException(createConnectException(new UnresolvedAddressException())));
 		Mockito.verify(mock).error("{}: {}", "unable to save", "java.nio.channels.UnresolvedAddressException");
 	}
-	
+
 	@Test
 	public void testLogErrorShortMessage2() {
 		Logger mock = Mockito.mock(Logger.class);
@@ -68,10 +68,17 @@ public class UtilTest {
 	}
 
 	@Test
+	public void testTotalSamplesForNonGzip() throws Exception {
+		byte[] data = new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF };
+		File file = setupTempFile(data, ".cf32");
+		assertEquals(data.length, Util.readTotalBytes(file.toPath()).longValue());
+	}
+
+	@Test
 	public void testIOException() throws Exception {
 		@SuppressWarnings("resource")
 		MockFileSystem fs = new MockFileSystem(FileSystems.getDefault());
-		Path file = fs.getPath(tempFolder.getRoot().getAbsolutePath()).resolve(UUID.randomUUID().toString());
+		Path file = fs.getPath(tempFolder.getRoot().getAbsolutePath()).resolve(UUID.randomUUID().toString() + ".gz");
 		long totalSamplesExpected = 50;
 		setupGzippedFile(totalSamplesExpected, file);
 		fs.mock(file, new FailingByteChannelCallback(3));
@@ -86,13 +93,13 @@ public class UtilTest {
 	@Test
 	public void testSmallFile() throws Exception {
 		// only 3 bytes
-		File file = setupTempFile(new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF });
+		File file = setupTempFile(new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF }, ".gz");
 		assertNull(Util.readTotalBytes(file.toPath()));
 	}
 
 	@Test
 	public void testUnsignedInt() throws Exception {
-		File file = setupTempFile(new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF });
+		File file = setupTempFile(new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF }, ".gz");
 		assertEquals(4294967295L, Util.readTotalBytes(file.toPath()).longValue());
 	}
 
@@ -121,8 +128,8 @@ public class UtilTest {
 		assertEquals("{\"f1\":1,\"f10\":\"E2\",\"f11\":[1.1,2.2,3.3],\"f2\":2,\"f3\":3,\"f4\":4,\"f5\":5.1,\"f6\":6.1,\"f7\":\"f7\",\"f8\":[\"1\",\"2\",\"3\"],\"f9\":{\"f9\":[\"1\",\"2\",\"3\"]}}", Util.convertObject(new SampleClass()).toString());
 	}
 
-	private File setupTempFile(byte[] data) throws IOException, FileNotFoundException {
-		File file = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
+	private File setupTempFile(byte[] data, String extension) throws IOException, FileNotFoundException {
+		File file = new File(tempFolder.getRoot(), UUID.randomUUID().toString() + extension);
 		try (FileOutputStream fos = new FileOutputStream(file)) {
 			fos.write(data);
 		}
@@ -130,7 +137,7 @@ public class UtilTest {
 	}
 
 	private Path setupGzippedFile(long totalSamplesExpected) throws IOException {
-		Path result = tempFolder.getRoot().toPath().resolve(UUID.randomUUID().toString());
+		Path result = tempFolder.getRoot().toPath().resolve(UUID.randomUUID().toString() + ".gz");
 		setupGzippedFile(totalSamplesExpected, result);
 		return result;
 	}

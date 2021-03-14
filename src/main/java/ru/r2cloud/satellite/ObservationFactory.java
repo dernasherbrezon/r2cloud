@@ -81,28 +81,19 @@ public class ObservationFactory {
 		result.setBiast(config.getBoolean("satellites.rtlsdr.biast"));
 		result.setSdrType(config.getSdrType());
 		result.setCenterBandFrequency(satellite.getFrequencyBand().getCenter());
+		result.setInputSampleRate(satellite.getInputSampleRate());
+		result.setOutputSampleRate(satellite.getOutputSampleRate());
+		
 
 		switch (satellite.getSource()) {
 		case APT:
 			result.setActualFrequency(satellite.getFrequency());
-			result.setInputSampleRate(60_000);
-			result.setOutputSampleRate(11_025);
 			break;
 		case LRPT:
-			result.setInputSampleRate(288_000);
-			result.setOutputSampleRate(144_000);
 			result.setActualFrequency(satellite.getFrequency());
 			break;
 		case FSK_AX25_G3RUH:
 		case TELEMETRY:
-			// sdr-server supports very narrow bandwidths
-			if (result.getSdrType().equals(SdrType.SDRSERVER)) {
-				result.setInputSampleRate(48_000);
-			} else {
-				result.setInputSampleRate(240_000);
-			}
-			result.setOutputSampleRate(48_000);
-
 			// compensate DC offset only for non sdr-server observations
 			if (result.getSdrType().equals(SdrType.SDRSERVER)) {
 				result.setActualFrequency(result.getSatelliteFrequency());
