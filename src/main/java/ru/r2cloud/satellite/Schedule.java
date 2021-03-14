@@ -19,7 +19,7 @@ import ru.r2cloud.util.Configuration;
 public class Schedule {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Schedule.class);
-	private static final Long partialToleranceMillis = 60 * 4 * 1000L;
+	private static final Long PARTIAL_TOLERANCE_MILLIS = 60 * 4 * 1000L;
 
 	private final ObservationFactory factory;
 	private final Timetable timetable;
@@ -36,12 +36,12 @@ public class Schedule {
 		if (config.getSdrType().equals(SdrType.SDRSERVER)) {
 			if (rotatorIsEnabled) {
 				LOG.info("concurrent observations are disabled because of rotator");
-				timetable = new SequentialTimetable(partialToleranceMillis);
+				timetable = new SequentialTimetable(PARTIAL_TOLERANCE_MILLIS);
 			} else {
-				timetable = new OverlappedTimetable(partialToleranceMillis);
+				timetable = new OverlappedTimetable(PARTIAL_TOLERANCE_MILLIS);
 			}
 		} else {
-			timetable = new SequentialTimetable(partialToleranceMillis);
+			timetable = new SequentialTimetable(PARTIAL_TOLERANCE_MILLIS);
 		}
 
 	}
