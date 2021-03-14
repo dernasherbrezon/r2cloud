@@ -74,6 +74,8 @@ public class SdrServerReader implements IQReader {
 				latch.await();
 			} else {
 				LOG.error("[{}] unable to start: {}", req.getId(), response);
+				Util.closeQuietly(socket);
+				socket = null;
 				return null;
 			}
 		} catch (IOException e) {
@@ -91,6 +93,27 @@ public class SdrServerReader implements IQReader {
 
 	@Override
 	public void complete() {
+		if (socket == null) {
+			return;
+		}
+		try {
+			OutputStream os = socket.getOutputStream();
+			DataOutputStream dos = new DataOutputStream(os);
+			dos.writeByte(0x00); // protocol version
+			dos.writeByte(0x01); // type = TYPE_SHUTDOWN
+			dos.flush();
+
+			// wait until sdr-server release resources and close socket
+			// disconnecting too quickly can start next observation
+			// the next observation might be in different band, so sdr-server will reject it
+			InputStream is = socket.getInputStream();
+			while (is.read() != -1) {
+				// do nothing
+			}
+		} catch (IOException e1) {
+			LOG.error("[{}] unable to gracefully disconnect", req.getId(), e1);
+		}
+
 		if (socket != null) {
 			try {
 				socket.close();
@@ -98,6 +121,7 @@ public class SdrServerReader implements IQReader {
 				Util.logIOException(LOG, "unable to close socket", e);
 			}
 		}
+		LOG.info("[{}] disconnected", req.getId());
 		latch.countDown();
 	}
 
