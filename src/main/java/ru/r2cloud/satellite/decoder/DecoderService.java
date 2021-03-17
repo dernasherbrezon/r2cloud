@@ -60,7 +60,13 @@ public class DecoderService implements Lifecycle {
 		for (Observation cur : all) {
 			if (cur.getStatus().equals(ObservationStatus.NEW)) {
 				LOG.info("resuming decoding: {}", cur.getId());
-				run(cur.getRawPath(), cur.getReq());
+				if (cur.getRawPath() == null) {
+					LOG.info("raw file doesn't exist: {}", cur.getId());
+					cur.setStatus(ObservationStatus.FAILED);
+					dao.update(cur);
+				} else {
+					run(cur.getRawPath(), cur.getReq());
+				}
 			}
 			if (apiKey != null && cur.getStatus().equals(ObservationStatus.DECODED)) {
 				LOG.info("resume uploading: {}", cur.getId());
