@@ -110,15 +110,10 @@ public class SdrServerReader implements IQReader {
 			while (is.read() != -1) {
 				// do nothing
 			}
+			socket.close();
 		} catch (IOException e1) {
-			LOG.error("[{}] unable to gracefully disconnect", req.getId(), e1);
-		}
-
-		if (socket != null) {
-			try {
-				socket.close();
-			} catch (IOException e) {
-				Util.logIOException(LOG, "unable to close socket", e);
+			if( !socket.isClosed() ) {
+				Util.logIOException(LOG, "unable to close socket", e1);
 			}
 		}
 		LOG.info("[{}] disconnected", req.getId());
