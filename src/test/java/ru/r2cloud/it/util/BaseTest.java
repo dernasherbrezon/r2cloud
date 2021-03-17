@@ -27,6 +27,7 @@ import ru.r2cloud.CelestrakServer;
 import ru.r2cloud.R2Cloud;
 import ru.r2cloud.RtlTestServer;
 import ru.r2cloud.TestUtil;
+import ru.r2cloud.model.SdrType;
 import ru.r2cloud.util.Configuration;
 
 public abstract class BaseTest {
@@ -79,6 +80,7 @@ public abstract class BaseTest {
 		try (Writer w = new FileWriter(setupKeyword)) {
 			w.append("ittests");
 		}
+		config.setProperty("satellites.sdr", SdrType.RTLSDR.name().toLowerCase());
 		config.setProperty("celestrak.hostname", celestrak.getUrl());
 		config.setProperty("locaiton.lat", "56.189");
 		config.setProperty("locaiton.lon", "38.174");

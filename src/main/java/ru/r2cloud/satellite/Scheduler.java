@@ -58,6 +58,10 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private ScheduledExecutorService rescheduleThread = null;
 	private Future<?> rescheduleTask;
 
+	private final Object sdrServerLock = new Object();
+	private Long currentBandFrequency = null;
+	private int numberOfObservationsOnCurrentBand = 0;
+
 	public Scheduler(Schedule schedule, Configuration config, SatelliteDao satellites, SdrLock lock, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderService decoderService, RotatorService rotatorService) {
 		this.schedule = schedule;
 		this.config = config;
@@ -138,11 +142,34 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				IQData data;
 				// do not use lock for multiple concurrent observations
 				if (config.getSdrType().equals(SdrType.SDRSERVER)) {
+					synchronized (sdrServerLock) {
+						while (currentBandFrequency != null && currentBandFrequency != observation.getCenterBandFrequency()) {
+							try {
+								sdrServerLock.wait();
+							} catch (InterruptedException e) {
+								Thread.currentThread().interrupt();
+								return;
+							}
+						}
+						if (currentBandFrequency == null) {
+							currentBandFrequency = observation.getCenterBandFrequency();
+							LOG.info("starting observations on {} hz", currentBandFrequency);
+						}
+						numberOfObservationsOnCurrentBand++;
+					}
 					try {
 						data = reader.start();
 					} catch (InterruptedException e) {
 						Thread.currentThread().interrupt();
 						return;
+					}
+					synchronized (sdrServerLock) {
+						numberOfObservationsOnCurrentBand--;
+						if (numberOfObservationsOnCurrentBand == 0) {
+							LOG.info("no more observations on: {} hz", currentBandFrequency);
+							currentBandFrequency = null;
+						}
+						sdrServerLock.notifyAll();
 					}
 				} else {
 					if (!lock.tryLock(Scheduler.this)) {

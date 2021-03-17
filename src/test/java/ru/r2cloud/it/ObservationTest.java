@@ -32,10 +32,10 @@ public class ObservationTest extends RegisteredTest {
 	@Test
 	public void testMeteorObservation() throws Exception {
 		rtlSdrMock.mockResponse("/data/40069-1553411549943.raw.gz");
-		JsonHttpResponse spectogramHandler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
-		server.setSpectogramMock(1L, spectogramHandler);
 		JsonHttpResponse metaHandler = new JsonHttpResponse("r2cloudclienttest/save-meta-response.json", 200);
 		server.setObservationMock(metaHandler);
+		JsonHttpResponse spectogramHandler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
+		server.setSpectogramMock(1L, spectogramHandler);
 
 		// start observation
 		String observationId = client.scheduleStart(METEOR_ID);

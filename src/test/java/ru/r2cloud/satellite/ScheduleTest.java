@@ -84,7 +84,7 @@ public class ScheduleTest {
 		assertObservations(expected, actual);
 
 		ObservationRequest first = schedule.findFirstBySatelliteId("40378", getTime("2020-10-01 11:38:34.491"));
-		assertEquals("1601553418714", first.getId());
+		assertEquals("1601553418714-40378", first.getId());
 		assertNull(schedule.findFirstBySatelliteId("40378", getTime("2020-10-02 11:43:56.801")));
 
 		// tasks and ensure previous got cancelled
@@ -144,6 +144,7 @@ public class ScheduleTest {
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("locaiton.lat", "51.49");
 		config.setProperty("locaiton.lon", "0.01");
+		config.setProperty("satellites.sdr", SdrType.RTLSDR.name().toLowerCase());
 		PredictOreKit predict = new PredictOreKit(config);
 		satelliteDao = new SatelliteDao(config);
 		TLEDao tleDao = new TLEDao(config, satelliteDao, new CelestrakClient(celestrak.getUrl()));

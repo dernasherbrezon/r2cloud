@@ -76,14 +76,13 @@ public class ObservationFactory {
 		result.setGroundStation(predict.getPosition().getPoint());
 		result.setStartTimeMillis(nextPass.getStartMillis());
 		result.setEndTimeMillis(nextPass.getEndMillis());
-		result.setId(String.valueOf(result.getStartTimeMillis()));
+		result.setId(String.valueOf(result.getStartTimeMillis()) + "-" + satellite.getId());
 		result.setGain(config.getDouble("satellites.rtlsdr.gain"));
 		result.setBiast(config.getBoolean("satellites.rtlsdr.biast"));
 		result.setSdrType(config.getSdrType());
 		result.setCenterBandFrequency(satellite.getFrequencyBand().getCenter());
 		result.setInputSampleRate(satellite.getInputSampleRate());
 		result.setOutputSampleRate(satellite.getOutputSampleRate());
-		
 
 		switch (satellite.getSource()) {
 		case APT:
