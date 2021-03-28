@@ -135,10 +135,6 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 			@Override
 			public void safeRun() {
-				if (clock.millis() > observation.getEndTimeMillis()) {
-					LOG.info("[{}] observation time passed. skip {}", observation.getId(), satellite);
-					return;
-				}
 				IQData data;
 				// do not use lock for multiple concurrent observations
 				if (config.getSdrType().equals(SdrType.SDRSERVER)) {
@@ -157,6 +153,10 @@ public class Scheduler implements Lifecycle, ConfigListener {
 						}
 						numberOfObservationsOnCurrentBand++;
 					}
+					if (clock.millis() > observation.getEndTimeMillis()) {
+						LOG.info("[{}] observation time passed. skip {}", observation.getId(), satellite);
+						return;
+					}
 					try {
 						data = reader.start();
 					} catch (InterruptedException e) {
@@ -172,6 +172,10 @@ public class Scheduler implements Lifecycle, ConfigListener {
 						sdrServerLock.notifyAll();
 					}
 				} else {
+					if (clock.millis() > observation.getEndTimeMillis()) {
+						LOG.info("[{}] observation time passed. skip {}", observation.getId(), satellite);
+						return;
+					}
 					if (!lock.tryLock(Scheduler.this)) {
 						LOG.info("[{}] unable to acquire lock for {}", observation.getId(), satellite);
 						return;
