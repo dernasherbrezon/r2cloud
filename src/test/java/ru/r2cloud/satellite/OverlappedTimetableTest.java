@@ -15,6 +15,14 @@ public class OverlappedTimetableTest {
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("HH:mm");
 
 	@Test
+	public void testIntersectWithPrevious() throws Exception {
+		OverlappedTimetable table = new OverlappedTimetable(60_000);
+		assertTrue(table.addFully(create("12:00", "12:10", 1)));
+		assertTrue(table.addFully(create("12:20", "12:30", 2)));
+		assertFalse(table.addFully(create("12:05", "12:15", 2)));
+	}
+	
+	@Test
 	public void testGrowBand() throws Exception {
 		OverlappedTimetable table = new OverlappedTimetable(60_000);
 		assertTrue(table.addFully(create("12:00", "12:10", 1)));

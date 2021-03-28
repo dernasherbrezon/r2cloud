@@ -94,7 +94,7 @@ public class OverlappedTimetable implements Timetable {
 			}
 			// 8. slot intersects with the previous
 			if (previous != null && slot.getStart() <= previous.getEnd() && slot.getEnd() < cur.getStart()) {
-				if (cur.getFrequency() == slot.getFrequency()) {
+				if (previous.getFrequency() == slot.getFrequency()) {
 					previous.setStart(Math.min(slot.getStart(), previous.getStart()));
 					previous.setEnd(Math.max(slot.getEnd(), previous.getEnd()));
 					previous.addSlot(slot);

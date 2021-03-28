@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -202,9 +203,9 @@ public class ScheduleTest {
 			while ((curLine = r.readLine()) != null) {
 				String[] parts = COMMA.split(curLine);
 				ObservationRequest cur = new ObservationRequest();
-				cur.setSatelliteId(parts[1]);
-				cur.setStartTimeMillis(sdf.parse(parts[2]).getTime());
-				cur.setEndTimeMillis(sdf.parse(parts[3]).getTime());
+				cur.setStartTimeMillis(sdf.parse(parts[0].trim()).getTime());
+				cur.setEndTimeMillis(sdf.parse(parts[1].trim()).getTime());
+				cur.setSatelliteId(parts[2].trim());
 				result.add(cur);
 			}
 		}
@@ -220,4 +221,14 @@ public class ScheduleTest {
 	private static long getTime(String str) throws Exception {
 		return createDateFormatter().parse(str).getTime();
 	}
+	
+	// used to create assertion .txt files
+	@SuppressWarnings("unused")
+	private void printObservations(List<ObservationRequest> actual) {
+		SimpleDateFormat sdf= createDateFormatter();
+		for( ObservationRequest cur : actual ) {
+			Satellite sat = satelliteDao.findById(cur.getSatelliteId());
+			System.out.println(sdf.format(new Date(cur.getStartTimeMillis())) + ",  " + sdf.format(new Date(cur.getEndTimeMillis())) + ",\t\t" + cur.getSatelliteId() + "," + sat.getFrequencyBand().getCenter() + ", " + sat.getName());
+		}
+	}	
 }
