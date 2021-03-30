@@ -1,5 +1,6 @@
 package ru.r2cloud.satellite.decoder;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class DopplerCorrectedSource implements FloatInput {
 		}
 
 		FloatInput source;
-		InputStream is = new FileInputStream(rawIq);
+		InputStream is = new BufferedInputStream(new FileInputStream(rawIq));
 		if (rawIq.toString().endsWith(".gz")) {
 			is = new GZIPInputStream(is);
 		}

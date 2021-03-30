@@ -79,7 +79,7 @@ public class SpectogramService {
 		}
 		FloatInput source = null;
 		try {
-			InputStream is = new FileInputStream(req.getRawPath());
+			InputStream is = new BufferedInputStream(new FileInputStream(req.getRawPath()));
 			if (req.getRawPath().toString().endsWith(".gz")) {
 				is = new GZIPInputStream(is);
 			}
