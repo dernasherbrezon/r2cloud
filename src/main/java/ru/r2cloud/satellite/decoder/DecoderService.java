@@ -97,6 +97,14 @@ public class DecoderService implements Lifecycle {
 			LOG.error("[{}] unknown decoder for {}", request.getId(), request.getSatelliteId());
 			return;
 		}
+		if (!rawFile.getParentFile().exists()) {
+			LOG.info("[{}] observation no longer exist. This can be caused by slow decoding of other observations and too aggressive retention. Increase scheduler.data.retention.count or reduce number of scheduled satellites or use faster hardware", request.getId());
+			return;
+		}
+		if (!rawFile.exists()) {
+			LOG.info("[{}] raw data for observation is missing. This can be caused by slow decoding of other observations and too aggressive retention. Increase scheduler.data.retention.raw.count or reduce number of scheduled satellites or use faster hardware", request.getId());
+			return;
+		}
 		LOG.info("[{}] decoding", request.getId());
 		DecoderResult result = decoder.decode(rawFile, request);
 		LOG.info("[{}] decoded", request.getId());
