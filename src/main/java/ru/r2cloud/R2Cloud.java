@@ -21,11 +21,13 @@ import ru.r2cloud.jradio.amical1.Amical1Beacon;
 import ru.r2cloud.jradio.armadillo.ArmadilloBeacon;
 import ru.r2cloud.jradio.ax25.Ax25Beacon;
 import ru.r2cloud.jradio.bsusat1.Bsusat1Beacon;
+import ru.r2cloud.jradio.bugsat.BugsatBeacon;
 import ru.r2cloud.jradio.csp.CspBeacon;
 import ru.r2cloud.jradio.falconsat3.Falconsat3Beacon;
 import ru.r2cloud.jradio.fox.Fox1BBeacon;
 import ru.r2cloud.jradio.fox.Fox1CBeacon;
 import ru.r2cloud.jradio.fox.Fox1DBeacon;
+import ru.r2cloud.jradio.grifex.GrifexBeacon;
 import ru.r2cloud.jradio.ls2.Lightsail2Beacon;
 import ru.r2cloud.jradio.lume1.Lume1Beacon;
 import ru.r2cloud.jradio.meznsat.MeznsatBeacon;
@@ -38,6 +40,7 @@ import ru.r2cloud.jradio.quetzal1.Quetzal1Beacon;
 import ru.r2cloud.jradio.skcube.SkcubeBeacon;
 import ru.r2cloud.jradio.spooqy1.Spooqy1Beacon;
 import ru.r2cloud.jradio.swampsat2.Swampsat2Beacon;
+import ru.r2cloud.jradio.tausat.Tausat1Beacon;
 import ru.r2cloud.jradio.unisat6.Unisat6Beacon;
 import ru.r2cloud.jradio.uwe4.Uwe4Beacon;
 import ru.r2cloud.metrics.Metrics;
@@ -251,8 +254,10 @@ public class R2Cloud {
 		decoders.put("39428", new BpskAx25Decoder(predict, props, 2400, 1200, Ax25Beacon.class));
 		decoders.put("47438", new BpskAx25G3ruhDecoder(predict, props, 9600, Ax25Beacon.class));
 		decoders.put("40024", new BpskAx25Decoder(predict, props, 1200, Ax25Beacon.class));
-		decoders.put("47926", new BpskAx25G3ruhDecoder(predict, props, 9600, Ax25Beacon.class));
+		decoders.put("47926", new BpskAx25G3ruhDecoder(predict, props, 9600, Tausat1Beacon.class));
 		decoders.put("47448", new FskAx100Decoder(predict, props, 9600, 512, CspBeacon.class));
+		decoders.put("40014", new FskAx25G3ruhDecoder(predict, props, 9600, BugsatBeacon.class));
+		decoders.put("40379", new FskAx25G3ruhDecoder(predict, props, 9600, GrifexBeacon.class));
 		
 		for (Satellite cur : satelliteDao.findAll()) {
 			if (cur.getSource().equals(FrequencySource.FSK_AX25_G3RUH)) {
