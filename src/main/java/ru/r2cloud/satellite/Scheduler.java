@@ -147,15 +147,15 @@ public class Scheduler implements Lifecycle, ConfigListener {
 								return;
 							}
 						}
+						if (clock.millis() > observation.getEndTimeMillis()) {
+							LOG.info("[{}] observation time passed. skip {}", observation.getId(), satellite);
+							return;
+						}
 						if (currentBandFrequency == null) {
 							currentBandFrequency = observation.getCenterBandFrequency();
 							LOG.info("starting observations on {} hz", currentBandFrequency);
 						}
 						numberOfObservationsOnCurrentBand++;
-					}
-					if (clock.millis() > observation.getEndTimeMillis()) {
-						LOG.info("[{}] observation time passed. skip {}", observation.getId(), satellite);
-						return;
 					}
 					try {
 						data = reader.start();
