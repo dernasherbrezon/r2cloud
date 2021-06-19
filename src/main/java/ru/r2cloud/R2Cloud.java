@@ -27,6 +27,7 @@ import ru.r2cloud.jradio.falconsat3.Falconsat3Beacon;
 import ru.r2cloud.jradio.fox.Fox1BBeacon;
 import ru.r2cloud.jradio.fox.Fox1CBeacon;
 import ru.r2cloud.jradio.fox.Fox1DBeacon;
+import ru.r2cloud.jradio.grbalpha.GRBAlphaBeacon;
 import ru.r2cloud.jradio.grifex.GrifexBeacon;
 import ru.r2cloud.jradio.ls2.Lightsail2Beacon;
 import ru.r2cloud.jradio.lume1.Lume1Beacon;
@@ -42,6 +43,7 @@ import ru.r2cloud.jradio.spooqy1.Spooqy1Beacon;
 import ru.r2cloud.jradio.swampsat2.Swampsat2Beacon;
 import ru.r2cloud.jradio.tausat.Tausat1Beacon;
 import ru.r2cloud.jradio.unisat6.Unisat6Beacon;
+import ru.r2cloud.jradio.uvsqsat.UvsqsatBeacon;
 import ru.r2cloud.jradio.uwe4.Uwe4Beacon;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.FrequencySource;
@@ -252,13 +254,15 @@ public class R2Cloud {
 		decoders.put("42792", new AfskAx25Decoder(predict, props, 1200, 1300, Ax25Beacon.class));
 		decoders.put("46922", new FskAx100Decoder(predict, props, 1200, 255, CspBeacon.class));
 		decoders.put("39428", new BpskAx25Decoder(predict, props, 2400, 1200, Ax25Beacon.class));
-		decoders.put("47438", new BpskAx25G3ruhDecoder(predict, props, 9600, Ax25Beacon.class));
+		decoders.put("47438", new BpskAx25G3ruhDecoder(predict, props, 9600, UvsqsatBeacon.class));
 		decoders.put("40024", new BpskAx25Decoder(predict, props, 1200, Ax25Beacon.class));
 		decoders.put("47926", new BpskAx25G3ruhDecoder(predict, props, 9600, Tausat1Beacon.class));
 		decoders.put("47448", new FskAx100Decoder(predict, props, 9600, 512, CspBeacon.class));
 		decoders.put("40014", new FskAx25G3ruhDecoder(predict, props, 9600, BugsatBeacon.class));
 		decoders.put("40379", new FskAx25G3ruhDecoder(predict, props, 9600, GrifexBeacon.class));
-		
+		decoders.put("47959", new FskAx25G3ruhDecoder(predict, props, 9600, GRBAlphaBeacon.class));
+		decoders.put("43019", new AfskAx25Decoder(predict, props, 1200, 1300, Ax25Beacon.class));
+
 		for (Satellite cur : satelliteDao.findAll()) {
 			if (cur.getSource().equals(FrequencySource.FSK_AX25_G3RUH)) {
 				if (cur.getBaud() == null) {

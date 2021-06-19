@@ -24,6 +24,7 @@ import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 
 public class Lucky7Decoder extends TelemetryDecoder {
 
@@ -60,7 +61,7 @@ public class Lucky7Decoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		FskDemodulator demodulator = new FskDemodulator(source, 4800);
+		FskDemodulator demodulator = new FskDemodulator(source, 4800, 5000.0f, Util.convertDecimation(4800), 1000);
 		SoftToHard bs = new SoftToHard(demodulator);
 		CorrelateSyncword correlate = new CorrelateSyncword(bs, 3, "0010110111010100", 37 * 8);
 		return new Lucky7(correlate);
