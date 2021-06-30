@@ -12,18 +12,31 @@ import ru.r2cloud.util.Configuration;
 
 public class Gomx1Decoder extends TelemetryDecoder {
 
+	private final Class<? extends Beacon> clazz;
+	private final boolean forceViterbi;
+	private final boolean forceScrambler;
+	private final boolean forceReedSolomon;
+
 	public Gomx1Decoder(PredictOreKit predict, Configuration config) {
+		this(predict, config, Gomx1Beacon.class, false, false, false);
+	}
+
+	public Gomx1Decoder(PredictOreKit predict, Configuration config, Class<? extends Beacon> clazz, boolean forceViterbi, boolean forceScrambler, boolean forceReedSolomon) {
 		super(predict, config);
+		this.clazz = clazz;
+		this.forceViterbi = forceViterbi;
+		this.forceScrambler = forceScrambler;
+		this.forceReedSolomon = forceReedSolomon;
 	}
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
 		AfskDemodulator demod = new AfskDemodulator(source, 4800, -1200, 3600, 2);
-		return new Ax100BeaconSource<>(demod, 255, "11000011101010100110011001010101", Gomx1Beacon.class, false, false, false);
+		return new Ax100BeaconSource<>(demod, 255, "11000011101010100110011001010101", clazz, forceViterbi, forceScrambler, forceReedSolomon);
 	}
-	
+
 	@Override
 	public Class<? extends Beacon> getBeaconClass() {
-		return Gomx1Beacon.class;
+		return clazz;
 	}
 }
