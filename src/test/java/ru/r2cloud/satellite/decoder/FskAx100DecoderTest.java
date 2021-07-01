@@ -27,7 +27,7 @@ public class FskAx100DecoderTest {
 	public void testSomeData() throws Exception {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/delphini1.raw.gz");
 		PredictOreKit predict = new PredictOreKit(config);
-		FskAx100Decoder decoder = new FskAx100Decoder(predict, config, 9600, 255, CspBeacon.class);
+		FskAx100Decoder decoder = new FskAx100Decoder(predict, config, 255, CspBeacon.class, 9600);
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/delphini1.raw.gz.json").getReq());
 		assertEquals(2, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
