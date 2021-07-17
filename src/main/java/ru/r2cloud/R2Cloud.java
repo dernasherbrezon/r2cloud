@@ -251,6 +251,7 @@ public class R2Cloud {
 		decoders.put("40931", new AfskAx25Decoder(predict, props, 1200, Ax25Beacon.class));
 		decoders.put("44426", new AfskAx25Decoder(predict, props, 1200, Ax25Beacon.class));
 		decoders.put("46923", new BpskAx25G3ruhDecoder(predict, props, 1200, Ax25Beacon.class));
+		decoders.put("49016", new BpskAx25G3ruhDecoder(predict, props, 1200, Ax25Beacon.class));
 		decoders.put("42792", new AfskAx25Decoder(predict, props, 1200, 1300, Ax25Beacon.class));
 		decoders.put("46922", new FskAx100Decoder(predict, props, 255, CspBeacon.class, 1200));
 		decoders.put("39428", new BpskAx25Decoder(predict, props, 2400, 1200, Ax25Beacon.class));
