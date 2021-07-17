@@ -199,6 +199,7 @@ public class R2Cloud {
 		decoders.put("42017", new Nayif1Decoder(predict, props));
 		decoders.put("42784", new PegasusDecoder(predict, props));
 		decoders.put("42829", new TechnosatDecoder(predict, props));
+		decoders.put("48900", new TechnosatDecoder(predict, props));
 		SnetDecoder snetDecoder = new SnetDecoder(predict, props);
 		decoders.put("43186", snetDecoder);
 		decoders.put("43187", snetDecoder);
