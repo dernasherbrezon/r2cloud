@@ -76,6 +76,7 @@ import ru.r2cloud.satellite.decoder.FskAx100Decoder;
 import ru.r2cloud.satellite.decoder.FskAx25G3ruhDecoder;
 import ru.r2cloud.satellite.decoder.Gomx1Decoder;
 import ru.r2cloud.satellite.decoder.Huskysat1Decoder;
+import ru.r2cloud.satellite.decoder.ItSpinsDecoder;
 import ru.r2cloud.satellite.decoder.Itasat1Decoder;
 import ru.r2cloud.satellite.decoder.Jy1satDecoder;
 import ru.r2cloud.satellite.decoder.LRPTDecoder;
@@ -265,7 +266,7 @@ public class R2Cloud {
 		decoders.put("43019", new AfskAx25Decoder(predict, props, 1200, 1300, Ax25Beacon.class));
 		decoders.put("42790", new Gomx1Decoder(predict, props, CspBeacon.class, false, true, true));
 		decoders.put("48851", new FskAx100Decoder(predict, props, 512, CspBeacon.class, 4800, 9600));
-		
+		decoders.put("49017", new ItSpinsDecoder(predict, props, Ax25Beacon.class));
 
 		for (Satellite cur : satelliteDao.findAll()) {
 			if (cur.getSource().equals(FrequencySource.FSK_AX25_G3RUH)) {
