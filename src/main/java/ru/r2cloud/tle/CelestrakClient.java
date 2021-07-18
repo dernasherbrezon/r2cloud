@@ -19,22 +19,32 @@ public class CelestrakClient {
 	private static final int TIMEOUT = 60 * 1000;
 	private static final Logger LOG = LoggerFactory.getLogger(CelestrakClient.class);
 	private final String host;
+	private final String calpolyHost;
 
 	public CelestrakClient(String host) {
+		this(host, null);
+	}
+
+	public CelestrakClient(String host, String calpolyHost) {
 		this.host = host;
+		this.calpolyHost = calpolyHost;
 	}
 
 	public Map<String, Tle> getTleForActiveSatellites() {
-		Map<String, Tle> result = loadTle("/NORAD/elements/satnogs.txt");
-		result.putAll(loadTle("/NORAD/elements/active.txt"));
+		Map<String, Tle> result = new HashMap<>();
+		if (calpolyHost != null) {
+			result.putAll(loadTle(calpolyHost + "/~ops/keps/kepler.txt"));
+		}
+		result.putAll(loadTle(host + "/NORAD/elements/satnogs.txt"));
+		result.putAll(loadTle(host + "/NORAD/elements/active.txt"));
 		return result;
 	}
 
-	private Map<String, Tle> loadTle(String location) {
+	private static Map<String, Tle> loadTle(String location) {
 		HttpURLConnection con = null;
 		Map<String, Tle> result = new HashMap<>();
 		try {
-			URL obj = new URL(host + location);
+			URL obj = new URL(location);
 			con = (HttpURLConnection) obj.openConnection();
 			con.setRequestMethod("GET");
 			con.setConnectTimeout(TIMEOUT);

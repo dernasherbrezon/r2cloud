@@ -184,7 +184,7 @@ public class R2Cloud {
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
 		satelliteDao = new SatelliteDao(props);
-		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient(props.getProperty("celestrak.hostname")));
+		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient(props.getProperty("celestrak.hostname"), props.getProperty("calpoly.hostname")));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
 		signed = new SignedURL(props, clock);
 		rotatorService = new RotatorService(props, predict, threadFactory, clock, metrics);
