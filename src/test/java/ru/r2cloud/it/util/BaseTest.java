@@ -89,7 +89,6 @@ public abstract class BaseTest {
 		config.setProperty("satellites.sox.path", "sox");
 		config.setProperty("r2server.hostname", "http://localhost:8001");
 		config.setProperty("server.tmp.directory", tempDirectory.getAbsolutePath());
-		config.setProperty("server.static.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data");
 		config.setProperty("metrics.basepath.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "rrd");
 		config.setProperty("auto.update.basepath.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "auto-udpate");
 		config.setProperty("acme.basepath", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "ssl");
