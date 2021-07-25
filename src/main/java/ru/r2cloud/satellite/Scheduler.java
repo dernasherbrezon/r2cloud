@@ -84,6 +84,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		}
 
 		if (config.getProperty("locaiton.lat") != null && config.getProperty("locaiton.lon") != null) {
+			LOG.info("base station location changed. reschedule");
 			reschedule();
 		} else {
 			LOG.info("missing location. cancelling all observations");
