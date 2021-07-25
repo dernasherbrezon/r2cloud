@@ -268,6 +268,10 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	public void reschedule() {
 		schedule.cancelAll();
+		synchronized (sdrServerLock) {
+			currentBandFrequency = null;
+			numberOfObservationsOnCurrentBand = 0;
+		}
 		List<Satellite> allSatellites = satelliteDao.findEnabled();
 		long current = clock.millis();
 		List<ObservationRequest> newSchedule = schedule.createInitialSchedule(allSatellites, current);
