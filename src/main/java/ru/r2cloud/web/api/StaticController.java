@@ -28,7 +28,7 @@ public class StaticController {
 	private final Configuration config;
 
 	public StaticController(Configuration config, SignedURL signed) {
-		this.basePath = Util.initDirectory(config.getProperty("satellites.basepath.location"));
+		this.basePath = Util.initDirectory(config.getProperty("server.static.location"));
 		try {
 			this.canonicalBasePath = this.basePath.getCanonicalPath();
 		} catch (IOException e) {

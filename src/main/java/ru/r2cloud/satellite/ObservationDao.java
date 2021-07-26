@@ -114,22 +114,22 @@ public class ObservationDao {
 		Path a = curDirectory.resolve(IMAGE_FILENAME);
 		if (Files.exists(a)) {
 			full.setImagePath(a.toFile());
-			full.setaURL("/api/v1/admin/static/" + satelliteId + "/data/" + full.getId() + "/" + IMAGE_FILENAME);
+			full.setaURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + IMAGE_FILENAME);
 		}
 		Path data = curDirectory.resolve(DATA_FILENAME);
 		if (Files.exists(data)) {
 			full.setDataPath(data.toFile());
-			full.setDataURL("/api/v1/admin/static/" + satelliteId + "/data/" + full.getId() + "/" + DATA_FILENAME);
+			full.setDataURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + DATA_FILENAME);
 		}
 		Path rawPath = resolveRawPath(curDirectory);
 		if (Files.exists(rawPath)) {
 			full.setRawPath(rawPath.toFile());
-			full.setRawURL("/api/v1/admin/static/" + satelliteId + "/data/" + full.getId() + "/" + rawPath.getFileName());
+			full.setRawURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + rawPath.getFileName());
 		}
 		Path spectogram = curDirectory.resolve(SPECTOGRAM_FILENAME);
 		if (Files.exists(spectogram)) {
 			full.setSpectogramPath(spectogram.toFile());
-			full.setSpectogramURL("/api/v1/admin/static/" + satelliteId + "/data/" + full.getId() + "/" + SPECTOGRAM_FILENAME);
+			full.setSpectogramURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + SPECTOGRAM_FILENAME);
 		}
 
 		return full;
