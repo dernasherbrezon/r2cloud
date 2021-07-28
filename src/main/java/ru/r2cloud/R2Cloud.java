@@ -12,6 +12,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.edu.icm.jlargearrays.ConcurrencyUtils;
 import ru.r2cloud.cloud.R2ServerClient;
 import ru.r2cloud.cloud.R2ServerService;
 import ru.r2cloud.ddns.DDNSClient;
@@ -173,6 +174,12 @@ public class R2Cloud {
 		rtlsdrLock.register(Scheduler.class, 3);
 		rtlsdrLock.register(SdrStatusDao.class, 2);
 
+		Integer numberOfThreads = props.getInteger("server.fft.threads");
+		// if not specified, then number of available processors will be used
+		if (numberOfThreads != null) {
+			ConcurrencyUtils.setNumberOfThreads(numberOfThreads);
+		}
+		
 		r2cloudClient = new R2ServerClient(props);
 		spectogramService = new SpectogramService(props);
 		resultDao = new ObservationDao(props);
