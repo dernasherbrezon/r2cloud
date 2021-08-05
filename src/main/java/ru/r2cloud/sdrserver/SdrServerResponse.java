@@ -3,11 +3,13 @@ package ru.r2cloud.sdrserver;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+import ru.r2cloud.jradio.util.StreamUtils;
+
 public class SdrServerResponse {
 
 	private MessageHeader header;
 	private ResponseStatus status;
-	private int details;
+	private long details;
 
 	public SdrServerResponse() {
 		// do nothing
@@ -16,7 +18,7 @@ public class SdrServerResponse {
 	public SdrServerResponse(DataInputStream dis) throws IOException {
 		header = new MessageHeader(dis);
 		status = ResponseStatus.values()[dis.readUnsignedByte()];
-		details = dis.readUnsignedByte();
+		details = StreamUtils.readUnsignedInt(dis);
 	}
 
 	public MessageHeader getHeader() {
@@ -35,11 +37,11 @@ public class SdrServerResponse {
 		this.status = status;
 	}
 
-	public int getDetails() {
+	public long getDetails() {
 		return details;
 	}
 
-	public void setDetails(int details) {
+	public void setDetails(long details) {
 		this.details = details;
 	}
 
