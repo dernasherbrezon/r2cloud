@@ -29,7 +29,7 @@ public class FoxSlowDecoderTest {
 		PredictOreKit predict = new PredictOreKit(config);
 		FoxSlowDecoder<Fox1CBeacon> decoder = new FoxSlowDecoder<>(predict, config, Fox1CBeacon.class);
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/fox1c.raw.gz.json").getReq());
-		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
+		assertEquals(2, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
 		assertNotNull(result.getRawPath());
 	}

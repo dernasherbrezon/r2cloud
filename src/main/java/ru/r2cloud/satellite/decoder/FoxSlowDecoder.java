@@ -25,7 +25,7 @@ public class FoxSlowDecoder<T extends Beacon> extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		FskDemodulator byteInput = new FskDemodulator(source, 200, 5000.0f, 60, 200.0f);
+		FskDemodulator byteInput = new FskDemodulator(source, 200, 1500.0f, 120, 200.0f);
 		SoftToHard s2h = new SoftToHard(byteInput);
 		Set<String> codes = new HashSet<>();
 		codes.add("0011111010");
