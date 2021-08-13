@@ -468,7 +468,7 @@ public class RestClient {
 	}
 
 	public HttpResponse<String> getObservationResponse(String satelliteId, String observationId) {
-		Map<String, String> params = new HashMap<String, String>();
+		Map<String, String> params = new HashMap<>();
 		if (satelliteId != null) {
 			params.put("satelliteId", satelliteId);
 		}
