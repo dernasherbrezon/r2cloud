@@ -14,6 +14,9 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +28,9 @@ import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
 
 import ru.r2cloud.R2Cloud;
+import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.Satellite;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -68,6 +73,26 @@ public class R2ServerClient {
 		}
 	}
 
+	public List<Satellite> loadNewLaunches() {
+		HttpRequest request = createRequest("/api/v1/satellite/newlaunch").GET().build();
+		try {
+			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				if (LOG.isErrorEnabled()) {
+					LOG.error("unable to load new launches. response code: {}. response: {}", response.statusCode(), response.body());
+				}
+				return Collections.emptyList();
+			}
+			return readNewLaunches(response.body());
+		} catch (IOException e) {
+			Util.logIOException(LOG, "unable to load new launches", e);
+			return Collections.emptyList();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new IllegalStateException(e);
+		}
+	}
+
 	public void saveJpeg(Long id, File getaPath) {
 		upload(OBSERVATION_BASEPATH + "/" + id + "/data", getaPath, "image/jpeg");
 	}
@@ -96,6 +121,55 @@ public class R2ServerClient {
 				LOG.error("unable to upload: {} response code: {}. response: {}", url, response.statusCode(), response.body());
 			}
 		});
+	}
+
+	private static List<Satellite> readNewLaunches(String body) {
+		JsonValue parsedJson;
+		try {
+			parsedJson = Json.parse(body);
+		} catch (ParseException e) {
+			LOG.info("malformed json");
+			return Collections.emptyList();
+		}
+		if (!parsedJson.isArray()) {
+			LOG.info("malformed json");
+			return Collections.emptyList();
+		}
+		JsonArray parsedArray = parsedJson.asArray();
+		List<Satellite> result = new ArrayList<>();
+		for (int i = 0; i < parsedArray.size(); i++) {
+			JsonValue jsonValue = parsedArray.get(i);
+			if (!jsonValue.isObject()) {
+				continue;
+			}
+			result.add(readNewLaunch(jsonValue.asObject()));
+		}
+		return result;
+	}
+
+	private static Satellite readNewLaunch(JsonObject json) {
+		Satellite result = new Satellite();
+		result.setId(json.getString("id", null));
+		result.setName(json.getString("name", null));
+		result.setFrequency(json.getLong("frequency", 0));
+
+		String modulation = json.getString("modulation", null);
+		String framing = json.getString("framing", null);
+		if (modulation.equalsIgnoreCase("GFSK") && framing.equalsIgnoreCase("AX25G3RUH")) {
+			result.setSource(FrequencySource.FSK_AX25_G3RUH);
+		} else {
+			result.setSource(FrequencySource.TELEMETRY);
+		}
+		result.setBandwidth(json.getLong("bandwidth", 0));
+		//FIXME set multiple baud
+//		result.setBaud(null);
+		//FIXME TLE
+		//FIXME beacon class
+		//FIXME beaconSizeBytes
+		//FIXME start / end
+		//FIXME modulation / framing
+
+		return result;
 	}
 
 	private static Long readObservationId(String con) {
