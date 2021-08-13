@@ -179,7 +179,7 @@ public class R2Cloud {
 		if (numberOfThreads != null) {
 			ConcurrencyUtils.setNumberOfThreads(numberOfThreads);
 		}
-		
+
 		r2cloudClient = new R2ServerClient(props);
 		spectogramService = new SpectogramService(props);
 		resultDao = new ObservationDao(props);
@@ -277,10 +277,10 @@ public class R2Cloud {
 
 		for (Satellite cur : satelliteDao.findAll()) {
 			if (cur.getSource().equals(FrequencySource.FSK_AX25_G3RUH)) {
-				if (cur.getBaud() == null) {
+				if (cur.getBaudRates().isEmpty()) {
 					throw new IllegalStateException("baud is missing for generic ax25 satellite: " + cur.getId());
 				}
-				decoders.put(cur.getId(), new FskAx25G3ruhDecoder(predict, props, cur.getBaud(), Ax25Beacon.class));
+				decoders.put(cur.getId(), new FskAx25G3ruhDecoder(predict, props, cur.getBaudRates().get(0), Ax25Beacon.class));
 			}
 		}
 

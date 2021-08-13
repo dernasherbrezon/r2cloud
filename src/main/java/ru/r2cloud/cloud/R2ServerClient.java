@@ -161,14 +161,24 @@ public class R2ServerClient {
 			result.setSource(FrequencySource.TELEMETRY);
 		}
 		result.setBandwidth(json.getLong("bandwidth", 0));
-		//FIXME set multiple baud
-//		result.setBaud(null);
-		//FIXME TLE
-		//FIXME beacon class
-		//FIXME beaconSizeBytes
-		//FIXME start / end
-		//FIXME modulation / framing
+		JsonValue jsonRates = json.get("baudRates");
+		if (jsonRates != null && jsonRates.isArray()) {
+			result.setBaudRates(convertToIntegerList(jsonRates.asArray()));
+		}
+		// FIXME TLE
+		// FIXME beacon class
+		// FIXME beaconSizeBytes
+		// FIXME start / end
+		// FIXME modulation / framing
 
+		return result;
+	}
+
+	private static List<Integer> convertToIntegerList(JsonArray array) {
+		List<Integer> result = new ArrayList<>(array.size());
+		for (int i = 0; i < array.size(); i++) {
+			result.add(array.get(i).asInt());
+		}
 		return result;
 	}
 

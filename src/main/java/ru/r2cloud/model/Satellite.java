@@ -1,5 +1,7 @@
 package ru.r2cloud.model;
 
+import java.util.List;
+
 public class Satellite {
 
 	private String id;
@@ -8,7 +10,7 @@ public class Satellite {
 	private long frequency;
 	private boolean enabled;
 	private long bandwidth;
-	private Integer baud;
+	private List<Integer> baudRates;
 	private BandFrequency frequencyBand;
 	private int inputSampleRate;
 	private int outputSampleRate;
@@ -36,15 +38,15 @@ public class Satellite {
 	public void setFrequencyBand(BandFrequency frequencyBand) {
 		this.frequencyBand = frequencyBand;
 	}
+	
+	public List<Integer> getBaudRates() {
+		return baudRates;
+	}
+	
+	public void setBaudRates(List<Integer> baudRates) {
+		this.baudRates = baudRates;
+	}
 
-	public Integer getBaud() {
-		return baud;
-	}
-	
-	public void setBaud(Integer baud) {
-		this.baud = baud;
-	}
-	
 	public long getBandwidth() {
 		return bandwidth;
 	}

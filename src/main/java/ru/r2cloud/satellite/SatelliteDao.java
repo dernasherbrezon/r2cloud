@@ -35,7 +35,7 @@ public class SatelliteDao {
 			curSatellite.setSource(FrequencySource.valueOf(config.getProperty("satellites." + curSatellite.getId() + ".source")));
 			curSatellite.setEnabled(config.getBoolean("satellites." + curSatellite.getId() + ".enabled"));
 			curSatellite.setBandwidth(config.getLong("satellites." + curSatellite.getId() + ".bandwidth"));
-			curSatellite.setBaud(config.getInteger("satellites." + curSatellite.getId() + ".baud"));
+			curSatellite.setBaudRates(config.getIntegerList("satellites." + curSatellite.getId() + ".baud"));
 			switch (curSatellite.getSource()) {
 			case APT:
 				curSatellite.setInputSampleRate(60_000);

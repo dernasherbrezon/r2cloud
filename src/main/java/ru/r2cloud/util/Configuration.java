@@ -55,7 +55,7 @@ public class Configuration {
 		this.fs = fs;
 		loadUserSettings();
 	}
-	
+
 	public Configuration(InputStream systemSettingsLocation, String userSettingsLocation, FileSystem fs) throws IOException {
 		this(systemSettingsLocation, userSettingsLocation, "config-common.properties", fs);
 	}
@@ -157,6 +157,19 @@ public class Configuration {
 			return null;
 		}
 		return Integer.valueOf(strValue);
+	}
+
+	public List<Integer> getIntegerList(String name) {
+		List<String> props = getProperties(name);
+		List<Integer> result = new ArrayList<>(props.size());
+		for (String cur : props) {
+			try {
+				result.add(Integer.parseInt(cur.trim()));
+			} catch (NumberFormatException e) {
+				LOG.error("unable to parse: {}", cur, e);
+			}
+		}
+		return result;
 	}
 
 	public boolean getBoolean(String string) {
