@@ -20,6 +20,15 @@ public class Satellite {
 	private Framing framing;
 	private Class<? extends Beacon> beaconClass;
 	private int beaconSizeBytes;
+	private Tle tle;
+	
+	public Tle getTle() {
+		return tle;
+	}
+	
+	public void setTle(Tle tle) {
+		this.tle = tle;
+	}
 
 	public int getBeaconSizeBytes() {
 		return beaconSizeBytes;

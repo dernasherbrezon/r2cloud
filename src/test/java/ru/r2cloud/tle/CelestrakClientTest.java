@@ -37,7 +37,7 @@ public class CelestrakClientTest {
 	}
 
 	private static Map<String, Tle> convert(String body) {
-		Map<String, Tle> result = new HashMap<String, Tle>();
+		Map<String, Tle> result = new HashMap<>();
 		String[] lines = body.split("\n");
 		for (int i = 0; i < lines.length; i += 3) {
 			result.put(lines[i], new Tle(new String[] { lines[i], lines[i + 1], lines[i + 2] }));

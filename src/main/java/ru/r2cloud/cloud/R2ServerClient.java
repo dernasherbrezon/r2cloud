@@ -34,6 +34,7 @@ import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.Tle;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -214,10 +215,40 @@ public class R2ServerClient {
 			return null;
 		}
 		result.setBeaconSizeBytes(json.getInt("beaconSizeBytes", 0));
-		// FIXME TLE
+
+		Tle tle = readTle(json.get("tle"));
+		if (tle == null) {
+			return null;
+		}
 		// FIXME start / end
 
 		return result;
+	}
+
+	private static Tle readTle(JsonValue tle) {
+		if (tle == null || !tle.isObject()) {
+			return null;
+		}
+		JsonObject tleObj = tle.asObject();
+
+		String line1 = tleObj.getString("line1", null);
+		if (line1 == null) {
+			return null;
+		}
+		String line2 = tleObj.getString("line2", null);
+		if (line2 == null) {
+			return null;
+		}
+		String line3 = tleObj.getString("line3", null);
+		if (line3 == null) {
+			return null;
+		}
+		try {
+			new org.orekit.propagation.analytical.tle.TLE(line2, line3);
+		} catch (Exception e) {
+			return null;
+		}
+		return new Tle(new String[] { line1, line2, line3 });
 	}
 
 	private static List<Integer> convertToIntegerList(JsonArray array) {

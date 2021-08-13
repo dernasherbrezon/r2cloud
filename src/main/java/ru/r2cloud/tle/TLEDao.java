@@ -96,6 +96,14 @@ public class TLEDao {
 		if (newTle.isEmpty()) {
 			return;
 		}
+		// TLE might come from new launches
+		// in this case they are attached to satellite and statically configured
+		for (Satellite cur : satelliteDao.findAll()) {
+			if (cur.getTle() == null) {
+				continue;
+			}
+			newTle.put(cur.getId(), cur.getTle());
+		}
 		for (Entry<String, Tle> cur : newTle.entrySet()) {
 			Satellite satellite = satelliteDao.findByName(cur.getKey());
 			if (satellite == null) {
