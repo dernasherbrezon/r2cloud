@@ -243,9 +243,7 @@ public class R2ServerClient {
 		if (line3 == null) {
 			return null;
 		}
-		try {
-			new org.orekit.propagation.analytical.tle.TLE(line2, line3);
-		} catch (Exception e) {
+		if (!org.orekit.propagation.analytical.tle.TLE.isFormatOK(line2, line3)) {
 			return null;
 		}
 		return new Tle(new String[] { line1, line2, line3 });

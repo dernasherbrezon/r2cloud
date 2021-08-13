@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.After;
@@ -24,6 +25,7 @@ import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SdrType;
 
 public class R2ServerClientTest {
@@ -132,6 +134,15 @@ public class R2ServerClientTest {
 		assertNull(handler.getRequest());
 	}
 
+	@Test
+	public void testLoadNewLaunch() throws Exception {
+		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunch.json", 200));
+		List<Satellite> result = client.loadNewLaunches();
+		assertEquals(2, result.size());
+		assertSatellite("LUCKY-7", result.get(0));
+		assertSatellite("PAINANI 1", result.get(1));
+	}
+
 	@Before
 	public void start() throws Exception {
 		server = new R2CloudServer();
@@ -184,5 +195,9 @@ public class R2ServerClientTest {
 
 	private static void assertJson(String filename, String actual) {
 		assertEquals(TestUtil.loadExpected(filename), actual);
+	}
+
+	private static void assertSatellite(String name, Satellite actual) {
+		assertEquals(name, actual.getName());
 	}
 }

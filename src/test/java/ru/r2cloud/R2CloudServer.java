@@ -36,6 +36,10 @@ public class R2CloudServer {
 		server.createContext("/api/v1/observation/" + id + "/spectogram", mock);
 	}
 
+	public void setNewLaunchMock(JsonHttpResponse mock) {
+		server.createContext("/api/v1/satellite/newlaunch", mock);
+	}
+
 	public void start() throws IOException {
 		server = HttpServer.create(new InetSocketAddress("localhost", 8001), 0);
 		server.start();

@@ -1,0 +1,40 @@
+[
+	{
+		"id": "R2CLOUD2",
+		"name": "LUCKY-7",
+		"modulation": "GFSK",
+		"framing": "AX25G3RUH",
+		"frequency": 437525000,
+		"bandwidth": 20000,
+		"baudRates": [
+			4800
+		],
+		"beaconClass": "ru.r2cloud.jradio.lucky7.Lucky7Beacon",
+		"tle": {
+			"line1": "LUCKY-7",
+			"line2": "1 44406U 19038W   20069.88080907  .00000505  00000-0  32890-4 0  9992",
+			"line3": "2 44406  97.5270  32.5584 0026284 107.4758 252.9348 15.12089395 37524"
+		},
+		"start": 1639300332000,
+		"end": 1639386732000
+	},
+	{
+		"id": "R2CLOUD3",
+		"name": "PAINANI 1",
+		"modulation": "GFSK",
+		"framing": "AX25G3RUH",
+		"frequency": 437475000,
+		"bandwidth": 20000,
+		"baudRates": [
+			9600
+		],
+		"beaconClass": "ru.r2cloud.jradio.painani1.Painani1Beacon",
+		"tle": {
+			"line1": "PAINANI 1",
+			"line2": "1 44365U 19037A   21224.51323972  .00003314  00000-0  84598-4 0  9994",
+			"line3": "2 44365  45.0052 305.2242 0004439 198.4634 161.6094 15.41815376119428"
+		},
+		"start": 1631265132000,
+		"end": 1631437932000
+	}
+]
