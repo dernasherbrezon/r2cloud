@@ -91,7 +91,6 @@ public class ObservationFactory {
 		case LRPT:
 			result.setActualFrequency(satellite.getFrequency());
 			break;
-		case FSK_AX25_G3RUH:
 		case TELEMETRY:
 			// compensate DC offset only for non sdr-server observations
 			if (result.getSdrType().equals(SdrType.SDRSERVER)) {

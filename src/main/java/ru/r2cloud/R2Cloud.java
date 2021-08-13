@@ -47,7 +47,8 @@ import ru.r2cloud.jradio.unisat6.Unisat6Beacon;
 import ru.r2cloud.jradio.uvsqsat.UvsqsatBeacon;
 import ru.r2cloud.jradio.uwe4.Uwe4Beacon;
 import ru.r2cloud.metrics.Metrics;
-import ru.r2cloud.model.FrequencySource;
+import ru.r2cloud.model.Framing;
+import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.ObservationDao;
@@ -276,11 +277,24 @@ public class R2Cloud {
 		decoders.put("49017", new ItSpinsDecoder(predict, props, Ax25Beacon.class));
 
 		for (Satellite cur : satelliteDao.findAll()) {
-			if (cur.getSource().equals(FrequencySource.FSK_AX25_G3RUH)) {
-				if (cur.getBaudRates().isEmpty()) {
-					throw new IllegalStateException("baud is missing for generic ax25 satellite: " + cur.getId());
+			if (cur.getFraming() == null || cur.getModulation() == null || cur.getBeaconClass() == null || cur.getBaudRates() == null || cur.getBaudRates().isEmpty()) {
+				continue;
+			}
+			if (cur.getModulation().equals(Modulation.GFSK) && cur.getFraming().equals(Framing.AX25G3RUH)) {
+				decoders.put(cur.getId(), new FskAx25G3ruhDecoder(predict, props, cur.getBaudRates().get(0), cur.getBeaconClass()));
+			}
+			if (cur.getModulation().equals(Modulation.GFSK) && cur.getFraming().equals(Framing.AX100)) {
+				if (cur.getBeaconSizeBytes() == 0) {
+					LOG.error("beacon size bytes are missing for GFSK AX100: {}", cur.getId());
+					continue;
 				}
-				decoders.put(cur.getId(), new FskAx25G3ruhDecoder(predict, props, cur.getBaudRates().get(0), Ax25Beacon.class));
+				decoders.put(cur.getId(), new FskAx100Decoder(predict, props, cur.getBeaconSizeBytes(), cur.getBeaconClass(), cur.getBaudRatesAsArray()));
+			}
+			if (cur.getModulation().equals(Modulation.BPSK) && cur.getFraming().equals(Framing.AX25G3RUH)) {
+				decoders.put(cur.getId(), new BpskAx25G3ruhDecoder(predict, props, cur.getBaudRates().get(0), cur.getBeaconClass()));
+			}
+			if (cur.getModulation().equals(Modulation.AFSK) && cur.getFraming().equals(Framing.AX25)) {
+				decoders.put(cur.getId(), new AfskAx25Decoder(predict, props, cur.getBaudRates().get(0), cur.getBeaconClass()));
 			}
 		}
 

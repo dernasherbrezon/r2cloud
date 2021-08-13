@@ -50,7 +50,7 @@ public class Observation {
 	private boolean biast;
 	private SdrType sdrType;
 	private long centerBandFrequency;
-	
+
 	public Observation() {
 		// do nothing
 	}
@@ -102,11 +102,11 @@ public class Observation {
 	public long getCenterBandFrequency() {
 		return centerBandFrequency;
 	}
-	
+
 	public void setCenterBandFrequency(long centerBandFrequency) {
 		this.centerBandFrequency = centerBandFrequency;
 	}
-	
+
 	public SdrType getSdrType() {
 		return sdrType;
 	}
@@ -338,7 +338,11 @@ public class Observation {
 			decoder = "telemetry";
 		}
 		if (decoder != null) {
-			result.setSource(FrequencySource.valueOf(decoder.toUpperCase(Locale.UK)));
+			FrequencySource frequencySource = FrequencySource.valueOf(decoder.toUpperCase(Locale.UK));
+			if (frequencySource.equals(FrequencySource.FSK_AX25_G3RUH)) {
+				frequencySource = FrequencySource.TELEMETRY;
+			}
+			result.setSource(frequencySource);
 		}
 		result.setSatelliteId(meta.getString("satellite", null));
 		JsonValue tle = meta.get("tle");

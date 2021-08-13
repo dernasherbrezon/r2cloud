@@ -132,7 +132,6 @@ public class DecoderService implements Lifecycle {
 		case LRPT:
 			lrpt.inc(observation.getNumberOfDecodedPackets());
 			break;
-		case FSK_AX25_G3RUH:
 		case TELEMETRY:
 			telemetry.inc(observation.getNumberOfDecodedPackets());
 			break;

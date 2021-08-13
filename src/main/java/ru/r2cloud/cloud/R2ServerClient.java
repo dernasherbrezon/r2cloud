@@ -191,12 +191,7 @@ public class R2ServerClient {
 		} catch (Exception e) {
 			return null;
 		}
-
-		if (result.getModulation().equals(Modulation.GFSK) && result.getFraming().equals(Framing.AX25G3RUH)) {
-			result.setSource(FrequencySource.FSK_AX25_G3RUH);
-		} else {
-			result.setSource(FrequencySource.TELEMETRY);
-		}
+		result.setSource(FrequencySource.TELEMETRY);
 		long bandwidth = json.getLong("bandwidth", 0);
 		if (bandwidth == 0) {
 			return null;
@@ -218,8 +213,8 @@ public class R2ServerClient {
 		} catch (ClassNotFoundException e) {
 			return null;
 		}
+		result.setBeaconSizeBytes(json.getInt("beaconSizeBytes", 0));
 		// FIXME TLE
-		// FIXME beaconSizeBytes
 		// FIXME start / end
 
 		return result;

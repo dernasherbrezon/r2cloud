@@ -65,7 +65,6 @@ public class SatelliteDao {
 				curSatellite.setInputSampleRate(288_000);
 				curSatellite.setOutputSampleRate(144_000);
 				break;
-			case FSK_AX25_G3RUH:
 			case TELEMETRY:
 				// sdr-server supports very narrow bandwidths
 				if (config.getSdrType().equals(SdrType.SDRSERVER)) {
