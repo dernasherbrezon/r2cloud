@@ -56,6 +56,10 @@ public class SatelliteDao {
 					throw new IllegalArgumentException(e);
 				}
 			}
+			String beaconSizeStr = config.getProperty("satellites." + curSatellite.getId() + ".beaconSize");
+			if (beaconSizeStr != null) {
+				curSatellite.setBeaconSizeBytes(Integer.valueOf(beaconSizeStr));
+			}
 			switch (curSatellite.getSource()) {
 			case APT:
 				curSatellite.setInputSampleRate(60_000);
