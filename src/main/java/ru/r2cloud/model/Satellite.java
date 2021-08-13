@@ -21,6 +21,15 @@ public class Satellite {
 	private Class<? extends Beacon> beaconClass;
 	private int beaconSizeBytes;
 	private Tle tle;
+	private Priority priority;
+	
+	public Priority getPriority() {
+		return priority;
+	}
+	
+	public void setPriority(Priority priority) {
+		this.priority = priority;
+	}
 	
 	public Tle getTle() {
 		return tle;

@@ -12,6 +12,7 @@ import ru.r2cloud.model.BandFrequency;
 import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.Modulation;
+import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteComparator;
 import ru.r2cloud.model.SdrType;
@@ -86,6 +87,7 @@ public class SatelliteDao {
 				throw new IllegalStateException("unable to find satellite name for: " + cur);
 			}
 			curSatellite.setName(name);
+			curSatellite.setPriority(Priority.NORMAL);
 			curSatellite.setFrequency(config.getLong("satellites." + curSatellite.getId() + ".freq"));
 			curSatellite.setSource(FrequencySource.valueOf(config.getProperty("satellites." + curSatellite.getId() + ".source")));
 			curSatellite.setEnabled(config.getBoolean("satellites." + curSatellite.getId() + ".enabled"));

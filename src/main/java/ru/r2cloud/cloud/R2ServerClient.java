@@ -33,6 +33,7 @@ import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.util.Configuration;
@@ -193,6 +194,7 @@ public class R2ServerClient {
 			return null;
 		}
 		result.setSource(FrequencySource.TELEMETRY);
+		result.setPriority(Priority.HIGH);
 		long bandwidth = json.getLong("bandwidth", 0);
 		if (bandwidth == 0) {
 			return null;
