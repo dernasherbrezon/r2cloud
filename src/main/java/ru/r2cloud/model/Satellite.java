@@ -1,5 +1,6 @@
 package ru.r2cloud.model;
 
+import java.util.Date;
 import java.util.List;
 
 import ru.r2cloud.jradio.Beacon;
@@ -22,19 +23,39 @@ public class Satellite {
 	private int beaconSizeBytes;
 	private Tle tle;
 	private Priority priority;
-	
+	// active period
+	// used for new launches when noradid not yet defined
+	private Date start;
+	private Date end;
+
+	public Date getStart() {
+		return start;
+	}
+
+	public Date getEnd() {
+		return end;
+	}
+
+	public void setStart(Date start) {
+		this.start = start;
+	}
+
+	public void setEnd(Date end) {
+		this.end = end;
+	}
+
 	public Priority getPriority() {
 		return priority;
 	}
-	
+
 	public void setPriority(Priority priority) {
 		this.priority = priority;
 	}
-	
+
 	public Tle getTle() {
 		return tle;
 	}
-	
+
 	public void setTle(Tle tle) {
 		this.tle = tle;
 	}

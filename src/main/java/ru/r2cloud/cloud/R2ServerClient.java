@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -222,7 +223,14 @@ public class R2ServerClient {
 		if (tle == null) {
 			return null;
 		}
-		// FIXME start / end
+		long startTimeMillis = json.getLong("start", 0);
+		if (startTimeMillis != 0) {
+			result.setStart(new Date(startTimeMillis));
+		}
+		long endTimeMillis = json.getLong("end", 0);
+		if (endTimeMillis != 0) {
+			result.setEnd(new Date(endTimeMillis));
+		}
 
 		return result;
 	}

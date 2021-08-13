@@ -46,6 +46,13 @@ public class ObservationFactory {
 		}
 		List<ObservationRequest> result = new ArrayList<>();
 		for (SatPass cur : batch) {
+			// ignore all observations out of satellite's active time
+			if (satellite.getStart() != null && cur.getEndMillis() < satellite.getStart().getTime()) {
+				continue;
+			}
+			if (satellite.getEnd() != null && cur.getStartMillis() > satellite.getEnd().getTime()) {
+				continue;
+			}
 			result.add(convert(satellite, tle, tlePropagator, cur));
 		}
 		return result;
