@@ -212,7 +212,6 @@ public class R2Cloud {
 		decoders.put("46489", new BpskAx25G3ruhDecoder(predict, props, 2400, 1200, MeznsatBeacon.class));
 		decoders.put("42792", new AfskAx25Decoder(predict, props, 1200, 1300, Ax25Beacon.class));
 		decoders.put("39428", new BpskAx25Decoder(predict, props, 2400, 1200, Ax25Beacon.class));
-		decoders.put("40024", new BpskAx25Decoder(predict, props, 1200, Ax25Beacon.class));
 		decoders.put("43019", new AfskAx25Decoder(predict, props, 1200, 1300, Ax25Beacon.class));
 		decoders.put("42790", new Gomx1Decoder(predict, props, CspBeacon.class, false, true, true));
 		decoders.put("49017", new ItSpinsDecoder(predict, props, Ax25Beacon.class));
@@ -223,19 +222,20 @@ public class R2Cloud {
 			}
 			if (cur.getModulation().equals(Modulation.GFSK) && cur.getFraming().equals(Framing.AX25G3RUH)) {
 				decoders.put(cur.getId(), new FskAx25G3ruhDecoder(predict, props, cur.getBaudRates().get(0), cur.getBeaconClass()));
-			}
-			if (cur.getModulation().equals(Modulation.GFSK) && cur.getFraming().equals(Framing.AX100)) {
+			} else if (cur.getModulation().equals(Modulation.GFSK) && cur.getFraming().equals(Framing.AX100)) {
 				if (cur.getBeaconSizeBytes() == 0) {
 					LOG.error("beacon size bytes are missing for GFSK AX100: {}", cur.getId());
 					continue;
 				}
 				decoders.put(cur.getId(), new FskAx100Decoder(predict, props, cur.getBeaconSizeBytes(), cur.getBeaconClass(), cur.getBaudRatesAsArray()));
-			}
-			if (cur.getModulation().equals(Modulation.BPSK) && cur.getFraming().equals(Framing.AX25G3RUH)) {
+			} else if (cur.getModulation().equals(Modulation.BPSK) && cur.getFraming().equals(Framing.AX25G3RUH)) {
 				decoders.put(cur.getId(), new BpskAx25G3ruhDecoder(predict, props, cur.getBaudRates().get(0), cur.getBeaconClass()));
-			}
-			if (cur.getModulation().equals(Modulation.AFSK) && cur.getFraming().equals(Framing.AX25)) {
+			} else if (cur.getModulation().equals(Modulation.BPSK) && cur.getFraming().equals(Framing.AX25)) {
+				decoders.put(cur.getId(), new BpskAx25Decoder(predict, props, cur.getBaudRates().get(0), cur.getBeaconClass()));
+			} else if (cur.getModulation().equals(Modulation.AFSK) && cur.getFraming().equals(Framing.AX25)) {
 				decoders.put(cur.getId(), new AfskAx25Decoder(predict, props, cur.getBaudRates().get(0), cur.getBeaconClass()));
+			} else {
+				LOG.error("unsupported combination of modulation and framing: {} - {}", cur.getModulation(), cur.getFraming());
 			}
 		}
 
