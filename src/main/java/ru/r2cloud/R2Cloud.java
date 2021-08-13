@@ -170,7 +170,7 @@ public class R2Cloud {
 		rtlsdrStatusDao = new SdrStatusDao(props, rtlsdrLock, threadFactory, metrics, processFactory);
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
-		satelliteDao = new SatelliteDao(props);
+		satelliteDao = new SatelliteDao(props, r2cloudClient);
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient(props.getProperty("celestrak.hostname"), props.getProperty("calpoly.hostname")));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
 		signed = new SignedURL(props, clock);

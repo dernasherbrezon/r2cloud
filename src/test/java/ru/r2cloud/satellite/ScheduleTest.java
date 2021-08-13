@@ -147,7 +147,7 @@ public class ScheduleTest {
 		config.setProperty("locaiton.lon", "0.01");
 		config.setProperty("satellites.sdr", SdrType.RTLSDR.name().toLowerCase());
 		PredictOreKit predict = new PredictOreKit(config);
-		satelliteDao = new SatelliteDao(config);
+		satelliteDao = new SatelliteDao(config, null);
 		TLEDao tleDao = new TLEDao(config, satelliteDao, new CelestrakClient(celestrak.getUrl()));
 		tleDao.start();
 		factory = new ObservationFactory(predict, tleDao, config);
