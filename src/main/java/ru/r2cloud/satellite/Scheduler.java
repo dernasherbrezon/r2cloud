@@ -292,6 +292,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 				@Override
 				public void safeRun() {
+					satelliteDao.reload();
 					reschedule();
 				}
 			}, delay, TimeUnit.MILLISECONDS);

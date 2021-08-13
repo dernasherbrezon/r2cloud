@@ -21,13 +21,22 @@ import ru.r2cloud.util.Configuration;
 public class SatelliteDao {
 
 	private final Configuration config;
-	private final List<Satellite> satellites;
+	private final R2ServerClient r2server;
+	private final List<Satellite> satellites = new ArrayList<>();
 	private final Map<String, Satellite> satelliteByName = new HashMap<>();
 	private final Map<String, Satellite> satelliteById = new HashMap<>();
 
 	public SatelliteDao(Configuration config, R2ServerClient r2server) {
 		this.config = config;
-		satellites = new ArrayList<>();
+		this.r2server = r2server;
+		reload();
+	}
+
+	public synchronized void reload() {
+		satellites.clear();
+		satelliteByName.clear();
+		satelliteById.clear();
+
 		satellites.addAll(loadFromConfig(config));
 		if (config.getBoolean("r2cloud.newLaunches")) {
 			satellites.addAll(r2server.loadNewLaunches());
@@ -118,19 +127,19 @@ public class SatelliteDao {
 		return result;
 	}
 
-	public Satellite findByName(String name) {
+	public synchronized Satellite findByName(String name) {
 		return satelliteByName.get(name);
 	}
 
-	public Satellite findById(String id) {
+	public synchronized Satellite findById(String id) {
 		return satelliteById.get(id);
 	}
 
-	public List<Satellite> findAll() {
+	public synchronized List<Satellite> findAll() {
 		return satellites;
 	}
 
-	public List<Satellite> findEnabled() {
+	public synchronized List<Satellite> findEnabled() {
 		List<Satellite> result = new ArrayList<>();
 		for (Satellite cur : satellites) {
 			if (!cur.isEnabled()) {

@@ -139,8 +139,8 @@ public class R2ServerClientTest {
 		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunch.json", 200));
 		List<Satellite> result = client.loadNewLaunches();
 		assertEquals(2, result.size());
-		assertSatellite("LUCKY-7", result.get(0));
-		assertSatellite("PAINANI 1", result.get(1));
+		assertSatellite("LUCKY-7", true, result.get(0));
+		assertSatellite("PAINANI 1", false, result.get(1));
 	}
 
 	@Before
@@ -151,6 +151,7 @@ public class R2ServerClientTest {
 		config.setProperty("r2server.hostname", server.getUrl());
 		config.setProperty("r2server.connectionTimeout", "1000");
 		config.setProperty("r2cloud.apiKey", UUID.randomUUID().toString());
+		config.setProperty("satellites.R2CLOUD3.enabled", false);
 		client = new R2ServerClient(config);
 	}
 
@@ -197,7 +198,8 @@ public class R2ServerClientTest {
 		assertEquals(TestUtil.loadExpected(filename), actual);
 	}
 
-	private static void assertSatellite(String name, Satellite actual) {
+	private static void assertSatellite(String name, boolean enabled, Satellite actual) {
 		assertEquals(name, actual.getName());
+		assertEquals(enabled, actual.isEnabled());
 	}
 }

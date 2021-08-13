@@ -129,7 +129,7 @@ public class R2ServerClient {
 		});
 	}
 
-	private static List<Satellite> readNewLaunches(String body) {
+	private List<Satellite> readNewLaunches(String body) {
 		JsonValue parsedJson;
 		try {
 			parsedJson = Json.parse(body);
@@ -158,7 +158,7 @@ public class R2ServerClient {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Satellite readNewLaunch(JsonObject json) {
+	private Satellite readNewLaunch(JsonObject json) {
 		Satellite result = new Satellite();
 		String id = json.getString("id", null);
 		if (id == null) {
@@ -196,6 +196,13 @@ public class R2ServerClient {
 		}
 		result.setSource(FrequencySource.TELEMETRY);
 		result.setPriority(Priority.HIGH);
+		// by default enabled, but can be overriden by user from UI
+		String enabledStr = config.getProperty("satellites." + result.getId() + ".enabled");
+		if (enabledStr != null) {
+			result.setEnabled(Boolean.valueOf(enabledStr));
+		} else {
+			result.setEnabled(true);
+		}
 		long bandwidth = json.getLong("bandwidth", 0);
 		if (bandwidth == 0) {
 			return null;
