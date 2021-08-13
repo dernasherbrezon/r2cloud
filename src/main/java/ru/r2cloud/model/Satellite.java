@@ -2,6 +2,8 @@ package ru.r2cloud.model;
 
 import java.util.List;
 
+import ru.r2cloud.jradio.Beacon;
+
 public class Satellite {
 
 	private String id;
@@ -14,6 +16,33 @@ public class Satellite {
 	private BandFrequency frequencyBand;
 	private int inputSampleRate;
 	private int outputSampleRate;
+	private Modulation modulation;
+	private Framing framing;
+	private Class<? extends Beacon> beaconClass;
+	
+	public Class<? extends Beacon> getBeaconClass() {
+		return beaconClass;
+	}
+	
+	public void setBeaconClass(Class<? extends Beacon> beaconClass) {
+		this.beaconClass = beaconClass;
+	}
+	
+	public Modulation getModulation() {
+		return modulation;
+	}
+	
+	public void setModulation(Modulation modulation) {
+		this.modulation = modulation;
+	}
+	
+	public Framing getFraming() {
+		return framing;
+	}
+	
+	public void setFraming(Framing framing) {
+		this.framing = framing;
+	}
 	
 	public int getInputSampleRate() {
 		return inputSampleRate;

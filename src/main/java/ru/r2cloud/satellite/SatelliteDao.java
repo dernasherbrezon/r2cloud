@@ -6,8 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.model.BandFrequency;
+import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.FrequencySource;
+import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteComparator;
 import ru.r2cloud.model.SdrType;
@@ -20,6 +23,7 @@ public class SatelliteDao {
 	private final Map<String, Satellite> satelliteByName = new HashMap<>();
 	private final Map<String, Satellite> satelliteById = new HashMap<>();
 
+	@SuppressWarnings("unchecked")
 	public SatelliteDao(Configuration config) {
 		this.config = config;
 		satellites = new ArrayList<>();
@@ -36,6 +40,22 @@ public class SatelliteDao {
 			curSatellite.setEnabled(config.getBoolean("satellites." + curSatellite.getId() + ".enabled"));
 			curSatellite.setBandwidth(config.getLong("satellites." + curSatellite.getId() + ".bandwidth"));
 			curSatellite.setBaudRates(config.getIntegerList("satellites." + curSatellite.getId() + ".baud"));
+			String modulationStr = config.getProperty("satellites." + curSatellite.getId() + ".modulation");
+			if (modulationStr != null) {
+				curSatellite.setModulation(Modulation.valueOf(modulationStr));
+			}
+			String framingStr = config.getProperty("satellites." + curSatellite.getId() + ".framing");
+			if (framingStr != null) {
+				curSatellite.setFraming(Framing.valueOf(framingStr));
+			}
+			String beaconClassStr = config.getProperty("satellites." + curSatellite.getId() + ".beacon");
+			if (beaconClassStr != null) {
+				try {
+					curSatellite.setBeaconClass((Class<? extends Beacon>) Class.forName(beaconClassStr));
+				} catch (ClassNotFoundException e) {
+					throw new IllegalArgumentException(e);
+				}
+			}
 			switch (curSatellite.getSource()) {
 			case APT:
 				curSatellite.setInputSampleRate(60_000);

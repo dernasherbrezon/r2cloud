@@ -28,7 +28,10 @@ import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
 
 import ru.r2cloud.R2Cloud;
+import ru.r2cloud.jradio.Beacon;
+import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.FrequencySource;
+import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.util.Configuration;
@@ -142,34 +145,82 @@ public class R2ServerClient {
 			if (!jsonValue.isObject()) {
 				continue;
 			}
-			result.add(readNewLaunch(jsonValue.asObject()));
+			Satellite newLaunch = readNewLaunch(jsonValue.asObject());
+			if (newLaunch == null) {
+				continue;
+			}
+			result.add(newLaunch);
 		}
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	private static Satellite readNewLaunch(JsonObject json) {
 		Satellite result = new Satellite();
-		result.setId(json.getString("id", null));
-		result.setName(json.getString("name", null));
-		result.setFrequency(json.getLong("frequency", 0));
+		String id = json.getString("id", null);
+		if (id == null) {
+			return null;
+		}
+		result.setId(id);
+		String name = json.getString("name", null);
+		if (name == null) {
+			return null;
+		}
+		result.setName(name);
+		long frequency = json.getLong("frequency", 0);
+		if (frequency == 0) {
+			return null;
+		}
+		result.setFrequency(frequency);
 
 		String modulation = json.getString("modulation", null);
+		if (modulation == null) {
+			return null;
+		}
+		try {
+			result.setModulation(Modulation.valueOf(modulation));
+		} catch (Exception e) {
+			return null;
+		}
 		String framing = json.getString("framing", null);
-		if (modulation.equalsIgnoreCase("GFSK") && framing.equalsIgnoreCase("AX25G3RUH")) {
+		if (framing == null) {
+			return null;
+		}
+		try {
+			result.setFraming(Framing.valueOf(framing));
+		} catch (Exception e) {
+			return null;
+		}
+
+		if (result.getModulation().equals(Modulation.GFSK) && result.getFraming().equals(Framing.AX25G3RUH)) {
 			result.setSource(FrequencySource.FSK_AX25_G3RUH);
 		} else {
 			result.setSource(FrequencySource.TELEMETRY);
 		}
-		result.setBandwidth(json.getLong("bandwidth", 0));
+		long bandwidth = json.getLong("bandwidth", 0);
+		if (bandwidth == 0) {
+			return null;
+		}
+		result.setBandwidth(bandwidth);
 		JsonValue jsonRates = json.get("baudRates");
 		if (jsonRates != null && jsonRates.isArray()) {
 			result.setBaudRates(convertToIntegerList(jsonRates.asArray()));
 		}
+		if (result.getBaudRates() == null || result.getBaudRates().isEmpty()) {
+			return null;
+		}
+		String beaconClassStr = json.getString("beaconClass", null);
+		if (beaconClassStr == null) {
+			return null;
+		}
+		try {
+			result.setBeaconClass((Class<? extends Beacon>) Class.forName(beaconClassStr));
+		} catch (ClassNotFoundException e) {
+			return null;
+		}
 		// FIXME TLE
-		// FIXME beacon class
 		// FIXME beaconSizeBytes
 		// FIXME start / end
-		// FIXME modulation / framing
 
 		return result;
 	}
