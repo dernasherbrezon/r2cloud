@@ -102,7 +102,7 @@ public class TLEDao {
 			if (cur.getTle() == null) {
 				continue;
 			}
-			newTle.put(cur.getId(), cur.getTle());
+			newTle.put(cur.getName(), cur.getTle());
 		}
 		for (Entry<String, Tle> cur : newTle.entrySet()) {
 			Satellite satellite = satelliteDao.findByName(cur.getKey());
