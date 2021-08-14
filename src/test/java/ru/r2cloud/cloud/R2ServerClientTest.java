@@ -201,5 +201,6 @@ public class R2ServerClientTest {
 	private static void assertSatellite(String name, boolean enabled, Satellite actual) {
 		assertEquals(name, actual.getName());
 		assertEquals(enabled, actual.isEnabled());
+		assertNotNull(actual.getTle());
 	}
 }

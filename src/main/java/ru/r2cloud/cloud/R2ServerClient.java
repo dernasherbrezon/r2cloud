@@ -230,6 +230,7 @@ public class R2ServerClient {
 		if (tle == null) {
 			return null;
 		}
+		result.setTle(tle);
 		long startTimeMillis = json.getLong("start", 0);
 		if (startTimeMillis != 0) {
 			result.setStart(new Date(startTimeMillis));
