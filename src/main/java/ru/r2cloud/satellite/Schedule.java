@@ -102,8 +102,8 @@ public class Schedule {
 		}
 
 		List<ObservationRequest> result = new ArrayList<>();
-		result.addAll(scheduleSatellites(findByPriority(allSatellites, Priority.HIGH), passesBySatellite));
-		result.addAll(scheduleSatellites(findByPriority(allSatellites, Priority.NORMAL), passesBySatellite));
+		result.addAll(scheduleSatellites(findByPriority(allSatellites, Priority.HIGH), passesBySatellite, Priority.HIGH));
+		result.addAll(scheduleSatellites(findByPriority(allSatellites, Priority.NORMAL), passesBySatellite, Priority.NORMAL));
 
 		index(result);
 		Collections.sort(result, ObservationRequestComparator.INSTANCE);
@@ -120,7 +120,7 @@ public class Schedule {
 		return result;
 	}
 
-	private List<ObservationRequest> scheduleSatellites(List<Satellite> allSatellites, Map<String, List<ObservationRequest>> passesBySatellite) {
+	private List<ObservationRequest> scheduleSatellites(List<Satellite> allSatellites, Map<String, List<ObservationRequest>> passesBySatellite, Priority priority) {
 		List<ObservationRequest> result = new ArrayList<>();
 		// fill-in full observations
 		while (!Thread.currentThread().isInterrupted()) {
@@ -165,6 +165,7 @@ public class Schedule {
 				break;
 			}
 		}
+		LOG.info("{}: satellites {} observations {}", priority, allSatellites.size(), result.size());
 		return result;
 	}
 

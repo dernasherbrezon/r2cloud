@@ -60,6 +60,17 @@ public class CelestrakServer {
 				os.close();
 			}
 		});
+		server.createContext("/NORAD/elements/satnogs.txt", new HttpHandler() {
+
+			@Override
+			public void handle(HttpExchange exchange) throws IOException {
+				byte[] bytes = "".getBytes(StandardCharsets.UTF_8);
+				exchange.sendResponseHeaders(200, bytes.length);
+				OutputStream os = exchange.getResponseBody();
+				os.write(bytes);
+				os.close();
+			}
+		});
 	}
 
 	public void stop() {
