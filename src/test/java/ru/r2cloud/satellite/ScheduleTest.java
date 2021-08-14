@@ -48,8 +48,19 @@ public class ScheduleTest {
 	private R2CloudServer r2server;
 	private TestConfiguration config;
 	private SatelliteDao satelliteDao;
+	private TLEDao tleDao;
 	private long current;
 	private ObservationFactory factory;
+
+	@Test
+	public void testScheduleForNewLaunches() throws Exception {
+		r2server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunch-for-scheduletest.json", 200));
+		satelliteDao.reload();
+		tleDao.reload();
+		List<ObservationRequest> expected = readExpected("expected/scheduleNewLaunches.txt");
+		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
+		assertObservations(expected, actual);
+	}
 
 	@Test
 	public void testSequentialTimetableForRotator() throws Exception {
@@ -158,7 +169,7 @@ public class ScheduleTest {
 		config.setProperty("r2server.hostname", r2server.getUrl());
 		R2ServerClient r2cloudClient = new R2ServerClient(config);
 		satelliteDao = new SatelliteDao(config, r2cloudClient);
-		TLEDao tleDao = new TLEDao(config, satelliteDao, new CelestrakClient(celestrak.getUrl()));
+		tleDao = new TLEDao(config, satelliteDao, new CelestrakClient(celestrak.getUrl()));
 		tleDao.start();
 		PredictOreKit predict = new PredictOreKit(config);
 		factory = new ObservationFactory(predict, tleDao, config);

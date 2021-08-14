@@ -91,7 +91,7 @@ public class TLEDao {
 		return tle;
 	}
 
-	void reload() {
+	public void reload() {
 		Map<String, Tle> newTle = celestrak.getTleForActiveSatellites();
 		if (newTle.isEmpty()) {
 			return;

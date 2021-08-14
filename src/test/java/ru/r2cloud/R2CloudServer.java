@@ -10,6 +10,7 @@ import com.sun.net.httpserver.HttpServer;
 public class R2CloudServer {
 
 	private HttpServer server;
+	private boolean newLaunchConfigured = false;
 
 	public void setObservationMock(JsonHttpResponse observationMock) {
 		server.createContext("/api/v1/observation", new HttpHandler() {
@@ -37,7 +38,12 @@ public class R2CloudServer {
 	}
 
 	public void setNewLaunchMock(JsonHttpResponse mock) {
-		server.createContext("/api/v1/satellite/newlaunch", mock);
+		String newLaunchPath = "/api/v1/satellite/newlaunch";
+		if (newLaunchConfigured) {
+			server.removeContext(newLaunchPath);
+		}
+		server.createContext(newLaunchPath, mock);
+		newLaunchConfigured = true;
 	}
 
 	public void start() throws IOException {
