@@ -16,38 +16,15 @@ import pl.edu.icm.jlargearrays.ConcurrencyUtils;
 import ru.r2cloud.cloud.R2ServerClient;
 import ru.r2cloud.cloud.R2ServerService;
 import ru.r2cloud.ddns.DDNSClient;
-import ru.r2cloud.jradio.aistechsat2.Aistechsat2Beacon;
-import ru.r2cloud.jradio.aistechsat3.Aistechsat3Beacon;
-import ru.r2cloud.jradio.amical1.Amical1Beacon;
-import ru.r2cloud.jradio.armadillo.ArmadilloBeacon;
 import ru.r2cloud.jradio.ax25.Ax25Beacon;
-import ru.r2cloud.jradio.bsusat1.Bsusat1Beacon;
-import ru.r2cloud.jradio.bugsat.BugsatBeacon;
 import ru.r2cloud.jradio.csp.CspBeacon;
-import ru.r2cloud.jradio.falconsat3.Falconsat3Beacon;
 import ru.r2cloud.jradio.fox.Fox1BBeacon;
 import ru.r2cloud.jradio.fox.Fox1CBeacon;
 import ru.r2cloud.jradio.fox.Fox1DBeacon;
-import ru.r2cloud.jradio.grbalpha.GRBAlphaBeacon;
-import ru.r2cloud.jradio.grifex.GrifexBeacon;
-import ru.r2cloud.jradio.ls2.Lightsail2Beacon;
-import ru.r2cloud.jradio.lume1.Lume1Beacon;
 import ru.r2cloud.jradio.meznsat.MeznsatBeacon;
-import ru.r2cloud.jradio.nexus.NexusBeacon;
-import ru.r2cloud.jradio.norbi.NorbiBeacon;
-import ru.r2cloud.jradio.painani1.Painani1Beacon;
-import ru.r2cloud.jradio.polyitan1.PolyItan1Beacon;
-import ru.r2cloud.jradio.qarman.QarmanBeacon;
-import ru.r2cloud.jradio.quetzal1.Quetzal1Beacon;
-import ru.r2cloud.jradio.skcube.SkcubeBeacon;
-import ru.r2cloud.jradio.spooqy1.Spooqy1Beacon;
-import ru.r2cloud.jradio.swampsat2.Swampsat2Beacon;
-import ru.r2cloud.jradio.tausat.Tausat1Beacon;
-import ru.r2cloud.jradio.unisat6.Unisat6Beacon;
-import ru.r2cloud.jradio.uvsqsat.UvsqsatBeacon;
-import ru.r2cloud.jradio.uwe4.Uwe4Beacon;
 import ru.r2cloud.metrics.Metrics;
-import ru.r2cloud.model.FrequencySource;
+import ru.r2cloud.model.Framing;
+import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.ObservationDao;
@@ -179,7 +156,7 @@ public class R2Cloud {
 		if (numberOfThreads != null) {
 			ConcurrencyUtils.setNumberOfThreads(numberOfThreads);
 		}
-		
+
 		r2cloudClient = new R2ServerClient(props);
 		spectogramService = new SpectogramService(props);
 		resultDao = new ObservationDao(props);
@@ -190,7 +167,7 @@ public class R2Cloud {
 		rtlsdrStatusDao = new SdrStatusDao(props, rtlsdrLock, threadFactory, metrics, processFactory);
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
-		satelliteDao = new SatelliteDao(props);
+		satelliteDao = new SatelliteDao(props, r2cloudClient);
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient(props.getProperty("celestrak.hostname"), props.getProperty("calpoly.hostname")));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
 		signed = new SignedURL(props, clock);
@@ -221,66 +198,44 @@ public class R2Cloud {
 		decoders.put("43803", new Jy1satDecoder(predict, props));
 		decoders.put("43804", new Suomi100Decoder(predict, props));
 		decoders.put("43881", new Dstar1Decoder(predict, props));
-		decoders.put("43908", new FskAx100Decoder(predict, props, 255, Lume1Beacon.class, 4800, 9600));
-		decoders.put("44103", new FskAx100Decoder(predict, props, 255, Aistechsat3Beacon.class, 9600));
 		decoders.put("44406", new Lucky7Decoder(predict, props));
 		decoders.put("44878", new OpsSatDecoder(predict, props));
 		decoders.put("44885", new Floripasat1Decoder(predict, props));
-		decoders.put("45115", new FskAx25G3ruhDecoder(predict, props, 9600, Swampsat2Beacon.class));
-		decoders.put("45263", new FskAx25G3ruhDecoder(predict, props, 9600, QarmanBeacon.class));
-		decoders.put("45598", new FskAx25G3ruhDecoder(predict, props, 4800, Quetzal1Beacon.class));
 		decoders.put("43017", new FoxSlowDecoder<>(predict, props, Fox1BBeacon.class));
 		decoders.put("43770", new FoxSlowDecoder<>(predict, props, Fox1CBeacon.class));
 		decoders.put("43137", new FoxDecoder<>(predict, props, Fox1DBeacon.class));
 		decoders.put("45119", new Huskysat1Decoder(predict, props));
-		decoders.put("44365", new FskAx25G3ruhDecoder(predict, props, 9600, Painani1Beacon.class));
 		decoders.put("43855", new ChompttDecoder(predict, props));
-		decoders.put("43880", new FskAx25G3ruhDecoder(predict, props, 9600, Uwe4Beacon.class));
-		decoders.put("40012", new FskAx25G3ruhDecoder(predict, props, 9600, Unisat6Beacon.class));
-		decoders.put("40042", new FskAx25G3ruhDecoder(predict, props, 9600, PolyItan1Beacon.class));
-		decoders.put("43666", new FskAx25G3ruhDecoder(predict, props, 9600, Bsusat1Beacon.class));
-		decoders.put("44420", new FskAx25G3ruhDecoder(predict, props, 9600, Lightsail2Beacon.class));
-		decoders.put("42789", new FskAx25G3ruhDecoder(predict, props, 9600, SkcubeBeacon.class));
-		decoders.put("43937", new FskAx25G3ruhDecoder(predict, props, 9600, NexusBeacon.class));
-		decoders.put("30776", new FskAx25G3ruhDecoder(predict, props, 9600, Falconsat3Beacon.class));
-		decoders.put("43768", new FskAx100Decoder(predict, props, 255, Aistechsat2Beacon.class, 9600));
 		decoders.put("41789", new Alsat1nDecoder(predict, props));
 		decoders.put("39090", new Strand1Decoder(predict, props));
 		decoders.put("46495", new SalsatDecoder(predict, props));
-		decoders.put("43199", new BpskAx25G3ruhDecoder(predict, props, 9600, Ax25Beacon.class));
-		decoders.put("44352", new FskAx25G3ruhDecoder(predict, props, 19200, ArmadilloBeacon.class));
-		decoders.put("46287", new AfskAx25Decoder(predict, props, 1200, Amical1Beacon.class));
-		decoders.put("40654", new AfskAx25Decoder(predict, props, 1200, Ax25Beacon.class));
-		decoders.put("44332", new FskAx100Decoder(predict, props, 512, Spooqy1Beacon.class, 4800));
 		decoders.put("46489", new BpskAx25G3ruhDecoder(predict, props, 2400, 1200, MeznsatBeacon.class));
-		decoders.put("43738", new FskAx100Decoder(predict, props, 512, CspBeacon.class, 4800));
-		decoders.put("46494", new FskAx25G3ruhDecoder(predict, props, 9600, NorbiBeacon.class));
-		decoders.put("43721", new FskAx100Decoder(predict, props, 255, CspBeacon.class, 9600));
-		decoders.put("40931", new AfskAx25Decoder(predict, props, 1200, Ax25Beacon.class));
-		decoders.put("44426", new AfskAx25Decoder(predict, props, 1200, Ax25Beacon.class));
-		decoders.put("46923", new BpskAx25G3ruhDecoder(predict, props, 1200, Ax25Beacon.class));
-		decoders.put("49016", new BpskAx25G3ruhDecoder(predict, props, 1200, Ax25Beacon.class));
 		decoders.put("42792", new AfskAx25Decoder(predict, props, 1200, 1300, Ax25Beacon.class));
-		decoders.put("46922", new FskAx100Decoder(predict, props, 255, CspBeacon.class, 1200));
 		decoders.put("39428", new BpskAx25Decoder(predict, props, 2400, 1200, Ax25Beacon.class));
-		decoders.put("47438", new BpskAx25G3ruhDecoder(predict, props, 9600, UvsqsatBeacon.class));
-		decoders.put("40024", new BpskAx25Decoder(predict, props, 1200, Ax25Beacon.class));
-		decoders.put("47926", new BpskAx25G3ruhDecoder(predict, props, 9600, Tausat1Beacon.class));
-		decoders.put("47448", new FskAx100Decoder(predict, props, 512, CspBeacon.class, 9600));
-		decoders.put("40014", new FskAx25G3ruhDecoder(predict, props, 9600, BugsatBeacon.class));
-		decoders.put("40379", new FskAx25G3ruhDecoder(predict, props, 9600, GrifexBeacon.class));
-		decoders.put("47959", new FskAx25G3ruhDecoder(predict, props, 9600, GRBAlphaBeacon.class));
 		decoders.put("43019", new AfskAx25Decoder(predict, props, 1200, 1300, Ax25Beacon.class));
 		decoders.put("42790", new Gomx1Decoder(predict, props, CspBeacon.class, false, true, true));
-		decoders.put("48851", new FskAx100Decoder(predict, props, 512, CspBeacon.class, 4800, 9600));
 		decoders.put("49017", new ItSpinsDecoder(predict, props, Ax25Beacon.class));
 
 		for (Satellite cur : satelliteDao.findAll()) {
-			if (cur.getSource().equals(FrequencySource.FSK_AX25_G3RUH)) {
-				if (cur.getBaud() == null) {
-					throw new IllegalStateException("baud is missing for generic ax25 satellite: " + cur.getId());
+			if (cur.getFraming() == null || cur.getModulation() == null || cur.getBeaconClass() == null || cur.getBaudRates() == null || cur.getBaudRates().isEmpty()) {
+				continue;
+			}
+			if (cur.getModulation().equals(Modulation.GFSK) && cur.getFraming().equals(Framing.AX25G3RUH)) {
+				decoders.put(cur.getId(), new FskAx25G3ruhDecoder(predict, props, cur.getBaudRates().get(0), cur.getBeaconClass()));
+			} else if (cur.getModulation().equals(Modulation.GFSK) && cur.getFraming().equals(Framing.AX100)) {
+				if (cur.getBeaconSizeBytes() == 0) {
+					LOG.error("beacon size bytes are missing for GFSK AX100: {}", cur.getId());
+					continue;
 				}
-				decoders.put(cur.getId(), new FskAx25G3ruhDecoder(predict, props, cur.getBaud(), Ax25Beacon.class));
+				decoders.put(cur.getId(), new FskAx100Decoder(predict, props, cur.getBeaconSizeBytes(), cur.getBeaconClass(), cur.getBaudRatesAsArray()));
+			} else if (cur.getModulation().equals(Modulation.BPSK) && cur.getFraming().equals(Framing.AX25G3RUH)) {
+				decoders.put(cur.getId(), new BpskAx25G3ruhDecoder(predict, props, cur.getBaudRates().get(0), cur.getBeaconClass()));
+			} else if (cur.getModulation().equals(Modulation.BPSK) && cur.getFraming().equals(Framing.AX25)) {
+				decoders.put(cur.getId(), new BpskAx25Decoder(predict, props, cur.getBaudRates().get(0), cur.getBeaconClass()));
+			} else if (cur.getModulation().equals(Modulation.AFSK) && cur.getFraming().equals(Framing.AX25)) {
+				decoders.put(cur.getId(), new AfskAx25Decoder(predict, props, cur.getBaudRates().get(0), cur.getBeaconClass()));
+			} else {
+				LOG.error("unsupported combination of modulation and framing: {} - {}", cur.getModulation(), cur.getFraming());
 			}
 		}
 

@@ -18,15 +18,17 @@ public class R2CloudSaveTest extends RegisteredTest {
 	public void testSaveAndLoad() {
 		String apiKey = UUID.randomUUID().toString();
 		boolean syncSpectogram = true;
-		client.saveR2CloudConfiguration(apiKey, syncSpectogram);
+		boolean newLaunch = true;
+		client.saveR2CloudConfiguration(apiKey, syncSpectogram, newLaunch);
 		JsonObject config = client.getR2CloudConfiguration();
 		assertEquals(apiKey, config.getString("apiKey", null));
 		assertTrue(config.getBoolean("syncSpectogram", false));
+		assertTrue(config.getBoolean("newLaunch", false));
 	}
 
 	@Test
 	public void testSaveWithInvalidApiKey() {
-		HttpResponse<String> response = client.saveR2CloudConfigurationWithResponse(null, true);
+		HttpResponse<String> response = client.saveR2CloudConfigurationWithResponse(null, true, true);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("apiKey", response);
 	}

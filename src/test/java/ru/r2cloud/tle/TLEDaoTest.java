@@ -32,9 +32,12 @@ import ru.r2cloud.satellite.SatelliteDao;
 
 public class TLEDaoTest {
 
+	private static final String OVERRIDE_NAME = UUID.randomUUID().toString();
+	private static final String OVERRIDE_ID = UUID.randomUUID().toString();
+
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
-	
+
 	private MockFileSystem fs;
 	private TestConfiguration config;
 	private SatelliteDao satelliteDao;
@@ -42,22 +45,23 @@ public class TLEDaoTest {
 
 	private Map<String, Tle> tleData;
 	private List<Satellite> supported;
-	
+	private Tle overrideTle;
+
 	@Test
 	public void testReloadFailure() {
 		TLEDao dao = new TLEDao(config, satelliteDao, celestrak);
-		//load succesfully
+		// load succesfully
 		dao.reload();
-		
+
 		Path failingPath = config.getSatellitesBasePath().resolve(supported.get(0).getId());
 		fs.mock(failingPath, new FailingByteChannelCallback(10));
 		dao.reload();
 		fs.removeMock(failingPath);
-		
-		//ensure data reloaded from disk
+
+		// ensure data reloaded from disk
 		dao.stop();
 		dao.start();
-		
+
 		assertNotNull(dao.findById(supported.get(0).getId()));
 	}
 
@@ -66,6 +70,13 @@ public class TLEDaoTest {
 		TLEDao dao = new TLEDao(config, satelliteDao, celestrak);
 		dao.reload();
 		assertNotNull(dao.findById(supported.get(0).getId()));
+	}
+	
+	@Test
+	public void testTleOverride() {
+		TLEDao dao = new TLEDao(config, satelliteDao, celestrak);
+		dao.reload();
+		assertNotNull(dao.findById(OVERRIDE_ID));
 	}
 
 	@Test
@@ -86,7 +97,7 @@ public class TLEDaoTest {
 
 		celestrak = mock(CelestrakClient.class);
 		// return tle for completely different satellites
-		HashMap<String, Tle> brokenTleData = new HashMap<String, Tle>();
+		HashMap<String, Tle> brokenTleData = new HashMap<>();
 		brokenTleData.put(UUID.randomUUID().toString(), tleData.get(supported.get(0).getName()));
 		when(celestrak.getTleForActiveSatellites()).thenReturn(brokenTleData);
 		// trigger last modified
@@ -110,7 +121,7 @@ public class TLEDaoTest {
 	}
 
 	private void setupMocks() {
-		tleData = new HashMap<String, Tle>();
+		tleData = new HashMap<>();
 		try (BufferedReader r = new BufferedReader(new InputStreamReader(TLEDaoTest.class.getClassLoader().getResourceAsStream("sample-tle.txt")))) {
 			String curLine = null;
 			List<String> lines = new ArrayList<>();
@@ -124,13 +135,20 @@ public class TLEDaoTest {
 			throw new RuntimeException(e);
 		}
 
-		supported = new ArrayList<Satellite>();
+		overrideTle = new Tle(new String[] { UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString() });
+
+		supported = new ArrayList<>();
 		for (String cur : tleData.keySet()) {
 			Satellite curSatellite = new Satellite();
 			curSatellite.setId(UUID.randomUUID().toString());
 			curSatellite.setName(cur);
 			supported.add(curSatellite);
 		}
+		Satellite satelliteWithOverride = new Satellite();
+		satelliteWithOverride.setId(OVERRIDE_ID);
+		satelliteWithOverride.setName(OVERRIDE_NAME);
+		satelliteWithOverride.setTle(overrideTle);
+		supported.add(satelliteWithOverride);
 
 		satelliteDao = mock(SatelliteDao.class);
 		celestrak = mock(CelestrakClient.class);

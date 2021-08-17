@@ -239,7 +239,6 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			return new RtlFmReader(config, processFactory, req);
 		case LRPT:
 		case TELEMETRY:
-		case FSK_AX25_G3RUH:
 			if (req.getSdrType().equals(SdrType.RTLSDR)) {
 				return new RtlSdrReader(config, processFactory, req);
 			} else if (req.getSdrType().equals(SdrType.PLUTOSDR)) {
@@ -293,6 +292,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 				@Override
 				public void safeRun() {
+					satelliteDao.reload();
 					reschedule();
 				}
 			}, delay, TimeUnit.MILLISECONDS);

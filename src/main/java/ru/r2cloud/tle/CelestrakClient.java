@@ -52,7 +52,7 @@ public class CelestrakClient {
 			con.setRequestProperty("User-Agent", R2Cloud.getVersion() + " info@r2cloud.ru");
 			int responseCode = con.getResponseCode();
 			if (responseCode != 200) {
-				LOG.error("unable to get weather tle. response code: {}. See logs for details", responseCode);
+				LOG.error("unable to get tle from {}. response code: {}. See logs for details", location, responseCode);
 				Util.toLog(LOG, con.getErrorStream());
 			} else {
 				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {

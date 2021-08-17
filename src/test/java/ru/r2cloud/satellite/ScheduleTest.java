@@ -26,8 +26,11 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.CelestrakServer;
+import ru.r2cloud.JsonHttpResponse;
+import ru.r2cloud.R2CloudServer;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
+import ru.r2cloud.cloud.R2ServerClient;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SdrType;
@@ -42,11 +45,23 @@ public class ScheduleTest {
 
 	private Schedule schedule;
 	private CelestrakServer celestrak;
+	private R2CloudServer r2server;
 	private TestConfiguration config;
 	private SatelliteDao satelliteDao;
+	private TLEDao tleDao;
 	private long current;
 	private ObservationFactory factory;
-	
+
+	@Test
+	public void testScheduleForNewLaunches() throws Exception {
+		r2server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunch-for-scheduletest.json", 200));
+		satelliteDao.reload();
+		tleDao.reload();
+		List<ObservationRequest> expected = readExpected("expected/scheduleNewLaunches.txt");
+		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
+		assertObservations(expected, actual);
+	}
+
 	@Test
 	public void testSequentialTimetableForRotator() throws Exception {
 		config.setProperty("satellites.sdr", SdrType.SDRSERVER.name().toLowerCase());
@@ -142,14 +157,21 @@ public class ScheduleTest {
 		celestrak = new CelestrakServer();
 		celestrak.start();
 		celestrak.mockResponse(TestUtil.loadExpected("tle-2020-09-27.txt"));
+		r2server = new R2CloudServer();
+		r2server.start();
+		r2server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/empty-array-response.json", 200));
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("locaiton.lat", "51.49");
 		config.setProperty("locaiton.lon", "0.01");
 		config.setProperty("satellites.sdr", SdrType.RTLSDR.name().toLowerCase());
-		PredictOreKit predict = new PredictOreKit(config);
-		satelliteDao = new SatelliteDao(config);
-		TLEDao tleDao = new TLEDao(config, satelliteDao, new CelestrakClient(celestrak.getUrl()));
+		config.setProperty("r2cloud.newLaunches", true);
+		config.setProperty("r2cloud.apiKey", UUID.randomUUID().toString());
+		config.setProperty("r2server.hostname", r2server.getUrl());
+		R2ServerClient r2cloudClient = new R2ServerClient(config);
+		satelliteDao = new SatelliteDao(config, r2cloudClient);
+		tleDao = new TLEDao(config, satelliteDao, new CelestrakClient(celestrak.getUrl()));
 		tleDao.start();
+		PredictOreKit predict = new PredictOreKit(config);
 		factory = new ObservationFactory(predict, tleDao, config);
 		schedule = new Schedule(config, factory);
 
@@ -160,6 +182,9 @@ public class ScheduleTest {
 	public void stop() {
 		if (celestrak != null) {
 			celestrak.stop();
+		}
+		if (r2server != null) {
+			r2server.stop();
 		}
 	}
 
@@ -221,14 +246,14 @@ public class ScheduleTest {
 	private static long getTime(String str) throws Exception {
 		return createDateFormatter().parse(str).getTime();
 	}
-	
+
 	// used to create assertion .txt files
 	@SuppressWarnings("unused")
 	private void printObservations(List<ObservationRequest> actual) {
-		SimpleDateFormat sdf= createDateFormatter();
-		for( ObservationRequest cur : actual ) {
+		SimpleDateFormat sdf = createDateFormatter();
+		for (ObservationRequest cur : actual) {
 			Satellite sat = satelliteDao.findById(cur.getSatelliteId());
 			System.out.println(sdf.format(new Date(cur.getStartTimeMillis())) + ",  " + sdf.format(new Date(cur.getEndTimeMillis())) + ",\t\t" + cur.getSatelliteId() + "," + sat.getFrequencyBand().getCenter() + ", " + sat.getName());
 		}
-	}	
+	}
 }

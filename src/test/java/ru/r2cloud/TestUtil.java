@@ -32,7 +32,6 @@ import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.it.ObservationTest;
 import ru.r2cloud.model.Observation;
-import ru.r2cloud.tle.CelestrakClientTest;
 import ru.r2cloud.util.Util;
 
 public class TestUtil {
@@ -48,7 +47,7 @@ public class TestUtil {
 
 	public static String loadExpected(String name) {
 		StringBuilder expectedStr = new StringBuilder();
-		try (BufferedReader r = new BufferedReader(new InputStreamReader(CelestrakClientTest.class.getClassLoader().getResourceAsStream(name), StandardCharsets.UTF_8))) {
+		try (BufferedReader r = new BufferedReader(new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(name), StandardCharsets.UTF_8))) {
 			String curLine = null;
 			while ((curLine = r.readLine()) != null) {
 				expectedStr.append(curLine).append("\n");

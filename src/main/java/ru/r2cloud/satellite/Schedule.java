@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SdrType;
 import ru.r2cloud.util.Configuration;
@@ -101,7 +102,26 @@ public class Schedule {
 		}
 
 		List<ObservationRequest> result = new ArrayList<>();
+		result.addAll(scheduleSatellites(findByPriority(allSatellites, Priority.HIGH), passesBySatellite, Priority.HIGH));
+		result.addAll(scheduleSatellites(findByPriority(allSatellites, Priority.NORMAL), passesBySatellite, Priority.NORMAL));
 
+		index(result);
+		Collections.sort(result, ObservationRequestComparator.INSTANCE);
+		return result;
+	}
+
+	private static List<Satellite> findByPriority(List<Satellite> allSatellites, Priority priority) {
+		List<Satellite> result = new ArrayList<>();
+		for (Satellite cur : allSatellites) {
+			if (cur.getPriority().equals(priority)) {
+				result.add(cur);
+			}
+		}
+		return result;
+	}
+
+	private List<ObservationRequest> scheduleSatellites(List<Satellite> allSatellites, Map<String, List<ObservationRequest>> passesBySatellite, Priority priority) {
+		List<ObservationRequest> result = new ArrayList<>();
 		// fill-in full observations
 		while (!Thread.currentThread().isInterrupted()) {
 			boolean moreObservationsToCheck = false;
@@ -145,9 +165,7 @@ public class Schedule {
 				break;
 			}
 		}
-
-		index(result);
-		Collections.sort(result, ObservationRequestComparator.INSTANCE);
+		LOG.info("{}: satellites {} observations {}", priority, allSatellites.size(), result.size());
 		return result;
 	}
 

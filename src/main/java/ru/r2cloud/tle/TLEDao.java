@@ -91,10 +91,18 @@ public class TLEDao {
 		return tle;
 	}
 
-	void reload() {
+	public void reload() {
 		Map<String, Tle> newTle = celestrak.getTleForActiveSatellites();
 		if (newTle.isEmpty()) {
 			return;
+		}
+		// TLE might come from new launches
+		// in this case they are attached to satellite and statically configured
+		for (Satellite cur : satelliteDao.findAll()) {
+			if (cur.getTle() == null) {
+				continue;
+			}
+			newTle.put(cur.getName(), cur.getTle());
 		}
 		for (Entry<String, Tle> cur : newTle.entrySet()) {
 			Satellite satellite = satelliteDao.findByName(cur.getKey());

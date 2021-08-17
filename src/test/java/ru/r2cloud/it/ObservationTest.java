@@ -84,7 +84,7 @@ public class ObservationTest extends RegisteredTest {
 	@Override
 	public void start() throws Exception {
 		super.start();
-		client.saveR2CloudConfiguration(UUID.randomUUID().toString(), true);
+		client.saveR2CloudConfiguration(UUID.randomUUID().toString(), true, true);
 		rtlSdrMock = new RtlSdrDataServer();
 		rtlSdrMock.start();
 		server = new R2CloudServer();

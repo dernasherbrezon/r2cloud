@@ -46,6 +46,13 @@ public class ObservationFactory {
 		}
 		List<ObservationRequest> result = new ArrayList<>();
 		for (SatPass cur : batch) {
+			// ignore all observations out of satellite's active time
+			if (satellite.getStart() != null && cur.getEndMillis() < satellite.getStart().getTime()) {
+				continue;
+			}
+			if (satellite.getEnd() != null && cur.getStartMillis() > satellite.getEnd().getTime()) {
+				continue;
+			}
 			result.add(convert(satellite, tle, tlePropagator, cur));
 		}
 		return result;
@@ -91,7 +98,6 @@ public class ObservationFactory {
 		case LRPT:
 			result.setActualFrequency(satellite.getFrequency());
 			break;
-		case FSK_AX25_G3RUH:
 		case TELEMETRY:
 			// compensate DC offset only for non sdr-server observations
 			if (result.getSdrType().equals(SdrType.SDRSERVER)) {

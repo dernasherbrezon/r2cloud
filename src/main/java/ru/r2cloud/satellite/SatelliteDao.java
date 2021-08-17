@@ -6,8 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ru.r2cloud.cloud.R2ServerClient;
+import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.model.BandFrequency;
+import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.FrequencySource;
+import ru.r2cloud.model.Modulation;
+import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteComparator;
 import ru.r2cloud.model.SdrType;
@@ -16,26 +21,27 @@ import ru.r2cloud.util.Configuration;
 public class SatelliteDao {
 
 	private final Configuration config;
-	private final List<Satellite> satellites;
+	private final R2ServerClient r2server;
+	private final List<Satellite> satellites = new ArrayList<>();
 	private final Map<String, Satellite> satelliteByName = new HashMap<>();
 	private final Map<String, Satellite> satelliteById = new HashMap<>();
 
-	public SatelliteDao(Configuration config) {
+	public SatelliteDao(Configuration config, R2ServerClient r2server) {
 		this.config = config;
-		satellites = new ArrayList<>();
-		for (String cur : config.getProperties("satellites.supported")) {
-			Satellite curSatellite = new Satellite();
-			curSatellite.setId(cur);
-			String name = config.getProperty("satellites." + curSatellite.getId() + ".name");
-			if (name == null) {
-				throw new IllegalStateException("unable to find satellite name for: " + cur);
-			}
-			curSatellite.setName(name);
-			curSatellite.setFrequency(config.getLong("satellites." + curSatellite.getId() + ".freq"));
-			curSatellite.setSource(FrequencySource.valueOf(config.getProperty("satellites." + curSatellite.getId() + ".source")));
-			curSatellite.setEnabled(config.getBoolean("satellites." + curSatellite.getId() + ".enabled"));
-			curSatellite.setBandwidth(config.getLong("satellites." + curSatellite.getId() + ".bandwidth"));
-			curSatellite.setBaud(config.getInteger("satellites." + curSatellite.getId() + ".baud"));
+		this.r2server = r2server;
+		reload();
+	}
+
+	public synchronized void reload() {
+		satellites.clear();
+		satelliteByName.clear();
+		satelliteById.clear();
+
+		satellites.addAll(loadFromConfig(config));
+		if (config.getBoolean("r2cloud.newLaunches")) {
+			satellites.addAll(r2server.loadNewLaunches());
+		}
+		for (Satellite curSatellite : satellites) {
 			switch (curSatellite.getSource()) {
 			case APT:
 				curSatellite.setInputSampleRate(60_000);
@@ -45,7 +51,6 @@ public class SatelliteDao {
 				curSatellite.setInputSampleRate(288_000);
 				curSatellite.setOutputSampleRate(144_000);
 				break;
-			case FSK_AX25_G3RUH:
 			case TELEMETRY:
 				// sdr-server supports very narrow bandwidths
 				if (config.getSdrType().equals(SdrType.SDRSERVER)) {
@@ -80,19 +85,61 @@ public class SatelliteDao {
 		Collections.sort(satellites, SatelliteComparator.ID_COMPARATOR);
 	}
 
-	public Satellite findByName(String name) {
+	@SuppressWarnings("unchecked")
+	private static List<Satellite> loadFromConfig(Configuration config) {
+		List<Satellite> result = new ArrayList<>();
+		for (String cur : config.getProperties("satellites.supported")) {
+			Satellite curSatellite = new Satellite();
+			curSatellite.setId(cur);
+			String name = config.getProperty("satellites." + curSatellite.getId() + ".name");
+			if (name == null) {
+				throw new IllegalStateException("unable to find satellite name for: " + cur);
+			}
+			curSatellite.setName(name);
+			curSatellite.setPriority(Priority.NORMAL);
+			curSatellite.setFrequency(config.getLong("satellites." + curSatellite.getId() + ".freq"));
+			curSatellite.setSource(FrequencySource.valueOf(config.getProperty("satellites." + curSatellite.getId() + ".source")));
+			curSatellite.setEnabled(config.getBoolean("satellites." + curSatellite.getId() + ".enabled"));
+			curSatellite.setBandwidth(config.getLong("satellites." + curSatellite.getId() + ".bandwidth"));
+			curSatellite.setBaudRates(config.getIntegerList("satellites." + curSatellite.getId() + ".baud"));
+			String modulationStr = config.getProperty("satellites." + curSatellite.getId() + ".modulation");
+			if (modulationStr != null) {
+				curSatellite.setModulation(Modulation.valueOf(modulationStr));
+			}
+			String framingStr = config.getProperty("satellites." + curSatellite.getId() + ".framing");
+			if (framingStr != null) {
+				curSatellite.setFraming(Framing.valueOf(framingStr));
+			}
+			String beaconClassStr = config.getProperty("satellites." + curSatellite.getId() + ".beacon");
+			if (beaconClassStr != null) {
+				try {
+					curSatellite.setBeaconClass((Class<? extends Beacon>) Class.forName(beaconClassStr));
+				} catch (ClassNotFoundException e) {
+					throw new IllegalArgumentException(e);
+				}
+			}
+			String beaconSizeStr = config.getProperty("satellites." + curSatellite.getId() + ".beaconSize");
+			if (beaconSizeStr != null) {
+				curSatellite.setBeaconSizeBytes(Integer.valueOf(beaconSizeStr));
+			}
+			result.add(curSatellite);
+		}
+		return result;
+	}
+
+	public synchronized Satellite findByName(String name) {
 		return satelliteByName.get(name);
 	}
 
-	public Satellite findById(String id) {
+	public synchronized Satellite findById(String id) {
 		return satelliteById.get(id);
 	}
 
-	public List<Satellite> findAll() {
+	public synchronized List<Satellite> findAll() {
 		return satellites;
 	}
 
-	public List<Satellite> findEnabled() {
+	public synchronized List<Satellite> findEnabled() {
 		List<Satellite> result = new ArrayList<>();
 		for (Satellite cur : satellites) {
 			if (!cur.isEnabled()) {
@@ -104,7 +151,6 @@ public class SatelliteDao {
 	}
 
 	private void index(Satellite satellite) {
-		satellites.add(satellite);
 		satelliteByName.put(satellite.getName(), satellite);
 		satelliteById.put(satellite.getId(), satellite);
 	}

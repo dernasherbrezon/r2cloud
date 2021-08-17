@@ -19,7 +19,7 @@ public class WebserverTest extends BaseTest {
 
 	@Test
 	public void testNonAuth() {
-		HttpResponse<String> response = client.saveR2CloudConfigurationWithResponse(UUID.randomUUID().toString(), true);
+		HttpResponse<String> response = client.saveR2CloudConfigurationWithResponse(UUID.randomUUID().toString(), true, true);
 		assertEquals(401, response.statusCode());
 	}
 	
