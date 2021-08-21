@@ -22,6 +22,7 @@ import ru.r2cloud.jradio.fox.Fox1BBeacon;
 import ru.r2cloud.jradio.fox.Fox1CBeacon;
 import ru.r2cloud.jradio.fox.Fox1DBeacon;
 import ru.r2cloud.jradio.meznsat.MeznsatBeacon;
+import ru.r2cloud.jradio.usp.UspBeacon;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.Modulation;
@@ -68,6 +69,7 @@ import ru.r2cloud.satellite.decoder.SnetDecoder;
 import ru.r2cloud.satellite.decoder.Strand1Decoder;
 import ru.r2cloud.satellite.decoder.Suomi100Decoder;
 import ru.r2cloud.satellite.decoder.TechnosatDecoder;
+import ru.r2cloud.satellite.decoder.UspDecoder;
 import ru.r2cloud.sdr.SdrLock;
 import ru.r2cloud.sdr.SdrStatusDao;
 import ru.r2cloud.tle.CelestrakClient;
@@ -215,6 +217,9 @@ public class R2Cloud {
 		decoders.put("43019", new AfskAx25Decoder(predict, props, 1200, 1300, Ax25Beacon.class));
 		decoders.put("42790", new Gomx1Decoder(predict, props, CspBeacon.class, false, true, true));
 		decoders.put("49017", new ItSpinsDecoder(predict, props, Ax25Beacon.class));
+		decoders.put("47960", new UspDecoder(predict, props, 2400, UspBeacon.class));
+		decoders.put("47952", new UspDecoder(predict, props, 2400, UspBeacon.class));
+		decoders.put("47951", new UspDecoder(predict, props, 2400, UspBeacon.class));
 
 		for (Satellite cur : satelliteDao.findAll()) {
 			if (cur.getFraming() == null || cur.getModulation() == null || cur.getBeaconClass() == null || cur.getBaudRates() == null || cur.getBaudRates().isEmpty()) {
