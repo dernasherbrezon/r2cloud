@@ -3,6 +3,7 @@ package ru.r2cloud.cloud;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -16,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
@@ -141,6 +143,77 @@ public class R2ServerClientTest {
 		assertEquals(2, result.size());
 		assertSatellite("LUCKY-7", true, result.get(0));
 		assertSatellite("PAINANI 1", false, result.get(1));
+	}
+
+	@Test
+	public void testEmptyNewLaunch() throws Exception {
+		assertTrue(client.loadNewLaunches().isEmpty());
+	}
+
+	@Test
+	public void testInvalidResponseNewLaunches() throws Exception {
+		server.setNewLaunchMock("not a json", 200);
+		assertTrue(client.loadNewLaunches().isEmpty());
+		server.setNewLaunchMock("{ \"test\": 1 }", 200);
+		assertTrue(client.loadNewLaunches().isEmpty());
+		server.setNewLaunchMock("[ [1,2,3] ]", 200);
+		assertTrue(client.loadNewLaunches().isEmpty());
+
+		String validNewLaunchStr = TestUtil.loadExpected("r2cloudclienttest/single-newlaunch.json");
+		JsonObject validNewLaunch = Json.parse(validNewLaunchStr).asObject();
+		validNewLaunch.remove("id");
+		server.setNewLaunchMock(validNewLaunch);
+		assertTrue(client.loadNewLaunches().isEmpty());
+
+		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
+		validNewLaunch.remove("name");
+		server.setNewLaunchMock(validNewLaunch);
+		assertTrue(client.loadNewLaunches().isEmpty());
+
+		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
+		validNewLaunch.remove("frequency");
+		server.setNewLaunchMock(validNewLaunch);
+		assertTrue(client.loadNewLaunches().isEmpty());
+
+		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
+		validNewLaunch.remove("modulation");
+		server.setNewLaunchMock(validNewLaunch);
+		assertTrue(client.loadNewLaunches().isEmpty());
+
+		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
+		validNewLaunch.set("modulation", UUID.randomUUID().toString());
+		server.setNewLaunchMock(validNewLaunch);
+		assertTrue(client.loadNewLaunches().isEmpty());
+		
+		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
+		validNewLaunch.remove("framing");
+		server.setNewLaunchMock(validNewLaunch);
+		assertTrue(client.loadNewLaunches().isEmpty());
+
+		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
+		validNewLaunch.set("framing", UUID.randomUUID().toString());
+		server.setNewLaunchMock(validNewLaunch);
+		assertTrue(client.loadNewLaunches().isEmpty());
+		
+		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
+		validNewLaunch.remove("bandwidth");
+		server.setNewLaunchMock(validNewLaunch);
+		assertTrue(client.loadNewLaunches().isEmpty());
+		
+		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
+		validNewLaunch.remove("baudRates");
+		server.setNewLaunchMock(validNewLaunch);
+		assertTrue(client.loadNewLaunches().isEmpty());
+		
+		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
+		validNewLaunch.remove("beaconClass");
+		server.setNewLaunchMock(validNewLaunch);
+		assertTrue(client.loadNewLaunches().isEmpty());
+		
+		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
+		validNewLaunch.set("beaconClass", UUID.randomUUID().toString());
+		server.setNewLaunchMock(validNewLaunch);
+		assertTrue(client.loadNewLaunches().isEmpty());
 	}
 
 	@Before
