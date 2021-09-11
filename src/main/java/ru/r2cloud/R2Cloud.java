@@ -46,6 +46,7 @@ import ru.r2cloud.satellite.decoder.ChompttDecoder;
 import ru.r2cloud.satellite.decoder.Decoder;
 import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.decoder.DelfiC3Decoder;
+import ru.r2cloud.satellite.decoder.Diy1Decoder;
 import ru.r2cloud.satellite.decoder.Dstar1Decoder;
 import ru.r2cloud.satellite.decoder.EseoDecoder;
 import ru.r2cloud.satellite.decoder.Floripasat1Decoder;
@@ -220,6 +221,7 @@ public class R2Cloud {
 		decoders.put("47960", new UspDecoder(predict, props, 2400, UspBeacon.class));
 		decoders.put("47952", new UspDecoder(predict, props, 2400, UspBeacon.class));
 		decoders.put("47951", new UspDecoder(predict, props, 2400, UspBeacon.class));
+		decoders.put("47963", new Diy1Decoder(predict, props));
 
 		for (Satellite cur : satelliteDao.findAll()) {
 			if (cur.getFraming() == null || cur.getModulation() == null || cur.getBeaconClass() == null || cur.getBaudRates() == null || cur.getBaudRates().isEmpty()) {
