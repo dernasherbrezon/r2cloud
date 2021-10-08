@@ -20,6 +20,10 @@ case $key in
 		GAIN="$2"
 		shift 2
 		;;
+	-d)
+		DEVICE_INDEX="$2"
+		shift 2
+		;;
 	-o)
 		OUTPUT="$2"
 		shift 2
@@ -40,7 +44,7 @@ trap _term SIGTERM
 
 set -o pipefail
 
-CMD="${RTL_SDR} -f ${FREQUENCY} -s ${SAMPLE_RATE} -p ${PPM} -g ${GAIN} -"
+CMD="${RTL_SDR} -f ${FREQUENCY} -d ${DEVICE_INDEX} -s ${SAMPLE_RATE} -p ${PPM} -g ${GAIN} -"
 ${CMD} | gzip > ${OUTPUT} &
 
 rtl=$(jobs -p)
