@@ -24,7 +24,6 @@ import com.codahale.metrics.Timer;
 
 import ru.r2cloud.ManualClock;
 import ru.r2cloud.TestConfiguration;
-import ru.r2cloud.cloud.R2ServerService;
 
 public class RRD4JReporterTest {
 
@@ -42,8 +41,8 @@ public class RRD4JReporterTest {
 		Counter c = registry.counter(name);
 		c.inc();
 		report(name, c);
-		
-		//ensure internal RrdDb are closed
+
+		// ensure internal RrdDb are closed
 		reporter.close();
 
 		// simulate sample in far future
@@ -53,11 +52,11 @@ public class RRD4JReporterTest {
 		sample.setValue("data", lastSample);
 		sample.update();
 		db.close();
-		
+
 		c.inc();
 		clock.add(1000);
 		report(name, c);
-		
+
 		assertEquals(lastSample, readLastValueFromFile(name), 0.0);
 	}
 
@@ -101,14 +100,13 @@ public class RRD4JReporterTest {
 		TestConfiguration config = new TestConfiguration(tempFolder);
 		basepath = new File(tempFolder.getRoot().getAbsolutePath(), "rrd4jtest");
 		config.setProperty("metrics.basepath.location", basepath.getAbsolutePath());
-		R2ServerService cloudService = new R2ServerService(config, null, null, null);
 		clock = new ManualClock();
-		reporter = new RRD4JReporter(config, registry, cloudService, clock);
+		reporter = new RRD4JReporter(config, registry, clock);
 	}
 
 	@SuppressWarnings("rawtypes")
 	private void report(String name, Counter c) {
-		TreeMap<String, Counter> counters = new TreeMap<String, Counter>();
+		TreeMap<String, Counter> counters = new TreeMap<>();
 		counters.put(name, c);
 		reporter.report(new TreeMap<String, Gauge>(), counters, new TreeMap<String, Histogram>(), new TreeMap<String, Meter>(), new TreeMap<String, Timer>());
 	}

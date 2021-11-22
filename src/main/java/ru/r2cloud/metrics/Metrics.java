@@ -8,13 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.Gauge;
+import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.MetricRegistry.MetricSupplier;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.codahale.metrics.health.SharedHealthCheckRegistries;
 
-import ru.r2cloud.cloud.R2ServerService;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 
@@ -24,15 +24,14 @@ public class Metrics {
 	private final MetricRegistry registry = SharedMetricRegistries.getOrCreate("r2cloud");
 	private final HealthCheckRegistry healthRegistry = SharedHealthCheckRegistries.getOrCreate("r2cloud");
 
+	private JmxReporter jmxReporter;
 	private RRD4JReporter reporter;
 	private Sigar sigar;
 	private final Configuration config;
-	private final R2ServerService cloudService;
 	private final Clock clock;
 
-	public Metrics(Configuration config, R2ServerService cloudService, Clock clock) {
+	public Metrics(Configuration config, Clock clock) {
 		this.config = config;
-		this.cloudService = cloudService;
 		this.clock = clock;
 	}
 
@@ -119,7 +118,10 @@ public class Metrics {
 			LOG.info("Could not initialize SIGAR library: {}", linkError.getMessage());
 		}
 
-		reporter = new RRD4JReporter(config, registry, cloudService, clock);
+		jmxReporter = JmxReporter.forRegistry(registry).inDomain("ru.r2cloud.metrics").build();
+		jmxReporter.start();
+
+		reporter = new RRD4JReporter(config, registry, clock);
 		reporter.start();
 		reporter.report();
 		LOG.info("metrics started");
@@ -131,6 +133,9 @@ public class Metrics {
 		}
 		if (reporter != null) {
 			reporter.close();
+		}
+		if (jmxReporter != null) {
+			jmxReporter.close();
 		}
 		SharedHealthCheckRegistries.remove("r2cloud");
 		SharedMetricRegistries.remove("r2cloud");

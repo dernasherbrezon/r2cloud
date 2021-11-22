@@ -28,7 +28,6 @@ import com.codahale.metrics.Timer;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
-import ru.r2cloud.cloud.R2ServerService;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
@@ -41,13 +40,11 @@ public class RRD4JReporter extends ScheduledReporter {
 	private final File basepath;
 	private final Map<String, RrdDb> dbPerMetric = new HashMap<>();
 	private final Map<String, Double> lastValueForCounter = new HashMap<>();
-	private final R2ServerService cloudService;
 	private final Clock clock;
 
-	RRD4JReporter(Configuration config, MetricRegistry registry, R2ServerService cloudService, Clock clock) {
+	RRD4JReporter(Configuration config, MetricRegistry registry, Clock clock) {
 		super(registry, "rrd4j-reporter", MetricFilter.ALL, TimeUnit.SECONDS, TimeUnit.MILLISECONDS);
 		basepath = Util.initDirectory(config.getProperty("metrics.basepath.location"));
-		this.cloudService = cloudService;
 		this.clock = clock;
 	}
 
@@ -70,7 +67,6 @@ public class RRD4JReporter extends ScheduledReporter {
 		for (Entry<String, Counter> cur : counters.entrySet()) {
 			metricsToShare.add(convertCounter(cur));
 		}
-		cloudService.saveMetrics(metricsToShare);
 	}
 
 	private JsonObject convertCounter(Entry<String, Counter> cur) {

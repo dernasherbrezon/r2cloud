@@ -5,8 +5,6 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.eclipsesource.json.JsonArray;
-
 import ru.r2cloud.SpectogramService;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationStatus;
@@ -45,7 +43,8 @@ public class R2ServerService {
 			client.saveJpeg(id, observation.getImagePath());
 		}
 		// update status to UPLOADED even if data or spectogram not
-		// in future UPLOADED might be split into UPLOADED_META, UPLOADED_DATA, UPLOADED_SPECTOGRAM
+		// in future UPLOADED might be split into UPLOADED_META, UPLOADED_DATA,
+		// UPLOADED_SPECTOGRAM
 		// right now, this seems too complicated
 		observation.setStatus(ObservationStatus.UPLOADED);
 		dao.update(observation);
@@ -72,14 +71,6 @@ public class R2ServerService {
 		if (spectogram != null) {
 			client.saveSpectogram(id, spectogram);
 		}
-	}
-
-	public void saveMetrics(JsonArray metrics) {
-		String apiKey = config.getProperty("r2cloud.apiKey");
-		if (apiKey == null) {
-			return;
-		}
-		client.saveMetrics(metrics);
 	}
 
 }

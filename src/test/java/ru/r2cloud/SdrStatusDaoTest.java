@@ -156,7 +156,7 @@ public class SdrStatusDaoTest {
 		rtlTestServer = new RtlTestServer();
 		rtlTestServer.start();
 
-		metrics = new Metrics(config, null, new DefaultClock());
+		metrics = new Metrics(config, new DefaultClock());
 	}
 
 	@After

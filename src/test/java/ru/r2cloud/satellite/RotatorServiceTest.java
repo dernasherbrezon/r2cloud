@@ -170,7 +170,7 @@ public class RotatorServiceTest {
 		config.setProperty("scheduler.orekit.path", "./src/test/resources/data/orekit-data");
 
 		predict = new PredictOreKit(config);
-		metrics = new Metrics(config, null, new DefaultClock());
+		metrics = new Metrics(config, new DefaultClock());
 	}
 
 	private void startMockServer() throws IOException {

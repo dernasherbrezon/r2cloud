@@ -164,7 +164,7 @@ public class R2Cloud {
 		spectogramService = new SpectogramService(props);
 		resultDao = new ObservationDao(props);
 		r2cloudService = new R2ServerService(props, resultDao, r2cloudClient, spectogramService);
-		metrics = new Metrics(props, r2cloudService, clock);
+		metrics = new Metrics(props, clock);
 		predict = new PredictOreKit(props);
 		auth = new Authenticator(props);
 		rtlsdrStatusDao = new SdrStatusDao(props, rtlsdrLock, threadFactory, metrics, processFactory);

@@ -300,21 +300,6 @@ public class R2ServerClient {
 		return id;
 	}
 
-	public void saveMetrics(JsonArray o) {
-		if (o == null || o.size() == 0) {
-			return;
-		}
-		HttpRequest request = createJsonRequest("/api/v1/metrics", o).build();
-		httpclient.sendAsync(request, BodyHandlers.ofString()).exceptionally(ex -> {
-			Util.logIOException(LOG, "unable to save metrics", ex);
-			return null;
-		}).thenAccept(response -> {
-			if (response != null && response.statusCode() != 200 && LOG.isErrorEnabled()) {
-				LOG.error("unable to save metrics. response code: {}. response: {}", response.statusCode(), response.body());
-			}
-		});
-	}
-
 	private HttpRequest.Builder createJsonRequest(String path, JsonValue json) {
 		return createRequest(path).header("Content-Type", "application/json").POST(BodyPublishers.ofString(json.toString(), StandardCharsets.UTF_8));
 	}

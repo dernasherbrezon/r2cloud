@@ -18,7 +18,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.JsonHttpResponse;
@@ -76,21 +75,6 @@ public class R2ServerClientTest {
 	@Test
 	public void testInvalidRequest() {
 		assertNull(client.saveMeta(null));
-	}
-
-	@Test
-	public void testSaveMetrics() throws InterruptedException {
-		JsonHttpResponse handler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
-		server.setMetricsMock(handler);
-		JsonObject metric = new JsonObject();
-		metric.add("name", "temperature");
-		metric.add("value", 0.1d);
-		JsonArray metrics = new JsonArray();
-		metrics.add(metric);
-		client.saveMetrics(metrics);
-		handler.awaitRequest();
-		assertEquals("application/json", handler.getRequestContentType());
-		assertJson("r2cloudclienttest/metrics-request.json", handler.getRequest());
 	}
 
 	@Test
@@ -184,7 +168,7 @@ public class R2ServerClientTest {
 		validNewLaunch.set("modulation", UUID.randomUUID().toString());
 		server.setNewLaunchMock(validNewLaunch);
 		assertTrue(client.loadNewLaunches().isEmpty());
-		
+
 		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
 		validNewLaunch.remove("framing");
 		server.setNewLaunchMock(validNewLaunch);
@@ -194,22 +178,22 @@ public class R2ServerClientTest {
 		validNewLaunch.set("framing", UUID.randomUUID().toString());
 		server.setNewLaunchMock(validNewLaunch);
 		assertTrue(client.loadNewLaunches().isEmpty());
-		
+
 		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
 		validNewLaunch.remove("bandwidth");
 		server.setNewLaunchMock(validNewLaunch);
 		assertTrue(client.loadNewLaunches().isEmpty());
-		
+
 		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
 		validNewLaunch.remove("baudRates");
 		server.setNewLaunchMock(validNewLaunch);
 		assertTrue(client.loadNewLaunches().isEmpty());
-		
+
 		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
 		validNewLaunch.remove("beaconClass");
 		server.setNewLaunchMock(validNewLaunch);
 		assertTrue(client.loadNewLaunches().isEmpty());
-		
+
 		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
 		validNewLaunch.set("beaconClass", UUID.randomUUID().toString());
 		server.setNewLaunchMock(validNewLaunch);
