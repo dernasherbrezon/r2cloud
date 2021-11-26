@@ -332,7 +332,7 @@
 					<section>embedded</section>
 					<osDependencies>
 						<r2cloud-ui>>=1513613469</r2cloud-ui>
-						<r2cloud-jdk>>=11.0.10-1</r2cloud-jdk>
+						<r2cloud-jdk>>=11.0.13-1</r2cloud-jdk>
 						<nginx-light>>=1.10.3</nginx-light>
 						<libhyperic-sigar-java>>=1.6.4</libhyperic-sigar-java>
 						<rtl-sdr>>=0.6.4</rtl-sdr>
