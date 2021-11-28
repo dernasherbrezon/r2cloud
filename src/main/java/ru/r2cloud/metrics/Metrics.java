@@ -118,8 +118,12 @@ public class Metrics {
 			LOG.info("Could not initialize SIGAR library: {}", linkError.getMessage());
 		}
 
-		jmxReporter = JmxReporter.forRegistry(registry).inDomain("ru.r2cloud.metrics").build();
-		jmxReporter.start();
+		try {
+			jmxReporter = JmxReporter.forRegistry(registry).inDomain("ru.r2cloud.metrics").build();
+			jmxReporter.start();
+		} catch (NoClassDefFoundError e) {
+			// ignore missing java.management module on old r2cloud-jdk
+		}
 
 		reporter = new RRD4JReporter(config, registry, clock);
 		reporter.start();
