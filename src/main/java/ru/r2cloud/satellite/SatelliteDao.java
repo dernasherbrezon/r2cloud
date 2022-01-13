@@ -100,7 +100,10 @@ public class SatelliteDao {
 			curSatellite.setFrequency(config.getLong("satellites." + curSatellite.getId() + ".freq"));
 			curSatellite.setSource(FrequencySource.valueOf(config.getProperty("satellites." + curSatellite.getId() + ".source")));
 			curSatellite.setEnabled(config.getBoolean("satellites." + curSatellite.getId() + ".enabled"));
-			curSatellite.setBandwidth(config.getLong("satellites." + curSatellite.getId() + ".bandwidth"));
+			Long bandwidth = config.getLong("satellites." + curSatellite.getId() + ".bandwidth");
+			if (bandwidth != null) {
+				curSatellite.setBandwidth(bandwidth);
+			}
 			curSatellite.setBaudRates(config.getIntegerList("satellites." + curSatellite.getId() + ".baud"));
 			String modulationStr = config.getProperty("satellites." + curSatellite.getId() + ".modulation");
 			if (modulationStr != null) {
@@ -122,6 +125,28 @@ public class SatelliteDao {
 			if (beaconSizeStr != null) {
 				curSatellite.setBeaconSizeBytes(Integer.valueOf(beaconSizeStr));
 			}
+
+			Long loraBandwidth = config.getLong("satellites." + curSatellite.getId() + ".loraBw");
+			if (loraBandwidth != null) {
+				curSatellite.setLoraBandwidth(loraBandwidth);
+			}
+			Integer loraSpreadFactor = config.getInteger("satellites." + curSatellite.getId() + ".loraSf");
+			if (loraSpreadFactor != null) {
+				curSatellite.setLoraSpreadFactor(loraSpreadFactor);
+			}
+			Integer loraCodingRate = config.getInteger("satellites." + curSatellite.getId() + ".loraCr");
+			if (loraCodingRate != null) {
+				curSatellite.setLoraCodingRate(loraCodingRate);
+			}
+			Integer loraSyncword = config.getInteger("satellites." + curSatellite.getId() + ".loraSyncword");
+			if (loraSyncword != null) {
+				curSatellite.setLoraSyncword(loraSyncword);
+			}
+			Integer loraPreambleLength = config.getInteger("satellites." + curSatellite.getId() + ".loraPreambleLength");
+			if (loraPreambleLength != null) {
+				curSatellite.setLoraPreambleLength(loraPreambleLength);
+			}
+
 			result.add(curSatellite);
 		}
 		return result;
@@ -139,17 +164,6 @@ public class SatelliteDao {
 		return satellites;
 	}
 
-	public synchronized List<Satellite> findEnabled() {
-		List<Satellite> result = new ArrayList<>();
-		for (Satellite cur : satellites) {
-			if (!cur.isEnabled()) {
-				continue;
-			}
-			result.add(cur);
-		}
-		return result;
-	}
-
 	private void index(Satellite satellite) {
 		satelliteByName.put(satellite.getName(), satellite);
 		satelliteById.put(satellite.getId(), satellite);
@@ -158,6 +172,16 @@ public class SatelliteDao {
 	public void update(Satellite satelliteToEdit) {
 		config.setProperty("satellites." + satelliteToEdit.getId() + ".enabled", satelliteToEdit.isEnabled());
 		config.update();
+	}
+
+	public List<Satellite> findByFilter(SatelliteFilter filter) {
+		List<Satellite> result = new ArrayList<>();
+		for (Satellite cur : satellites) {
+			if (filter.accept(cur)) {
+				result.add(cur);
+			}
+		}
+		return result;
 	}
 
 }

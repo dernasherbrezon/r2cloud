@@ -25,6 +25,7 @@ import ru.r2cloud.model.SdrType;
 import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.reader.IQReader;
 import ru.r2cloud.satellite.reader.PlutoSdrReader;
+import ru.r2cloud.satellite.reader.R2loraReader;
 import ru.r2cloud.satellite.reader.RtlFmReader;
 import ru.r2cloud.satellite.reader.RtlSdrReader;
 import ru.r2cloud.satellite.reader.SdrServerReader;
@@ -52,6 +53,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private final DecoderService decoderService;
 	private final Schedule schedule;
 	private final RotatorService rotatorService;
+	private final SatelliteFilter filter;
 
 	private ScheduledExecutorService startThread = null;
 	private ScheduledExecutorService stopThread = null;
@@ -62,7 +64,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private Long currentBandFrequency = null;
 	private int numberOfObservationsOnCurrentBand = 0;
 
-	public Scheduler(Schedule schedule, Configuration config, SatelliteDao satellites, SdrLock lock, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderService decoderService, RotatorService rotatorService) {
+	public Scheduler(Schedule schedule, Configuration config, SatelliteDao satellites, SatelliteFilter filter, SdrLock lock, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderService decoderService, RotatorService rotatorService) {
 		this.schedule = schedule;
 		this.config = config;
 		this.config.subscribe(this, "locaiton.lat");
@@ -75,6 +77,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		this.dao = dao;
 		this.decoderService = decoderService;
 		this.rotatorService = rotatorService;
+		this.filter = filter;
 	}
 
 	@Override
@@ -107,7 +110,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		rescheduleThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("re-schedule"));
 		onConfigUpdated();
 
-		LOG.info("started");
+		LOG.info("{} scheduler started", filter.getName());
 	}
 
 	public ObservationRequest schedule(Satellite satellite) {
@@ -245,6 +248,8 @@ public class Scheduler implements Lifecycle, ConfigListener {
 				return new PlutoSdrReader(config, processFactory, req);
 			} else if (req.getSdrType().equals(SdrType.SDRSERVER)) {
 				return new SdrServerReader(config, req);
+			} else if (req.getSdrType().equals(SdrType.R2LORA)) {
+				return new R2loraReader(config, req);
 			} else {
 				throw new IllegalArgumentException("unsupported sdr type: " + req.getSdrType());
 			}
@@ -262,7 +267,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		Util.shutdown(stopThread, config.getThreadPoolShutdownMillis());
 		Util.shutdown(rescheduleThread, config.getThreadPoolShutdownMillis());
 		startThread = null;
-		LOG.info("stopped");
+		LOG.info("{} scheduler stopped", filter.getName());
 	}
 
 	public void reschedule() {
@@ -271,7 +276,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			currentBandFrequency = null;
 			numberOfObservationsOnCurrentBand = 0;
 		}
-		List<Satellite> allSatellites = satelliteDao.findEnabled();
+		List<Satellite> allSatellites = satelliteDao.findByFilter(filter);
 		long current = clock.millis();
 		List<ObservationRequest> newSchedule = schedule.createInitialSchedule(allSatellites, current);
 		for (ObservationRequest cur : newSchedule) {
@@ -283,7 +288,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		} else {
 			delay = TimeUnit.DAYS.toMillis(2);
 		}
-		LOG.info("observations rescheduled. next update at: {}", new Date(current + delay));
+		LOG.info("{} observations rescheduled. next update at: {}", filter.getName(), new Date(current + delay));
 		synchronized (this) {
 			if (rescheduleTask != null) {
 				rescheduleTask.cancel(true);

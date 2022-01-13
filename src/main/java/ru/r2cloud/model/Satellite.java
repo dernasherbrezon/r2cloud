@@ -28,6 +28,12 @@ public class Satellite {
 	private Date start;
 	private Date end;
 
+	private long loraBandwidth;
+	private int loraSpreadFactor;
+	private int loraCodingRate;
+	private int loraSyncword;
+	private int loraPreambleLength;
+
 	public Date getStart() {
 		return start;
 	}
@@ -178,6 +184,46 @@ public class Satellite {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public long getLoraBandwidth() {
+		return loraBandwidth;
+	}
+
+	public void setLoraBandwidth(long loraBandwidth) {
+		this.loraBandwidth = loraBandwidth;
+	}
+
+	public int getLoraSpreadFactor() {
+		return loraSpreadFactor;
+	}
+
+	public void setLoraSpreadFactor(int loraSpreadFactor) {
+		this.loraSpreadFactor = loraSpreadFactor;
+	}
+
+	public int getLoraCodingRate() {
+		return loraCodingRate;
+	}
+
+	public void setLoraCodingRate(int loraCodingRate) {
+		this.loraCodingRate = loraCodingRate;
+	}
+
+	public int getLoraSyncword() {
+		return loraSyncword;
+	}
+
+	public void setLoraSyncword(int loraSyncword) {
+		this.loraSyncword = loraSyncword;
+	}
+
+	public int getLoraPreambleLength() {
+		return loraPreambleLength;
+	}
+
+	public void setLoraPreambleLength(int loraPreambleLength) {
+		this.loraPreambleLength = loraPreambleLength;
 	}
 
 	@Override

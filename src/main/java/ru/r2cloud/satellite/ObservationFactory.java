@@ -9,6 +9,7 @@ import org.orekit.propagation.analytical.tle.TLEPropagator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.SatPass;
 import ru.r2cloud.model.Satellite;
@@ -86,7 +87,12 @@ public class ObservationFactory {
 		result.setId(String.valueOf(result.getStartTimeMillis()) + "-" + satellite.getId());
 		result.setGain(config.getDouble("satellites.rtlsdr.gain"));
 		result.setBiast(config.getBoolean("satellites.rtlsdr.biast"));
-		result.setSdrType(config.getSdrType());
+		// only r2lora can handle lora modulation
+		if (satellite.getModulation() != null && satellite.getModulation().equals(Modulation.LORA)) {
+			result.setSdrType(SdrType.R2LORA);
+		} else {
+			result.setSdrType(config.getSdrType());
+		}
 		result.setCenterBandFrequency(satellite.getFrequencyBand().getCenter());
 		result.setInputSampleRate(satellite.getInputSampleRate());
 		result.setOutputSampleRate(satellite.getOutputSampleRate());

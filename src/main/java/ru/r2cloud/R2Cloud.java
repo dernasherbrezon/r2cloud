@@ -28,6 +28,8 @@ import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.predict.PredictOreKit;
+import ru.r2cloud.satellite.EnabledLoraSatelliteFilter;
+import ru.r2cloud.satellite.EnabledSdrSatelliteFilter;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.RotatorService;
@@ -64,6 +66,7 @@ import ru.r2cloud.satellite.decoder.Lucky7Decoder;
 import ru.r2cloud.satellite.decoder.Nayif1Decoder;
 import ru.r2cloud.satellite.decoder.OpsSatDecoder;
 import ru.r2cloud.satellite.decoder.PegasusDecoder;
+import ru.r2cloud.satellite.decoder.R2loraDecoder;
 import ru.r2cloud.satellite.decoder.ReaktorHelloWorldDecoder;
 import ru.r2cloud.satellite.decoder.SalsatDecoder;
 import ru.r2cloud.satellite.decoder.SnetDecoder;
@@ -131,6 +134,10 @@ public class R2Cloud {
 	private final DecoderService decoderService;
 	private final Schedule schedule;
 	private final Scheduler scheduler;
+
+	private final Schedule scheduleLora;
+	private final Scheduler schedulerLora;
+
 	private final SdrLock rtlsdrLock;
 	private final PredictOreKit predict;
 	private final ThreadPoolFactory threadFactory;
@@ -223,7 +230,14 @@ public class R2Cloud {
 		decoders.put("47963", new Diy1Decoder(predict, props));
 
 		for (Satellite cur : satelliteDao.findAll()) {
-			if (cur.getFraming() == null || cur.getModulation() == null || cur.getBeaconClass() == null || cur.getBaudRates() == null || cur.getBaudRates().isEmpty()) {
+			if (cur.getFraming() == null || cur.getModulation() == null || cur.getBeaconClass() == null) {
+				continue;
+			}
+			if (cur.getModulation().equals(Modulation.LORA)) {
+				decoders.put(cur.getId(), new R2loraDecoder(props));
+				continue;
+			}
+			if (cur.getBaudRates() == null || cur.getBaudRates().isEmpty()) {
 				continue;
 			}
 			if (cur.getModulation().equals(Modulation.GFSK) && cur.getFraming().equals(Framing.AX25G3RUH)) {
@@ -250,7 +264,10 @@ public class R2Cloud {
 
 		observationFactory = new ObservationFactory(predict, tleDao, props);
 		schedule = new Schedule(props, observationFactory);
-		scheduler = new Scheduler(schedule, props, satelliteDao, rtlsdrLock, threadFactory, clock, processFactory, resultDao, decoderService, rotatorService);
+		scheduler = new Scheduler(schedule, props, satelliteDao, EnabledSdrSatelliteFilter.INSTANCE, rtlsdrLock, threadFactory, clock, processFactory, resultDao, decoderService, rotatorService);
+
+		scheduleLora = new Schedule(props, observationFactory);
+		schedulerLora = new Scheduler(scheduleLora, props, satelliteDao, EnabledLoraSatelliteFilter.INSTANCE, rtlsdrLock, threadFactory, clock, processFactory, resultDao, decoderService, rotatorService);
 
 		// setup web server
 		index(new Health());
@@ -284,6 +301,7 @@ public class R2Cloud {
 		// scheduler should start after tle (it uses TLE to schedule
 		// observations)
 		scheduler.start();
+		schedulerLora.start();
 		metrics.start();
 		webServer.start();
 		LOG.info("=================================");
@@ -294,6 +312,7 @@ public class R2Cloud {
 	public void stop() {
 		webServer.stop();
 		metrics.stop();
+		schedulerLora.stop();
 		scheduler.stop();
 		rotatorService.stop();
 		decoderService.stop();

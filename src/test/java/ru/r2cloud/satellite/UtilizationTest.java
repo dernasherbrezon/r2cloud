@@ -95,7 +95,7 @@ public class UtilizationTest {
 
 	private static List<Satellite> getDefaultEnabled(SatelliteDao dao) {
 		List<Satellite> result = new ArrayList<>();
-		for (Satellite cur : dao.findEnabled()) {
+		for (Satellite cur : dao.findByFilter(EnabledSdrSatelliteFilter.INSTANCE)) {
 			// this satellite can't be visible on the tested ground station
 			if (cur.getId().equals("44365") || cur.getId().equals("44832")) {
 				continue;
