@@ -228,6 +228,7 @@ public class R2ServerClient {
 
 		Tle tle = readTle(json.get("tle"));
 		if (tle == null) {
+			LOG.info("can't read tle for {}", name);
 			return null;
 		}
 		result.setTle(tle);
@@ -262,6 +263,7 @@ public class R2ServerClient {
 			return null;
 		}
 		if (!org.orekit.propagation.analytical.tle.TLE.isFormatOK(line2, line3)) {
+			LOG.error("invalid tle format");
 			return null;
 		}
 		return new Tle(new String[] { line1, line2, line3 });
