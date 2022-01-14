@@ -10,14 +10,17 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
@@ -31,14 +34,12 @@ public class R2loraClient {
 	private static final Logger LOG = LoggerFactory.getLogger(R2ServerClient.class);
 
 	private HttpClient httpclient;
-	private final String username;
-	private final String password;
 	private final String hostname;
+	private final String basicAuth;
 
 	public R2loraClient(String hostname, int port, String username, String password, int timeout) {
 		this.hostname = "http://" + hostname + ":" + port;
-		this.username = username;
-		this.password = password;
+		this.basicAuth = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.ISO_8859_1));
 		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMillis(timeout)).build();
 	}
 
@@ -64,7 +65,7 @@ public class R2loraClient {
 
 	public R2loraResponse startObservation(R2loraObservationRequest req) {
 		HttpRequest request;
-		request = createRequest("/lora/rx/start").header("Content-Type", "application/json").PUT(BodyPublishers.ofString(toJson(req))).build();
+		request = createRequest("/lora/rx/start").header("Content-Type", "application/json").POST(BodyPublishers.ofString(toJson(req))).build();
 		try {
 			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
 			if (response.statusCode() != 200) {
@@ -75,7 +76,28 @@ public class R2loraClient {
 			}
 			return readResponse(response.body());
 		} catch (IOException e) {
-			Util.logIOException(LOG, "unable to get r2lora status", e);
+			Util.logIOException(LOG, "unable to start observation", e);
+			return new R2loraResponse("CONNECTION_FAILURE");
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new IllegalStateException(e);
+		}
+	}
+
+	public R2loraResponse stopObservation() {
+		HttpRequest request;
+		request = createRequest("/rx/stop").POST(BodyPublishers.noBody()).build();
+		try {
+			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				if (LOG.isErrorEnabled()) {
+					LOG.error("unable to stop observation. response code: {}. response: {}", response.statusCode(), response.body());
+				}
+				return new R2loraResponse("CONNECTION_FAILURE");
+			}
+			return readResponse(response.body());
+		} catch (IOException e) {
+			Util.logIOException(LOG, "unable to stop observation", e);
 			return new R2loraResponse("CONNECTION_FAILURE");
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
@@ -102,6 +124,33 @@ public class R2loraClient {
 		if (failureMessage != null) {
 			result.setFailureMessage(failureMessage.asString());
 		}
+		JsonValue frames = obj.get("frames");
+		if (frames != null && frames.isArray()) {
+			JsonArray framesArray = frames.asArray();
+			List<R2loraFrame> loraFrames = new ArrayList<>(framesArray.size());
+			for (int i = 0; i < framesArray.size(); i++) {
+				R2loraFrame cur = readFrame(framesArray.get(i));
+				if (cur == null) {
+					continue;
+				}
+				loraFrames.add(cur);
+			}
+			result.setFrames(loraFrames);
+		}
+		return result;
+	}
+
+	private static R2loraFrame readFrame(JsonValue val) {
+		if (!val.isObject()) {
+			return null;
+		}
+		JsonObject obj = val.asObject();
+		R2loraFrame result = new R2loraFrame();
+		result.setData(Util.hexStringToByteArray(obj.getString("data", null)));
+		result.setFrequencyError(obj.getFloat("frequencyError", 0));
+		result.setRssi(obj.getFloat("rssi", 0));
+		result.setSnr(obj.getFloat("snr", 0));
+		result.setTimestamp(obj.getLong("timestamp", 0));
 		return result;
 	}
 
@@ -161,8 +210,8 @@ public class R2loraClient {
 		Builder result = HttpRequest.newBuilder().uri(URI.create(hostname + path));
 		result.timeout(Duration.ofMinutes(1L));
 		result.header("User-Agent", R2Cloud.getVersion() + " info@r2cloud.ru");
-		// FIXME create basic auth
-		result.header("Authorization", "Basic");
+		result.header("Authorization", basicAuth);
 		return result;
 	}
+
 }
