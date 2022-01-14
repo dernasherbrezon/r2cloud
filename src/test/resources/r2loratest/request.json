@@ -1,0 +1,10 @@
+{
+	"freq": 433.125,
+	"bw": 500,
+	"sf": 9,
+	"cr": 7,
+	"syncWord": 18,
+	"preambleLength": 8,
+	"gain": 0,
+	"ldro": 0
+}

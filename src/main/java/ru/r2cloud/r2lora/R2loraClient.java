@@ -177,6 +177,7 @@ public class R2loraClient {
 		if (loraConfig != null) {
 			configs.add(loraConfig);
 		}
+		result.setConfigs(configs);
 		return result;
 	}
 

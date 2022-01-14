@@ -1,0 +1,12 @@
+{
+	"status": "IDLE",
+	"chipTemperature": 10,
+	"lora": {
+		"minFreq": 144.0,
+		"maxFreq": 500.1
+	},
+	"fsk": {
+		"minFreq": 144.0,
+		"maxFreq": 500.1
+	}
+}
