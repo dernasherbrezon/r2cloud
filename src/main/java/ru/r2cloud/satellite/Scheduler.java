@@ -22,6 +22,7 @@ import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SdrType;
+import ru.r2cloud.r2lora.R2loraClient;
 import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.reader.IQReader;
 import ru.r2cloud.satellite.reader.PlutoSdrReader;
@@ -54,6 +55,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private final Schedule schedule;
 	private final RotatorService rotatorService;
 	private final SatelliteFilter filter;
+	private final R2loraClient loraClient;
 
 	private ScheduledExecutorService startThread = null;
 	private ScheduledExecutorService stopThread = null;
@@ -64,7 +66,8 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private Long currentBandFrequency = null;
 	private int numberOfObservationsOnCurrentBand = 0;
 
-	public Scheduler(Schedule schedule, Configuration config, SatelliteDao satellites, SatelliteFilter filter, SdrLock lock, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderService decoderService, RotatorService rotatorService) {
+	public Scheduler(Schedule schedule, Configuration config, SatelliteDao satellites, SatelliteFilter filter, SdrLock lock, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderService decoderService, RotatorService rotatorService,
+			R2loraClient loraClient) {
 		this.schedule = schedule;
 		this.config = config;
 		this.config.subscribe(this, "locaiton.lat");
@@ -78,6 +81,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		this.decoderService = decoderService;
 		this.rotatorService = rotatorService;
 		this.filter = filter;
+		this.loraClient = loraClient;
 	}
 
 	@Override
@@ -134,7 +138,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private void schedule(ObservationRequest observation) {
 		Satellite satellite = satelliteDao.findById(observation.getSatelliteId());
 		LOG.info("scheduled next pass for {}. start: {} end: {}", satellite, new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
-		IQReader reader = createReader(observation);
+		IQReader reader = createReader(observation, satellite);
 		Runnable readTask = new SafeRunnable() {
 
 			@Override
@@ -235,7 +239,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 		}
 	}
 
-	private IQReader createReader(ObservationRequest req) {
+	private IQReader createReader(ObservationRequest req, Satellite satellite) {
 		FrequencySource source = req.getSource();
 		switch (source) {
 		case APT:
@@ -249,7 +253,7 @@ public class Scheduler implements Lifecycle, ConfigListener {
 			} else if (req.getSdrType().equals(SdrType.SDRSERVER)) {
 				return new SdrServerReader(config, req);
 			} else if (req.getSdrType().equals(SdrType.R2LORA)) {
-				return new R2loraReader(config, req);
+				return new R2loraReader(config, req, loraClient, satellite);
 			} else {
 				throw new IllegalArgumentException("unsupported sdr type: " + req.getSdrType());
 			}

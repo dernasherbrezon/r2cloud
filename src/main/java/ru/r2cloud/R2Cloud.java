@@ -264,10 +264,12 @@ public class R2Cloud {
 
 		observationFactory = new ObservationFactory(predict, tleDao, props);
 		schedule = new Schedule(props, observationFactory);
-		scheduler = new Scheduler(schedule, props, satelliteDao, EnabledSdrSatelliteFilter.INSTANCE, rtlsdrLock, threadFactory, clock, processFactory, resultDao, decoderService, rotatorService);
+		scheduler = new Scheduler(schedule, props, satelliteDao, EnabledSdrSatelliteFilter.INSTANCE, rtlsdrLock, threadFactory, clock, processFactory, resultDao, decoderService, rotatorService, null);
 
+		
 		scheduleLora = new Schedule(props, observationFactory);
-		schedulerLora = new Scheduler(scheduleLora, props, satelliteDao, EnabledLoraSatelliteFilter.INSTANCE, rtlsdrLock, threadFactory, clock, processFactory, resultDao, decoderService, rotatorService);
+		//FIXME client
+		schedulerLora = new Scheduler(scheduleLora, props, satelliteDao, EnabledLoraSatelliteFilter.INSTANCE, rtlsdrLock, threadFactory, clock, processFactory, resultDao, decoderService, rotatorService, null);
 
 		// setup web server
 		index(new Health());
@@ -405,7 +407,7 @@ public class R2Cloud {
 			}
 		}
 	}
-
+	
 	public static String getVersion() {
 		if (version == null) {
 			return "unknown";
