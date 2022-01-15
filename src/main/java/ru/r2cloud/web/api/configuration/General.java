@@ -124,7 +124,7 @@ public class General extends AbstractHttpController {
 		try {
 			ppm = WebServer.getInteger(request, "ppm");
 			if (ppm == null) {
-				errors.put("ppm", Messages.CANNOT_BE_EMPTY);
+				ppm = 0;
 			}
 		} catch (NumberFormatException e) {
 			errors.put("ppm", "not an integer");
