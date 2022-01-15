@@ -184,4 +184,14 @@ public class SatelliteDao {
 		return result;
 	}
 
+	public List<Satellite> findEnabled() {
+		List<Satellite> result = new ArrayList<>();
+		for (Satellite cur : satellites) {
+			if (cur.isEnabled()) {
+				result.add(cur);
+			}
+		}
+		return result;
+	}
+
 }

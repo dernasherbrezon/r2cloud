@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.ddns.DDNSType;
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.SdrType;
 
 public class Configuration {
@@ -201,6 +202,34 @@ public class Configuration {
 
 	public SdrType getSdrType() {
 		return SdrType.valueOf(getProperty("satellites.sdr").toUpperCase(Locale.UK));
+	}
+
+	public List<DeviceConfiguration> getSdrConfigurations() {
+		DeviceConfiguration config = new DeviceConfiguration();
+		// some default sdr configuration
+		config.setMinimumFrequency(100_000_000);
+		config.setMaximumFrequency(1_700_000_000);
+		config.setId("sdr-" + getProperty("satellites.rtlsdr.device.index"));
+		List<DeviceConfiguration> result = new ArrayList<>();
+		result.add(config);
+		return result;
+	}
+
+	public List<DeviceConfiguration> getLoraConfigurations() {
+		List<String> loraProps = getProperties("r2lora.hostnames");
+		if (loraProps.isEmpty()) {
+			return Collections.emptyList();
+		}
+		int timeout = getInteger("r2lora.timeout");
+		List<DeviceConfiguration> result = new ArrayList<>(loraProps.size());
+		for (String cur : loraProps) {
+			DeviceConfiguration config = new DeviceConfiguration();
+			config.setHostport(cur);
+			config.setTimeout(timeout);
+			config.setId("lora-" + cur);
+			result.add(config);
+		}
+		return result;
 	}
 
 	public List<String> getProperties(String name) {

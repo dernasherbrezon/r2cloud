@@ -85,7 +85,7 @@ public class RotatorServiceTest {
 		config.setProperty("rotator.enabled", true);
 		config.setProperty("rotator.rotctrld.port", serverPort + 1);
 		DefaultClock clock = new DefaultClock();
-		service = new RotatorService(config, predict, new ThreadPoolFactoryImpl(), clock, metrics);
+		service = new RotatorService(config, predict, new ThreadPoolFactoryImpl(10000), clock, metrics);
 		service.start();
 		assertNull(service.schedule(createRequest(), clock.millis()));
 	}
@@ -115,13 +115,12 @@ public class RotatorServiceTest {
 		assertEquals(Double.valueOf(expectedParts[1]), Double.valueOf(actualParts[1]), 0.0001);
 		assertEquals(Double.valueOf(expectedParts[2]), Double.valueOf(actualParts[2]), 0.0001);
 	}
-	
 
 	@Test
 	public void testDisabled() {
 		config.setProperty("rotator.enabled", false);
 		DefaultClock clock = new DefaultClock();
-		service = new RotatorService(config, predict, new ThreadPoolFactoryImpl(), clock, metrics);
+		service = new RotatorService(config, predict, new ThreadPoolFactoryImpl(10000), clock, metrics);
 		service.start();
 		assertNull(service.schedule(createRequest(), clock.millis()));
 	}

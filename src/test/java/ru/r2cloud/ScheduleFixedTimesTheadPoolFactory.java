@@ -27,6 +27,11 @@ public class ScheduleFixedTimesTheadPoolFactory implements ThreadPoolFactory, Sc
 	}
 
 	@Override
+	public long getThreadPoolShutdownMillis() {
+		return 10000;
+	}
+
+	@Override
 	public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
 		for (int i = 0; i < times; i++) {
 			command.run();

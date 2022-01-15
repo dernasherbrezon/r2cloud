@@ -14,13 +14,10 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
-import ru.r2cloud.model.SdrType;
-import ru.r2cloud.util.Configuration;
 
 public class Schedule {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Schedule.class);
-	private static final Long PARTIAL_TOLERANCE_MILLIS = 60 * 4 * 1000L;
 
 	private final ObservationFactory factory;
 	private final Timetable timetable;
@@ -30,21 +27,9 @@ public class Schedule {
 	private final Map<String, TimeSlot> timeSlotById = new HashMap<>();
 	private final Map<String, List<ObservationRequest>> observationsBySatelliteId = new HashMap<>();
 
-	public Schedule(Configuration config, ObservationFactory factory) {
+	public Schedule(Timetable timetable, ObservationFactory factory) {
 		this.factory = factory;
-		boolean rotatorIsEnabled = config.getBoolean("rotator.enabled");
-		// this complicated if just to put some logging
-		if (config.getSdrType().equals(SdrType.SDRSERVER)) {
-			if (rotatorIsEnabled) {
-				LOG.info("concurrent observations are disabled because of rotator");
-				timetable = new SequentialTimetable(PARTIAL_TOLERANCE_MILLIS);
-			} else {
-				timetable = new OverlappedTimetable(PARTIAL_TOLERANCE_MILLIS);
-			}
-		} else {
-			timetable = new SequentialTimetable(PARTIAL_TOLERANCE_MILLIS);
-		}
-
+		this.timetable = timetable;
 	}
 
 	public synchronized void assignTasksToSlot(String observationId, ScheduledObservation entry) {

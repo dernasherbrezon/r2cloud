@@ -31,6 +31,7 @@ import ru.r2cloud.R2CloudServer;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.cloud.R2ServerClient;
+import ru.r2cloud.device.Device;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SdrType;
@@ -64,9 +65,7 @@ public class ScheduleTest {
 
 	@Test
 	public void testSequentialTimetableForRotator() throws Exception {
-		config.setProperty("satellites.sdr", SdrType.SDRSERVER.name().toLowerCase());
-		config.setProperty("rotator.enabled", true);
-		schedule = new Schedule(config, factory);
+		schedule = new Schedule(new SequentialTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
 		List<ObservationRequest> expected = readExpected("expected/schedule.txt");
 		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
@@ -76,7 +75,7 @@ public class ScheduleTest {
 	public void testScheduleBasedOnOverlapedTimetable() throws Exception {
 		config.setProperty("satellites.sdr", SdrType.SDRSERVER.name().toLowerCase());
 		config.setProperty("rotator.enabled", false);
-		schedule = new Schedule(config, factory);
+		schedule = new Schedule(new OverlappedTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
 		List<ObservationRequest> expected = readExpected("expected/scheduleOverlapedTimetable.txt");
 		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
@@ -173,7 +172,7 @@ public class ScheduleTest {
 		tleDao.start();
 		PredictOreKit predict = new PredictOreKit(config);
 		factory = new ObservationFactory(predict, tleDao, config);
-		schedule = new Schedule(config, factory);
+		schedule = new Schedule(new SequentialTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
 
 		current = getTime("2020-09-30 22:17:01.000");
 	}

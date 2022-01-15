@@ -4,19 +4,19 @@ import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
+import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.satellite.SatelliteDao;
-import ru.r2cloud.satellite.Schedule;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
 
 public class ScheduleList extends AbstractHttpController {
 
 	private final SatelliteDao satelliteDao;
-	private final Schedule schedule;
+	private final DeviceManager schedule;
 
-	public ScheduleList(SatelliteDao satelliteDao, Schedule schedule) {
+	public ScheduleList(SatelliteDao satelliteDao, DeviceManager schedule) {
 		this.satelliteDao = satelliteDao;
 		this.schedule = schedule;
 	}
@@ -24,13 +24,14 @@ public class ScheduleList extends AbstractHttpController {
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
 		JsonArray entity = new JsonArray();
+		long currentTimeMillis = System.currentTimeMillis();
 		for (Satellite cur : satelliteDao.findAll()) {
 			JsonObject curSatellite = new JsonObject();
 			curSatellite.add("id", cur.getId());
 			curSatellite.add("name", cur.getName());
 			curSatellite.add("enabled", cur.isEnabled());
 			curSatellite.add("frequency", cur.getFrequency());
-			ObservationRequest nextObservation = schedule.findFirstBySatelliteId(cur.getId(), System.currentTimeMillis());
+			ObservationRequest nextObservation = schedule.findFirstBySatelliteId(cur.getId(), currentTimeMillis);
 			if (nextObservation != null) {
 				curSatellite.add("nextPass", nextObservation.getStartTimeMillis());
 			}

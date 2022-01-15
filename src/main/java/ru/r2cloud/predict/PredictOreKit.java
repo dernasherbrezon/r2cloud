@@ -40,7 +40,7 @@ import ru.r2cloud.util.Configuration;
 
 public class PredictOreKit {
 
-	private static final double PREDICT_INTERVAL = 3600. * 24 * 2;
+	public static final double PREDICT_INTERVAL = 3600. * 24 * 2;
 	private static final Logger LOG = LoggerFactory.getLogger(PredictOreKit.class);
 	private static final double SPEED_OF_LIGHT = 2.99792458E8;
 

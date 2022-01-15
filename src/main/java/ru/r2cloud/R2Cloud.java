@@ -16,6 +16,9 @@ import pl.edu.icm.jlargearrays.ConcurrencyUtils;
 import ru.r2cloud.cloud.R2ServerClient;
 import ru.r2cloud.cloud.R2ServerService;
 import ru.r2cloud.ddns.DDNSClient;
+import ru.r2cloud.device.DeviceManager;
+import ru.r2cloud.device.LoraDevice;
+import ru.r2cloud.device.SdrDevice;
 import ru.r2cloud.jradio.ax25.Ax25Beacon;
 import ru.r2cloud.jradio.csp.CspBeacon;
 import ru.r2cloud.jradio.fox.Fox1BBeacon;
@@ -24,18 +27,21 @@ import ru.r2cloud.jradio.fox.Fox1DBeacon;
 import ru.r2cloud.jradio.meznsat.MeznsatBeacon;
 import ru.r2cloud.jradio.usp.UspBeacon;
 import ru.r2cloud.metrics.Metrics;
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SdrType;
 import ru.r2cloud.predict.PredictOreKit;
-import ru.r2cloud.satellite.EnabledLoraSatelliteFilter;
-import ru.r2cloud.satellite.EnabledSdrSatelliteFilter;
+import ru.r2cloud.r2lora.ModulationConfig;
+import ru.r2cloud.r2lora.R2loraClient;
+import ru.r2cloud.r2lora.R2loraStatus;
+import ru.r2cloud.satellite.LoraSatelliteFilter;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.RotatorService;
 import ru.r2cloud.satellite.SatelliteDao;
-import ru.r2cloud.satellite.Schedule;
-import ru.r2cloud.satellite.Scheduler;
+import ru.r2cloud.satellite.SdrSatelliteFilter;
 import ru.r2cloud.satellite.decoder.APTDecoder;
 import ru.r2cloud.satellite.decoder.Aausat4Decoder;
 import ru.r2cloud.satellite.decoder.AfskAx25Decoder;
@@ -131,12 +137,6 @@ public class R2Cloud {
 	private final TLEDao tleDao;
 	private final TLEReloader tleReloader;
 	private final DecoderService decoderService;
-	private final Schedule schedule;
-	private final Scheduler scheduler;
-
-	private final Schedule scheduleLora;
-	private final Scheduler schedulerLora;
-
 	private final PredictOreKit predict;
 	private final ThreadPoolFactory threadFactory;
 	private final ObservationFactory observationFactory;
@@ -149,9 +149,10 @@ public class R2Cloud {
 	private final Map<String, Decoder> decoders = new HashMap<>();
 	private final SignedURL signed;
 	private final RotatorService rotatorService;
+	private final DeviceManager deviceManager;
 
 	public R2Cloud(Configuration props) {
-		threadFactory = new ThreadPoolFactoryImpl();
+		threadFactory = new ThreadPoolFactoryImpl(props.getThreadPoolShutdownMillis());
 		processFactory = new ProcessFactory();
 		clock = new DefaultClock();
 
@@ -257,13 +258,21 @@ public class R2Cloud {
 		decoderService = new DecoderService(props, decoders, resultDao, r2cloudService, threadFactory, metrics);
 
 		observationFactory = new ObservationFactory(predict, tleDao, props);
-		schedule = new Schedule(props, observationFactory);
-		scheduler = new Scheduler(schedule, props, satelliteDao, EnabledSdrSatelliteFilter.INSTANCE, threadFactory, clock, processFactory, resultDao, decoderService, rotatorService, null);
 
-		
-		scheduleLora = new Schedule(props, observationFactory);
-		//FIXME client
-		schedulerLora = new Scheduler(scheduleLora, props, satelliteDao, EnabledLoraSatelliteFilter.INSTANCE, threadFactory, clock, processFactory, resultDao, decoderService, rotatorService, null);
+		deviceManager = new DeviceManager(props, satelliteDao, threadFactory);
+		for (DeviceConfiguration cur : props.getSdrConfigurations()) {
+			int numberOfConcurrentObservations = 1;
+			if (props.getSdrType().equals(SdrType.SDRSERVER) && !props.getBoolean("rotator.enabled")) {
+				numberOfConcurrentObservations = 5;
+			}
+			deviceManager.addDevice(new SdrDevice(cur.getId(), new SdrSatelliteFilter(cur), numberOfConcurrentObservations, observationFactory, threadFactory, clock, rotatorService, resultDao, decoderService, props, processFactory));
+		}
+		for (DeviceConfiguration cur : props.getLoraConfigurations()) {
+			R2loraClient client = new R2loraClient(cur.getHostport(), null, null, cur.getTimeout());
+			if (populateFrequencies(client.getStatus(), cur)) {
+				deviceManager.addDevice(new LoraDevice(cur.getId(), new LoraSatelliteFilter(cur), 1, observationFactory, threadFactory, clock, rotatorService, resultDao, decoderService, props, client));
+			}
+		}
 
 		// setup web server
 		index(new Health());
@@ -280,10 +289,10 @@ public class R2Cloud {
 		index(new ObservationSpectrogram(resultDao, spectogramService, signed));
 		index(new ObservationList(satelliteDao, resultDao));
 		index(new ObservationLoad(resultDao, signed, decoders));
-		index(new ScheduleList(satelliteDao, schedule));
-		index(new ScheduleSave(satelliteDao, scheduler));
-		index(new ScheduleStart(satelliteDao, scheduler));
-		index(new ScheduleComplete(scheduler));
+		index(new ScheduleList(satelliteDao, deviceManager));
+		index(new ScheduleSave(satelliteDao, deviceManager));
+		index(new ScheduleStart(satelliteDao, deviceManager));
+		index(new ScheduleComplete(deviceManager));
 		webServer = new WebServer(props, controllers, auth, signed);
 	}
 
@@ -294,10 +303,9 @@ public class R2Cloud {
 		tleReloader.start();
 		decoderService.start();
 		rotatorService.start();
-		// scheduler should start after tle (it uses TLE to schedule
+		// device manager should start after tle (it uses TLE to schedule
 		// observations)
-		scheduler.start();
-		schedulerLora.start();
+		deviceManager.start();
 		metrics.start();
 		webServer.start();
 		LOG.info("=================================");
@@ -308,8 +316,7 @@ public class R2Cloud {
 	public void stop() {
 		webServer.stop();
 		metrics.stop();
-		schedulerLora.stop();
-		scheduler.stop();
+		deviceManager.stop();
 		rotatorService.stop();
 		decoderService.stop();
 		tleReloader.stop();
@@ -401,7 +408,22 @@ public class R2Cloud {
 			}
 		}
 	}
-	
+
+	private static boolean populateFrequencies(R2loraStatus status, DeviceConfiguration config) {
+		if (status.getConfigs() == null) {
+			return false;
+		}
+		for (ModulationConfig cur : status.getConfigs()) {
+			if (!cur.getName().equalsIgnoreCase("lora")) {
+				continue;
+			}
+			config.setMinimumFrequency((long) (cur.getMinFrequency() * 1_000_000));
+			config.setMaximumFrequency((long) (cur.getMaxFrequency() * 1_000_000));
+			return true;
+		}
+		return false;
+	}
+
 	public static String getVersion() {
 		if (version == null) {
 			return "unknown";

@@ -5,10 +5,10 @@ import org.slf4j.LoggerFactory;
 
 import com.eclipsesource.json.JsonObject;
 
+import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.satellite.SatelliteDao;
-import ru.r2cloud.satellite.Scheduler;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
 import ru.r2cloud.web.InternalServerError;
@@ -22,9 +22,9 @@ public class ScheduleStart extends AbstractHttpController {
 	private static final Logger LOG = LoggerFactory.getLogger(ScheduleStart.class);
 
 	private final SatelliteDao satelliteDao;
-	private final Scheduler scheduler;
+	private final DeviceManager scheduler;
 
-	public ScheduleStart(SatelliteDao satelliteDao, Scheduler scheduler) {
+	public ScheduleStart(SatelliteDao satelliteDao, DeviceManager scheduler) {
 		this.satelliteDao = satelliteDao;
 		this.scheduler = scheduler;
 	}

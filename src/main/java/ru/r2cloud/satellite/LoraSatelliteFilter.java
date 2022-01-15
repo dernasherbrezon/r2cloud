@@ -1,15 +1,18 @@
 package ru.r2cloud.satellite;
 
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Satellite;
 
-public class EnabledLoraSatelliteFilter implements SatelliteFilter {
+public class LoraSatelliteFilter extends DeviceSatelliteFilter {
 
-	public static final EnabledLoraSatelliteFilter INSTANCE = new EnabledLoraSatelliteFilter();
+	public LoraSatelliteFilter(DeviceConfiguration config) {
+		super(config);
+	}
 
 	@Override
 	public boolean accept(Satellite satellite) {
-		if (!satellite.isEnabled()) {
+		if (!super.accept(satellite)) {
 			return false;
 		}
 		if (satellite.getModulation() != null && satellite.getModulation().equals(Modulation.LORA)) {
@@ -18,8 +21,4 @@ public class EnabledLoraSatelliteFilter implements SatelliteFilter {
 		return false;
 	}
 
-	@Override
-	public String getName() {
-		return "lora";
-	}
 }

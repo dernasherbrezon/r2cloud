@@ -5,5 +5,7 @@ import java.util.concurrent.ScheduledExecutorService;
 public interface ThreadPoolFactory {
 
 	ScheduledExecutorService newScheduledThreadPool(int i, NamingThreadFactory namingThreadFactory);
+	
+	long getThreadPoolShutdownMillis();
 
 }

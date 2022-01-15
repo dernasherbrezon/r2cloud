@@ -28,6 +28,11 @@ public class ExecuteNowThreadFactory implements ThreadPoolFactory, ScheduledExec
 	}
 
 	@Override
+	public long getThreadPoolShutdownMillis() {
+		return 0;
+	}
+
+	@Override
 	public ScheduledExecutorService newScheduledThreadPool(int i, NamingThreadFactory namingThreadFactory) {
 		if (!sameThread) {
 			impl = Executors.newScheduledThreadPool(i, namingThreadFactory);

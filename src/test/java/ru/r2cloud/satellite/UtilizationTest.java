@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import ru.r2cloud.CelestrakServer;
 import ru.r2cloud.TestUtil;
+import ru.r2cloud.device.Device;
 import ru.r2cloud.it.util.BaseTest;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
@@ -32,7 +33,7 @@ public class UtilizationTest {
 		}
 		config.setProperty("locaiton.lat", "56.189");
 		config.setProperty("locaiton.lon", "38.174");
-		//test overlapped observations
+		// test overlapped observations
 //		config.setProperty("satellites.sdr", SdrType.SDRSERVER.name().toLowerCase());
 //		config.setProperty("rotator.enabled", false);
 
@@ -50,14 +51,14 @@ public class UtilizationTest {
 		System.out.println("partial default: ");
 		enabledByDefault = getDefaultEnabled(satelliteDao);
 		while (!enabledByDefault.isEmpty()) {
-			float utilization = calculatePartialUtilization(config, factory, enabledByDefault);
+			float utilization = calculatePartialUtilization(factory, enabledByDefault);
 			System.out.println(enabledByDefault.size() + " " + utilization);
 			enabledByDefault.remove(0);
 		}
 		System.out.println("partial 70cm: ");
 		List<Satellite> cm = loadFromFile(satelliteDao, "70cm-satellites.txt");
 		while (!cm.isEmpty()) {
-			float utilization = calculatePartialUtilization(config, factory, cm);
+			float utilization = calculatePartialUtilization(factory, cm);
 			System.out.println(cm.size() + " " + utilization);
 			cm.remove(0);
 		}
@@ -75,14 +76,14 @@ public class UtilizationTest {
 		return result;
 	}
 
-	private static float calculatePartialUtilization(Configuration config, ObservationFactory factory, List<Satellite> satellites) throws ParseException {
+	private static float calculatePartialUtilization(ObservationFactory factory, List<Satellite> satellites) throws ParseException {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
 		long start = sdf.parse("2020-09-27 11:13:00").getTime();
 		long end = sdf.parse("2020-09-29 11:13:00").getTime(); // +2 days
 
-		Schedule schedule = new Schedule(config, factory);
+		Schedule schedule = new Schedule(new SequentialTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
 		List<ObservationRequest> happened = schedule.createInitialSchedule(satellites, start);
 
 		long total = end - start;
@@ -95,7 +96,7 @@ public class UtilizationTest {
 
 	private static List<Satellite> getDefaultEnabled(SatelliteDao dao) {
 		List<Satellite> result = new ArrayList<>();
-		for (Satellite cur : dao.findByFilter(EnabledSdrSatelliteFilter.INSTANCE)) {
+		for (Satellite cur : dao.findEnabled()) {
 			// this satellite can't be visible on the tested ground station
 			if (cur.getId().equals("44365") || cur.getId().equals("44832")) {
 				continue;

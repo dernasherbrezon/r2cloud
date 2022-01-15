@@ -11,7 +11,7 @@ public class ScheduledObservation {
 
 	private boolean cancelled = false;
 
-	ScheduledObservation(Future<?> future, Future<?> completeTaskFuture, Runnable completeTask, Future<?> rotatorFuture) {
+	public ScheduledObservation(Future<?> future, Future<?> completeTaskFuture, Runnable completeTask, Future<?> rotatorFuture) {
 		this.future = future;
 		this.completeTaskFuture = completeTaskFuture;
 		this.completeTask = completeTask;

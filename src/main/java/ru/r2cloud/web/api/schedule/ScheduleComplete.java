@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import com.eclipsesource.json.JsonObject;
 
-import ru.r2cloud.satellite.Scheduler;
+import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
 import ru.r2cloud.web.ModelAndView;
@@ -19,9 +19,9 @@ public class ScheduleComplete extends AbstractHttpController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ScheduleComplete.class);
 
-	private final Scheduler scheduler;
+	private final DeviceManager scheduler;
 
-	public ScheduleComplete(Scheduler scheduler) {
+	public ScheduleComplete(DeviceManager scheduler) {
 		this.scheduler = scheduler;
 	}
 

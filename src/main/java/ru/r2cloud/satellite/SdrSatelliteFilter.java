@@ -1,15 +1,18 @@
 package ru.r2cloud.satellite;
 
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Satellite;
 
-public class EnabledSdrSatelliteFilter implements SatelliteFilter {
+public class SdrSatelliteFilter extends DeviceSatelliteFilter {
 
-	public static final EnabledSdrSatelliteFilter INSTANCE = new EnabledSdrSatelliteFilter();
+	public SdrSatelliteFilter(DeviceConfiguration config) {
+		super(config);
+	}
 
 	@Override
 	public boolean accept(Satellite satellite) {
-		if (!satellite.isEnabled()) {
+		if (!super.accept(satellite)) {
 			return false;
 		}
 		if (satellite.getModulation() == null || !satellite.getModulation().equals(Modulation.LORA)) {
@@ -17,9 +20,5 @@ public class EnabledSdrSatelliteFilter implements SatelliteFilter {
 		}
 		return false;
 	}
-	
-	@Override
-	public String getName() {
-		return "sdr";
-	}
+
 }

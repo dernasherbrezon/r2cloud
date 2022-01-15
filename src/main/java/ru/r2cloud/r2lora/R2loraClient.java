@@ -37,8 +37,8 @@ public class R2loraClient {
 	private final String hostname;
 	private final String basicAuth;
 
-	public R2loraClient(String hostname, int port, String username, String password, int timeout) {
-		this.hostname = "http://" + hostname + ":" + port;
+	public R2loraClient(String hostport, String username, String password, int timeout) {
+		this.hostname = "http://" + hostport;
 		this.basicAuth = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.ISO_8859_1));
 		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMillis(timeout)).build();
 	}
@@ -55,7 +55,7 @@ public class R2loraClient {
 			}
 			return readStatus(response.body());
 		} catch (IOException e) {
-			Util.logIOException(LOG, "unable to get r2lora status", e);
+			Util.logIOException(LOG, "unable to get r2lora status from: " + hostname, e);
 			return new R2loraStatus("CONNECTION_FAILURE");
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
