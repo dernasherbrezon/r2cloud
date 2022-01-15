@@ -268,7 +268,7 @@ public class R2Cloud {
 			deviceManager.addDevice(new SdrDevice(cur.getId(), new SdrSatelliteFilter(cur), numberOfConcurrentObservations, observationFactory, threadFactory, clock, rotatorService, resultDao, decoderService, props, processFactory));
 		}
 		for (DeviceConfiguration cur : props.getLoraConfigurations()) {
-			R2loraClient client = new R2loraClient(cur.getHostport(), null, null, cur.getTimeout());
+			R2loraClient client = new R2loraClient(cur.getHostport(), cur.getUsername(), cur.getPassword(), cur.getTimeout());
 			if (populateFrequencies(client.getStatus(), cur)) {
 				deviceManager.addDevice(new LoraDevice(cur.getId(), new LoraSatelliteFilter(cur), 1, observationFactory, threadFactory, clock, rotatorService, resultDao, decoderService, props, client));
 			}

@@ -187,6 +187,10 @@ public abstract class Device implements Lifecycle {
 			currentBandFrequency = null;
 			numberOfObservationsOnCurrentBand = 0;
 		}
+		if (scheduledSatellites.isEmpty()) {
+			LOG.info("[{}] no available satellites for this device", id);
+			return;
+		}
 		long current = clock.millis();
 		List<ObservationRequest> newSchedule = schedule.createInitialSchedule(scheduledSatellites, current);
 		for (ObservationRequest cur : newSchedule) {
