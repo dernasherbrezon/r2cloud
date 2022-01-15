@@ -24,9 +24,8 @@ public class MetricsTest extends RegisteredTest {
 	@Test
 	public void testLoadMetrics() {
 		JsonArray metrics = client.getMetrics();
-		// there might be more metrics. these 2 guaranteed to exist
+		// there might be more metrics. this 1 guaranteed to exist
 		assertMetric(metrics, "heap", "BYTES");
-		assertMetric(metrics, "ppm", "NORMAL");
 	}
 
 	private void assertMetric(JsonArray metrics, String name, String expectedFormat) {

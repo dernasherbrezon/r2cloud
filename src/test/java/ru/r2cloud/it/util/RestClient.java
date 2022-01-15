@@ -280,9 +280,6 @@ public class RestClient {
 			json.add("lng", config.getLng());
 		}
 		json.add("autoUpdate", config.isAutoUpdate());
-		if (config.getPpmType() != null) {
-			json.add("ppmType", config.getPpmType());
-		}
 		if (config.getPpm() != null) {
 			json.add("ppm", config.getPpm());
 		}

@@ -9,7 +9,6 @@ import com.eclipsesource.json.JsonObject;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.AutoUpdate;
-import ru.r2cloud.model.PpmType;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
@@ -38,7 +37,6 @@ public class General extends AbstractHttpController {
 		entity.add("lat", config.getDouble("locaiton.lat"));
 		entity.add("lng", config.getDouble("locaiton.lon"));
 		entity.add("autoUpdate", autoUpdate.isEnabled());
-		entity.add("ppmType", config.getPpmType().toString());
 		entity.add("elevationMin", config.getDouble("scheduler.elevation.min"));
 		entity.add("elevationGuaranteed", config.getDouble("scheduler.elevation.guaranteed"));
 		entity.add("rotationEnabled", config.getBoolean("rotator.enabled"));
@@ -122,28 +120,14 @@ public class General extends AbstractHttpController {
 				errors.put("rotatorCycle", Messages.CANNOT_BE_EMPTY);
 			}
 		}
-		String ppmTypeStr = WebServer.getString(request, "ppmType");
-		PpmType ppmType = null;
-		if (ppmTypeStr == null) {
-			ppmTypeStr = "AUTO";
-		} else {
-			try {
-				ppmType = PpmType.valueOf(ppmTypeStr);
-			} catch (Exception e) {
-				errors.put("ppmType", "unkown ppmType");
-			}
-		}
-
 		Integer ppm = null;
-		if (ppmType != null && ppmType.equals(PpmType.MANUAL)) {
-			try {
-				ppm = WebServer.getInteger(request, "ppm");
-				if (ppm == null) {
-					errors.put("ppm", Messages.CANNOT_BE_EMPTY);
-				}
-			} catch (NumberFormatException e) {
-				errors.put("ppm", "not an integer");
+		try {
+			ppm = WebServer.getInteger(request, "ppm");
+			if (ppm == null) {
+				errors.put("ppm", Messages.CANNOT_BE_EMPTY);
 			}
+		} catch (NumberFormatException e) {
+			errors.put("ppm", "not an integer");
 		}
 		if (!errors.isEmpty()) {
 			LOG.info("unable to save: {}", errors);
@@ -154,7 +138,6 @@ public class General extends AbstractHttpController {
 		config.setProperty("satellites.rtlsdr.biast", biast);
 		config.setProperty("locaiton.lat", lat);
 		config.setProperty("locaiton.lon", lon);
-		config.setProperty("ppm.calculate.type", ppmTypeStr);
 		config.setProperty("scheduler.elevation.min", String.valueOf(elevationMin));
 		config.setProperty("scheduler.elevation.guaranteed", String.valueOf(elevationGuaranteed));
 		config.setProperty("rotator.enabled", rotationEnabled);

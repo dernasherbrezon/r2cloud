@@ -22,7 +22,6 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		assertEquals(config.getLat(), configuration.getDouble("lat", 0.0), 0.0);
 		assertEquals(config.getLng(), configuration.getDouble("lng", 0.0), 0.0);
 		assertEquals(config.isAutoUpdate(), configuration.getBoolean("autoUpdate", !config.isAutoUpdate()));
-		assertEquals(config.getPpmType(), configuration.getString("ppmType", null));
 		assertEquals(config.getPpm().intValue(), configuration.getInt("ppm", -1));
 		assertEquals(config.getElevationMin(), configuration.getDouble("elevationMin", 0.0), 0.0);
 		assertEquals(config.getElevationGuaranteed(), configuration.getDouble("elevationGuaranteed", 0.0), 0.0);
@@ -36,40 +35,26 @@ public class GeneralConfigurationTest extends RegisteredTest {
 	}
 
 	@Test
-	public void testDefaultPpmType() {
-		GeneralConfiguration config = createConfig();
-		config.setPpmType(null);
-		client.setGeneralConfiguration(config);
-		JsonObject configuration = client.getGeneralConfiguration();
-		assertEquals(config.getLat(), configuration.getDouble("lat", 0.0), 0.0);
-		assertEquals(config.getLng(), configuration.getDouble("lng", 0.0), 0.0);
-		assertEquals(config.isAutoUpdate(), configuration.getBoolean("autoUpdate", !config.isAutoUpdate()));
-		assertEquals("AUTO", configuration.getString("ppmType", null));
-		assertEquals(config.getElevationMin(), configuration.getDouble("elevationMin", 0.0), 0.0);
-		assertEquals(config.getElevationGuaranteed(), configuration.getDouble("elevationGuaranteed", 0.0), 0.0);
-	}
-
-	@Test
 	public void testInvalidGain() {
 		GeneralConfiguration config = createConfig();
 		config.setGain(null);
 		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("gain", response);
-		
+
 		config = createConfig();
 		config.setGain(-1.0);
 		response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("gain", response);
-		
+
 		config = createConfig();
 		config.setGain(51.0);
 		response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("gain", response);
 	}
-	
+
 	@Test
 	public void testInvalidElevationMin() {
 		GeneralConfiguration config = createConfig();
@@ -77,21 +62,20 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("elevationMin", response);
-		
+
 		config = createConfig();
 		config.setElevationMin(-1.0);
 		response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("elevationMin", response);
-		
+
 		config = createConfig();
 		config.setElevationMin(10.0);
 		config.setElevationGuaranteed(5.0);
 		response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
-		assertErrorInField("elevationMin", response);		
+		assertErrorInField("elevationMin", response);
 	}
-	
 
 	@Test
 	public void testInvalidElevationGuaranteed() {
@@ -100,14 +84,14 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("elevationGuaranteed", response);
-		
+
 		config = createConfig();
 		config.setElevationGuaranteed(91.0);
 		response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
-		assertErrorInField("elevationGuaranteed", response);		
+		assertErrorInField("elevationGuaranteed", response);
 	}
-	
+
 	@Test
 	public void testRotctldConfiguration() {
 		GeneralConfiguration config = createConfig();
@@ -115,13 +99,13 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("rotctrldHostname", response);
-		
+
 		config = createConfig();
 		config.setRotctrldHostname(UUID.randomUUID().toString());
 		response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("rotctrldHostname", response);
-		
+
 		config = createConfig();
 		config.setRotctrldPort(null);
 		response = client.setGeneralConfigurationWithResponse(config);
@@ -140,7 +124,7 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		assertEquals(400, response.statusCode());
 		assertErrorInField("rotatorCycle", response);
 	}
-	
+
 	@Test
 	public void testInvalidLat() {
 		GeneralConfiguration config = createConfig();
@@ -162,20 +146,10 @@ public class GeneralConfigurationTest extends RegisteredTest {
 	@Test
 	public void testMissingPpm() {
 		GeneralConfiguration config = createConfig();
-		config.setPpmType("MANUAL");
 		config.setPpm(null);
 		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("ppm", response);
-	}
-
-	@Test
-	public void testUnknownPpmType() {
-		GeneralConfiguration config = createConfig();
-		config.setPpmType(UUID.randomUUID().toString());
-		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
-		assertEquals(400, response.statusCode());
-		assertErrorInField("ppmType", response);
 	}
 
 	private static GeneralConfiguration createConfig() {
@@ -183,7 +157,6 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		config.setLat(10.1);
 		config.setLng(23.4);
 		config.setAutoUpdate(true);
-		config.setPpmType("MANUAL");
 		config.setPpm(10);
 		config.setElevationMin(8d);
 		config.setElevationGuaranteed(20d);

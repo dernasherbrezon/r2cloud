@@ -74,7 +74,6 @@ import ru.r2cloud.satellite.decoder.Strand1Decoder;
 import ru.r2cloud.satellite.decoder.Suomi100Decoder;
 import ru.r2cloud.satellite.decoder.TechnosatDecoder;
 import ru.r2cloud.satellite.decoder.UspDecoder;
-import ru.r2cloud.sdr.SdrLock;
 import ru.r2cloud.sdr.SdrStatusDao;
 import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.tle.TLEDao;
@@ -138,7 +137,6 @@ public class R2Cloud {
 	private final Schedule scheduleLora;
 	private final Scheduler schedulerLora;
 
-	private final SdrLock rtlsdrLock;
 	private final PredictOreKit predict;
 	private final ThreadPoolFactory threadFactory;
 	private final ObservationFactory observationFactory;
@@ -157,10 +155,6 @@ public class R2Cloud {
 		processFactory = new ProcessFactory();
 		clock = new DefaultClock();
 
-		rtlsdrLock = new SdrLock();
-		rtlsdrLock.register(Scheduler.class, 3);
-		rtlsdrLock.register(SdrStatusDao.class, 2);
-
 		Integer numberOfThreads = props.getInteger("server.fft.threads");
 		// if not specified, then number of available processors will be used
 		if (numberOfThreads != null) {
@@ -174,7 +168,7 @@ public class R2Cloud {
 		metrics = new Metrics(props, clock);
 		predict = new PredictOreKit(props);
 		auth = new Authenticator(props);
-		rtlsdrStatusDao = new SdrStatusDao(props, rtlsdrLock, threadFactory, metrics, processFactory);
+		rtlsdrStatusDao = new SdrStatusDao(props, metrics, processFactory);
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
 		satelliteDao = new SatelliteDao(props, r2cloudClient);
@@ -264,12 +258,12 @@ public class R2Cloud {
 
 		observationFactory = new ObservationFactory(predict, tleDao, props);
 		schedule = new Schedule(props, observationFactory);
-		scheduler = new Scheduler(schedule, props, satelliteDao, EnabledSdrSatelliteFilter.INSTANCE, rtlsdrLock, threadFactory, clock, processFactory, resultDao, decoderService, rotatorService, null);
+		scheduler = new Scheduler(schedule, props, satelliteDao, EnabledSdrSatelliteFilter.INSTANCE, threadFactory, clock, processFactory, resultDao, decoderService, rotatorService, null);
 
 		
 		scheduleLora = new Schedule(props, observationFactory);
 		//FIXME client
-		schedulerLora = new Scheduler(scheduleLora, props, satelliteDao, EnabledLoraSatelliteFilter.INSTANCE, rtlsdrLock, threadFactory, clock, processFactory, resultDao, decoderService, rotatorService, null);
+		schedulerLora = new Scheduler(scheduleLora, props, satelliteDao, EnabledLoraSatelliteFilter.INSTANCE, threadFactory, clock, processFactory, resultDao, decoderService, rotatorService, null);
 
 		// setup web server
 		index(new Health());

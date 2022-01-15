@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.ddns.DDNSType;
-import ru.r2cloud.model.PpmType;
 import ru.r2cloud.model.SdrType;
 
 public class Configuration {
@@ -178,19 +177,6 @@ public class Configuration {
 			return false;
 		}
 		return Boolean.valueOf(str);
-	}
-
-	public PpmType getPpmType() {
-		String str = getProperty("ppm.calculate.type");
-		if (str == null) {
-			return PpmType.AUTO;
-		}
-		try {
-			return PpmType.valueOf(str);
-		} catch (Exception e) {
-			LOG.error("invalid ppm type: {} default to: AUTO", str, e);
-			return PpmType.AUTO;
-		}
 	}
 
 	public Double getDouble(String name) {

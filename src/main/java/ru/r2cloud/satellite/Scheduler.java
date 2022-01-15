@@ -30,7 +30,6 @@ import ru.r2cloud.satellite.reader.R2loraReader;
 import ru.r2cloud.satellite.reader.RtlFmReader;
 import ru.r2cloud.satellite.reader.RtlSdrReader;
 import ru.r2cloud.satellite.reader.SdrServerReader;
-import ru.r2cloud.sdr.SdrLock;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
@@ -46,7 +45,6 @@ public class Scheduler implements Lifecycle, ConfigListener {
 
 	private final SatelliteDao satelliteDao;
 	private final Configuration config;
-	private final SdrLock lock;
 	private final ThreadPoolFactory threadpoolFactory;
 	private final Clock clock;
 	private final ProcessFactory processFactory;
@@ -66,14 +64,12 @@ public class Scheduler implements Lifecycle, ConfigListener {
 	private Long currentBandFrequency = null;
 	private int numberOfObservationsOnCurrentBand = 0;
 
-	public Scheduler(Schedule schedule, Configuration config, SatelliteDao satellites, SatelliteFilter filter, SdrLock lock, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderService decoderService, RotatorService rotatorService,
-			R2loraClient loraClient) {
+	public Scheduler(Schedule schedule, Configuration config, SatelliteDao satellites, SatelliteFilter filter, ThreadPoolFactory threadpoolFactory, Clock clock, ProcessFactory processFactory, ObservationDao dao, DecoderService decoderService, RotatorService rotatorService, R2loraClient loraClient) {
 		this.schedule = schedule;
 		this.config = config;
 		this.config.subscribe(this, "locaiton.lat");
 		this.config.subscribe(this, "locaiton.lon");
 		this.satelliteDao = satellites;
-		this.lock = lock;
 		this.threadpoolFactory = threadpoolFactory;
 		this.clock = clock;
 		this.processFactory = processFactory;
@@ -184,17 +180,11 @@ public class Scheduler implements Lifecycle, ConfigListener {
 						LOG.info("[{}] observation time passed. skip {}", observation.getId(), satellite);
 						return;
 					}
-					if (!lock.tryLock(Scheduler.this)) {
-						LOG.info("[{}] unable to acquire lock for {}", observation.getId(), satellite);
-						return;
-					}
 					try {
 						data = reader.start();
 					} catch (InterruptedException e) {
 						Thread.currentThread().interrupt();
 						return;
-					} finally {
-						lock.unlock(Scheduler.this);
 					}
 				}
 

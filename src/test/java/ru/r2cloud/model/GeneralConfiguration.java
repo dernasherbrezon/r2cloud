@@ -5,7 +5,6 @@ public class GeneralConfiguration {
 	private Double lat;
 	private Double lng;
 	private boolean autoUpdate;
-	private String ppmType;
 	private Integer ppm;
 	private Double elevationMin;
 	private Double elevationGuaranteed;
@@ -111,14 +110,6 @@ public class GeneralConfiguration {
 
 	public void setAutoUpdate(boolean autoUpdate) {
 		this.autoUpdate = autoUpdate;
-	}
-
-	public String getPpmType() {
-		return ppmType;
-	}
-
-	public void setPpmType(String ppmType) {
-		this.ppmType = ppmType;
 	}
 
 	public Integer getPpm() {

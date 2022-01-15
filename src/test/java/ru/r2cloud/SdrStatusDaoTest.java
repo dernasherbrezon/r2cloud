@@ -7,26 +7,20 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ScheduledExecutorService;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.Mockito;
 
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.Metric;
 import com.codahale.metrics.health.HealthCheck.Result;
 
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.metrics.Status;
-import ru.r2cloud.sdr.SdrLock;
 import ru.r2cloud.sdr.SdrStatusDao;
 import ru.r2cloud.util.DefaultClock;
 import ru.r2cloud.util.ProcessFactory;
-import ru.r2cloud.util.ThreadPoolFactory;
 
 public class SdrStatusDaoTest {
 
@@ -40,24 +34,19 @@ public class SdrStatusDaoTest {
 
 	@Test
 	public void testInitialStatus() {
-		SdrLock lock = new SdrLock();
-		dao = new SdrStatusDao(config, lock, createNoOpThreadFactory(), metrics, new ProcessFactory());
-		lock.register(SdrStatusDao.class, 1);
+		dao = new SdrStatusDao(config, metrics, new ProcessFactory());
 		dao.start();
 
 		assertUnknown();
-		assertPpm(0);
 	}
 
 	@Test
 	public void testUnknown() {
 		rtlTestServer.mockTest("No supported\n");
-		rtlTestServer.mockPpm("No supported\n");
 		createExecuteNowRtlSdrDao();
 
 		Map<String, Result> status = metrics.getHealthRegistry().runHealthChecks();
 		assertError(status.get("rtldongle"));
-		assertPpm(0);
 	}
 
 	@Test
@@ -78,7 +67,6 @@ public class SdrStatusDaoTest {
 		Map<String, Result> status = metrics.getHealthRegistry().runHealthChecks();
 		assertHealthy(status.get("rtltest"));
 		assertHealthy(status.get("rtldongle"));
-		assertPpm(53);
 	}
 
 	@Test
@@ -86,9 +74,7 @@ public class SdrStatusDaoTest {
 		config.setProperty("satellites.rtlsdr.test.path", TestUtil.setupScript(new File(tempFolder.getRoot().getAbsoluteFile(), "rtl_test_mock_timeouted.sh")).getAbsolutePath());
 		config.update();
 
-		SdrLock lock = new SdrLock();
-		dao = new SdrStatusDao(config, lock, new ExecuteNowThreadFactory(false), metrics, new ProcessFactory());
-		lock.register(SdrStatusDao.class, 1);
+		dao = new SdrStatusDao(config, metrics, new ProcessFactory());
 		dao.start();
 
 		long startTerminationMillis = System.currentTimeMillis();
@@ -98,16 +84,8 @@ public class SdrStatusDaoTest {
 		assertTrue("took: " + totalTerminationMillis, totalTerminationMillis < config.getThreadPoolShutdownMillis());
 	}
 
-	@SuppressWarnings("unchecked")
-	private void assertPpm(int ppm) {
-		Map<String, Metric> metricsData = metrics.getRegistry().getMetrics();
-		assertEquals(ppm, ((Gauge<Integer>) metricsData.get("ppm")).getValue().intValue());
-	}
-
 	private void createExecuteNowRtlSdrDao() {
-		SdrLock lock = new SdrLock();
-		dao = new SdrStatusDao(config, lock, new ExecuteNowThreadFactory(), metrics, new ProcessFactory());
-		lock.register(SdrStatusDao.class, 1);
+		dao = new SdrStatusDao(config, metrics, new ProcessFactory());
 		dao.start();
 	}
 
@@ -129,18 +107,6 @@ public class SdrStatusDaoTest {
 	private static void assertError(Result check) {
 		assertFalse(check.isHealthy());
 		assertEquals(Status.ERROR, check.getDetails().get("status"));
-	}
-
-	private static ThreadPoolFactory createNoOpThreadFactory() {
-		ThreadPoolFactory threadFactory = Mockito.mock(ThreadPoolFactory.class);
-		ScheduledExecutorService scheduledExecutor = Mockito.mock(ScheduledExecutorService.class);
-		try {
-			Mockito.when(scheduledExecutor.awaitTermination(Mockito.anyLong(), Mockito.any())).thenReturn(true);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-		Mockito.when(threadFactory.newScheduledThreadPool(Mockito.anyInt(), Mockito.any())).thenReturn(scheduledExecutor);
-		return threadFactory;
 	}
 
 	@Before
