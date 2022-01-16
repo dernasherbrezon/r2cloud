@@ -216,26 +216,26 @@ public class Configuration {
 	}
 
 	public List<DeviceConfiguration> getLoraConfigurations() {
-		List<String> loraInstances = getProperties("r2lora.instances");
-		if (loraInstances.isEmpty()) {
+		List<String> loraDevices = getProperties("r2lora.devices");
+		if (loraDevices.isEmpty()) {
 			return Collections.emptyList();
 		}
 		int timeout = getInteger("r2lora.timeout");
-		List<DeviceConfiguration> result = new ArrayList<>(loraInstances.size());
-		for (String cur : loraInstances) {
-			String hostport = getProperty("r2lora.instance." + cur + ".hostport");
+		List<DeviceConfiguration> result = new ArrayList<>(loraDevices.size());
+		for (String cur : loraDevices) {
+			String hostport = getProperty("r2lora.device." + cur + ".hostport");
 			if (hostport == null) {
-				LOG.error("invalid r2lora instance. hostport is missing for {}", cur);
+				LOG.error("invalid r2lora device. hostport is missing for {}", cur);
 				continue;
 			}
-			String username = getProperty("r2lora.instance." + cur + ".username");
+			String username = getProperty("r2lora.device." + cur + ".username");
 			if (username == null) {
-				LOG.error("invalid r2lora instance. username is missing for {}", cur);
+				LOG.error("invalid r2lora device. username is missing for {}", cur);
 				continue;
 			}
-			String password = getProperty("r2lora.instance." + cur + ".password");
+			String password = getProperty("r2lora.device." + cur + ".password");
 			if (password == null) {
-				LOG.error("invalid r2lora instance. password is missing for {}", cur);
+				LOG.error("invalid r2lora device. password is missing for {}", cur);
 				continue;
 			}
 			DeviceConfiguration config = new DeviceConfiguration();
