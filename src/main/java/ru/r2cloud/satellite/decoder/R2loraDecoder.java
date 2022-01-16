@@ -28,7 +28,9 @@ public class R2loraDecoder implements Decoder {
 				numberOfDecodedPackets++;
 			}
 			result.setNumberOfDecodedPackets(numberOfDecodedPackets);
-			result.setDataPath(rawFile);
+			if (numberOfDecodedPackets >= 0) {
+				result.setDataPath(rawFile);
+			}
 		} catch (IOException e) {
 			LOG.error("unable to read lora beacons", e);
 		}

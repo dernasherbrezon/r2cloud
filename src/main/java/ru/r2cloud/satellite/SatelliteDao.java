@@ -55,10 +55,15 @@ public class SatelliteDao {
 				// sdr-server supports very narrow bandwidths
 				if (config.getSdrType().equals(SdrType.SDRSERVER)) {
 					curSatellite.setInputSampleRate(48_000);
+					curSatellite.setOutputSampleRate(48_000);
+				} else if (curSatellite.getModulation() != null && curSatellite.getModulation().equals(Modulation.LORA)) {
+					// not applicable
+					curSatellite.setInputSampleRate(0);
+					curSatellite.setOutputSampleRate(0);
 				} else {
 					curSatellite.setInputSampleRate(240_000);
+					curSatellite.setOutputSampleRate(48_000);
 				}
-				curSatellite.setOutputSampleRate(48_000);
 				break;
 			default:
 				throw new IllegalArgumentException("unsupported source: " + curSatellite.getSource());

@@ -79,13 +79,11 @@ public class ObservationFactory {
 		result.setSatelliteFrequency(satellite.getFrequency());
 		result.setSatelliteId(satellite.getId());
 		result.setSource(satellite.getSource());
-		result.setBandwidth(satellite.getBandwidth());
 		result.setTle(tle);
 		result.setGroundStation(predict.getPosition().getPoint());
 		result.setStartTimeMillis(nextPass.getStartMillis());
 		result.setEndTimeMillis(nextPass.getEndMillis());
 		result.setId(String.valueOf(result.getStartTimeMillis()) + "-" + satellite.getId());
-		result.setGain(config.getDouble("satellites.rtlsdr.gain"));
 		result.setBiast(config.getBoolean("satellites.rtlsdr.biast"));
 		// only r2lora can handle lora modulation
 		if (satellite.getModulation() != null && satellite.getModulation().equals(Modulation.LORA)) {
@@ -93,20 +91,28 @@ public class ObservationFactory {
 		} else {
 			result.setSdrType(config.getSdrType());
 		}
+		if (result.getSdrType().equals(SdrType.R2LORA)) {
+			// use auto for all r2lora observations
+			result.setGain(0.0);
+			result.setBandwidth(satellite.getLoraBandwidth());
+		} else {
+			result.setGain(config.getDouble("satellites.rtlsdr.gain"));
+			result.setBandwidth(satellite.getBandwidth());
+		}
 		result.setCenterBandFrequency(satellite.getFrequencyBand().getCenter());
 		result.setInputSampleRate(satellite.getInputSampleRate());
 		result.setOutputSampleRate(satellite.getOutputSampleRate());
 
 		switch (satellite.getSource()) {
 		case APT:
-			result.setActualFrequency(satellite.getFrequency());
+			result.setActualFrequency(result.getSatelliteFrequency());
 			break;
 		case LRPT:
-			result.setActualFrequency(satellite.getFrequency());
+			result.setActualFrequency(result.getSatelliteFrequency());
 			break;
 		case TELEMETRY:
 			// compensate DC offset only for non sdr-server observations
-			if (result.getSdrType().equals(SdrType.SDRSERVER)) {
+			if (result.getSdrType().equals(SdrType.SDRSERVER) || result.getSdrType().equals(SdrType.R2LORA)) {
 				result.setActualFrequency(result.getSatelliteFrequency());
 			} else {
 				// at the beginning doppler freq is the max

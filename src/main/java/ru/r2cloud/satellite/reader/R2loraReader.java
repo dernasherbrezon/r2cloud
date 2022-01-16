@@ -41,14 +41,15 @@ public class R2loraReader implements IQReader {
 	@Override
 	public IQData start() throws InterruptedException {
 		R2loraObservationRequest loraRequest = new R2loraObservationRequest();
-		loraRequest.setBw((float) satellite.getLoraBandwidth() / 1000);
+		loraRequest.setBw((float) req.getBandwidth() / 1000);
 		loraRequest.setCr(satellite.getLoraCodingRate());
-		loraRequest.setFrequency((float) satellite.getFrequency() / 1_000_000);
-		loraRequest.setGain(0);
+		loraRequest.setFrequency((float) req.getActualFrequency() / 1_000_000);
+		loraRequest.setGain((int) req.getGain());
 		loraRequest.setLdro(0);
 		loraRequest.setPreambleLength(satellite.getLoraPreambleLength());
 		loraRequest.setSf(satellite.getLoraSpreadFactor());
 		loraRequest.setSyncword(satellite.getLoraSyncword());
+		LOG.info("[{}] starting lora observation for {} on {}Mhz", req.getId(), satellite, loraRequest.getFrequency());
 		R2loraResponse response = client.startObservation(loraRequest);
 		if (!response.getStatus().equals(ResponseStatus.SUCCESS)) {
 			LOG.error("[{}] unable to start lora observation: {}", req.getId(), response.getFailureMessage());
@@ -72,6 +73,7 @@ public class R2loraReader implements IQReader {
 		} catch (IOException e) {
 			LOG.error("[{}] unable to save beacons", req.getId(), e);
 		}
+		LOG.info("[{}] observation completed", req.getId());
 		IQData result = new IQData();
 		result.setActualStart(startTimeMillis);
 		result.setActualEnd(endTimeMillis);
