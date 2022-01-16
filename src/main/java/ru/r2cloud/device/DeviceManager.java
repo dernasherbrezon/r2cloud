@@ -59,21 +59,24 @@ public class DeviceManager implements Lifecycle, ConfigListener {
 			devices.get(i).start();
 		}
 		rescheduleThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("re-schedule"));
-		LOG.info("observations rescheduled. next update at: {}", new Date(System.currentTimeMillis() + (long) PredictOreKit.PREDICT_INTERVAL));
+		long period = (long) PredictOreKit.PREDICT_INTERVAL_SECONDS * 1000;
+		LOG.info("observations scheduled. next update at: {}", new Date(System.currentTimeMillis() + period));
 		synchronized (this) {
-			rescheduleThread.schedule(new SafeRunnable() {
+			rescheduleThread.scheduleAtFixedRate(new SafeRunnable() {
 
 				@Override
 				public void safeRun() {
+					LOG.info("reschedule observations");
 					for (int i = 0; i < devices.size(); i++) {
 						devices.get(i).reschedule();
 					}
 				}
-			}, (long) PredictOreKit.PREDICT_INTERVAL, TimeUnit.MILLISECONDS);
+			}, period, period, TimeUnit.MILLISECONDS);
 		}
 	}
 
-	public ObservationRequest schedule(Satellite satellite) {
+	public ObservationRequest enableSatellite(Satellite satellite) {
+		LOG.info("satellite {} enabled", satellite);
 		for (int i = 0; i < devices.size(); i++) {
 			ObservationRequest req = next().enableSatellite(satellite);
 			if (req != null) {
@@ -84,6 +87,7 @@ public class DeviceManager implements Lifecycle, ConfigListener {
 	}
 
 	public void disableSatellite(Satellite satelliteToEdit) {
+		LOG.info("satellite {} disabled. reschedule", satelliteToEdit.getId());
 		for (int i = 0; i < devices.size(); i++) {
 			devices.get(i).disableSatellite(satelliteToEdit);
 		}

@@ -53,9 +53,8 @@ public class ScheduleSave extends AbstractHttpController {
 
 		ObservationRequest nextObservation = null;
 		if (enabled) {
-			nextObservation = scheduler.schedule(satelliteToEdit);
+			nextObservation = scheduler.enableSatellite(satelliteToEdit);
 		} else {
-			LOG.info("satellite {} disabled. reschedule", id);
 			scheduler.disableSatellite(satelliteToEdit);
 		}
 

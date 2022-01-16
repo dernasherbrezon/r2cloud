@@ -40,7 +40,7 @@ import ru.r2cloud.util.Configuration;
 
 public class PredictOreKit {
 
-	public static final double PREDICT_INTERVAL = 3600. * 24 * 2;
+	public static final double PREDICT_INTERVAL_SECONDS = 3600. * 24 * 2;
 	private static final Logger LOG = LoggerFactory.getLogger(PredictOreKit.class);
 	private static final double SPEED_OF_LIGHT = 2.99792458E8;
 
@@ -110,7 +110,7 @@ public class PredictOreKit {
 		tlePropagator.clearEventsDetectors();
 		tlePropagator.addEventDetector(new EventSlopeFilter<EventDetector>(maxDetector, FilterType.TRIGGER_ONLY_DECREASING_EVENTS));
 		tlePropagator.setSlaveMode();
-		tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, PREDICT_INTERVAL));
+		tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, PREDICT_INTERVAL_SECONDS));
 		for (AbsoluteDate curMax : max) {
 			SatPass cur = findStartEnd(tlePropagator, baseStationFrame, curMax);
 			if (cur != null) {
@@ -136,7 +136,7 @@ public class PredictOreKit {
 		tlePropagator.clearEventsDetectors();
 		tlePropagator.addEventDetector(new EventSlopeFilter<EventDetector>(maxDetector, FilterType.TRIGGER_ONLY_DECREASING_EVENTS));
 		tlePropagator.setSlaveMode();
-		tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, PREDICT_INTERVAL));
+		tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, PREDICT_INTERVAL_SECONDS));
 		if (maxElevationHandler.getDate() == null) {
 			return null;
 		}
