@@ -1,5 +1,6 @@
 package ru.r2cloud.r2lora;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.net.InetSocketAddress;
@@ -49,12 +50,19 @@ public class R2loraClientTest {
 	public void testStartStop() {
 		JsonHttpResponse handler = new JsonHttpResponse("r2loratest/success.json", 200);
 		setupContext("/lora/rx/start", handler);
-		setupContext("/rx/stop", new JsonHttpResponse("r2loratest/success.json", 200));
+		setupContext("/rx/stop", new JsonHttpResponse("r2loratest/successStop.json", 200));
 		R2loraResponse response = client.startObservation(createRequest());
 		assertEquals(ResponseStatus.SUCCESS, response.getStatus());
 		TestUtil.assertJson("r2loratest/request.json", Json.parse(handler.getRequest()).asObject());
 		response = client.stopObservation();
 		assertEquals(ResponseStatus.SUCCESS, response.getStatus());
+		assertEquals(1, response.getFrames().size());
+		R2loraFrame r2loraFrame = response.getFrames().get(0);
+		assertArrayEquals(new byte[] { (byte) 0xca, (byte) 0xfe }, r2loraFrame.getData());
+		assertEquals(-121.75, r2loraFrame.getRssi(), 0.00001f);
+		assertEquals(-5.75, r2loraFrame.getSnr(), 0.00001f);
+		assertEquals(-729.8089, r2loraFrame.getFrequencyError(), 0.00001f);
+		assertEquals(1641987504, r2loraFrame.getTimestamp());
 	}
 
 	@Test
