@@ -44,6 +44,10 @@ public class R2loraClientTest {
 		setupContext("/status", new JsonHttpResponse("r2loratest/status.json", 401));
 		R2loraStatus status = client.getStatus();
 		assertEquals("CONNECTION_FAILURE", status.getStatus());
+		R2loraResponse response = client.startObservation(createRequest());
+		assertEquals(ResponseStatus.FAILURE, response.getStatus());
+		response = client.stopObservation();
+		assertEquals(ResponseStatus.FAILURE, response.getStatus());
 	}
 
 	@Test
