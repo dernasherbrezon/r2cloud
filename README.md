@@ -39,28 +39,30 @@ sudo apt-get install r2cloud
 2. Open [https://raspberrypi.local](https://raspberrypi.local) address.
 3. Accept self-signed certificate. This is unique certificate that was generated during installation. Once setup is complete, you could enable proper SSL using [Letsencrypt](https://letsencrypt.org). 
 
-## Design guidelines
+## Main features
 
   - Autonomous:
     - Ability to operate without internet connection
     - synchronize state once connection restored
-    - automatically calibrate average absolute error
-    - configure base station location based on coordinates from GPS receiver
     - new decoders could be added after auto-update
   - Integration with external systems:
-    - share as much as possible data with external systems
-    - re-use libraries
-  - Single stack
-    - focus on single hardware and software stack
-    - optimize it
-  - Stability
-    - housekeeping logs and data based on available hard disk
-    - auto-update
-    - backward compatibility
+    - [https://r2server.ru](https://r2server.ru)
+    - [SatNOGS](https://satnogs.org)
+    - [Amsat TLM](https://www.amsat.org/tlm/leaderboard.php?id=0&db=FOXDB)
+    - [Funcube warehouse](http://data.amsat-uk.org/registration)
+    - and more
+  - Decode satellite signal right after reception
+    - full list of supported satellite is available at [jradio](https://github.com/dernasherbrezon/jradio)
+    - display images if they supported by the satellite
+  - Multiple devices
+    - [RTL-SDR](https://www.rtl-sdr.com/buy-rtl-sdr-dvb-t-dongles/)
+    - [PlutoSDR](https://github.com/dernasherbrezon/r2cloud/wiki/PlutoSDR)
+    - [sdr-server](https://github.com/dernasherbrezon/r2cloud/wiki/sdr-server)
+    - LoRa via [r2lora](https://github.com/dernasherbrezon/r2lora)
   - Security
     - safe to expose administration UI to the internet
    
-Details could be found in official [documentation](https://github.com/dernasherbrezon/r2cloud/wiki/Features).
+Detailed features could be found in the [documentation](https://github.com/dernasherbrezon/r2cloud/wiki/Features).
 
 ## Contribution
 
@@ -68,9 +70,9 @@ Please read our [guidelines](https://github.com/dernasherbrezon/r2cloud/wiki/Con
 
 ## Contact
 
-Please use [gitter](https://gitter.im/r2cloud/Lobby)
+Please follow [@r2cloud1](https://twitter.com/r2cloud1) at twitter to get the latest updates or join conversations at [github discussions](https://github.com/dernasherbrezon/r2cloud/discussions).
 
 ## Troubleshooting guide
 
-Frequent errors are combined in our [guide](https://github.com/dernasherbrezon/r2cloud/wiki/Troubleshooting-guide).
+Frequent errors are combined in the [troubleshooting guide](https://github.com/dernasherbrezon/r2cloud/wiki/Troubleshooting-guide).
 
