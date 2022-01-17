@@ -58,7 +58,7 @@ sudo apt-get install r2cloud
     - [RTL-SDR](https://www.rtl-sdr.com/buy-rtl-sdr-dvb-t-dongles/)
     - [PlutoSDR](https://github.com/dernasherbrezon/r2cloud/wiki/PlutoSDR)
     - [sdr-server](https://github.com/dernasherbrezon/r2cloud/wiki/sdr-server)
-    - LoRa via [r2lora](https://github.com/dernasherbrezon/r2lora)
+    - [LoRa via r2lora](https://github.com/dernasherbrezon/r2cloud/wiki/LoRa)
   - Security
     - safe to expose administration UI to the internet
    
