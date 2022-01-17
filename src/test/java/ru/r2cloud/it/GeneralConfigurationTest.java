@@ -143,15 +143,6 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		assertErrorInField("lng", response);
 	}
 
-	@Test
-	public void testMissingPpm() {
-		GeneralConfiguration config = createConfig();
-		config.setPpm(null);
-		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
-		assertEquals(400, response.statusCode());
-		assertErrorInField("ppm", response);
-	}
-
 	private static GeneralConfiguration createConfig() {
 		GeneralConfiguration config = new GeneralConfiguration();
 		config.setLat(10.1);
