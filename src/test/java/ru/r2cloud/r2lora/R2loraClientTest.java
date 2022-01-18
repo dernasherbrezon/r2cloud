@@ -79,6 +79,7 @@ public class R2loraClientTest {
 
 	@Before
 	public void start() throws Exception {
+		configuredContexts.clear();
 		String host = "localhost";
 		int port = 8000;
 		server = HttpServer.create(new InetSocketAddress(host, port), 0);

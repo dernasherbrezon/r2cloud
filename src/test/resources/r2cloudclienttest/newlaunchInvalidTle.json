@@ -1,0 +1,21 @@
+[
+	{
+		"id": "R2CLOUD2",
+		"name": "LUCKY-7",
+		"modulation": "GFSK",
+		"framing": "AX25G3RUH",
+		"frequency": 437525000,
+		"bandwidth": 20000,
+		"baudRates": [
+			4800
+		],
+		"beaconClass": "ru.r2cloud.jradio.lucky7.Lucky7Beacon",
+		"tle": {
+			"line1": "LUCKY-7",
+			"line2": "1",
+			"line3": "2"
+		},
+		"start": 1639300332000,
+		"end": 1639386732000
+	}
+]

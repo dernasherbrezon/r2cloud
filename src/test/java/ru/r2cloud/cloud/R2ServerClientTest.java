@@ -130,6 +130,13 @@ public class R2ServerClientTest {
 	}
 
 	@Test
+	public void testInvalidTleInNewLaunch() throws Exception {
+		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunchInvalidTle.json", 200));
+		List<Satellite> result = client.loadNewLaunches();
+		assertEquals(0, result.size());
+	}
+
+	@Test
 	public void testEmptyNewLaunch() throws Exception {
 		assertTrue(client.loadNewLaunches().isEmpty());
 	}
