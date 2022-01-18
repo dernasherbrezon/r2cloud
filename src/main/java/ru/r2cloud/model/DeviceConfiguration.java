@@ -10,6 +10,8 @@ public class DeviceConfiguration {
 	private int timeout;
 	private String username;
 	private String password;
+	
+	private RotatorConfiguration rotatorConfiguration;
 
 	public String getId() {
 		return id;
@@ -67,4 +69,11 @@ public class DeviceConfiguration {
 		this.password = password;
 	}
 
+	public RotatorConfiguration getRotatorConfiguration() {
+		return rotatorConfiguration;
+	}
+	
+	public void setRotatorConfiguration(RotatorConfiguration rotatorConfiguration) {
+		this.rotatorConfiguration = rotatorConfiguration;
+	}
 }

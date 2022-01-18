@@ -1,12 +1,13 @@
 package ru.r2cloud.device;
 
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SdrType;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.ObservationFactory;
-import ru.r2cloud.satellite.RotatorService;
 import ru.r2cloud.satellite.SatelliteFilter;
 import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.reader.IQReader;
@@ -24,9 +25,9 @@ public class SdrDevice extends Device {
 	private final Configuration config;
 	private final ProcessFactory processFactory;
 
-	public SdrDevice(String id, SatelliteFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, RotatorService rotatorService, ObservationDao observationDao, DecoderService decoderService, Configuration config,
-			ProcessFactory processFactory) {
-		super(id, filter, numberOfConcurrentObservations, observationFactory, threadpoolFactory, clock, rotatorService, observationDao, decoderService);
+	public SdrDevice(String id, SatelliteFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, DeviceConfiguration deviceConfiguration, ObservationDao observationDao, DecoderService decoderService,
+			PredictOreKit predict, Configuration config, ProcessFactory processFactory) {
+		super(id, filter, numberOfConcurrentObservations, observationFactory, threadpoolFactory, clock, deviceConfiguration, observationDao, decoderService, predict);
 		this.config = config;
 		this.processFactory = processFactory;
 	}

@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.ddns.DDNSType;
 import ru.r2cloud.model.DeviceConfiguration;
+import ru.r2cloud.model.RotatorConfiguration;
 import ru.r2cloud.model.SdrType;
 
 public class Configuration {
@@ -210,6 +211,15 @@ public class Configuration {
 		config.setMinimumFrequency(100_000_000);
 		config.setMaximumFrequency(1_700_000_000);
 		config.setId("sdr-" + getProperty("satellites.rtlsdr.device.index"));
+		if (getBoolean("rotator.enabled")) {
+			RotatorConfiguration rotator = new RotatorConfiguration();
+			rotator.setHostname(getProperty("rotator.rotctrld.hostname"));
+			rotator.setPort(getInteger("rotator.rotctrld.port"));
+			rotator.setTimeout(getInteger("rotator.rotctrld.timeout"));
+			rotator.setTolerance(getDouble("rotator.tolerance"));
+			rotator.setCycleMillis(getInteger("rotator.cycleMillis"));
+			config.setRotatorConfiguration(rotator);
+		}
 		List<DeviceConfiguration> result = new ArrayList<>();
 		result.add(config);
 		return result;

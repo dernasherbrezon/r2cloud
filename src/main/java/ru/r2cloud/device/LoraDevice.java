@@ -1,11 +1,12 @@
 package ru.r2cloud.device;
 
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.r2lora.R2loraClient;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.ObservationFactory;
-import ru.r2cloud.satellite.RotatorService;
 import ru.r2cloud.satellite.SatelliteFilter;
 import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.reader.IQReader;
@@ -19,9 +20,9 @@ public class LoraDevice extends Device {
 	private final R2loraClient client;
 	private final Configuration config;
 
-	public LoraDevice(String id, SatelliteFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, RotatorService rotatorService, ObservationDao observationDao, DecoderService decoderService, Configuration config,
-			R2loraClient client) {
-		super(id, filter, numberOfConcurrentObservations, observationFactory, threadpoolFactory, clock, rotatorService, observationDao, decoderService);
+	public LoraDevice(String id, SatelliteFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, DeviceConfiguration deviceConfiguration, ObservationDao observationDao, DecoderService decoderService,
+			Configuration config, PredictOreKit predict, R2loraClient client) {
+		super(id, filter, numberOfConcurrentObservations, observationFactory, threadpoolFactory, clock, deviceConfiguration, observationDao, decoderService, predict);
 		this.client = client;
 		this.config = config;
 	}

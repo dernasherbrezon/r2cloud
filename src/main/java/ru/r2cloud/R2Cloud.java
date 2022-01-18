@@ -39,7 +39,6 @@ import ru.r2cloud.r2lora.R2loraStatus;
 import ru.r2cloud.satellite.LoraSatelliteFilter;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.ObservationFactory;
-import ru.r2cloud.satellite.RotatorService;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.SdrSatelliteFilter;
 import ru.r2cloud.satellite.decoder.APTDecoder;
@@ -148,7 +147,6 @@ public class R2Cloud {
 	private final SpectogramService spectogramService;
 	private final Map<String, Decoder> decoders = new HashMap<>();
 	private final SignedURL signed;
-	private final RotatorService rotatorService;
 	private final DeviceManager deviceManager;
 
 	public R2Cloud(Configuration props) {
@@ -176,7 +174,6 @@ public class R2Cloud {
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient(props.getProperty("celestrak.hostname"), props.getProperty("calpoly.hostname")));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
 		signed = new SignedURL(props, clock);
-		rotatorService = new RotatorService(props, predict, threadFactory, clock, metrics);
 		APTDecoder aptDecoder = new APTDecoder(props, processFactory);
 		decoders.put("25338", aptDecoder);
 		decoders.put("28654", aptDecoder);
@@ -262,15 +259,15 @@ public class R2Cloud {
 		deviceManager = new DeviceManager(props, satelliteDao, threadFactory);
 		for (DeviceConfiguration cur : props.getSdrConfigurations()) {
 			int numberOfConcurrentObservations = 1;
-			if (props.getSdrType().equals(SdrType.SDRSERVER) && !props.getBoolean("rotator.enabled")) {
+			if (props.getSdrType().equals(SdrType.SDRSERVER) && cur.getRotatorConfiguration() == null) {
 				numberOfConcurrentObservations = 5;
 			}
-			deviceManager.addDevice(new SdrDevice(cur.getId(), new SdrSatelliteFilter(cur), numberOfConcurrentObservations, observationFactory, threadFactory, clock, rotatorService, resultDao, decoderService, props, processFactory));
+			deviceManager.addDevice(new SdrDevice(cur.getId(), new SdrSatelliteFilter(cur), numberOfConcurrentObservations, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, props, processFactory));
 		}
 		for (DeviceConfiguration cur : props.getLoraConfigurations()) {
 			R2loraClient client = new R2loraClient(cur.getHostport(), cur.getUsername(), cur.getPassword(), cur.getTimeout());
 			if (populateFrequencies(client.getStatus(), cur)) {
-				deviceManager.addDevice(new LoraDevice(cur.getId(), new LoraSatelliteFilter(cur), 1, observationFactory, threadFactory, clock, rotatorService, resultDao, decoderService, props, client));
+				deviceManager.addDevice(new LoraDevice(cur.getId(), new LoraSatelliteFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, client));
 			}
 		}
 
@@ -302,7 +299,6 @@ public class R2Cloud {
 		tleDao.start();
 		tleReloader.start();
 		decoderService.start();
-		rotatorService.start();
 		// device manager should start after tle (it uses TLE to schedule
 		// observations)
 		deviceManager.start();
@@ -317,7 +313,6 @@ public class R2Cloud {
 		webServer.stop();
 		metrics.stop();
 		deviceManager.stop();
-		rotatorService.stop();
 		decoderService.stop();
 		tleReloader.stop();
 		tleDao.stop();

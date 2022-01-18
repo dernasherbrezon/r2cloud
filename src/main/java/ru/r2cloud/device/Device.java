@@ -18,9 +18,11 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.Lifecycle;
 import ru.r2cloud.model.BandFrequency;
 import ru.r2cloud.model.BandFrequencyComparator;
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.ObservationRequestComparator;
@@ -60,13 +62,18 @@ public abstract class Device implements Lifecycle {
 	private ScheduledExecutorService startThread = null;
 	private ScheduledExecutorService stopThread = null;
 
-	public Device(String id, SatelliteFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, RotatorService rotatorService, ObservationDao observationDao, DecoderService decoderService) {
+	public Device(String id, SatelliteFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, DeviceConfiguration deviceConfiguration, ObservationDao observationDao, DecoderService decoderService,
+			PredictOreKit predict) {
 		this.id = id;
 		this.filter = filter;
 		this.numberOfConcurrentObservations = numberOfConcurrentObservations;
 		this.threadpoolFactory = threadpoolFactory;
 		this.clock = clock;
-		this.rotatorService = rotatorService;
+		if (deviceConfiguration.getRotatorConfiguration() != null) {
+			this.rotatorService = new RotatorService(deviceConfiguration.getRotatorConfiguration(), predict, threadpoolFactory, clock);
+		} else {
+			this.rotatorService = null;
+		}
 		this.observationDao = observationDao;
 		this.decoderService = decoderService;
 		if (numberOfConcurrentObservations == 1) {
@@ -168,7 +175,10 @@ public abstract class Device implements Lifecycle {
 			}
 			long current = clock.millis();
 			Future<?> startFuture = startThread.schedule(readTask, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
-			Future<?> rotatorFuture = rotatorService.schedule(observation, current);
+			Future<?> rotatorFuture = null;
+			if (rotatorService != null) {
+				rotatorFuture = rotatorService.schedule(observation, current);
+			}
 			Runnable completeTask = new SafeRunnable() {
 
 				@Override
@@ -225,10 +235,13 @@ public abstract class Device implements Lifecycle {
 	public void stop() {
 		// cancel all tasks and complete active sdr readers
 		schedule.cancelAll();
+		if (rotatorService != null) {
+			rotatorService.stop();
+		}
 		Util.shutdown(startThread, threadpoolFactory.getThreadPoolShutdownMillis());
 		Util.shutdown(stopThread, threadpoolFactory.getThreadPoolShutdownMillis());
 		startThread = null;
-		LOG.info("[{}] scheduler stopped", id);
+		LOG.info("[{}] device stopped", id);
 	}
 
 	@Override
@@ -238,6 +251,9 @@ public abstract class Device implements Lifecycle {
 		}
 		startThread = threadpoolFactory.newScheduledThreadPool(numberOfConcurrentObservations, new NamingThreadFactory("sch-start"));
 		stopThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("sch-stop"));
+		if (rotatorService != null) {
+			rotatorService.start();
+		}
 		reschedule();
 		LOG.info("[{}] device started", id);
 	}
