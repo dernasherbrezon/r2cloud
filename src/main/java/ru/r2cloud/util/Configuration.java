@@ -218,6 +218,7 @@ public class Configuration {
 			rotator.setTimeout(getInteger("rotator.rotctrld.timeout"));
 			rotator.setTolerance(getDouble("rotator.tolerance"));
 			rotator.setCycleMillis(getInteger("rotator.cycleMillis"));
+			rotator.setId(config.getId());
 			config.setRotatorConfiguration(rotator);
 		}
 		List<DeviceConfiguration> result = new ArrayList<>();
@@ -254,8 +255,53 @@ public class Configuration {
 			config.setPassword(password);
 			config.setTimeout(timeout);
 			config.setId("lora-" + hostport);
+			config.setRotatorConfiguration(getRotatorConfiguration(config.getId(), "r2lora.device." + cur + "."));
 			result.add(config);
 		}
+		return result;
+	}
+
+	private RotatorConfiguration getRotatorConfiguration(String id, String prefix) {
+		String hostname = getProperty(prefix + "rotctrld.hostname");
+		if (hostname == null) {
+			return null;
+		}
+		Integer port = getInteger(prefix + "rotctrld.port");
+		if (port == null) {
+			return null;
+		}
+		Integer timeout = getInteger(prefix + "rotctrld.timeout");
+		if (timeout == null) {
+			// old property
+			timeout = getInteger("rotator.rotctrld.timeout");
+		}
+		if (timeout == null) {
+			return null;
+		}
+		Double tolerance = getDouble(prefix + "rotator.tolerance");
+		if (tolerance == null) {
+			// old property
+			tolerance = getDouble("rotator.tolerance");
+		}
+		if (tolerance == null) {
+			return null;
+		}
+		Integer cycleMillis = getInteger(prefix + "rotator.cycleMillis");
+		if (cycleMillis == null) {
+			// old property
+			cycleMillis = getInteger("rotator.cycleMillis");
+		}
+		if (cycleMillis == null) {
+			return null;
+		}
+		RotatorConfiguration result = new RotatorConfiguration();
+		result.setId(id);
+		result.setHostname(hostname);
+		result.setPort(port);
+		result.setTimeout(timeout);
+		result.setTolerance(getThreadPoolShutdownMillis());
+		result.setTolerance(tolerance);
+		result.setCycleMillis(cycleMillis);
 		return result;
 	}
 
