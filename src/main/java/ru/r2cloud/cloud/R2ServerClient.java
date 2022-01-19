@@ -212,9 +212,6 @@ public class R2ServerClient {
 		if (jsonRates != null && jsonRates.isArray()) {
 			result.setBaudRates(convertToIntegerList(jsonRates.asArray()));
 		}
-		if (result.getBaudRates() == null || result.getBaudRates().isEmpty()) {
-			return null;
-		}
 		String beaconClassStr = json.getString("beaconClass", null);
 		if (beaconClassStr == null) {
 			return null;
@@ -240,7 +237,12 @@ public class R2ServerClient {
 		if (endTimeMillis != 0) {
 			result.setEnd(new Date(endTimeMillis));
 		}
-
+		result.setLoraBandwidth(json.getLong("loraBandwidth", 0));
+		result.setLoraSpreadFactor(json.getInt("loraSpreadFactor", 0));
+		result.setLoraCodingRate(json.getInt("loraCodingRate", 0));
+		result.setLoraSyncword(json.getInt("loraSyncword", 0));
+		result.setLoraPreambleLength(json.getInt("loraPreambleLength", 0));
+		result.setLoraLdro(json.getInt("loraLdro", 0));
 		return result;
 	}
 
