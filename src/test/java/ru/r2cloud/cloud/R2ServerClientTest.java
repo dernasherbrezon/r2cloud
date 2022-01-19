@@ -192,11 +192,6 @@ public class R2ServerClientTest {
 		assertTrue(client.loadNewLaunches().isEmpty());
 
 		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
-		validNewLaunch.remove("baudRates");
-		server.setNewLaunchMock(validNewLaunch);
-		assertTrue(client.loadNewLaunches().isEmpty());
-
-		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
 		validNewLaunch.remove("beaconClass");
 		server.setNewLaunchMock(validNewLaunch);
 		assertTrue(client.loadNewLaunches().isEmpty());
