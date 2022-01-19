@@ -97,6 +97,7 @@ public class R2loraReaderTest {
 		satellite.setLoraPreambleLength(8);
 		satellite.setLoraSpreadFactor(9);
 		satellite.setLoraSyncword(18);
+		satellite.setLoraLdro(0);
 		satellite.setId(UUID.randomUUID().toString());
 		return satellite;
 	}

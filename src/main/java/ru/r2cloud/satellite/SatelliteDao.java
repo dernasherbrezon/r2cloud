@@ -151,6 +151,10 @@ public class SatelliteDao {
 			if (loraPreambleLength != null) {
 				curSatellite.setLoraPreambleLength(loraPreambleLength);
 			}
+			Integer loraLdro = config.getInteger("satellites." + curSatellite.getId() + ".loraLdro");
+			if (loraLdro != null) {
+				curSatellite.setLoraLdro(loraLdro);
+			}
 
 			result.add(curSatellite);
 		}

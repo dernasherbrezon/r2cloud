@@ -33,6 +33,7 @@ public class Satellite {
 	private int loraCodingRate;
 	private int loraSyncword;
 	private int loraPreambleLength;
+	private int loraLdro;
 
 	public Date getStart() {
 		return start;
@@ -226,6 +227,14 @@ public class Satellite {
 		this.loraPreambleLength = loraPreambleLength;
 	}
 
+	public int getLoraLdro() {
+		return loraLdro;
+	}
+	
+	public void setLoraLdro(int loraLdro) {
+		this.loraLdro = loraLdro;
+	}
+	
 	@Override
 	public String toString() {
 		return name + "(" + id + ")";

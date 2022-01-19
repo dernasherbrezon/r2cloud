@@ -45,7 +45,7 @@ public class R2loraReader implements IQReader {
 		loraRequest.setCr(satellite.getLoraCodingRate());
 		loraRequest.setFrequency((float) req.getActualFrequency() / 1_000_000);
 		loraRequest.setGain((int) req.getGain());
-		loraRequest.setLdro(0);
+		loraRequest.setLdro(satellite.getLoraLdro());
 		loraRequest.setPreambleLength(satellite.getLoraPreambleLength());
 		loraRequest.setSf(satellite.getLoraSpreadFactor());
 		loraRequest.setSyncword(satellite.getLoraSyncword());
