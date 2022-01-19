@@ -92,11 +92,8 @@ public class ObservationFactory {
 			result.setSdrType(config.getSdrType());
 		}
 		if (result.getSdrType().equals(SdrType.R2LORA)) {
-			// use auto for all r2lora observations
-			result.setGain(0.0);
 			result.setBandwidth(satellite.getLoraBandwidth());
 		} else {
-			result.setGain(config.getDouble("satellites.rtlsdr.gain"));
 			result.setBandwidth(satellite.getBandwidth());
 		}
 		result.setCenterBandFrequency(satellite.getFrequencyBand().getCenter());

@@ -211,6 +211,7 @@ public class Configuration {
 		config.setMinimumFrequency(100_000_000);
 		config.setMaximumFrequency(1_700_000_000);
 		config.setId("sdr-" + getProperty("satellites.rtlsdr.device.index"));
+		config.setGain(getDouble("satellites.rtlsdr.gain").floatValue());
 		if (getBoolean("rotator.enabled")) {
 			RotatorConfiguration rotator = new RotatorConfiguration();
 			rotator.setHostname(getProperty("rotator.rotctrld.hostname"));
@@ -249,6 +250,11 @@ public class Configuration {
 				LOG.error("invalid r2lora device. password is missing for {}", cur);
 				continue;
 			}
+			Integer gain = getInteger("r2lora.device." + cur + ".gain");
+			if (gain == null) {
+				// by default should be auto
+				gain = 0;
+			}
 			DeviceConfiguration config = new DeviceConfiguration();
 			config.setHostport(hostport);
 			config.setUsername(username);
@@ -256,6 +262,7 @@ public class Configuration {
 			config.setTimeout(timeout);
 			config.setId("lora-" + hostport);
 			config.setRotatorConfiguration(getRotatorConfiguration(config.getId(), "r2lora.device." + cur + "."));
+			config.setGain(gain);
 			result.add(config);
 		}
 		return result;

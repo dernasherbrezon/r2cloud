@@ -5,12 +5,13 @@ public class DeviceConfiguration {
 	private String id;
 	private long minimumFrequency;
 	private long maximumFrequency;
+	private float gain;
 
 	private String hostport;
 	private int timeout;
 	private String username;
 	private String password;
-	
+
 	private RotatorConfiguration rotatorConfiguration;
 
 	public String getId() {
@@ -72,8 +73,16 @@ public class DeviceConfiguration {
 	public RotatorConfiguration getRotatorConfiguration() {
 		return rotatorConfiguration;
 	}
-	
+
 	public void setRotatorConfiguration(RotatorConfiguration rotatorConfiguration) {
 		this.rotatorConfiguration = rotatorConfiguration;
+	}
+
+	public float getGain() {
+		return gain;
+	}
+
+	public void setGain(float gain) {
+		this.gain = gain;
 	}
 }

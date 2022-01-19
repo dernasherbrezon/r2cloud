@@ -56,6 +56,7 @@ public abstract class Device implements Lifecycle {
 	private final RotatorService rotatorService;
 	private final ObservationDao observationDao;
 	private final DecoderService decoderService;
+	private final DeviceConfiguration deviceConfiguration;
 
 	private Long currentBandFrequency = null;
 	private int numberOfObservationsOnCurrentBand = 0;
@@ -76,6 +77,7 @@ public abstract class Device implements Lifecycle {
 		}
 		this.observationDao = observationDao;
 		this.decoderService = decoderService;
+		this.deviceConfiguration = deviceConfiguration;
 		if (numberOfConcurrentObservations == 1) {
 			this.schedule = new Schedule(new SequentialTimetable(PARTIAL_TOLERANCE_MILLIS), observationFactory);
 		} else {
@@ -92,6 +94,8 @@ public abstract class Device implements Lifecycle {
 	}
 
 	private void schedule(ObservationRequest observation, Satellite satellite) {
+		// write some device-specific parameters
+		observation.setGain(deviceConfiguration.getGain());
 		LOG.info("scheduled next pass for {}. start: {} end: {}", satellite, new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
 		IQReader reader = createReader(observation, satellite);
 		Runnable readTask = new SafeRunnable() {
