@@ -258,7 +258,6 @@ public abstract class Device implements Lifecycle {
 		if (rotatorService != null) {
 			rotatorService.start();
 		}
-		reschedule();
 		LOG.info("[{}] device started", id);
 	}
 
@@ -329,6 +328,10 @@ public abstract class Device implements Lifecycle {
 			}
 		}
 		return null;
+	}
+
+	public void removeAllSatellites() {
+		scheduledSatellites.clear();
 	}
 
 	private boolean removeSatellite(String id) {

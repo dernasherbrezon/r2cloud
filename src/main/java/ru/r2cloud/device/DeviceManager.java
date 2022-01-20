@@ -47,6 +47,17 @@ public class DeviceManager implements Lifecycle, ConfigListener {
 
 	@Override
 	public void start() {
+		for (int i = 0; i < devices.size(); i++) {
+			devices.get(i).start();
+		}
+		rescheduleThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("re-schedule"));
+		reschedule();
+	}
+
+	private void reschedule() {
+		for (int i = 0; i < devices.size(); i++) {
+			devices.get(i).removeAllSatellites();
+		}
 		List<Satellite> all = dao.findEnabled();
 		for (Satellite cur : all) {
 			for (int i = 0; i < devices.size(); i++) {
@@ -56,22 +67,20 @@ public class DeviceManager implements Lifecycle, ConfigListener {
 			}
 		}
 		for (int i = 0; i < devices.size(); i++) {
-			devices.get(i).start();
+			devices.get(i).reschedule();
 		}
-		rescheduleThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("re-schedule"));
 		long period = (long) PredictOreKit.PREDICT_INTERVAL_SECONDS * 1000;
 		LOG.info("observations scheduled. next update at: {}", new Date(System.currentTimeMillis() + period));
 		synchronized (this) {
-			rescheduleThread.scheduleAtFixedRate(new SafeRunnable() {
+			rescheduleThread.schedule(new SafeRunnable() {
 
 				@Override
 				public void safeRun() {
 					LOG.info("reschedule observations");
-					for (int i = 0; i < devices.size(); i++) {
-						devices.get(i).reschedule();
-					}
+					dao.reload();
+					reschedule();
 				}
-			}, period, period, TimeUnit.MILLISECONDS);
+			}, period, TimeUnit.MILLISECONDS);
 		}
 	}
 
