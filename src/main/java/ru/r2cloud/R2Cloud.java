@@ -226,7 +226,7 @@ public class R2Cloud {
 				continue;
 			}
 			if (cur.getModulation().equals(Modulation.LORA)) {
-				decoders.put(cur.getId(), new R2loraDecoder());
+				decoders.put(cur.getId(), new R2loraDecoder(cur.getBeaconClass()));
 				continue;
 			}
 			if (cur.getBaudRates() == null || cur.getBaudRates().isEmpty()) {

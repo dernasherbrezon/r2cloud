@@ -33,7 +33,7 @@ public class R2loraDecoderTest {
 			bos.write(beacon);
 		}
 
-		R2loraDecoder decoder = new R2loraDecoder();
+		R2loraDecoder decoder = new R2loraDecoder(LoraBeacon.class);
 		DecoderResult result = decoder.decode(rawFile, new ObservationRequest());
 		assertNotNull(result);
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
@@ -46,7 +46,7 @@ public class R2loraDecoderTest {
 		try (FileOutputStream fos = new FileOutputStream(rawFile)) {
 			fos.write(1);
 		}
-		R2loraDecoder decoder = new R2loraDecoder();
+		R2loraDecoder decoder = new R2loraDecoder(LoraBeacon.class);
 		DecoderResult result = decoder.decode(rawFile, new ObservationRequest());
 		assertNotNull(result);
 		assertEquals(0, result.getNumberOfDecodedPackets().longValue());

@@ -8,9 +8,9 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.model.DecoderResult;
-import ru.r2cloud.model.LoraBeacon;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.util.Util;
 
@@ -18,12 +18,18 @@ public class R2loraDecoder implements Decoder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(R2loraDecoder.class);
 
+	private final Class<? extends Beacon> beacon;
+
+	public R2loraDecoder(Class<? extends Beacon> beacon) {
+		this.beacon = beacon;
+	}
+
 	@Override
 	public DecoderResult decode(File rawFile, ObservationRequest request) {
 		DecoderResult result = new DecoderResult();
 		result.setRawPath(null);
 		long numberOfDecodedPackets = 0;
-		try (BeaconInputStream<LoraBeacon> bis = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(rawFile)), LoraBeacon.class)) {
+		try (BeaconInputStream<? extends Beacon> bis = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(rawFile)), beacon)) {
 			while (bis.hasNext()) {
 				bis.next();
 				numberOfDecodedPackets++;
@@ -39,6 +45,10 @@ public class R2loraDecoder implements Decoder {
 			result.setDataPath(rawFile);
 		}
 		return result;
+	}
+
+	public Class<? extends Beacon> getBeacon() {
+		return beacon;
 	}
 
 }

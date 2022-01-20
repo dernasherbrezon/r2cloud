@@ -17,6 +17,7 @@ import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.decoder.Decoder;
+import ru.r2cloud.satellite.decoder.R2loraDecoder;
 import ru.r2cloud.satellite.decoder.TelemetryDecoder;
 import ru.r2cloud.util.SignedURL;
 import ru.r2cloud.util.Util;
@@ -66,9 +67,17 @@ public class ObservationLoad extends AbstractHttpController {
 		JsonObject json = entity.toJson(signed);
 		if (entity.getDataPath() != null) {
 			Decoder decoder = decoders.get(entity.getSatelliteId());
+			Class<? extends Beacon> clazz = null;
 			if (decoder instanceof TelemetryDecoder) {
 				TelemetryDecoder telemetryDecoder = (TelemetryDecoder) decoder;
-				try (BeaconInputStream<?> ais = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(entity.getDataPath())), telemetryDecoder.getBeaconClass())) {
+				clazz = telemetryDecoder.getBeaconClass();
+			}
+			if (decoder instanceof R2loraDecoder) {
+				R2loraDecoder r2Decoder = (R2loraDecoder) decoder;
+				clazz = r2Decoder.getBeacon();
+			}
+			if (clazz != null) {
+				try (BeaconInputStream<?> ais = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(entity.getDataPath())), clazz)) {
 					JsonArray data = new JsonArray();
 					while (ais.hasNext()) {
 						data.add(convert(ais.next()));
