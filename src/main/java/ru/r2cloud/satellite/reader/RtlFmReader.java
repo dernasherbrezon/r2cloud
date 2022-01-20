@@ -46,7 +46,8 @@ public class RtlFmReader implements IQReader {
 				ppm = 0;
 			}
 			sox = factory.create(config.getProperty("satellites.sox.path") + " -t raw -r " + req.getInputSampleRate() + " -es -b 16 - " + wavPath.getAbsolutePath() + " rate " + req.getOutputSampleRate(), Redirect.INHERIT, false);
-			rtlfm = factory.create(config.getProperty("satellites.rtlfm.path") + " -f " + req.getActualFrequency() + " -d " + config.getProperty("satellites.rtlsdr.device.index") + " -s " + req.getInputSampleRate() + " -g " + req.getGain() + " -p " + ppm + " -E deemp -F 9 -", Redirect.INHERIT, false);
+			rtlfm = factory.create(config.getProperty("satellites.rtlfm.path") + " -f " + req.getActualFrequency() + " -d " + config.getProperty("satellites.rtlsdr.device.index") + " -s " + req.getInputSampleRate() + " -g " + req.getGain() + " -p " + ppm + " -E deemp -F 9 -", Redirect.INHERIT,
+					false);
 			byte[] buf = new byte[BUF_SIZE];
 			while (!Thread.currentThread().isInterrupted()) {
 				int r = rtlfm.getInputStream().read(buf);
@@ -75,7 +76,11 @@ public class RtlFmReader implements IQReader {
 		IQData result = new IQData();
 
 		if (wavPath.exists()) {
-			result.setDataFile(wavPath);
+			if (wavPath.length() == 0) {
+				Util.deleteQuietly(wavPath);
+			} else {
+				result.setDataFile(wavPath);
+			}
 		}
 		if (startTimeMillis != null) {
 			result.setActualStart(startTimeMillis);

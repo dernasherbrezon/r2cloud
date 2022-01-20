@@ -1,9 +1,10 @@
 package ru.r2cloud.satellite.reader;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.contains;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -12,6 +13,8 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -20,7 +23,9 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
+import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.satellite.ProcessFactoryMock;
 import ru.r2cloud.satellite.ProcessWrapperMock;
 import ru.r2cloud.util.ProcessFactory;
 
@@ -33,6 +38,25 @@ public class RtlFmReaderTest {
 	private ProcessFactory factory;
 	private String sox;
 	private String rtlfm;
+
+	@Test
+	public void testFailure() throws Exception {
+		String satelliteId = UUID.randomUUID().toString();
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ByteArrayInputStream bais = new ByteArrayInputStream(new byte[0]);
+
+		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, baos, 0), new ProcessWrapperMock(bais, null, 0)), satelliteId);
+
+		ObservationRequest req = new ObservationRequest();
+		req.setBiast(false);
+		req.setSatelliteId(satelliteId);
+
+		RtlFmReader o = new RtlFmReader(config, factory, req);
+		IQData iqData = o.start();
+		o.complete();
+		assertNull(iqData.getDataFile());
+	}
 
 	@Test
 	public void testSuccess() throws Exception {
@@ -67,6 +91,13 @@ public class RtlFmReaderTest {
 		config.update();
 
 		factory = mock(ProcessFactory.class);
+	}
+
+	private Map<String, ProcessWrapperMock> create(ProcessWrapperMock soxMock, ProcessWrapperMock rtlfmMock) {
+		Map<String, ProcessWrapperMock> result = new HashMap<>();
+		result.put(sox, soxMock);
+		result.put(rtlfm, rtlfmMock);
+		return result;
 	}
 
 }

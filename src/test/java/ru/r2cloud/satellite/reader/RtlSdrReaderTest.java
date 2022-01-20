@@ -30,7 +30,7 @@ public class RtlSdrReaderTest {
 	@Test
 	public void testBiasTSuccess() throws Exception {
 		String satelliteId = UUID.randomUUID().toString();
-		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 143), new ProcessWrapperMock(null, null, 0)), satelliteId);
+		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 143, true), new ProcessWrapperMock(null, null, 0)), satelliteId);
 
 		ObservationRequest req = new ObservationRequest();
 		req.setBiast(true);
@@ -41,11 +41,11 @@ public class RtlSdrReaderTest {
 		o.complete();
 		assertNotNull(iqData.getDataFile());
 	}
-	
+
 	@Test
 	public void testBiasTFailure() throws Exception {
 		String satelliteId = UUID.randomUUID().toString();
-		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 143), new ProcessWrapperMock(null, null, 1)), satelliteId);
+		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 143, true), new ProcessWrapperMock(null, null, 1)), satelliteId);
 
 		ObservationRequest req = new ObservationRequest();
 		req.setBiast(true);
@@ -56,7 +56,7 @@ public class RtlSdrReaderTest {
 		o.complete();
 		assertNull(iqData);
 	}
-	
+
 	@Test
 	public void testFailure() throws Exception {
 		String satelliteId = UUID.randomUUID().toString();
@@ -75,7 +75,7 @@ public class RtlSdrReaderTest {
 	@Test
 	public void testSuccess() throws Exception {
 		String satelliteId = UUID.randomUUID().toString();
-		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 143)), satelliteId);
+		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 143, true)), satelliteId);
 
 		ObservationRequest req = new ObservationRequest();
 		req.setBiast(false);

@@ -1,5 +1,8 @@
 package ru.r2cloud.satellite;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,22 +20,37 @@ public class ProcessWrapperMock implements ProcessWrapper {
 	private final InputStream is;
 	private final OutputStream os;
 	private final int statusCode;
+	private final boolean writeOnWait;
 
 	private boolean alive;
+	private File backingFile;
 
 	public ProcessWrapperMock(InputStream is, OutputStream os) {
 		this(is, os, 0);
 	}
 
 	public ProcessWrapperMock(InputStream is, OutputStream os, int statusCode) {
+		this(is, os, statusCode, false);
+	}
+
+	public ProcessWrapperMock(InputStream is, OutputStream os, int statusCode, boolean writeOnWait) {
 		this.is = is;
 		this.os = os;
 		alive = true;
 		this.statusCode = statusCode;
+		this.writeOnWait = writeOnWait;
 	}
 
 	@Override
 	public int waitFor() throws InterruptedException {
+		if (writeOnWait) {
+			try {
+				getOutputStream().write(1);
+				getOutputStream().close();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
 		stop();
 		return statusCode;
 	}
@@ -61,6 +79,13 @@ public class ProcessWrapperMock implements ProcessWrapper {
 
 	@Override
 	public OutputStream getOutputStream() {
+		if (backingFile != null) {
+			try {
+				return new FileOutputStream(backingFile);
+			} catch (FileNotFoundException e) {
+				throw new RuntimeException(e);
+			}
+		}
 		return os;
 	}
 
@@ -72,6 +97,10 @@ public class ProcessWrapperMock implements ProcessWrapper {
 	@Override
 	public InputStream getErrorStream() {
 		return null;
+	}
+
+	public void setBackingFile(File backingFile) {
+		this.backingFile = backingFile;
 	}
 
 	private void stop() {

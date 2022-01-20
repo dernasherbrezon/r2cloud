@@ -1,7 +1,6 @@
 package ru.r2cloud.satellite;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.Map;
@@ -25,14 +24,13 @@ public class ProcessFactoryMock extends ProcessFactory {
 	@Override
 	public ProcessWrapper create(String commandLine, Redirect redirectError, boolean inheritIO) throws IOException {
 		String[] parts = SPACE.split(commandLine);
+		ProcessWrapperMock result = reply.get(parts[0]);
 		for (String cur : parts) {
 			if (cur.contains(filePrefix)) {
-				try (FileOutputStream fos = new FileOutputStream(new File(cur))) {
-					fos.write(1);
-				}
+				result.setBackingFile(new File(cur));
 				break;
 			}
 		}
-		return reply.get(parts[0]);
+		return result;
 	}
 }
