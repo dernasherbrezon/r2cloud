@@ -41,12 +41,8 @@ public class RtlFmReader implements IQReader {
 			return null;
 		}
 		try {
-			Integer ppm = config.getInteger("ppm.current");
-			if (ppm == null) {
-				ppm = 0;
-			}
 			sox = factory.create(config.getProperty("satellites.sox.path") + " -t raw -r " + req.getInputSampleRate() + " -es -b 16 - " + wavPath.getAbsolutePath() + " rate " + req.getOutputSampleRate(), Redirect.INHERIT, false);
-			rtlfm = factory.create(config.getProperty("satellites.rtlfm.path") + " -f " + req.getActualFrequency() + " -d " + config.getProperty("satellites.rtlsdr.device.index") + " -s " + req.getInputSampleRate() + " -g " + req.getGain() + " -p " + ppm + " -E deemp -F 9 -", Redirect.INHERIT,
+			rtlfm = factory.create(config.getProperty("satellites.rtlfm.path") + " -f " + req.getActualFrequency() + " -d " + req.getRtlDeviceId() + " -s " + req.getInputSampleRate() + " -g " + req.getGain() + " -p " + req.getPpm() + " -E deemp -F 9 -", Redirect.INHERIT,
 					false);
 			byte[] buf = new byte[BUF_SIZE];
 			while (!Thread.currentThread().isInterrupted()) {
@@ -60,6 +56,13 @@ public class RtlFmReader implements IQReader {
 				sox.getOutputStream().write(buf, 0, r);
 			}
 			sox.getOutputStream().flush();
+			int responseCode = rtlfm.waitFor();
+			if (responseCode != 143) {
+				LOG.error("[{}] invalid response code rtl_fm: {}", req.getId(), responseCode);
+				Util.deleteQuietly(wavPath);
+			} else {
+				LOG.info("[{}] rtl_fm stopped: {}", req.getId(), responseCode);
+			}
 		} catch (IOException e) {
 			// there is no way to know if IOException was caused by closed stream
 			if (e.getMessage() == null || !e.getMessage().equals("Stream closed")) {
@@ -76,11 +79,7 @@ public class RtlFmReader implements IQReader {
 		IQData result = new IQData();
 
 		if (wavPath.exists()) {
-			if (wavPath.length() == 0) {
-				Util.deleteQuietly(wavPath);
-			} else {
-				result.setDataFile(wavPath);
-			}
+			result.setDataFile(wavPath);
 		}
 		if (startTimeMillis != null) {
 			result.setActualStart(startTimeMillis);

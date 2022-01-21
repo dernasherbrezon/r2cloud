@@ -59,21 +59,6 @@ public class ObservationFactory {
 		return result;
 	}
 
-	public ObservationRequest create(Date date, Satellite satellite) {
-		Tle tle = tleDao.findById(satellite.getId());
-		if (tle == null) {
-			LOG.error("unable to find tle for: {}", satellite);
-			return null;
-		}
-		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(tle.getRaw()[1], tle.getRaw()[2]));
-		SatPass nextPass = predict.calculateNext(date, tlePropagator);
-		if (nextPass == null) {
-			LOG.info("can't find next pass for {}", satellite);
-			return null;
-		}
-		return convert(satellite, tle, tlePropagator, nextPass);
-	}
-
 	private ObservationRequest convert(Satellite satellite, Tle tle, TLEPropagator tlePropagator, SatPass nextPass) {
 		ObservationRequest result = new ObservationRequest();
 		result.setSatelliteFrequency(satellite.getFrequency());
@@ -84,7 +69,6 @@ public class ObservationFactory {
 		result.setStartTimeMillis(nextPass.getStartMillis());
 		result.setEndTimeMillis(nextPass.getEndMillis());
 		result.setId(String.valueOf(result.getStartTimeMillis()) + "-" + satellite.getId());
-		result.setBiast(config.getBoolean("satellites.rtlsdr.biast"));
 		// only r2lora can handle lora modulation
 		if (satellite.getModulation() != null && satellite.getModulation().equals(Modulation.LORA)) {
 			result.setSdrType(SdrType.R2LORA);

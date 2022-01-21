@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.ddns.DDNSType;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.RotatorConfiguration;
+import ru.r2cloud.model.SdrServerConfiguration;
 import ru.r2cloud.model.SdrType;
 
 public class Configuration {
@@ -206,24 +207,44 @@ public class Configuration {
 	}
 
 	public List<DeviceConfiguration> getSdrConfigurations() {
-		DeviceConfiguration config = new DeviceConfiguration();
-		// some default sdr configuration
-		config.setMinimumFrequency(100_000_000);
-		config.setMaximumFrequency(1_700_000_000);
-		config.setId("sdr-" + getProperty("satellites.rtlsdr.device.index"));
-		config.setGain(getDouble("satellites.rtlsdr.gain").floatValue());
-		if (getBoolean("rotator.enabled")) {
-			RotatorConfiguration rotator = new RotatorConfiguration();
-			rotator.setHostname(getProperty("rotator.rotctrld.hostname"));
-			rotator.setPort(getInteger("rotator.rotctrld.port"));
-			rotator.setTimeout(getInteger("rotator.rotctrld.timeout"));
-			rotator.setTolerance(getDouble("rotator.tolerance"));
-			rotator.setCycleMillis(getInteger("rotator.cycleMillis"));
-			rotator.setId(config.getId());
-			config.setRotatorConfiguration(rotator);
+		List<String> sdrDevices = getProperties("sdr.devices");
+		if (sdrDevices.isEmpty()) {
+			return Collections.emptyList();
 		}
-		List<DeviceConfiguration> result = new ArrayList<>();
-		result.add(config);
+		List<DeviceConfiguration> result = new ArrayList<>(sdrDevices.size());
+		for (String cur : sdrDevices) {
+			DeviceConfiguration config = new DeviceConfiguration();
+			String prefix = "sdr.device." + cur + ".";
+			config.setMinimumFrequency(getLong(prefix + "minFrequency"));
+			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
+			config.setRtlDeviceId(getInteger(prefix + "rtlsdr.index"));
+			Integer oldDeviceIdProperty = getInteger("satellites.rtlsdr.device.index");
+			if (oldDeviceIdProperty != null) {
+				config.setRtlDeviceId(oldDeviceIdProperty);
+			}
+			config.setGain(getDouble(prefix + "rtlsdr.gain").floatValue());
+			Double oldGain = getDouble("satellites.rtlsdr.gain");
+			if (oldGain != null) {
+				config.setGain(oldGain.floatValue());
+			}
+			config.setBiast(getBoolean(prefix + "rtlsdr.biast"));
+			String oldBiast = getProperty("satellites.rtlsdr.biast");
+			if (oldBiast != null) {
+				config.setBiast(Boolean.valueOf(oldBiast));
+			}
+			config.setPpm(getInteger(prefix + "ppm"));
+			Integer oldPpm = getInteger("ppm.current");
+			if (oldPpm != null) {
+				config.setPpm(oldPpm);
+			}
+			config.setId("sdr-" + config.getRtlDeviceId());
+			String oldRotatorConfig = getProperty("rotator.enabled");
+			if (oldRotatorConfig == null || Boolean.valueOf(oldRotatorConfig)) {
+				config.setRotatorConfiguration(getRotatorConfiguration(config.getId(), prefix));
+			}
+			config.setSdrServerConfiguration(getSdrServerConfiguration(prefix));
+			result.add(config);
+		}
 		return result;
 	}
 
@@ -264,6 +285,45 @@ public class Configuration {
 			config.setRotatorConfiguration(getRotatorConfiguration(config.getId(), "r2lora.device." + cur + "."));
 			config.setGain(gain);
 			result.add(config);
+		}
+		return result;
+	}
+
+	private SdrServerConfiguration getSdrServerConfiguration(String prefix) {
+		String hostname = getProperty(prefix + "sdrserver.host");
+		if (hostname == null) {
+			return null;
+		}
+		Integer port = getInteger(prefix + "sdrserver.port");
+		if (port == null) {
+			return null;
+		}
+		SdrServerConfiguration result = new SdrServerConfiguration();
+		result.setHost(hostname);
+		result.setPort(port);
+		result.setBasepath(getProperty(prefix + "sdrserver.basepath"));
+		result.setTimeout(getInteger(prefix + "sdrserver.timeout"));
+		result.setUseGzip(getBoolean(prefix + "sdrserver.usegzip"));
+
+		String oldHostname = getProperty("satellites.sdrserver.host");
+		if (oldHostname != null) {
+			result.setHost(oldHostname);
+		}
+		Integer oldPort = getInteger("satellites.sdrserver.port");
+		if (oldPort != null) {
+			result.setPort(oldPort);
+		}
+		String oldBasePath = getProperty("satellites.sdrserver.basepath");
+		if (oldBasePath != null) {
+			result.setBasepath(oldBasePath);
+		}
+		Integer oldTimeout = getInteger("satellites.sdrserver.timeout");
+		if (oldTimeout != null) {
+			result.setTimeout(oldTimeout);
+		}
+		String oldGzip = getProperty("satellites.sdrserver.usegzip");
+		if (oldGzip != null) {
+			result.setUseGzip(Boolean.valueOf(oldGzip));
 		}
 		return result;
 	}

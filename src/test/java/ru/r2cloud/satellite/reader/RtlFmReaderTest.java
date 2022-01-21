@@ -86,7 +86,6 @@ public class RtlFmReaderTest {
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("satellites.sox.path", sox);
 		config.setProperty("satellites.rtlfm.path", rtlfm);
-		config.setProperty("satellites.rtlsdr.device.index", "0");
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
 		config.update();
 

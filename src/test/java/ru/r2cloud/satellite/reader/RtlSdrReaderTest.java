@@ -95,7 +95,6 @@ public class RtlSdrReaderTest {
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("satellites.rtlsdrwrapper.path", rtlsdr);
 		config.setProperty("satellites.rtlsdr.biast.path", rtlBiast);
-		config.setProperty("satellites.rtlsdr.device.index", "0");
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
 		config.update();
 	}

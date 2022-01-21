@@ -16,21 +16,18 @@ import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.sdrserver.ResponseStatus;
 import ru.r2cloud.sdrserver.SdrServerResponse;
-import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
 public class SdrServerReader implements IQReader {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SdrServerReader.class);
 
-	private final Configuration config;
 	private final ObservationRequest req;
 	private final CountDownLatch latch = new CountDownLatch(1);
 
 	private Socket socket;
 
-	public SdrServerReader(Configuration config, ObservationRequest req) {
-		this.config = config;
+	public SdrServerReader(ObservationRequest req) {
 		this.req = req;
 	}
 
@@ -40,8 +37,8 @@ public class SdrServerReader implements IQReader {
 		Long startTimeMillis = null;
 		Long endTimeMillis = null;
 		try {
-			socket = new Socket(config.getProperty("satellites.sdrserver.host"), config.getInteger("satellites.sdrserver.port"));
-			socket.setSoTimeout(config.getInteger("satellites.sdrserver.timeout"));
+			socket = new Socket(req.getSdrServerConfiguration().getHost(), req.getSdrServerConfiguration().getPort());
+			socket.setSoTimeout(req.getSdrServerConfiguration().getTimeout());
 			OutputStream os = socket.getOutputStream();
 			DataOutputStream dos = new DataOutputStream(os);
 			dos.writeByte(0x00); // protocol version
@@ -58,7 +55,7 @@ public class SdrServerReader implements IQReader {
 			if (response.getStatus().equals(ResponseStatus.SUCCESS)) {
 				LOG.info("[{}] response from sdr-server: {}", req.getId(), response);
 				startTimeMillis = System.currentTimeMillis();
-				String basepath = config.getProperty("satellites.sdrserver.basepath");
+				String basepath = req.getSdrServerConfiguration().getBasepath();
 				if (basepath == null) {
 					basepath = System.getenv("TMPDIR");
 					if (basepath == null) {
@@ -66,7 +63,7 @@ public class SdrServerReader implements IQReader {
 					}
 				}
 				String path = basepath + File.separator + response.getDetails() + ".cf32";
-				if (config.getBoolean("satellites.sdrserver.usegzip")) {
+				if (req.getSdrServerConfiguration().isUseGzip()) {
 					path += ".gz";
 				}
 				rawFile = new File(path);

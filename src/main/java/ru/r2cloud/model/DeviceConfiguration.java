@@ -14,6 +14,43 @@ public class DeviceConfiguration {
 
 	private RotatorConfiguration rotatorConfiguration;
 
+	private int rtlDeviceId;
+	private boolean biast;
+	private SdrServerConfiguration sdrServerConfiguration;
+	private int ppm;
+	
+	public int getPpm() {
+		return ppm;
+	}
+	
+	public void setPpm(int ppm) {
+		this.ppm = ppm;
+	}
+
+	public SdrServerConfiguration getSdrServerConfiguration() {
+		return sdrServerConfiguration;
+	}
+
+	public void setSdrServerConfiguration(SdrServerConfiguration sdrServerConfiguration) {
+		this.sdrServerConfiguration = sdrServerConfiguration;
+	}
+
+	public boolean isBiast() {
+		return biast;
+	}
+
+	public void setBiast(boolean biast) {
+		this.biast = biast;
+	}
+
+	public int getRtlDeviceId() {
+		return rtlDeviceId;
+	}
+
+	public void setRtlDeviceId(int rtlDeviceId) {
+		this.rtlDeviceId = rtlDeviceId;
+	}
+
 	public String getId() {
 		return id;
 	}

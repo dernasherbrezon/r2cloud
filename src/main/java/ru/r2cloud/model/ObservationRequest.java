@@ -21,6 +21,33 @@ public class ObservationRequest {
 	private boolean biast;
 	private SdrType sdrType;
 	private long centerBandFrequency;
+	private int rtlDeviceId;
+	private int ppm;
+	private SdrServerConfiguration sdrServerConfiguration;
+	
+	public SdrServerConfiguration getSdrServerConfiguration() {
+		return sdrServerConfiguration;
+	}
+	
+	public void setSdrServerConfiguration(SdrServerConfiguration sdrServerConfiguration) {
+		this.sdrServerConfiguration = sdrServerConfiguration;
+	}
+	
+	public int getPpm() {
+		return ppm;
+	}
+	
+	public void setPpm(int ppm) {
+		this.ppm = ppm;
+	}
+	
+	public int getRtlDeviceId() {
+		return rtlDeviceId;
+	}
+	
+	public void setRtlDeviceId(int rtlDeviceId) {
+		this.rtlDeviceId = rtlDeviceId;
+	}
 	
 	public long getCenterBandFrequency() {
 		return centerBandFrequency;

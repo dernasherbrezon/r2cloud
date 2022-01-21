@@ -44,12 +44,12 @@ public class General extends AbstractHttpController {
 		entity.add("rotctrldPort", config.getInteger("rotator.rotctrld.port"));
 		entity.add("rotatorTolerance", config.getDouble("rotator.tolerance"));
 		entity.add("rotatorCycle", config.getInteger("rotator.cycleMillis"));
-		Integer currentPpm = config.getInteger("ppm.current");
+		Integer currentPpm = config.getInteger("sdr.device.0.ppm");
 		if (currentPpm != null) {
 			entity.add("ppm", currentPpm);
 		}
-		entity.add("gain", config.getDouble("satellites.rtlsdr.gain"));
-		entity.add("biast", config.getBoolean("satellites.rtlsdr.biast"));
+		entity.add("gain", config.getDouble("sdr.device.0.rtlsdr.gain"));
+		entity.add("biast", config.getBoolean("sdr.device.0.rtlsdr.biast"));
 		result.setData(entity.toString());
 		return result;
 	}
@@ -134,8 +134,8 @@ public class General extends AbstractHttpController {
 			return new BadRequest(errors);
 		}
 		autoUpdate.setEnabled(WebServer.getBoolean(request, "autoUpdate"));
-		config.setProperty("satellites.rtlsdr.gain", gain);
-		config.setProperty("satellites.rtlsdr.biast", biast);
+		config.setProperty("sdr.device.0.rtlsdr.gain", gain);
+		config.setProperty("sdr.device.0.rtlsdr.biast", biast);
 		config.setProperty("locaiton.lat", lat);
 		config.setProperty("locaiton.lon", lon);
 		config.setProperty("scheduler.elevation.min", String.valueOf(elevationMin));
@@ -154,7 +154,7 @@ public class General extends AbstractHttpController {
 			config.setProperty("rotator.cycleMillis", rotatorCycleMillis);
 		}
 		if (ppm != null) {
-			config.setProperty("ppm.current", ppm);
+			config.setProperty("sdr.device.0.ppm", ppm);
 		}
 		config.update();
 		return new Success();

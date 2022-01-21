@@ -45,7 +45,7 @@ public class SdrDevice extends Device {
 			} else if (req.getSdrType().equals(SdrType.PLUTOSDR)) {
 				return new PlutoSdrReader(config, processFactory, req);
 			} else if (req.getSdrType().equals(SdrType.SDRSERVER)) {
-				return new SdrServerReader(config, req);
+				return new SdrServerReader(req);
 			} else {
 				throw new IllegalArgumentException("unsupported sdr type: " + req.getSdrType());
 			}
