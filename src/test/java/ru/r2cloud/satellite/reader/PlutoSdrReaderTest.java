@@ -29,7 +29,7 @@ public class PlutoSdrReaderTest {
 	@Test
 	public void testFailure() throws Exception {
 		String satelliteId = UUID.randomUUID().toString();
-		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 0)), satelliteId);
+		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 0, true)), satelliteId);
 
 		ObservationRequest req = new ObservationRequest();
 		req.setSatelliteId(satelliteId);
@@ -43,7 +43,7 @@ public class PlutoSdrReaderTest {
 	@Test
 	public void testSuccess() throws Exception {
 		String satelliteId = UUID.randomUUID().toString();
-		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 143)), satelliteId);
+		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 143, true)), satelliteId);
 
 		ObservationRequest req = new ObservationRequest();
 		req.setSatelliteId(satelliteId);
