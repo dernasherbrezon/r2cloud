@@ -1,6 +1,7 @@
 package ru.r2cloud.device;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -10,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.Lifecycle;
+import ru.r2cloud.model.DeviceStatus;
+import ru.r2cloud.model.DeviceStatusComparator;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.predict.PredictOreKit;
@@ -158,6 +161,15 @@ public class DeviceManager implements Lifecycle, ConfigListener {
 			LOG.info("missing location. cancelling all observations");
 			stop();
 		}
+	}
+
+	public List<DeviceStatus> getStatus() {
+		List<DeviceStatus> result = new ArrayList<>(devices.size());
+		for (Device cur : devices) {
+			result.add(cur.getStatus());
+		}
+		Collections.sort(result, DeviceStatusComparator.INSTANCE);
+		return result;
 	}
 
 }

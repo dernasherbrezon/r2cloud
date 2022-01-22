@@ -79,7 +79,6 @@ import ru.r2cloud.satellite.decoder.Strand1Decoder;
 import ru.r2cloud.satellite.decoder.Suomi100Decoder;
 import ru.r2cloud.satellite.decoder.TechnosatDecoder;
 import ru.r2cloud.satellite.decoder.UspDecoder;
-import ru.r2cloud.sdr.SdrStatusDao;
 import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.tle.TLEDao;
 import ru.r2cloud.tle.TLEReloader;
@@ -129,7 +128,6 @@ public class R2Cloud {
 	private final WebServer webServer;
 	private final Authenticator auth;
 	private final Metrics metrics;
-	private final SdrStatusDao rtlsdrStatusDao;
 	private final AutoUpdate autoUpdate;
 	private final DDNSClient ddnsClient;
 	private final SatelliteDao satelliteDao;
@@ -167,7 +165,6 @@ public class R2Cloud {
 		metrics = new Metrics(props, clock);
 		predict = new PredictOreKit(props);
 		auth = new Authenticator(props);
-		rtlsdrStatusDao = new SdrStatusDao(props, metrics, processFactory);
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
 		satelliteDao = new SatelliteDao(props, r2cloudClient);
@@ -295,7 +292,6 @@ public class R2Cloud {
 
 	public void start() {
 		ddnsClient.start();
-		rtlsdrStatusDao.start();
 		tleDao.start();
 		tleReloader.start();
 		decoderService.start();
@@ -316,7 +312,6 @@ public class R2Cloud {
 		decoderService.stop();
 		tleReloader.stop();
 		tleDao.stop();
-		rtlsdrStatusDao.stop();
 		ddnsClient.stop();
 	}
 

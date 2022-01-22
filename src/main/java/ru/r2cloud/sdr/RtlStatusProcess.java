@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.model.SdrStatus;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
@@ -18,16 +19,17 @@ import ru.r2cloud.util.Util;
 class RtlStatusProcess implements SdrStatusProcess {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RtlStatusProcess.class);
-	private static final Pattern DEVICEPATTERN = Pattern.compile("^  0:  (.*?), (.*?), SN: (.*?)$");
+	private static final Pattern DEVICEPATTERN = Pattern.compile("^  (\\d+):  (.*?), (.*?), SN: (.*?)$");
 
 	private ProcessWrapper process;
-	private boolean terminated = false;
 	private final Configuration config;
 	private final ProcessFactory factory;
+	private final int expectedRtlDeviceId;
 
-	RtlStatusProcess(Configuration config, ProcessFactory factory) {
+	RtlStatusProcess(Configuration config, ProcessFactory factory, int expectedRtlDeviceId) {
 		this.config = config;
 		this.factory = factory;
+		this.expectedRtlDeviceId = expectedRtlDeviceId;
 	}
 
 	@Override
@@ -35,60 +37,45 @@ class RtlStatusProcess implements SdrStatusProcess {
 		SdrStatus result = null;
 		try {
 			BufferedReader r = null;
-			synchronized (this) {
-				if (terminated) {
-					terminated = false;
-					return result;
-				}
-				process = factory.create(config.getProperty("satellites.rtlsdr.test.path") + " -t", false, false);
-				r = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-				terminated = false;
-			}
+			process = factory.create(config.getProperty("satellites.rtlsdr.test.path") + " -t", false, false);
+			r = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 			String curLine = null;
 			while ((curLine = r.readLine()) != null && !Thread.currentThread().isInterrupted()) {
 				if (curLine.startsWith("No supported")) {
 					result = new SdrStatus();
-					result.setDongleConnected(false);
-					result.setError(curLine);
+					result.setStatus(DeviceConnectionStatus.FAILED);
+					result.setFailureMessage(curLine);
 					break;
 				} else {
 					Matcher m = DEVICEPATTERN.matcher(curLine);
 					if (m.find()) {
+						try {
+							int actualDeviceId = Integer.parseInt(m.group(1));
+							if (actualDeviceId != expectedRtlDeviceId) {
+								continue;
+							}
+						} catch (Exception e) {
+							continue;
+						}
 						result = new SdrStatus();
-						result.setDongleConnected(true);
+						result.setStatus(DeviceConnectionStatus.CONNECTED);
+						result.setModel(m.group(2) + ", " + m.group(3) + ", SN: " + m.group(4));
 						break;
 					}
 				}
 			}
 		} catch (IOException e) {
-			String error = "unable to read status";
 			result = new SdrStatus();
-			result.setDongleConnected(false);
-			result.setError(error);
-			LOG.error(error, e);
-		} finally {
-			stop(5000);
+			result.setStatus(DeviceConnectionStatus.FAILED);
+			result.setFailureMessage(e.getMessage());
+			Util.logIOException(LOG, "unable to read status", e);
+		}
+		if (result == null) {
+			result = new SdrStatus();
+			result.setStatus(DeviceConnectionStatus.FAILED);
+			result.setFailureMessage("unable to read device status");
 		}
 		return result;
-	}
-
-	@Override
-	public synchronized void terminate(long timeout) {
-		shutdown(timeout);
-		terminated = true;
-	}
-
-	synchronized void stop(long timeout) {
-		shutdown(timeout);
-		terminated = false;
-	}
-
-	private void shutdown(long timeout) {
-		if (process == null) {
-			return;
-		}
-		Util.shutdown("rtl-status", process, timeout);
-		process = null;
 	}
 
 }

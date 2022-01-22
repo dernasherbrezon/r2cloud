@@ -19,8 +19,11 @@ import ru.r2cloud.Lifecycle;
 import ru.r2cloud.model.BandFrequency;
 import ru.r2cloud.model.BandFrequencyComparator;
 import ru.r2cloud.model.DeviceConfiguration;
+import ru.r2cloud.model.DeviceConnectionStatus;
+import ru.r2cloud.model.DeviceStatus;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.RotatorStatus;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.ObservationDao;
@@ -350,6 +353,19 @@ public abstract class Device implements Lifecycle {
 			}
 		}
 		return removed;
+	}
+
+	public DeviceStatus getStatus() {
+		DeviceStatus result = new DeviceStatus();
+		result.setConfig(deviceConfiguration);
+		if (rotatorService != null) {
+			result.setRotatorStatus(rotatorService.getStatus());
+		} else {
+			RotatorStatus rotatorStatus = new RotatorStatus();
+			rotatorStatus.setStatus(DeviceConnectionStatus.DISABLED);
+			result.setRotatorStatus(rotatorStatus);
+		}
+		return result;
 	}
 
 }

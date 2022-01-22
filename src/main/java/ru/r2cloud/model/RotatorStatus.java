@@ -1,10 +1,19 @@
 package ru.r2cloud.model;
 
-public class SdrStatus {
+public class RotatorStatus {
 
+	private String hostport;
+	private String model;
 	private DeviceConnectionStatus status;
 	private String failureMessage;
-	private String model;
+
+	public String getHostport() {
+		return hostport;
+	}
+
+	public void setHostport(String hostport) {
+		this.hostport = hostport;
+	}
 
 	public String getModel() {
 		return model;

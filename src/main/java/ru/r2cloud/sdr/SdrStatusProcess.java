@@ -5,7 +5,5 @@ import ru.r2cloud.model.SdrStatus;
 public interface SdrStatusProcess {
 
 	SdrStatus getStatus();
-	
-	void terminate(long timeout);
-	
+
 }

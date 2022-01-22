@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.Lifecycle;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.RotatorConfiguration;
+import ru.r2cloud.model.RotatorStatus;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.rotctrld.Position;
 import ru.r2cloud.rotctrld.RotctrldClient;
@@ -107,6 +108,11 @@ public class RotatorService implements Lifecycle {
 			}
 		}, req.getStartTimeMillis() - current, config.getCycleMillis(), TimeUnit.MILLISECONDS);
 		return result;
+	}
+
+	public RotatorStatus getStatus() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
