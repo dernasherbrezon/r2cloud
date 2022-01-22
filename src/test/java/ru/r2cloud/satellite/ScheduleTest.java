@@ -73,8 +73,6 @@ public class ScheduleTest {
 
 	@Test
 	public void testScheduleBasedOnOverlapedTimetable() throws Exception {
-		config.setProperty("satellites.sdr", SdrType.SDRSERVER.name().toLowerCase());
-		config.setProperty("rotator.enabled", false);
 		schedule = new Schedule(new OverlappedTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
 		List<ObservationRequest> expected = readExpected("expected/scheduleOverlapedTimetable.txt");
 		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);

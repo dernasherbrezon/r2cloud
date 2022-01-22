@@ -238,8 +238,12 @@ public class Configuration {
 				config.setPpm(oldPpm);
 			}
 			config.setId("sdr-" + config.getRtlDeviceId());
+			boolean rotatorEnabled = getBoolean(prefix + "rotator.enabled");
 			String oldRotatorConfig = getProperty("rotator.enabled");
-			if (oldRotatorConfig == null || Boolean.valueOf(oldRotatorConfig)) {
+			if (oldRotatorConfig != null) {
+				rotatorEnabled = Boolean.valueOf(oldRotatorConfig);
+			}
+			if (rotatorEnabled) {
 				config.setRotatorConfiguration(getRotatorConfiguration(config.getId(), prefix));
 			}
 			config.setSdrServerConfiguration(getSdrServerConfiguration(prefix));

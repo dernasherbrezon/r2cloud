@@ -39,7 +39,7 @@ public class General extends AbstractHttpController {
 		entity.add("autoUpdate", autoUpdate.isEnabled());
 		entity.add("elevationMin", config.getDouble("scheduler.elevation.min"));
 		entity.add("elevationGuaranteed", config.getDouble("scheduler.elevation.guaranteed"));
-		entity.add("rotationEnabled", config.getBoolean("rotator.enabled"));
+		entity.add("rotationEnabled", config.getBoolean("sdr.device.0.rotator.enabled"));
 		entity.add("rotctrldHostname", config.getProperty("rotator.rotctrld.hostname"));
 		entity.add("rotctrldPort", config.getInteger("rotator.rotctrld.port"));
 		entity.add("rotatorTolerance", config.getDouble("rotator.tolerance"));
@@ -136,11 +136,11 @@ public class General extends AbstractHttpController {
 		autoUpdate.setEnabled(WebServer.getBoolean(request, "autoUpdate"));
 		config.setProperty("sdr.device.0.rtlsdr.gain", gain);
 		config.setProperty("sdr.device.0.rtlsdr.biast", biast);
+		config.setProperty("sdr.device.0.rotator.enabled", rotationEnabled);
 		config.setProperty("locaiton.lat", lat);
 		config.setProperty("locaiton.lon", lon);
 		config.setProperty("scheduler.elevation.min", String.valueOf(elevationMin));
 		config.setProperty("scheduler.elevation.guaranteed", String.valueOf(elevationGuaranteed));
-		config.setProperty("rotator.enabled", rotationEnabled);
 		if (rotctrldHostname != null) {
 			config.setProperty("rotator.rotctrld.hostname", rotctrldHostname);
 		}
