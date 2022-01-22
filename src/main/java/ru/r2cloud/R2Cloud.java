@@ -274,7 +274,7 @@ public class R2Cloud {
 		index(new Configured(auth, props));
 		index(new Restore(auth));
 		index(new MetricsController(signed, metrics));
-		index(new Overview(deviceManager));
+		index(new Overview(props, deviceManager));
 		index(new General(props, autoUpdate));
 		index(new DDNS(props, ddnsClient));
 		index(new TLE(props, tleDao));

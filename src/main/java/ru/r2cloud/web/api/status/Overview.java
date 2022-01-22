@@ -14,15 +14,18 @@ import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.model.DeviceStatus;
 import ru.r2cloud.model.DeviceType;
 import ru.r2cloud.model.RotatorStatus;
+import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
 
 public class Overview extends AbstractHttpController {
 
+	private final Configuration config;
 	private final DeviceManager deviceManager;
 
-	public Overview(DeviceManager deviceManager) {
+	public Overview(Configuration config, DeviceManager deviceManager) {
 		this.deviceManager = deviceManager;
+		this.config = config;
 	}
 
 	@Override
@@ -42,7 +45,20 @@ public class Overview extends AbstractHttpController {
 			if (cur.getType().equals(DeviceType.LORA)) {
 				curObj.add("connection", cur.getConfig().getHostport());
 			} else if (cur.getType().equals(DeviceType.SDR)) {
-				curObj.add("connection", "device id: " + cur.getConfig().getRtlDeviceId());
+				switch (config.getSdrType()) {
+				case RTLSDR:
+					curObj.add("connection", "RTL-SDR " + cur.getConfig().getRtlDeviceId());
+					break;
+				case SDRSERVER:
+					curObj.add("connection", "SDR-SERVER - " + cur.getConfig().getSdrServerConfiguration().getHost() + ":" + cur.getConfig().getSdrServerConfiguration().getPort());
+					break;
+				case PLUTOSDR:
+					curObj.add("connection", "PLUTOSDR");
+					break;
+				default:
+					break;
+				}
+
 			}
 			curObj.add("minFrequency", cur.getConfig().getMinimumFrequency());
 			curObj.add("maxFrequency", cur.getConfig().getMaximumFrequency());

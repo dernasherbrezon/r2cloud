@@ -41,9 +41,9 @@ public class General extends AbstractHttpController {
 		entity.add("elevationGuaranteed", config.getDouble("scheduler.elevation.guaranteed"));
 		entity.add("rotationEnabled", config.getBoolean("sdr.device.0.rotator.enabled"));
 		entity.add("rotctrldHostname", config.getProperty("rotator.rotctrld.hostname"));
-		entity.add("rotctrldPort", config.getInteger("rotator.rotctrld.port"));
-		entity.add("rotatorTolerance", config.getDouble("rotator.tolerance"));
-		entity.add("rotatorCycle", config.getInteger("rotator.cycleMillis"));
+		entity.add("rotctrldPort", config.getInteger("sdr.device.0.rotctrld.port"));
+		entity.add("rotatorTolerance", config.getDouble("sdr.device.0.rotator.tolerance"));
+		entity.add("rotatorCycle", config.getInteger("sdr.device.0.rotator.cycleMillis"));
 		Integer currentPpm = config.getInteger("sdr.device.0.ppm");
 		if (currentPpm != null) {
 			entity.add("ppm", currentPpm);
@@ -145,13 +145,13 @@ public class General extends AbstractHttpController {
 			config.setProperty("rotator.rotctrld.hostname", rotctrldHostname);
 		}
 		if (rotctrldPort != null) {
-			config.setProperty("rotator.rotctrld.port", rotctrldPort);
+			config.setProperty("sdr.device.0.rotctrld.port", rotctrldPort);
 		}
 		if (rotatorTolerance != null) {
-			config.setProperty("rotator.tolerance", rotatorTolerance);
+			config.setProperty("sdr.device.0.rotator.tolerance", rotatorTolerance);
 		}
 		if (rotatorCycleMillis != null) {
-			config.setProperty("rotator.cycleMillis", rotatorCycleMillis);
+			config.setProperty("sdr.device.0.rotator.cycleMillis", rotatorCycleMillis);
 		}
 		if (ppm != null) {
 			config.setProperty("sdr.device.0.ppm", ppm);
