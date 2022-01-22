@@ -43,7 +43,7 @@ public class Overview extends AbstractHttpController {
 				curObj.add("model", cur.getModel());
 			}
 			if (cur.getType().equals(DeviceType.LORA)) {
-				curObj.add("connection", cur.getConfig().getHostport());
+				curObj.add("connection", "LoRa - " + cur.getConfig().getHostport());
 			} else if (cur.getType().equals(DeviceType.SDR)) {
 				switch (config.getSdrType()) {
 				case RTLSDR:

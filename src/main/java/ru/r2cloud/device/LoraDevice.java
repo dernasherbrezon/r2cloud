@@ -7,7 +7,6 @@ import ru.r2cloud.model.DeviceType;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.predict.PredictOreKit;
-import ru.r2cloud.r2lora.ModulationConfig;
 import ru.r2cloud.r2lora.R2loraClient;
 import ru.r2cloud.r2lora.R2loraStatus;
 import ru.r2cloud.satellite.ObservationDao;
@@ -45,14 +44,6 @@ public class LoraDevice extends Device {
 		result.setStatus(loraStatus.getDeviceStatus());
 		if (loraStatus.getDeviceStatus().equals(DeviceConnectionStatus.FAILED)) {
 			result.setFailureMessage(loraStatus.getStatus());
-		} else if (loraStatus.getDeviceStatus().equals(DeviceConnectionStatus.CONNECTED)) {
-			for (ModulationConfig cur : loraStatus.getConfigs()) {
-				if (!cur.getName().equalsIgnoreCase("lora")) {
-					continue;
-				}
-				result.setModel("r2lora " + cur.getMinFrequency() + " - " + cur.getMaxFrequency() + " Mhz");
-				break;
-			}
 		}
 		return result;
 	}

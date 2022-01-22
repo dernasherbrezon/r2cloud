@@ -2,8 +2,7 @@
 	"devices": [
 		{
 			"status": "CONNECTED",
-			"model": "r2lora 144.0 - 500.1 Mhz",
-			"connection": "127.0.0.1:8005",
+			"connection": "LoRa - 127.0.0.1:8005",
 			"minFrequency": 144000000,
 			"maxFrequency": 500100000,
 			"rotator": {
@@ -13,7 +12,7 @@
 		{
 			"status": "FAILED",
 			"failureMessage": "CONNECTION_FAILURE",
-			"connection": "255.255.255.255:80",
+			"connection": "LoRa - 255.255.255.255:80",
 			"minFrequency": 0,
 			"maxFrequency": 0,
 			"rotator": {
