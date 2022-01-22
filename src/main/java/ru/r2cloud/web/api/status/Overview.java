@@ -4,44 +4,72 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.util.Map.Entry;
 
-import com.codahale.metrics.health.HealthCheck.Result;
 import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
-import ru.r2cloud.metrics.Metrics;
-import ru.r2cloud.metrics.Status;
+import ru.r2cloud.device.DeviceManager;
+import ru.r2cloud.model.DeviceStatus;
+import ru.r2cloud.model.DeviceType;
+import ru.r2cloud.model.RotatorStatus;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
 
 public class Overview extends AbstractHttpController {
 
-	private final Metrics metrics;
+	private final DeviceManager deviceManager;
 
-	public Overview(Metrics metrics) {
-		this.metrics = metrics;
+	public Overview(DeviceManager deviceManager) {
+		this.deviceManager = deviceManager;
 	}
 
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
 		ModelAndView result = new ModelAndView();
 		JsonObject entity = Json.object();
-		for (Entry<String, Result> cur : metrics.getHealthRegistry().runHealthChecks().entrySet()) {
-			JsonObject value = Json.object().add("status", cur.getValue().getDetails().get("status").toString());
-			if (!cur.getValue().isHealthy()) {
-				value.add("message", cur.getValue().getMessage());
+		JsonArray devices = new JsonArray();
+		for (DeviceStatus cur : deviceManager.getStatus()) {
+			JsonObject curObj = Json.object();
+			curObj.add("status", cur.getStatus().name());
+			if (cur.getFailureMessage() != null) {
+				curObj.add("failureMessage", cur.getFailureMessage());
 			}
-			entity.add(cur.getKey(), value);
+			if (cur.getModel() != null) {
+				curObj.add("model", cur.getModel());
+			}
+			if (cur.getType().equals(DeviceType.LORA)) {
+				curObj.add("connection", cur.getConfig().getHostport());
+			} else if (cur.getType().equals(DeviceType.SDR)) {
+				curObj.add("connection", "device id: " + cur.getConfig().getRtlDeviceId());
+			}
+			curObj.add("minFrequency", cur.getConfig().getMinimumFrequency());
+			curObj.add("maxFrequency", cur.getConfig().getMaximumFrequency());
+			curObj.add("rotator", createRotatorStatus(cur.getRotatorStatus()));
+			devices.add(curObj);
 		}
+		entity.add("devices", devices);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm", Locale.UK);
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-		JsonObject value = Json.object().add("status", Status.SUCCESS.toString());
-		value.add("message", "Server time: " + sdf.format(new Date()));
-		entity.add("serverTime", value);
+		entity.add("serverTime", sdf.format(new Date()));
 		result.setData(entity.toString());
 		return result;
+	}
+
+	private static JsonObject createRotatorStatus(RotatorStatus cur) {
+		JsonObject rotator = Json.object();
+		rotator.add("status", cur.getStatus().name());
+		if (cur.getModel() != null) {
+			rotator.add("model", cur.getModel());
+		}
+		if (cur.getHostport() != null) {
+			rotator.add("connection", cur.getHostport());
+		}
+		if (cur.getFailureMessage() != null) {
+			rotator.add("failureMessage", cur.getFailureMessage());
+		}
+		return rotator;
 	}
 
 	@Override

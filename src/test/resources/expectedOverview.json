@@ -1,0 +1,48 @@
+{
+	"devices": [
+		{
+			"status": "CONNECTED",
+			"model": "r2lora 144.0 - 500.1 Mhz",
+			"connection": "127.0.0.1:8005",
+			"minFrequency": 144000000,
+			"maxFrequency": 500100000,
+			"rotator": {
+				"status": "CONNECTED",
+				"model": "TEST",
+				"connection": "127.0.0.1:8006"
+			}
+		},
+		{
+			"status": "FAILED",
+			"failureMessage": "CONNECTION_FAILURE",
+			"connection": "255.255.255.255:80",
+			"minFrequency": 0,
+			"maxFrequency": 0,
+			"rotator": {
+				"status": "DISABLED"
+			}
+		},
+		{
+			"status": "CONNECTED",
+			"model": "Realtek, RTL2838UHIDIR, SN: 00000001",
+			"connection": "device id: 0",
+			"minFrequency": 100000000,
+			"maxFrequency": 1700000000,
+			"rotator": {
+				"status": "DISABLED"
+			}
+		},
+		{
+			"status": "FAILED",
+			"failureMessage": "unable to read device status",
+			"connection": "device id: 1",
+			"minFrequency": 100000000,
+			"maxFrequency": 1700000000,
+			"rotator": {
+				"status": "CONNECTED",
+				"model": "TEST",
+				"connection": "127.0.0.1:8004"
+			}
+		}
+	]
+}

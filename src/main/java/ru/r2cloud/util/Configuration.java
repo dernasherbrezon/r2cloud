@@ -260,32 +260,17 @@ public class Configuration {
 		int timeout = getInteger("r2lora.timeout");
 		List<DeviceConfiguration> result = new ArrayList<>(loraDevices.size());
 		for (String cur : loraDevices) {
-			String hostport = getProperty("r2lora.device." + cur + ".hostport");
-			if (hostport == null) {
-				LOG.error("invalid r2lora device. hostport is missing for {}", cur);
-				continue;
-			}
-			String username = getProperty("r2lora.device." + cur + ".username");
-			if (username == null) {
-				LOG.error("invalid r2lora device. username is missing for {}", cur);
-				continue;
-			}
-			String password = getProperty("r2lora.device." + cur + ".password");
-			if (password == null) {
-				LOG.error("invalid r2lora device. password is missing for {}", cur);
-				continue;
-			}
 			Integer gain = getInteger("r2lora.device." + cur + ".gain");
 			if (gain == null) {
 				// by default should be auto
 				gain = 0;
 			}
 			DeviceConfiguration config = new DeviceConfiguration();
-			config.setHostport(hostport);
-			config.setUsername(username);
-			config.setPassword(password);
+			config.setHostport(getProperty("r2lora.device." + cur + ".hostport"));
+			config.setUsername(getProperty("r2lora.device." + cur + ".username"));
+			config.setPassword(getProperty("r2lora.device." + cur + ".password"));
 			config.setTimeout(timeout);
-			config.setId("lora-" + hostport);
+			config.setId("lora-" + config.getHostport());
 			config.setRotatorConfiguration(getRotatorConfiguration(config.getId(), "r2lora.device." + cur + "."));
 			config.setGain(gain);
 			result.add(config);

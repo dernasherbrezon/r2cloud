@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.Lifecycle;
+import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.RotatorConfiguration;
 import ru.r2cloud.model.RotatorStatus;
@@ -29,6 +30,7 @@ public class RotatorService implements Lifecycle {
 	private RotctrldClient rotClient;
 	private String failureMessage;
 
+	private final RotatorStatus status = new RotatorStatus();
 	private final RotatorConfiguration config;
 	private final PredictOreKit predict;
 	private final ThreadPoolFactory threadpoolFactory;
@@ -44,13 +46,17 @@ public class RotatorService implements Lifecycle {
 	@Override
 	public synchronized void start() {
 		LOG.info("[{}] starting rotator on: {}:{}", config.getId(), config.getHostname(), config.getPort());
+		status.setHostport(config.getHostname() + ":" + config.getPort());
 		try {
 			rotClient = new RotctrldClient(config.getHostname(), config.getPort(), config.getTimeout());
 			rotClient.start();
-			String modelName = rotClient.getModelName();
-			LOG.info("[{}] initialized for model: {}", config.getId(), modelName);
+			status.setStatus(DeviceConnectionStatus.CONNECTED);
+			status.setModel(rotClient.getModelName());
+			LOG.info("[{}] initialized for model: {}", config.getId(), status.getModel());
 		} catch (Exception e) {
 			failureMessage = "unable to connect to rotctrld";
+			status.setStatus(DeviceConnectionStatus.FAILED);
+			status.setFailureMessage(e.getMessage());
 			Util.logIOException(LOG, failureMessage, e);
 			return;
 		}
@@ -111,8 +117,7 @@ public class RotatorService implements Lifecycle {
 	}
 
 	public RotatorStatus getStatus() {
-		// TODO Auto-generated method stub
-		return null;
+		return status;
 	}
 
 }

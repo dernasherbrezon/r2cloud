@@ -263,9 +263,8 @@ public class R2Cloud {
 		}
 		for (DeviceConfiguration cur : props.getLoraConfigurations()) {
 			R2loraClient client = new R2loraClient(cur.getHostport(), cur.getUsername(), cur.getPassword(), cur.getTimeout());
-			if (populateFrequencies(client.getStatus(), cur)) {
-				deviceManager.addDevice(new LoraDevice(cur.getId(), new LoraSatelliteFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, client));
-			}
+			populateFrequencies(client.getStatus(), cur);
+			deviceManager.addDevice(new LoraDevice(cur.getId(), new LoraSatelliteFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, client));
 		}
 
 		// setup web server
@@ -275,7 +274,7 @@ public class R2Cloud {
 		index(new Configured(auth, props));
 		index(new Restore(auth));
 		index(new MetricsController(signed, metrics));
-		index(new Overview(metrics));
+		index(new Overview(deviceManager));
 		index(new General(props, autoUpdate));
 		index(new DDNS(props, ddnsClient));
 		index(new TLE(props, tleDao));
@@ -399,9 +398,9 @@ public class R2Cloud {
 		}
 	}
 
-	private static boolean populateFrequencies(R2loraStatus status, DeviceConfiguration config) {
+	private static void populateFrequencies(R2loraStatus status, DeviceConfiguration config) {
 		if (status.getConfigs() == null) {
-			return false;
+			return;
 		}
 		for (ModulationConfig cur : status.getConfigs()) {
 			if (!cur.getName().equalsIgnoreCase("lora")) {
@@ -409,9 +408,9 @@ public class R2Cloud {
 			}
 			config.setMinimumFrequency((long) (cur.getMinFrequency() * 1_000_000));
 			config.setMaximumFrequency((long) (cur.getMaxFrequency() * 1_000_000));
-			return true;
+			return;
 		}
-		return false;
+		return;
 	}
 
 	public static String getVersion() {

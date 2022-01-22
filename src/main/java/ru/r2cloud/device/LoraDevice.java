@@ -50,7 +50,7 @@ public class LoraDevice extends Device {
 				if (!cur.getName().equalsIgnoreCase("lora")) {
 					continue;
 				}
-				result.setModel(cur.getMinFrequency() + " - " + cur.getMaxFrequency() + " Mhz");
+				result.setModel("r2lora " + cur.getMinFrequency() + " - " + cur.getMaxFrequency() + " Mhz");
 				break;
 			}
 		}
