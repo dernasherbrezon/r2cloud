@@ -1,10 +1,15 @@
 package ru.r2cloud.device;
 
 import ru.r2cloud.model.DeviceConfiguration;
+import ru.r2cloud.model.DeviceConnectionStatus;
+import ru.r2cloud.model.DeviceStatus;
+import ru.r2cloud.model.DeviceType;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.predict.PredictOreKit;
+import ru.r2cloud.r2lora.ModulationConfig;
 import ru.r2cloud.r2lora.R2loraClient;
+import ru.r2cloud.r2lora.R2loraStatus;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.SatelliteFilter;
@@ -30,6 +35,26 @@ public class LoraDevice extends Device {
 	@Override
 	public IQReader createReader(ObservationRequest req, Satellite satellite) {
 		return new R2loraReader(config, req, client, satellite);
+	}
+
+	@Override
+	public DeviceStatus getStatus() {
+		DeviceStatus result = super.getStatus();
+		result.setType(DeviceType.LORA);
+		R2loraStatus loraStatus = client.getStatus();
+		result.setStatus(loraStatus.getDeviceStatus());
+		if (loraStatus.getDeviceStatus().equals(DeviceConnectionStatus.FAILED)) {
+			result.setFailureMessage(loraStatus.getStatus());
+		} else if (loraStatus.getDeviceStatus().equals(DeviceConnectionStatus.CONNECTED)) {
+			for (ModulationConfig cur : loraStatus.getConfigs()) {
+				if (!cur.getName().equalsIgnoreCase("lora")) {
+					continue;
+				}
+				result.setModel(cur.getMinFrequency() + " - " + cur.getMaxFrequency() + " Mhz");
+				break;
+			}
+		}
+		return result;
 	}
 
 }

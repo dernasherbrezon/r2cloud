@@ -2,8 +2,11 @@ package ru.r2cloud.r2lora;
 
 import java.util.List;
 
+import ru.r2cloud.model.DeviceConnectionStatus;
+
 public class R2loraStatus {
 
+	private DeviceConnectionStatus deviceStatus;
 	private String status;
 	private int chipTemperature;
 	private List<ModulationConfig> configs;
@@ -12,8 +15,9 @@ public class R2loraStatus {
 		// do nothing
 	}
 
-	public R2loraStatus(String status) {
+	public R2loraStatus(DeviceConnectionStatus deviceStatus, String status) {
 		this.status = status;
+		this.deviceStatus = deviceStatus;
 	}
 
 	public String getStatus() {
@@ -40,4 +44,11 @@ public class R2loraStatus {
 		this.configs = configs;
 	}
 
+	public DeviceConnectionStatus getDeviceStatus() {
+		return deviceStatus;
+	}
+
+	public void setDeviceStatus(DeviceConnectionStatus deviceStatus) {
+		this.deviceStatus = deviceStatus;
+	}
 }

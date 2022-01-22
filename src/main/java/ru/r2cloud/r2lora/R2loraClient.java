@@ -27,6 +27,7 @@ import com.eclipsesource.json.ParseException;
 
 import ru.r2cloud.R2Cloud;
 import ru.r2cloud.cloud.R2ServerClient;
+import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.util.Util;
 
 public class R2loraClient {
@@ -51,12 +52,12 @@ public class R2loraClient {
 				if (LOG.isErrorEnabled()) {
 					LOG.error("unable to get r2lora status. response code: {}. response: {}", response.statusCode(), response.body());
 				}
-				return new R2loraStatus("CONNECTION_FAILURE");
+				return new R2loraStatus(DeviceConnectionStatus.FAILED, "CONNECTION_FAILURE");
 			}
 			return readStatus(response.body());
 		} catch (IOException e) {
 			Util.logIOException(LOG, "unable to get r2lora status from: " + hostname, e);
-			return new R2loraStatus("CONNECTION_FAILURE");
+			return new R2loraStatus(DeviceConnectionStatus.FAILED, "CONNECTION_FAILURE");
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new IllegalStateException(e);
@@ -160,16 +161,17 @@ public class R2loraClient {
 			json = Json.parse(con);
 		} catch (ParseException e) {
 			LOG.info("malformed json");
-			return new R2loraStatus("MALFORMED_JSON");
+			return new R2loraStatus(DeviceConnectionStatus.FAILED, "MALFORMED_JSON");
 		}
 		if (!json.isObject()) {
 			LOG.info("malformed json");
-			return new R2loraStatus("MALFORMED_JSON");
+			return new R2loraStatus(DeviceConnectionStatus.FAILED, "MALFORMED_JSON");
 		}
 		JsonObject obj = json.asObject();
 		R2loraStatus result = new R2loraStatus();
 		result.setStatus(obj.getString("status", null));
 		result.setChipTemperature(obj.getInt("chipTemperature", 0));
+		result.setDeviceStatus(DeviceConnectionStatus.CONNECTED);
 
 		List<ModulationConfig> configs = new ArrayList<>();
 		// interested only in lora parameters
