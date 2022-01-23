@@ -43,6 +43,15 @@ public class PlutoStatusProcessTest {
 		assertEquals("No IIO context found.", result.getFailureMessage());
 	}
 
+	@Test
+	public void testSuccess() {
+		rtlTestServer.mockTest(
+				"Using auto-detected IIO context at URI \"usb:0.1.5\"\nIIO context created with usb backend.\nBackend description string: Linux (none) 4.19.0-119999-g6edc6cd #319 SMP PREEMPT Mon Jul 6 15:45:01 CEST 2020 armv7l\nIIO context has 15 attributes:\n	hw_model: Analog Devices PlutoSDR Rev.B (Z7010-AD9363A)\n	hw_model_variant: 0\n	hw_serial: 10447354119600050d003000d4311fd131\n");
+		SdrStatus result = status.getStatus();
+		assertEquals(DeviceConnectionStatus.CONNECTED, result.getStatus());
+		assertEquals("Analog Devices PlutoSDR Rev.B (Z7010-AD9363A)", result.getModel());
+	}
+
 	@Before
 	public void start() throws Exception {
 		config = new TestConfiguration(tempFolder);

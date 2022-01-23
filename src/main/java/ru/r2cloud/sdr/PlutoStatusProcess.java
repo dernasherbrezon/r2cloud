@@ -17,6 +17,7 @@ import ru.r2cloud.util.Util;
 class PlutoStatusProcess implements SdrStatusProcess {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PlutoStatusProcess.class);
+	private static final String HW_MODEL = "hw_model:";
 
 	private ProcessWrapper process;
 	private final Configuration config;
@@ -42,8 +43,14 @@ class PlutoStatusProcess implements SdrStatusProcess {
 					result.setFailureMessage(curLine);
 					break;
 				}
+				int index = curLine.indexOf(HW_MODEL);
+				if (index != -1) {
+					result = new SdrStatus();
+					result.setStatus(DeviceConnectionStatus.CONNECTED);
+					result.setModel(curLine.substring(HW_MODEL.length() + 1).trim());
+					break;
+				}
 			}
-			// TODO find correct plutosdr output
 		} catch (IOException e) {
 			result = new SdrStatus();
 			result.setStatus(DeviceConnectionStatus.FAILED);
