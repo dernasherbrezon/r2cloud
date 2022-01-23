@@ -53,7 +53,7 @@ class PlutoStatusProcess implements SdrStatusProcess {
 		if (result == null) {
 			result = new SdrStatus();
 			result.setStatus(DeviceConnectionStatus.FAILED);
-			result.setFailureMessage("unable to read device status");
+			result.setFailureMessage("unable to find device");
 		}
 		return result;
 	}
