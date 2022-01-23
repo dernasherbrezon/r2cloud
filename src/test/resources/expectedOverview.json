@@ -31,7 +31,7 @@
 		},
 		{
 			"status": "FAILED",
-			"failureMessage": "unable to read device status",
+			"failureMessage": "unable to find device",
 			"connection": "RTL-SDR 1",
 			"minFrequency": 100000000,
 			"maxFrequency": 1700000000,
