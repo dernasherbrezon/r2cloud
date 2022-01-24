@@ -14,8 +14,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.jradio.BeaconOutputStream;
+import ru.r2cloud.jradio.RawBeacon;
 import ru.r2cloud.model.DecoderResult;
-import ru.r2cloud.model.LoraBeacon;
 import ru.r2cloud.model.ObservationRequest;
 
 public class R2loraDecoderTest {
@@ -25,7 +25,7 @@ public class R2loraDecoderTest {
 
 	@Test
 	public void testSuccess() throws Exception {
-		LoraBeacon beacon = new LoraBeacon();
+		RawBeacon beacon = new RawBeacon();
 		beacon.setBeginMillis(1641987504000L);
 		beacon.setRawData(new byte[] { 0x11, 0x22 });
 		File rawFile = new File(tempFolder.getRoot(), UUID.randomUUID().toString() + ".raw");
@@ -33,7 +33,7 @@ public class R2loraDecoderTest {
 			bos.write(beacon);
 		}
 
-		R2loraDecoder decoder = new R2loraDecoder(LoraBeacon.class);
+		R2loraDecoder decoder = new R2loraDecoder(RawBeacon.class);
 		DecoderResult result = decoder.decode(rawFile, new ObservationRequest());
 		assertNotNull(result);
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
@@ -46,7 +46,7 @@ public class R2loraDecoderTest {
 		try (FileOutputStream fos = new FileOutputStream(rawFile)) {
 			fos.write(1);
 		}
-		R2loraDecoder decoder = new R2loraDecoder(LoraBeacon.class);
+		R2loraDecoder decoder = new R2loraDecoder(RawBeacon.class);
 		DecoderResult result = decoder.decode(rawFile, new ObservationRequest());
 		assertNotNull(result);
 		assertEquals(0, result.getNumberOfDecodedPackets().longValue());

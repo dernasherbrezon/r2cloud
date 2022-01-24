@@ -10,8 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.jradio.BeaconOutputStream;
+import ru.r2cloud.jradio.RawBeacon;
+import ru.r2cloud.jradio.RxMetadata;
 import ru.r2cloud.model.IQData;
-import ru.r2cloud.model.LoraBeacon;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.r2lora.R2loraClient;
@@ -81,10 +82,15 @@ public class R2loraReader implements IQReader {
 		return result;
 	}
 
-	private static LoraBeacon convert(R2loraFrame frame) {
-		LoraBeacon result = new LoraBeacon();
+	private static RawBeacon convert(R2loraFrame frame) {
+		RawBeacon result = new RawBeacon();
 		result.setBeginMillis(frame.getTimestamp() * 1000);
 		result.setRawData(frame.getData());
+		RxMetadata meta = new RxMetadata();
+		meta.setFrequencyError((long) frame.getFrequencyError());
+		meta.setRssi(frame.getRssi());
+		meta.setSnr(frame.getSnr());
+		result.setRxMeta(meta);
 		return result;
 	}
 
