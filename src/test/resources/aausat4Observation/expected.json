@@ -15,7 +15,7 @@
 	"sdrType": "RTLSDR",
 	"dataEntity": [
 		{
-			"name": 1562788405439,
+			"time": 1562788405439,
 			"body": {
 				"adcs1": {
 					"bdot1": -2035,
