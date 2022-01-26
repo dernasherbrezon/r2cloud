@@ -95,11 +95,16 @@ public class ObservationLoad extends AbstractHttpController {
 
 	private static JsonObject convert(Beacon b) {
 		JsonObject result = new JsonObject();
-		result.add("name", b.getBeginMillis());
+		result.add("time", b.getBeginMillis());
 		JsonValue convertObject = Util.convertObject(b);
 		if (convertObject != null) {
-			convertObject.asObject().remove("rawData").remove("beginMillis").remove("beginSample");
+			convertObject.asObject().remove("rawData").remove("beginMillis").remove("beginSample").remove("rxMeta");
 			result.add("body", convertObject);
+		}
+		if (b.getRxMeta() != null && b.getRxMeta().getFrequencyError() != 0) {
+			result.add("frequencyError", b.getRxMeta().getFrequencyError());
+			result.add("rssi", b.getRxMeta().getRssi());
+			result.add("snr", b.getRxMeta().getSnr());
 		}
 		return result;
 	}
