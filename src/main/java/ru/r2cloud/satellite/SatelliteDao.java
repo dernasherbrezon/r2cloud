@@ -53,16 +53,22 @@ public class SatelliteDao {
 				break;
 			case TELEMETRY:
 				// sdr-server supports very narrow bandwidths
+				int outputSampleRate = 48_000;
+				// some rates better to sample at 50k
+				if (checkBaudRate(curSatellite, 50_000)) {
+					outputSampleRate = 50_000;
+				}
 				if (config.getSdrType().equals(SdrType.SDRSERVER)) {
-					curSatellite.setInputSampleRate(48_000);
-					curSatellite.setOutputSampleRate(48_000);
+					curSatellite.setInputSampleRate(outputSampleRate);
+					curSatellite.setOutputSampleRate(outputSampleRate);
 				} else if (curSatellite.getModulation() != null && curSatellite.getModulation().equals(Modulation.LORA)) {
 					// not applicable
 					curSatellite.setInputSampleRate(0);
 					curSatellite.setOutputSampleRate(0);
 				} else {
-					curSatellite.setInputSampleRate(240_000);
-					curSatellite.setOutputSampleRate(48_000);
+					// 48k * 5 = 240k - minimum rate rtl-sdr supports
+					curSatellite.setInputSampleRate(outputSampleRate * 5);
+					curSatellite.setOutputSampleRate(outputSampleRate);
 				}
 				break;
 			default:
@@ -201,6 +207,13 @@ public class SatelliteDao {
 			}
 		}
 		return result;
+	}
+
+	private static boolean checkBaudRate(Satellite satellite, int outputSampleRate) {
+		if (satellite.getBaudRates() == null || satellite.getBaudRates().isEmpty()) {
+			return false;
+		}
+		return (outputSampleRate % satellite.getBaudRates().get(0) == 0);
 	}
 
 }
