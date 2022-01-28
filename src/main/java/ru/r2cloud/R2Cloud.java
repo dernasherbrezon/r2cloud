@@ -74,6 +74,7 @@ import ru.r2cloud.satellite.decoder.PegasusDecoder;
 import ru.r2cloud.satellite.decoder.R2loraDecoder;
 import ru.r2cloud.satellite.decoder.ReaktorHelloWorldDecoder;
 import ru.r2cloud.satellite.decoder.SalsatDecoder;
+import ru.r2cloud.satellite.decoder.Smog1Decoder;
 import ru.r2cloud.satellite.decoder.SnetDecoder;
 import ru.r2cloud.satellite.decoder.Strand1Decoder;
 import ru.r2cloud.satellite.decoder.Suomi100Decoder;
@@ -217,6 +218,7 @@ public class R2Cloud {
 		decoders.put("47952", new UspDecoder(predict, props, 2400, UspBeacon.class));
 		decoders.put("47951", new UspDecoder(predict, props, 2400, UspBeacon.class));
 		decoders.put("47963", new Diy1Decoder(predict, props));
+		decoders.put("47964", new Smog1Decoder(predict, props));
 
 		for (Satellite cur : satelliteDao.findAll()) {
 			if (cur.getFraming() == null || cur.getModulation() == null || cur.getBeaconClass() == null) {
