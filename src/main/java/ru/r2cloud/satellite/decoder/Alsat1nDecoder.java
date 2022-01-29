@@ -18,10 +18,10 @@ public class Alsat1nDecoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		FskDemodulator demod = new FskDemodulator(source, 9600);
+		FskDemodulator demod = new FskDemodulator(source, req.getBaudRates().get(0));
 		return new Alsat1n(demod);
 	}
-	
+
 	@Override
 	public Class<? extends Beacon> getBeaconClass() {
 		return Alsat1nBeacon.class;

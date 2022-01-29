@@ -211,6 +211,8 @@ public class R2ServerClient {
 		JsonValue jsonRates = json.get("baudRates");
 		if (jsonRates != null && jsonRates.isArray()) {
 			result.setBaudRates(convertToIntegerList(jsonRates.asArray()));
+		} else {
+			result.setBaudRates(Collections.emptyList());
 		}
 		String beaconClassStr = json.getString("beaconClass", null);
 		if (beaconClassStr == null) {

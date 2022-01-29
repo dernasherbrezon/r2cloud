@@ -1,5 +1,7 @@
 package ru.r2cloud.model;
 
+import java.util.List;
+
 import org.orekit.bodies.GeodeticPoint;
 
 public class ObservationRequest {
@@ -13,6 +15,7 @@ public class ObservationRequest {
 	private long bandwidth;
 	private Tle tle;
 	private GeodeticPoint groundStation;
+	private List<Integer> baudRates;
 
 	private int inputSampleRate;
 	private int outputSampleRate;
@@ -24,6 +27,14 @@ public class ObservationRequest {
 	private int rtlDeviceId;
 	private int ppm;
 	private SdrServerConfiguration sdrServerConfiguration;
+	
+	public List<Integer> getBaudRates() {
+		return baudRates;
+	}
+	
+	public void setBaudRates(List<Integer> baudRates) {
+		this.baudRates = baudRates;
+	}
 	
 	public SdrServerConfiguration getSdrServerConfiguration() {
 		return sdrServerConfiguration;

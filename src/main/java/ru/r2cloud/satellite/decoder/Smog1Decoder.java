@@ -20,8 +20,6 @@ import ru.r2cloud.util.Util;
 
 public class Smog1Decoder extends TelemetryDecoder {
 
-	private static final int[] DOWNLINK_SPEEDS = new int[] { 1250, 2500, 5000, 12500 };
-
 	public Smog1Decoder(PredictOreKit predict, Configuration config) {
 		super(predict, config);
 	}
@@ -29,11 +27,11 @@ public class Smog1Decoder extends TelemetryDecoder {
 	@Override
 	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, ObservationRequest req) throws IOException {
 		List<BeaconSource<? extends Beacon>> result = new ArrayList<>();
-		for (int i = 0; i < DOWNLINK_SPEEDS.length; i++) {
-			result.add(new Smog1RaCoded(createDemodulator(DOWNLINK_SPEEDS[i], rawIq, req), 128, 260));
-			result.add(new Smog1RaCoded(createDemodulator(DOWNLINK_SPEEDS[i], rawIq, req), 256, 514));
-			result.add(new Smog1Short(createDemodulator(DOWNLINK_SPEEDS[i], rawIq, req)));
-			result.add(new Smog1(createDemodulator(DOWNLINK_SPEEDS[i], rawIq, req)));
+		for (int i = 0; i < req.getBaudRates().size(); i++) {
+			result.add(new Smog1RaCoded(createDemodulator(req.getBaudRates().get(i), rawIq, req), 128, 260));
+			result.add(new Smog1RaCoded(createDemodulator(req.getBaudRates().get(i), rawIq, req), 256, 514));
+			result.add(new Smog1Short(createDemodulator(req.getBaudRates().get(i), rawIq, req)));
+			result.add(new Smog1(createDemodulator(req.getBaudRates().get(i), rawIq, req)));
 		}
 		return result;
 	}

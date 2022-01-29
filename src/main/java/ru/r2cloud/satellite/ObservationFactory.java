@@ -69,6 +69,7 @@ public class ObservationFactory {
 		result.setStartTimeMillis(nextPass.getStartMillis());
 		result.setEndTimeMillis(nextPass.getEndMillis());
 		result.setId(String.valueOf(result.getStartTimeMillis()) + "-" + satellite.getId());
+		result.setBaudRates(satellite.getBaudRates());
 		// only r2lora can handle lora modulation
 		if (satellite.getModulation() != null && satellite.getModulation().equals(Modulation.LORA)) {
 			result.setSdrType(SdrType.R2LORA);
