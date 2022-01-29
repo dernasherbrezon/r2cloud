@@ -88,7 +88,7 @@ public abstract class Device implements Lifecycle {
 		}
 	}
 
-	public boolean trySatellite(Satellite satellite) {
+	public synchronized boolean trySatellite(Satellite satellite) {
 		if (!filter.accept(satellite)) {
 			return false;
 		}
@@ -208,22 +208,24 @@ public abstract class Device implements Lifecycle {
 			currentBandFrequency = null;
 			numberOfObservationsOnCurrentBand = 0;
 		}
-		if (scheduledSatellites.isEmpty()) {
-			LOG.info("[{}] no available satellites for this device", id);
-			return;
-		}
-		long current = clock.millis();
-		List<ObservationRequest> newSchedule = schedule.createInitialSchedule(scheduledSatellites, current);
-		for (ObservationRequest cur : newSchedule) {
-			Satellite fullSatelliteInfo = findById(cur.getSatelliteId());
-			if (fullSatelliteInfo == null) {
-				LOG.error("unable to find full satellite info for schedule observation: {}", cur.getId());
-				continue;
+		synchronized (this) {
+			if (scheduledSatellites.isEmpty()) {
+				LOG.info("[{}] no available satellites for this device", id);
+				return;
 			}
-			schedule(cur, fullSatelliteInfo);
-		}
-		if (numberOfConcurrentObservations > 1) {
-			logBandsForSdrServer(scheduledSatellites);
+			long current = clock.millis();
+			List<ObservationRequest> newSchedule = schedule.createInitialSchedule(scheduledSatellites, current);
+			for (ObservationRequest cur : newSchedule) {
+				Satellite fullSatelliteInfo = findById(cur.getSatelliteId());
+				if (fullSatelliteInfo == null) {
+					LOG.error("unable to find full satellite info for schedule observation: {}", cur.getId());
+					continue;
+				}
+				schedule(cur, fullSatelliteInfo);
+			}
+			if (numberOfConcurrentObservations > 1) {
+				logBandsForSdrServer(scheduledSatellites);
+			}
 		}
 	}
 
@@ -321,7 +323,7 @@ public abstract class Device implements Lifecycle {
 		return batch.get(0);
 	}
 
-	public void disableSatellite(Satellite satelliteToEdit) {
+	public synchronized void disableSatellite(Satellite satelliteToEdit) {
 		if (removeSatellite(satelliteToEdit.getId())) {
 			reschedule();
 			LOG.info("[{}] rescheduled", id);
@@ -337,7 +339,7 @@ public abstract class Device implements Lifecycle {
 		return null;
 	}
 
-	public void removeAllSatellites() {
+	public synchronized void removeAllSatellites() {
 		scheduledSatellites.clear();
 	}
 
