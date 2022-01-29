@@ -10,6 +10,7 @@ import ru.r2cloud.jradio.florsat.Floripasat1Beacon;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 
 public class Floripasat1Decoder extends TelemetryDecoder {
 
@@ -19,7 +20,8 @@ public class Floripasat1Decoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		GmskDemodulator demodulator = new GmskDemodulator(source, 1200, req.getBandwidth(), 0.175f * 3);
+		int baudRate = req.getBaudRates().get(0);
+		GmskDemodulator demodulator = new GmskDemodulator(source, baudRate, req.getBandwidth(), 0.175f * 3, 0.06f, Util.convertDecimation(baudRate), 2000);
 		SoftToHard bs = new SoftToHard(demodulator);
 		CorrelateSyncword correlate = new CorrelateSyncword(bs, 5, "01011101111001100010101001111110", (255 + 3) * 8);
 		return new Floripasat1(correlate);

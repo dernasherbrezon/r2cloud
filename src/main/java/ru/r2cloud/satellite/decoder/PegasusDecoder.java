@@ -19,8 +19,7 @@ public class PegasusDecoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		float gainMu = 0.175f * 3;
-		GmskDemodulator gmsk = new GmskDemodulator(source, 9600, req.getBandwidth(), gainMu);
+		GmskDemodulator gmsk = new GmskDemodulator(source, req.getBaudRates().get(0), req.getBandwidth(), 0.175f * 3);
 		SoftToHard s2h = new SoftToHard(gmsk);
 		CorrelateSyncword correlate = new CorrelateSyncword(s2h, 2, "0010110111010100", 64 * 8);
 		return new At03(correlate);

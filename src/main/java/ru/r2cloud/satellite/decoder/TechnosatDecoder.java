@@ -23,7 +23,8 @@ public class TechnosatDecoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		FskDemodulator demod = new FskDemodulator(source, 4800, 2400.0f, Util.convertDecimation(4800), 2000, true);
+		int baudRate = req.getBaudRates().get(0);
+		FskDemodulator demod = new FskDemodulator(source, baudRate, 2400.0f, Util.convertDecimation(baudRate), 2000, true);
 		SoftToHard s2h = new SoftToHard(demod);
 		InvertBits invert = new InvertBits(s2h);		
 		CorrelateSyncword correlateTag = new CorrelateSyncword(invert, 4, "111011110000111011110000", CMX909bBeacon.MAX_SIZE * 8);

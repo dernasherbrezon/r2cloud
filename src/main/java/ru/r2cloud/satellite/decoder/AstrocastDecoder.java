@@ -19,9 +19,7 @@ public class AstrocastDecoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		float gainMu = 0.175f * 5;
-		int baud = 9600;
-		GmskDemodulator gmsk = new GmskDemodulator(source, baud, req.getBandwidth(), gainMu);
+		GmskDemodulator gmsk = new GmskDemodulator(source, req.getBaudRates().get(0), req.getBandwidth(), 0.175f * 5);
 		SoftToHard s2h = new SoftToHard(gmsk);
 		CorrelateSyncword correlate = new CorrelateSyncword(s2h, 4, "00011010110011111111110000011101", 255 * 8 * 5);
 		return new Astrocast9k6(correlate);

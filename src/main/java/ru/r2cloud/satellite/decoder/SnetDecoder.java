@@ -11,6 +11,7 @@ import ru.r2cloud.jradio.snet.SnetBeacon;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 
 public class SnetDecoder extends TelemetryDecoder {
 
@@ -20,7 +21,8 @@ public class SnetDecoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		AfskDemodulator demod = new AfskDemodulator(source, 1200, -600, 1500, 1);
+		int baudRate = req.getBaudRates().get(0);
+		AfskDemodulator demod = new AfskDemodulator(source, baudRate, -600, 1500, Util.convertDecimation(baudRate));
 		CorrelateSyncword correlateTag = new CorrelateSyncword(new SoftToHard(demod), 4, "00000100110011110101111111001000", 512 * 8);
 		return new Snet(correlateTag);
 	}

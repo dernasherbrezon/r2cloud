@@ -61,7 +61,8 @@ public class Lucky7Decoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		FskDemodulator demodulator = new FskDemodulator(source, 4800, 5000.0f, Util.convertDecimation(4800), 1000);
+		int baudRate = req.getBaudRates().get(0);
+		FskDemodulator demodulator = new FskDemodulator(source, baudRate, 5000.0f, Util.convertDecimation(baudRate), 1000);
 		SoftToHard bs = new SoftToHard(demodulator);
 		CorrelateSyncword correlate = new CorrelateSyncword(bs, 3, "0010110111010100", 37 * 8);
 		return new Lucky7(correlate);

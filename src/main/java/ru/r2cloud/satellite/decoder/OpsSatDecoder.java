@@ -19,7 +19,7 @@ public class OpsSatDecoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		FskDemodulator demodulator = new FskDemodulator(source, 9600);
+		FskDemodulator demodulator = new FskDemodulator(source, req.getBaudRates().get(0));
 		SoftToHard bs = new SoftToHard(demodulator);
 		return new OpsSat(bs);
 	}

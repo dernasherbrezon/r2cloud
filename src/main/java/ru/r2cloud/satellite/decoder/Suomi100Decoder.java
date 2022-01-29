@@ -19,8 +19,7 @@ public class Suomi100Decoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		float gainMu = 0.175f * 3;
-		GmskDemodulator gmsk = new GmskDemodulator(source, 9600, req.getBandwidth(), gainMu);
+		GmskDemodulator gmsk = new GmskDemodulator(source, req.getBaudRates().get(0), req.getBandwidth(), 0.175f * 3);
 		CorrelateSyncword correlateTag = new CorrelateSyncword(gmsk, 4, "10010011000010110101000111011110", 255 * 8);
 		AX100Decoder ax100 = new AX100Decoder(correlateTag, false, true, true);
 		return new Suomi100(ax100);

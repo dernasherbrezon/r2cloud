@@ -1,11 +1,14 @@
 package ru.r2cloud.model;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
 
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
@@ -50,6 +53,7 @@ public class Observation {
 	private boolean biast;
 	private SdrType sdrType;
 	private long centerBandFrequency;
+	private List<Integer> baudRates;
 
 	public Observation() {
 		// do nothing
@@ -96,6 +100,7 @@ public class Observation {
 		result.setBiast(biast);
 		result.setSdrType(sdrType);
 		result.setCenterBandFrequency(centerBandFrequency);
+		result.setBaudRates(baudRates);
 		return result;
 	}
 
@@ -377,6 +382,15 @@ public class Observation {
 		}
 		result.setSdrType(sdrType);
 		result.setCenterBandFrequency(meta.getLong("centerBandFrequency", 0));
+		JsonValue jsonBaudRates = meta.get("baudRates");
+		if (jsonBaudRates != null && jsonBaudRates.isArray()) {
+			JsonArray jsonBaudRatesArray = jsonBaudRates.asArray();
+			List<Integer> baudRates = new ArrayList<>(jsonBaudRatesArray.size());
+			for (int i = 0; i < jsonBaudRatesArray.size(); i++) {
+				baudRates.add(jsonBaudRatesArray.get(i).asInt());
+			}
+			result.setBaudRates(baudRates);
+		}
 		return result;
 	}
 
@@ -424,6 +438,13 @@ public class Observation {
 		json.add("biast", isBiast());
 		json.add("sdrType", sdrType.name());
 		json.add("centerBandFrequency", centerBandFrequency);
+		JsonArray jsonBaudRates = new JsonArray();
+		if (getBaudRates() != null) {
+			for (Integer cur : getBaudRates()) {
+				jsonBaudRates.add(cur);
+			}
+		}
+		json.add("baudRates", jsonBaudRates);
 		return json;
 	}
 
@@ -453,6 +474,14 @@ public class Observation {
 
 	public boolean hasData() {
 		return aURL != null || dataURL != null;
+	}
+	
+	public List<Integer> getBaudRates() {
+		return baudRates;
+	}
+	
+	public void setBaudRates(List<Integer> baudRates) {
+		this.baudRates = baudRates;
 	}
 
 }

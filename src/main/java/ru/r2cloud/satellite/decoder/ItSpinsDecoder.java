@@ -13,17 +13,16 @@ import ru.r2cloud.util.Util;
 // Very similar to FskAx25G3ruhDecoder, but uses wider deviation + disable DC block
 public class ItSpinsDecoder extends TelemetryDecoder {
 
-	private final int baudRate;
 	private final Class<? extends Beacon> beacon;
 
 	public ItSpinsDecoder(PredictOreKit predict, Configuration config, Class<? extends Beacon> beacon) {
 		super(predict, config);
-		this.baudRate = 19600;
 		this.beacon = beacon;
 	}
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
+		int baudRate = req.getBaudRates().get(0);
 		FskDemodulator demodulator = new FskDemodulator(source, baudRate, 10000.0f, Util.convertDecimation(baudRate), 1000, false);
 		return new Ax25G3ruhBeaconSource<>(demodulator, beacon);
 	}

@@ -16,13 +16,11 @@ import ru.r2cloud.util.Util;
 
 public class FskAx100Decoder extends TelemetryDecoder {
 
-	private final int[] baudRate;
 	private final Class<? extends Beacon> beacon;
 	private final int beaconSizeBytes;
 
-	public FskAx100Decoder(PredictOreKit predict, Configuration config, int beaconSizeBytes, Class<? extends Beacon> beacon, int... baudRate) {
+	public FskAx100Decoder(PredictOreKit predict, Configuration config, int beaconSizeBytes, Class<? extends Beacon> beacon) {
 		super(predict, config);
-		this.baudRate = baudRate;
 		this.beacon = beacon;
 		this.beaconSizeBytes = beaconSizeBytes;
 	}
@@ -30,9 +28,9 @@ public class FskAx100Decoder extends TelemetryDecoder {
 	@Override
 	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, ObservationRequest req) throws IOException {
 		List<BeaconSource<? extends Beacon>> result = new ArrayList<>();
-		for (int i = 0; i < baudRate.length; i++) {
+		for (int i = 0; i < req.getBaudRates().size(); i++) {
 			DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req);
-			FskDemodulator demodulator = new FskDemodulator(source, baudRate[i], 5000.0f, Util.convertDecimation(baudRate[i]), 2000);
+			FskDemodulator demodulator = new FskDemodulator(source, req.getBaudRates().get(i), 5000.0f, Util.convertDecimation(req.getBaudRates().get(i)), 2000);
 			result.add(new Ax100BeaconSource<>(demodulator, beaconSizeBytes, beacon));
 		}
 		return result;

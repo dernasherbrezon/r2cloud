@@ -9,6 +9,7 @@ import ru.r2cloud.jradio.diy1.Diy1Beacon;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 
 public class Diy1Decoder extends TelemetryDecoder {
 
@@ -18,7 +19,8 @@ public class Diy1Decoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		FskDemodulator demod = new FskDemodulator(source, 500, 5000.0f, 24, 2000, true);
+		int baudRate = req.getBaudRates().get(0);
+		FskDemodulator demod = new FskDemodulator(source, baudRate, 5000.0f, Util.convertDecimation(baudRate), 2000, true);
 		return new Diy1(demod);
 	}
 	

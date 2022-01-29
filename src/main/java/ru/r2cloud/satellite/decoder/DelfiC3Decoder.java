@@ -9,19 +9,21 @@ import ru.r2cloud.jradio.demod.BpskDemodulator;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 
 public class DelfiC3Decoder extends TelemetryDecoder {
 
 	public DelfiC3Decoder(PredictOreKit predict, Configuration config) {
 		super(predict, config);
 	}
-	
+
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		BpskDemodulator bpsk = new BpskDemodulator(source, 1200, 5, -1450.0, true);
+		int baudRate = req.getBaudRates().get(0);
+		BpskDemodulator bpsk = new BpskDemodulator(source, baudRate, Util.convertDecimation(baudRate), -2000, true);
 		return new DelfiC3(bpsk);
 	}
-	
+
 	@Override
 	public Class<? extends Beacon> getBeaconClass() {
 		return DelfiC3Beacon.class;

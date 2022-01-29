@@ -11,6 +11,7 @@ import ru.r2cloud.jradio.huskysat1.Huskysat1Beacon;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 
 public class Huskysat1Decoder extends TelemetryDecoder {
 
@@ -20,7 +21,8 @@ public class Huskysat1Decoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		BpskDemodulator bpsk = new BpskDemodulator(source, 1200, 1, 1200, true);
+		int baudRate = req.getBaudRates().get(0);
+		BpskDemodulator bpsk = new BpskDemodulator(source, baudRate, Util.convertDecimation(baudRate), 1200, true);
 		SoftToHard s2h = new SoftToHard(bpsk);
 		CorrelateSyncword correlate = new CorrelateSyncword(s2h, 4, "1000111110011010010000101011101", Huskysat1.FRAME_SIZE * 10);
 		return new Huskysat1(correlate);

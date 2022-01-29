@@ -9,6 +9,7 @@ import ru.r2cloud.jradio.nayif1.Nayif1Beacon;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 
 public class Nayif1Decoder extends TelemetryDecoder {
 
@@ -18,7 +19,8 @@ public class Nayif1Decoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		BpskDemodulator bpsk = new BpskDemodulator(source, 1200, 5, 0, true);
+		int baudRate = req.getBaudRates().get(0);
+		BpskDemodulator bpsk = new BpskDemodulator(source, baudRate, Util.convertDecimation(baudRate), 0, true);
 		return new Nayif1(bpsk);
 	}
 	

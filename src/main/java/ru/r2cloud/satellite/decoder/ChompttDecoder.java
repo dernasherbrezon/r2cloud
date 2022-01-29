@@ -9,6 +9,7 @@ import ru.r2cloud.jradio.demod.AfskDemodulator;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 
 public class ChompttDecoder extends TelemetryDecoder {
 
@@ -18,7 +19,8 @@ public class ChompttDecoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		AfskDemodulator demod = new AfskDemodulator(source, 1200, 500, 1700, 5);
+		int baudRate = req.getBaudRates().get(0);
+		AfskDemodulator demod = new AfskDemodulator(source, baudRate, 500, 1700, Util.convertDecimation(baudRate));
 		return new Chomptt(demod);
 	}
 

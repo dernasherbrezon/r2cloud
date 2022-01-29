@@ -40,7 +40,7 @@ public class LRPTDecoder implements Decoder {
 
 	@Override
 	public DecoderResult decode(final File rawIq, final ObservationRequest req) {
-		int symbolRate = 72000;
+		int symbolRate = req.getBaudRates().get(0);
 		MeteorM lrpt = null;
 		DecoderResult result = new DecoderResult();
 		result.setRawPath(rawIq);

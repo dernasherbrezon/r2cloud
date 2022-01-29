@@ -38,6 +38,10 @@ public abstract class TelemetryDecoder implements Decoder {
 	public DecoderResult decode(File rawIq, ObservationRequest req) {
 		DecoderResult result = new DecoderResult();
 		result.setRawPath(rawIq);
+		if (req.getBaudRates() == null || req.getBaudRates().isEmpty()) {
+			LOG.error("[{}] baud rate is missing: {}", req.getId(), req.getSatelliteId());
+			return result;
+		}
 
 		long numberOfDecodedPackets = 0;
 		float sampleRate = req.getInputSampleRate();

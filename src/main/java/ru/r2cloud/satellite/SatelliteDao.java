@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ru.r2cloud.cloud.R2ServerClient;
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.model.BandFrequency;
@@ -19,6 +22,8 @@ import ru.r2cloud.model.SdrType;
 import ru.r2cloud.util.Configuration;
 
 public class SatelliteDao {
+
+	private static final Logger LOG = LoggerFactory.getLogger(SatelliteDao.class);
 
 	private final Configuration config;
 	private final R2ServerClient r2server;
@@ -120,6 +125,10 @@ public class SatelliteDao {
 			if (modulationStr != null) {
 				curSatellite.setModulation(Modulation.valueOf(modulationStr));
 			}
+			if (curSatellite.getBaudRates().isEmpty() && (curSatellite.getModulation() == null || !curSatellite.getModulation().equals(Modulation.LORA)) && curSatellite.getSource().equals(FrequencySource.TELEMETRY)) {
+				LOG.error("baud rates are missing for satellite: {}", curSatellite.getId());
+			}
+
 			String framingStr = config.getProperty("satellites." + curSatellite.getId() + ".framing");
 			if (framingStr != null) {
 				curSatellite.setFraming(Framing.valueOf(framingStr));
