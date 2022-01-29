@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,7 +46,7 @@ public class R2ServerClientTest {
 		assertNotNull(result);
 		assertEquals(1L, result.longValue());
 		assertEquals("application/json", handler.getRequestContentType());
-		assertJson("r2cloudclienttest/save-meta-request.json", handler.getRequest());
+		TestUtil.assertJson("r2cloudclienttest/save-meta-request.json", Json.parse(handler.getRequest()).asObject());
 	}
 
 	@Test
@@ -250,11 +251,8 @@ public class R2ServerClientTest {
 		result.setSpectogramURL("1");
 		result.setBiast(true);
 		result.setSdrType(SdrType.RTLSDR);
+		result.setBaudRates(Collections.singletonList(2400));
 		return result;
-	}
-
-	private static void assertJson(String filename, String actual) {
-		assertEquals(TestUtil.loadExpected(filename), actual);
 	}
 
 	private static void assertSatellite(String name, boolean enabled, Satellite actual) {
