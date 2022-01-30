@@ -67,9 +67,6 @@ public class CelestrakClient {
 						if (line2 == null) {
 							break;
 						}
-						if (curLine.equalsIgnoreCase("ACRUX 1")) {
-							System.out.println("here");
-						}
 						result.put(curLine.trim(), new Tle(new String[] { curLine.trim(), line1, line2 }));
 					}
 				}
