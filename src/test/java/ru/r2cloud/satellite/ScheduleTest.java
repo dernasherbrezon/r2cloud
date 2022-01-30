@@ -166,7 +166,7 @@ public class ScheduleTest {
 		config.setProperty("r2server.hostname", r2server.getUrl());
 		R2ServerClient r2cloudClient = new R2ServerClient(config);
 		satelliteDao = new SatelliteDao(config, r2cloudClient);
-		tleDao = new TLEDao(config, satelliteDao, new CelestrakClient(celestrak.getUrl()));
+		tleDao = new TLEDao(config, satelliteDao, new CelestrakClient(celestrak.getUrls()));
 		tleDao.start();
 		PredictOreKit predict = new PredictOreKit(config);
 		factory = new ObservationFactory(predict, tleDao, config);

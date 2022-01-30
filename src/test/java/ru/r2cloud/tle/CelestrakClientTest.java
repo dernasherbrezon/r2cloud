@@ -24,7 +24,7 @@ public class CelestrakClientTest {
 		server.mockResponse(expectedBody);
 
 		// one slash is important here
-		CelestrakClient client = new CelestrakClient(server.getUrl());
+		CelestrakClient client = new CelestrakClient(server.getUrls());
 		Map<String, Tle> actual = client.getTleForActiveSatellites();
 		assertEquals(expected.size(), actual.size());
 		assertEquals(expected, actual);
@@ -32,7 +32,7 @@ public class CelestrakClientTest {
 
 	@Test
 	public void testFailure() {
-		CelestrakClient client = new CelestrakClient(server.getUrl());
+		CelestrakClient client = new CelestrakClient(server.getUrls());
 		assertEquals(0, client.getTleForActiveSatellites().size());
 	}
 

@@ -42,7 +42,7 @@ public class UtilizationTest {
 		celestrak.mockResponse(TestUtil.loadExpected("tle-2020-09-27.txt"));
 		PredictOreKit predict = new PredictOreKit(config);
 		SatelliteDao satelliteDao = new SatelliteDao(config, null);
-		TLEDao tleDao = new TLEDao(config, satelliteDao, new CelestrakClient(celestrak.getUrl()));
+		TLEDao tleDao = new TLEDao(config, satelliteDao, new CelestrakClient(celestrak.getUrls()));
 		tleDao.start();
 		ObservationFactory factory = new ObservationFactory(predict, tleDao, config);
 

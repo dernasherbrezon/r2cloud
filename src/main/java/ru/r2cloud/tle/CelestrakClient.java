@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -18,25 +20,21 @@ public class CelestrakClient {
 
 	private static final int TIMEOUT = 60 * 1000;
 	private static final Logger LOG = LoggerFactory.getLogger(CelestrakClient.class);
-	private final String host;
-	private final String calpolyHost;
+	private final List<String> urls;
 
-	public CelestrakClient(String host) {
-		this(host, null);
+	public CelestrakClient(String url) {
+		this(Collections.singletonList(url));
 	}
 
-	public CelestrakClient(String host, String calpolyHost) {
-		this.host = host;
-		this.calpolyHost = calpolyHost;
+	public CelestrakClient(List<String> urls) {
+		this.urls = urls;
 	}
 
 	public Map<String, Tle> getTleForActiveSatellites() {
 		Map<String, Tle> result = new HashMap<>();
-		if (calpolyHost != null) {
-			result.putAll(loadTle(calpolyHost + "/~ops/keps/kepler.txt"));
+		for (String cur : urls) {
+			result.putAll(loadTle(cur));
 		}
-		result.putAll(loadTle(host + "/NORAD/elements/satnogs.txt"));
-		result.putAll(loadTle(host + "/NORAD/elements/active.txt"));
 		return result;
 	}
 
@@ -44,6 +42,7 @@ public class CelestrakClient {
 		HttpURLConnection con = null;
 		Map<String, Tle> result = new HashMap<>();
 		try {
+			LOG.info("loading tle from: {}", location);
 			URL obj = new URL(location);
 			con = (HttpURLConnection) obj.openConnection();
 			con.setRequestMethod("GET");
@@ -71,6 +70,7 @@ public class CelestrakClient {
 					}
 				}
 			}
+			LOG.info("received tle for {} satellites", result.size());
 		} catch (Exception e) {
 			Util.logIOException(LOG, "unable to get tle", e);
 		} finally {

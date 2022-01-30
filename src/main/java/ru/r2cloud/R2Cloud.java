@@ -169,7 +169,7 @@ public class R2Cloud {
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
 		satelliteDao = new SatelliteDao(props, r2cloudClient);
-		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient(props.getProperty("celestrak.hostname"), props.getProperty("calpoly.hostname")));
+		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient(props.getProperties("tle.urls")));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
 		signed = new SignedURL(props, clock);
 		APTDecoder aptDecoder = new APTDecoder(props, processFactory);

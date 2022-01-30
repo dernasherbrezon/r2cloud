@@ -5,6 +5,8 @@ import java.io.OutputStream;
 import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -79,8 +81,23 @@ public class CelestrakServer {
 		}
 	}
 
-	public String getUrl() {
-		return "http://" + server.getAddress().getHostName() + ":" + server.getAddress().getPort();
+	public List<String> getUrls() {
+		List<String> result = new ArrayList<>();
+		result.add("http://" + server.getAddress().getHostName() + ":" + server.getAddress().getPort() + "/NORAD/elements/satnogs.txt");
+		result.add("http://" + server.getAddress().getHostName() + ":" + server.getAddress().getPort() + "/NORAD/elements/active.txt");
+		return result;
+	}
+
+	public String getUrlsAsProperty() {
+		StringBuilder result = new StringBuilder();
+		List<String> urls = getUrls();
+		for (int i = 0; i < urls.size(); i++) {
+			if (i != 0) {
+				result.append(',');
+			}
+			result.append(urls.get(i));
+		}
+		return result.toString();
 	}
 
 }

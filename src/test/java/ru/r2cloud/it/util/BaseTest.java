@@ -114,7 +114,7 @@ public abstract class BaseTest {
 			w.append("ittests");
 		}
 		config.setProperty("satellites.sdr", SdrType.RTLSDR.name().toLowerCase());
-		config.setProperty("celestrak.hostname", celestrak.getUrl());
+		config.setProperty("tle.urls", celestrak.getUrlsAsProperty());
 		config.setProperty("locaiton.lat", "56.189");
 		config.setProperty("locaiton.lon", "38.174");
 		config.setProperty("satellites.rtlsdr.path", rtlSdrMock.getAbsolutePath());
