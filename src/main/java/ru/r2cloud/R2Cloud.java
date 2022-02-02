@@ -62,6 +62,7 @@ import ru.r2cloud.satellite.decoder.FoxDecoder;
 import ru.r2cloud.satellite.decoder.FoxSlowDecoder;
 import ru.r2cloud.satellite.decoder.FskAx100Decoder;
 import ru.r2cloud.satellite.decoder.FskAx25G3ruhDecoder;
+import ru.r2cloud.satellite.decoder.GaspacsDecoder;
 import ru.r2cloud.satellite.decoder.Gomx1Decoder;
 import ru.r2cloud.satellite.decoder.ItSpinsDecoder;
 import ru.r2cloud.satellite.decoder.Itasat1Decoder;
@@ -219,6 +220,7 @@ public class R2Cloud {
 		decoders.put("47963", new Diy1Decoder(predict, props));
 		decoders.put("47964", new Smog1Decoder(predict, props));
 		decoders.put("51074", new DelfiPqDecoder(predict, props));
+		decoders.put("51439", new GaspacsDecoder(predict, props));
 
 		for (Satellite cur : satelliteDao.findAll()) {
 			if (cur.getFraming() == null || cur.getModulation() == null || cur.getBeaconClass() == null) {
