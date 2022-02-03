@@ -198,7 +198,7 @@ public class SatelliteDao {
 		config.update();
 	}
 
-	public List<Satellite> findByFilter(SatelliteFilter filter) {
+	public synchronized List<Satellite> findByFilter(SatelliteFilter filter) {
 		List<Satellite> result = new ArrayList<>();
 		for (Satellite cur : satellites) {
 			if (filter.accept(cur)) {
@@ -208,7 +208,7 @@ public class SatelliteDao {
 		return result;
 	}
 
-	public List<Satellite> findEnabled() {
+	public synchronized List<Satellite> findEnabled() {
 		List<Satellite> result = new ArrayList<>();
 		for (Satellite cur : satellites) {
 			if (cur.isEnabled()) {
