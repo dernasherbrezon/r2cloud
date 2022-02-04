@@ -59,10 +59,6 @@ public class SatelliteDao {
 			case TELEMETRY:
 				// sdr-server supports very narrow bandwidths
 				int outputSampleRate = 48_000;
-				// some rates better to sample at 50k
-				if (checkBaudRate(curSatellite, 50_000)) {
-					outputSampleRate = 50_000;
-				}
 				if (config.getSdrType().equals(SdrType.SDRSERVER)) {
 					curSatellite.setInputSampleRate(outputSampleRate);
 					curSatellite.setOutputSampleRate(outputSampleRate);
@@ -71,6 +67,10 @@ public class SatelliteDao {
 					curSatellite.setInputSampleRate(0);
 					curSatellite.setOutputSampleRate(0);
 				} else {
+					// some rates better to sample at 50k
+					if (checkBaudRate(curSatellite, 50_000)) {
+						outputSampleRate = 50_000;
+					}
 					// 48k * 5 = 240k - minimum rate rtl-sdr supports
 					curSatellite.setInputSampleRate(outputSampleRate * 5);
 					curSatellite.setOutputSampleRate(outputSampleRate);
