@@ -15,6 +15,7 @@ import java.net.http.HttpResponse;
 import java.nio.file.FileSystems;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.logging.LogManager;
 
 import org.junit.After;
 import org.junit.Before;
@@ -70,6 +71,7 @@ public abstract class BaseTest {
 
 	@Before
 	public void start() throws Exception {
+		LogManager.getLogManager().reset();
 		tempDirectory = new File(tempFolder.getRoot(), "tmp");
 		if (!tempDirectory.mkdirs()) {
 			throw new RuntimeException("unable to create temp dir: " + tempDirectory.getAbsolutePath());
