@@ -41,6 +41,7 @@ public class ObservationDao {
 	private final Path basepath;
 	private final int maxCount;
 	private final int maxCountRawData;
+	private final TimeSizeRetention retention;
 
 	public ObservationDao(Configuration config) {
 		this.basepath = config.getSatellitesBasePath();
@@ -48,6 +49,30 @@ public class ObservationDao {
 		this.maxCountRawData = config.getInteger("scheduler.data.retention.raw.count");
 		if (maxCountRawData > maxCount) {
 			LOG.error("scheduler.data.retention.raw.count: {} is more than scheduler.data.retention.count: {}. did you mean the opposite?", maxCountRawData, maxCount);
+		}
+		Long maxRetentionSize = config.getLong("scheduler.data.retention.maxSizeBytes");
+		if (maxRetentionSize != null) {
+			LOG.info("retention: keep last {}Mb of observations", (maxRetentionSize / 1024 / 1024));
+			retention = new TimeSizeRetention(maxRetentionSize);
+			try (DirectoryStream<Path> ds = Files.newDirectoryStream(basepath)) {
+				for (Path curSatellite : ds) {
+					Path dataRoot = curSatellite.resolve("data");
+					if (!Files.exists(dataRoot)) {
+						// satellite dir without observations shouldn't exist
+						Files.delete(curSatellite);
+						continue;
+					}
+					DirectoryStream<Path> observationDirs = Files.newDirectoryStream(dataRoot);
+					for (Path curObservation : observationDirs) {
+						retention.indexAndCleanup(curObservation);
+					}
+				}
+			} catch (IOException e) {
+				LOG.error("unable to index all", e);
+			}
+		} else {
+			LOG.info("retention: keep last {} observations per satellite and last {} raw data", maxCount, maxCountRawData);
+			retention = null;
 		}
 	}
 
@@ -184,7 +209,9 @@ public class ObservationDao {
 	}
 
 	public File insert(ObservationRequest request, File rawFile) {
-		cleanupPreviousObservations(request);
+		if (retention == null) {
+			cleanupPreviousObservations(request);
+		}
 
 		Path observationBasePath = getObservationBasepath(request);
 		if (!Util.initDirectory(observationBasePath)) {
@@ -234,7 +261,8 @@ public class ObservationDao {
 		} else {
 			filename = OUTPUT_RAW_FILENAME;
 		}
-		Path dest = getObservationBasepath(observation).resolve(filename);
+		Path observationBasepath = getObservationBasepath(observation);
+		Path dest = observationBasepath.resolve(filename);
 		if (!Util.initDirectory(dest.getParent())) {
 			return null;
 		}
@@ -245,6 +273,11 @@ public class ObservationDao {
 		if (!rawFile.renameTo(dest.toFile())) {
 			LOG.error("unable to save file from {} to {}. Check src and dst are on the same filesystem", rawFile.getAbsolutePath(), dest.toFile().getAbsolutePath());
 			return null;
+		}
+		if (retention != null) {
+			// re-index and cleanup on new raw File
+			// rawFile is the biggest file in the observation
+			retention.indexAndCleanup(observationBasepath);
 		}
 		return dest.toFile();
 	}
@@ -279,4 +312,5 @@ public class ObservationDao {
 	private Path getObservationBasepath(String satelliteId, String observationId) {
 		return basepath.resolve(satelliteId).resolve("data").resolve(observationId);
 	}
+
 }
