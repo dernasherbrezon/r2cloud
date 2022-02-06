@@ -13,19 +13,23 @@ import java.util.UUID;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TimeSizeRetentionTest {
+
+	private static final Logger LOG = LoggerFactory.getLogger(TimeSizeRetentionTest.class);
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	@Test
 	public void testRetention() throws Exception {
-		long currentTime = System.currentTimeMillis();
+		long currentTime = System.currentTimeMillis() - 1 * 60 * 60 * 1000;
 		Path folder1 = createFolder(UUID.randomUUID().toString(), 10, currentTime);
 		Path folder2 = createFolder(UUID.randomUUID().toString(), 10, currentTime + 1000);
 		Path folder3 = createFolder(UUID.randomUUID().toString(), 10, currentTime + 2000);
-		TimeSizeRetention retention = new TimeSizeRetention(21);
+		TimeSizeRetention retention = new TimeSizeRetention(22);
 		retention.indexAndCleanup(folder1);
 		retention.indexAndCleanup(folder2);
 		assertTrue(Files.exists(folder1));
@@ -38,10 +42,10 @@ public class TimeSizeRetentionTest {
 
 	@Test
 	public void testUpdateFolderContents() throws Exception {
-		long currentTime = System.currentTimeMillis();
+		long currentTime = System.currentTimeMillis() - 1 * 60 * 60 * 1000;
 		Path folder1 = createFolder(UUID.randomUUID().toString(), 10, currentTime);
 		Path folder2 = createFolder(UUID.randomUUID().toString(), 10, currentTime + 1000);
-		TimeSizeRetention retention = new TimeSizeRetention(21);
+		TimeSizeRetention retention = new TimeSizeRetention(22);
 		retention.indexAndCleanup(folder1);
 		retention.indexAndCleanup(folder2);
 		assertTrue(Files.exists(folder1));
@@ -68,7 +72,9 @@ public class TimeSizeRetentionTest {
 		} catch (Exception e) {
 			fail("unable to write: " + e.getMessage());
 		}
-		file.setLastModified(time);
+		if (!file.setLastModified(time)) {
+			LOG.error("unable to setup time: {}", time);
+		}
 		return baseDir.toPath();
 	}
 
