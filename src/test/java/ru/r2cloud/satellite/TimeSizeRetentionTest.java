@@ -52,7 +52,7 @@ public class TimeSizeRetentionTest {
 		assertTrue(Files.exists(folder2));
 		// increase contents of folder 2 so that total size should overflow
 		try (FileOutputStream fos = new FileOutputStream(new File(folder2.toFile(), UUID.randomUUID().toString()))) {
-			fos.write(new byte[2]);
+			fos.write(new byte[3]);
 		} catch (Exception e) {
 			fail("unable to write: " + e.getMessage());
 		}
