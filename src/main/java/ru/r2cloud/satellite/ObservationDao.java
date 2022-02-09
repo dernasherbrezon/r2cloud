@@ -59,7 +59,7 @@ public class ObservationDao {
 					Path dataRoot = curSatellite.resolve("data");
 					if (!Files.exists(dataRoot)) {
 						// satellite dir without observations shouldn't exist
-						Files.delete(curSatellite);
+						Util.deleteDirectory(curSatellite);
 						continue;
 					}
 					DirectoryStream<Path> observationDirs = Files.newDirectoryStream(dataRoot);
