@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -126,6 +127,7 @@ public class ObservationDaoTest {
 		assertEquals(req.getGroundStation().getLatitude(), actual.getGroundStation().getLatitude(), 0.0);
 		assertEquals(req.getGroundStation().getLongitude(), actual.getGroundStation().getLongitude(), 0.0);
 		assertEquals(ObservationStatus.NEW, actual.getStatus());
+		assertEquals(req.getBaudRates().size(), actual.getBaudRates().size());
 
 		assertNotNull(dao.saveData(req.getSatelliteId(), req.getId(), createTempFile("data")));
 		assertNotNull(dao.saveImage(req.getSatelliteId(), req.getId(), createTempFile("image")));
@@ -176,6 +178,7 @@ public class ObservationDaoTest {
 		req.setGain(45.0);
 		req.setBiast(false);
 		req.setSdrType(SdrType.RTLSDR);
+		req.setBaudRates(Collections.singletonList(1200));
 		return req;
 	}
 

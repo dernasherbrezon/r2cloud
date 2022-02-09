@@ -76,6 +76,7 @@ public class Observation {
 		biast = req.isBiast();
 		sdrType = req.getSdrType();
 		centerBandFrequency = req.getCenterBandFrequency();
+		baudRates = req.getBaudRates();
 	}
 
 	public ObservationRequest getReq() {
