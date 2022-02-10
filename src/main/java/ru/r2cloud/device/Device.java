@@ -66,7 +66,7 @@ public abstract class Device implements Lifecycle {
 	private ScheduledExecutorService startThread = null;
 	private ScheduledExecutorService stopThread = null;
 
-	public Device(String id, SatelliteFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, DeviceConfiguration deviceConfiguration, ObservationDao observationDao, DecoderService decoderService,
+	protected Device(String id, SatelliteFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, DeviceConfiguration deviceConfiguration, ObservationDao observationDao, DecoderService decoderService,
 			PredictOreKit predict) {
 		this.id = id;
 		this.filter = filter;

@@ -24,7 +24,7 @@ import ru.r2cloud.util.Configuration;
 
 public class R2loraReader implements IQReader {
 
-	private final static Logger LOG = LoggerFactory.getLogger(R2loraReader.class);
+	private static final Logger LOG = LoggerFactory.getLogger(R2loraReader.class);
 
 	private final Configuration config;
 	private final ObservationRequest req;

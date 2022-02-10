@@ -81,7 +81,7 @@ public class TimeSizeRetention {
 					LOG.info("no observation with minimum time found"); // this is weird because at least one was just added
 					break;
 				}
-				LOG.info("deleting old observation: {} last update time: {}", min.getPath().toString(), new Date(min.getLastUpdateTime()));
+				LOG.info("deleting old observation: {} last update time: {}", min.getPath(), new Date(min.getLastUpdateTime()));
 				if (Util.deleteDirectory(min.getPath())) {
 					allObservationsSize -= min.getSize();
 				}

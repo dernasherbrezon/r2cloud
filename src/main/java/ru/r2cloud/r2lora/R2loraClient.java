@@ -32,6 +32,10 @@ import ru.r2cloud.util.Util;
 
 public class R2loraClient {
 
+	private static final String MALFORMED_JSON = "MALFORMED_JSON";
+
+	private static final String CONNECTION_FAILURE = "CONNECTION_FAILURE";
+
 	private static final Logger LOG = LoggerFactory.getLogger(R2ServerClient.class);
 
 	private HttpClient httpclient;
@@ -52,12 +56,12 @@ public class R2loraClient {
 				if (LOG.isErrorEnabled()) {
 					LOG.error("unable to get r2lora status. response code: {}. response: {}", response.statusCode(), response.body());
 				}
-				return new R2loraStatus(DeviceConnectionStatus.FAILED, "CONNECTION_FAILURE");
+				return new R2loraStatus(DeviceConnectionStatus.FAILED, CONNECTION_FAILURE);
 			}
 			return readStatus(response.body());
 		} catch (IOException e) {
 			Util.logIOException(LOG, "unable to get r2lora status from: " + hostname, e);
-			return new R2loraStatus(DeviceConnectionStatus.FAILED, "CONNECTION_FAILURE");
+			return new R2loraStatus(DeviceConnectionStatus.FAILED, CONNECTION_FAILURE);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new IllegalStateException(e);
@@ -73,12 +77,12 @@ public class R2loraClient {
 				if (LOG.isErrorEnabled()) {
 					LOG.error("unable to start observation. response code: {}. response: {}", response.statusCode(), response.body());
 				}
-				return new R2loraResponse("CONNECTION_FAILURE");
+				return new R2loraResponse(CONNECTION_FAILURE);
 			}
 			return readResponse(response.body());
 		} catch (IOException e) {
 			Util.logIOException(LOG, "unable to start observation", e);
-			return new R2loraResponse("CONNECTION_FAILURE");
+			return new R2loraResponse(CONNECTION_FAILURE);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new IllegalStateException(e);
@@ -94,12 +98,12 @@ public class R2loraClient {
 				if (LOG.isErrorEnabled()) {
 					LOG.error("unable to stop observation. response code: {}. response: {}", response.statusCode(), response.body());
 				}
-				return new R2loraResponse("CONNECTION_FAILURE");
+				return new R2loraResponse(CONNECTION_FAILURE);
 			}
 			return readResponse(response.body());
 		} catch (IOException e) {
 			Util.logIOException(LOG, "unable to stop observation", e);
-			return new R2loraResponse("CONNECTION_FAILURE");
+			return new R2loraResponse(CONNECTION_FAILURE);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new IllegalStateException(e);
@@ -111,12 +115,12 @@ public class R2loraClient {
 		try {
 			json = Json.parse(con);
 		} catch (ParseException e) {
-			LOG.info("malformed json");
-			return new R2loraResponse("MALFORMED_JSON");
+			LOG.info(MALFORMED_JSON);
+			return new R2loraResponse(MALFORMED_JSON);
 		}
 		if (!json.isObject()) {
-			LOG.info("malformed json");
-			return new R2loraResponse("MALFORMED_JSON");
+			LOG.info(MALFORMED_JSON);
+			return new R2loraResponse(MALFORMED_JSON);
 		}
 		JsonObject obj = json.asObject();
 		R2loraResponse result = new R2loraResponse();
@@ -160,12 +164,12 @@ public class R2loraClient {
 		try {
 			json = Json.parse(con);
 		} catch (ParseException e) {
-			LOG.info("malformed json");
-			return new R2loraStatus(DeviceConnectionStatus.FAILED, "MALFORMED_JSON");
+			LOG.info(MALFORMED_JSON);
+			return new R2loraStatus(DeviceConnectionStatus.FAILED, MALFORMED_JSON);
 		}
 		if (!json.isObject()) {
-			LOG.info("malformed json");
-			return new R2loraStatus(DeviceConnectionStatus.FAILED, "MALFORMED_JSON");
+			LOG.info(MALFORMED_JSON);
+			return new R2loraStatus(DeviceConnectionStatus.FAILED, MALFORMED_JSON);
 		}
 		JsonObject obj = json.asObject();
 		R2loraStatus result = new R2loraStatus();

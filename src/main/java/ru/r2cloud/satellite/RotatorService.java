@@ -28,7 +28,6 @@ public class RotatorService implements Lifecycle {
 
 	private ScheduledExecutorService executor = null;
 	private RotctrldClient rotClient;
-	private String failureMessage;
 
 	private final RotatorStatus status = new RotatorStatus();
 	private final RotatorConfiguration config;
@@ -54,10 +53,9 @@ public class RotatorService implements Lifecycle {
 			status.setModel(rotClient.getModelName());
 			LOG.info("[{}] initialized for model: {}", config.getId(), status.getModel());
 		} catch (Exception e) {
-			failureMessage = "unable to connect to rotctrld";
 			status.setStatus(DeviceConnectionStatus.FAILED);
 			status.setFailureMessage(e.getMessage());
-			Util.logIOException(LOG, failureMessage, e);
+			Util.logIOException(LOG, "unable to connect to rotctrld", e);
 			return;
 		}
 		executor = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("rotator"));
