@@ -19,7 +19,6 @@ class PlutoStatusProcess implements SdrStatusProcess {
 	private static final Logger LOG = LoggerFactory.getLogger(PlutoStatusProcess.class);
 	private static final String HW_MODEL = "hw_model:";
 
-	private ProcessWrapper process;
 	private final Configuration config;
 	private final ProcessFactory factory;
 
@@ -33,7 +32,7 @@ class PlutoStatusProcess implements SdrStatusProcess {
 		SdrStatus result = null;
 		try {
 			BufferedReader r = null;
-			process = factory.create(config.getProperty("satellites.plutosdr.test.path") + " -a", false, false);
+			ProcessWrapper process = factory.create(config.getProperty("satellites.plutosdr.test.path") + " -a", false, false);
 			r = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String curLine = null;
 			while ((curLine = r.readLine()) != null && !Thread.currentThread().isInterrupted()) {
