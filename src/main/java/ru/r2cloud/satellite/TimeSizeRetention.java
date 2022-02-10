@@ -1,6 +1,7 @@
 package ru.r2cloud.satellite;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
@@ -23,15 +24,32 @@ public class TimeSizeRetention {
 	private final long maxSize;
 	private long allObservationsSize = 0;
 
-	public TimeSizeRetention(long maxSize) {
+	public TimeSizeRetention(long maxSize, Path basedir) {
 		this.maxSize = maxSize;
+		try (DirectoryStream<Path> ds = Files.newDirectoryStream(basedir)) {
+			for (Path curSatellite : ds) {
+				Path dataRoot = curSatellite.resolve("data");
+				if (!Files.exists(dataRoot)) {
+					// satellite dir without observations shouldn't exist
+					Util.deleteDirectory(curSatellite);
+					continue;
+				}
+				try (DirectoryStream<Path> observationDirs = Files.newDirectoryStream(dataRoot)) {
+					for (Path curObservation : observationDirs) {
+						indexAndCleanup(curObservation);
+					}
+				}
+			}
+		} catch (IOException e) {
+			LOG.error("unable to index all", e);
+		}
 	}
 
 	public void indexAndCleanup(Path curObservation) {
 		long minTime = Long.MAX_VALUE;
 		long totalSize = 0;
-		try {
-			for (Path file : Files.newDirectoryStream(curObservation)) {
+		try (DirectoryStream<Path> dir = Files.newDirectoryStream(curObservation)) {
+			for (Path file : dir) {
 				FileTime time = Files.getLastModifiedTime(file);
 				minTime = Math.min(minTime, time.toMillis());
 				totalSize += Files.size(file);

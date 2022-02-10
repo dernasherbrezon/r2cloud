@@ -24,12 +24,38 @@ public class TimeSizeRetentionTest {
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	@Test
+	public void testDeleteEmptySatelliteDir() throws Exception {
+		File satelliteDir = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
+		if (!satelliteDir.exists() && !satelliteDir.mkdirs()) {
+			throw new RuntimeException("unable to create dir: " + satelliteDir.getAbsolutePath());
+		}
+		File file = new File(satelliteDir, "tle.txt");
+		try (FileOutputStream fos = new FileOutputStream(file)) {
+			fos.write(new byte[10]);
+		} catch (Exception e) {
+			fail("unable to write: " + e.getMessage());
+		}
+		new TimeSizeRetention(22, tempFolder.getRoot().toPath());
+		assertFalse(satelliteDir.exists());
+	}
+
+	@Test
+	public void testCleanupOnStartup() throws Exception {
+		long currentTime = System.currentTimeMillis() - 1 * 60 * 60 * 1000;
+		Path folder1 = createObservationFolder(UUID.randomUUID().toString(), 15, currentTime);
+		Path folder2 = createObservationFolder(UUID.randomUUID().toString(), 15, currentTime + 1000);
+		new TimeSizeRetention(22, tempFolder.getRoot().toPath());
+		assertFalse(Files.exists(folder1));
+		assertTrue(Files.exists(folder2));
+	}
+
+	@Test
 	public void testRetention() throws Exception {
 		long currentTime = System.currentTimeMillis() - 1 * 60 * 60 * 1000;
-		Path folder1 = createFolder(UUID.randomUUID().toString(), 10, currentTime);
-		Path folder2 = createFolder(UUID.randomUUID().toString(), 10, currentTime + 1000);
-		Path folder3 = createFolder(UUID.randomUUID().toString(), 10, currentTime + 2000);
-		TimeSizeRetention retention = new TimeSizeRetention(22);
+		TimeSizeRetention retention = new TimeSizeRetention(22, tempFolder.getRoot().toPath());
+		Path folder1 = createObservationFolder(UUID.randomUUID().toString(), 10, currentTime);
+		Path folder2 = createObservationFolder(UUID.randomUUID().toString(), 10, currentTime + 1000);
+		Path folder3 = createObservationFolder(UUID.randomUUID().toString(), 10, currentTime + 2000);
 		retention.indexAndCleanup(folder1);
 		retention.indexAndCleanup(folder2);
 		assertTrue(Files.exists(folder1));
@@ -43,9 +69,9 @@ public class TimeSizeRetentionTest {
 	@Test
 	public void testUpdateFolderContents() throws Exception {
 		long currentTime = System.currentTimeMillis() - 1 * 60 * 60 * 1000;
-		Path folder1 = createFolder(UUID.randomUUID().toString(), 10, currentTime);
-		Path folder2 = createFolder(UUID.randomUUID().toString(), 10, currentTime + 1000);
-		TimeSizeRetention retention = new TimeSizeRetention(22);
+		TimeSizeRetention retention = new TimeSizeRetention(22, tempFolder.getRoot().toPath());
+		Path folder1 = createObservationFolder(UUID.randomUUID().toString(), 10, currentTime);
+		Path folder2 = createObservationFolder(UUID.randomUUID().toString(), 10, currentTime + 1000);
 		retention.indexAndCleanup(folder1);
 		retention.indexAndCleanup(folder2);
 		assertTrue(Files.exists(folder1));
@@ -61,12 +87,20 @@ public class TimeSizeRetentionTest {
 		assertTrue(Files.exists(folder2));
 	}
 
-	private Path createFolder(String name, int size, long time) {
-		File baseDir = new File(tempFolder.getRoot(), name);
+	private Path createObservationFolder(String satelliteName, int size, long time) {
+		File baseDir = new File(tempFolder.getRoot(), satelliteName);
 		if (!baseDir.exists() && !baseDir.mkdirs()) {
 			throw new RuntimeException("unable to create dir: " + baseDir.getAbsolutePath());
 		}
-		File file = new File(baseDir, UUID.randomUUID().toString());
+		File dataDir = new File(baseDir, "data");
+		if (!dataDir.exists() && !dataDir.mkdirs()) {
+			throw new RuntimeException("unable to create dir: " + dataDir.getAbsolutePath());
+		}
+		File observationDir = new File(dataDir, UUID.randomUUID().toString());
+		if (!observationDir.exists() && !observationDir.mkdirs()) {
+			throw new RuntimeException("unable to create dir: " + dataDir.getAbsolutePath());
+		}
+		File file = new File(observationDir, UUID.randomUUID().toString());
 		try (FileOutputStream fos = new FileOutputStream(file)) {
 			fos.write(new byte[size]);
 		} catch (Exception e) {
@@ -75,7 +109,7 @@ public class TimeSizeRetentionTest {
 		if (!file.setLastModified(time)) {
 			LOG.error("unable to setup time: {}", time);
 		}
-		return baseDir.toPath();
+		return observationDir.toPath();
 	}
 
 }

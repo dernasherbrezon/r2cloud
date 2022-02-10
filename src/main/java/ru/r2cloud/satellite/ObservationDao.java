@@ -53,23 +53,7 @@ public class ObservationDao {
 		Long maxRetentionSize = config.getLong("scheduler.data.retention.maxSizeBytes");
 		if (maxRetentionSize != null) {
 			LOG.info("retention: keep last {}Mb of observations", (maxRetentionSize / 1024 / 1024));
-			retention = new TimeSizeRetention(maxRetentionSize);
-			try (DirectoryStream<Path> ds = Files.newDirectoryStream(basepath)) {
-				for (Path curSatellite : ds) {
-					Path dataRoot = curSatellite.resolve("data");
-					if (!Files.exists(dataRoot)) {
-						// satellite dir without observations shouldn't exist
-						Util.deleteDirectory(curSatellite);
-						continue;
-					}
-					DirectoryStream<Path> observationDirs = Files.newDirectoryStream(dataRoot);
-					for (Path curObservation : observationDirs) {
-						retention.indexAndCleanup(curObservation);
-					}
-				}
-			} catch (IOException e) {
-				LOG.error("unable to index all", e);
-			}
+			retention = new TimeSizeRetention(maxRetentionSize, basepath);
 		} else {
 			LOG.info("retention: keep last {} observations per satellite and last {} raw data", maxCount, maxCountRawData);
 			retention = null;
