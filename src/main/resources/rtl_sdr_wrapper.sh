@@ -37,7 +37,6 @@ done
 
 _term() {
   kill -TERM "$rtl" 2>/dev/null
-  tail --pid=$rtl -f /dev/null
 }
 
 trap _term SIGTERM
@@ -48,5 +47,4 @@ CMD="${RTL_SDR} -f ${FREQUENCY} -d ${DEVICE_INDEX} -s ${SAMPLE_RATE} -p ${PPM} -
 ${CMD} | gzip > ${OUTPUT} &
 
 rtl=$(jobs -p)
-child=$! 
-wait "$child"
+wait "$rtl"
