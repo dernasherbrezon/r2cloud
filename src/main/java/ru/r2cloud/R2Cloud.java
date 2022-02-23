@@ -414,7 +414,6 @@ public class R2Cloud {
 			config.setMaximumFrequency((long) (cur.getMaxFrequency() * 1_000_000));
 			return;
 		}
-		return;
 	}
 
 	public static String getVersion() {

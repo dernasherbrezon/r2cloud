@@ -20,6 +20,7 @@ import ru.r2cloud.web.ModelAndView;
 
 public class Overview extends AbstractHttpController {
 
+	private static final String CONNECTION_PROPERTY = "connection";
 	private final Configuration config;
 	private final DeviceManager deviceManager;
 
@@ -43,17 +44,17 @@ public class Overview extends AbstractHttpController {
 				curObj.add("model", cur.getModel());
 			}
 			if (cur.getType().equals(DeviceType.LORA)) {
-				curObj.add("connection", "LoRa - " + cur.getConfig().getHostport());
+				curObj.add(CONNECTION_PROPERTY, "LoRa - " + cur.getConfig().getHostport());
 			} else if (cur.getType().equals(DeviceType.SDR)) {
 				switch (config.getSdrType()) {
 				case RTLSDR:
-					curObj.add("connection", "RTL-SDR " + cur.getConfig().getRtlDeviceId());
+					curObj.add(CONNECTION_PROPERTY, "RTL-SDR " + cur.getConfig().getRtlDeviceId());
 					break;
 				case SDRSERVER:
-					curObj.add("connection", "SDR-SERVER - " + cur.getConfig().getSdrServerConfiguration().getHost() + ":" + cur.getConfig().getSdrServerConfiguration().getPort());
+					curObj.add(CONNECTION_PROPERTY, "SDR-SERVER - " + cur.getConfig().getSdrServerConfiguration().getHost() + ":" + cur.getConfig().getSdrServerConfiguration().getPort());
 					break;
 				case PLUTOSDR:
-					curObj.add("connection", "PLUTOSDR");
+					curObj.add(CONNECTION_PROPERTY, "PLUTOSDR");
 					break;
 				default:
 					break;
@@ -80,7 +81,7 @@ public class Overview extends AbstractHttpController {
 			rotator.add("model", cur.getModel());
 		}
 		if (cur.getHostport() != null) {
-			rotator.add("connection", cur.getHostport());
+			rotator.add(CONNECTION_PROPERTY, cur.getHostport());
 		}
 		if (cur.getFailureMessage() != null) {
 			rotator.add("failureMessage", cur.getFailureMessage());

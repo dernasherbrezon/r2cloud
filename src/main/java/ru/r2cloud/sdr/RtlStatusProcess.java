@@ -21,7 +21,6 @@ class RtlStatusProcess implements SdrStatusProcess {
 	private static final Logger LOG = LoggerFactory.getLogger(RtlStatusProcess.class);
 	private static final Pattern DEVICEPATTERN = Pattern.compile("^  (\\d+):  (.*), (.*), SN: (.*)$");
 
-	private ProcessWrapper process;
 	private final Configuration config;
 	private final ProcessFactory factory;
 	private final int expectedRtlDeviceId;
@@ -37,7 +36,7 @@ class RtlStatusProcess implements SdrStatusProcess {
 		SdrStatus result = null;
 		try {
 			BufferedReader r = null;
-			process = factory.create(config.getProperty("satellites.rtlsdr.test.path") + " -t", false, false);
+			ProcessWrapper process = factory.create(config.getProperty("satellites.rtlsdr.test.path") + " -t", false, false);
 			r = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 			String curLine = null;
 			while ((curLine = r.readLine()) != null && !Thread.currentThread().isInterrupted()) {
@@ -49,12 +48,8 @@ class RtlStatusProcess implements SdrStatusProcess {
 				} else {
 					Matcher m = DEVICEPATTERN.matcher(curLine);
 					if (m.find()) {
-						try {
-							int actualDeviceId = Integer.parseInt(m.group(1));
-							if (actualDeviceId != expectedRtlDeviceId) {
-								continue;
-							}
-						} catch (NumberFormatException e) {
+						Integer actualDeviceId = parse(m.group(1));
+						if (actualDeviceId == null || actualDeviceId != expectedRtlDeviceId) {
 							continue;
 						}
 						result = new SdrStatus();
@@ -76,6 +71,14 @@ class RtlStatusProcess implements SdrStatusProcess {
 			result.setFailureMessage("unable to find device");
 		}
 		return result;
+	}
+	
+	private static Integer parse(String value) {
+		try {
+			return Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 }
