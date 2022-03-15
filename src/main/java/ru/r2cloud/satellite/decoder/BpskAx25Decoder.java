@@ -14,22 +14,20 @@ public class BpskAx25Decoder extends TelemetryDecoder {
 
 	private final double centerFrequency;
 	private final Class<? extends Beacon> beacon;
+	private final byte[] assistedHeader;
 
-	public BpskAx25Decoder(PredictOreKit predict, Configuration config, Class<? extends Beacon> beacon) {
-		this(predict, config, 0.0, beacon);
-	}
-
-	public BpskAx25Decoder(PredictOreKit predict, Configuration config, double centerFrequency, Class<? extends Beacon> beacon) {
+	public BpskAx25Decoder(PredictOreKit predict, Configuration config, double centerFrequency, Class<? extends Beacon> beacon, byte[] assistedHeader) {
 		super(predict, config);
 		this.centerFrequency = centerFrequency;
 		this.beacon = beacon;
+		this.assistedHeader = assistedHeader;
 	}
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
 		int baudRate = req.getBaudRates().get(0);
 		BpskDemodulator demodulator = new BpskDemodulator(source, baudRate, Util.convertDecimation(baudRate), centerFrequency, false);
-		return new Ax25BeaconSource<>(demodulator, beacon);
+		return new Ax25BeaconSource<>(demodulator, beacon, true, assistedHeader);
 	}
 
 	@Override

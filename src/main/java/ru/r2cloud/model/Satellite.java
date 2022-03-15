@@ -27,6 +27,7 @@ public class Satellite {
 	// used for new launches when noradid not yet defined
 	private Date start;
 	private Date end;
+	private byte[] assistedHeader;
 
 	private long loraBandwidth;
 	private int loraSpreadFactor;
@@ -230,13 +231,22 @@ public class Satellite {
 	public int getLoraLdro() {
 		return loraLdro;
 	}
-	
+
 	public void setLoraLdro(int loraLdro) {
 		this.loraLdro = loraLdro;
 	}
-	
+
+	public byte[] getAssistedHeader() {
+		return assistedHeader;
+	}
+
+	public void setAssistedHeader(byte[] assistedHeader) {
+		this.assistedHeader = assistedHeader;
+	}
+
 	@Override
 	public String toString() {
 		return name + "(" + id + ")";
 	}
+
 }

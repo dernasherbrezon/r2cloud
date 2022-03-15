@@ -27,7 +27,7 @@ public class FskAx25G3ruhDecoderTest {
 	public void testSomeData() throws Exception {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/swampsat2.raw.gz");
 		PredictOreKit predict = new PredictOreKit(config);
-		FskAx25G3ruhDecoder decoder = new FskAx25G3ruhDecoder(predict, config, Swampsat2Beacon.class);
+		FskAx25G3ruhDecoder decoder = new FskAx25G3ruhDecoder(predict, config, Swampsat2Beacon.class, null);
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/swampsat2.raw.gz.json").getReq());
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());

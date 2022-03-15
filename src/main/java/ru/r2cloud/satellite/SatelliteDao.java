@@ -170,6 +170,7 @@ public class SatelliteDao {
 			if (loraLdro != null) {
 				curSatellite.setLoraLdro(loraLdro);
 			}
+			curSatellite.setAssistedHeader(config.getByteArray("satellites." + curSatellite.getId() + ".header"));
 
 			result.add(curSatellite);
 		}

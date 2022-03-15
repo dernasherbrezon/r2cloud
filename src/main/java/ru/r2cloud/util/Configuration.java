@@ -174,6 +174,15 @@ public class Configuration {
 		return result;
 	}
 
+	public byte[] getByteArray(String name) {
+		List<String> props = getProperties(name);
+		byte[] result = new byte[props.size()];
+		for (int i = 0; i < props.size(); i++) {
+			result[i] = Byte.parseByte(props.get(i));
+		}
+		return result;
+	}
+
 	public boolean getBoolean(String string) {
 		String str = getProperty(string);
 		if (str == null) {

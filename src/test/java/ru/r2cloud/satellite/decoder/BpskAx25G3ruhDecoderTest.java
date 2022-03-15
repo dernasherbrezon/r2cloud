@@ -27,7 +27,7 @@ public class BpskAx25G3ruhDecoderTest {
 	public void testSomeData() throws Exception {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/meznsat.raw.gz");
 		PredictOreKit predict = new PredictOreKit(config);
-		BpskAx25G3ruhDecoder decoder = new BpskAx25G3ruhDecoder(predict, config, 1300.0, MeznsatBeacon.class);
+		BpskAx25G3ruhDecoder decoder = new BpskAx25G3ruhDecoder(predict, config, 1300.0, MeznsatBeacon.class, null);
 		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/meznsat.raw.gz.json").getReq());
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());

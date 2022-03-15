@@ -14,22 +14,20 @@ public class AfskAx25Decoder extends TelemetryDecoder {
 
 	private final float deviation;
 	private final Class<? extends Beacon> beacon;
+	private final byte[] assistedHeader;
 
-	public AfskAx25Decoder(PredictOreKit predict, Configuration config, float deviation, Class<? extends Beacon> beacon) {
+	public AfskAx25Decoder(PredictOreKit predict, Configuration config, float deviation, Class<? extends Beacon> beacon, byte[] assistedHeader) {
 		super(predict, config);
 		this.beacon = beacon;
 		this.deviation = deviation;
-	}
-
-	public AfskAx25Decoder(PredictOreKit predict, Configuration config, Class<? extends Beacon> beacon) {
-		this(predict, config, 500, beacon);
+		this.assistedHeader = assistedHeader;
 	}
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
 		int baudRate = req.getBaudRates().get(0);
 		AfskDemodulator demodulator = new AfskDemodulator(source, baudRate, deviation, 1700, Util.convertDecimation(baudRate));
-		return new Ax25BeaconSource<>(demodulator, beacon);
+		return new Ax25BeaconSource<>(demodulator, beacon, true, assistedHeader);
 	}
 
 	@Override
