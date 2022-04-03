@@ -14,7 +14,7 @@ import ru.r2cloud.jradio.RawBeacon;
 import ru.r2cloud.jradio.RxMetadata;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.r2lora.R2loraClient;
 import ru.r2cloud.r2lora.R2loraFrame;
 import ru.r2cloud.r2lora.R2loraObservationRequest;
@@ -29,28 +29,28 @@ public class R2loraReader implements IQReader {
 	private final Configuration config;
 	private final ObservationRequest req;
 	private final R2loraClient client;
-	private final Satellite satellite;
+	private final Transmitter transmitter;
 	private final CountDownLatch latch = new CountDownLatch(1);
 
-	public R2loraReader(Configuration config, ObservationRequest req, R2loraClient client, Satellite satellite) {
+	public R2loraReader(Configuration config, ObservationRequest req, R2loraClient client, Transmitter transmitter) {
 		this.config = config;
 		this.req = req;
 		this.client = client;
-		this.satellite = satellite;
+		this.transmitter = transmitter;
 	}
 
 	@Override
 	public IQData start() throws InterruptedException {
 		R2loraObservationRequest loraRequest = new R2loraObservationRequest();
-		loraRequest.setBw((float) req.getBandwidth() / 1000);
-		loraRequest.setCr(satellite.getLoraCodingRate());
+		loraRequest.setBw((float) transmitter.getLoraBandwidth() / 1000);
+		loraRequest.setCr(transmitter.getLoraCodingRate());
 		loraRequest.setFrequency((float) req.getActualFrequency() / 1_000_000);
 		loraRequest.setGain((int) req.getGain());
-		loraRequest.setLdro(satellite.getLoraLdro());
-		loraRequest.setPreambleLength(satellite.getLoraPreambleLength());
-		loraRequest.setSf(satellite.getLoraSpreadFactor());
-		loraRequest.setSyncword(satellite.getLoraSyncword());
-		LOG.info("[{}] starting lora observation for {} on {}Mhz", req.getId(), satellite, loraRequest.getFrequency());
+		loraRequest.setLdro(transmitter.getLoraLdro());
+		loraRequest.setPreambleLength(transmitter.getLoraPreambleLength());
+		loraRequest.setSf(transmitter.getLoraSpreadFactor());
+		loraRequest.setSyncword(transmitter.getLoraSyncword());
+		LOG.info("[{}] starting lora observation for {} on {}Mhz", req.getId(), transmitter, loraRequest.getFrequency());
 		R2loraResponse response = client.startObservation(loraRequest);
 		if (!response.getStatus().equals(ResponseStatus.SUCCESS)) {
 			LOG.error("[{}] unable to start lora observation: {}", req.getId(), response.getFailureMessage());

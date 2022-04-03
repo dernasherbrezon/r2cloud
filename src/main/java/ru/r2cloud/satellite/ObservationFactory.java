@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.SatPass;
-import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.Tle;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.tle.TLEDao;
 import ru.r2cloud.util.Configuration;
@@ -34,7 +34,7 @@ public class ObservationFactory {
 		this.config = config;
 	}
 
-	public List<ObservationRequest> createSchedule(Date date, Satellite satellite) {
+	public List<ObservationRequest> createSchedule(Date date, Transmitter satellite) {
 		Tle tle = tleDao.findById(satellite.getId());
 		if (tle == null) {
 			LOG.error("unable to find tle for: {}", satellite);
@@ -59,51 +59,39 @@ public class ObservationFactory {
 		return result;
 	}
 
-	private ObservationRequest convert(Satellite satellite, Tle tle, TLEPropagator tlePropagator, SatPass nextPass) {
+	private ObservationRequest convert(Transmitter transmitter, Tle tle, TLEPropagator tlePropagator, SatPass nextPass) {
 		ObservationRequest result = new ObservationRequest();
-		result.setSatelliteFrequency(satellite.getFrequency());
-		result.setSatelliteId(satellite.getId());
-		result.setSource(satellite.getSource());
+		result.setSatelliteId(transmitter.getSatelliteId());
+		result.setTransmitterId(transmitter.getId());
 		result.setTle(tle);
 		result.setGroundStation(predict.getPosition().getPoint());
 		result.setStartTimeMillis(nextPass.getStartMillis());
 		result.setEndTimeMillis(nextPass.getEndMillis());
-		result.setId(String.valueOf(result.getStartTimeMillis()) + "-" + satellite.getId());
-		result.setBaudRates(satellite.getBaudRates());
+		result.setId(String.valueOf(result.getStartTimeMillis()) + "-" + transmitter.getId());
 		// only r2lora can handle lora modulation
-		if (satellite.getModulation() != null && satellite.getModulation().equals(Modulation.LORA)) {
+		if (transmitter.getModulation() != null && transmitter.getModulation().equals(Modulation.LORA)) {
 			result.setSdrType(SdrType.R2LORA);
 		} else {
 			result.setSdrType(config.getSdrType());
 		}
-		if (result.getSdrType().equals(SdrType.R2LORA)) {
-			result.setBandwidth(satellite.getLoraBandwidth());
-		} else {
-			result.setBandwidth(satellite.getBandwidth());
-		}
-		result.setCenterBandFrequency(satellite.getFrequencyBand().getCenter());
-		result.setInputSampleRate(satellite.getInputSampleRate());
-		result.setOutputSampleRate(satellite.getOutputSampleRate());
-
-		switch (satellite.getSource()) {
+		result.setCenterBandFrequency(transmitter.getFrequencyBand().getCenter());
+		switch (transmitter.getFraming()) {
 		case APT:
-			result.setActualFrequency(result.getSatelliteFrequency());
+			result.setActualFrequency(transmitter.getFrequency());
 			break;
 		case LRPT:
-			result.setActualFrequency(result.getSatelliteFrequency());
+			result.setActualFrequency(transmitter.getFrequency());
 			break;
-		case TELEMETRY:
+		default:
 			// compensate DC offset only for non sdr-server observations
 			if (result.getSdrType().equals(SdrType.SDRSERVER) || result.getSdrType().equals(SdrType.R2LORA)) {
-				result.setActualFrequency(result.getSatelliteFrequency());
+				result.setActualFrequency(transmitter.getFrequency());
 			} else {
 				// at the beginning doppler freq is the max
-				long initialDopplerFrequency = predict.getDownlinkFreq(satellite.getFrequency(), nextPass.getStartMillis(), predict.getPosition(), tlePropagator);
+				long initialDopplerFrequency = predict.getDownlinkFreq(transmitter.getFrequency(), nextPass.getStartMillis(), predict.getPosition(), tlePropagator);
 				result.setActualFrequency(initialDopplerFrequency + DC_OFFSET);
 			}
 			break;
-		default:
-			throw new IllegalArgumentException("unsupported source: " + satellite.getSource());
 		}
 		return result;
 	}

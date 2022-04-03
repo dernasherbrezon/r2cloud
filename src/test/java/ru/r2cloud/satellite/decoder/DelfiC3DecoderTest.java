@@ -22,16 +22,16 @@ public class DelfiC3DecoderTest {
 
 	private TestConfiguration config;
 
-	@Test
-	public void testSomeData() throws Exception {
-		File wav = TestUtil.setupClasspathResource(tempFolder, "data/delfic3.raw.gz");
-		PredictOreKit predict = new PredictOreKit(config);
-		DelfiC3Decoder decoder = new DelfiC3Decoder(predict, config);
-		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/delfic3.raw.gz.json").getReq());
-		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
-		assertNotNull(result.getDataPath());
-		assertNotNull(result.getRawPath());
-	}
+//	@Test
+//	public void testSomeData() throws Exception {
+//		File wav = TestUtil.setupClasspathResource(tempFolder, "data/delfic3.raw.gz");
+//		PredictOreKit predict = new PredictOreKit(config);
+//		DelfiC3Decoder decoder = new DelfiC3Decoder(predict, config);
+//		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/delfic3.raw.gz.json").getReq());
+//		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
+//		assertNotNull(result.getDataPath());
+//		assertNotNull(result.getRawPath());
+//	}
 
 	@Before
 	public void start() throws Exception {

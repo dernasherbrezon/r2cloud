@@ -1,14 +1,10 @@
 package ru.r2cloud.model;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
 
-import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
@@ -21,18 +17,20 @@ public class Observation {
 	private long startTimeMillis;
 	private long endTimeMillis;
 	private String satelliteId;
-	private FrequencySource source;
-	private long satelliteFrequency;
-	private long bandwidth;
+	private String transmitterId;
 	private Tle tle;
 	private GeodeticPoint groundStation;
 
-	private int inputSampleRate;
-	private int outputSampleRate;
+	private SdrType sdrType;
+	private int sampleRate;
 	private long actualFrequency;
+	private double gain;
+	private boolean biast;
+	private long centerBandFrequency;
+	private int rtlDeviceId;
+	private int ppm;
 
 	// observation status
-	private String gain;
 	private String channelA;
 	private String channelB;
 	private Long numberOfDecodedPackets = 0L;
@@ -50,10 +48,6 @@ public class Observation {
 	private File dataPath;
 
 	private ObservationStatus status;
-	private boolean biast;
-	private SdrType sdrType;
-	private long centerBandFrequency;
-	private List<Integer> baudRates;
 
 	public Observation() {
 		// do nothing
@@ -64,19 +58,17 @@ public class Observation {
 		startTimeMillis = req.getStartTimeMillis();
 		endTimeMillis = req.getEndTimeMillis();
 		satelliteId = req.getSatelliteId();
-		source = req.getSource();
-		satelliteFrequency = req.getSatelliteFrequency();
-		bandwidth = req.getBandwidth();
+		transmitterId = req.getTransmitterId();
 		tle = req.getTle();
 		groundStation = req.getGroundStation();
-		inputSampleRate = req.getInputSampleRate();
-		outputSampleRate = req.getOutputSampleRate();
-		actualFrequency = req.getActualFrequency();
-		gain = String.valueOf(req.getGain());
-		biast = req.isBiast();
 		sdrType = req.getSdrType();
+		sampleRate = req.getSampleRate();
+		actualFrequency = req.getActualFrequency();
+		gain = req.getGain();
+		biast = req.isBiast();
 		centerBandFrequency = req.getCenterBandFrequency();
-		baudRates = req.getBaudRates();
+		rtlDeviceId = req.getRtlDeviceId();
+		ppm = req.getPpm();
 	}
 
 	public ObservationRequest getReq() {
@@ -85,23 +77,17 @@ public class Observation {
 		result.setStartTimeMillis(startTimeMillis);
 		result.setEndTimeMillis(endTimeMillis);
 		result.setSatelliteId(satelliteId);
-		result.setSource(source);
-		result.setSatelliteFrequency(satelliteFrequency);
-		result.setBandwidth(bandwidth);
+		result.setTransmitterId(transmitterId);
 		result.setTle(tle);
 		result.setGroundStation(groundStation);
-		result.setInputSampleRate(inputSampleRate);
-		result.setOutputSampleRate(outputSampleRate);
-		result.setActualFrequency(actualFrequency);
-		if (gain != null) {
-			result.setGain(Double.valueOf(gain));
-		} else {
-			result.setGain(45.0);
-		}
-		result.setBiast(biast);
 		result.setSdrType(sdrType);
+		result.setSampleRate(sampleRate);
+		result.setActualFrequency(actualFrequency);
+		result.setGain(gain);
+		result.setBiast(biast);
 		result.setCenterBandFrequency(centerBandFrequency);
-		result.setBaudRates(baudRates);
+		result.setRtlDeviceId(rtlDeviceId);
+		result.setPpm(ppm);
 		return result;
 	}
 
@@ -169,30 +155,6 @@ public class Observation {
 		this.satelliteId = satelliteId;
 	}
 
-	public FrequencySource getSource() {
-		return source;
-	}
-
-	public void setSource(FrequencySource source) {
-		this.source = source;
-	}
-
-	public long getSatelliteFrequency() {
-		return satelliteFrequency;
-	}
-
-	public void setSatelliteFrequency(long satelliteFrequency) {
-		this.satelliteFrequency = satelliteFrequency;
-	}
-
-	public long getBandwidth() {
-		return bandwidth;
-	}
-
-	public void setBandwidth(long bandwidth) {
-		this.bandwidth = bandwidth;
-	}
-
 	public Tle getTle() {
 		return tle;
 	}
@@ -207,22 +169,6 @@ public class Observation {
 
 	public void setGroundStation(GeodeticPoint groundStation) {
 		this.groundStation = groundStation;
-	}
-
-	public int getInputSampleRate() {
-		return inputSampleRate;
-	}
-
-	public void setInputSampleRate(int inputSampleRate) {
-		this.inputSampleRate = inputSampleRate;
-	}
-
-	public int getOutputSampleRate() {
-		return outputSampleRate;
-	}
-
-	public void setOutputSampleRate(int outputSampleRate) {
-		this.outputSampleRate = outputSampleRate;
 	}
 
 	public long getActualFrequency() {
@@ -247,14 +193,6 @@ public class Observation {
 
 	public void setRawPath(File rawPath) {
 		this.rawPath = rawPath;
-	}
-
-	public String getGain() {
-		return gain;
-	}
-
-	public void setGain(String gain) {
-		this.gain = gain;
 	}
 
 	public String getChannelA() {
@@ -329,28 +267,53 @@ public class Observation {
 		this.dataPath = dataPath;
 	}
 
+	public String getTransmitterId() {
+		return transmitterId;
+	}
+
+	public void setTransmitterId(String transmitterId) {
+		this.transmitterId = transmitterId;
+	}
+
+	public int getSampleRate() {
+		return sampleRate;
+	}
+
+	public void setSampleRate(int sampleRate) {
+		this.sampleRate = sampleRate;
+	}
+
+	public double getGain() {
+		return gain;
+	}
+
+	public void setGain(double gain) {
+		this.gain = gain;
+	}
+
+	public int getRtlDeviceId() {
+		return rtlDeviceId;
+	}
+
+	public void setRtlDeviceId(int rtlDeviceId) {
+		this.rtlDeviceId = rtlDeviceId;
+	}
+
+	public int getPpm() {
+		return ppm;
+	}
+
+	public void setPpm(int ppm) {
+		this.ppm = ppm;
+	}
+	
 	public static Observation fromJson(JsonObject meta) {
 		Observation result = new Observation();
 		result.setId(meta.getString("id", null));
 		result.setStartTimeMillis(meta.getLong("start", -1L));
 		result.setEndTimeMillis(meta.getLong("end", -1L));
-		result.setOutputSampleRate(meta.getInt("sampleRate", -1));
-		result.setInputSampleRate(meta.getInt("inputSampleRate", -1));
-		result.setSatelliteFrequency(meta.getLong("frequency", -1));
-		result.setActualFrequency(meta.getLong("actualFrequency", -1));
-		result.setBandwidth(meta.getLong("bandwidth", -1));
-		String decoder = meta.getString("decoder", null);
-		if ("aausat4".equals(decoder)) {
-			decoder = "telemetry";
-		}
-		if (decoder != null) {
-			FrequencySource frequencySource = FrequencySource.valueOf(decoder.toUpperCase(Locale.UK));
-			if (frequencySource.equals(FrequencySource.FSK_AX25_G3RUH)) {
-				frequencySource = FrequencySource.TELEMETRY;
-			}
-			result.setSource(frequencySource);
-		}
 		result.setSatelliteId(meta.getString("satellite", null));
+		result.setTransmitterId(meta.getString("transmitterId", null));
 		JsonValue tle = meta.get("tle");
 		if (tle != null && tle.isObject()) {
 			result.setTle(Tle.fromJson(tle.asObject()));
@@ -359,21 +322,6 @@ public class Observation {
 		if (groundStation != null && groundStation.isObject()) {
 			result.setGroundStation(groundStationFromJson(groundStation.asObject()));
 		}
-		result.setGain(meta.getString("gain", null));
-		result.setChannelA(meta.getString("channelA", null));
-		result.setChannelB(meta.getString("channelB", null));
-		result.setNumberOfDecodedPackets(meta.getLong("numberOfDecodedPackets", 0));
-		result.setaURL(meta.getString("aURL", null));
-		result.setDataURL(meta.getString("data", null));
-		result.setSpectogramURL(meta.getString("spectogramURL", null));
-		result.setRawURL(meta.getString("rawURL", null));
-		String statusStr = meta.getString("status", null);
-		if (statusStr != null) {
-			result.setStatus(ObservationStatus.valueOf(statusStr));
-		} else {
-			result.setStatus(ObservationStatus.UPLOADED);
-		}
-		result.setBiast(meta.getBoolean("biast", false));
 		String sdrTypeStr = meta.getString("sdrType", null);
 		SdrType sdrType;
 		if (sdrTypeStr != null) {
@@ -382,41 +330,52 @@ public class Observation {
 			sdrType = SdrType.RTLSDR;
 		}
 		result.setSdrType(sdrType);
+		result.setSampleRate(meta.getInt("sampleRate", -1));
+		result.setActualFrequency(meta.getLong("actualFrequency", -1));
+		result.setGain(meta.getDouble("gain", 0.0));
+		result.setBiast(meta.getBoolean("biast", false));
 		result.setCenterBandFrequency(meta.getLong("centerBandFrequency", 0));
-		JsonValue jsonBaudRates = meta.get("baudRates");
-		if (jsonBaudRates != null && jsonBaudRates.isArray()) {
-			JsonArray jsonBaudRatesArray = jsonBaudRates.asArray();
-			List<Integer> baudRates = new ArrayList<>(jsonBaudRatesArray.size());
-			for (int i = 0; i < jsonBaudRatesArray.size(); i++) {
-				baudRates.add(jsonBaudRatesArray.get(i).asInt());
-			}
-			result.setBaudRates(baudRates);
+		result.setRtlDeviceId(meta.getInt("rtlDeviceId", 0));
+		result.setPpm(meta.getInt("ppm", 0));
+		
+		result.setChannelA(meta.getString("channelA", null));
+		result.setChannelB(meta.getString("channelB", null));
+		result.setNumberOfDecodedPackets(meta.getLong("numberOfDecodedPackets", 0));
+		result.setRawURL(meta.getString("rawURL", null));
+		result.setaURL(meta.getString("aURL", null));
+		result.setSpectogramURL(meta.getString("spectogramURL", null));
+		result.setDataURL(meta.getString("data", null));
+		String statusStr = meta.getString("status", null);
+		if (statusStr != null) {
+			result.setStatus(ObservationStatus.valueOf(statusStr));
+		} else {
+			result.setStatus(ObservationStatus.UPLOADED);
 		}
 		return result;
 	}
-
+	
 	public JsonObject toJson(SignedURL signed) {
 		JsonObject json = new JsonObject();
 		json.add("id", getId());
 		json.add("start", getStartTimeMillis());
 		json.add("end", getEndTimeMillis());
-		json.add("sampleRate", getOutputSampleRate());
-		json.add("inputSampleRate", getInputSampleRate());
-		json.add("frequency", getSatelliteFrequency());
-		json.add("actualFrequency", getActualFrequency());
-		json.add("decoder", getSource().name());
 		json.add("satellite", getSatelliteId());
-		json.add("bandwidth", getBandwidth());
+		json.add("transmitterId", getTransmitterId());
 		if (getTle() != null) {
 			json.add("tle", getTle().toJson());
 		}
 		if (getGroundStation() != null) {
 			json.add("groundStation", toJson(getGroundStation()));
 		}
-
-		if (getGain() != null) {
-			json.add("gain", getGain());
-		}
+		json.add("sdrType", sdrType.name());
+		json.add("sampleRate", getSampleRate());
+		json.add("actualFrequency", getActualFrequency());
+		json.add("gain", getGain());
+		json.add("biast", isBiast());
+		json.add("centerBandFrequency", centerBandFrequency);
+		json.add("rtlDeviceId", getRtlDeviceId());
+		json.add("ppm", getPpm());
+		
 		if (getChannelA() != null) {
 			json.add("channelA", getChannelA());
 		}
@@ -426,26 +385,17 @@ public class Observation {
 		if (getNumberOfDecodedPackets() != null) {
 			json.add("numberOfDecodedPackets", getNumberOfDecodedPackets());
 		}
-		addNullable("aURL", getaURL(), signed, json);
-		addNullable("data", getDataURL(), signed, json);
-		addNullable("spectogramURL", getSpectogramURL(), signed, json);
 		addNullable("rawURL", getRawURL(), signed, json);
+		addNullable("aURL", getaURL(), signed, json);
+		addNullable("spectogramURL", getSpectogramURL(), signed, json);
+		addNullable("data", getDataURL(), signed, json);
 		ObservationStatus statusToSave = getStatus();
 		if (statusToSave == null) {
 			// this would avoid double upload/decode of old observations
 			statusToSave = ObservationStatus.UPLOADED;
 		}
 		json.add("status", statusToSave.name());
-		json.add("biast", isBiast());
-		json.add("sdrType", sdrType.name());
-		json.add("centerBandFrequency", centerBandFrequency);
-		JsonArray jsonBaudRates = new JsonArray();
-		if (getBaudRates() != null) {
-			for (Integer cur : getBaudRates()) {
-				jsonBaudRates.add(cur);
-			}
-		}
-		json.add("baudRates", jsonBaudRates);
+
 		return json;
 	}
 
@@ -477,12 +427,4 @@ public class Observation {
 		return aURL != null || dataURL != null;
 	}
 	
-	public List<Integer> getBaudRates() {
-		return baudRates;
-	}
-	
-	public void setBaudRates(List<Integer> baudRates) {
-		this.baudRates = baudRates;
-	}
-
 }

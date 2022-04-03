@@ -3,15 +3,14 @@ package ru.r2cloud.device;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceStatus;
 import ru.r2cloud.model.DeviceType;
-import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SdrStatus;
 import ru.r2cloud.model.SdrType;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.ObservationFactory;
-import ru.r2cloud.satellite.SatelliteFilter;
+import ru.r2cloud.satellite.TransmitterFilter;
 import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.reader.IQReader;
 import ru.r2cloud.satellite.reader.PlutoSdrReader;
@@ -30,7 +29,7 @@ public class SdrDevice extends Device {
 	private final ProcessFactory processFactory;
 	private final SdrStatusDao statusDao;
 
-	public SdrDevice(String id, SatelliteFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, DeviceConfiguration deviceConfiguration, ObservationDao observationDao, DecoderService decoderService,
+	public SdrDevice(String id, TransmitterFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, DeviceConfiguration deviceConfiguration, ObservationDao observationDao, DecoderService decoderService,
 			PredictOreKit predict, Configuration config, ProcessFactory processFactory) {
 		super(id, filter, numberOfConcurrentObservations, observationFactory, threadpoolFactory, clock, deviceConfiguration, observationDao, decoderService, predict);
 		this.config = config;
@@ -39,13 +38,12 @@ public class SdrDevice extends Device {
 	}
 
 	@Override
-	public IQReader createReader(ObservationRequest req, Satellite satellite) {
-		FrequencySource source = req.getSource();
-		switch (source) {
+	public IQReader createReader(ObservationRequest req, Transmitter transmitter) {
+		switch (transmitter.getFraming()) {
 		case APT:
-			return new RtlFmReader(config, processFactory, req);
+			return new RtlFmReader(config, processFactory, req, transmitter);
 		case LRPT:
-		case TELEMETRY:
+		default:
 			if (req.getSdrType().equals(SdrType.RTLSDR)) {
 				return new RtlSdrReader(config, processFactory, req);
 			} else if (req.getSdrType().equals(SdrType.PLUTOSDR)) {
@@ -55,8 +53,6 @@ public class SdrDevice extends Device {
 			} else {
 				throw new IllegalArgumentException("unsupported sdr type: " + req.getSdrType());
 			}
-		default:
-			throw new IllegalArgumentException("unsupported source: " + source);
 		}
 	}
 

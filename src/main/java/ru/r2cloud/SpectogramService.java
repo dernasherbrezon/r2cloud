@@ -85,16 +85,16 @@ public class SpectogramService {
 			}
 			switch (req.getSdrType()) {
 			case RTLSDR:
-				source = new RtlSdr(is, req.getInputSampleRate(), totalBytes / 2);
+				source = new RtlSdr(is, req.getSampleRate(), totalBytes / 2);
 				break;
 			case PLUTOSDR:
-				source = new PlutoSdr(is, req.getInputSampleRate(), totalBytes / 4);
+				source = new PlutoSdr(is, req.getSampleRate(), totalBytes / 4);
 				break;
 			case SDRSERVER:
 				Context ctx = new Context();
 				ctx.setChannels(2);
 				ctx.setSampleSizeInBits(4 * 8); // float = 4 bytes
-				ctx.setSampleRate(req.getInputSampleRate());
+				ctx.setSampleRate(req.getSampleRate());
 				ctx.setTotalSamples(totalBytes / 8);
 				source = new InputStreamSource(is, ctx);
 				break;

@@ -12,7 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +26,6 @@ import com.aerse.mockfs.FailingByteChannelCallback;
 import com.aerse.mockfs.MockFileSystem;
 
 import ru.r2cloud.TestConfiguration;
-import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationStatus;
@@ -116,18 +114,14 @@ public class ObservationDaoTest {
 		assertNotNull(dao.insert(req, createTempFile("wav")));
 		Observation actual = dao.find(req.getSatelliteId(), req.getId());
 		assertNotNull(actual.getRawPath());
-		assertEquals(req.getSource(), actual.getSource());
 		assertNull(actual.getDataPath());
 		assertNull(actual.getImagePath());
 		assertNull(actual.getSpectogramPath());
-		assertEquals(1, actual.getSatelliteFrequency());
 		assertEquals(2, actual.getActualFrequency());
-		assertEquals(4_000, actual.getBandwidth());
 		assertEquals(req.getTle(), actual.getTle());
 		assertEquals(req.getGroundStation().getLatitude(), actual.getGroundStation().getLatitude(), 0.0);
 		assertEquals(req.getGroundStation().getLongitude(), actual.getGroundStation().getLongitude(), 0.0);
 		assertEquals(ObservationStatus.NEW, actual.getStatus());
-		assertEquals(req.getBaudRates().size(), actual.getBaudRates().size());
 
 		assertNotNull(dao.saveData(req.getSatelliteId(), req.getId(), createTempFile("data")));
 		assertNotNull(dao.saveImage(req.getSatelliteId(), req.getId(), createTempFile("image")));
@@ -147,7 +141,6 @@ public class ObservationDaoTest {
 		Observation full = new Observation(req);
 		full.setChannelA(UUID.randomUUID().toString());
 		full.setChannelB(UUID.randomUUID().toString());
-		full.setGain(gain);
 		full.setNumberOfDecodedPackets(1L);
 		full.setStatus(ObservationStatus.DECODED);
 		assertTrue(dao.update(full));
@@ -163,22 +156,17 @@ public class ObservationDaoTest {
 	private static ObservationRequest createRequest() {
 		ObservationRequest req = new ObservationRequest();
 		req.setActualFrequency(1L);
-		req.setSource(FrequencySource.APT);
 		req.setEndTimeMillis(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5));
 		req.setId(UUID.randomUUID().toString());
-		req.setInputSampleRate(1);
+		req.setSampleRate(1);
 		req.setTle(create());
-		req.setOutputSampleRate(1);
-		req.setSatelliteFrequency(1);
 		req.setActualFrequency(2);
 		req.setSatelliteId(UUID.randomUUID().toString());
 		req.setStartTimeMillis(System.currentTimeMillis());
-		req.setBandwidth(4_000);
 		req.setGroundStation(createGroundStation());
 		req.setGain(45.0);
 		req.setBiast(false);
 		req.setSdrType(SdrType.RTLSDR);
-		req.setBaudRates(Collections.singletonList(1200));
 		return req;
 	}
 

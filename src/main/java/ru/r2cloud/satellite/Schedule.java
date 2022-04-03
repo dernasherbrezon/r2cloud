@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Priority;
-import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.Transmitter;
 
 public class Schedule {
 
@@ -76,9 +76,9 @@ public class Schedule {
 		observationsById.clear();
 	}
 
-	public synchronized List<ObservationRequest> createInitialSchedule(List<Satellite> allSatellites, long current) {
+	public synchronized List<ObservationRequest> createInitialSchedule(List<Transmitter> allSatellites, long current) {
 		Map<String, List<ObservationRequest>> passesBySatellite = new HashMap<>();
-		for (Satellite cur : allSatellites) {
+		for (Transmitter cur : allSatellites) {
 			List<ObservationRequest> passes = factory.createSchedule(new Date(current), cur);
 			if (passes.isEmpty()) {
 				continue;
@@ -95,9 +95,9 @@ public class Schedule {
 		return result;
 	}
 
-	private static List<Satellite> findByPriority(List<Satellite> allSatellites, Priority priority) {
-		List<Satellite> result = new ArrayList<>();
-		for (Satellite cur : allSatellites) {
+	private static List<Transmitter> findByPriority(List<Transmitter> allSatellites, Priority priority) {
+		List<Transmitter> result = new ArrayList<>();
+		for (Transmitter cur : allSatellites) {
 			if (cur.getPriority().equals(priority)) {
 				result.add(cur);
 			}
@@ -105,12 +105,12 @@ public class Schedule {
 		return result;
 	}
 
-	private List<ObservationRequest> scheduleSatellites(List<Satellite> allSatellites, Map<String, List<ObservationRequest>> passesBySatellite, Priority priority) {
+	private List<ObservationRequest> scheduleSatellites(List<Transmitter> allSatellites, Map<String, List<ObservationRequest>> passesBySatellite, Priority priority) {
 		List<ObservationRequest> result = new ArrayList<>();
 		// fill-in full observations
 		while (!Thread.currentThread().isInterrupted()) {
 			boolean moreObservationsToCheck = false;
-			for (Satellite cur : allSatellites) {
+			for (Transmitter cur : allSatellites) {
 				List<ObservationRequest> allPasses = passesBySatellite.get(cur.getId());
 				if (allPasses == null) {
 					continue;
@@ -132,7 +132,7 @@ public class Schedule {
 		// fill-in partial observations
 		while (!Thread.currentThread().isInterrupted()) {
 			boolean moreObservationsToCheck = false;
-			for (Satellite cur : allSatellites) {
+			for (Transmitter cur : allSatellites) {
 				List<ObservationRequest> allPasses = passesBySatellite.get(cur.getId());
 				if (allPasses == null) {
 					continue;
@@ -164,18 +164,18 @@ public class Schedule {
 
 	// even if this satellite will be scheduled well forward the rest of satellites
 	// whole schedule will be cleared on next re-schedule
-	public synchronized List<ObservationRequest> addSatelliteToSchedule(Satellite satellite, long current) {
-		List<ObservationRequest> previous = observationsBySatelliteId.get(satellite.getId());
+	public synchronized List<ObservationRequest> addToSchedule(Transmitter transmitter, long current) {
+		List<ObservationRequest> previous = observationsBySatelliteId.get(transmitter.getId());
 		if (previous != null && !previous.isEmpty()) {
 			return previous;
 		}
-		List<ObservationRequest> allPasses = factory.createSchedule(new Date(current), satellite);
+		List<ObservationRequest> allPasses = factory.createSchedule(new Date(current), transmitter);
 		List<ObservationRequest> batch = new ArrayList<>();
 		for (ObservationRequest cur : allPasses) {
 			TimeSlot slot = new TimeSlot();
 			slot.setStart(cur.getStartTimeMillis());
 			slot.setEnd(cur.getEndTimeMillis());
-			slot.setFrequency(satellite.getFrequencyBand().getCenter());
+			slot.setFrequency(transmitter.getFrequencyBand().getCenter());
 			if (timetable.addFully(slot)) {
 				batch.add(cur);
 				timeSlotById.put(cur.getId(), slot);

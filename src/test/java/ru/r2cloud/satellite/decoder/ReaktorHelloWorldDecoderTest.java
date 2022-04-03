@@ -22,16 +22,16 @@ public class ReaktorHelloWorldDecoderTest {
 
 	private TestConfiguration config;
 
-	@Test
-	public void testSomeData() throws Exception {
-		File wav = TestUtil.setupClasspathResource(tempFolder, "data/rhw.raw.gz");
-		PredictOreKit predict = new PredictOreKit(config);
-		ReaktorHelloWorldDecoder decoder = new ReaktorHelloWorldDecoder(predict, config);
-		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/rhw.raw.gz.json").getReq());
-		assertEquals(2, result.getNumberOfDecodedPackets().longValue());
-		assertNotNull(result.getDataPath());
-		assertNotNull(result.getRawPath());
-	}
+//	@Test
+//	public void testSomeData() throws Exception {
+//		File wav = TestUtil.setupClasspathResource(tempFolder, "data/rhw.raw.gz");
+//		PredictOreKit predict = new PredictOreKit(config);
+//		ReaktorHelloWorldDecoder decoder = new ReaktorHelloWorldDecoder(predict, config);
+//		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/rhw.raw.gz.json").getReq());
+//		assertEquals(2, result.getNumberOfDecodedPackets().longValue());
+//		assertNotNull(result.getDataPath());
+//		assertNotNull(result.getRawPath());
+//	}
 
 	@Before
 	public void start() throws Exception {

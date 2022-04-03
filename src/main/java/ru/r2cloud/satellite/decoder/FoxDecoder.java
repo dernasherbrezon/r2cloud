@@ -18,12 +18,14 @@ import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.jradio.BeaconSource;
 import ru.r2cloud.jradio.blocks.CorrelateSyncword;
 import ru.r2cloud.jradio.blocks.SoftToHard;
+import ru.r2cloud.jradio.demod.FskDemodulator;
 import ru.r2cloud.jradio.fox.Fox1DBeacon;
 import ru.r2cloud.jradio.fox.FoxPictureDecoder;
 import ru.r2cloud.jradio.fox.HighSpeedFox;
 import ru.r2cloud.jradio.fox.PictureScanLine;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
@@ -39,14 +41,15 @@ public class FoxDecoder<T extends Beacon> extends FoxSlowDecoder<T> {
 	}
 
 	@Override
-	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, ObservationRequest req) throws IOException {
+	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, ObservationRequest req, final Transmitter transmitter) throws IOException {
 		List<BeaconSource<? extends Beacon>> result = new ArrayList<>();
 		// slow fox
-		DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req);
-		result.add(createBeaconSource(source, req));
+		DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req, transmitter);
+		FskDemodulator byteInput = new FskDemodulator(source, 200, 1500.0f, 120, 200.0f);
+		result.add(createBeaconSource(byteInput, req));
 
-		DopplerCorrectedSource source2 = new DopplerCorrectedSource(predict, rawIq, req);
-		GmskDemodulator gmsk = new GmskDemodulator(source2, 9600, req.getBandwidth(), 0.175f * 3);
+		DopplerCorrectedSource source2 = new DopplerCorrectedSource(predict, rawIq, req, transmitter);
+		GmskDemodulator gmsk = new GmskDemodulator(source2, 9600, transmitter.getBandwidth(), 0.175f * 3);
 		SoftToHard s2h = new SoftToHard(gmsk);
 		Set<String> codes = new HashSet<>();
 		codes.add("0011111010");
@@ -58,8 +61,8 @@ public class FoxDecoder<T extends Beacon> extends FoxSlowDecoder<T> {
 	}
 
 	@Override
-	public DecoderResult decode(File rawIq, ObservationRequest req) {
-		DecoderResult result = super.decode(rawIq, req);
+	public DecoderResult decode(File rawIq, ObservationRequest req, final Transmitter transmitter) {
+		DecoderResult result = super.decode(rawIq, req, transmitter);
 		if (result.getDataPath() != null) {
 			try (BeaconInputStream<Fox1DBeacon> bis = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(result.getDataPath())), Fox1DBeacon.class)) {
 				List<PictureScanLine> scanLines = new ArrayList<>();

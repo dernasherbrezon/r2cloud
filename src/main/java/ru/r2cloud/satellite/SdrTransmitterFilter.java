@@ -2,16 +2,16 @@ package ru.r2cloud.satellite;
 
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.Modulation;
-import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.Transmitter;
 
-public class SdrSatelliteFilter extends DeviceSatelliteFilter {
+public class SdrTransmitterFilter extends DeviceTransmitterFilter {
 
-	public SdrSatelliteFilter(DeviceConfiguration config) {
+	public SdrTransmitterFilter(DeviceConfiguration config) {
 		super(config);
 	}
 
 	@Override
-	public boolean accept(Satellite satellite) {
+	public boolean accept(Transmitter satellite) {
 		if (!super.accept(satellite)) {
 			return false;
 		}

@@ -15,9 +15,15 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconOutputStream;
 import ru.r2cloud.jradio.BeaconSource;
+import ru.r2cloud.jradio.ByteInput;
 import ru.r2cloud.jradio.FloatInput;
+import ru.r2cloud.jradio.demod.AfskDemodulator;
+import ru.r2cloud.jradio.demod.BpskDemodulator;
+import ru.r2cloud.jradio.demod.FskDemodulator;
 import ru.r2cloud.model.DecoderResult;
+import ru.r2cloud.model.DemodulatorType;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
@@ -35,20 +41,20 @@ public abstract class TelemetryDecoder implements Decoder {
 	}
 
 	@Override
-	public DecoderResult decode(File rawIq, ObservationRequest req) {
+	public DecoderResult decode(File rawIq, ObservationRequest req, final Transmitter transmitter) {
 		DecoderResult result = new DecoderResult();
 		result.setRawPath(rawIq);
-		if (req.getBaudRates() == null || req.getBaudRates().isEmpty()) {
+		if (transmitter.getBaudRates() == null || transmitter.getBaudRates().isEmpty()) {
 			LOG.error("[{}] baud rate is missing: {}", req.getId(), req.getSatelliteId());
 			return result;
 		}
 
 		long numberOfDecodedPackets = 0;
-		float sampleRate = req.getInputSampleRate();
+		float sampleRate = transmitter.getInputSampleRate();
 		File binFile = new File(config.getTempDirectory(), req.getId() + ".bin");
 		List<BeaconSource<? extends Beacon>> input = null;
 		try (BeaconOutputStream aos = new BeaconOutputStream(new FileOutputStream(binFile));) {
-			input = createBeaconSources(rawIq, req);
+			input = createBeaconSources(rawIq, req, transmitter);
 			for (int i = 0; i < input.size(); i++) {
 				if (Thread.currentThread().isInterrupted()) {
 					LOG.info("decoding thread interrupted. stopping...");
@@ -80,13 +86,36 @@ public abstract class TelemetryDecoder implements Decoder {
 		return result;
 	}
 
-	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, ObservationRequest req) throws IOException {
-		DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req);
-		BeaconSource<? extends Beacon> beaconSource = createBeaconSource(source, req);
+	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, ObservationRequest req, final Transmitter transmitter) throws IOException {
+		DemodulatorType type = config.getDemodulatorType(transmitter.getModulation());
+		ByteInput demodulator;
+		switch (type) {
+		case JRADIO:
+			demodulator = createDemodulator(new DopplerCorrectedSource(predict, rawIq, req, transmitter), transmitter);
+			break;
+		default:
+			LOG.error("unknown demodulator type: " + type);
+			return Collections.emptyList();
+		}
+		BeaconSource<? extends Beacon> beaconSource = createBeaconSource(demodulator, req);
 		if (beaconSource == null) {
 			throw new IllegalArgumentException("at least one beacon source should be specified");
 		}
 		return Collections.singletonList(beaconSource);
+	}
+
+	private static ByteInput createDemodulator(FloatInput source, Transmitter transmitter) {
+		int baudRate = transmitter.getBaudRates().get(0);
+		switch (transmitter.getModulation()) {
+		case GFSK:
+			return new FskDemodulator(source, baudRate, 5000.0f, Util.convertDecimation(baudRate), 1000);
+		case AFSK:
+			return new AfskDemodulator(source, baudRate, transmitter.getDeviation(), transmitter.getAfCarrier(), Util.convertDecimation(baudRate));
+		case BPSK:
+			return new BpskDemodulator(source, baudRate, Util.convertDecimation(baudRate), transmitter.getBpskCenterFrequency(), transmitter.isBpskDifferential());
+		default:
+			throw new RuntimeException("unknown jradio modulator: " + transmitter.getModulation());
+		}
 	}
 
 	protected File saveImage(String path, BufferedImage image) {
@@ -104,7 +133,7 @@ public abstract class TelemetryDecoder implements Decoder {
 	}
 
 	@SuppressWarnings("unused")
-	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
+	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput source, ObservationRequest req) {
 		return null;
 	}
 

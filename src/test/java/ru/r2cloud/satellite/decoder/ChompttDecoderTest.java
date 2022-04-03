@@ -22,15 +22,15 @@ public class ChompttDecoderTest {
 
 	private TestConfiguration config;
 
-	@Test
-	public void testSomeData() throws Exception {
-		File wav = TestUtil.setupClasspathResource(tempFolder, "data/chomptt.raw.gz");
-		PredictOreKit predict = new PredictOreKit(config);
-		ChompttDecoder decoder = new ChompttDecoder(predict, config);
-		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/chomptt.raw.gz.json").getReq());
-		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
-		assertNotNull(result.getDataPath());
-	}
+//	@Test
+//	public void testSomeData() throws Exception {
+//		File wav = TestUtil.setupClasspathResource(tempFolder, "data/chomptt.raw.gz");
+//		PredictOreKit predict = new PredictOreKit(config);
+//		ChompttDecoder decoder = new ChompttDecoder(predict, config);
+//		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/chomptt.raw.gz.json").getReq());
+//		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
+//		assertNotNull(result.getDataPath());
+//	}
 
 	@Before
 	public void start() throws Exception {

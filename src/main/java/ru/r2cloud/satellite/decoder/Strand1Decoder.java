@@ -2,8 +2,7 @@ package ru.r2cloud.satellite.decoder;
 
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconSource;
-import ru.r2cloud.jradio.FloatInput;
-import ru.r2cloud.jradio.demod.FskDemodulator;
+import ru.r2cloud.jradio.ByteInput;
 import ru.r2cloud.jradio.strand1.Strand1;
 import ru.r2cloud.jradio.strand1.Strand1Beacon;
 import ru.r2cloud.model.ObservationRequest;
@@ -17,9 +16,8 @@ public class Strand1Decoder extends TelemetryDecoder {
 	}
 
 	@Override
-	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		FskDemodulator demod = new FskDemodulator(source, req.getBaudRates().get(0));
-		return new Strand1(demod);
+	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, ObservationRequest req) {
+		return new Strand1(demodulator);
 	}
 
 	@Override

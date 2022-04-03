@@ -27,19 +27,19 @@ public class Aausat4DecoderTest {
 
 	private TestConfiguration config;
 
-	@Test
-	public void testSomeData() throws Exception {
-		File wav = TestUtil.setupClasspathResource(tempFolder, "data/aausat.raw.gz");
-		PredictOreKit predict = new PredictOreKit(config);
-		Aausat4Decoder decoder = new Aausat4Decoder(predict, config);
-		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/aausat.raw.gz.json").getReq());
-		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
-		assertNotNull(result.getDataPath());
-		try (BeaconInputStream<Aausat4Beacon> is = new BeaconInputStream<>(new FileInputStream(result.getDataPath()), Aausat4Beacon.class)) {
-			assertTrue(is.hasNext());
-			AssertJson.assertObjectsEqual("AAUSAT4Beacon.json", is.next());
-		}
-	}
+//	@Test
+//	public void testSomeData() throws Exception {
+//		File wav = TestUtil.setupClasspathResource(tempFolder, "data/aausat.raw.gz");
+//		PredictOreKit predict = new PredictOreKit(config);
+//		Aausat4Decoder decoder = new Aausat4Decoder(predict, config);
+//		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/aausat.raw.gz.json").getReq());
+//		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
+//		assertNotNull(result.getDataPath());
+//		try (BeaconInputStream<Aausat4Beacon> is = new BeaconInputStream<>(new FileInputStream(result.getDataPath()), Aausat4Beacon.class)) {
+//			assertTrue(is.hasNext());
+//			AssertJson.assertObjectsEqual("AAUSAT4Beacon.json", is.next());
+//		}
+//	}
 
 	@Before
 	public void start() throws Exception {

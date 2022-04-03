@@ -11,17 +11,16 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.jradio.BeaconSource;
-import ru.r2cloud.jradio.FloatInput;
-import ru.r2cloud.jradio.demod.BpskDemodulator;
+import ru.r2cloud.jradio.ByteInput;
 import ru.r2cloud.jradio.jy1sat.Jy1sat;
 import ru.r2cloud.jradio.jy1sat.Jy1satBeacon;
 import ru.r2cloud.jradio.jy1sat.Jy1satSsdvPacketSource;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.ssdv.SsdvDecoder;
 import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.Util;
 
 public class Jy1satDecoder extends TelemetryDecoder {
 
@@ -32,8 +31,8 @@ public class Jy1satDecoder extends TelemetryDecoder {
 	}
 
 	@Override
-	public DecoderResult decode(File rawIq, ObservationRequest req) {
-		DecoderResult result = super.decode(rawIq, req);
+	public DecoderResult decode(File rawIq, ObservationRequest req, final Transmitter transmitter) {
+		DecoderResult result = super.decode(rawIq, req, transmitter);
 		if (result.getDataPath() != null) {
 			try (BeaconInputStream<Jy1satBeacon> bis = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(result.getDataPath())), Jy1satBeacon.class)) {
 				SsdvDecoder decoder = new SsdvDecoder(new Jy1satSsdvPacketSource(bis));
@@ -53,10 +52,8 @@ public class Jy1satDecoder extends TelemetryDecoder {
 	}
 
 	@Override
-	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		int baudRate = req.getBaudRates().get(0);
-		BpskDemodulator bpsk = new BpskDemodulator(source, baudRate, Util.convertDecimation(baudRate), 0.0, true);
-		return new Jy1sat(bpsk);
+	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, ObservationRequest req) {
+		return new Jy1sat(demodulator);
 	}
 
 	@Override

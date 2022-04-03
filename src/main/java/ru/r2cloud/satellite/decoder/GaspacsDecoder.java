@@ -13,18 +13,17 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.jradio.BeaconSource;
-import ru.r2cloud.jradio.FloatInput;
-import ru.r2cloud.jradio.demod.FskDemodulator;
+import ru.r2cloud.jradio.ByteInput;
 import ru.r2cloud.jradio.gaspacs.Gaspacs;
 import ru.r2cloud.jradio.gaspacs.GaspacsBeacon;
 import ru.r2cloud.jradio.gaspacs.GaspacsPacketSource;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.ssdv.SsdvDecoder;
 import ru.r2cloud.ssdv.SsdvPacket;
 import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.Util;
 
 public class GaspacsDecoder extends TelemetryDecoder {
 
@@ -35,8 +34,8 @@ public class GaspacsDecoder extends TelemetryDecoder {
 	}
 
 	@Override
-	public DecoderResult decode(File rawIq, ObservationRequest req) {
-		DecoderResult result = super.decode(rawIq, req);
+	public DecoderResult decode(File rawIq, ObservationRequest req, final Transmitter transmitter) {
+		DecoderResult result = super.decode(rawIq, req, transmitter);
 		if (result.getDataPath() != null) {
 			List<GaspacsBeacon> beacons = new ArrayList<>();
 			try (BeaconInputStream<GaspacsBeacon> bis = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(result.getDataPath())), GaspacsBeacon.class)) {
@@ -68,10 +67,8 @@ public class GaspacsDecoder extends TelemetryDecoder {
 	}
 
 	@Override
-	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		int baudRate = req.getBaudRates().get(0);
-		FskDemodulator demod = new FskDemodulator(source, baudRate, 2400.0f, Util.convertDecimation(baudRate), 2000, false);
-		return new Gaspacs(demod);
+	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, ObservationRequest req) {
+		return new Gaspacs(demodulator);
 	}
 
 	@Override

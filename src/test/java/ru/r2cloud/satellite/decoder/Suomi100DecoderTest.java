@@ -22,16 +22,16 @@ public class Suomi100DecoderTest {
 
 	private TestConfiguration config;
 
-	@Test
-	public void testSomeData() throws Exception {
-		File wav = TestUtil.setupClasspathResource(tempFolder, "data/suomi.raw.gz");
-		PredictOreKit predict = new PredictOreKit(config);
-		Suomi100Decoder decoder = new Suomi100Decoder(predict, config);
-		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/suomi.raw.gz.json").getReq());
-		assertEquals(3, result.getNumberOfDecodedPackets().longValue());
-		assertNotNull(result.getDataPath());
-		assertNotNull(result.getRawPath());
-	}
+//	@Test
+//	public void testSomeData() throws Exception {
+//		File wav = TestUtil.setupClasspathResource(tempFolder, "data/suomi.raw.gz");
+//		PredictOreKit predict = new PredictOreKit(config);
+//		Suomi100Decoder decoder = new Suomi100Decoder(predict, config);
+//		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/suomi.raw.gz.json").getReq());
+//		assertEquals(3, result.getNumberOfDecodedPackets().longValue());
+//		assertNotNull(result.getDataPath());
+//		assertNotNull(result.getRawPath());
+//	}
 
 	@Before
 	public void start() throws Exception {

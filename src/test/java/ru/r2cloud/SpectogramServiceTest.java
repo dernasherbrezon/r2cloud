@@ -69,7 +69,7 @@ public class SpectogramServiceTest {
 
 	private static Observation createIq(File iq, int sampleRate) {
 		ObservationRequest req = new ObservationRequest();
-		req.setInputSampleRate(sampleRate);
+		req.setSampleRate(sampleRate);
 		req.setSdrType(SdrType.RTLSDR);
 		Observation result = new Observation(req);
 		result.setRawPath(iq);

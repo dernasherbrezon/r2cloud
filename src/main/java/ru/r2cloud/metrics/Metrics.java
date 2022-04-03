@@ -127,7 +127,7 @@ public class Metrics {
 
 		reporter = new RRD4JReporter(config, registry, clock);
 		reporter.start();
-		reporter.report();
+//		reporter.report();
 		LOG.info("metrics started");
 	}
 

@@ -1,18 +1,18 @@
 package ru.r2cloud.satellite;
 
 import ru.r2cloud.model.DeviceConfiguration;
-import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.Transmitter;
 
-public class DeviceSatelliteFilter implements SatelliteFilter {
+public class DeviceTransmitterFilter implements TransmitterFilter {
 
 	private final DeviceConfiguration config;
 
-	public DeviceSatelliteFilter(DeviceConfiguration config) {
+	public DeviceTransmitterFilter(DeviceConfiguration config) {
 		this.config = config;
 	}
 
 	@Override
-	public boolean accept(Satellite satellite) {
+	public boolean accept(Transmitter satellite) {
 		if (!satellite.isEnabled()) {
 			return false;
 		}

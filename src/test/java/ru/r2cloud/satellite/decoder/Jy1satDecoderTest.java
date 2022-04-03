@@ -22,17 +22,17 @@ public class Jy1satDecoderTest {
 
 	private TestConfiguration config;
 
-	@Test
-	public void testSomeData() throws Exception {
-		File wav = TestUtil.setupClasspathResource(tempFolder, "data/jy1sat.raw.gz");
-		PredictOreKit predict = new PredictOreKit(config);
-		Jy1satDecoder decoder = new Jy1satDecoder(predict, config);
-		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/jy1sat.raw.gz.json").getReq());
-		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
-		assertNotNull(result.getDataPath());
-		assertNotNull(result.getImagePath());
-		assertNotNull(result.getRawPath());
-	}
+//	@Test
+//	public void testSomeData() throws Exception {
+//		File wav = TestUtil.setupClasspathResource(tempFolder, "data/jy1sat.raw.gz");
+//		PredictOreKit predict = new PredictOreKit(config);
+//		Jy1satDecoder decoder = new Jy1satDecoder(predict, config);
+//		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/jy1sat.raw.gz.json").getReq());
+//		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
+//		assertNotNull(result.getDataPath());
+//		assertNotNull(result.getImagePath());
+//		assertNotNull(result.getRawPath());
+//	}
 
 	@Before
 	public void start() throws Exception {

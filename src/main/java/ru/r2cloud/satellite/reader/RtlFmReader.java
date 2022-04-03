@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ProcessWrapper;
@@ -24,11 +25,13 @@ public class RtlFmReader implements IQReader {
 	private final ObservationRequest req;
 	private final Configuration config;
 	private final ProcessFactory factory;
+	private final Transmitter transmitter;
 
-	public RtlFmReader(Configuration config, ProcessFactory factory, ObservationRequest req) {
+	public RtlFmReader(Configuration config, ProcessFactory factory, ObservationRequest req, Transmitter transmitter) {
 		this.config = config;
 		this.factory = factory;
 		this.req = req;
+		this.transmitter = transmitter;
 	}
 
 	@Override
@@ -41,8 +44,8 @@ public class RtlFmReader implements IQReader {
 			return null;
 		}
 		try {
-			sox = factory.create(config.getProperty("satellites.sox.path") + " -t raw -r " + req.getInputSampleRate() + " -es -b 16 - " + wavPath.getAbsolutePath() + " rate " + req.getOutputSampleRate(), Redirect.INHERIT, false);
-			rtlfm = factory.create(config.getProperty("satellites.rtlfm.path") + " -f " + req.getActualFrequency() + " -d " + req.getRtlDeviceId() + " -s " + req.getInputSampleRate() + " -g " + req.getGain() + " -p " + req.getPpm() + " -E deemp -F 9 -", Redirect.INHERIT,
+			sox = factory.create(config.getProperty("satellites.sox.path") + " -t raw -r " + req.getSampleRate() + " -es -b 16 - " + wavPath.getAbsolutePath() + " rate " + transmitter.getOutputSampleRate(), Redirect.INHERIT, false);
+			rtlfm = factory.create(config.getProperty("satellites.rtlfm.path") + " -f " + req.getActualFrequency() + " -d " + req.getRtlDeviceId() + " -s " + req.getSampleRate() + " -g " + req.getGain() + " -p " + req.getPpm() + " -E deemp -F 9 -", Redirect.INHERIT,
 					false);
 			byte[] buf = new byte[BUF_SIZE];
 			while (!Thread.currentThread().isInterrupted()) {

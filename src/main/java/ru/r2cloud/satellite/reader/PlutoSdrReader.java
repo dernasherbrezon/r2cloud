@@ -37,7 +37,7 @@ public class PlutoSdrReader implements IQReader {
 		Long endTimeMillis = null;
 		try {
 			startTimeMillis = System.currentTimeMillis();
-			plutoSdrCli = factory.create(config.getProperty("satellites.plutosdr.wrapper.path") + " -cli " + config.getProperty("satellites.plutosdr.path") + " -f " + req.getActualFrequency() + " -s " + req.getInputSampleRate() + " -g " + req.getGain() + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
+			plutoSdrCli = factory.create(config.getProperty("satellites.plutosdr.wrapper.path") + " -cli " + config.getProperty("satellites.plutosdr.path") + " -f " + req.getActualFrequency() + " -s " + req.getSampleRate() + " -g " + req.getGain() + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
 			int responseCode = plutoSdrCli.waitFor();
 			if (responseCode != 143) {
 				LOG.error("[{}] invalid response code plutoSdrCli: {}", req.getId(), responseCode);

@@ -25,16 +25,17 @@ import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.RotatorStatus;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.ObservationRequestComparator;
 import ru.r2cloud.satellite.OverlappedTimetable;
 import ru.r2cloud.satellite.RotatorService;
-import ru.r2cloud.satellite.SatelliteFilter;
 import ru.r2cloud.satellite.Schedule;
 import ru.r2cloud.satellite.ScheduledObservation;
 import ru.r2cloud.satellite.SequentialTimetable;
+import ru.r2cloud.satellite.TransmitterFilter;
 import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.reader.IQReader;
 import ru.r2cloud.util.Clock;
@@ -49,8 +50,8 @@ public abstract class Device implements Lifecycle {
 	public static final Long PARTIAL_TOLERANCE_MILLIS = 60 * 4 * 1000L;
 
 	private final String id;
-	private final List<Satellite> scheduledSatellites = new ArrayList<>();
-	private final SatelliteFilter filter;
+	private final List<Transmitter> scheduledTransmitters = new ArrayList<>();
+	private final TransmitterFilter filter;
 	private final Schedule schedule;
 	private final int numberOfConcurrentObservations;
 	private final ThreadPoolFactory threadpoolFactory;
@@ -66,7 +67,7 @@ public abstract class Device implements Lifecycle {
 	private ScheduledExecutorService startThread = null;
 	private ScheduledExecutorService stopThread = null;
 
-	protected Device(String id, SatelliteFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, DeviceConfiguration deviceConfiguration, ObservationDao observationDao, DecoderService decoderService,
+	protected Device(String id, TransmitterFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, DeviceConfiguration deviceConfiguration, ObservationDao observationDao, DecoderService decoderService,
 			PredictOreKit predict) {
 		this.id = id;
 		this.filter = filter;
@@ -88,15 +89,15 @@ public abstract class Device implements Lifecycle {
 		}
 	}
 
-	public synchronized boolean trySatellite(Satellite satellite) {
-		if (!filter.accept(satellite)) {
+	public synchronized boolean tryTransmitter(Transmitter transmitter) {
+		if (!filter.accept(transmitter)) {
 			return false;
 		}
-		scheduledSatellites.add(satellite);
+		scheduledTransmitters.add(transmitter);
 		return true;
 	}
 
-	private void schedule(ObservationRequest observation, Satellite satellite) {
+	private void schedule(ObservationRequest observation, Transmitter satellite) {
 		// write some device-specific parameters
 		observation.setGain(deviceConfiguration.getGain());
 		observation.setBiast(deviceConfiguration.isBiast());
@@ -209,30 +210,30 @@ public abstract class Device implements Lifecycle {
 			numberOfObservationsOnCurrentBand = 0;
 		}
 		synchronized (this) {
-			if (scheduledSatellites.isEmpty()) {
+			if (scheduledTransmitters.isEmpty()) {
 				LOG.info("[{}] no available satellites for this device", id);
 				return;
 			}
 			long current = clock.millis();
-			List<ObservationRequest> newSchedule = schedule.createInitialSchedule(scheduledSatellites, current);
+			List<ObservationRequest> newSchedule = schedule.createInitialSchedule(scheduledTransmitters, current);
 			for (ObservationRequest cur : newSchedule) {
-				Satellite fullSatelliteInfo = findById(cur.getSatelliteId());
+				Transmitter fullSatelliteInfo = findById(cur.getTransmitterId());
 				if (fullSatelliteInfo == null) {
-					LOG.error("unable to find full satellite info for schedule observation: {}", cur.getId());
+					LOG.error("unable to find full transmitter info for schedule observation: {}", cur.getId());
 					continue;
 				}
 				schedule(cur, fullSatelliteInfo);
 			}
 			if (numberOfConcurrentObservations > 1) {
-				logBandsForSdrServer(scheduledSatellites);
+				logBandsForSdrServer(scheduledTransmitters);
 			}
 		}
 	}
 
-	private void logBandsForSdrServer(List<Satellite> allSatellites) {
+	private void logBandsForSdrServer(List<Transmitter> allSatellites) {
 		LOG.info("[{}] active bands are:", id);
 		Set<BandFrequency> unique = new HashSet<>();
-		for (Satellite cur : allSatellites) {
+		for (Transmitter cur : allSatellites) {
 			unique.add(cur.getFrequencyBand());
 		}
 		List<BandFrequency> sorted = new ArrayList<>(unique);
@@ -242,7 +243,7 @@ public abstract class Device implements Lifecycle {
 		}
 	}
 
-	public abstract IQReader createReader(ObservationRequest req, Satellite satellite);
+	public abstract IQReader createReader(ObservationRequest req, Transmitter satellite);
 
 	@Override
 	public void stop() {
@@ -270,9 +271,9 @@ public abstract class Device implements Lifecycle {
 		LOG.info("[{}] device started", id);
 	}
 
-	public ObservationRequest startImmediately(Satellite satellite) {
+	public ObservationRequest startImmediately(Transmitter transmitter) {
 		long startTime = clock.millis();
-		ObservationRequest closest = schedule.findFirstBySatelliteId(satellite.getId(), startTime);
+		ObservationRequest closest = schedule.findFirstBySatelliteId(transmitter.getId(), startTime);
 		if (closest == null) {
 			return null;
 		}
@@ -285,7 +286,7 @@ public abstract class Device implements Lifecycle {
 		if (movedTo == null) {
 			return null;
 		}
-		schedule(closest, satellite);
+		schedule(closest, transmitter);
 		return closest;
 	}
 
@@ -302,19 +303,19 @@ public abstract class Device implements Lifecycle {
 		return schedule.findFirstBySatelliteId(satelliteId, current);
 	}
 
-	public ObservationRequest enableSatellite(Satellite satellite) {
-		if (!trySatellite(satellite)) {
+	public ObservationRequest enableTransmitter(Transmitter transmitter) {
+		if (!tryTransmitter(transmitter)) {
 			return null;
 		}
-		List<ObservationRequest> batch = schedule.getBySatelliteId(satellite.getId());
+		List<ObservationRequest> batch = schedule.getBySatelliteId(transmitter.getId());
 		if (batch.isEmpty()) {
-			batch = schedule.addSatelliteToSchedule(satellite, clock.millis());
+			batch = schedule.addToSchedule(transmitter, clock.millis());
 			if (batch.isEmpty()) {
 				return null;
 			}
 
 			for (ObservationRequest cur : batch) {
-				schedule(cur, satellite);
+				schedule(cur, transmitter);
 			}
 		}
 
@@ -330,8 +331,8 @@ public abstract class Device implements Lifecycle {
 		}
 	}
 
-	private Satellite findById(String id) {
-		for (Satellite cur : scheduledSatellites) {
+	private Transmitter findById(String id) {
+		for (Transmitter cur : scheduledTransmitters) {
 			if (cur.getId().equals(id)) {
 				return cur;
 			}
@@ -339,15 +340,15 @@ public abstract class Device implements Lifecycle {
 		return null;
 	}
 
-	public synchronized void removeAllSatellites() {
-		scheduledSatellites.clear();
+	public synchronized void removeAllTransmitters() {
+		scheduledTransmitters.clear();
 	}
 
 	private boolean removeSatellite(String id) {
 		boolean removed = false;
-		Iterator<Satellite> it = scheduledSatellites.iterator();
+		Iterator<Transmitter> it = scheduledTransmitters.iterator();
 		while (it.hasNext()) {
-			Satellite cur = it.next();
+			Transmitter cur = it.next();
 			if (cur.getId().equalsIgnoreCase(id)) {
 				removed = true;
 				it.remove();

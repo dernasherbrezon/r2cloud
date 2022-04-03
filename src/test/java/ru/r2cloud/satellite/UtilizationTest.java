@@ -18,6 +18,7 @@ import ru.r2cloud.device.Device;
 import ru.r2cloud.it.util.BaseTest;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.tle.TLEDao;
@@ -46,7 +47,7 @@ public class UtilizationTest {
 		tleDao.start();
 		ObservationFactory factory = new ObservationFactory(predict, tleDao, config);
 
-		List<Satellite> enabledByDefault = getDefaultEnabled(satelliteDao);
+		List<Transmitter> enabledByDefault = getDefaultEnabled(satelliteDao);
 
 		System.out.println("partial default: ");
 		enabledByDefault = getDefaultEnabled(satelliteDao);
@@ -56,7 +57,7 @@ public class UtilizationTest {
 			enabledByDefault.remove(0);
 		}
 		System.out.println("partial 70cm: ");
-		List<Satellite> cm = loadFromFile(satelliteDao, "70cm-satellites.txt");
+		List<Transmitter> cm = loadFromFile(satelliteDao, "70cm-satellites.txt");
 		while (!cm.isEmpty()) {
 			float utilization = calculatePartialUtilization(factory, cm);
 			System.out.println(cm.size() + " " + utilization);
@@ -65,18 +66,18 @@ public class UtilizationTest {
 		celestrak.stop();
 	}
 
-	private static List<Satellite> loadFromFile(SatelliteDao satelliteDao, String file) throws Exception {
-		List<Satellite> result = new ArrayList<>();
+	private static List<Transmitter> loadFromFile(SatelliteDao satelliteDao, String file) throws Exception {
+		List<Transmitter> result = new ArrayList<>();
 		try (BufferedReader r = new BufferedReader(new InputStreamReader(UtilizationTest.class.getClassLoader().getResourceAsStream(file)))) {
 			String curLine = null;
 			while ((curLine = r.readLine()) != null) {
-				result.add(satelliteDao.findByName(curLine.trim()));
+				result.addAll(satelliteDao.findByName(curLine.trim()).getTransmitters());
 			}
 		}
 		return result;
 	}
 
-	private static float calculatePartialUtilization(ObservationFactory factory, List<Satellite> satellites) throws ParseException {
+	private static float calculatePartialUtilization(ObservationFactory factory, List<Transmitter> satellites) throws ParseException {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
@@ -94,14 +95,14 @@ public class UtilizationTest {
 		return (utilized / (float) total);
 	}
 
-	private static List<Satellite> getDefaultEnabled(SatelliteDao dao) {
-		List<Satellite> result = new ArrayList<>();
+	private static List<Transmitter> getDefaultEnabled(SatelliteDao dao) {
+		List<Transmitter> result = new ArrayList<>();
 		for (Satellite cur : dao.findEnabled()) {
 			// this satellite can't be visible on the tested ground station
 			if (cur.getId().equals("44365") || cur.getId().equals("44832")) {
 				continue;
 			}
-			result.add(cur);
+			result.addAll(cur.getTransmitters());
 		}
 		return result;
 	}

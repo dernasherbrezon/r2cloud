@@ -23,7 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.ddns.DDNSType;
+import ru.r2cloud.model.DemodulatorType;
 import ru.r2cloud.model.DeviceConfiguration;
+import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.RotatorConfiguration;
 import ru.r2cloud.model.SdrServerConfiguration;
 import ru.r2cloud.model.SdrType;
@@ -150,7 +152,7 @@ public class Configuration {
 		if (strValue == null) {
 			return null;
 		}
-		return Long.valueOf(strValue);
+		return Long.valueOf(strValue.trim());
 	}
 
 	public Integer getInteger(String name) {
@@ -422,5 +424,13 @@ public class Configuration {
 
 	public Path getPath(String filename) {
 		return fs.getPath(filename);
+	}
+
+	public DemodulatorType getDemodulatorType(Modulation modulation) {
+		String demodulatorType = getProperty("satellites.demod." + modulation);
+		if (demodulatorType == null) {
+			return DemodulatorType.JRADIO;
+		}
+		return DemodulatorType.valueOf(demodulatorType);
 	}
 }

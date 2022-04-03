@@ -23,6 +23,7 @@ import ru.r2cloud.jradio.source.RtlSdr;
 import ru.r2cloud.jradio.source.SigSource;
 import ru.r2cloud.jradio.source.Waveform;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Util;
 
@@ -30,7 +31,7 @@ public class DopplerCorrectedSource implements FloatInput {
 
 	private final FloatInput input;
 
-	public DopplerCorrectedSource(PredictOreKit predict, File rawIq, ObservationRequest req) throws IOException {
+	public DopplerCorrectedSource(PredictOreKit predict, File rawIq, ObservationRequest req, Transmitter transmitter) throws IOException {
 		Long totalBytes = Util.readTotalBytes(rawIq.toPath());
 		if (totalBytes == null) {
 			throw new IllegalArgumentException("unable to read total samples");
@@ -43,16 +44,16 @@ public class DopplerCorrectedSource implements FloatInput {
 		}
 		switch (req.getSdrType()) {
 		case RTLSDR:
-			source = new RtlSdr(is, req.getInputSampleRate(), totalBytes / 2);
+			source = new RtlSdr(is, transmitter.getInputSampleRate(), totalBytes / 2);
 			break;
 		case PLUTOSDR:
-			source = new PlutoSdr(is, req.getInputSampleRate(), totalBytes / 4);
+			source = new PlutoSdr(is, transmitter.getInputSampleRate(), totalBytes / 4);
 			break;
 		case SDRSERVER:
 			Context ctx = new Context();
 			ctx.setChannels(2);
 			ctx.setSampleSizeInBits(4 * 8); // float = 4 bytes
-			ctx.setSampleRate(req.getInputSampleRate());
+			ctx.setSampleRate(transmitter.getInputSampleRate());
 			ctx.setTotalSamples(totalBytes / 8);
 			source = new InputStreamSource(is, ctx);
 			break;
@@ -62,16 +63,16 @@ public class DopplerCorrectedSource implements FloatInput {
 		}
 		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(req.getTle().getRaw()[1], req.getTle().getRaw()[2]));
 		TopocentricFrame groundStation = predict.getPosition(req.getGroundStation());
-		long startFrequency = predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getStartTimeMillis(), groundStation, tlePropagator);
-		long endFrequency = predict.getDownlinkFreq(req.getSatelliteFrequency(), req.getEndTimeMillis(), groundStation, tlePropagator);
+		long startFrequency = predict.getDownlinkFreq(transmitter.getFrequency(), req.getStartTimeMillis(), groundStation, tlePropagator);
+		long endFrequency = predict.getDownlinkFreq(transmitter.getFrequency(), req.getEndTimeMillis(), groundStation, tlePropagator);
 
-		long maxOffset = Math.max(Math.abs(req.getSatelliteFrequency() - startFrequency), Math.abs(req.getSatelliteFrequency() - endFrequency));
+		long maxOffset = Math.max(Math.abs(transmitter.getFrequency() - startFrequency), Math.abs(transmitter.getFrequency() - endFrequency));
 
-		long finalBandwidth = maxOffset + req.getBandwidth() / 2;
+		long finalBandwidth = maxOffset + transmitter.getBandwidth() / 2;
 
 		float[] taps = Firdes.lowPass(1.0, source.getContext().getSampleRate(), finalBandwidth, 1600, Window.WIN_HAMMING, 6.76);
-		FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(source, taps, req.getInputSampleRate() / req.getOutputSampleRate(), (double) req.getSatelliteFrequency() - req.getActualFrequency());
-		SigSource source2 = new SigSource(Waveform.COMPLEX, (long) xlating.getContext().getSampleRate(), new DopplerValueSource(xlating.getContext().getSampleRate(), req.getSatelliteFrequency(), 1000L, req.getStartTimeMillis()) {
+		FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(source, taps, transmitter.getInputSampleRate() / transmitter.getOutputSampleRate(), (double) transmitter.getFrequency() - req.getActualFrequency());
+		SigSource source2 = new SigSource(Waveform.COMPLEX, (long) xlating.getContext().getSampleRate(), new DopplerValueSource(xlating.getContext().getSampleRate(), transmitter.getFrequency(), 1000L, req.getStartTimeMillis()) {
 
 			@Override
 			public long getDopplerFrequency(long satelliteFrequency, long currentTimeMillis) {

@@ -13,18 +13,17 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.jradio.BeaconSource;
-import ru.r2cloud.jradio.FloatInput;
+import ru.r2cloud.jradio.ByteInput;
 import ru.r2cloud.jradio.blocks.CorrelateSyncword;
 import ru.r2cloud.jradio.blocks.SoftToHard;
-import ru.r2cloud.jradio.demod.FskDemodulator;
 import ru.r2cloud.jradio.lucky7.Lucky7;
 import ru.r2cloud.jradio.lucky7.Lucky7Beacon;
 import ru.r2cloud.jradio.lucky7.Lucky7PictureDecoder;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.Util;
 
 public class Lucky7Decoder extends TelemetryDecoder {
 
@@ -35,8 +34,8 @@ public class Lucky7Decoder extends TelemetryDecoder {
 	}
 
 	@Override
-	public DecoderResult decode(File rawIq, ObservationRequest req) {
-		DecoderResult result = super.decode(rawIq, req);
+	public DecoderResult decode(File rawIq, ObservationRequest req, final Transmitter transmitter) {
+		DecoderResult result = super.decode(rawIq, req, transmitter);
 		if (result.getDataPath() != null) {
 			List<Lucky7Beacon> beacons = new ArrayList<>();
 			try (BeaconInputStream<Lucky7Beacon> bis = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(result.getDataPath())), Lucky7Beacon.class)) {
@@ -60,9 +59,7 @@ public class Lucky7Decoder extends TelemetryDecoder {
 	}
 
 	@Override
-	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		int baudRate = req.getBaudRates().get(0);
-		FskDemodulator demodulator = new FskDemodulator(source, baudRate, 5000.0f, Util.convertDecimation(baudRate), 1000);
+	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, ObservationRequest req) {
 		SoftToHard bs = new SoftToHard(demodulator);
 		CorrelateSyncword correlate = new CorrelateSyncword(bs, 3, "0010110111010100", 37 * 8);
 		return new Lucky7(correlate);

@@ -12,6 +12,7 @@ import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Util;
 
 public class R2loraDecoder implements Decoder {
@@ -25,7 +26,7 @@ public class R2loraDecoder implements Decoder {
 	}
 
 	@Override
-	public DecoderResult decode(File rawFile, ObservationRequest request) {
+	public DecoderResult decode(File rawFile, ObservationRequest request, final Transmitter transmitter) {
 		DecoderResult result = new DecoderResult();
 		result.setRawPath(null);
 		long numberOfDecodedPackets = 0;

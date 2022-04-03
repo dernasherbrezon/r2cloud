@@ -2,7 +2,6 @@ package ru.r2cloud.web.api.observation;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +14,10 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.satellite.ObservationDao;
-import ru.r2cloud.satellite.decoder.Decoder;
-import ru.r2cloud.satellite.decoder.R2loraDecoder;
-import ru.r2cloud.satellite.decoder.TelemetryDecoder;
+import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.SignedURL;
 import ru.r2cloud.util.Util;
 import ru.r2cloud.web.AbstractHttpController;
@@ -35,12 +34,12 @@ public class ObservationLoad extends AbstractHttpController {
 
 	private final ObservationDao resultDao;
 	private final SignedURL signed;
-	private final Map<String, Decoder> decoders;
+	private final SatelliteDao satelliteDao;
 
-	public ObservationLoad(ObservationDao resultDao, SignedURL signed, Map<String, Decoder> decoders) {
+	public ObservationLoad(ObservationDao resultDao, SignedURL signed, SatelliteDao satelliteDao) {
 		this.resultDao = resultDao;
 		this.signed = signed;
-		this.decoders = decoders;
+		this.satelliteDao = satelliteDao;
 	}
 
 	@Override
@@ -66,31 +65,39 @@ public class ObservationLoad extends AbstractHttpController {
 		}
 		JsonObject json = entity.toJson(signed);
 		if (entity.getDataPath() != null) {
-			Decoder decoder = decoders.get(entity.getSatelliteId());
-			Class<? extends Beacon> clazz = null;
-			if (decoder instanceof TelemetryDecoder) {
-				TelemetryDecoder telemetryDecoder = (TelemetryDecoder) decoder;
-				clazz = telemetryDecoder.getBeaconClass();
-			}
-			if (decoder instanceof R2loraDecoder) {
-				R2loraDecoder r2Decoder = (R2loraDecoder) decoder;
-				clazz = r2Decoder.getBeacon();
-			}
-			if (clazz != null) {
-				try (BeaconInputStream<?> ais = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(entity.getDataPath())), clazz)) {
-					JsonArray data = new JsonArray();
-					while (ais.hasNext()) {
-						data.add(convert(ais.next()));
-					}
-					json.add("dataEntity", data);
-				} catch (Exception e) {
-					LOG.error("unable to read binary data", e);
-				}
+			JsonArray beacons = convertBeacons(entity);
+			if (beacons != null) {
+				json.add("dataEntity", beacons);
 			}
 		}
 		ModelAndView result = new ModelAndView();
 		result.setData(json.toString());
 		return result;
+	}
+
+	private JsonArray convertBeacons(Observation entity) {
+		Satellite satellite = satelliteDao.findById(entity.getSatelliteId());
+		if (satellite == null) {
+			return null;
+		}
+		Transmitter transmitter = satellite.getById(entity.getTransmitterId());
+		if (transmitter == null) {
+			return null;
+		}
+		Class<? extends Beacon> clazz = transmitter.getBeaconClass();
+		if (clazz == null) {
+			return null;
+		}
+		try (BeaconInputStream<?> ais = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(entity.getDataPath())), clazz)) {
+			JsonArray data = new JsonArray();
+			while (ais.hasNext()) {
+				data.add(convert(ais.next()));
+			}
+			return data;
+		} catch (Exception e) {
+			LOG.error("unable to read binary data", e);
+			return null;
+		}
 	}
 
 	private static JsonObject convert(Beacon b) {

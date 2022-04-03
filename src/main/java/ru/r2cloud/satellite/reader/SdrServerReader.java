@@ -44,7 +44,7 @@ public class SdrServerReader implements IQReader {
 			dos.writeByte(0x00); // protocol version
 			dos.writeByte(0x00); // type = TYPE_REQUEST
 			dos.writeInt((int) req.getActualFrequency()); // center freq
-			dos.writeInt(req.getInputSampleRate()); // bandwidth
+			dos.writeInt(req.getSampleRate()); // bandwidth
 			dos.writeInt((int) req.getCenterBandFrequency()); // band frequency
 			dos.writeByte(0); // destination=REQUEST_DESTINATION_FILE
 			dos.flush();

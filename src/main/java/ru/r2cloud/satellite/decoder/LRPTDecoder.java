@@ -21,6 +21,7 @@ import ru.r2cloud.jradio.meteor.MeteorImage;
 import ru.r2cloud.jradio.meteor.MeteorM;
 import ru.r2cloud.jradio.meteor.MeteorMN2;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
@@ -39,8 +40,8 @@ public class LRPTDecoder implements Decoder {
 	}
 
 	@Override
-	public DecoderResult decode(final File rawIq, final ObservationRequest req) {
-		int symbolRate = req.getBaudRates().get(0);
+	public DecoderResult decode(final File rawIq, final ObservationRequest req, final Transmitter transmitter) {
+		int symbolRate = transmitter.getBaudRates().get(0);
 		MeteorM lrpt = null;
 		DecoderResult result = new DecoderResult();
 		result.setRawPath(rawIq);
@@ -48,7 +49,7 @@ public class LRPTDecoder implements Decoder {
 		long numberOfDecodedPackets = 0;
 		File binFile = new File(config.getTempDirectory(), "lrpt-" + req.getId() + ".bin");
 		try {
-			DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req);
+			DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req, transmitter);
 			Constellation constel = new Constellation(new float[] { -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f }, new int[] { 0, 1, 3, 2 }, 4, 1);
 			QpskDemodulator qpskDemod = new QpskDemodulator(source, symbolRate, constel);
 			lrpt = new MeteorMN2(qpskDemod);

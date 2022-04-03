@@ -7,31 +7,31 @@ import org.junit.Test;
 
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.Modulation;
-import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.Transmitter;
 
-public class SdrSatelliteFilterTest {
+public class LoraTransmitterFilterTest {
 
 	@Test
 	public void testSuccess() {
 		DeviceConfiguration config = new DeviceConfiguration();
-		config.setMinimumFrequency(100_000_000);
-		config.setMaximumFrequency(180_000_000);
-		SdrSatelliteFilter filter = new SdrSatelliteFilter(config);
-		Satellite satellite = createValid();
+		config.setMinimumFrequency(432_000_000);
+		config.setMaximumFrequency(450_000_000);
+		LoraTransmitterFilter filter = new LoraTransmitterFilter(config);
+		Transmitter satellite = createValid();
 		assertTrue(filter.accept(satellite));
-		satellite.setFrequency(433_000_000);
+		satellite.setFrequency(868_000_000);
 		assertFalse(filter.accept(satellite));
 		satellite = createValid();
-		satellite.setModulation(Modulation.LORA);
+		satellite.setModulation(Modulation.GFSK);
 		assertFalse(filter.accept(satellite));
 	}
 
-	private static Satellite createValid() {
-		Satellite result = new Satellite();
-		result.setFrequency(144_000_000);
-		result.setModulation(Modulation.GFSK);
+	private static Transmitter createValid() {
+		Transmitter result = new Transmitter();
+		result.setFrequency(433_000_000);
+		result.setModulation(Modulation.LORA);
 		result.setEnabled(true);
 		return result;
 	}
-
+	
 }

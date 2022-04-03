@@ -15,6 +15,7 @@ import ru.r2cloud.model.DeviceStatus;
 import ru.r2cloud.model.DeviceStatusComparator;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.ConfigListener;
@@ -59,13 +60,15 @@ public class DeviceManager implements Lifecycle, ConfigListener {
 
 	private void reschedule() {
 		for (int i = 0; i < devices.size(); i++) {
-			devices.get(i).removeAllSatellites();
+			devices.get(i).removeAllTransmitters();
 		}
 		List<Satellite> all = dao.findEnabled();
 		for (Satellite cur : all) {
-			for (int i = 0; i < devices.size(); i++) {
-				if (next().trySatellite(cur)) {
-					break;
+			for (Transmitter curTransmitter : cur.getTransmitters()) {
+				for (int i = 0; i < devices.size(); i++) {
+					if (next().tryTransmitter(curTransmitter)) {
+						break;
+					}
 				}
 			}
 		}
@@ -89,13 +92,18 @@ public class DeviceManager implements Lifecycle, ConfigListener {
 
 	public ObservationRequest enableSatellite(Satellite satellite) {
 		LOG.info("satellite {} enabled", satellite);
+		ObservationRequest result = null;
 		for (int i = 0; i < devices.size(); i++) {
-			ObservationRequest req = next().enableSatellite(satellite);
-			if (req != null) {
-				return req;
+			for (Transmitter cur : satellite.getTransmitters()) {
+				ObservationRequest req = next().enableTransmitter(cur);
+				// satellite might have several transmitters enabled
+				// return observation for the first scheduled
+				if (req != null) {
+					result = req;
+				}
 			}
 		}
-		return null;
+		return result;
 	}
 
 	public void disableSatellite(Satellite satelliteToEdit) {
@@ -115,13 +123,16 @@ public class DeviceManager implements Lifecycle, ConfigListener {
 	}
 
 	public ObservationRequest startImmediately(Satellite satellite) {
+		ObservationRequest result = null;
 		for (int i = 0; i < devices.size(); i++) {
-			ObservationRequest result = devices.get(i).startImmediately(satellite);
-			if (result != null) {
-				return result;
+			for (Transmitter curTransmitter : satellite.getTransmitters()) {
+				ObservationRequest cur = devices.get(i).startImmediately(curTransmitter);
+				if (cur != null) {
+					result = cur;
+				}
 			}
 		}
-		return null;
+		return result;
 	}
 
 	public boolean completeImmediately(String observationId) {

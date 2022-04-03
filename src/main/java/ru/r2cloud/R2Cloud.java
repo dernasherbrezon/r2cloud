@@ -19,67 +19,20 @@ import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.device.LoraDevice;
 import ru.r2cloud.device.SdrDevice;
-import ru.r2cloud.jradio.ax25.Ax25Beacon;
-import ru.r2cloud.jradio.csp.CspBeacon;
-import ru.r2cloud.jradio.fox.Fox1BBeacon;
-import ru.r2cloud.jradio.fox.Fox1CBeacon;
-import ru.r2cloud.jradio.fox.Fox1DBeacon;
-import ru.r2cloud.jradio.meznsat.MeznsatBeacon;
-import ru.r2cloud.jradio.usp.UspBeacon;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.DeviceConfiguration;
-import ru.r2cloud.model.Framing;
-import ru.r2cloud.model.Modulation;
-import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SdrType;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.r2lora.ModulationConfig;
 import ru.r2cloud.r2lora.R2loraClient;
 import ru.r2cloud.r2lora.R2loraStatus;
-import ru.r2cloud.satellite.LoraSatelliteFilter;
+import ru.r2cloud.satellite.LoraTransmitterFilter;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.SatelliteDao;
-import ru.r2cloud.satellite.SdrSatelliteFilter;
-import ru.r2cloud.satellite.decoder.APTDecoder;
-import ru.r2cloud.satellite.decoder.Aausat4Decoder;
-import ru.r2cloud.satellite.decoder.AfskAx25Decoder;
-import ru.r2cloud.satellite.decoder.Alsat1nDecoder;
-import ru.r2cloud.satellite.decoder.Ao73Decoder;
-import ru.r2cloud.satellite.decoder.AstrocastDecoder;
-import ru.r2cloud.satellite.decoder.BpskAx25Decoder;
-import ru.r2cloud.satellite.decoder.BpskAx25G3ruhDecoder;
-import ru.r2cloud.satellite.decoder.ChompttDecoder;
-import ru.r2cloud.satellite.decoder.Decoder;
+import ru.r2cloud.satellite.SdrTransmitterFilter;
 import ru.r2cloud.satellite.decoder.DecoderService;
-import ru.r2cloud.satellite.decoder.DelfiC3Decoder;
-import ru.r2cloud.satellite.decoder.DelfiPqDecoder;
-import ru.r2cloud.satellite.decoder.Diy1Decoder;
-import ru.r2cloud.satellite.decoder.Dstar1Decoder;
-import ru.r2cloud.satellite.decoder.EseoDecoder;
-import ru.r2cloud.satellite.decoder.Floripasat1Decoder;
-import ru.r2cloud.satellite.decoder.FoxDecoder;
-import ru.r2cloud.satellite.decoder.FoxSlowDecoder;
-import ru.r2cloud.satellite.decoder.FskAx100Decoder;
-import ru.r2cloud.satellite.decoder.FskAx25G3ruhDecoder;
-import ru.r2cloud.satellite.decoder.GaspacsDecoder;
-import ru.r2cloud.satellite.decoder.Gomx1Decoder;
-import ru.r2cloud.satellite.decoder.ItSpinsDecoder;
-import ru.r2cloud.satellite.decoder.Jy1satDecoder;
-import ru.r2cloud.satellite.decoder.LRPTDecoder;
-import ru.r2cloud.satellite.decoder.Lucky7Decoder;
-import ru.r2cloud.satellite.decoder.Nayif1Decoder;
-import ru.r2cloud.satellite.decoder.OpsSatDecoder;
-import ru.r2cloud.satellite.decoder.PegasusDecoder;
-import ru.r2cloud.satellite.decoder.R2loraDecoder;
-import ru.r2cloud.satellite.decoder.ReaktorHelloWorldDecoder;
-import ru.r2cloud.satellite.decoder.SalsatDecoder;
-import ru.r2cloud.satellite.decoder.Smog1Decoder;
-import ru.r2cloud.satellite.decoder.SnetDecoder;
-import ru.r2cloud.satellite.decoder.Strand1Decoder;
-import ru.r2cloud.satellite.decoder.Suomi100Decoder;
-import ru.r2cloud.satellite.decoder.TechnosatDecoder;
-import ru.r2cloud.satellite.decoder.UspDecoder;
+import ru.r2cloud.satellite.decoder.Decoders;
 import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.tle.TLEDao;
 import ru.r2cloud.tle.TLEReloader;
@@ -144,7 +97,7 @@ public class R2Cloud {
 	private final R2ServerService r2cloudService;
 	private final R2ServerClient r2cloudClient;
 	private final SpectogramService spectogramService;
-	private final Map<String, Decoder> decoders = new HashMap<>();
+	private final Decoders decoders;
 	private final SignedURL signed;
 	private final DeviceManager deviceManager;
 
@@ -172,86 +125,8 @@ public class R2Cloud {
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient(props.getProperties("tle.urls")));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
 		signed = new SignedURL(props, clock);
-		APTDecoder aptDecoder = new APTDecoder(props, processFactory);
-		decoders.put("25338", aptDecoder);
-		decoders.put("28654", aptDecoder);
-		decoders.put("32789", new DelfiC3Decoder(predict, props));
-		decoders.put("33591", aptDecoder);
-		decoders.put("39430", new Gomx1Decoder(predict, props));
-		decoders.put("39444", new Ao73Decoder(predict, props));
-		decoders.put("40069", new LRPTDecoder(predict, props));
-		decoders.put("41460", new Aausat4Decoder(predict, props));
-		decoders.put("42017", new Nayif1Decoder(predict, props));
-		decoders.put("42784", new PegasusDecoder(predict, props));
-		decoders.put("42829", new TechnosatDecoder(predict, props));
-		decoders.put("48900", new TechnosatDecoder(predict, props));
-		SnetDecoder snetDecoder = new SnetDecoder(predict, props);
-		decoders.put("43186", snetDecoder);
-		decoders.put("43187", snetDecoder);
-		decoders.put("43188", snetDecoder);
-		decoders.put("43189", snetDecoder);
-		decoders.put("43743", new ReaktorHelloWorldDecoder(predict, props));
-		decoders.put("43792", new EseoDecoder(predict, props));
-		decoders.put("43798", new AstrocastDecoder(predict, props));
-		decoders.put("44083", new AstrocastDecoder(predict, props));
-		decoders.put("43803", new Jy1satDecoder(predict, props));
-		decoders.put("43804", new Suomi100Decoder(predict, props));
-		decoders.put("43881", new Dstar1Decoder(predict, props));
-		decoders.put("44406", new Lucky7Decoder(predict, props));
-		decoders.put("44878", new OpsSatDecoder(predict, props));
-		decoders.put("44885", new Floripasat1Decoder(predict, props));
-		decoders.put("43017", new FoxSlowDecoder<>(predict, props, Fox1BBeacon.class));
-		decoders.put("43770", new FoxSlowDecoder<>(predict, props, Fox1CBeacon.class));
-		decoders.put("43137", new FoxDecoder<>(predict, props, Fox1DBeacon.class));
-		decoders.put("43855", new ChompttDecoder(predict, props));
-		decoders.put("41789", new Alsat1nDecoder(predict, props));
-		decoders.put("39090", new Strand1Decoder(predict, props));
-		decoders.put("46495", new SalsatDecoder(predict, props));
-		decoders.put("46489", new BpskAx25G3ruhDecoder(predict, props, 1200, MeznsatBeacon.class, null));
-		decoders.put("42792", new AfskAx25Decoder(predict, props, 1300, Ax25Beacon.class, null));
-		decoders.put("39428", new BpskAx25Decoder(predict, props, 1200, Ax25Beacon.class, null));
-		decoders.put("42790", new Gomx1Decoder(predict, props, CspBeacon.class, false, true, true));
-		decoders.put("49017", new ItSpinsDecoder(predict, props, Ax25Beacon.class));
-		decoders.put("47960", new UspDecoder(predict, props, UspBeacon.class));
-		decoders.put("47952", new UspDecoder(predict, props, UspBeacon.class));
-		decoders.put("47951", new UspDecoder(predict, props, UspBeacon.class));
-		decoders.put("47963", new Diy1Decoder(predict, props));
-		decoders.put("47964", new Smog1Decoder(predict, props));
-		decoders.put("51074", new DelfiPqDecoder(predict, props));
-		decoders.put("51439", new GaspacsDecoder(predict, props));
-
-		for (Satellite cur : satelliteDao.findAll()) {
-			if (cur.getFraming() == null || cur.getModulation() == null || cur.getBeaconClass() == null) {
-				continue;
-			}
-			if (cur.getModulation().equals(Modulation.LORA)) {
-				decoders.put(cur.getId(), new R2loraDecoder(cur.getBeaconClass()));
-				continue;
-			}
-			if (cur.getBaudRates() == null || cur.getBaudRates().isEmpty()) {
-				continue;
-			}
-			if (cur.getModulation().equals(Modulation.GFSK) && cur.getFraming().equals(Framing.AX25G3RUH)) {
-				decoders.put(cur.getId(), new FskAx25G3ruhDecoder(predict, props, cur.getBeaconClass(), cur.getAssistedHeader()));
-			} else if (cur.getModulation().equals(Modulation.GFSK) && cur.getFraming().equals(Framing.AX100)) {
-				if (cur.getBeaconSizeBytes() == 0) {
-					LOG.error("beacon size bytes are missing for GFSK AX100: {}", cur.getId());
-					continue;
-				}
-				decoders.put(cur.getId(), new FskAx100Decoder(predict, props, cur.getBeaconSizeBytes(), cur.getBeaconClass()));
-			} else if (cur.getModulation().equals(Modulation.BPSK) && cur.getFraming().equals(Framing.AX25G3RUH)) {
-				decoders.put(cur.getId(), new BpskAx25G3ruhDecoder(predict, props, cur.getBaudRates().get(0), cur.getBeaconClass(), cur.getAssistedHeader()));
-			} else if (cur.getModulation().equals(Modulation.BPSK) && cur.getFraming().equals(Framing.AX25)) {
-				decoders.put(cur.getId(), new BpskAx25Decoder(predict, props, 0.0, cur.getBeaconClass(), cur.getAssistedHeader()));
-			} else if (cur.getModulation().equals(Modulation.AFSK) && cur.getFraming().equals(Framing.AX25)) {
-				decoders.put(cur.getId(), new AfskAx25Decoder(predict, props, cur.getBaudRates().get(0), cur.getBeaconClass(), cur.getAssistedHeader()));
-			} else {
-				LOG.error("unsupported combination of modulation and framing: {} - {}", cur.getModulation(), cur.getFraming());
-			}
-		}
-
-		validateDecoders();
-		decoderService = new DecoderService(props, decoders, resultDao, r2cloudService, threadFactory, metrics);
+		decoders = new Decoders(predict, props, processFactory, satelliteDao);
+		decoderService = new DecoderService(props, decoders, resultDao, r2cloudService, threadFactory, metrics, satelliteDao);
 
 		observationFactory = new ObservationFactory(predict, tleDao, props);
 
@@ -261,12 +136,12 @@ public class R2Cloud {
 			if (props.getSdrType().equals(SdrType.SDRSERVER) && cur.getRotatorConfiguration() == null) {
 				numberOfConcurrentObservations = 5;
 			}
-			deviceManager.addDevice(new SdrDevice(cur.getId(), new SdrSatelliteFilter(cur), numberOfConcurrentObservations, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, props, processFactory));
+			deviceManager.addDevice(new SdrDevice(cur.getId(), new SdrTransmitterFilter(cur), numberOfConcurrentObservations, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, props, processFactory));
 		}
 		for (DeviceConfiguration cur : props.getLoraConfigurations()) {
 			R2loraClient client = new R2loraClient(cur.getHostport(), cur.getUsername(), cur.getPassword(), cur.getTimeout());
 			populateFrequencies(client.getStatus(), cur);
-			deviceManager.addDevice(new LoraDevice(cur.getId(), new LoraSatelliteFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, client));
+			deviceManager.addDevice(new LoraDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, client));
 		}
 
 		// setup web server
@@ -283,7 +158,7 @@ public class R2Cloud {
 		index(new R2CloudSave(props));
 		index(new ObservationSpectrogram(resultDao, spectogramService, signed));
 		index(new ObservationList(satelliteDao, resultDao));
-		index(new ObservationLoad(resultDao, signed, decoders));
+		index(new ObservationLoad(resultDao, signed, satelliteDao));
 		index(new ScheduleList(satelliteDao, deviceManager));
 		index(new ScheduleSave(satelliteDao, deviceManager));
 		index(new ScheduleStart(satelliteDao, deviceManager));
@@ -384,19 +259,6 @@ public class R2Cloud {
 		HttpContoller previous = controllers.put(controller.getRequestMappingURL(), controller);
 		if (previous != null) {
 			throw new IllegalArgumentException("duplicate controller has been registerd: " + controller.getClass().getSimpleName() + " previous: " + previous.getClass().getSimpleName());
-		}
-	}
-
-	private void validateDecoders() {
-		for (Satellite cur : satelliteDao.findAll()) {
-			if (!decoders.containsKey(cur.getId())) {
-				throw new IllegalStateException("decoder is not defined for: " + cur.getId());
-			}
-		}
-		for (String id : decoders.keySet()) {
-			if (satelliteDao.findById(id) == null) {
-				throw new IllegalStateException("missing satellite configuration for: " + id);
-			}
 		}
 	}
 

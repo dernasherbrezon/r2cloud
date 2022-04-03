@@ -2,7 +2,6 @@ package ru.r2cloud.satellite.decoder;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
@@ -17,7 +16,10 @@ import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationStatus;
+import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.satellite.ObservationDao;
+import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
 import ru.r2cloud.util.SafeRunnable;
@@ -30,23 +32,25 @@ public class DecoderService implements Lifecycle {
 
 	private ScheduledExecutorService decoderThread = null;
 
-	private final Map<String, Decoder> decoders;
+	private final Decoders decoders;
 	private final ObservationDao dao;
 	private final R2ServerService r2cloudService;
 	private final ThreadPoolFactory threadpoolFactory;
 	private final Configuration config;
 	private final Metrics metrics;
+	private final SatelliteDao satelliteDao;
 
 	private Counter lrpt;
 	private Counter telemetry;
 
-	public DecoderService(Configuration config, Map<String, Decoder> decoders, ObservationDao dao, R2ServerService r2cloudService, ThreadPoolFactory threadpoolFactory, Metrics metrics) {
+	public DecoderService(Configuration config, Decoders decoders, ObservationDao dao, R2ServerService r2cloudService, ThreadPoolFactory threadpoolFactory, Metrics metrics, SatelliteDao satelliteDao) {
 		this.config = config;
 		this.decoders = decoders;
 		this.dao = dao;
 		this.r2cloudService = r2cloudService;
 		this.threadpoolFactory = threadpoolFactory;
 		this.metrics = metrics;
+		this.satelliteDao = satelliteDao;
 	}
 
 	@Override
@@ -92,7 +96,7 @@ public class DecoderService implements Lifecycle {
 	}
 
 	private void runInternally(File rawFile, ObservationRequest request) {
-		Decoder decoder = decoders.get(request.getSatelliteId());
+		Decoder decoder = decoders.findByKey(request.getSatelliteId(), request.getTransmitterId());
 		if (decoder == null) {
 			LOG.error("[{}] unknown decoder for {}", request.getId(), request.getSatelliteId());
 			return;
@@ -105,8 +109,27 @@ public class DecoderService implements Lifecycle {
 			LOG.info("[{}] raw data for observation is missing. This can be caused by slow decoding of other observations and too aggressive retention. Increase scheduler.data.retention.raw.count or reduce number of scheduled satellites or use faster hardware", request.getId());
 			return;
 		}
+		Satellite satellite = satelliteDao.findById(request.getSatelliteId());
+		if (satellite == null) {
+			LOG.error("[{}] satellite is missing. cannot decode: {}", request.getId(), request.getSatelliteId());
+			return;
+		}
+		Transmitter transmitter = null;
+		if (request.getTransmitterId() != null) {
+			transmitter = satellite.getById(request.getTransmitterId());
+		} else {
+			// support for legacy observations
+			// select first transmitter
+			if (satellite.getTransmitters().size() > 0) {
+				transmitter = satellite.getTransmitters().get(0);
+			}
+		}
+		if (transmitter == null) {
+			LOG.error("[{}] cannot find transmitter for satellite {}", request.getId(), request.getSatelliteId());
+			return;
+		}
 		LOG.info("[{}] decoding", request.getId());
-		DecoderResult result = decoder.decode(rawFile, request);
+		DecoderResult result = decoder.decode(rawFile, request, transmitter);
 		LOG.info("[{}] decoded", request.getId());
 
 		if (result.getDataPath() != null) {
@@ -128,14 +151,14 @@ public class DecoderService implements Lifecycle {
 		dao.update(observation);
 		r2cloudService.uploadObservation(observation);
 
-		switch (observation.getSource()) {
+		switch (transmitter.getFraming()) {
+		case APT:
+			break;
 		case LRPT:
 			lrpt.inc(observation.getNumberOfDecodedPackets());
 			break;
-		case TELEMETRY:
-			telemetry.inc(observation.getNumberOfDecodedPackets());
-			break;
 		default:
+			telemetry.inc(observation.getNumberOfDecodedPackets());
 			break;
 		}
 	}

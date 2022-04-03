@@ -3,174 +3,18 @@ package ru.r2cloud.model;
 import java.util.Date;
 import java.util.List;
 
-import ru.r2cloud.jradio.Beacon;
-
 public class Satellite {
 
 	private String id;
 	private String name;
-	private FrequencySource source;
-	private long frequency;
 	private boolean enabled;
-	private long bandwidth;
-	private List<Integer> baudRates;
-	private BandFrequency frequencyBand;
-	private int inputSampleRate;
-	private int outputSampleRate;
-	private Modulation modulation;
-	private Framing framing;
-	private Class<? extends Beacon> beaconClass;
-	private int beaconSizeBytes;
 	private Tle tle;
 	private Priority priority;
 	// active period
 	// used for new launches when noradid not yet defined
 	private Date start;
 	private Date end;
-	private byte[] assistedHeader;
-
-	private long loraBandwidth;
-	private int loraSpreadFactor;
-	private int loraCodingRate;
-	private int loraSyncword;
-	private int loraPreambleLength;
-	private int loraLdro;
-
-	public Date getStart() {
-		return start;
-	}
-
-	public Date getEnd() {
-		return end;
-	}
-
-	public void setStart(Date start) {
-		this.start = start;
-	}
-
-	public void setEnd(Date end) {
-		this.end = end;
-	}
-
-	public Priority getPriority() {
-		return priority;
-	}
-
-	public void setPriority(Priority priority) {
-		this.priority = priority;
-	}
-
-	public Tle getTle() {
-		return tle;
-	}
-
-	public void setTle(Tle tle) {
-		this.tle = tle;
-	}
-
-	public int getBeaconSizeBytes() {
-		return beaconSizeBytes;
-	}
-
-	public void setBeaconSizeBytes(int beaconSizeBytes) {
-		this.beaconSizeBytes = beaconSizeBytes;
-	}
-
-	public Class<? extends Beacon> getBeaconClass() {
-		return beaconClass;
-	}
-
-	public void setBeaconClass(Class<? extends Beacon> beaconClass) {
-		this.beaconClass = beaconClass;
-	}
-
-	public Modulation getModulation() {
-		return modulation;
-	}
-
-	public void setModulation(Modulation modulation) {
-		this.modulation = modulation;
-	}
-
-	public Framing getFraming() {
-		return framing;
-	}
-
-	public void setFraming(Framing framing) {
-		this.framing = framing;
-	}
-
-	public int getInputSampleRate() {
-		return inputSampleRate;
-	}
-
-	public void setInputSampleRate(int inputSampleRate) {
-		this.inputSampleRate = inputSampleRate;
-	}
-
-	public int getOutputSampleRate() {
-		return outputSampleRate;
-	}
-
-	public void setOutputSampleRate(int outputSampleRate) {
-		this.outputSampleRate = outputSampleRate;
-	}
-
-	public BandFrequency getFrequencyBand() {
-		return frequencyBand;
-	}
-
-	public void setFrequencyBand(BandFrequency frequencyBand) {
-		this.frequencyBand = frequencyBand;
-	}
-
-	public List<Integer> getBaudRates() {
-		return baudRates;
-	}
-
-	public void setBaudRates(List<Integer> baudRates) {
-		this.baudRates = baudRates;
-	}
-
-	public int[] getBaudRatesAsArray() {
-		int[] result = new int[baudRates.size()];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = baudRates.get(i);
-		}
-		return result;
-	}
-
-	public long getBandwidth() {
-		return bandwidth;
-	}
-
-	public void setBandwidth(long bandwidth) {
-		this.bandwidth = bandwidth;
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public FrequencySource getSource() {
-		return source;
-	}
-
-	public void setSource(FrequencySource source) {
-		this.source = source;
-	}
-
-	public long getFrequency() {
-		return frequency;
-	}
-
-	public void setFrequency(long frequency) {
-		this.frequency = frequency;
-	}
+	private List<Transmitter> transmitters;
 
 	public String getId() {
 		return id;
@@ -188,60 +32,61 @@ public class Satellite {
 		this.name = name;
 	}
 
-	public long getLoraBandwidth() {
-		return loraBandwidth;
+	public boolean isEnabled() {
+		return enabled;
 	}
 
-	public void setLoraBandwidth(long loraBandwidth) {
-		this.loraBandwidth = loraBandwidth;
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
-	public int getLoraSpreadFactor() {
-		return loraSpreadFactor;
+	public Tle getTle() {
+		return tle;
 	}
 
-	public void setLoraSpreadFactor(int loraSpreadFactor) {
-		this.loraSpreadFactor = loraSpreadFactor;
+	public void setTle(Tle tle) {
+		this.tle = tle;
 	}
 
-	public int getLoraCodingRate() {
-		return loraCodingRate;
+	public Priority getPriority() {
+		return priority;
 	}
 
-	public void setLoraCodingRate(int loraCodingRate) {
-		this.loraCodingRate = loraCodingRate;
+	public void setPriority(Priority priority) {
+		this.priority = priority;
 	}
 
-	public int getLoraSyncword() {
-		return loraSyncword;
+	public Date getStart() {
+		return start;
 	}
 
-	public void setLoraSyncword(int loraSyncword) {
-		this.loraSyncword = loraSyncword;
+	public void setStart(Date start) {
+		this.start = start;
 	}
 
-	public int getLoraPreambleLength() {
-		return loraPreambleLength;
+	public Date getEnd() {
+		return end;
 	}
 
-	public void setLoraPreambleLength(int loraPreambleLength) {
-		this.loraPreambleLength = loraPreambleLength;
+	public void setEnd(Date end) {
+		this.end = end;
 	}
 
-	public int getLoraLdro() {
-		return loraLdro;
+	public List<Transmitter> getTransmitters() {
+		return transmitters;
 	}
 
-	public void setLoraLdro(int loraLdro) {
-		this.loraLdro = loraLdro;
+	public void setTransmitters(List<Transmitter> transmitters) {
+		this.transmitters = transmitters;
 	}
 
-	public byte[] getAssistedHeader() {
-		return assistedHeader;
-	}
-
-	public void setAssistedHeader(byte[] assistedHeader) {
-		this.assistedHeader = assistedHeader;
+	public Transmitter getById(String id) {
+		for (Transmitter cur : transmitters) {
+			if (cur.getId().equalsIgnoreCase(id)) {
+				return cur;
+			}
+		}
+		return null;
 	}
 
 	@Override

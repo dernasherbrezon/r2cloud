@@ -31,12 +31,12 @@ import com.eclipsesource.json.ParseException;
 import ru.r2cloud.R2Cloud;
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.model.Framing;
-import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Tle;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -170,31 +170,6 @@ public class R2ServerClient {
 			return null;
 		}
 		result.setName(name);
-		long frequency = json.getLong("frequency", 0);
-		if (frequency == 0) {
-			return null;
-		}
-		result.setFrequency(frequency);
-
-		String modulation = json.getString("modulation", null);
-		if (modulation == null) {
-			return null;
-		}
-		try {
-			result.setModulation(Modulation.valueOf(modulation));
-		} catch (Exception e) {
-			return null;
-		}
-		String framing = json.getString("framing", null);
-		if (framing == null) {
-			return null;
-		}
-		try {
-			result.setFraming(Framing.valueOf(framing));
-		} catch (Exception e) {
-			return null;
-		}
-		result.setSource(FrequencySource.TELEMETRY);
 		result.setPriority(Priority.HIGH);
 		// by default enabled, but can be overriden by user from UI
 		String enabledStr = config.getProperty("satellites." + result.getId() + ".enabled");
@@ -203,28 +178,6 @@ public class R2ServerClient {
 		} else {
 			result.setEnabled(true);
 		}
-		long bandwidth = json.getLong("bandwidth", 0);
-		if (bandwidth == 0) {
-			return null;
-		}
-		result.setBandwidth(bandwidth);
-		JsonValue jsonRates = json.get("baudRates");
-		if (jsonRates != null && jsonRates.isArray()) {
-			result.setBaudRates(convertToIntegerList(jsonRates.asArray()));
-		} else {
-			result.setBaudRates(Collections.emptyList());
-		}
-		String beaconClassStr = json.getString("beaconClass", null);
-		if (beaconClassStr == null) {
-			return null;
-		}
-		try {
-			result.setBeaconClass((Class<? extends Beacon>) Class.forName(beaconClassStr));
-		} catch (ClassNotFoundException e) {
-			return null;
-		}
-		result.setBeaconSizeBytes(json.getInt("beaconSizeBytes", 0));
-
 		Tle tle = readTle(json.get("tle"));
 		if (tle == null) {
 			LOG.info("can't read tle for {}", name);
@@ -239,12 +192,64 @@ public class R2ServerClient {
 		if (endTimeMillis != 0) {
 			result.setEnd(new Date(endTimeMillis));
 		}
-		result.setLoraBandwidth(json.getLong("loraBandwidth", 0));
-		result.setLoraSpreadFactor(json.getInt("loraSpreadFactor", 0));
-		result.setLoraCodingRate(json.getInt("loraCodingRate", 0));
-		result.setLoraSyncword(json.getInt("loraSyncword", 0));
-		result.setLoraPreambleLength(json.getInt("loraPreambleLength", 0));
-		result.setLoraLdro(json.getInt("loraLdro", 0));
+		Transmitter transmitter = new Transmitter();
+		transmitter.setId(result.getId() + "-0");
+		transmitter.setEnabled(result.isEnabled());
+		transmitter.setPriority(result.getPriority());
+		transmitter.setSatelliteId(result.getId());
+		transmitter.setStart(result.getStart());
+		transmitter.setEnd(result.getEnd());
+		long frequency = json.getLong("frequency", 0);
+		if (frequency == 0) {
+			return null;
+		}
+		transmitter.setFrequency(frequency);
+		String modulation = json.getString("modulation", null);
+		if (modulation == null) {
+			return null;
+		}
+		try {
+			transmitter.setModulation(Modulation.valueOf(modulation));
+		} catch (Exception e) {
+			return null;
+		}
+		String framing = json.getString("framing", null);
+		if (framing == null) {
+			return null;
+		}
+		try {
+			transmitter.setFraming(Framing.valueOf(framing));
+		} catch (Exception e) {
+			return null;
+		}
+		long bandwidth = json.getLong("bandwidth", 0);
+		if (bandwidth == 0) {
+			return null;
+		}
+		transmitter.setBandwidth(bandwidth);
+		String beaconClassStr = json.getString("beaconClass", null);
+		if (beaconClassStr == null) {
+			return null;
+		}
+		try {
+			transmitter.setBeaconClass((Class<? extends Beacon>) Class.forName(beaconClassStr));
+		} catch (ClassNotFoundException e) {
+			return null;
+		}
+		transmitter.setBeaconSizeBytes(json.getInt("beaconSizeBytes", 0));
+		transmitter.setLoraBandwidth(json.getLong("loraBandwidth", 0));
+		transmitter.setLoraSpreadFactor(json.getInt("loraSpreadFactor", 0));
+		transmitter.setLoraCodingRate(json.getInt("loraCodingRate", 0));
+		transmitter.setLoraSyncword(json.getInt("loraSyncword", 0));
+		transmitter.setLoraPreambleLength(json.getInt("loraPreambleLength", 0));
+		transmitter.setLoraLdro(json.getInt("loraLdro", 0));
+		JsonValue jsonRates = json.get("baudRates");
+		if (jsonRates != null && jsonRates.isArray()) {
+			transmitter.setBaudRates(convertToIntegerList(jsonRates.asArray()));
+		} else {
+			transmitter.setBaudRates(Collections.emptyList());
+		}
+		result.setTransmitters(Collections.singletonList(transmitter));
 		return result;
 	}
 

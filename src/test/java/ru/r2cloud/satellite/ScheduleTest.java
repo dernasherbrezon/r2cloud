@@ -35,6 +35,7 @@ import ru.r2cloud.device.Device;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SdrType;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.tle.TLEDao;
@@ -112,12 +113,12 @@ public class ScheduleTest {
 		List<ObservationRequest> sublist = schedule.findObservations(getTime("2020-10-01 10:55:40.000"), getTime("2020-10-01 13:04:14.000"));
 		assertObservations(readExpected("expected/scheduleSublist.txt"), sublist);
 
-		List<ObservationRequest> noaa18 = schedule.addSatelliteToSchedule(satelliteDao.findByName("NOAA 18"), current);
+		List<ObservationRequest> noaa18 = schedule.addToSchedule(satelliteDao.findByName("NOAA 18").getTransmitters().get(0), current);
 		List<ObservationRequest> extended = new ArrayList<>(actual);
 		extended.addAll(noaa18);
 		assertObservations(readExpected("expected/scheduleWithNoaa18.txt"), extended);
 		// test satellite already scheduled
-		List<ObservationRequest> doubleAdded = schedule.addSatelliteToSchedule(satelliteDao.findByName("NOAA 18"), current);
+		List<ObservationRequest> doubleAdded = schedule.addToSchedule(satelliteDao.findByName("NOAA 18").getTransmitters().get(0), current);
 		assertObservations(noaa18, doubleAdded);
 
 		// cancel all newly added
@@ -200,18 +201,18 @@ public class ScheduleTest {
 		assertEquals(expected.getEndTimeMillis(), actual.getEndTimeMillis());
 	}
 
-	private static List<Satellite> extractSatellites(List<ObservationRequest> req, SatelliteDao dao) throws Exception {
+	private static List<Transmitter> extractSatellites(List<ObservationRequest> req, SatelliteDao dao) throws Exception {
 		Set<String> ids = new HashSet<>();
 		for (ObservationRequest cur : req) {
 			ids.add(cur.getSatelliteId());
 		}
-		List<Satellite> result = new ArrayList<>();
+		List<Transmitter> result = new ArrayList<>();
 		for (String cur : ids) {
 			Satellite curSatellite = dao.findById(cur);
 			if (curSatellite == null) {
 				continue;
 			}
-			result.add(curSatellite);
+			result.addAll(curSatellite.getTransmitters());
 		}
 		return result;
 	}
@@ -250,7 +251,8 @@ public class ScheduleTest {
 		SimpleDateFormat sdf = createDateFormatter();
 		for (ObservationRequest cur : actual) {
 			Satellite sat = satelliteDao.findById(cur.getSatelliteId());
-			System.out.println(sdf.format(new Date(cur.getStartTimeMillis())) + ",  " + sdf.format(new Date(cur.getEndTimeMillis())) + ",\t\t" + cur.getSatelliteId() + "," + sat.getFrequencyBand().getCenter() + ", " + sat.getName());
+			Transmitter transmitter = sat.getTransmitters().get(0);
+			System.out.println(sdf.format(new Date(cur.getStartTimeMillis())) + ",  " + sdf.format(new Date(cur.getEndTimeMillis())) + ",\t\t" + cur.getSatelliteId() + "," + transmitter.getFrequencyBand().getCenter() + ", " + sat.getName());
 		}
 	}
 }

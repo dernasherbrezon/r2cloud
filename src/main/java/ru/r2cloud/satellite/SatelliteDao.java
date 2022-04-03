@@ -13,12 +13,13 @@ import ru.r2cloud.cloud.R2ServerClient;
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.model.BandFrequency;
 import ru.r2cloud.model.Framing;
-import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteComparator;
 import ru.r2cloud.model.SdrType;
+import ru.r2cloud.model.Transmitter;
+import ru.r2cloud.model.TransmitterComparator;
 import ru.r2cloud.util.Configuration;
 
 public class SatelliteDao {
@@ -46,50 +47,53 @@ public class SatelliteDao {
 		if (config.getBoolean("r2cloud.newLaunches")) {
 			satellites.addAll(r2server.loadNewLaunches());
 		}
+		List<Transmitter> allTransmitters = new ArrayList<>();
 		for (Satellite curSatellite : satellites) {
-			switch (curSatellite.getSource()) {
-			case APT:
-				curSatellite.setInputSampleRate(60_000);
-				curSatellite.setOutputSampleRate(11_025);
-				break;
-			case LRPT:
-				curSatellite.setInputSampleRate(288_000);
-				curSatellite.setOutputSampleRate(144_000);
-				break;
-			case TELEMETRY:
-				// sdr-server supports very narrow bandwidths
-				int outputSampleRate = 48_000;
-				if (config.getSdrType().equals(SdrType.SDRSERVER)) {
-					curSatellite.setInputSampleRate(outputSampleRate);
-					curSatellite.setOutputSampleRate(outputSampleRate);
-				} else if (curSatellite.getModulation() != null && curSatellite.getModulation().equals(Modulation.LORA)) {
-					// not applicable
-					curSatellite.setInputSampleRate(0);
-					curSatellite.setOutputSampleRate(0);
-				} else {
-					// some rates better to sample at 50k
-					if (checkBaudRate(curSatellite, 50_000)) {
-						outputSampleRate = 50_000;
+			allTransmitters.addAll(curSatellite.getTransmitters());
+			for (Transmitter curTransmitter : curSatellite.getTransmitters()) {
+				switch (curTransmitter.getFraming()) {
+				case APT:
+					curTransmitter.setInputSampleRate(60_000);
+					curTransmitter.setOutputSampleRate(11_025);
+					break;
+				case LRPT:
+					curTransmitter.setInputSampleRate(288_000);
+					curTransmitter.setOutputSampleRate(144_000);
+					break;
+				default:
+					// sdr-server supports very narrow bandwidths
+					int outputSampleRate = 48_000;
+					if (config.getSdrType().equals(SdrType.SDRSERVER)) {
+						curTransmitter.setInputSampleRate(outputSampleRate);
+						curTransmitter.setOutputSampleRate(outputSampleRate);
+					} else if (curTransmitter.getModulation() != null && curTransmitter.getModulation().equals(Modulation.LORA)) {
+						// not applicable
+						curTransmitter.setInputSampleRate(0);
+						curTransmitter.setOutputSampleRate(0);
+					} else {
+						// some rates better to sample at 50k
+						if (curTransmitter.getBaudRates() != null && curTransmitter.getBaudRates().size() > 0 && 50_000 % curTransmitter.getBaudRates().get(0) == 0) {
+							outputSampleRate = 50_000;
+						}
+						// 48k * 5 = 240k - minimum rate rtl-sdr supports
+						curTransmitter.setInputSampleRate(outputSampleRate * 5);
+						curTransmitter.setOutputSampleRate(outputSampleRate);
 					}
-					// 48k * 5 = 240k - minimum rate rtl-sdr supports
-					curSatellite.setInputSampleRate(outputSampleRate * 5);
-					curSatellite.setOutputSampleRate(outputSampleRate);
+					break;
 				}
-				break;
-			default:
-				throw new IllegalArgumentException("unsupported source: " + curSatellite.getSource());
 			}
 			index(curSatellite);
 		}
 		long sdrServerBandwidth = config.getLong("satellites.sdrserver.bandwidth");
 		long bandwidthCrop = config.getLong("satellites.sdrserver.bandwidth.crop");
-		Collections.sort(satellites, SatelliteComparator.FREQ_BANDWIDTH_COMPARATOR);
+		Collections.sort(allTransmitters, TransmitterComparator.INSTANCE);
 
+		// bands can be calculated only when all supported transmitters known
 		BandFrequency currentBand = null;
-		for (Satellite cur : satellites) {
+		for (Transmitter cur : allTransmitters) {
 			long lowerSatelliteFrequency = cur.getFrequency() - cur.getInputSampleRate() / 2;
 			long upperSatelliteFrequency = cur.getFrequency() + cur.getInputSampleRate() / 2;
-			// first satellite or upper frequency out of band
+			// first transmitter or upper frequency out of band
 			if (currentBand == null || (currentBand.getUpper() - bandwidthCrop) < upperSatelliteFrequency) {
 				currentBand = new BandFrequency();
 				currentBand.setLower(lowerSatelliteFrequency - bandwidthCrop);
@@ -113,64 +117,86 @@ public class SatelliteDao {
 			}
 			curSatellite.setName(name);
 			curSatellite.setPriority(Priority.NORMAL);
-			curSatellite.setFrequency(config.getLong("satellites." + curSatellite.getId() + ".freq"));
-			curSatellite.setSource(FrequencySource.valueOf(config.getProperty("satellites." + curSatellite.getId() + ".source")));
 			curSatellite.setEnabled(config.getBoolean("satellites." + curSatellite.getId() + ".enabled"));
-			Long bandwidth = config.getLong("satellites." + curSatellite.getId() + ".bandwidth");
-			if (bandwidth != null) {
-				curSatellite.setBandwidth(bandwidth);
-			}
-			curSatellite.setBaudRates(config.getIntegerList("satellites." + curSatellite.getId() + ".baud"));
-			String modulationStr = config.getProperty("satellites." + curSatellite.getId() + ".modulation");
-			if (modulationStr != null) {
-				curSatellite.setModulation(Modulation.valueOf(modulationStr));
-			}
-			if (curSatellite.getBaudRates().isEmpty() && (curSatellite.getModulation() == null || !curSatellite.getModulation().equals(Modulation.LORA)) && curSatellite.getSource().equals(FrequencySource.TELEMETRY)) {
-				LOG.error("baud rates are missing for satellite: {}", curSatellite.getId());
-			}
-
-			String framingStr = config.getProperty("satellites." + curSatellite.getId() + ".framing");
-			if (framingStr != null) {
-				curSatellite.setFraming(Framing.valueOf(framingStr));
-			}
-			String beaconClassStr = config.getProperty("satellites." + curSatellite.getId() + ".beacon");
-			if (beaconClassStr != null) {
-				try {
-					curSatellite.setBeaconClass((Class<? extends Beacon>) Class.forName(beaconClassStr));
-				} catch (ClassNotFoundException e) {
-					throw new IllegalArgumentException(e);
+			List<Transmitter> transmitters = new ArrayList<>();
+			for (String curId : config.getProperties("satellites." + curSatellite.getId() + ".transmitters")) {
+				String prefix = "satellites." + curSatellite.getId() + ".transmitter." + curId;
+				Transmitter curTransmitter = new Transmitter();
+				curTransmitter.setId(curSatellite.getId() + "-" + curId);
+				curTransmitter.setEnabled(curSatellite.isEnabled());
+				curTransmitter.setPriority(curSatellite.getPriority());
+				curTransmitter.setSatelliteId(curSatellite.getId());
+				curTransmitter.setStart(curSatellite.getStart());
+				curTransmitter.setEnd(curSatellite.getEnd());
+				curTransmitter.setFrequency(config.getLong(prefix + ".freq"));
+				Long bandwidth = config.getLong(prefix + ".bandwidth");
+				if (bandwidth != null) {
+					curTransmitter.setBandwidth(bandwidth);
 				}
-			}
-			String beaconSizeStr = config.getProperty("satellites." + curSatellite.getId() + ".beaconSize");
-			if (beaconSizeStr != null) {
-				curSatellite.setBeaconSizeBytes(Integer.valueOf(beaconSizeStr));
-			}
+				curTransmitter.setBaudRates(config.getIntegerList(prefix + ".baud"));
+				String modulationStr = config.getProperty(prefix + ".modulation");
+				if (modulationStr != null) {
+					curTransmitter.setModulation(Modulation.valueOf(modulationStr));
+				}
+				curTransmitter.setFraming(Framing.valueOf(config.getProperty(prefix + ".framing")));
+				String beaconClassStr = config.getProperty(prefix + ".beacon");
+				if (beaconClassStr != null) {
+					try {
+						curTransmitter.setBeaconClass((Class<? extends Beacon>) Class.forName(beaconClassStr));
+					} catch (ClassNotFoundException e) {
+						throw new IllegalArgumentException(e);
+					}
+				}
+				String beaconSizeStr = config.getProperty(prefix + ".beaconSize");
+				if (beaconSizeStr != null) {
+					curTransmitter.setBeaconSizeBytes(Integer.valueOf(beaconSizeStr));
+				}
 
-			Long loraBandwidth = config.getLong("satellites." + curSatellite.getId() + ".loraBw");
-			if (loraBandwidth != null) {
-				curSatellite.setLoraBandwidth(loraBandwidth);
+				Long loraBandwidth = config.getLong(prefix + ".loraBw");
+				if (loraBandwidth != null) {
+					curTransmitter.setLoraBandwidth(loraBandwidth);
+				}
+				Integer loraSpreadFactor = config.getInteger(prefix + ".loraSf");
+				if (loraSpreadFactor != null) {
+					curTransmitter.setLoraSpreadFactor(loraSpreadFactor);
+				}
+				Integer loraCodingRate = config.getInteger(prefix + ".loraCr");
+				if (loraCodingRate != null) {
+					curTransmitter.setLoraCodingRate(loraCodingRate);
+				}
+				Integer loraSyncword = config.getInteger(prefix + ".loraSyncword");
+				if (loraSyncword != null) {
+					curTransmitter.setLoraSyncword(loraSyncword);
+				}
+				Integer loraPreambleLength = config.getInteger(prefix + ".loraPreambleLength");
+				if (loraPreambleLength != null) {
+					curTransmitter.setLoraPreambleLength(loraPreambleLength);
+				}
+				Integer loraLdro = config.getInteger(prefix + ".loraLdro");
+				if (loraLdro != null) {
+					curTransmitter.setLoraLdro(loraLdro);
+				}
+				curTransmitter.setAssistedHeader(config.getByteArray(prefix + ".header"));
+				Long deviation = config.getLong(prefix + ".deviation");
+				if (deviation != null) {
+					curTransmitter.setDeviation(deviation);
+				}
+				Long bpskCenterFrequency = config.getLong(prefix + ".bpskCenterFrequency");
+				if (bpskCenterFrequency != null) {
+					curTransmitter.setBpskCenterFrequency(bpskCenterFrequency);
+				}
+				curTransmitter.setBpskDifferential(config.getBoolean(prefix + ".bpskDifferential"));
+				Long afCarrier = config.getLong(prefix + ".afCarrier");
+				if (afCarrier != null) {
+					curTransmitter.setAfCarrier(afCarrier);
+				}
+				transmitters.add(curTransmitter);
 			}
-			Integer loraSpreadFactor = config.getInteger("satellites." + curSatellite.getId() + ".loraSf");
-			if (loraSpreadFactor != null) {
-				curSatellite.setLoraSpreadFactor(loraSpreadFactor);
+			if (transmitters.isEmpty()) {
+				LOG.error("no transmitters found for: {}", name);
+				continue;
 			}
-			Integer loraCodingRate = config.getInteger("satellites." + curSatellite.getId() + ".loraCr");
-			if (loraCodingRate != null) {
-				curSatellite.setLoraCodingRate(loraCodingRate);
-			}
-			Integer loraSyncword = config.getInteger("satellites." + curSatellite.getId() + ".loraSyncword");
-			if (loraSyncword != null) {
-				curSatellite.setLoraSyncword(loraSyncword);
-			}
-			Integer loraPreambleLength = config.getInteger("satellites." + curSatellite.getId() + ".loraPreambleLength");
-			if (loraPreambleLength != null) {
-				curSatellite.setLoraPreambleLength(loraPreambleLength);
-			}
-			Integer loraLdro = config.getInteger("satellites." + curSatellite.getId() + ".loraLdro");
-			if (loraLdro != null) {
-				curSatellite.setLoraLdro(loraLdro);
-			}
-			curSatellite.setAssistedHeader(config.getByteArray("satellites." + curSatellite.getId() + ".header"));
+			curSatellite.setTransmitters(transmitters);
 
 			result.add(curSatellite);
 		}
@@ -199,16 +225,6 @@ public class SatelliteDao {
 		config.update();
 	}
 
-	public synchronized List<Satellite> findByFilter(SatelliteFilter filter) {
-		List<Satellite> result = new ArrayList<>();
-		for (Satellite cur : satellites) {
-			if (filter.accept(cur)) {
-				result.add(cur);
-			}
-		}
-		return result;
-	}
-
 	public synchronized List<Satellite> findEnabled() {
 		List<Satellite> result = new ArrayList<>();
 		for (Satellite cur : satellites) {
@@ -217,13 +233,6 @@ public class SatelliteDao {
 			}
 		}
 		return result;
-	}
-
-	private static boolean checkBaudRate(Satellite satellite, int outputSampleRate) {
-		if (satellite.getBaudRates() == null || satellite.getBaudRates().isEmpty()) {
-			return false;
-		}
-		return (outputSampleRate % satellite.getBaudRates().get(0) == 0);
 	}
 
 }

@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +24,6 @@ import ru.r2cloud.JsonHttpResponse;
 import ru.r2cloud.R2CloudServer;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
-import ru.r2cloud.model.FrequencySource;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SdrType;
@@ -235,14 +233,9 @@ public class R2ServerClientTest {
 		result.setId("1");
 		result.setStartTimeMillis(1L);
 		result.setEndTimeMillis(1L);
-		result.setOutputSampleRate(1);
-		result.setInputSampleRate(1);
-		result.setSatelliteFrequency(1L);
+		result.setSampleRate(1);
 		result.setActualFrequency(100L);
-		result.setSource(FrequencySource.APT);
 		result.setSatelliteId("1");
-		result.setBandwidth(1000);
-		result.setGain("1");
 		result.setChannelA("1");
 		result.setChannelB("1");
 		result.setNumberOfDecodedPackets(1L);
@@ -251,7 +244,6 @@ public class R2ServerClientTest {
 		result.setSpectogramURL("1");
 		result.setBiast(true);
 		result.setSdrType(SdrType.RTLSDR);
-		result.setBaudRates(Collections.singletonList(2400));
 		return result;
 	}
 

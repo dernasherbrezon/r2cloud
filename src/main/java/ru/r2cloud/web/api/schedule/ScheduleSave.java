@@ -8,6 +8,7 @@ import com.eclipsesource.json.JsonObject;
 import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
@@ -62,9 +63,12 @@ public class ScheduleSave extends AbstractHttpController {
 		entity.add("id", satelliteToEdit.getId());
 		entity.add("name", satelliteToEdit.getName());
 		entity.add("enabled", satelliteToEdit.isEnabled());
-		entity.add("frequency", satelliteToEdit.getFrequency());
 		if (nextObservation != null) {
 			entity.add("nextPass", nextObservation.getStartTimeMillis());
+			Transmitter transmitter = satelliteToEdit.getById(nextObservation.getTransmitterId());
+			if (transmitter != null) {
+				entity.add("frequency", transmitter.getFrequency());
+			}
 		}
 
 		ModelAndView result = new ModelAndView();

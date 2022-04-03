@@ -2,7 +2,7 @@ package ru.r2cloud.satellite.decoder;
 
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconSource;
-import ru.r2cloud.jradio.FloatInput;
+import ru.r2cloud.jradio.ByteInput;
 import ru.r2cloud.jradio.blocks.CorrelateSyncword;
 import ru.r2cloud.jradio.gomx1.AX100Decoder;
 import ru.r2cloud.jradio.suomi100.Suomi100;
@@ -18,9 +18,8 @@ public class Suomi100Decoder extends TelemetryDecoder {
 	}
 
 	@Override
-	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		GmskDemodulator gmsk = new GmskDemodulator(source, req.getBaudRates().get(0), req.getBandwidth(), 0.175f * 3);
-		CorrelateSyncword correlateTag = new CorrelateSyncword(gmsk, 4, "10010011000010110101000111011110", 255 * 8);
+	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, ObservationRequest req) {
+		CorrelateSyncword correlateTag = new CorrelateSyncword(demodulator, 4, "10010011000010110101000111011110", 255 * 8);
 		AX100Decoder ax100 = new AX100Decoder(correlateTag, false, true, true);
 		return new Suomi100(ax100);
 	}

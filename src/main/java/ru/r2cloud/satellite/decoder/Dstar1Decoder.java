@@ -2,7 +2,7 @@ package ru.r2cloud.satellite.decoder;
 
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconSource;
-import ru.r2cloud.jradio.FloatInput;
+import ru.r2cloud.jradio.ByteInput;
 import ru.r2cloud.jradio.blocks.CorrelateSyncword;
 import ru.r2cloud.jradio.blocks.InvertBits;
 import ru.r2cloud.jradio.blocks.SoftToHard;
@@ -11,7 +11,6 @@ import ru.r2cloud.jradio.dstar1.Dstar1Beacon;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.Util;
 
 public class Dstar1Decoder extends TelemetryDecoder {
 
@@ -22,10 +21,8 @@ public class Dstar1Decoder extends TelemetryDecoder {
 	}
 
 	@Override
-	public BeaconSource<? extends Beacon> createBeaconSource(FloatInput source, ObservationRequest req) {
-		int baudRate = req.getBaudRates().get(0);
-		GmskDemodulator gmsk = new GmskDemodulator(source, baudRate, req.getBandwidth(), 0.175f, 0.06f, Util.convertDecimation(baudRate), 2000);
-		SoftToHard s2h = new SoftToHard(gmsk);
+	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, ObservationRequest req) {
+		SoftToHard s2h = new SoftToHard(demodulator);
 		InvertBits invert = new InvertBits(s2h);
 		CorrelateSyncword correlate = new CorrelateSyncword(invert, 6, "1100110011000101011101100101", MAX_MESSAGE_SIZE_BYTES * 8);
 		return new Dstar1(correlate);
