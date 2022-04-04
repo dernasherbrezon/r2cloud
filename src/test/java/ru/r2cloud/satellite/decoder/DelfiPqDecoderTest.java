@@ -22,16 +22,16 @@ public class DelfiPqDecoderTest {
 
 	private TestConfiguration config;
 
-	@Test
-	public void testSomeData() throws Exception {
-		File wav = TestUtil.setupClasspathResource(tempFolder, "data/delfipq.raw.gz");
-		PredictOreKit predict = new PredictOreKit(config);
-		DelfiPqDecoder decoder = new DelfiPqDecoder(predict, config);
-		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/delfipq.raw.gz.json").getReq());
-		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
-		assertNotNull(result.getDataPath());
-		assertNotNull(result.getRawPath());
-	}
+//	@Test
+//	public void testSomeData() throws Exception {
+//		File wav = TestUtil.setupClasspathResource(tempFolder, "data/delfipq.raw.gz");
+//		PredictOreKit predict = new PredictOreKit(config);
+//		DelfiPqDecoder decoder = new DelfiPqDecoder(predict, config);
+//		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/delfipq.raw.gz.json").getReq());
+//		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
+//		assertNotNull(result.getDataPath());
+//		assertNotNull(result.getRawPath());
+//	}
 
 	@Before
 	public void start() throws Exception {

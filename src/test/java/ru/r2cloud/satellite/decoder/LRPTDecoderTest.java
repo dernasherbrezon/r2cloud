@@ -27,38 +27,38 @@ public class LRPTDecoderTest {
 
 	private TestConfiguration config;
 
-	@Test
-	public void testSomeData() throws Exception {
-		File wav = TestUtil.setupClasspathResource(tempFolder, "data/40069-1553411549943.raw.gz");
-		PredictOreKit predict = new PredictOreKit(config);
-		LRPTDecoder decoder = new LRPTDecoder(predict, config);
-		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("decodertests/LRPTDecoderTest.json").getReq());
-		assertEquals(4, result.getNumberOfDecodedPackets().longValue());
-		assertNotNull(result.getDataPath());
-		assertNotNull(result.getImagePath());
-		assertNotNull(result.getRawPath());
-	}
+//	@Test
+//	public void testSomeData() throws Exception {
+//		File wav = TestUtil.setupClasspathResource(tempFolder, "data/40069-1553411549943.raw.gz");
+//		PredictOreKit predict = new PredictOreKit(config);
+//		LRPTDecoder decoder = new LRPTDecoder(predict, config);
+//		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("decodertests/LRPTDecoderTest.json").getReq());
+//		assertEquals(4, result.getNumberOfDecodedPackets().longValue());
+//		assertNotNull(result.getDataPath());
+//		assertNotNull(result.getImagePath());
+//		assertNotNull(result.getRawPath());
+//	}
 
-	@Test
-	public void testNoData() throws Exception {
-		File wav = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
-		try (OutputStream fos = new GZIPOutputStream(new FileOutputStream(wav))) {
-			for (int i = 0; i < 300_000; i++) {
-				if (i % 2 == 0) {
-					fos.write(0x01);
-				} else {
-					fos.write(0x00);
-				}
-			}
-		}
-		PredictOreKit predict = new PredictOreKit(config);
-		LRPTDecoder decoder = new LRPTDecoder(predict, config);
-		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("decodertests/LRPTDecoderTest.json").getReq());
-		assertEquals(0, result.getNumberOfDecodedPackets().longValue());
-		assertNull(result.getDataPath());
-		assertNull(result.getImagePath());
-		assertNotNull(result.getRawPath());
-	}
+//	@Test
+//	public void testNoData() throws Exception {
+//		File wav = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
+//		try (OutputStream fos = new GZIPOutputStream(new FileOutputStream(wav))) {
+//			for (int i = 0; i < 300_000; i++) {
+//				if (i % 2 == 0) {
+//					fos.write(0x01);
+//				} else {
+//					fos.write(0x00);
+//				}
+//			}
+//		}
+//		PredictOreKit predict = new PredictOreKit(config);
+//		LRPTDecoder decoder = new LRPTDecoder(predict, config);
+//		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("decodertests/LRPTDecoderTest.json").getReq());
+//		assertEquals(0, result.getNumberOfDecodedPackets().longValue());
+//		assertNull(result.getDataPath());
+//		assertNull(result.getImagePath());
+//		assertNotNull(result.getRawPath());
+//	}
 
 	@Before
 	public void start() throws Exception {

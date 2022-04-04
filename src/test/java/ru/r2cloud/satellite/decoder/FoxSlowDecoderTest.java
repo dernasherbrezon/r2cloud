@@ -23,16 +23,16 @@ public class FoxSlowDecoderTest {
 
 	private TestConfiguration config;
 
-	@Test
-	public void testSomeData2() throws Exception {
-		File wav = TestUtil.setupClasspathResource(tempFolder, "data/fox1c.raw.gz");
-		PredictOreKit predict = new PredictOreKit(config);
-		FoxSlowDecoder<Fox1CBeacon> decoder = new FoxSlowDecoder<>(predict, config, Fox1CBeacon.class);
-		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/fox1c.raw.gz.json").getReq());
-		assertEquals(2, result.getNumberOfDecodedPackets().longValue());
-		assertNotNull(result.getDataPath());
-		assertNotNull(result.getRawPath());
-	}
+//	@Test
+//	public void testSomeData2() throws Exception {
+//		File wav = TestUtil.setupClasspathResource(tempFolder, "data/fox1c.raw.gz");
+//		PredictOreKit predict = new PredictOreKit(config);
+//		FoxSlowDecoder<Fox1CBeacon> decoder = new FoxSlowDecoder<>(predict, config, Fox1CBeacon.class);
+//		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/fox1c.raw.gz.json").getReq());
+//		assertEquals(2, result.getNumberOfDecodedPackets().longValue());
+//		assertNotNull(result.getDataPath());
+//		assertNotNull(result.getRawPath());
+//	}
 
 	@Before
 	public void start() throws Exception {

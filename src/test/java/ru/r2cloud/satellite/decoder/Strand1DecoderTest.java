@@ -22,16 +22,16 @@ public class Strand1DecoderTest {
 
 	private TestConfiguration config;
 
-	@Test
-	public void testSomeData() throws Exception {
-		File wav = TestUtil.setupClasspathResource(tempFolder, "data/strand1.raw.gz");
-		PredictOreKit predict = new PredictOreKit(config);
-		Strand1Decoder decoder = new Strand1Decoder(predict, config);
-		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/strand1.raw.gz.json").getReq());
-		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
-		assertNotNull(result.getDataPath());
-		assertNotNull(result.getRawPath());
-	}
+//	@Test
+//	public void testSomeData() throws Exception {
+//		File wav = TestUtil.setupClasspathResource(tempFolder, "data/strand1.raw.gz");
+//		PredictOreKit predict = new PredictOreKit(config);
+//		Strand1Decoder decoder = new Strand1Decoder(predict, config);
+//		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/strand1.raw.gz.json").getReq());
+//		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
+//		assertNotNull(result.getDataPath());
+//		assertNotNull(result.getRawPath());
+//	}
 
 	@Before
 	public void start() throws Exception {

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.net.InetSocketAddress;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -24,6 +25,7 @@ import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.r2lora.R2loraClient;
 import ru.r2cloud.util.Configuration;
 
@@ -39,7 +41,7 @@ public class R2loraReaderTest {
 
 	@Test
 	public void testStartFailed() throws Exception {
-		R2loraReader reader = new R2loraReader(config, createValidRequest(), client, createSatellite());
+		R2loraReader reader = new R2loraReader(config, createValidRequest(), client, createSatellite().getTransmitters().get(0));
 		// make sure we won't stuck in the reader.start
 		reader.complete();
 		IQData iqData = reader.start();
@@ -50,7 +52,7 @@ public class R2loraReaderTest {
 	public void testStopFailed() throws Exception {
 		JsonHttpResponse handler = new JsonHttpResponse("r2loratest/success.json", 200);
 		setupContext("/lora/rx/start", handler);
-		R2loraReader reader = new R2loraReader(config, createValidRequest(), client, createSatellite());
+		R2loraReader reader = new R2loraReader(config, createValidRequest(), client, createSatellite().getTransmitters().get(0));
 		// make sure we won't stuck in the reader.start
 		reader.complete();
 		IQData iqData = reader.start();
@@ -63,7 +65,7 @@ public class R2loraReaderTest {
 		setupContext("/lora/rx/start", handler);
 		setupContext("/rx/stop", new JsonHttpResponse("r2loratest/successStop.json", 200));
 
-		R2loraReader reader = new R2loraReader(config, createValidRequest(), client, createSatellite());
+		R2loraReader reader = new R2loraReader(config, createValidRequest(), client, createSatellite().getTransmitters().get(0));
 		// make sure we won't stuck in the reader.start
 		reader.complete();
 		IQData iqData = reader.start();
@@ -92,20 +94,23 @@ public class R2loraReaderTest {
 	}
 
 	private static Satellite createSatellite() {
+		Transmitter transmitter = new Transmitter();
+		transmitter.setLoraCodingRate(7);
+		transmitter.setLoraPreambleLength(8);
+		transmitter.setLoraSpreadFactor(9);
+		transmitter.setLoraSyncword(18);
+		transmitter.setLoraLdro(0);
+		transmitter.setBandwidth(500000);
+		
 		Satellite satellite = new Satellite();
-		satellite.setLoraCodingRate(7);
-		satellite.setLoraPreambleLength(8);
-		satellite.setLoraSpreadFactor(9);
-		satellite.setLoraSyncword(18);
-		satellite.setLoraLdro(0);
 		satellite.setId(UUID.randomUUID().toString());
+		satellite.setTransmitters(Collections.singletonList(transmitter));
 		return satellite;
 	}
 
 	private static ObservationRequest createValidRequest() {
 		ObservationRequest req = new ObservationRequest();
 		req.setActualFrequency(433125000);
-		req.setBandwidth(500000);
 		req.setGain(0.0);
 		req.setId(UUID.randomUUID().toString());
 		return req;

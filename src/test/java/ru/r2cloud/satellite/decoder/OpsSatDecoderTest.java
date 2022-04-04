@@ -22,16 +22,16 @@ public class OpsSatDecoderTest {
 
 	private TestConfiguration config;
 
-	@Test
-	public void testTelemetry() throws Exception {
-		File wav = TestUtil.setupClasspathResource(tempFolder, "data/opssat.raw.gz");
-		PredictOreKit predict = new PredictOreKit(config);
-		OpsSatDecoder decoder = new OpsSatDecoder(predict, config);
-		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/opssat.raw.gz.json").getReq());
-		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
-		assertNotNull(result.getDataPath());
-		assertNotNull(result.getRawPath());
-	}
+//	@Test
+//	public void testTelemetry() throws Exception {
+//		File wav = TestUtil.setupClasspathResource(tempFolder, "data/opssat.raw.gz");
+//		PredictOreKit predict = new PredictOreKit(config);
+//		OpsSatDecoder decoder = new OpsSatDecoder(predict, config);
+//		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/opssat.raw.gz.json").getReq());
+//		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
+//		assertNotNull(result.getDataPath());
+//		assertNotNull(result.getRawPath());
+//	}
 
 	@Before
 	public void start() throws Exception {

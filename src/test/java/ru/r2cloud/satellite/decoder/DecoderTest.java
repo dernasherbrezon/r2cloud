@@ -73,7 +73,16 @@ public class DecoderTest {
 			{ "data/astrocast.raw.gz", "data/astrocast.raw.gz.json", "43798", "43798-0", 1},
 			{ "data/jy1sat.raw.gz", "data/jy1sat.raw.gz.json", "43803", "43803-0", 1},
 			{ "data/suomi.raw.gz", "data/suomi.raw.gz.json", "43804", "43804-0", 3},
-			{ "data/dstar1.raw.gz", "data/dstar1.raw.gz.json", "43881", "43881-0", 1}
+			{ "data/dstar1.raw.gz", "data/dstar1.raw.gz.json", "43881", "43881-0", 1},
+			{ "data/lucky7.raw.gz", "data/lucky7.raw.gz.json", "44406", "44406-0", 1},
+			{ "data/opssat.raw.gz", "data/opssat.raw.gz.json", "44878", "44878-0", 1},
+			{ "data/fox1c.raw.gz", "data/fox1c.raw.gz.json", "43770", "43770-0", 2},
+			{ "data/strand1.raw.gz", "data/strand1.raw.gz.json", "39090", "39090-0", 1},
+			{ "data/delfipq.raw.gz", "data/delfipq.raw.gz.json", "51074", "51074-0", 1},
+			{ "data/delphini1.raw.gz", "data/delphini1.raw.gz.json", "43721", "43721-0", 2},
+			{ "data/meznsat.raw.gz", "data/meznsat.raw.gz.json", "46489", "46489-0", 1},
+			{ "data/swampsat2.raw.gz", "data/swampsat2.raw.gz.json", "40912", "40912-0", 1},
+			{ "data/40069-1553411549943.raw.gz", "decodertests/LRPTDecoderTest.json", "40069", "40069-0", 4}
 		});
 	}
 

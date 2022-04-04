@@ -23,16 +23,16 @@ public class FskAx100DecoderTest {
 
 	private TestConfiguration config;
 
-	@Test
-	public void testSomeData() throws Exception {
-		File wav = TestUtil.setupClasspathResource(tempFolder, "data/delphini1.raw.gz");
-		PredictOreKit predict = new PredictOreKit(config);
-		FskAx100Decoder decoder = new FskAx100Decoder(predict, config, 255, CspBeacon.class);
-		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/delphini1.raw.gz.json").getReq());
-		assertEquals(2, result.getNumberOfDecodedPackets().longValue());
-		assertNotNull(result.getDataPath());
-		assertNotNull(result.getRawPath());
-	}
+//	@Test
+//	public void testSomeData() throws Exception {
+//		File wav = TestUtil.setupClasspathResource(tempFolder, "data/delphini1.raw.gz");
+//		PredictOreKit predict = new PredictOreKit(config);
+//		FskAx100Decoder decoder = new FskAx100Decoder(predict, config, 255, CspBeacon.class);
+//		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/delphini1.raw.gz.json").getReq());
+//		assertEquals(2, result.getNumberOfDecodedPackets().longValue());
+//		assertNotNull(result.getDataPath());
+//		assertNotNull(result.getRawPath());
+//	}
 
 	@Before
 	public void start() throws Exception {

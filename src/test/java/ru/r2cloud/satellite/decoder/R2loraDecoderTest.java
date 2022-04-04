@@ -17,6 +17,7 @@ import ru.r2cloud.jradio.BeaconOutputStream;
 import ru.r2cloud.jradio.RawBeacon;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Transmitter;
 
 public class R2loraDecoderTest {
 
@@ -34,7 +35,7 @@ public class R2loraDecoderTest {
 		}
 
 		R2loraDecoder decoder = new R2loraDecoder(RawBeacon.class);
-		DecoderResult result = decoder.decode(rawFile, new ObservationRequest());
+		DecoderResult result = decoder.decode(rawFile, new ObservationRequest(), new Transmitter());
 		assertNotNull(result);
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
@@ -47,7 +48,7 @@ public class R2loraDecoderTest {
 			fos.write(1);
 		}
 		R2loraDecoder decoder = new R2loraDecoder(RawBeacon.class);
-		DecoderResult result = decoder.decode(rawFile, new ObservationRequest());
+		DecoderResult result = decoder.decode(rawFile, new ObservationRequest(), new Transmitter());
 		assertNotNull(result);
 		assertEquals(0, result.getNumberOfDecodedPackets().longValue());
 		assertNull(result.getDataPath());

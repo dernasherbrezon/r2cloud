@@ -22,15 +22,15 @@ public class Lucky7DecoderTest {
 
 	private TestConfiguration config;
 
-	@Test
-	public void testSomeData() throws Exception {
-		File wav = TestUtil.setupClasspathResource(tempFolder, "data/lucky7.raw.gz");
-		PredictOreKit predict = new PredictOreKit(config);
-		Lucky7Decoder decoder = new Lucky7Decoder(predict, config);
-		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/lucky7.raw.gz.json").getReq());
-		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
-		assertNotNull(result.getDataPath());
-	}
+//	@Test
+//	public void testSomeData() throws Exception {
+//		File wav = TestUtil.setupClasspathResource(tempFolder, "data/lucky7.raw.gz");
+//		PredictOreKit predict = new PredictOreKit(config);
+//		Lucky7Decoder decoder = new Lucky7Decoder(predict, config);
+//		DecoderResult result = decoder.decode(wav, TestUtil.loadObservation("data/lucky7.raw.gz.json").getReq());
+//		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
+//		assertNotNull(result.getDataPath());
+//	}
 
 	@Before
 	public void start() throws Exception {

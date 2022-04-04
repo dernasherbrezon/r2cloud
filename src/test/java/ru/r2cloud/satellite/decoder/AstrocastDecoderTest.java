@@ -35,6 +35,7 @@ import ru.r2cloud.jradio.trace.HdlcReceiverTrace;
 import ru.r2cloud.jradio.trace.TraceContext;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 
 public class AstrocastDecoderTest {
@@ -399,7 +400,7 @@ public class AstrocastDecoderTest {
 //		DelfiPqDecoder decoder = new DelfiPqDecoder(predict, config);
 		// ObservationResult result = decoder.decode(wav,
 		// TestUtil.loadObservation("data/suomi.raw.gz.json").getReq());
-		DecoderResult result = decoder.decode(wav, observation.getReq());
+		DecoderResult result = decoder.decode(wav, observation.getReq(), new Transmitter());
 
 		logHdlcTrace();
 

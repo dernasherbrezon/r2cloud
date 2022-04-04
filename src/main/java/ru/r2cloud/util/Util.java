@@ -419,6 +419,8 @@ public final class Util {
 	// rate
 	public static int convertDecimation(int baudRate) {
 		switch (baudRate) {
+		case 200:
+			return 120;
 		case 500:
 			return 24;
 		case 1200:
