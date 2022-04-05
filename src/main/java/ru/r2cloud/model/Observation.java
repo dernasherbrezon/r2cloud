@@ -306,7 +306,7 @@ public class Observation {
 	public void setPpm(int ppm) {
 		this.ppm = ppm;
 	}
-	
+
 	public static Observation fromJson(JsonObject meta) {
 		Observation result = new Observation();
 		result.setId(meta.getString("id", null));
@@ -332,12 +332,19 @@ public class Observation {
 		result.setSdrType(sdrType);
 		result.setSampleRate(meta.getInt("sampleRate", -1));
 		result.setActualFrequency(meta.getLong("actualFrequency", -1));
-		result.setGain(meta.getDouble("gain", 0.0));
+		JsonValue gainValue = meta.get("gain");
+		if (gainValue != null) {
+			if (gainValue.isString()) {
+				result.setGain(Double.valueOf(gainValue.asString()));
+			} else {
+				result.setGain(gainValue.asDouble());
+			}
+		}
 		result.setBiast(meta.getBoolean("biast", false));
 		result.setCenterBandFrequency(meta.getLong("centerBandFrequency", 0));
 		result.setRtlDeviceId(meta.getInt("rtlDeviceId", 0));
 		result.setPpm(meta.getInt("ppm", 0));
-		
+
 		result.setChannelA(meta.getString("channelA", null));
 		result.setChannelB(meta.getString("channelB", null));
 		result.setNumberOfDecodedPackets(meta.getLong("numberOfDecodedPackets", 0));
@@ -353,7 +360,7 @@ public class Observation {
 		}
 		return result;
 	}
-	
+
 	public JsonObject toJson(SignedURL signed) {
 		JsonObject json = new JsonObject();
 		json.add("id", getId());
@@ -375,7 +382,7 @@ public class Observation {
 		json.add("centerBandFrequency", centerBandFrequency);
 		json.add("rtlDeviceId", getRtlDeviceId());
 		json.add("ppm", getPpm());
-		
+
 		if (getChannelA() != null) {
 			json.add("channelA", getChannelA());
 		}
@@ -426,5 +433,5 @@ public class Observation {
 	public boolean hasData() {
 		return aURL != null || dataURL != null;
 	}
-	
+
 }
