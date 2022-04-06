@@ -3,13 +3,10 @@
 	"start": 1,
 	"end": 1,
 	"sampleRate": 1,
-	"inputSampleRate": 1,
-	"frequency": 1,
 	"actualFrequency": 100,
-	"decoder": "APT",
 	"satellite": "1",
-	"bandwidth": 1000,
-	"gain": "1",
+	"transmitterId": "1",
+	"gain": 12.2,
 	"channelA": "1",
 	"channelB": "1",
 	"numberOfDecodedPackets": 1,
@@ -19,8 +16,5 @@
 	"status": "UPLOADED",
 	"biast": true,
 	"sdrType": "RTLSDR",
-	"centerBandFrequency": 0,
-	"baudRates": [
-		2400
-	]
+	"centerBandFrequency": 0
 }

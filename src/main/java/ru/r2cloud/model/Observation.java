@@ -313,7 +313,7 @@ public class Observation {
 		result.setStartTimeMillis(meta.getLong("start", -1L));
 		result.setEndTimeMillis(meta.getLong("end", -1L));
 		result.setSatelliteId(meta.getString("satellite", null));
-		result.setTransmitterId(meta.getString("transmitterId", null));
+		result.setTransmitterId(meta.getString("transmitterId", result.getSatelliteId() + "-0"));
 		JsonValue tle = meta.get("tle");
 		if (tle != null && tle.isObject()) {
 			result.setTle(Tle.fromJson(tle.asObject()));

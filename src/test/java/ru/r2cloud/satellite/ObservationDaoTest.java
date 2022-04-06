@@ -137,7 +137,6 @@ public class ObservationDaoTest {
 		assertNotNull(actual.getaURL());
 		assertNotNull(actual.getRawURL());
 
-		String gain = UUID.randomUUID().toString();
 		Observation full = new Observation(req);
 		full.setChannelA(UUID.randomUUID().toString());
 		full.setChannelB(UUID.randomUUID().toString());
@@ -145,7 +144,7 @@ public class ObservationDaoTest {
 		full.setStatus(ObservationStatus.DECODED);
 		assertTrue(dao.update(full));
 		actual = dao.find(req.getSatelliteId(), req.getId());
-		assertEquals(gain, actual.getGain());
+		assertEquals(45.0, actual.getGain(), 0.0);
 		assertEquals(1, actual.getNumberOfDecodedPackets().longValue());
 		assertEquals(ObservationStatus.DECODED, actual.getStatus());
 
@@ -162,6 +161,7 @@ public class ObservationDaoTest {
 		req.setTle(create());
 		req.setActualFrequency(2);
 		req.setSatelliteId(UUID.randomUUID().toString());
+		req.setTransmitterId(UUID.randomUUID().toString());
 		req.setStartTimeMillis(System.currentTimeMillis());
 		req.setGroundStation(createGroundStation());
 		req.setGain(45.0);

@@ -236,6 +236,7 @@ public class R2ServerClientTest {
 		result.setSampleRate(1);
 		result.setActualFrequency(100L);
 		result.setSatelliteId("1");
+		result.setTransmitterId("1");
 		result.setChannelA("1");
 		result.setChannelB("1");
 		result.setNumberOfDecodedPackets(1L);
@@ -244,6 +245,7 @@ public class R2ServerClientTest {
 		result.setSpectogramURL("1");
 		result.setBiast(true);
 		result.setSdrType(SdrType.RTLSDR);
+		result.setGain(12.2);
 		return result;
 	}
 

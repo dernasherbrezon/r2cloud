@@ -100,7 +100,7 @@ public class R2loraReaderTest {
 		transmitter.setLoraSpreadFactor(9);
 		transmitter.setLoraSyncword(18);
 		transmitter.setLoraLdro(0);
-		transmitter.setBandwidth(500000);
+		transmitter.setLoraBandwidth(500000);
 		
 		Satellite satellite = new Satellite();
 		satellite.setId(UUID.randomUUID().toString());
