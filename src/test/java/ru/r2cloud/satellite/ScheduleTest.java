@@ -97,9 +97,9 @@ public class ScheduleTest {
 		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
 
-		ObservationRequest first = schedule.findFirstBySatelliteId("40378", getTime("2020-10-01 11:38:34.491"));
-		assertEquals("1601553418714-40378", first.getId());
-		assertNull(schedule.findFirstBySatelliteId("40378", getTime("2020-10-02 11:43:56.801")));
+		ObservationRequest first = schedule.findFirstByTransmitterId("40378-0", getTime("2020-10-01 11:38:34.491"));
+		assertEquals("1601553418714-40378-0", first.getId());
+		assertNull(schedule.findFirstByTransmitterId("40378-0", getTime("2020-10-02 11:43:56.801")));
 
 		// tasks and ensure previous got cancelled
 		ScheduledObservation tasks = new ScheduledObservation(null, null, null, null);
@@ -135,10 +135,10 @@ public class ScheduleTest {
 		actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
 
-		first = schedule.findFirstBySatelliteId("40378", getTime("2020-10-01 11:38:34.491"));
+		first = schedule.findFirstByTransmitterId("40378-0", getTime("2020-10-01 11:38:34.491"));
 		// slot is occupied
 		assertNull(schedule.moveObservation(first, getTime("2020-10-02 11:11:00.359")));
-		first = schedule.findFirstBySatelliteId("40378", getTime("2020-10-01 11:38:34.491"));
+		first = schedule.findFirstByTransmitterId("40378-0", getTime("2020-10-01 11:38:34.491"));
 		ObservationRequest movedTo = schedule.moveObservation(first, getTime("2020-10-02 00:00:00.000"));
 		assertNotNull(movedTo);
 		assertEquals(getTime("2020-10-02 00:00:00.000"), movedTo.getStartTimeMillis());

@@ -273,7 +273,7 @@ public abstract class Device implements Lifecycle {
 
 	public ObservationRequest startImmediately(Transmitter transmitter) {
 		long startTime = clock.millis();
-		ObservationRequest closest = schedule.findFirstBySatelliteId(transmitter.getId(), startTime);
+		ObservationRequest closest = schedule.findFirstByTransmitterId(transmitter.getId(), startTime);
 		if (closest == null) {
 			return null;
 		}
@@ -299,15 +299,15 @@ public abstract class Device implements Lifecycle {
 		return true;
 	}
 
-	public ObservationRequest findFirstBySatelliteId(String satelliteId, long current) {
-		return schedule.findFirstBySatelliteId(satelliteId, current);
+	public ObservationRequest findFirstByTransmitterId(String transmitterId, long current) {
+		return schedule.findFirstByTransmitterId(transmitterId, current);
 	}
 
 	public ObservationRequest enableTransmitter(Transmitter transmitter) {
 		if (!tryTransmitter(transmitter)) {
 			return null;
 		}
-		List<ObservationRequest> batch = schedule.getBySatelliteId(transmitter.getId());
+		List<ObservationRequest> batch = schedule.getByTransmitterId(transmitter.getId());
 		if (batch.isEmpty()) {
 			batch = schedule.addToSchedule(transmitter, clock.millis());
 			if (batch.isEmpty()) {

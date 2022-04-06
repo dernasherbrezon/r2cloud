@@ -108,7 +108,7 @@ public abstract class TelemetryDecoder implements Decoder {
 		int baudRate = transmitter.getBaudRates().get(0);
 		switch (transmitter.getModulation()) {
 		case GFSK:
-			return new FskDemodulator(source, baudRate, 5000.0f, Util.convertDecimation(baudRate), 1000);
+			return new FskDemodulator(source, baudRate, transmitter.getDeviation(), Util.convertDecimation(baudRate), 2000, true);
 		case AFSK:
 			return new AfskDemodulator(source, baudRate, transmitter.getDeviation(), transmitter.getAfCarrier(), Util.convertDecimation(baudRate));
 		case BPSK:

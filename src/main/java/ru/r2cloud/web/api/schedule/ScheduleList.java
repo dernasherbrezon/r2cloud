@@ -31,13 +31,14 @@ public class ScheduleList extends AbstractHttpController {
 			curSatellite.add("id", cur.getId());
 			curSatellite.add("name", cur.getName());
 			curSatellite.add("enabled", cur.isEnabled());
-			ObservationRequest nextObservation = schedule.findFirstBySatelliteId(cur.getId(), currentTimeMillis);
-			if (nextObservation != null) {
-				curSatellite.add("nextPass", nextObservation.getStartTimeMillis());
-				Transmitter transmitter = cur.getById(nextObservation.getTransmitterId());
-				if (transmitter != null) {
-					curSatellite.add("frequency", transmitter.getFrequency());
+			for (Transmitter curTransmitter : cur.getTransmitters()) {
+				ObservationRequest nextObservation = schedule.findFirstByTransmitterId(curTransmitter.getId(), currentTimeMillis);
+				if (nextObservation == null) {
+					continue;
 				}
+				curSatellite.add("nextPass", nextObservation.getStartTimeMillis());
+				curSatellite.add("frequency", curTransmitter.getFrequency());
+				break;
 			}
 			entity.add(curSatellite);
 		}

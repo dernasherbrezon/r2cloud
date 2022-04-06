@@ -144,9 +144,9 @@ public class DeviceManager implements Lifecycle, ConfigListener {
 		return false;
 	}
 
-	public ObservationRequest findFirstBySatelliteId(String satelliteId, long current) {
+	public ObservationRequest findFirstByTransmitterId(String transmitterId, long current) {
 		for (int i = 0; i < devices.size(); i++) {
-			ObservationRequest result = devices.get(i).findFirstBySatelliteId(satelliteId, current);
+			ObservationRequest result = devices.get(i).findFirstByTransmitterId(transmitterId, current);
 			if (result != null) {
 				return result;
 			}

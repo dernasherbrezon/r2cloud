@@ -288,5 +288,10 @@ public class Transmitter {
 	public void setLoraLdro(int loraLdro) {
 		this.loraLdro = loraLdro;
 	}
+	
+	@Override
+	public String toString() {
+		return id;
+	}
 
 }

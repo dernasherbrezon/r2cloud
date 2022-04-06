@@ -66,7 +66,7 @@ public class DecoderTest {
 			{ "data/chomptt.raw.gz", "data/chomptt.raw.gz.json",  "43855", "43855-0", 1},
 			{ "data/delfic3.raw.gz", "data/delfic3.raw.gz.json", "32789", "32789-0", 1},
 			{ "data/gomx1.raw.gz", "data/gomx1.raw.gz.json", "39430", "39430-0", 1},
-			{ "data/pegasus.raw.gz", "data/pegasus.raw.gz.json", "42784", "42784-0", 2},
+			{ "data/pegasus.raw.gz", "data/pegasus.raw.gz.json", "42784", "42784-0", 1},
 			{ "data/tubin.raw.gz", "data/tubin.raw.gz.json", "48900", "48900-0", 1},
 			{ "data/rhw.raw.gz", "data/rhw.raw.gz.json", "43743", "43743-0", 2},
 			{ "data/itasat1.raw.gz", "data/itasat1.raw.gz.json", "43786", "43786-0", 1},
@@ -79,9 +79,9 @@ public class DecoderTest {
 			{ "data/fox1c.raw.gz", "data/fox1c.raw.gz.json", "43770", "43770-0", 2},
 			{ "data/strand1.raw.gz", "data/strand1.raw.gz.json", "39090", "39090-0", 1},
 			{ "data/delfipq.raw.gz", "data/delfipq.raw.gz.json", "51074", "51074-0", 1},
-			{ "data/delphini1.raw.gz", "data/delphini1.raw.gz.json", "43721", "43721-0", 2},
+			{ "data/delphini1.raw.gz", "data/delphini1.raw.gz.json", "44030", "44030-0", 2},
 			{ "data/meznsat.raw.gz", "data/meznsat.raw.gz.json", "46489", "46489-0", 1},
-			{ "data/swampsat2.raw.gz", "data/swampsat2.raw.gz.json", "40912", "40912-0", 1},
+			{ "data/swampsat2.raw.gz", "data/swampsat2.raw.gz.json", "45115", "45115-0", 1},
 			{ "data/40069-1553411549943.raw.gz", "decodertests/LRPTDecoderTest.json", "40069", "40069-0", 5}
 		});
 	}

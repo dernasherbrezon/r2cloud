@@ -25,7 +25,7 @@ public class Schedule {
 	private final Map<String, ScheduledObservation> tasksById = new HashMap<>();
 	private final Map<String, ObservationRequest> observationsById = new HashMap<>();
 	private final Map<String, TimeSlot> timeSlotById = new HashMap<>();
-	private final Map<String, List<ObservationRequest>> observationsBySatelliteId = new HashMap<>();
+	private final Map<String, List<ObservationRequest>> observationsByTransmitterId = new HashMap<>();
 
 	public Schedule(Timetable timetable, ObservationFactory factory) {
 		this.factory = factory;
@@ -154,8 +154,8 @@ public class Schedule {
 		return result;
 	}
 
-	public synchronized List<ObservationRequest> getBySatelliteId(String satelliteId) {
-		List<ObservationRequest> previous = observationsBySatelliteId.get(satelliteId);
+	public synchronized List<ObservationRequest> getByTransmitterId(String transmitterId) {
+		List<ObservationRequest> previous = observationsByTransmitterId.get(transmitterId);
 		if (previous == null) {
 			return Collections.emptyList();
 		}
@@ -165,7 +165,7 @@ public class Schedule {
 	// even if this satellite will be scheduled well forward the rest of satellites
 	// whole schedule will be cleared on next re-schedule
 	public synchronized List<ObservationRequest> addToSchedule(Transmitter transmitter, long current) {
-		List<ObservationRequest> previous = observationsBySatelliteId.get(transmitter.getId());
+		List<ObservationRequest> previous = observationsByTransmitterId.get(transmitter.getId());
 		if (previous != null && !previous.isEmpty()) {
 			return previous;
 		}
@@ -194,8 +194,8 @@ public class Schedule {
 		return batch;
 	}
 
-	public synchronized ObservationRequest findFirstBySatelliteId(String id, long current) {
-		List<ObservationRequest> curList = observationsBySatelliteId.get(id);
+	public synchronized ObservationRequest findFirstByTransmitterId(String id, long current) {
+		List<ObservationRequest> curList = observationsByTransmitterId.get(id);
 		if (curList == null || curList.isEmpty()) {
 			return null;
 		}
@@ -273,7 +273,7 @@ public class Schedule {
 	}
 
 	private void removeFromIndex(ObservationRequest req) {
-		List<ObservationRequest> curList = observationsBySatelliteId.get(req.getSatelliteId());
+		List<ObservationRequest> curList = observationsByTransmitterId.get(req.getTransmitterId());
 		if (curList == null) {
 			return;
 		}
@@ -289,16 +289,16 @@ public class Schedule {
 
 	private void index(List<ObservationRequest> req) {
 		for (ObservationRequest cur : req) {
-			List<ObservationRequest> curList = observationsBySatelliteId.get(cur.getSatelliteId());
+			List<ObservationRequest> curList = observationsByTransmitterId.get(cur.getTransmitterId());
 			if (curList == null) {
 				curList = new ArrayList<>();
-				observationsBySatelliteId.put(cur.getSatelliteId(), curList);
+				observationsByTransmitterId.put(cur.getTransmitterId(), curList);
 			}
 			curList.add(cur);
 			observationsById.put(cur.getId(), cur);
 		}
 
-		for (List<ObservationRequest> values : observationsBySatelliteId.values()) {
+		for (List<ObservationRequest> values : observationsByTransmitterId.values()) {
 			Collections.sort(values, ObservationRequestComparator.INSTANCE);
 		}
 	}

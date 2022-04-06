@@ -34,10 +34,10 @@ public class ObservationFactory {
 		this.config = config;
 	}
 
-	public List<ObservationRequest> createSchedule(Date date, Transmitter satellite) {
-		Tle tle = tleDao.findById(satellite.getId());
+	public List<ObservationRequest> createSchedule(Date date, Transmitter transmitter) {
+		Tle tle = tleDao.findById(transmitter.getSatelliteId());
 		if (tle == null) {
-			LOG.error("unable to find tle for: {}", satellite);
+			LOG.error("unable to find tle for: {}", transmitter);
 			return Collections.emptyList();
 		}
 		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(tle.getRaw()[1], tle.getRaw()[2]));
@@ -48,13 +48,13 @@ public class ObservationFactory {
 		List<ObservationRequest> result = new ArrayList<>();
 		for (SatPass cur : batch) {
 			// ignore all observations out of satellite's active time
-			if (satellite.getStart() != null && cur.getEndMillis() < satellite.getStart().getTime()) {
+			if (transmitter.getStart() != null && cur.getEndMillis() < transmitter.getStart().getTime()) {
 				continue;
 			}
-			if (satellite.getEnd() != null && cur.getStartMillis() > satellite.getEnd().getTime()) {
+			if (transmitter.getEnd() != null && cur.getStartMillis() > transmitter.getEnd().getTime()) {
 				continue;
 			}
-			result.add(convert(satellite, tle, tlePropagator, cur));
+			result.add(convert(transmitter, tle, tlePropagator, cur));
 		}
 		return result;
 	}

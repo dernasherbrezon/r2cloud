@@ -180,6 +180,8 @@ public class SatelliteDao {
 				Long deviation = config.getLong(prefix + ".deviation");
 				if (deviation != null) {
 					curTransmitter.setDeviation(deviation);
+				} else {
+					curTransmitter.setDeviation(5000);
 				}
 				Long bpskCenterFrequency = config.getLong(prefix + ".bpskCenterFrequency");
 				if (bpskCenterFrequency != null) {
