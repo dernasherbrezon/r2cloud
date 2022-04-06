@@ -104,6 +104,7 @@ public abstract class Device implements Lifecycle {
 		observation.setRtlDeviceId(deviceConfiguration.getRtlDeviceId());
 		observation.setPpm(deviceConfiguration.getPpm());
 		observation.setSdrServerConfiguration(deviceConfiguration.getSdrServerConfiguration());
+		observation.setSampleRate(satellite.getInputSampleRate());
 		LOG.info("scheduled next pass for {}. start: {} end: {}", satellite, new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
 		IQReader reader = createReader(observation, satellite);
 		Runnable readTask = new SafeRunnable() {

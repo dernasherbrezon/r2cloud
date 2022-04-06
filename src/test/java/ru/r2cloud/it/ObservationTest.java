@@ -62,15 +62,8 @@ public class ObservationTest extends RegisteredTest {
 
 	private static void assertObservation(JsonObject observation) {
 		assertNotNull(observation);
-		assertEquals(144000, observation.getInt("sampleRate", 0));
-		assertEquals(288000, observation.getInt("inputSampleRate", 0));
-		assertEquals(137100000, observation.getInt("frequency", 0));
-		assertEquals(137100000, observation.getInt("actualFrequency", 0));
-		// do not assert numberOfDecodedPackets as file contains valid data
-		// there is no control on when test executed, so doppler correction might
-		// generate valid freq offset and numberOfDecodedPackets might NOT be 0
-		// assertEquals(0, observation.getInt("numberOfDecodedPackets", -1));
-		assertEquals("LRPT", observation.getString("decoder", null));
+		assertEquals(288000, observation.getInt("sampleRate", 0));
+		assertEquals(137900000, observation.getInt("actualFrequency", 0));
 		assertEquals(METEOR_ID, observation.getString("satellite", null));
 	}
 

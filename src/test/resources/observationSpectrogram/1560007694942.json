@@ -1,1 +1,9 @@
-{"id":"1560007694942","start":1560007694943,"end":1560007695152,"sampleRate":144000,"inputSampleRate":288000,"frequency":137900000,"actualFrequency":137900000,"decoder":"LRPT","satellite":"40069","numberOfDecodedPackets":0}
+{
+	"id": "1560007694942",
+	"start": 1560007694943,
+	"end": 1560007695152,
+	"sampleRate": 288000,
+	"actualFrequency": 137900000,
+	"satellite": "40069",
+	"numberOfDecodedPackets": 0
+}

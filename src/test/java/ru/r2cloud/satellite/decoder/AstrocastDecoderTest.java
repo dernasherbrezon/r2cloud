@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -23,7 +24,6 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.TestConfiguration;
-import ru.r2cloud.TestUtil;
 import ru.r2cloud.jradio.Ax25G3ruhBeaconSource;
 import ru.r2cloud.jradio.ax25.Ax25Beacon;
 import ru.r2cloud.jradio.ax25.Header;
@@ -339,7 +339,7 @@ public class AstrocastDecoderTest {
 	}
 
 	@Test
-//	@Ignore
+	@Ignore
 	public void testSomeData2() throws Exception {
 		// File wav = TestUtil.setupClasspathResource(tempFolder, "data/suomi.raw.gz");
 		// File wav = new
