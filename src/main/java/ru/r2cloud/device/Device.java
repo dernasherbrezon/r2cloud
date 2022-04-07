@@ -97,16 +97,16 @@ public abstract class Device implements Lifecycle {
 		return true;
 	}
 
-	private void schedule(ObservationRequest observation, Transmitter satellite) {
+	private void schedule(ObservationRequest observation, Transmitter transmitter) {
 		// write some device-specific parameters
 		observation.setGain(deviceConfiguration.getGain());
 		observation.setBiast(deviceConfiguration.isBiast());
 		observation.setRtlDeviceId(deviceConfiguration.getRtlDeviceId());
 		observation.setPpm(deviceConfiguration.getPpm());
 		observation.setSdrServerConfiguration(deviceConfiguration.getSdrServerConfiguration());
-		observation.setSampleRate(satellite.getInputSampleRate());
-		LOG.info("scheduled next pass for {}. start: {} end: {}", satellite, new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
-		IQReader reader = createReader(observation, satellite);
+		observation.setSampleRate(transmitter.getInputSampleRate());
+		LOG.info("scheduled next pass for {}. start: {} end: {}", transmitter, new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
+		IQReader reader = createReader(observation, transmitter);
 		Runnable readTask = new SafeRunnable() {
 
 			@Override
@@ -124,7 +124,7 @@ public abstract class Device implements Lifecycle {
 							}
 						}
 						if (clock.millis() > observation.getEndTimeMillis()) {
-							LOG.info("[{}] observation time passed. skip {}", observation.getId(), satellite);
+							LOG.info("[{}] observation time passed. skip {}", observation.getId(), transmitter);
 							return;
 						}
 						if (currentBandFrequency == null) {
@@ -149,7 +149,7 @@ public abstract class Device implements Lifecycle {
 					}
 				} else {
 					if (clock.millis() > observation.getEndTimeMillis()) {
-						LOG.info("[{}] observation time passed. skip {}", observation.getId(), satellite);
+						LOG.info("[{}] observation time passed. skip {}", observation.getId(), transmitter);
 						return;
 					}
 					try {

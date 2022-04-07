@@ -330,7 +330,12 @@ public class Observation {
 			sdrType = SdrType.RTLSDR;
 		}
 		result.setSdrType(sdrType);
-		result.setSampleRate(meta.getInt("sampleRate", -1));
+		int legacyInputRate = meta.getInt("inputSampleRate", 0);
+		if (legacyInputRate != 0) {
+			result.setSampleRate(legacyInputRate);
+		} else {
+			result.setSampleRate(meta.getInt("sampleRate", -1));
+		}
 		result.setActualFrequency(meta.getLong("actualFrequency", -1));
 		JsonValue gainValue = meta.get("gain");
 		if (gainValue != null) {

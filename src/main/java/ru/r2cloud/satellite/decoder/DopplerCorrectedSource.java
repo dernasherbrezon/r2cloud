@@ -44,16 +44,16 @@ public class DopplerCorrectedSource implements FloatInput {
 		}
 		switch (req.getSdrType()) {
 		case RTLSDR:
-			source = new RtlSdr(is, transmitter.getInputSampleRate(), totalBytes / 2);
+			source = new RtlSdr(is, req.getSampleRate(), totalBytes / 2);
 			break;
 		case PLUTOSDR:
-			source = new PlutoSdr(is, transmitter.getInputSampleRate(), totalBytes / 4);
+			source = new PlutoSdr(is, req.getSampleRate(), totalBytes / 4);
 			break;
 		case SDRSERVER:
 			Context ctx = new Context();
 			ctx.setChannels(2);
 			ctx.setSampleSizeInBits(4 * 8); // float = 4 bytes
-			ctx.setSampleRate(transmitter.getInputSampleRate());
+			ctx.setSampleRate(req.getSampleRate());
 			ctx.setTotalSamples(totalBytes / 8);
 			source = new InputStreamSource(is, ctx);
 			break;
@@ -71,7 +71,7 @@ public class DopplerCorrectedSource implements FloatInput {
 		long finalBandwidth = maxOffset + transmitter.getBandwidth() / 2;
 
 		float[] taps = Firdes.lowPass(1.0, source.getContext().getSampleRate(), finalBandwidth, 1600, Window.WIN_HAMMING, 6.76);
-		FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(source, taps, transmitter.getInputSampleRate() / transmitter.getOutputSampleRate(), (double) transmitter.getFrequency() - req.getActualFrequency());
+		FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(source, taps, req.getSampleRate() / transmitter.getOutputSampleRate(), (double) transmitter.getFrequency() - req.getActualFrequency());
 		SigSource source2 = new SigSource(Waveform.COMPLEX, (long) xlating.getContext().getSampleRate(), new DopplerValueSource(xlating.getContext().getSampleRate(), transmitter.getFrequency(), 1000L, req.getStartTimeMillis()) {
 
 			@Override

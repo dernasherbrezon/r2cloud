@@ -82,7 +82,7 @@ public class DecoderTest {
 			{ "data/delphini1.raw.gz", "data/delphini1.raw.gz.json", "44030", "44030-0", 2},
 			{ "data/meznsat.raw.gz", "data/meznsat.raw.gz.json", "46489", "46489-0", 1},
 			{ "data/swampsat2.raw.gz", "data/swampsat2.raw.gz.json", "45115", "45115-0", 1},
-			{ "data/40069-1553411549943.raw.gz", "decodertests/LRPTDecoderTest.json", "40069", "40069-0", 5}
+			{ "data/40069-1553411549943.raw.gz", "decodertests/LRPTDecoderTest.json", "40069", "40069-0", 4}
 		});
 	}
 
