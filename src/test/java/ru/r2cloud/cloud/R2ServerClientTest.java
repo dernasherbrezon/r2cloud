@@ -245,7 +245,7 @@ public class R2ServerClientTest {
 		result.setSpectogramURL("1");
 		result.setBiast(true);
 		result.setSdrType(SdrType.RTLSDR);
-		result.setGain(12.2);
+		result.setGain("12.2");
 		return result;
 	}
 

@@ -6,7 +6,7 @@
 	"actualFrequency": 100,
 	"satellite": "1",
 	"transmitterId": "1",
-	"gain": 12.2,
+	"gain": "12.2",
 	"channelA": "1",
 	"channelB": "1",
 	"numberOfDecodedPackets": 1,

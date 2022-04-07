@@ -144,7 +144,7 @@ public class ObservationDaoTest {
 		full.setStatus(ObservationStatus.DECODED);
 		assertTrue(dao.update(full));
 		actual = dao.find(req.getSatelliteId(), req.getId());
-		assertEquals(45.0, actual.getGain(), 0.0);
+		assertEquals("45.0", actual.getGain());
 		assertEquals(1, actual.getNumberOfDecodedPackets().longValue());
 		assertEquals(ObservationStatus.DECODED, actual.getStatus());
 

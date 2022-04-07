@@ -24,7 +24,7 @@ public class Observation {
 	private SdrType sdrType;
 	private int sampleRate;
 	private long actualFrequency;
-	private double gain;
+	private String gain;
 	private boolean biast;
 	private long centerBandFrequency;
 	private int rtlDeviceId;
@@ -64,7 +64,7 @@ public class Observation {
 		sdrType = req.getSdrType();
 		sampleRate = req.getSampleRate();
 		actualFrequency = req.getActualFrequency();
-		gain = req.getGain();
+		gain = String.valueOf(req.getGain());
 		biast = req.isBiast();
 		centerBandFrequency = req.getCenterBandFrequency();
 		rtlDeviceId = req.getRtlDeviceId();
@@ -83,7 +83,11 @@ public class Observation {
 		result.setSdrType(sdrType);
 		result.setSampleRate(sampleRate);
 		result.setActualFrequency(actualFrequency);
-		result.setGain(gain);
+		if (gain != null) {
+			result.setGain(Double.valueOf(gain));
+		} else {
+			result.setGain(45.0);
+		}
 		result.setBiast(biast);
 		result.setCenterBandFrequency(centerBandFrequency);
 		result.setRtlDeviceId(rtlDeviceId);
@@ -283,11 +287,11 @@ public class Observation {
 		this.sampleRate = sampleRate;
 	}
 
-	public double getGain() {
+	public String getGain() {
 		return gain;
 	}
 
-	public void setGain(double gain) {
+	public void setGain(String gain) {
 		this.gain = gain;
 	}
 
@@ -337,14 +341,7 @@ public class Observation {
 			result.setSampleRate(meta.getInt("sampleRate", -1));
 		}
 		result.setActualFrequency(meta.getLong("actualFrequency", -1));
-		JsonValue gainValue = meta.get("gain");
-		if (gainValue != null) {
-			if (gainValue.isString()) {
-				result.setGain(Double.valueOf(gainValue.asString()));
-			} else {
-				result.setGain(gainValue.asDouble());
-			}
-		}
+		result.setGain(meta.getString("gain", null));
 		result.setBiast(meta.getBoolean("biast", false));
 		result.setCenterBandFrequency(meta.getLong("centerBandFrequency", 0));
 		result.setRtlDeviceId(meta.getInt("rtlDeviceId", 0));
