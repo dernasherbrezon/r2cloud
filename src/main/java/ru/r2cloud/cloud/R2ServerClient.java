@@ -237,6 +237,7 @@ public class R2ServerClient {
 			return null;
 		}
 		transmitter.setDeviation(5000);
+		transmitter.setTransitionWidth(2000);
 		transmitter.setBeaconSizeBytes(json.getInt("beaconSizeBytes", 0));
 		transmitter.setLoraBandwidth(json.getLong("loraBandwidth", 0));
 		transmitter.setLoraSpreadFactor(json.getInt("loraSpreadFactor", 0));

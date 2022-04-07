@@ -21,6 +21,7 @@ public class Transmitter {
 	private double bpskCenterFrequency;
 	private long deviation;
 	private long afCarrier;
+	private double transitionWidth;
 	private int inputSampleRate;
 	private int outputSampleRate;
 
@@ -63,6 +64,7 @@ public class Transmitter {
 		this.bpskCenterFrequency = copy.bpskCenterFrequency;
 		this.deviation = copy.deviation;
 		this.afCarrier = copy.afCarrier;
+		this.transitionWidth = copy.transitionWidth;
 		this.inputSampleRate = copy.inputSampleRate;
 		this.outputSampleRate = copy.outputSampleRate;
 		this.loraBandwidth = copy.loraBandwidth;
@@ -71,6 +73,14 @@ public class Transmitter {
 		this.loraSyncword = copy.loraSyncword;
 		this.loraPreambleLength = copy.loraPreambleLength;
 		this.loraLdro = copy.loraLdro;
+	}
+	
+	public double getTransitionWidth() {
+		return transitionWidth;
+	}
+	
+	public void setTransitionWidth(double transitionWidth) {
+		this.transitionWidth = transitionWidth;
 	}
 	
 	public long getAfCarrier() {

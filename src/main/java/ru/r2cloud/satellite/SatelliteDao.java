@@ -192,6 +192,12 @@ public class SatelliteDao {
 				if (afCarrier != null) {
 					curTransmitter.setAfCarrier(afCarrier);
 				}
+				Double transitionWidth = config.getDouble(prefix + ".transitionWidth");
+				if (transitionWidth != null) {
+					curTransmitter.setTransitionWidth(transitionWidth);
+				} else {
+					curTransmitter.setTransitionWidth(2000);
+				}
 				transmitters.add(curTransmitter);
 			}
 			if (transmitters.isEmpty()) {
