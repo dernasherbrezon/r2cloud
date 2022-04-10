@@ -14,7 +14,10 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -24,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.model.GeneralConfiguration;
 
@@ -431,14 +435,23 @@ public class RestClient {
 		}
 	}
 
-	public String scheduleStart(String satelliteId) {
+	public List<String> scheduleStart(String satelliteId) {
 		HttpResponse<String> response = scheduleStartResponse(satelliteId);
 		if (response.statusCode() != 200) {
 			LOG.info("response: {}", response.body());
 			throw new RuntimeException("invalid status code: " + response.statusCode());
 		}
 		JsonObject json = (JsonObject) Json.parse(response.body());
-		return json.getString("id", null);
+		JsonValue ids = json.get("ids");
+		if (ids == null || !ids.isArray()) {
+			return Collections.emptyList();
+		}
+		JsonArray idsArray = ids.asArray();
+		List<String> result = new ArrayList<>();
+		for (int i = 0; i < idsArray.size(); i++) {
+			result.add(idsArray.get(i).asString());
+		}
+		return result;
 	}
 
 	public HttpResponse<String> scheduleCompleteResponse(String observationId) {

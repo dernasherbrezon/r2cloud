@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.After;
@@ -38,10 +39,10 @@ public class ObservationTest extends RegisteredTest {
 		server.setSpectogramMock(1L, spectogramHandler);
 
 		// start observation
-		String observationId = client.scheduleStart(METEOR_ID);
-		assertNotNull(observationId);
+		List<String> observationIds = client.scheduleStart(METEOR_ID);
+		assertEquals(1, observationIds.size());
 		// get observation and assert
-		assertObservation(awaitObservation(observationId));
+		assertObservation(awaitObservation(METEOR_ID, observationIds.get(0), true));
 
 		// wait for r2cloud meta upload and assert
 		metaHandler.awaitRequest();
@@ -58,6 +59,22 @@ public class ObservationTest extends RegisteredTest {
 		assertEquals("image/png", spectogramHandler.getRequestContentType());
 		assertSpectogram("spectogram-output.raw.gz.png", spectogramHandler.getRequestBytes());
 		assertTempEmpty();
+	}
+
+	@Test
+	public void testTwoTransmittors() throws Exception {
+		rtlSdrMock.mockResponse("/data/40069-1553411549943.raw.gz");
+		JsonHttpResponse metaHandler = new JsonHttpResponse("r2cloudclienttest/save-meta-response.json", 200);
+		server.setObservationMock(metaHandler);
+		JsonHttpResponse spectogramHandler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
+		server.setSpectogramMock(1L, spectogramHandler);
+
+		r2loraServer.createContext("/lora/rx/start", new JsonHttpResponse("r2loratest/success.json", 200));
+		r2loraServer.createContext("/rx/stop", new JsonHttpResponse("r2loratest/successStop.json", 200));
+		
+		// start observation
+		List<String> observationIds = client.scheduleStart("46494");
+		assertEquals(2, observationIds.size());
 	}
 
 	private static void assertObservation(JsonObject observation) {
@@ -96,13 +113,13 @@ public class ObservationTest extends RegisteredTest {
 		super.stop();
 	}
 
-	private JsonObject awaitObservation(String observationId) {
+	private JsonObject awaitObservation(String satelliteId, String observationId, boolean waitForDecodedPackets) {
 		// experimental. 20 seconds to process LRPT
 		int maxRetries = 40;
 		int curRetry = 0;
 		while (!Thread.currentThread().isInterrupted() && curRetry < maxRetries) {
-			JsonObject observation = client.getObservation(METEOR_ID, observationId);
-			if (observation != null && observation.get("numberOfDecodedPackets") != null) {
+			JsonObject observation = client.getObservation(satelliteId, observationId);
+			if (observation != null && (!waitForDecodedPackets || observation.get("numberOfDecodedPackets") != null)) {
 				return observation;
 			}
 			try {

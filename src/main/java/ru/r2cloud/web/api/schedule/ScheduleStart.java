@@ -1,8 +1,11 @@
 package ru.r2cloud.web.api.schedule;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.device.DeviceManager;
@@ -48,13 +51,19 @@ public class ScheduleStart extends AbstractHttpController {
 			return new BadRequest(errors);
 		}
 
-		ObservationRequest req = scheduler.startImmediately(satellite);
+		LOG.info("start observation for satellite {}", id);
+
+		List<ObservationRequest> req = scheduler.startImmediately(satellite);
 		if (req == null) {
 			return new InternalServerError();
 		}
+		JsonArray ids = new JsonArray();
+		for (ObservationRequest cur : req) {
+			ids.add(cur.getId());
+		}
 
 		JsonObject entity = new JsonObject();
-		entity.add("id", req.getId());
+		entity.add("ids", ids);
 		ModelAndView result = new ModelAndView();
 		result.setData(entity);
 		return result;

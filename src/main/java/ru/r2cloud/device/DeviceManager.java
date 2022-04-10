@@ -122,14 +122,15 @@ public class DeviceManager implements Lifecycle, ConfigListener {
 		return result;
 	}
 
-	public ObservationRequest startImmediately(Satellite satellite) {
-		ObservationRequest result = null;
+	public List<ObservationRequest> startImmediately(Satellite satellite) {
+		List<ObservationRequest> result = new ArrayList<>();
 		for (int i = 0; i < devices.size(); i++) {
 			for (Transmitter curTransmitter : satellite.getTransmitters()) {
 				ObservationRequest cur = devices.get(i).startImmediately(curTransmitter);
-				if (cur != null) {
-					result = cur;
+				if (cur == null) {
+					continue;
 				}
+				result.add(cur);
 			}
 		}
 		return result;
