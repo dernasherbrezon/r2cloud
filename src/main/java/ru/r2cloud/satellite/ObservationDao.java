@@ -10,7 +10,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +23,7 @@ import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.FilenameComparator;
 import ru.r2cloud.model.Observation;
-import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.ObservationStatus;
+import ru.r2cloud.model.ObservationComparator;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -37,6 +39,7 @@ public class ObservationDao {
 	private static final String OUTPUT_RAW_FILENAME = "output.raw";
 
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationDao.class);
+	private static final Map<String, List<Observation>> IN_FLIGHT_OBSERVATIONS = new HashMap<>();
 
 	private final Path basepath;
 	private final int maxCount;
@@ -85,7 +88,6 @@ public class ObservationDao {
 			LOG.error("unable to load observations", e);
 			return Collections.emptyList();
 		}
-		Collections.sort(observations, FilenameComparator.INSTANCE_DESC);
 		List<Observation> result = new ArrayList<>(observations.size());
 		for (Path curDirectory : observations) {
 			Observation cur = find(satelliteId, curDirectory);
@@ -95,10 +97,27 @@ public class ObservationDao {
 			}
 			result.add(cur);
 		}
+		synchronized (IN_FLIGHT_OBSERVATIONS) {
+			List<Observation> inFlight = IN_FLIGHT_OBSERVATIONS.get(satelliteId);
+			if (inFlight != null) {
+				result.addAll(inFlight);
+			}
+		}
+		Collections.sort(result, ObservationComparator.INSTANCE);
 		return result;
 	}
 
 	public Observation find(String satelliteId, String observationId) {
+		synchronized (IN_FLIGHT_OBSERVATIONS) {
+			List<Observation> inFlight = IN_FLIGHT_OBSERVATIONS.get(satelliteId);
+			if (inFlight != null) {
+				for (Observation cur : inFlight) {
+					if (cur.getId().equalsIgnoreCase(observationId)) {
+						return cur;
+					}
+				}
+			}
+		}
 		Path baseDirectory = basepath.resolve(satelliteId).resolve("data").resolve(observationId);
 		if (!Files.exists(baseDirectory)) {
 			return null;
@@ -192,28 +211,58 @@ public class ObservationDao {
 		return dest.toFile();
 	}
 
-	public File insert(ObservationRequest request, File rawFile) {
-		if (retention == null) {
-			cleanupPreviousObservations(request);
+	public void insert(Observation observation) {
+		synchronized (IN_FLIGHT_OBSERVATIONS) {
+			List<Observation> inFlight = IN_FLIGHT_OBSERVATIONS.get(observation.getSatelliteId());
+			if (inFlight == null) {
+				inFlight = new ArrayList<>();
+				IN_FLIGHT_OBSERVATIONS.put(observation.getSatelliteId(), inFlight);
+			}
+			inFlight.add(observation);
 		}
-
-		Path observationBasePath = getObservationBasepath(request);
-		if (!Util.initDirectory(observationBasePath)) {
-			return null;
-		}
-
-		Observation observation = new Observation(request);
-		observation.setStatus(ObservationStatus.NEW);
-		if (!update(observation)) {
-			return null;
-		}
-
-		return insertRawFile(request, rawFile);
 	}
 
-	private void cleanupPreviousObservations(ObservationRequest request) {
+	public void cancel(Observation observation) {
+		synchronized (IN_FLIGHT_OBSERVATIONS) {
+			List<Observation> inFlight = IN_FLIGHT_OBSERVATIONS.get(observation.getSatelliteId());
+			if (inFlight != null) {
+				Iterator<Observation> it = inFlight.iterator();
+				while (it.hasNext()) {
+					Observation cur = it.next();
+					if (cur.getId().equalsIgnoreCase(observation.getId())) {
+						it.remove();
+						break;
+					}
+				}
+				if (inFlight.isEmpty()) {
+					IN_FLIGHT_OBSERVATIONS.remove(observation.getSatelliteId());
+				}
+			}
+		}
+	}
+
+	public File update(Observation observation, File rawFile) {
+		synchronized (IN_FLIGHT_OBSERVATIONS) {
+			cancel(observation);
+			if (retention == null) {
+				cleanupPreviousObservations(observation);
+			}
+
+			Path observationBasePath = getObservationBasepath(observation);
+			if (!Util.initDirectory(observationBasePath)) {
+				return null;
+			}
+
+			if (!update(observation)) {
+				return null;
+			}
+		}
+		return insertRawFile(observation, rawFile);
+	}
+
+	private void cleanupPreviousObservations(Observation observation) {
 		try {
-			Path satelliteBasePath = basepath.resolve(request.getSatelliteId()).resolve("data");
+			Path satelliteBasePath = basepath.resolve(observation.getSatelliteId()).resolve("data");
 			if (Files.exists(satelliteBasePath)) {
 				List<Path> dataDirs = Util.toList(Files.newDirectoryStream(satelliteBasePath));
 				Collections.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
@@ -236,7 +285,7 @@ public class ObservationDao {
 		}
 	}
 
-	private File insertRawFile(ObservationRequest observation, File rawFile) {
+	private File insertRawFile(Observation observation, File rawFile) {
 		String filename;
 		if (rawFile.getName().endsWith("wav")) {
 			filename = OUTPUT_WAV_FILENAME;
@@ -286,10 +335,6 @@ public class ObservationDao {
 	}
 
 	private Path getObservationBasepath(Observation observation) {
-		return getObservationBasepath(observation.getSatelliteId(), observation.getId());
-	}
-
-	private Path getObservationBasepath(ObservationRequest observation) {
 		return getObservationBasepath(observation.getSatelliteId(), observation.getId());
 	}
 

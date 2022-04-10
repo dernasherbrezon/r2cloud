@@ -27,7 +27,6 @@ import com.aerse.mockfs.MockFileSystem;
 
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.model.Observation;
-import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationStatus;
 import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.Tle;
@@ -43,8 +42,9 @@ public class ObservationDaoTest {
 
 	@Test
 	public void testFailedToUpdate() throws Exception {
-		ObservationRequest req = createRequest();
-		assertNotNull(dao.insert(req, createTempFile("wav")));
+		Observation req = createObservation();
+		req.setStatus(ObservationStatus.RECEIVED);
+		assertNotNull(dao.update(req, createTempFile("wav")));
 		Observation observation = dao.find(req.getSatelliteId(), req.getId());
 		// corrupt writing
 		Path pathToMock = config.getSatellitesBasePath().resolve(req.getSatelliteId()).resolve("data").resolve(req.getId());
@@ -55,7 +55,7 @@ public class ObservationDaoTest {
 		// ensure meta in the state before corruption
 		observation = dao.find(req.getSatelliteId(), req.getId());
 		assertNotNull(observation);
-		assertEquals(ObservationStatus.NEW, observation.getStatus());
+		assertEquals(ObservationStatus.RECEIVED, observation.getStatus());
 	}
 
 	@Test
@@ -67,8 +67,7 @@ public class ObservationDaoTest {
 	public void testFindAll() throws Exception {
 		int expectedObservations = 5;
 		for (int i = 0; i < expectedObservations; i++) {
-			ObservationRequest req = createRequest();
-			assertNotNull(dao.insert(req, createTempFile("wav")));
+			assertNotNull(dao.update(createObservation(), createTempFile("wav")));
 		}
 		assertEquals(expectedObservations, dao.findAll().size());
 	}
@@ -77,41 +76,75 @@ public class ObservationDaoTest {
 	public void testRetention() throws Exception {
 		String satelliteId = UUID.randomUUID().toString();
 		for (int i = 0; i < 5; i++) {
-			ObservationRequest req = createRequest();
+			Observation req = createObservation();
 			req.setSatelliteId(satelliteId);
-			assertNotNull(dao.insert(req, createTempFile("wav")));
+			assertNotNull(dao.update(req, createTempFile("wav")));
 		}
 		assertEquals(2, dao.findAllBySatelliteId(satelliteId).size());
 	}
 
 	@Test
 	public void saveSpectogramTwice() throws Exception {
-		ObservationRequest req = createRequest();
-		assertNotNull(dao.insert(req, createTempFile("wav")));
+		Observation req = createObservation();
+		assertNotNull(dao.update(req, createTempFile("wav")));
 		assertNotNull(dao.saveSpectogram(req.getSatelliteId(), req.getId(), createTempFile("data")));
 		assertNull(dao.saveSpectogram(req.getSatelliteId(), req.getId(), createTempFile("dup")));
 	}
 
 	@Test
 	public void saveImageTwice() throws Exception {
-		ObservationRequest req = createRequest();
-		assertNotNull(dao.insert(req, createTempFile("wav")));
+		Observation req = createObservation();
+		assertNotNull(dao.update(req, createTempFile("wav")));
 		assertNotNull(dao.saveImage(req.getSatelliteId(), req.getId(), createTempFile("data")));
 		assertNull(dao.saveImage(req.getSatelliteId(), req.getId(), createTempFile("dup")));
 	}
 
 	@Test
 	public void saveDataTwice() throws Exception {
-		ObservationRequest req = createRequest();
-		assertNotNull(dao.insert(req, createTempFile("wav")));
+		Observation req = createObservation();
+		assertNotNull(dao.update(req, createTempFile("wav")));
 		assertNotNull(dao.saveData(req.getSatelliteId(), req.getId(), createTempFile("data")));
 		assertNull(dao.saveData(req.getSatelliteId(), req.getId(), createTempFile("dup")));
 	}
 
 	@Test
+	public void testInFlight() throws Exception {
+		Observation req = createObservation();
+		req.setStatus(ObservationStatus.RECEIVING_DATA);
+		dao.insert(req);
+		Observation actual = dao.find(req.getSatelliteId(), req.getId());
+		assertNotNull(actual);
+		assertEquals(ObservationStatus.RECEIVING_DATA, actual.getStatus());
+
+		dao.cancel(req);
+		actual = dao.find(req.getSatelliteId(), req.getId());
+		assertNull(actual);
+
+		req.setStartTimeMillis(1);
+		dao.insert(req);
+		Observation req2 = createObservation();
+		req2.setSatelliteId(req.getSatelliteId());
+		req2.setStartTimeMillis(2);
+		assertNotNull(dao.update(req2, createTempFile("wav")));
+
+		List<Observation> all = dao.findAll();
+		assertEquals(2, all.size());
+		// test desc sorting
+		assertEquals(2, all.get(0).getStartTimeMillis());
+		assertEquals(1, all.get(1).getStartTimeMillis());
+
+		all = dao.findAllBySatelliteId(req.getSatelliteId());
+		assertEquals(2, all.size());
+		// test desc sorting
+		assertEquals(2, all.get(0).getStartTimeMillis());
+		assertEquals(1, all.get(1).getStartTimeMillis());
+	}
+
+	@Test
 	public void testCrud() throws Exception {
-		ObservationRequest req = createRequest();
-		assertNotNull(dao.insert(req, createTempFile("wav")));
+		Observation req = createObservation();
+		req.setStatus(ObservationStatus.RECEIVED);
+		assertNotNull(dao.update(req, createTempFile("wav")));
 		Observation actual = dao.find(req.getSatelliteId(), req.getId());
 		assertNotNull(actual.getRawPath());
 		assertNull(actual.getDataPath());
@@ -121,7 +154,7 @@ public class ObservationDaoTest {
 		assertEquals(req.getTle(), actual.getTle());
 		assertEquals(req.getGroundStation().getLatitude(), actual.getGroundStation().getLatitude(), 0.0);
 		assertEquals(req.getGroundStation().getLongitude(), actual.getGroundStation().getLongitude(), 0.0);
-		assertEquals(ObservationStatus.NEW, actual.getStatus());
+		assertEquals(ObservationStatus.RECEIVED, actual.getStatus());
 
 		assertNotNull(dao.saveData(req.getSatelliteId(), req.getId(), createTempFile("data")));
 		assertNotNull(dao.saveImage(req.getSatelliteId(), req.getId(), createTempFile("image")));
@@ -137,7 +170,7 @@ public class ObservationDaoTest {
 		assertNotNull(actual.getaURL());
 		assertNotNull(actual.getRawURL());
 
-		Observation full = new Observation(req);
+		Observation full = new Observation(req.getReq());
 		full.setChannelA(UUID.randomUUID().toString());
 		full.setChannelB(UUID.randomUUID().toString());
 		full.setNumberOfDecodedPackets(1L);
@@ -152,22 +185,22 @@ public class ObservationDaoTest {
 		assertEquals(1, all.size());
 	}
 
-	private static ObservationRequest createRequest() {
-		ObservationRequest req = new ObservationRequest();
-		req.setActualFrequency(1L);
-		req.setEndTimeMillis(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5));
-		req.setId(UUID.randomUUID().toString());
-		req.setSampleRate(1);
-		req.setTle(create());
-		req.setActualFrequency(2);
-		req.setSatelliteId(UUID.randomUUID().toString());
-		req.setTransmitterId(UUID.randomUUID().toString());
-		req.setStartTimeMillis(System.currentTimeMillis());
-		req.setGroundStation(createGroundStation());
-		req.setGain(45.0);
-		req.setBiast(false);
-		req.setSdrType(SdrType.RTLSDR);
-		return req;
+	private static Observation createObservation() {
+		Observation result = new Observation();
+		result.setActualFrequency(1L);
+		result.setEndTimeMillis(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5));
+		result.setId(UUID.randomUUID().toString());
+		result.setSampleRate(1);
+		result.setTle(create());
+		result.setActualFrequency(2);
+		result.setSatelliteId(UUID.randomUUID().toString());
+		result.setTransmitterId(UUID.randomUUID().toString());
+		result.setStartTimeMillis(System.currentTimeMillis());
+		result.setGroundStation(createGroundStation());
+		result.setGain("45.0");
+		result.setBiast(false);
+		result.setSdrType(SdrType.RTLSDR);
+		return result;
 	}
 
 	private static Tle create() {

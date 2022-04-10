@@ -22,7 +22,9 @@ import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.model.DeviceStatus;
 import ru.r2cloud.model.IQData;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.ObservationStatus;
 import ru.r2cloud.model.RotatorStatus;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
@@ -97,25 +99,27 @@ public abstract class Device implements Lifecycle {
 		return true;
 	}
 
-	private void schedule(ObservationRequest observation, Transmitter transmitter) {
+	private void schedule(ObservationRequest req, Transmitter transmitter) {
 		// write some device-specific parameters
-		observation.setGain(deviceConfiguration.getGain());
-		observation.setBiast(deviceConfiguration.isBiast());
-		observation.setRtlDeviceId(deviceConfiguration.getRtlDeviceId());
-		observation.setPpm(deviceConfiguration.getPpm());
-		observation.setSdrServerConfiguration(deviceConfiguration.getSdrServerConfiguration());
-		observation.setSampleRate(transmitter.getInputSampleRate());
-		LOG.info("scheduled next pass for {}. start: {} end: {}", transmitter, new Date(observation.getStartTimeMillis()), new Date(observation.getEndTimeMillis()));
-		IQReader reader = createReader(observation, transmitter);
+		req.setGain(deviceConfiguration.getGain());
+		req.setBiast(deviceConfiguration.isBiast());
+		req.setRtlDeviceId(deviceConfiguration.getRtlDeviceId());
+		req.setPpm(deviceConfiguration.getPpm());
+		req.setSdrServerConfiguration(deviceConfiguration.getSdrServerConfiguration());
+		req.setSampleRate(transmitter.getInputSampleRate());
+		LOG.info("scheduled next pass for {}. start: {} end: {}", transmitter, new Date(req.getStartTimeMillis()), new Date(req.getEndTimeMillis()));
+		IQReader reader = createReader(req, transmitter);
 		Runnable readTask = new SafeRunnable() {
 
 			@Override
 			public void safeRun() {
 				IQData data;
+				Observation observation = new Observation(req);
+				observation.setStatus(ObservationStatus.RECEIVING_DATA);
 				// do not use lock for multiple concurrent observations
 				if (numberOfConcurrentObservations > 1) {
 					synchronized (sdrServerLock) {
-						while (currentBandFrequency != null && currentBandFrequency != observation.getCenterBandFrequency()) {
+						while (currentBandFrequency != null && currentBandFrequency != req.getCenterBandFrequency()) {
 							try {
 								sdrServerLock.wait();
 							} catch (InterruptedException e) {
@@ -123,19 +127,22 @@ public abstract class Device implements Lifecycle {
 								return;
 							}
 						}
-						if (clock.millis() > observation.getEndTimeMillis()) {
-							LOG.info("[{}] observation time passed. skip {}", observation.getId(), transmitter);
+						if (clock.millis() > req.getEndTimeMillis()) {
+							LOG.info("[{}] observation time passed. skip {}", req.getId(), transmitter);
 							return;
 						}
 						if (currentBandFrequency == null) {
-							currentBandFrequency = observation.getCenterBandFrequency();
+							currentBandFrequency = req.getCenterBandFrequency();
 							LOG.info("starting observations on {} hz", currentBandFrequency);
 						}
 						numberOfObservationsOnCurrentBand++;
 					}
+					// insert only when it actually started on the device
+					observationDao.insert(observation);
 					try {
 						data = reader.start();
 					} catch (InterruptedException e) {
+						observationDao.cancel(observation);
 						Thread.currentThread().interrupt();
 						return;
 					}
@@ -148,26 +155,30 @@ public abstract class Device implements Lifecycle {
 						sdrServerLock.notifyAll();
 					}
 				} else {
-					if (clock.millis() > observation.getEndTimeMillis()) {
-						LOG.info("[{}] observation time passed. skip {}", observation.getId(), transmitter);
+					if (clock.millis() > req.getEndTimeMillis()) {
+						LOG.info("[{}] observation time passed. skip {}", req.getId(), transmitter);
 						return;
 					}
+					observationDao.insert(observation);
 					try {
 						data = reader.start();
 					} catch (InterruptedException e) {
+						observationDao.cancel(observation);
 						Thread.currentThread().interrupt();
 						return;
 					}
 				}
 
 				if (data == null || data.getDataFile() == null) {
+					observationDao.cancel(observation);
 					return;
 				}
 				// actual start/end might be different
 				observation.setStartTimeMillis(data.getActualStart());
 				observation.setEndTimeMillis(data.getActualEnd());
-
-				File dataFile = observationDao.insert(observation, data.getDataFile());
+				observation.setStatus(ObservationStatus.RECEIVED);
+				
+				File dataFile = observationDao.update(observation, data.getDataFile());
 				if (dataFile == null) {
 					return;
 				}
@@ -177,7 +188,7 @@ public abstract class Device implements Lifecycle {
 						return;
 					}
 
-					decoderService.run(dataFile, observation);
+					decoderService.run(dataFile, req);
 				}
 
 			}
@@ -187,10 +198,10 @@ public abstract class Device implements Lifecycle {
 				return;
 			}
 			long current = clock.millis();
-			Future<?> startFuture = startThread.schedule(readTask, observation.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
+			Future<?> startFuture = startThread.schedule(readTask, req.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
 			Future<?> rotatorFuture = null;
 			if (rotatorService != null) {
-				rotatorFuture = rotatorService.schedule(observation, current);
+				rotatorFuture = rotatorService.schedule(req, current);
 			}
 			Runnable completeTask = new SafeRunnable() {
 
@@ -199,8 +210,8 @@ public abstract class Device implements Lifecycle {
 					reader.complete();
 				}
 			};
-			Future<?> stopRtlSdrFuture = stopThread.schedule(completeTask, observation.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
-			schedule.assignTasksToSlot(observation.getId(), new ScheduledObservation(startFuture, stopRtlSdrFuture, completeTask, rotatorFuture));
+			Future<?> stopRtlSdrFuture = stopThread.schedule(completeTask, req.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
+			schedule.assignTasksToSlot(req.getId(), new ScheduledObservation(startFuture, stopRtlSdrFuture, completeTask, rotatorFuture));
 		}
 	}
 

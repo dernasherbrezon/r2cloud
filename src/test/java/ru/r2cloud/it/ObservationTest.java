@@ -71,17 +71,26 @@ public class ObservationTest extends RegisteredTest {
 
 		r2loraServer.createContext("/lora/rx/start", new JsonHttpResponse("r2loratest/success.json", 200));
 		r2loraServer.createContext("/rx/stop", new JsonHttpResponse("r2loratest/successStop.json", 200));
-		
+
 		// start observation
-		List<String> observationIds = client.scheduleStart("46494");
+		String satelliteId = "46494";
+		List<String> observationIds = client.scheduleStart(satelliteId);
 		assertEquals(2, observationIds.size());
+
+		// get observation and assert
+		assertObservation(satelliteId, awaitObservation(satelliteId, observationIds.get(0), false));
+		assertObservation(satelliteId, awaitObservation(satelliteId, observationIds.get(1), false));
 	}
 
 	private static void assertObservation(JsonObject observation) {
-		assertNotNull(observation);
+		assertObservation(METEOR_ID, observation);
 		assertEquals(288000, observation.getInt("sampleRate", 0));
 		assertEquals(137900000, observation.getInt("actualFrequency", 0));
-		assertEquals(METEOR_ID, observation.getString("satellite", null));
+	}
+
+	private static void assertObservation(String satelliteId, JsonObject observation) {
+		assertNotNull(observation);
+		assertEquals(satelliteId, observation.getString("satellite", null));
 	}
 
 	static void assertSpectogram(String expectedFilename, byte[] actualBytes) throws IOException {

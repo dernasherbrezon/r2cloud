@@ -62,7 +62,7 @@ public class DecoderService implements Lifecycle {
 		List<Observation> all = dao.findAll();
 		String apiKey = config.getProperty("r2cloud.apiKey");
 		for (Observation cur : all) {
-			if (cur.getStatus().equals(ObservationStatus.NEW)) {
+			if (cur.getStatus().equals(ObservationStatus.RECEIVED)) {
 				LOG.info("resuming decoding: {}", cur.getId());
 				if (cur.getRawPath() == null) {
 					LOG.info("raw file doesn't exist: {}", cur.getId());
