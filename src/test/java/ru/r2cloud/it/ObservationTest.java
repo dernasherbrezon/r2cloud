@@ -17,7 +17,7 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.ParseException;
 
 import ru.r2cloud.JsonHttpResponse;
-import ru.r2cloud.R2CloudServer;
+import ru.r2cloud.LeoSatDataServerMock;
 import ru.r2cloud.RtlSdrDataServer;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.it.util.RegisteredTest;
@@ -27,7 +27,7 @@ public class ObservationTest extends RegisteredTest {
 	private final static String METEOR_ID = "40069";
 
 	private RtlSdrDataServer rtlSdrMock;
-	private R2CloudServer server;
+	private LeoSatDataServerMock server;
 
 	@Test
 	public void testMeteorObservation() throws Exception {
@@ -80,7 +80,7 @@ public class ObservationTest extends RegisteredTest {
 		client.saveR2CloudConfiguration(UUID.randomUUID().toString(), true, true);
 		rtlSdrMock = new RtlSdrDataServer();
 		rtlSdrMock.start();
-		server = new R2CloudServer();
+		server = new LeoSatDataServerMock();
 		server.start();
 	}
 

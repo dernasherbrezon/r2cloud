@@ -21,17 +21,17 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.JsonHttpResponse;
-import ru.r2cloud.R2CloudServer;
+import ru.r2cloud.LeoSatDataServerMock;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SdrType;
 
-public class R2ServerClientTest {
+public class LeoSatDataClientTest {
 
-	private R2CloudServer server;
-	private R2ServerClient client;
+	private LeoSatDataServerMock server;
+	private LeoSatDataClient client;
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -203,14 +203,14 @@ public class R2ServerClientTest {
 
 	@Before
 	public void start() throws Exception {
-		server = new R2CloudServer();
+		server = new LeoSatDataServerMock();
 		server.start();
 		TestConfiguration config = new TestConfiguration(tempFolder);
-		config.setProperty("r2server.hostname", server.getUrl());
-		config.setProperty("r2server.connectionTimeout", "1000");
+		config.setProperty("leosatdata.hostname", server.getUrl());
+		config.setProperty("leosatdata.connectionTimeout", "1000");
 		config.setProperty("r2cloud.apiKey", UUID.randomUUID().toString());
 		config.setProperty("satellites.R2CLOUD3.enabled", false);
-		client = new R2ServerClient(config);
+		client = new LeoSatDataClient(config);
 	}
 
 	@After

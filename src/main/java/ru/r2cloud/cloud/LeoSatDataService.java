@@ -11,16 +11,16 @@ import ru.r2cloud.model.ObservationStatus;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.util.Configuration;
 
-public class R2ServerService {
+public class LeoSatDataService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(R2ServerService.class);
+	private static final Logger LOG = LoggerFactory.getLogger(LeoSatDataService.class);
 
 	private final Configuration config;
 	private final ObservationDao dao;
-	private final R2ServerClient client;
+	private final LeoSatDataClient client;
 	private final SpectogramService spectogramService;
 
-	public R2ServerService(Configuration config, ObservationDao dao, R2ServerClient client, SpectogramService spectogramService) {
+	public LeoSatDataService(Configuration config, ObservationDao dao, LeoSatDataClient client, SpectogramService spectogramService) {
 		this.config = config;
 		this.dao = dao;
 		this.client = client;

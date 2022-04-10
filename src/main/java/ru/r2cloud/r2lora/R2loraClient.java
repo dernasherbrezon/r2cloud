@@ -26,7 +26,7 @@ import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
 
 import ru.r2cloud.R2Cloud;
-import ru.r2cloud.cloud.R2ServerClient;
+import ru.r2cloud.cloud.LeoSatDataClient;
 import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.util.Util;
 
@@ -36,7 +36,7 @@ public class R2loraClient {
 
 	private static final String CONNECTION_FAILURE = "CONNECTION_FAILURE";
 
-	private static final Logger LOG = LoggerFactory.getLogger(R2ServerClient.class);
+	private static final Logger LOG = LoggerFactory.getLogger(LeoSatDataClient.class);
 
 	private HttpClient httpclient;
 	private final String hostname;

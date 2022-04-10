@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.Counter;
 
 import ru.r2cloud.Lifecycle;
-import ru.r2cloud.cloud.R2ServerService;
+import ru.r2cloud.cloud.LeoSatDataService;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.Observation;
@@ -34,7 +34,7 @@ public class DecoderService implements Lifecycle {
 
 	private final Decoders decoders;
 	private final ObservationDao dao;
-	private final R2ServerService r2cloudService;
+	private final LeoSatDataService r2cloudService;
 	private final ThreadPoolFactory threadpoolFactory;
 	private final Configuration config;
 	private final Metrics metrics;
@@ -43,7 +43,7 @@ public class DecoderService implements Lifecycle {
 	private Counter lrpt;
 	private Counter telemetry;
 
-	public DecoderService(Configuration config, Decoders decoders, ObservationDao dao, R2ServerService r2cloudService, ThreadPoolFactory threadpoolFactory, Metrics metrics, SatelliteDao satelliteDao) {
+	public DecoderService(Configuration config, Decoders decoders, ObservationDao dao, LeoSatDataService r2cloudService, ThreadPoolFactory threadpoolFactory, Metrics metrics, SatelliteDao satelliteDao) {
 		this.config = config;
 		this.decoders = decoders;
 		this.dao = dao;

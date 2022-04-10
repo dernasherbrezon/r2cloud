@@ -27,10 +27,10 @@ import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.CelestrakServer;
 import ru.r2cloud.JsonHttpResponse;
-import ru.r2cloud.R2CloudServer;
+import ru.r2cloud.LeoSatDataServerMock;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
-import ru.r2cloud.cloud.R2ServerClient;
+import ru.r2cloud.cloud.LeoSatDataClient;
 import ru.r2cloud.device.Device;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
@@ -47,7 +47,7 @@ public class ScheduleTest {
 
 	private Schedule schedule;
 	private CelestrakServer celestrak;
-	private R2CloudServer r2server;
+	private LeoSatDataServerMock server;
 	private TestConfiguration config;
 	private SatelliteDao satelliteDao;
 	private TLEDao tleDao;
@@ -56,7 +56,7 @@ public class ScheduleTest {
 
 	@Test
 	public void testScheduleForNewLaunches() throws Exception {
-		r2server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunch-for-scheduletest.json", 200));
+		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunch-for-scheduletest.json", 200));
 		satelliteDao.reload();
 		tleDao.reload();
 		List<ObservationRequest> expected = readExpected("expected/scheduleNewLaunches.txt");
@@ -155,17 +155,17 @@ public class ScheduleTest {
 		celestrak = new CelestrakServer();
 		celestrak.start();
 		celestrak.mockResponse(TestUtil.loadExpected("tle-2020-09-27.txt"));
-		r2server = new R2CloudServer();
-		r2server.start();
-		r2server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/empty-array-response.json", 200));
+		server = new LeoSatDataServerMock();
+		server.start();
+		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/empty-array-response.json", 200));
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("locaiton.lat", "51.49");
 		config.setProperty("locaiton.lon", "0.01");
 		config.setProperty("satellites.sdr", SdrType.RTLSDR.name().toLowerCase());
 		config.setProperty("r2cloud.newLaunches", true);
 		config.setProperty("r2cloud.apiKey", UUID.randomUUID().toString());
-		config.setProperty("r2server.hostname", r2server.getUrl());
-		R2ServerClient r2cloudClient = new R2ServerClient(config);
+		config.setProperty("leosatdata.hostname", server.getUrl());
+		LeoSatDataClient r2cloudClient = new LeoSatDataClient(config);
 		satelliteDao = new SatelliteDao(config, r2cloudClient);
 		tleDao = new TLEDao(config, satelliteDao, new CelestrakClient(celestrak.getUrls()));
 		tleDao.start();
@@ -181,8 +181,8 @@ public class ScheduleTest {
 		if (celestrak != null) {
 			celestrak.stop();
 		}
-		if (r2server != null) {
-			r2server.stop();
+		if (server != null) {
+			server.stop();
 		}
 	}
 

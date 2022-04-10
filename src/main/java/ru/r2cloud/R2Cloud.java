@@ -13,8 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pl.edu.icm.jlargearrays.ConcurrencyUtils;
-import ru.r2cloud.cloud.R2ServerClient;
-import ru.r2cloud.cloud.R2ServerService;
+import ru.r2cloud.cloud.LeoSatDataClient;
+import ru.r2cloud.cloud.LeoSatDataService;
 import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.device.LoraDevice;
@@ -94,8 +94,8 @@ public class R2Cloud {
 	private final Clock clock;
 	private final ProcessFactory processFactory;
 	private final ObservationDao resultDao;
-	private final R2ServerService r2cloudService;
-	private final R2ServerClient r2cloudClient;
+	private final LeoSatDataService leoSatDataService;
+	private final LeoSatDataClient leoSatDataClient;
 	private final SpectogramService spectogramService;
 	private final Decoders decoders;
 	private final SignedURL signed;
@@ -112,21 +112,21 @@ public class R2Cloud {
 			ConcurrencyUtils.setNumberOfThreads(numberOfThreads);
 		}
 
-		r2cloudClient = new R2ServerClient(props);
+		leoSatDataClient = new LeoSatDataClient(props);
 		spectogramService = new SpectogramService(props);
 		resultDao = new ObservationDao(props);
-		r2cloudService = new R2ServerService(props, resultDao, r2cloudClient, spectogramService);
+		leoSatDataService = new LeoSatDataService(props, resultDao, leoSatDataClient, spectogramService);
 		metrics = new Metrics(props, clock);
 		predict = new PredictOreKit(props);
 		auth = new Authenticator(props);
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
-		satelliteDao = new SatelliteDao(props, r2cloudClient);
+		satelliteDao = new SatelliteDao(props, leoSatDataClient);
 		tleDao = new TLEDao(props, satelliteDao, new CelestrakClient(props.getProperties("tle.urls")));
 		tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
 		signed = new SignedURL(props, clock);
 		decoders = new Decoders(predict, props, processFactory, satelliteDao);
-		decoderService = new DecoderService(props, decoders, resultDao, r2cloudService, threadFactory, metrics, satelliteDao);
+		decoderService = new DecoderService(props, decoders, resultDao, leoSatDataService, threadFactory, metrics, satelliteDao);
 
 		observationFactory = new ObservationFactory(predict, tleDao, props);
 

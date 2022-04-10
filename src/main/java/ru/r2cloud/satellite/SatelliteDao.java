@@ -9,7 +9,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.r2cloud.cloud.R2ServerClient;
+import ru.r2cloud.cloud.LeoSatDataClient;
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.model.BandFrequency;
 import ru.r2cloud.model.Framing;
@@ -27,14 +27,14 @@ public class SatelliteDao {
 	private static final Logger LOG = LoggerFactory.getLogger(SatelliteDao.class);
 
 	private final Configuration config;
-	private final R2ServerClient r2server;
+	private final LeoSatDataClient client;
 	private final List<Satellite> satellites = new ArrayList<>();
 	private final Map<String, Satellite> satelliteByName = new HashMap<>();
 	private final Map<String, Satellite> satelliteById = new HashMap<>();
 
-	public SatelliteDao(Configuration config, R2ServerClient r2server) {
+	public SatelliteDao(Configuration config, LeoSatDataClient client) {
 		this.config = config;
-		this.r2server = r2server;
+		this.client = client;
 		reload();
 	}
 
@@ -45,7 +45,7 @@ public class SatelliteDao {
 
 		satellites.addAll(loadFromConfig(config));
 		if (config.getBoolean("r2cloud.newLaunches")) {
-			satellites.addAll(r2server.loadNewLaunches());
+			satellites.addAll(client.loadNewLaunches());
 		}
 		List<Transmitter> allTransmitters = new ArrayList<>();
 		for (Satellite curSatellite : satellites) {

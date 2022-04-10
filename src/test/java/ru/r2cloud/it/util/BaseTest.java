@@ -122,7 +122,7 @@ public abstract class BaseTest {
 		config.setProperty("satellites.rtlsdr.path", rtlSdrMock.getAbsolutePath());
 		config.setProperty("satellites.rtlsdr.test.path", rtlTestMock.getAbsolutePath());
 		config.setProperty("satellites.sox.path", "sox");
-		config.setProperty("r2server.hostname", "http://localhost:8001");
+		config.setProperty("leosatdata.hostname", "http://localhost:8001");
 		config.setProperty("server.tmp.directory", tempDirectory.getAbsolutePath());
 		config.setProperty("server.static.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data");
 		config.setProperty("metrics.basepath.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "rrd");

@@ -22,17 +22,17 @@ Base station might include different hardware components. Please check recommend
 
 1. Install r2cloud
   - From the image. This is the easiest way to install r2cloud on Raspberry PI. It will require brand new SD card:
-    - Download the [latest](http://apt.r2server.ru/dist/image_2020-08-13-r2cloud-lite.zip) official image
+    - Download the [latest](http://apt.leosatdata.com/dist/image_2020-08-13-r2cloud-lite.zip) official image
     - Insert SD card into the card reader and flash it. You could use [Etcher](https://etcher.io) to do this
     - Insert SD card into the card reader and create file ```r2cloud.txt``` in the root directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
   
-  - Or from [repository binaries](https://r2server.ru/apt.html):
+  - Or from [repository binaries](https://leosatdata.com/apt.html):
     - Login via SSH and create ```r2cloud.txt``` file in /boot directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
     - Execute the following commands:
 ```
 sudo apt-get install dirmngr lsb-release
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A5A70917
-sudo bash -c "echo 'deb http://apt.r2server.ru $(lsb_release --codename --short) main' > /etc/apt/sources.list.d/r2cloud.list"
+sudo bash -c "echo 'deb http://apt.leosatdata.com $(lsb_release --codename --short) main' > /etc/apt/sources.list.d/r2cloud.list"
 sudo apt-get update
 sudo apt-get install r2cloud
 ```
@@ -46,7 +46,7 @@ sudo apt-get install r2cloud
     - synchronize state once connection restored
     - new decoders could be added after auto-update
   - Integration with external systems:
-    - [https://r2server.ru](https://r2server.ru)
+    - [https://leosatdata.com](https://leosatdata.com)
     - [SatNOGS](https://satnogs.org)
     - [Amsat TLM](https://www.amsat.org/tlm/leaderboard.php?id=0&db=FOXDB)
     - [Funcube warehouse](http://data.amsat-uk.org/registration)

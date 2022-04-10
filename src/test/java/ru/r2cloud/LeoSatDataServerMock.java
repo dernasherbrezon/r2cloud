@@ -10,7 +10,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
-public class R2CloudServer {
+public class LeoSatDataServerMock {
 
 	private HttpServer server;
 	private boolean newLaunchConfigured = false;
