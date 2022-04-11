@@ -103,7 +103,6 @@ public abstract class BaseTest {
 		try (InputStream is = BaseTest.class.getClassLoader().getResourceAsStream("config-user-test.properties"); FileOutputStream fos = new FileOutputStream(userSettingsLocation)) {
 			Properties props = new Properties();
 			props.load(is);
-			props.put("r2lora.devices", "0");
 			props.put("sdr.device.1.sdrserver.port", String.valueOf(ROTCTRLD_PORT));
 			props.put("r2lora.device.0.rotctrld.port", String.valueOf(ROTCTRLD_PORT_LORA));
 			props.put("r2lora.device.0.hostport", "127.0.0.1:" + R2LORA_PORT);
