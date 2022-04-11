@@ -46,6 +46,8 @@ public class ObservationList extends AbstractHttpController {
 				curObservation.add("name", cur.getSatelliteId());
 			}
 			curObservation.add("start", cur.getStartTimeMillis());
+			curObservation.add("end", cur.getEndTimeMillis());
+			curObservation.add("status", cur.getStatus().name());
 			curObservation.add("numberOfDecodedPackets", cur.getNumberOfDecodedPackets());
 			curObservation.add("hasData", cur.hasData());
 			satellites.add(curObservation);
