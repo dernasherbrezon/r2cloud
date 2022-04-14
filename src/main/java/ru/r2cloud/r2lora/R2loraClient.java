@@ -69,8 +69,17 @@ public class R2loraClient {
 	}
 
 	public R2loraResponse startObservation(R2loraObservationRequest req) {
-		HttpRequest request;
-		request = createRequest("/lora/rx/start").header("Content-Type", "application/json").POST(BodyPublishers.ofString(toJson(req))).build();
+		R2loraResponse result = startObservationInternal(req);
+		if (result.getStatus().equals(ResponseStatus.RECEIVING)) {
+			LOG.info("r2lora is already receiving. stopping previous and starting again");
+			stopObservation();
+			result = startObservation(req);
+		}
+		return result;
+	}
+
+	private R2loraResponse startObservationInternal(R2loraObservationRequest req) {
+		HttpRequest request = createRequest("/lora/rx/start").header("Content-Type", "application/json").POST(BodyPublishers.ofString(toJson(req))).build();
 		try {
 			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
 			if (response.statusCode() != 200) {
@@ -124,7 +133,11 @@ public class R2loraClient {
 		}
 		JsonObject obj = json.asObject();
 		R2loraResponse result = new R2loraResponse();
-		result.setStatus(ResponseStatus.valueOf(obj.getString("status", "FAILURE")));
+		try {
+			result.setStatus(ResponseStatus.valueOf(obj.getString("status", "FAILURE")));
+		} catch (Exception e) {
+			result.setStatus(ResponseStatus.UNKNOWN);
+		}
 		JsonValue failureMessage = obj.get("failureMessage");
 		if (failureMessage != null) {
 			result.setFailureMessage(failureMessage.asString());

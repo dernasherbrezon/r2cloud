@@ -17,6 +17,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import ru.r2cloud.JsonHttpResponse;
+import ru.r2cloud.MultiHttpResponse;
 import ru.r2cloud.TestUtil;
 
 public class R2loraClientTest {
@@ -41,7 +42,7 @@ public class R2loraClientTest {
 
 	@Test
 	public void testAuthFailure() {
-		setupContext("/status", new JsonHttpResponse("r2loratest/status.json", 401));
+		setupContext("/status", new JsonHttpResponse("r2loratest/authfailure.json", 401));
 		R2loraStatus status = client.getStatus();
 		assertEquals("CONNECTION_FAILURE", status.getStatus());
 		R2loraResponse response = client.startObservation(createRequest());
@@ -75,6 +76,14 @@ public class R2loraClientTest {
 		R2loraResponse response = client.startObservation(createRequest());
 		assertEquals(ResponseStatus.FAILURE, response.getStatus());
 		assertEquals("just a failure", response.getFailureMessage());
+	}
+
+	@Test
+	public void testStartEvenR2loraIsReceiving() {
+		setupContext("/lora/rx/start", new MultiHttpResponse(new JsonHttpResponse("r2loratest/receiving.json", 200), new JsonHttpResponse("r2loratest/success.json", 200)));
+		setupContext("/rx/stop", new JsonHttpResponse("r2loratest/successStop.json", 200));
+		R2loraResponse response = client.startObservation(createRequest());
+		assertEquals(ResponseStatus.SUCCESS, response.getStatus());
 	}
 
 	@Before
