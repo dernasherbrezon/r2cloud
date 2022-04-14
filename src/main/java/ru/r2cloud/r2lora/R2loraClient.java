@@ -13,6 +13,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -72,7 +73,12 @@ public class R2loraClient {
 		R2loraResponse result = startObservationInternal(req);
 		if (result.getStatus().equals(ResponseStatus.RECEIVING)) {
 			LOG.info("r2lora is already receiving. stopping previous and starting again");
-			stopObservation();
+			R2loraResponse response = stopObservation();
+			if (response.getFrames() != null && response.getFrames().size() > 0) {
+				for (R2loraFrame cur : response.getFrames()) {
+					LOG.info("previous unknown observation got some data. Logging it here for manual recovery: {}", Arrays.toString(cur.getData()));
+				}
+			}
 			result = startObservation(req);
 		}
 		return result;
