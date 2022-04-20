@@ -356,7 +356,11 @@ public class Observation {
 		result.setDataURL(meta.getString("data", null));
 		String statusStr = meta.getString("status", null);
 		if (statusStr != null) {
-			result.setStatus(ObservationStatus.valueOf(statusStr));
+			ObservationStatus status = ObservationStatus.valueOf(statusStr);
+			if (status.equals(ObservationStatus.NEW)) {
+				status = ObservationStatus.RECEIVED;
+			}
+			result.setStatus(status);
 		} else {
 			result.setStatus(ObservationStatus.UPLOADED);
 		}
