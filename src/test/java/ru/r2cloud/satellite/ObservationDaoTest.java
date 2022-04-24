@@ -115,6 +115,8 @@ public class ObservationDaoTest {
 		Observation actual = dao.find(req.getSatelliteId(), req.getId());
 		assertNotNull(actual);
 		assertEquals(ObservationStatus.RECEIVING_DATA, actual.getStatus());
+		List<Observation> observations = dao.findAllBySatelliteId(req.getSatelliteId());
+		assertEquals(1, observations.size());
 
 		dao.cancel(req);
 		actual = dao.find(req.getSatelliteId(), req.getId());

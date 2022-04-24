@@ -77,6 +77,19 @@ public class ObservationDao {
 	}
 
 	public List<Observation> findAllBySatelliteId(String satelliteId) {
+		List<Observation> result = new ArrayList<>();
+		result.addAll(loadFromDisk(satelliteId));
+		synchronized (IN_FLIGHT_OBSERVATIONS) {
+			List<Observation> inFlight = IN_FLIGHT_OBSERVATIONS.get(satelliteId);
+			if (inFlight != null) {
+				result.addAll(inFlight);
+			}
+		}
+		Collections.sort(result, ObservationComparator.INSTANCE);
+		return result;
+	}
+
+	private List<Observation> loadFromDisk(String satelliteId) {
 		Path dataRoot = basepath.resolve(satelliteId).resolve("data");
 		if (!Files.exists(dataRoot)) {
 			return Collections.emptyList();
@@ -97,13 +110,6 @@ public class ObservationDao {
 			}
 			result.add(cur);
 		}
-		synchronized (IN_FLIGHT_OBSERVATIONS) {
-			List<Observation> inFlight = IN_FLIGHT_OBSERVATIONS.get(satelliteId);
-			if (inFlight != null) {
-				result.addAll(inFlight);
-			}
-		}
-		Collections.sort(result, ObservationComparator.INSTANCE);
 		return result;
 	}
 
