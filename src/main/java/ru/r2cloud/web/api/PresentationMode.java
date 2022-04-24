@@ -1,4 +1,4 @@
-package ru.r2cloud.web.api.configuration;
+package ru.r2cloud.web.api;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,7 +81,7 @@ public class PresentationMode extends AbstractHttpController {
 		for (int i = 0; i < 5 && i < observations.size(); i++) {
 			Observation cur = observations.get(i);
 			Satellite curSatellite = dao.findById(cur.getSatelliteId());
-			if (curSatellite == null) {
+			if (curSatellite == null || cur.getTle() == null) {
 				continue;
 			}
 			JsonObject curObservation = new JsonObject();

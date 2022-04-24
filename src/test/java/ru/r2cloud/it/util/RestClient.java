@@ -182,6 +182,18 @@ public class RestClient {
 		}
 	}
 
+	public HttpResponse<String> getDataWithResponse(String url) {
+		HttpRequest request = createAuthRequest(url).GET().build();
+		try {
+			return httpclient.send(request, BodyHandlers.ofString());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
+
 	public void saveR2CloudConfiguration(String apiKey, boolean syncSpectogram, boolean newLaunch) {
 		HttpResponse<String> response = saveR2CloudConfigurationWithResponse(apiKey, syncSpectogram, newLaunch);
 		if (response.statusCode() != 200) {
@@ -310,6 +322,7 @@ public class RestClient {
 			json.add("gain", config.getGain());
 		}
 		json.add("biast", config.isBiast());
+		json.add("presentationMode", config.isPresentationMode());
 		HttpRequest request = createJsonPost("/api/v1/admin/config/general", json).build();
 		try {
 			return httpclient.send(request, BodyHandlers.ofString());
@@ -478,7 +491,7 @@ public class RestClient {
 		}
 	}
 
-	public HttpResponse<String> getObservationResponse(String satelliteId, String observationId) {
+	public HttpResponse<String> getObservationResponse(String url, String satelliteId, String observationId) {
 		Map<String, String> params = new HashMap<>();
 		if (satelliteId != null) {
 			params.put("satelliteId", satelliteId);
@@ -486,7 +499,7 @@ public class RestClient {
 		if (observationId != null) {
 			params.put("id", observationId);
 		}
-		HttpRequest request = createAuthRequest("/api/v1/admin/observation/load" + createQuery(params)).GET().build();
+		HttpRequest request = createAuthRequest(url + createQuery(params)).GET().build();
 		try {
 			return httpclient.send(request, BodyHandlers.ofString());
 		} catch (IOException e) {
@@ -495,6 +508,10 @@ public class RestClient {
 			Thread.currentThread().interrupt();
 			throw new RuntimeException("unable to send request");
 		}
+	}
+
+	public HttpResponse<String> getObservationResponse(String satelliteId, String observationId) {
+		return getObservationResponse("/api/v1/admin/observation/load", satelliteId, observationId);
 	}
 
 	public JsonArray getObservationList() {
@@ -550,6 +567,18 @@ public class RestClient {
 		return (JsonObject) Json.parse(response.body());
 	}
 
+	public JsonObject getObservationPresentation(String satelliteId, String observationId) {
+		HttpResponse<String> response = getObservationResponse("/api/v1/observation/load", satelliteId, observationId);
+		if (response.statusCode() == 404) {
+			return null;
+		}
+		if (response.statusCode() != 200) {
+			LOG.info("response: {}", response.body());
+			throw new RuntimeException("invalid status code: " + response.statusCode());
+		}
+		return (JsonObject) Json.parse(response.body());
+	}
+
 	private static String createQuery(Map<String, String> params) {
 		StringBuilder result = new StringBuilder();
 		if (params == null || params.isEmpty()) {
@@ -569,6 +598,10 @@ public class RestClient {
 
 	public JsonObject getDdnsConfiguration() {
 		return getData("/api/v1/admin/config/ddns");
+	}
+
+	public JsonObject getPresentationModeData() {
+		return getData("/api/v1/presentationMode");
 	}
 
 	public void saveDdnsConfiguration(String type, String username, String password, String domain) {

@@ -32,6 +32,10 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		assertEquals(config.getRotatorCycle().longValue(), configuration.getLong("rotatorCycle", 0));
 		assertEquals(config.getGain().doubleValue(), configuration.getDouble("gain", 0.0), 0.0);
 		assertEquals(config.isBiast(), configuration.getBoolean("biast", false));
+		assertEquals(config.isPresentationMode(), configuration.getBoolean("presentationMode", false));
+		
+		JsonObject configured = client.getConfigured();
+		assertEquals(config.isPresentationMode(), configured.getBoolean("presentationMode", false));
 	}
 
 	@Test
@@ -158,6 +162,7 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		config.setRotatorCycle(1000L);
 		config.setGain(44.5);
 		config.setBiast(false);
+		config.setPresentationMode(true);
 		return config;
 	}
 }

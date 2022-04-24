@@ -15,6 +15,15 @@ public class GeneralConfiguration {
 	private Long rotatorCycle;
 	private Double gain;
 	private boolean biast;
+	private boolean presentationMode;
+	
+	public boolean isPresentationMode() {
+		return presentationMode;
+	}
+	
+	public void setPresentationMode(boolean presentationMode) {
+		this.presentationMode = presentationMode;
+	}
 
 	public Double getGain() {
 		return gain;
