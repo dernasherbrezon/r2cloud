@@ -23,6 +23,7 @@ public class Configured extends AbstractHttpController {
 		JsonObject entity = new JsonObject();
 		entity.add("configured", !auth.isFirstStart());
 		entity.add("generalSetup", isGenerallyConfigured());
+		entity.add("presentationMode", config.getBoolean("presentationMode"));
 		
 		ModelAndView result = new ModelAndView();
 		result.setData(entity);

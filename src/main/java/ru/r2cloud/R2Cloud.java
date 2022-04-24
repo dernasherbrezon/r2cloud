@@ -54,9 +54,11 @@ import ru.r2cloud.web.api.TLE;
 import ru.r2cloud.web.api.configuration.Configured;
 import ru.r2cloud.web.api.configuration.DDNS;
 import ru.r2cloud.web.api.configuration.General;
+import ru.r2cloud.web.api.configuration.PresentationMode;
 import ru.r2cloud.web.api.configuration.R2CloudSave;
 import ru.r2cloud.web.api.observation.ObservationList;
 import ru.r2cloud.web.api.observation.ObservationLoad;
+import ru.r2cloud.web.api.observation.ObservationLoadPresentation;
 import ru.r2cloud.web.api.observation.ObservationSpectrogram;
 import ru.r2cloud.web.api.schedule.ScheduleComplete;
 import ru.r2cloud.web.api.schedule.ScheduleList;
@@ -159,10 +161,12 @@ public class R2Cloud {
 		index(new ObservationSpectrogram(resultDao, spectogramService, signed));
 		index(new ObservationList(satelliteDao, resultDao));
 		index(new ObservationLoad(resultDao, signed, satelliteDao));
+		index(new ObservationLoadPresentation(props, resultDao, signed, satelliteDao));
 		index(new ScheduleList(satelliteDao, deviceManager));
 		index(new ScheduleSave(satelliteDao, deviceManager));
 		index(new ScheduleStart(satelliteDao, deviceManager));
 		index(new ScheduleComplete(deviceManager));
+		index(new PresentationMode(props, satelliteDao, resultDao, deviceManager));
 		webServer = new WebServer(props, controllers, auth, signed);
 	}
 

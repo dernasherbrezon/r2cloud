@@ -50,6 +50,7 @@ public class General extends AbstractHttpController {
 		}
 		entity.add("gain", config.getDouble("sdr.device.0.rtlsdr.gain"));
 		entity.add("biast", config.getBoolean("sdr.device.0.rtlsdr.biast"));
+		entity.add("presentationMode", config.getBoolean("presentationMode"));
 		result.setData(entity.toString());
 		return result;
 	}
@@ -68,6 +69,7 @@ public class General extends AbstractHttpController {
 		Integer rotatorCycleMillis = WebServer.getInteger(request, "rotatorCycle");
 		Double gain = WebServer.getDouble(request, "gain");
 		boolean biast = WebServer.getBoolean(request, "biast");
+		boolean presentationMode = WebServer.getBoolean(request, "presentationMode");
 		if (gain == null) {
 			errors.put("gain", Messages.CANNOT_BE_EMPTY);
 		} else {
@@ -156,6 +158,7 @@ public class General extends AbstractHttpController {
 		if (ppm != null) {
 			config.setProperty("sdr.device.0.ppm", ppm);
 		}
+		config.setProperty("presentationMode", presentationMode);
 		config.update();
 		return new Success();
 	}
