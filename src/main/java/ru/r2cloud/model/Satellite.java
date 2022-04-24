@@ -38,6 +38,11 @@ public class Satellite {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+		if (transmitters != null) {
+			for (Transmitter cur : transmitters) {
+				cur.setEnabled(enabled);
+			}
+		}
 	}
 
 	public Tle getTle() {
@@ -74,6 +79,13 @@ public class Satellite {
 
 	public List<Transmitter> getTransmitters() {
 		return transmitters;
+	}
+
+	public Transmitter getFirstOrNull() {
+		if (transmitters.isEmpty()) {
+			return null;
+		}
+		return transmitters.get(0);
 	}
 
 	public void setTransmitters(List<Transmitter> transmitters) {

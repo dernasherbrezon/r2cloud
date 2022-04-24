@@ -63,12 +63,16 @@ public class ScheduleSave extends AbstractHttpController {
 		entity.add("id", satelliteToEdit.getId());
 		entity.add("name", satelliteToEdit.getName());
 		entity.add("enabled", satelliteToEdit.isEnabled());
+		Transmitter transmitter = null;
 		if (nextObservation != null) {
 			entity.add("nextPass", nextObservation.getStartTimeMillis());
-			Transmitter transmitter = satelliteToEdit.getById(nextObservation.getTransmitterId());
-			if (transmitter != null) {
-				entity.add("frequency", transmitter.getFrequency());
-			}
+			transmitter = satelliteToEdit.getById(nextObservation.getTransmitterId());
+		}
+		if (transmitter == null) {
+			transmitter = satelliteToEdit.getFirstOrNull();
+		}
+		if (transmitter != null) {
+			entity.add("frequency", transmitter.getFrequency());
 		}
 
 		ModelAndView result = new ModelAndView();

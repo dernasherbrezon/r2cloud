@@ -15,11 +15,11 @@ import ru.r2cloud.web.ModelAndView;
 public class ScheduleList extends AbstractHttpController {
 
 	private final SatelliteDao satelliteDao;
-	private final DeviceManager schedule;
+	private final DeviceManager deviceManager;
 
-	public ScheduleList(SatelliteDao satelliteDao, DeviceManager schedule) {
+	public ScheduleList(SatelliteDao satelliteDao, DeviceManager deviceManager) {
 		this.satelliteDao = satelliteDao;
-		this.schedule = schedule;
+		this.deviceManager = deviceManager;
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class ScheduleList extends AbstractHttpController {
 			curSatellite.add("enabled", cur.isEnabled());
 			Transmitter transmitter = null;
 			for (Transmitter curTransmitter : cur.getTransmitters()) {
-				ObservationRequest nextObservation = schedule.findFirstByTransmitterId(curTransmitter.getId(), currentTimeMillis);
+				ObservationRequest nextObservation = deviceManager.findFirstByTransmitterId(curTransmitter.getId(), currentTimeMillis);
 				transmitter = curTransmitter;
 				if (nextObservation == null) {
 					continue;

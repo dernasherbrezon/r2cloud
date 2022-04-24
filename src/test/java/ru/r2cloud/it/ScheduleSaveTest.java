@@ -18,7 +18,8 @@ public class ScheduleSaveTest extends RegisteredTest {
 
 	@Test
 	public void testUpdateConfiguration() {
-		String satelliteId = "40069";
+		// PEGASUS not enabled by default
+		String satelliteId = "42784";
 		JsonObject result = client.updateSchedule(satelliteId, true);
 		assertNotNull(result.get("nextPass"));
 		assertTrue(result.getBoolean("enabled", false));
