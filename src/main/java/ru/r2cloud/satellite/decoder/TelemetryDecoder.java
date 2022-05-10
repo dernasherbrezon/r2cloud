@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,6 +26,7 @@ import ru.r2cloud.model.DemodulatorType;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
+import ru.r2cloud.sdrmodem.SdrModemClient;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -53,7 +55,7 @@ public abstract class TelemetryDecoder implements Decoder {
 		float sampleRate = transmitter.getInputSampleRate();
 		File binFile = new File(config.getTempDirectory(), req.getId() + ".bin");
 		List<BeaconSource<? extends Beacon>> input = null;
-		try (BeaconOutputStream aos = new BeaconOutputStream(new FileOutputStream(binFile));) {
+		try (BeaconOutputStream aos = new BeaconOutputStream(new FileOutputStream(binFile))) {
 			input = createBeaconSources(rawIq, req, transmitter);
 			for (int i = 0; i < input.size(); i++) {
 				if (Thread.currentThread().isInterrupted()) {
@@ -88,24 +90,29 @@ public abstract class TelemetryDecoder implements Decoder {
 
 	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, ObservationRequest req, final Transmitter transmitter) throws IOException {
 		DemodulatorType type = config.getDemodulatorType(transmitter.getModulation());
-		ByteInput demodulator;
+		List<BeaconSource<? extends Beacon>> result = new ArrayList<>(transmitter.getBaudRates().size());
 		switch (type) {
 		case JRADIO:
-			demodulator = createDemodulator(new DopplerCorrectedSource(predict, rawIq, req, transmitter), transmitter);
+			for (Integer cur : transmitter.getBaudRates()) {
+				ByteInput demodulator = createDemodulator(new DopplerCorrectedSource(predict, rawIq, req, transmitter), transmitter, cur);
+				result.add(createBeaconSource(demodulator, req));
+			}
+			break;
+		case SDRMODEM:
+			ByteInput demodulator = new SdrModemClient(config, rawIq, req, transmitter);
+			result.add(createBeaconSource(demodulator, req));
 			break;
 		default:
 			LOG.error("unknown demodulator type: " + type);
 			return Collections.emptyList();
 		}
-		BeaconSource<? extends Beacon> beaconSource = createBeaconSource(demodulator, req);
-		if (beaconSource == null) {
+		if (result.isEmpty()) {
 			throw new IllegalArgumentException("at least one beacon source should be specified");
 		}
-		return Collections.singletonList(beaconSource);
+		return result;
 	}
 
-	private static ByteInput createDemodulator(FloatInput source, Transmitter transmitter) {
-		int baudRate = transmitter.getBaudRates().get(0);
+	private static ByteInput createDemodulator(FloatInput source, Transmitter transmitter, int baudRate) {
 		switch (transmitter.getModulation()) {
 		case GFSK:
 			return new FskDemodulator(source, baudRate, transmitter.getDeviation(), Util.convertDecimation(baudRate), transmitter.getTransitionWidth(), true);
