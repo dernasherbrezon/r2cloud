@@ -64,7 +64,12 @@
 		<dependency>
 			<groupId>ru.r2cloud</groupId>
 			<artifactId>jradio</artifactId>
-			<version>1.75</version>
+			<version>1.76</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>3.17.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.fusesource</groupId>
