@@ -8,12 +8,12 @@ import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
-public class BpskAx25Decoder extends TelemetryDecoder {
+public class Ax25Decoder extends TelemetryDecoder {
 
 	private final Class<? extends Beacon> beacon;
 	private final byte[] assistedHeader;
 
-	public BpskAx25Decoder(PredictOreKit predict, Configuration config, Class<? extends Beacon> beacon, byte[] assistedHeader) {
+	public Ax25Decoder(PredictOreKit predict, Configuration config, Class<? extends Beacon> beacon, byte[] assistedHeader) {
 		super(predict, config);
 		this.beacon = beacon;
 		this.assistedHeader = assistedHeader;

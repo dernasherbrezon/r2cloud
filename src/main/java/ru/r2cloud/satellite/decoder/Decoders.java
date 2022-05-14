@@ -89,18 +89,16 @@ public class Decoders {
 				if( transmitter.getFraming().equals(Framing.CUSTOM) ) {
 					continue;
 				}
-				if (transmitter.getModulation().equals(Modulation.GFSK) && transmitter.getFraming().equals(Framing.AX25G3RUH)) {
-					index(cur.getId(), transmitter.getId(), new FskAx25G3ruhDecoder(predict, props, transmitter.getBeaconClass(), transmitter.getAssistedHeader()));
+				if (transmitter.getFraming().equals(Framing.AX25G3RUH)) {
+					index(cur.getId(), transmitter.getId(), new Ax25G3ruhDecoder(predict, props, transmitter.getBeaconClass(), transmitter.getAssistedHeader()));
 				} else if (transmitter.getModulation().equals(Modulation.GFSK) && transmitter.getFraming().equals(Framing.AX100)) {
 					if (transmitter.getBeaconSizeBytes() == 0) {
 						LOG.error("beacon size bytes are missing for GFSK AX100: {}", cur.getId());
 						continue;
 					}
 					index(cur.getId(), transmitter.getId(), new FskAx100Decoder(predict, props, transmitter.getBeaconSizeBytes(), transmitter.getBeaconClass()));
-				} else if (transmitter.getModulation().equals(Modulation.BPSK) && transmitter.getFraming().equals(Framing.AX25G3RUH)) {
-					index(cur.getId(), transmitter.getId(), new BpskAx25G3ruhDecoder(predict, props, transmitter.getBeaconClass(), transmitter.getAssistedHeader()));
-				} else if (transmitter.getModulation().equals(Modulation.BPSK) && transmitter.getFraming().equals(Framing.AX25)) {
-					index(cur.getId(), transmitter.getId(), new BpskAx25Decoder(predict, props, transmitter.getBeaconClass(), transmitter.getAssistedHeader()));
+				} else if (transmitter.getFraming().equals(Framing.AX25)) {
+					index(cur.getId(), transmitter.getId(), new Ax25Decoder(predict, props, transmitter.getBeaconClass(), transmitter.getAssistedHeader()));
 				} else if (transmitter.getModulation().equals(Modulation.AFSK) && transmitter.getFraming().equals(Framing.AX25)) {
 					index(cur.getId(), transmitter.getId(), new AfskAx25Decoder(predict, props, transmitter.getBeaconClass(), transmitter.getAssistedHeader()));
 				} else {
