@@ -21,6 +21,7 @@ import ru.r2cloud.sdrmodem.SdrmodemApi.Response;
 import ru.r2cloud.sdrmodem.SdrmodemApi.RxRequest;
 import ru.r2cloud.sdrmodem.SdrmodemApi.demod_destination;
 import ru.r2cloud.sdrmodem.SdrmodemApi.doppler_settings;
+import ru.r2cloud.sdrmodem.SdrmodemApi.file_settings;
 import ru.r2cloud.sdrmodem.SdrmodemApi.fsk_demodulation_settings;
 import ru.r2cloud.sdrmodem.SdrmodemApi.modem_type;
 import ru.r2cloud.sdrmodem.SdrmodemApi.response_status;
@@ -122,13 +123,16 @@ public class SdrModemClient implements ByteInput {
 		dopplerSettings.setLongitude((int) (FastMath.toDegrees(req.getGroundStation().getLongitude()) * 10E6));
 		dopplerSettings.setAltitude((int) (req.getGroundStation().getAltitude() * 10E6));
 
+		file_settings.Builder fs = file_settings.newBuilder();
+		fs.setFilename(rawIq.getAbsolutePath());
+		fs.setStartTimeSeconds(req.getStartTimeMillis() / 1000);
+
 		RxRequest.Builder b = RxRequest.newBuilder();
-		b.setFilename(rawIq.getAbsolutePath());
 		b.setRxSamplingFreq(transmitter.getInputSampleRate());
 		b.setRxOffset(0);
 		b.setRxCenterFreq(req.getActualFrequency());
 		b.setRxDumpFile(false);
-		b.setStartTimeSeconds(req.getStartTimeMillis() / 1000);
+		b.setFileSettings(fs.build());
 		b.setDemodDestination(demod_destination.SOCKET);
 		b.setDemodType(modem_type.GMSK);
 		Integer baudRate = transmitter.getBaudRates().get(0);

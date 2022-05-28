@@ -2630,6 +2630,726 @@ public final class SdrmodemApi {
 
   }
 
+  public interface file_settingsOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:file_settings)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required string filename = 1;</code>
+     * @return Whether the filename field is set.
+     */
+    boolean hasFilename();
+    /**
+     * <code>required string filename = 1;</code>
+     * @return The filename.
+     */
+    java.lang.String getFilename();
+    /**
+     * <code>required string filename = 1;</code>
+     * @return The bytes for filename.
+     */
+    com.google.protobuf.ByteString
+        getFilenameBytes();
+
+    /**
+     * <code>required uint64 start_time_seconds = 2;</code>
+     * @return Whether the startTimeSeconds field is set.
+     */
+    boolean hasStartTimeSeconds();
+    /**
+     * <code>required uint64 start_time_seconds = 2;</code>
+     * @return The startTimeSeconds.
+     */
+    long getStartTimeSeconds();
+  }
+  /**
+   * Protobuf type {@code file_settings}
+   */
+  public static final class file_settings extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:file_settings)
+      file_settingsOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use file_settings.newBuilder() to construct.
+    private file_settings(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private file_settings() {
+      filename_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new file_settings();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private file_settings(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000001;
+              filename_ = bs;
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              startTimeSeconds_ = input.readUInt64();
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return SdrmodemApi.internal_static_file_settings_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return SdrmodemApi.internal_static_file_settings_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              SdrmodemApi.file_settings.class, SdrmodemApi.file_settings.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int FILENAME_FIELD_NUMBER = 1;
+    private volatile java.lang.Object filename_;
+    /**
+     * <code>required string filename = 1;</code>
+     * @return Whether the filename field is set.
+     */
+    @java.lang.Override
+    public boolean hasFilename() {
+      return ((bitField0_ & 0x00000001) != 0);
+    }
+    /**
+     * <code>required string filename = 1;</code>
+     * @return The filename.
+     */
+    @java.lang.Override
+    public java.lang.String getFilename() {
+      java.lang.Object ref = filename_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          filename_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string filename = 1;</code>
+     * @return The bytes for filename.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getFilenameBytes() {
+      java.lang.Object ref = filename_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        filename_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int START_TIME_SECONDS_FIELD_NUMBER = 2;
+    private long startTimeSeconds_;
+    /**
+     * <code>required uint64 start_time_seconds = 2;</code>
+     * @return Whether the startTimeSeconds field is set.
+     */
+    @java.lang.Override
+    public boolean hasStartTimeSeconds() {
+      return ((bitField0_ & 0x00000002) != 0);
+    }
+    /**
+     * <code>required uint64 start_time_seconds = 2;</code>
+     * @return The startTimeSeconds.
+     */
+    @java.lang.Override
+    public long getStartTimeSeconds() {
+      return startTimeSeconds_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      if (!hasFilename()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasStartTimeSeconds()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (((bitField0_ & 0x00000001) != 0)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, filename_);
+      }
+      if (((bitField0_ & 0x00000002) != 0)) {
+        output.writeUInt64(2, startTimeSeconds_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) != 0)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, filename_);
+      }
+      if (((bitField0_ & 0x00000002) != 0)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(2, startTimeSeconds_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof SdrmodemApi.file_settings)) {
+        return super.equals(obj);
+      }
+      SdrmodemApi.file_settings other = (SdrmodemApi.file_settings) obj;
+
+      if (hasFilename() != other.hasFilename()) return false;
+      if (hasFilename()) {
+        if (!getFilename()
+            .equals(other.getFilename())) return false;
+      }
+      if (hasStartTimeSeconds() != other.hasStartTimeSeconds()) return false;
+      if (hasStartTimeSeconds()) {
+        if (getStartTimeSeconds()
+            != other.getStartTimeSeconds()) return false;
+      }
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasFilename()) {
+        hash = (37 * hash) + FILENAME_FIELD_NUMBER;
+        hash = (53 * hash) + getFilename().hashCode();
+      }
+      if (hasStartTimeSeconds()) {
+        hash = (37 * hash) + START_TIME_SECONDS_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+            getStartTimeSeconds());
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static SdrmodemApi.file_settings parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static SdrmodemApi.file_settings parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static SdrmodemApi.file_settings parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static SdrmodemApi.file_settings parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static SdrmodemApi.file_settings parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static SdrmodemApi.file_settings parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static SdrmodemApi.file_settings parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static SdrmodemApi.file_settings parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static SdrmodemApi.file_settings parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static SdrmodemApi.file_settings parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static SdrmodemApi.file_settings parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static SdrmodemApi.file_settings parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(SdrmodemApi.file_settings prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code file_settings}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:file_settings)
+        SdrmodemApi.file_settingsOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return SdrmodemApi.internal_static_file_settings_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return SdrmodemApi.internal_static_file_settings_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                SdrmodemApi.file_settings.class, SdrmodemApi.file_settings.Builder.class);
+      }
+
+      // Construct using SdrmodemApi.file_settings.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        filename_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        startTimeSeconds_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return SdrmodemApi.internal_static_file_settings_descriptor;
+      }
+
+      @java.lang.Override
+      public SdrmodemApi.file_settings getDefaultInstanceForType() {
+        return SdrmodemApi.file_settings.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public SdrmodemApi.file_settings build() {
+        SdrmodemApi.file_settings result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public SdrmodemApi.file_settings buildPartial() {
+        SdrmodemApi.file_settings result = new SdrmodemApi.file_settings(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.filename_ = filename_;
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.startTimeSeconds_ = startTimeSeconds_;
+          to_bitField0_ |= 0x00000002;
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof SdrmodemApi.file_settings) {
+          return mergeFrom((SdrmodemApi.file_settings)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(SdrmodemApi.file_settings other) {
+        if (other == SdrmodemApi.file_settings.getDefaultInstance()) return this;
+        if (other.hasFilename()) {
+          bitField0_ |= 0x00000001;
+          filename_ = other.filename_;
+          onChanged();
+        }
+        if (other.hasStartTimeSeconds()) {
+          setStartTimeSeconds(other.getStartTimeSeconds());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        if (!hasFilename()) {
+          return false;
+        }
+        if (!hasStartTimeSeconds()) {
+          return false;
+        }
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        SdrmodemApi.file_settings parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (SdrmodemApi.file_settings) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.lang.Object filename_ = "";
+      /**
+       * <code>required string filename = 1;</code>
+       * @return Whether the filename field is set.
+       */
+      public boolean hasFilename() {
+        return ((bitField0_ & 0x00000001) != 0);
+      }
+      /**
+       * <code>required string filename = 1;</code>
+       * @return The filename.
+       */
+      public java.lang.String getFilename() {
+        java.lang.Object ref = filename_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            filename_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string filename = 1;</code>
+       * @return The bytes for filename.
+       */
+      public com.google.protobuf.ByteString
+          getFilenameBytes() {
+        java.lang.Object ref = filename_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          filename_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string filename = 1;</code>
+       * @param value The filename to set.
+       * @return This builder for chaining.
+       */
+      public Builder setFilename(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        filename_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string filename = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearFilename() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        filename_ = getDefaultInstance().getFilename();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string filename = 1;</code>
+       * @param value The bytes for filename to set.
+       * @return This builder for chaining.
+       */
+      public Builder setFilenameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        filename_ = value;
+        onChanged();
+        return this;
+      }
+
+      private long startTimeSeconds_ ;
+      /**
+       * <code>required uint64 start_time_seconds = 2;</code>
+       * @return Whether the startTimeSeconds field is set.
+       */
+      @java.lang.Override
+      public boolean hasStartTimeSeconds() {
+        return ((bitField0_ & 0x00000002) != 0);
+      }
+      /**
+       * <code>required uint64 start_time_seconds = 2;</code>
+       * @return The startTimeSeconds.
+       */
+      @java.lang.Override
+      public long getStartTimeSeconds() {
+        return startTimeSeconds_;
+      }
+      /**
+       * <code>required uint64 start_time_seconds = 2;</code>
+       * @param value The startTimeSeconds to set.
+       * @return This builder for chaining.
+       */
+      public Builder setStartTimeSeconds(long value) {
+        bitField0_ |= 0x00000002;
+        startTimeSeconds_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint64 start_time_seconds = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearStartTimeSeconds() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        startTimeSeconds_ = 0L;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:file_settings)
+    }
+
+    // @@protoc_insertion_point(class_scope:file_settings)
+    private static final SdrmodemApi.file_settings DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new SdrmodemApi.file_settings();
+    }
+
+    public static SdrmodemApi.file_settings getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<file_settings>
+        PARSER = new com.google.protobuf.AbstractParser<file_settings>() {
+      @java.lang.Override
+      public file_settings parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new file_settings(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<file_settings> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<file_settings> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public SdrmodemApi.file_settings getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface RxRequestOrBuilder extends
       // @@protoc_insertion_point(interface_extends:RxRequest)
       com.google.protobuf.MessageOrBuilder {
@@ -2761,32 +3481,19 @@ public final class SdrmodemApi {
     SdrmodemApi.fsk_demodulation_settingsOrBuilder getFskSettingsOrBuilder();
 
     /**
-     * <code>optional string filename = 11;</code>
-     * @return Whether the filename field is set.
+     * <code>optional .file_settings file_settings = 11;</code>
+     * @return Whether the fileSettings field is set.
      */
-    boolean hasFilename();
+    boolean hasFileSettings();
     /**
-     * <code>optional string filename = 11;</code>
-     * @return The filename.
+     * <code>optional .file_settings file_settings = 11;</code>
+     * @return The fileSettings.
      */
-    java.lang.String getFilename();
+    SdrmodemApi.file_settings getFileSettings();
     /**
-     * <code>optional string filename = 11;</code>
-     * @return The bytes for filename.
+     * <code>optional .file_settings file_settings = 11;</code>
      */
-    com.google.protobuf.ByteString
-        getFilenameBytes();
-
-    /**
-     * <code>optional uint64 start_time_seconds = 12;</code>
-     * @return Whether the startTimeSeconds field is set.
-     */
-    boolean hasStartTimeSeconds();
-    /**
-     * <code>optional uint64 start_time_seconds = 12;</code>
-     * @return The startTimeSeconds.
-     */
-    long getStartTimeSeconds();
+    SdrmodemApi.file_settingsOrBuilder getFileSettingsOrBuilder();
   }
   /**
    * Protobuf type {@code RxRequest}
@@ -2803,7 +3510,6 @@ public final class SdrmodemApi {
     private RxRequest() {
       demodType_ = 1;
       demodDestination_ = 0;
-      filename_ = "";
     }
 
     @java.lang.Override
@@ -2918,14 +3624,16 @@ public final class SdrmodemApi {
               break;
             }
             case 90: {
-              com.google.protobuf.ByteString bs = input.readBytes();
+              SdrmodemApi.file_settings.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000400) != 0)) {
+                subBuilder = fileSettings_.toBuilder();
+              }
+              fileSettings_ = input.readMessage(SdrmodemApi.file_settings.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(fileSettings_);
+                fileSettings_ = subBuilder.buildPartial();
+              }
               bitField0_ |= 0x00000400;
-              filename_ = bs;
-              break;
-            }
-            case 96: {
-              bitField0_ |= 0x00000800;
-              startTimeSeconds_ = input.readUInt64();
               break;
             }
             default: {
@@ -3173,71 +3881,30 @@ public final class SdrmodemApi {
       return fskSettings_ == null ? SdrmodemApi.fsk_demodulation_settings.getDefaultInstance() : fskSettings_;
     }
 
-    public static final int FILENAME_FIELD_NUMBER = 11;
-    private volatile java.lang.Object filename_;
+    public static final int FILE_SETTINGS_FIELD_NUMBER = 11;
+    private SdrmodemApi.file_settings fileSettings_;
     /**
-     * <code>optional string filename = 11;</code>
-     * @return Whether the filename field is set.
+     * <code>optional .file_settings file_settings = 11;</code>
+     * @return Whether the fileSettings field is set.
      */
     @java.lang.Override
-    public boolean hasFilename() {
+    public boolean hasFileSettings() {
       return ((bitField0_ & 0x00000400) != 0);
     }
     /**
-     * <code>optional string filename = 11;</code>
-     * @return The filename.
+     * <code>optional .file_settings file_settings = 11;</code>
+     * @return The fileSettings.
      */
     @java.lang.Override
-    public java.lang.String getFilename() {
-      java.lang.Object ref = filename_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          filename_ = s;
-        }
-        return s;
-      }
+    public SdrmodemApi.file_settings getFileSettings() {
+      return fileSettings_ == null ? SdrmodemApi.file_settings.getDefaultInstance() : fileSettings_;
     }
     /**
-     * <code>optional string filename = 11;</code>
-     * @return The bytes for filename.
+     * <code>optional .file_settings file_settings = 11;</code>
      */
     @java.lang.Override
-    public com.google.protobuf.ByteString
-        getFilenameBytes() {
-      java.lang.Object ref = filename_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        filename_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int START_TIME_SECONDS_FIELD_NUMBER = 12;
-    private long startTimeSeconds_;
-    /**
-     * <code>optional uint64 start_time_seconds = 12;</code>
-     * @return Whether the startTimeSeconds field is set.
-     */
-    @java.lang.Override
-    public boolean hasStartTimeSeconds() {
-      return ((bitField0_ & 0x00000800) != 0);
-    }
-    /**
-     * <code>optional uint64 start_time_seconds = 12;</code>
-     * @return The startTimeSeconds.
-     */
-    @java.lang.Override
-    public long getStartTimeSeconds() {
-      return startTimeSeconds_;
+    public SdrmodemApi.file_settingsOrBuilder getFileSettingsOrBuilder() {
+      return fileSettings_ == null ? SdrmodemApi.file_settings.getDefaultInstance() : fileSettings_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -3291,6 +3958,12 @@ public final class SdrmodemApi {
           return false;
         }
       }
+      if (hasFileSettings()) {
+        if (!getFileSettings().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -3329,10 +4002,7 @@ public final class SdrmodemApi {
         output.writeMessage(10, getFskSettings());
       }
       if (((bitField0_ & 0x00000400) != 0)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 11, filename_);
-      }
-      if (((bitField0_ & 0x00000800) != 0)) {
-        output.writeUInt64(12, startTimeSeconds_);
+        output.writeMessage(11, getFileSettings());
       }
       unknownFields.writeTo(output);
     }
@@ -3384,11 +4054,8 @@ public final class SdrmodemApi {
           .computeMessageSize(10, getFskSettings());
       }
       if (((bitField0_ & 0x00000400) != 0)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(11, filename_);
-      }
-      if (((bitField0_ & 0x00000800) != 0)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(12, startTimeSeconds_);
+          .computeMessageSize(11, getFileSettings());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -3453,15 +4120,10 @@ public final class SdrmodemApi {
         if (!getFskSettings()
             .equals(other.getFskSettings())) return false;
       }
-      if (hasFilename() != other.hasFilename()) return false;
-      if (hasFilename()) {
-        if (!getFilename()
-            .equals(other.getFilename())) return false;
-      }
-      if (hasStartTimeSeconds() != other.hasStartTimeSeconds()) return false;
-      if (hasStartTimeSeconds()) {
-        if (getStartTimeSeconds()
-            != other.getStartTimeSeconds()) return false;
+      if (hasFileSettings() != other.hasFileSettings()) return false;
+      if (hasFileSettings()) {
+        if (!getFileSettings()
+            .equals(other.getFileSettings())) return false;
       }
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
@@ -3518,14 +4180,9 @@ public final class SdrmodemApi {
         hash = (37 * hash) + FSK_SETTINGS_FIELD_NUMBER;
         hash = (53 * hash) + getFskSettings().hashCode();
       }
-      if (hasFilename()) {
-        hash = (37 * hash) + FILENAME_FIELD_NUMBER;
-        hash = (53 * hash) + getFilename().hashCode();
-      }
-      if (hasStartTimeSeconds()) {
-        hash = (37 * hash) + START_TIME_SECONDS_FIELD_NUMBER;
-        hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-            getStartTimeSeconds());
+      if (hasFileSettings()) {
+        hash = (37 * hash) + FILE_SETTINGS_FIELD_NUMBER;
+        hash = (53 * hash) + getFileSettings().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -3657,6 +4314,7 @@ public final class SdrmodemApi {
                 .alwaysUseFieldBuilders) {
           getDopplerFieldBuilder();
           getFskSettingsFieldBuilder();
+          getFileSettingsFieldBuilder();
         }
       }
       @java.lang.Override
@@ -3690,10 +4348,12 @@ public final class SdrmodemApi {
           fskSettingsBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000200);
-        filename_ = "";
+        if (fileSettingsBuilder_ == null) {
+          fileSettings_ = null;
+        } else {
+          fileSettingsBuilder_.clear();
+        }
         bitField0_ = (bitField0_ & ~0x00000400);
-        startTimeSeconds_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000800);
         return this;
       }
 
@@ -3771,12 +4431,12 @@ public final class SdrmodemApi {
           to_bitField0_ |= 0x00000200;
         }
         if (((from_bitField0_ & 0x00000400) != 0)) {
+          if (fileSettingsBuilder_ == null) {
+            result.fileSettings_ = fileSettings_;
+          } else {
+            result.fileSettings_ = fileSettingsBuilder_.build();
+          }
           to_bitField0_ |= 0x00000400;
-        }
-        result.filename_ = filename_;
-        if (((from_bitField0_ & 0x00000800) != 0)) {
-          result.startTimeSeconds_ = startTimeSeconds_;
-          to_bitField0_ |= 0x00000800;
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -3857,13 +4517,8 @@ public final class SdrmodemApi {
         if (other.hasFskSettings()) {
           mergeFskSettings(other.getFskSettings());
         }
-        if (other.hasFilename()) {
-          bitField0_ |= 0x00000400;
-          filename_ = other.filename_;
-          onChanged();
-        }
-        if (other.hasStartTimeSeconds()) {
-          setStartTimeSeconds(other.getStartTimeSeconds());
+        if (other.hasFileSettings()) {
+          mergeFileSettings(other.getFileSettings());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -3903,6 +4558,11 @@ public final class SdrmodemApi {
         }
         if (hasFskSettings()) {
           if (!getFskSettings().isInitialized()) {
+            return false;
+          }
+        }
+        if (hasFileSettings()) {
+          if (!getFileSettings().isInitialized()) {
             return false;
           }
         }
@@ -4505,127 +5165,124 @@ public final class SdrmodemApi {
         return fskSettingsBuilder_;
       }
 
-      private java.lang.Object filename_ = "";
+      private SdrmodemApi.file_settings fileSettings_;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          SdrmodemApi.file_settings, SdrmodemApi.file_settings.Builder, SdrmodemApi.file_settingsOrBuilder> fileSettingsBuilder_;
       /**
-       * <code>optional string filename = 11;</code>
-       * @return Whether the filename field is set.
+       * <code>optional .file_settings file_settings = 11;</code>
+       * @return Whether the fileSettings field is set.
        */
-      public boolean hasFilename() {
+      public boolean hasFileSettings() {
         return ((bitField0_ & 0x00000400) != 0);
       }
       /**
-       * <code>optional string filename = 11;</code>
-       * @return The filename.
+       * <code>optional .file_settings file_settings = 11;</code>
+       * @return The fileSettings.
        */
-      public java.lang.String getFilename() {
-        java.lang.Object ref = filename_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            filename_ = s;
+      public SdrmodemApi.file_settings getFileSettings() {
+        if (fileSettingsBuilder_ == null) {
+          return fileSettings_ == null ? SdrmodemApi.file_settings.getDefaultInstance() : fileSettings_;
+        } else {
+          return fileSettingsBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .file_settings file_settings = 11;</code>
+       */
+      public Builder setFileSettings(SdrmodemApi.file_settings value) {
+        if (fileSettingsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
           }
-          return s;
+          fileSettings_ = value;
+          onChanged();
         } else {
-          return (java.lang.String) ref;
+          fileSettingsBuilder_.setMessage(value);
         }
-      }
-      /**
-       * <code>optional string filename = 11;</code>
-       * @return The bytes for filename.
-       */
-      public com.google.protobuf.ByteString
-          getFilenameBytes() {
-        java.lang.Object ref = filename_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          filename_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string filename = 11;</code>
-       * @param value The filename to set.
-       * @return This builder for chaining.
-       */
-      public Builder setFilename(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000400;
-        filename_ = value;
-        onChanged();
+        bitField0_ |= 0x00000400;
         return this;
       }
       /**
-       * <code>optional string filename = 11;</code>
-       * @return This builder for chaining.
+       * <code>optional .file_settings file_settings = 11;</code>
        */
-      public Builder clearFilename() {
+      public Builder setFileSettings(
+          SdrmodemApi.file_settings.Builder builderForValue) {
+        if (fileSettingsBuilder_ == null) {
+          fileSettings_ = builderForValue.build();
+          onChanged();
+        } else {
+          fileSettingsBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000400;
+        return this;
+      }
+      /**
+       * <code>optional .file_settings file_settings = 11;</code>
+       */
+      public Builder mergeFileSettings(SdrmodemApi.file_settings value) {
+        if (fileSettingsBuilder_ == null) {
+          if (((bitField0_ & 0x00000400) != 0) &&
+              fileSettings_ != null &&
+              fileSettings_ != SdrmodemApi.file_settings.getDefaultInstance()) {
+            fileSettings_ =
+              SdrmodemApi.file_settings.newBuilder(fileSettings_).mergeFrom(value).buildPartial();
+          } else {
+            fileSettings_ = value;
+          }
+          onChanged();
+        } else {
+          fileSettingsBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000400;
+        return this;
+      }
+      /**
+       * <code>optional .file_settings file_settings = 11;</code>
+       */
+      public Builder clearFileSettings() {
+        if (fileSettingsBuilder_ == null) {
+          fileSettings_ = null;
+          onChanged();
+        } else {
+          fileSettingsBuilder_.clear();
+        }
         bitField0_ = (bitField0_ & ~0x00000400);
-        filename_ = getDefaultInstance().getFilename();
-        onChanged();
         return this;
       }
       /**
-       * <code>optional string filename = 11;</code>
-       * @param value The bytes for filename to set.
-       * @return This builder for chaining.
+       * <code>optional .file_settings file_settings = 11;</code>
        */
-      public Builder setFilenameBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000400;
-        filename_ = value;
+      public SdrmodemApi.file_settings.Builder getFileSettingsBuilder() {
+        bitField0_ |= 0x00000400;
         onChanged();
-        return this;
-      }
-
-      private long startTimeSeconds_ ;
-      /**
-       * <code>optional uint64 start_time_seconds = 12;</code>
-       * @return Whether the startTimeSeconds field is set.
-       */
-      @java.lang.Override
-      public boolean hasStartTimeSeconds() {
-        return ((bitField0_ & 0x00000800) != 0);
+        return getFileSettingsFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional uint64 start_time_seconds = 12;</code>
-       * @return The startTimeSeconds.
+       * <code>optional .file_settings file_settings = 11;</code>
        */
-      @java.lang.Override
-      public long getStartTimeSeconds() {
-        return startTimeSeconds_;
+      public SdrmodemApi.file_settingsOrBuilder getFileSettingsOrBuilder() {
+        if (fileSettingsBuilder_ != null) {
+          return fileSettingsBuilder_.getMessageOrBuilder();
+        } else {
+          return fileSettings_ == null ?
+              SdrmodemApi.file_settings.getDefaultInstance() : fileSettings_;
+        }
       }
       /**
-       * <code>optional uint64 start_time_seconds = 12;</code>
-       * @param value The startTimeSeconds to set.
-       * @return This builder for chaining.
+       * <code>optional .file_settings file_settings = 11;</code>
        */
-      public Builder setStartTimeSeconds(long value) {
-        bitField0_ |= 0x00000800;
-        startTimeSeconds_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional uint64 start_time_seconds = 12;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearStartTimeSeconds() {
-        bitField0_ = (bitField0_ & ~0x00000800);
-        startTimeSeconds_ = 0L;
-        onChanged();
-        return this;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          SdrmodemApi.file_settings, SdrmodemApi.file_settings.Builder, SdrmodemApi.file_settingsOrBuilder> 
+          getFileSettingsFieldBuilder() {
+        if (fileSettingsBuilder_ == null) {
+          fileSettingsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              SdrmodemApi.file_settings, SdrmodemApi.file_settings.Builder, SdrmodemApi.file_settingsOrBuilder>(
+                  getFileSettings(),
+                  getParentForChildren(),
+                  isClean());
+          fileSettings_ = null;
+        }
+        return fileSettingsBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -4781,21 +5438,19 @@ public final class SdrmodemApi {
     SdrmodemApi.fsk_modulation_settingsOrBuilder getFskSettingsOrBuilder();
 
     /**
-     * <code>optional string filename = 9;</code>
-     * @return Whether the filename field is set.
+     * <code>optional .file_settings file_settings = 9;</code>
+     * @return Whether the fileSettings field is set.
      */
-    boolean hasFilename();
+    boolean hasFileSettings();
     /**
-     * <code>optional string filename = 9;</code>
-     * @return The filename.
+     * <code>optional .file_settings file_settings = 9;</code>
+     * @return The fileSettings.
      */
-    java.lang.String getFilename();
+    SdrmodemApi.file_settings getFileSettings();
     /**
-     * <code>optional string filename = 9;</code>
-     * @return The bytes for filename.
+     * <code>optional .file_settings file_settings = 9;</code>
      */
-    com.google.protobuf.ByteString
-        getFilenameBytes();
+    SdrmodemApi.file_settingsOrBuilder getFileSettingsOrBuilder();
   }
   /**
    * Protobuf type {@code TxRequest}
@@ -4811,7 +5466,6 @@ public final class SdrmodemApi {
     }
     private TxRequest() {
       modType_ = 1;
-      filename_ = "";
     }
 
     @java.lang.Override
@@ -4909,9 +5563,16 @@ public final class SdrmodemApi {
               break;
             }
             case 74: {
-              com.google.protobuf.ByteString bs = input.readBytes();
+              SdrmodemApi.file_settings.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000100) != 0)) {
+                subBuilder = fileSettings_.toBuilder();
+              }
+              fileSettings_ = input.readMessage(SdrmodemApi.file_settings.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(fileSettings_);
+                fileSettings_ = subBuilder.buildPartial();
+              }
               bitField0_ |= 0x00000100;
-              filename_ = bs;
               break;
             }
             default: {
@@ -5113,52 +5774,30 @@ public final class SdrmodemApi {
       return fskSettings_ == null ? SdrmodemApi.fsk_modulation_settings.getDefaultInstance() : fskSettings_;
     }
 
-    public static final int FILENAME_FIELD_NUMBER = 9;
-    private volatile java.lang.Object filename_;
+    public static final int FILE_SETTINGS_FIELD_NUMBER = 9;
+    private SdrmodemApi.file_settings fileSettings_;
     /**
-     * <code>optional string filename = 9;</code>
-     * @return Whether the filename field is set.
+     * <code>optional .file_settings file_settings = 9;</code>
+     * @return Whether the fileSettings field is set.
      */
     @java.lang.Override
-    public boolean hasFilename() {
+    public boolean hasFileSettings() {
       return ((bitField0_ & 0x00000100) != 0);
     }
     /**
-     * <code>optional string filename = 9;</code>
-     * @return The filename.
+     * <code>optional .file_settings file_settings = 9;</code>
+     * @return The fileSettings.
      */
     @java.lang.Override
-    public java.lang.String getFilename() {
-      java.lang.Object ref = filename_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          filename_ = s;
-        }
-        return s;
-      }
+    public SdrmodemApi.file_settings getFileSettings() {
+      return fileSettings_ == null ? SdrmodemApi.file_settings.getDefaultInstance() : fileSettings_;
     }
     /**
-     * <code>optional string filename = 9;</code>
-     * @return The bytes for filename.
+     * <code>optional .file_settings file_settings = 9;</code>
      */
     @java.lang.Override
-    public com.google.protobuf.ByteString
-        getFilenameBytes() {
-      java.lang.Object ref = filename_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        filename_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public SdrmodemApi.file_settingsOrBuilder getFileSettingsOrBuilder() {
+      return fileSettings_ == null ? SdrmodemApi.file_settings.getDefaultInstance() : fileSettings_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -5204,6 +5843,12 @@ public final class SdrmodemApi {
           return false;
         }
       }
+      if (hasFileSettings()) {
+        if (!getFileSettings().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -5236,7 +5881,7 @@ public final class SdrmodemApi {
         output.writeMessage(8, getFskSettings());
       }
       if (((bitField0_ & 0x00000100) != 0)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 9, filename_);
+        output.writeMessage(9, getFileSettings());
       }
       unknownFields.writeTo(output);
     }
@@ -5280,7 +5925,8 @@ public final class SdrmodemApi {
           .computeMessageSize(8, getFskSettings());
       }
       if (((bitField0_ & 0x00000100) != 0)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(9, filename_);
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(9, getFileSettings());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -5336,10 +5982,10 @@ public final class SdrmodemApi {
         if (!getFskSettings()
             .equals(other.getFskSettings())) return false;
       }
-      if (hasFilename() != other.hasFilename()) return false;
-      if (hasFilename()) {
-        if (!getFilename()
-            .equals(other.getFilename())) return false;
+      if (hasFileSettings() != other.hasFileSettings()) return false;
+      if (hasFileSettings()) {
+        if (!getFileSettings()
+            .equals(other.getFileSettings())) return false;
       }
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
@@ -5388,9 +6034,9 @@ public final class SdrmodemApi {
         hash = (37 * hash) + FSK_SETTINGS_FIELD_NUMBER;
         hash = (53 * hash) + getFskSettings().hashCode();
       }
-      if (hasFilename()) {
-        hash = (37 * hash) + FILENAME_FIELD_NUMBER;
-        hash = (53 * hash) + getFilename().hashCode();
+      if (hasFileSettings()) {
+        hash = (37 * hash) + FILE_SETTINGS_FIELD_NUMBER;
+        hash = (53 * hash) + getFileSettings().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -5522,6 +6168,7 @@ public final class SdrmodemApi {
                 .alwaysUseFieldBuilders) {
           getDopplerFieldBuilder();
           getFskSettingsFieldBuilder();
+          getFileSettingsFieldBuilder();
         }
       }
       @java.lang.Override
@@ -5551,7 +6198,11 @@ public final class SdrmodemApi {
           fskSettingsBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000080);
-        filename_ = "";
+        if (fileSettingsBuilder_ == null) {
+          fileSettings_ = null;
+        } else {
+          fileSettingsBuilder_.clear();
+        }
         bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
@@ -5622,9 +6273,13 @@ public final class SdrmodemApi {
           to_bitField0_ |= 0x00000080;
         }
         if (((from_bitField0_ & 0x00000100) != 0)) {
+          if (fileSettingsBuilder_ == null) {
+            result.fileSettings_ = fileSettings_;
+          } else {
+            result.fileSettings_ = fileSettingsBuilder_.build();
+          }
           to_bitField0_ |= 0x00000100;
         }
-        result.filename_ = filename_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -5698,10 +6353,8 @@ public final class SdrmodemApi {
         if (other.hasFskSettings()) {
           mergeFskSettings(other.getFskSettings());
         }
-        if (other.hasFilename()) {
-          bitField0_ |= 0x00000100;
-          filename_ = other.filename_;
-          onChanged();
+        if (other.hasFileSettings()) {
+          mergeFileSettings(other.getFileSettings());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -5735,6 +6388,11 @@ public final class SdrmodemApi {
         }
         if (hasFskSettings()) {
           if (!getFskSettings().isInitialized()) {
+            return false;
+          }
+        }
+        if (hasFileSettings()) {
+          if (!getFileSettings().isInitialized()) {
             return false;
           }
         }
@@ -6239,88 +6897,124 @@ public final class SdrmodemApi {
         return fskSettingsBuilder_;
       }
 
-      private java.lang.Object filename_ = "";
+      private SdrmodemApi.file_settings fileSettings_;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          SdrmodemApi.file_settings, SdrmodemApi.file_settings.Builder, SdrmodemApi.file_settingsOrBuilder> fileSettingsBuilder_;
       /**
-       * <code>optional string filename = 9;</code>
-       * @return Whether the filename field is set.
+       * <code>optional .file_settings file_settings = 9;</code>
+       * @return Whether the fileSettings field is set.
        */
-      public boolean hasFilename() {
+      public boolean hasFileSettings() {
         return ((bitField0_ & 0x00000100) != 0);
       }
       /**
-       * <code>optional string filename = 9;</code>
-       * @return The filename.
+       * <code>optional .file_settings file_settings = 9;</code>
+       * @return The fileSettings.
        */
-      public java.lang.String getFilename() {
-        java.lang.Object ref = filename_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            filename_ = s;
+      public SdrmodemApi.file_settings getFileSettings() {
+        if (fileSettingsBuilder_ == null) {
+          return fileSettings_ == null ? SdrmodemApi.file_settings.getDefaultInstance() : fileSettings_;
+        } else {
+          return fileSettingsBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .file_settings file_settings = 9;</code>
+       */
+      public Builder setFileSettings(SdrmodemApi.file_settings value) {
+        if (fileSettingsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
           }
-          return s;
+          fileSettings_ = value;
+          onChanged();
         } else {
-          return (java.lang.String) ref;
+          fileSettingsBuilder_.setMessage(value);
         }
-      }
-      /**
-       * <code>optional string filename = 9;</code>
-       * @return The bytes for filename.
-       */
-      public com.google.protobuf.ByteString
-          getFilenameBytes() {
-        java.lang.Object ref = filename_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          filename_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string filename = 9;</code>
-       * @param value The filename to set.
-       * @return This builder for chaining.
-       */
-      public Builder setFilename(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000100;
-        filename_ = value;
-        onChanged();
+        bitField0_ |= 0x00000100;
         return this;
       }
       /**
-       * <code>optional string filename = 9;</code>
-       * @return This builder for chaining.
+       * <code>optional .file_settings file_settings = 9;</code>
        */
-      public Builder clearFilename() {
+      public Builder setFileSettings(
+          SdrmodemApi.file_settings.Builder builderForValue) {
+        if (fileSettingsBuilder_ == null) {
+          fileSettings_ = builderForValue.build();
+          onChanged();
+        } else {
+          fileSettingsBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      /**
+       * <code>optional .file_settings file_settings = 9;</code>
+       */
+      public Builder mergeFileSettings(SdrmodemApi.file_settings value) {
+        if (fileSettingsBuilder_ == null) {
+          if (((bitField0_ & 0x00000100) != 0) &&
+              fileSettings_ != null &&
+              fileSettings_ != SdrmodemApi.file_settings.getDefaultInstance()) {
+            fileSettings_ =
+              SdrmodemApi.file_settings.newBuilder(fileSettings_).mergeFrom(value).buildPartial();
+          } else {
+            fileSettings_ = value;
+          }
+          onChanged();
+        } else {
+          fileSettingsBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      /**
+       * <code>optional .file_settings file_settings = 9;</code>
+       */
+      public Builder clearFileSettings() {
+        if (fileSettingsBuilder_ == null) {
+          fileSettings_ = null;
+          onChanged();
+        } else {
+          fileSettingsBuilder_.clear();
+        }
         bitField0_ = (bitField0_ & ~0x00000100);
-        filename_ = getDefaultInstance().getFilename();
-        onChanged();
         return this;
       }
       /**
-       * <code>optional string filename = 9;</code>
-       * @param value The bytes for filename to set.
-       * @return This builder for chaining.
+       * <code>optional .file_settings file_settings = 9;</code>
        */
-      public Builder setFilenameBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000100;
-        filename_ = value;
+      public SdrmodemApi.file_settings.Builder getFileSettingsBuilder() {
+        bitField0_ |= 0x00000100;
         onChanged();
-        return this;
+        return getFileSettingsFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .file_settings file_settings = 9;</code>
+       */
+      public SdrmodemApi.file_settingsOrBuilder getFileSettingsOrBuilder() {
+        if (fileSettingsBuilder_ != null) {
+          return fileSettingsBuilder_.getMessageOrBuilder();
+        } else {
+          return fileSettings_ == null ?
+              SdrmodemApi.file_settings.getDefaultInstance() : fileSettings_;
+        }
+      }
+      /**
+       * <code>optional .file_settings file_settings = 9;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          SdrmodemApi.file_settings, SdrmodemApi.file_settings.Builder, SdrmodemApi.file_settingsOrBuilder> 
+          getFileSettingsFieldBuilder() {
+        if (fileSettingsBuilder_ == null) {
+          fileSettingsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              SdrmodemApi.file_settings, SdrmodemApi.file_settings.Builder, SdrmodemApi.file_settingsOrBuilder>(
+                  getFileSettings(),
+                  getParentForChildren(),
+                  isClean());
+          fileSettings_ = null;
+        }
+        return fileSettingsBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -7572,6 +8266,11 @@ public final class SdrmodemApi {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_fsk_modulation_settings_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_file_settings_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_file_settings_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_RxRequest_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -7607,28 +8306,30 @@ public final class SdrmodemApi {
       "\030\001 \002(\003\022\"\n\032demod_fsk_transition_width\030\002 \002" +
       "(\r\022\036\n\026demod_fsk_use_dc_block\030\003 \002(\010\"4\n\027fs" +
       "k_modulation_settings\022\031\n\021mod_fsk_deviati" +
-      "on\030\001 \002(\003\"\355\002\n\tRxRequest\022\026\n\016rx_center_freq" +
-      "\030\001 \002(\004\022\030\n\020rx_sampling_freq\030\002 \002(\004\022\024\n\014rx_d" +
-      "ump_file\030\003 \002(\010\022\021\n\trx_offset\030\004 \002(\003\022\037\n\ndem" +
-      "od_type\030\005 \002(\0162\013.modem_type\022\027\n\017demod_baud" +
-      "_rate\030\006 \002(\r\022\030\n\020demod_decimation\030\007 \002(\r\022-\n" +
-      "\021demod_destination\030\010 \002(\0162\022.demod_destina" +
-      "tion\022\"\n\007doppler\030\t \001(\0132\021.doppler_settings" +
-      "\0220\n\014fsk_settings\030\n \001(\0132\032.fsk_demodulatio" +
-      "n_settings\022\020\n\010filename\030\013 \001(\t\022\032\n\022start_ti" +
-      "me_seconds\030\014 \001(\004\"\202\002\n\tTxRequest\022\026\n\016tx_cen" +
-      "ter_freq\030\001 \002(\004\022\030\n\020tx_sampling_freq\030\002 \002(\004" +
-      "\022\024\n\014tx_dump_file\030\003 \002(\010\022\021\n\ttx_offset\030\004 \002(" +
-      "\003\022\035\n\010mod_type\030\005 \002(\0162\013.modem_type\022\025\n\rmod_" +
-      "baud_rate\030\006 \002(\r\022\"\n\007doppler\030\007 \001(\0132\021.doppl" +
-      "er_settings\022.\n\014fsk_settings\030\010 \001(\0132\030.fsk_" +
-      "modulation_settings\022\020\n\010filename\030\t \001(\t\"=\n" +
-      "\010Response\022 \n\006status\030\001 \002(\0162\020.response_sta" +
-      "tus\022\017\n\007details\030\002 \002(\r\"\026\n\006TxData\022\014\n\004data\030\001" +
-      " \002(\014*\026\n\nmodem_type\022\010\n\004GMSK\020\001*3\n\021demod_de" +
-      "stination\022\010\n\004FILE\020\000\022\n\n\006SOCKET\020\001\022\010\n\004BOTH\020" +
-      "\002*+\n\017response_status\022\013\n\007SUCCESS\020\000\022\013\n\007FAI" +
-      "LURE\020\001"
+      "on\030\001 \002(\003\"=\n\rfile_settings\022\020\n\010filename\030\001 " +
+      "\002(\t\022\032\n\022start_time_seconds\030\002 \002(\004\"\346\002\n\tRxRe" +
+      "quest\022\026\n\016rx_center_freq\030\001 \002(\004\022\030\n\020rx_samp" +
+      "ling_freq\030\002 \002(\004\022\024\n\014rx_dump_file\030\003 \002(\010\022\021\n" +
+      "\trx_offset\030\004 \002(\003\022\037\n\ndemod_type\030\005 \002(\0162\013.m" +
+      "odem_type\022\027\n\017demod_baud_rate\030\006 \002(\r\022\030\n\020de" +
+      "mod_decimation\030\007 \002(\r\022-\n\021demod_destinatio" +
+      "n\030\010 \002(\0162\022.demod_destination\022\"\n\007doppler\030\t" +
+      " \001(\0132\021.doppler_settings\0220\n\014fsk_settings\030" +
+      "\n \001(\0132\032.fsk_demodulation_settings\022%\n\rfil" +
+      "e_settings\030\013 \001(\0132\016.file_settings\"\227\002\n\tTxR" +
+      "equest\022\026\n\016tx_center_freq\030\001 \002(\004\022\030\n\020tx_sam" +
+      "pling_freq\030\002 \002(\004\022\024\n\014tx_dump_file\030\003 \002(\010\022\021" +
+      "\n\ttx_offset\030\004 \002(\003\022\035\n\010mod_type\030\005 \002(\0162\013.mo" +
+      "dem_type\022\025\n\rmod_baud_rate\030\006 \002(\r\022\"\n\007doppl" +
+      "er\030\007 \001(\0132\021.doppler_settings\022.\n\014fsk_setti" +
+      "ngs\030\010 \001(\0132\030.fsk_modulation_settings\022%\n\rf" +
+      "ile_settings\030\t \001(\0132\016.file_settings\"=\n\010Re" +
+      "sponse\022 \n\006status\030\001 \002(\0162\020.response_status" +
+      "\022\017\n\007details\030\002 \002(\r\"\026\n\006TxData\022\014\n\004data\030\001 \002(" +
+      "\014*\026\n\nmodem_type\022\010\n\004GMSK\020\001*3\n\021demod_desti" +
+      "nation\022\010\n\004FILE\020\000\022\n\n\006SOCKET\020\001\022\010\n\004BOTH\020\002*+" +
+      "\n\017response_status\022\013\n\007SUCCESS\020\000\022\013\n\007FAILUR" +
+      "E\020\001"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -7652,26 +8353,32 @@ public final class SdrmodemApi {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_fsk_modulation_settings_descriptor,
         new java.lang.String[] { "ModFskDeviation", });
-    internal_static_RxRequest_descriptor =
+    internal_static_file_settings_descriptor =
       getDescriptor().getMessageTypes().get(3);
+    internal_static_file_settings_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_file_settings_descriptor,
+        new java.lang.String[] { "Filename", "StartTimeSeconds", });
+    internal_static_RxRequest_descriptor =
+      getDescriptor().getMessageTypes().get(4);
     internal_static_RxRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RxRequest_descriptor,
-        new java.lang.String[] { "RxCenterFreq", "RxSamplingFreq", "RxDumpFile", "RxOffset", "DemodType", "DemodBaudRate", "DemodDecimation", "DemodDestination", "Doppler", "FskSettings", "Filename", "StartTimeSeconds", });
+        new java.lang.String[] { "RxCenterFreq", "RxSamplingFreq", "RxDumpFile", "RxOffset", "DemodType", "DemodBaudRate", "DemodDecimation", "DemodDestination", "Doppler", "FskSettings", "FileSettings", });
     internal_static_TxRequest_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_TxRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TxRequest_descriptor,
-        new java.lang.String[] { "TxCenterFreq", "TxSamplingFreq", "TxDumpFile", "TxOffset", "ModType", "ModBaudRate", "Doppler", "FskSettings", "Filename", });
+        new java.lang.String[] { "TxCenterFreq", "TxSamplingFreq", "TxDumpFile", "TxOffset", "ModType", "ModBaudRate", "Doppler", "FskSettings", "FileSettings", });
     internal_static_Response_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_Response_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Response_descriptor,
         new java.lang.String[] { "Status", "Details", });
     internal_static_TxData_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_TxData_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TxData_descriptor,
