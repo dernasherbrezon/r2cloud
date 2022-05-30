@@ -57,6 +57,11 @@
 			<version>10.1</version>
 		</dependency>
 		<dependency>
+			<groupId>com.fazecast</groupId>
+			<artifactId>jSerialComm</artifactId>
+			<version>2.9.1</version>
+		</dependency>
+		<dependency>
 			<groupId>ru.r2cloud</groupId>
 			<artifactId>journald-formatter</artifactId>
 			<version>1.0</version>
