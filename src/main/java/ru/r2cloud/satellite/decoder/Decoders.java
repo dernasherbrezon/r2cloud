@@ -80,7 +80,7 @@ public class Decoders {
 					continue;
 				}
 				if (transmitter.getModulation().equals(Modulation.LORA)) {
-					index(cur.getId(), transmitter.getId(), new R2loraDecoder(transmitter.getBeaconClass()));
+					index(cur.getId(), transmitter.getId(), new LoraDecoder(transmitter.getBeaconClass()));
 					continue;
 				}
 				if (transmitter.getBaudRates() == null || transmitter.getBaudRates().isEmpty()) {

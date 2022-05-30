@@ -15,13 +15,13 @@ import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Util;
 
-public class R2loraDecoder implements Decoder {
+public class LoraDecoder implements Decoder {
 
-	private static final Logger LOG = LoggerFactory.getLogger(R2loraDecoder.class);
+	private static final Logger LOG = LoggerFactory.getLogger(LoraDecoder.class);
 
 	private final Class<? extends Beacon> beacon;
 
-	public R2loraDecoder(Class<? extends Beacon> beacon) {
+	public LoraDecoder(Class<? extends Beacon> beacon) {
 		this.beacon = beacon;
 	}
 

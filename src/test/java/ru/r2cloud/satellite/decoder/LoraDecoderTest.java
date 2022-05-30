@@ -19,7 +19,7 @@ import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
 
-public class R2loraDecoderTest {
+public class LoraDecoderTest {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -34,7 +34,7 @@ public class R2loraDecoderTest {
 			bos.write(beacon);
 		}
 
-		R2loraDecoder decoder = new R2loraDecoder(RawBeacon.class);
+		LoraDecoder decoder = new LoraDecoder(RawBeacon.class);
 		DecoderResult result = decoder.decode(rawFile, new ObservationRequest(), new Transmitter());
 		assertNotNull(result);
 		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
@@ -47,7 +47,7 @@ public class R2loraDecoderTest {
 		try (FileOutputStream fos = new FileOutputStream(rawFile)) {
 			fos.write(1);
 		}
-		R2loraDecoder decoder = new R2loraDecoder(RawBeacon.class);
+		LoraDecoder decoder = new LoraDecoder(RawBeacon.class);
 		DecoderResult result = decoder.decode(rawFile, new ObservationRequest(), new Transmitter());
 		assertNotNull(result);
 		assertEquals(0, result.getNumberOfDecodedPackets().longValue());
