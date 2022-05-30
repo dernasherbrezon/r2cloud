@@ -288,6 +288,30 @@ public class Configuration {
 		}
 		return result;
 	}
+	
+	public List<DeviceConfiguration> getLoraAtConfigurations() {
+		List<String> loraDevices = getProperties("loraat.devices");
+		if (loraDevices.isEmpty()) {
+			return Collections.emptyList();
+		}
+		int timeout = getInteger("loraat.timeout");
+		List<DeviceConfiguration> result = new ArrayList<>(loraDevices.size());
+		for (String cur : loraDevices) {
+			Integer gain = getInteger("loraat.device." + cur + ".gain");
+			if (gain == null) {
+				// by default should be auto
+				gain = 0;
+			}
+			DeviceConfiguration config = new DeviceConfiguration();
+			config.setHostport(getProperty("loraat.device." + cur + ".port"));
+			config.setTimeout(timeout);
+			config.setId("loraat-" + config.getHostport());
+			config.setRotatorConfiguration(getRotatorConfiguration(config.getId(), "loraat.device." + cur + "."));
+			config.setGain(gain);
+			result.add(config);
+		}
+		return result;
+	}
 
 	private SdrServerConfiguration getSdrServerConfiguration(String prefix) {
 		String hostname = getProperty(prefix + "sdrserver.host");

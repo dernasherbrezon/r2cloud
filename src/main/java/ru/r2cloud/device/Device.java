@@ -107,7 +107,7 @@ public abstract class Device implements Lifecycle {
 		req.setPpm(deviceConfiguration.getPpm());
 		req.setSdrServerConfiguration(deviceConfiguration.getSdrServerConfiguration());
 		req.setSampleRate(transmitter.getInputSampleRate());
-		LOG.info("scheduled next pass for {}. start: {} end: {}", transmitter, new Date(req.getStartTimeMillis()), new Date(req.getEndTimeMillis()));
+		LOG.info("[{}] scheduled next pass for {}. start: {} end: {}", id, transmitter, new Date(req.getStartTimeMillis()), new Date(req.getEndTimeMillis()));
 		IQReader reader = createReader(req, transmitter);
 		Runnable readTask = new SafeRunnable() {
 
@@ -177,7 +177,7 @@ public abstract class Device implements Lifecycle {
 				observation.setStartTimeMillis(data.getActualStart());
 				observation.setEndTimeMillis(data.getActualEnd());
 				observation.setStatus(ObservationStatus.RECEIVED);
-				
+
 				File dataFile = observationDao.update(observation, data.getDataFile());
 				if (dataFile == null) {
 					return;

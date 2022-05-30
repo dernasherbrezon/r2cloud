@@ -17,8 +17,11 @@ import ru.r2cloud.cloud.LeoSatDataClient;
 import ru.r2cloud.cloud.LeoSatDataService;
 import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.device.DeviceManager;
+import ru.r2cloud.device.LoraAtDevice;
 import ru.r2cloud.device.LoraDevice;
 import ru.r2cloud.device.SdrDevice;
+import ru.r2cloud.loraat.LoraAtClient;
+import ru.r2cloud.loraat.LoraAtStatus;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.SdrType;
@@ -144,6 +147,11 @@ public class R2Cloud {
 			R2loraClient client = new R2loraClient(cur.getHostport(), cur.getUsername(), cur.getPassword(), cur.getTimeout());
 			populateFrequencies(client.getStatus(), cur);
 			deviceManager.addDevice(new LoraDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, client));
+		}
+		for (DeviceConfiguration cur : props.getLoraAtConfigurations()) {
+			LoraAtClient client = new LoraAtClient(cur.getHostport(), cur.getTimeout());
+			populateFrequencies(client.getStatus(), cur);
+			deviceManager.addDevice(new LoraAtDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, client));
 		}
 
 		// setup web server
@@ -271,6 +279,20 @@ public class R2Cloud {
 			return;
 		}
 		for (ModulationConfig cur : status.getConfigs()) {
+			if (!cur.getName().equalsIgnoreCase("lora")) {
+				continue;
+			}
+			config.setMinimumFrequency((long) (cur.getMinFrequency() * 1_000_000));
+			config.setMaximumFrequency((long) (cur.getMaxFrequency() * 1_000_000));
+			return;
+		}
+	}
+
+	private static void populateFrequencies(LoraAtStatus status, DeviceConfiguration config) {
+		if (status.getConfigs() == null) {
+			return;
+		}
+		for (ru.r2cloud.loraat.ModulationConfig cur : status.getConfigs()) {
 			if (!cur.getName().equalsIgnoreCase("lora")) {
 				continue;
 			}

@@ -24,13 +24,11 @@ public class LoraAtClient {
 	private static final Pattern COMMA = Pattern.compile(",");
 
 	private final String portDescriptor;
+	private final int timeout;
 
-	public LoraAtClient(String portDescriptor) {
+	public LoraAtClient(String portDescriptor, int timeout) {
 		this.portDescriptor = portDescriptor;
-	}
-
-	public static void main(String[] args) {
-		new LoraAtClient(args[0]).getStatus();
+		this.timeout = timeout;
 	}
 
 	public LoraAtStatus getStatus() {
@@ -84,7 +82,7 @@ public class LoraAtClient {
 
 	private LoraAtResponse startObservationImpl(LoraAtObservationRequest loraRequest) {
 		LoraAtResponse result = new LoraAtResponse();
-		String request = "AT+LORARX=" + loraRequest.getFrequency() + "," + loraRequest.getBw() + "," + loraRequest.getSf() + "," + loraRequest.getCr() + "," + loraRequest.getSyncword() + ",0," + loraRequest.getPreambleLength() + "," + loraRequest.getGain() + "," + loraRequest.getLdro();
+		String request = "AT+LORARX=" + loraRequest.getFrequency() + "," + loraRequest.getBw() + "," + loraRequest.getSf() + "," + loraRequest.getCr() + "," + loraRequest.getSyncword() + ",10," + loraRequest.getPreambleLength() + "," + loraRequest.getGain() + "," + loraRequest.getLdro() + "\r\n";
 		try {
 			sendRequest(request);
 		} catch (LoraAtException e) {
@@ -132,7 +130,7 @@ public class LoraAtClient {
 	private List<String> sendRequest(String request) throws LoraAtException {
 		SerialPort port = SerialPort.getCommPort(portDescriptor);
 		// this is important
-		port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
+		port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, timeout, timeout);
 		// some defaults
 		port.setBaudRate(115200);
 		port.setParity(SerialPort.NO_PARITY);
@@ -167,9 +165,9 @@ public class LoraAtClient {
 			StringBuilder errorMessage = new StringBuilder();
 			while ((curLine = reader.readLine()) != null) {
 				curLine = curLine.trim();
+				LOG.info("response: {}", curLine);
 				// skip logging
 				if (curLine.charAt(0) == '[') {
-					LOG.info("remote: {}", curLine);
 					continue;
 				}
 				if (curLine.equalsIgnoreCase("ERROR")) {
