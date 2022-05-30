@@ -70,7 +70,7 @@ public class LoraAtClient {
 	public LoraAtResponse startObservation(LoraAtObservationRequest loraRequest) {
 		LoraAtResponse result = startObservationImpl(loraRequest);
 		if (result.getStatus().equals(ResponseStatus.RECEIVING)) {
-			LOG.info("r2lora is already receiving. stopping previous and starting again");
+			LOG.info("lora-at is already receiving. stopping previous and starting again");
 			LoraAtResponse response = stopObservation();
 			if (response.getFrames() != null && response.getFrames().size() > 0) {
 				for (LoraAtFrame cur : response.getFrames()) {
