@@ -66,6 +66,12 @@ public class LoraAtClient {
 	}
 
 	public LoraAtResponse startObservation(LoraAtObservationRequest loraRequest) {
+		// make sure lora internal clock is OK
+		try {
+			sendRequest("AT+TIME=" + (System.currentTimeMillis() / 1000));
+		} catch (LoraAtException e) {
+			return new LoraAtResponse(e.getMessage());
+		}
 		LoraAtResponse result = startObservationImpl(loraRequest);
 		if (result.getStatus().equals(ResponseStatus.RECEIVING)) {
 			LOG.info("lora-at is already receiving. stopping previous and starting again");
