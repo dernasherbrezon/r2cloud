@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortInvalidPortException;
 
 import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.util.Util;
@@ -134,7 +135,13 @@ public class LoraAtClient {
 	}
 
 	private List<String> sendRequest(String request) throws LoraAtException {
-		SerialPort port = SerialPort.getCommPort(portDescriptor);
+		SerialPort port;
+		try {
+			port = SerialPort.getCommPort(portDescriptor);
+		} catch (SerialPortInvalidPortException e) {
+			throw new LoraAtException("unable to send request: " + e.getMessage());
+		}
+
 		// this is important
 		port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, timeout, timeout);
 		// some defaults
