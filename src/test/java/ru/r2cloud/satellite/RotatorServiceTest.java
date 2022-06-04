@@ -2,7 +2,6 @@ package ru.r2cloud.satellite;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,6 +10,7 @@ import java.net.BindException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -55,14 +55,16 @@ public class RotatorServiceTest {
 	private int serverPort;
 	private CollectingRequestHandler requestHandler;
 
-	@Test(expected = RuntimeException.class)
-	public void testRotctrldUnavailableDuringThePass() {
-		serverMock.setHandler(new SequentialRequestHandler(new SimpleRequestHandler("test\n"), new SimpleRequestHandler("RPRT 1\n")));
+	@Test
+	public void testRotctrldDuringPeriodOfUnavailability() {
+		SequentialRequestHandler handler = new SequentialRequestHandler(new SimpleRequestHandler("test\n"), new SimpleRequestHandler("RPRT 0\n"), new SimpleRequestHandler("RPRT 1\n"), new SimpleRequestHandler("test\n"), new SimpleRequestHandler("RPRT 0\n"));
+		serverMock.setHandler(handler);
 		DefaultClock clock = new DefaultClock();
 		ObservationRequest req = createRequest();
-		service = new RotatorService(createValidConfig(), predict, new ScheduleFixedTimesTheadPoolFactory(1), new SteppingClock(req.getStartTimeMillis(), 1000));
+		service = new RotatorService(createValidConfig(), predict, new ScheduleFixedTimesTheadPoolFactory(3), new SteppingClock(req.getStartTimeMillis(), 70000));
 		service.start();
 		service.schedule(req, clock.millis());
+		assertRequests(handler.getRequests(), "\\get_info", "\\set_pos 13.012740887809334 4.795259842441547", "\\set_pos 13.088623261159723 10.736921202289226", "\\get_info", "\\set_pos 13.02476416487044 18.929574822190133");
 	}
 
 	@Test(expected = RuntimeException.class)
@@ -75,13 +77,13 @@ public class RotatorServiceTest {
 	}
 
 	@Test
-	public void testServiceDisabledIfRotctrldIsUnavailable() {
+	public void testScheduleRotationEvenIfRotatorNotYetEnabled() {
 		DefaultClock clock = new DefaultClock();
 		RotatorConfiguration rotatorConfiguration = createValidConfig();
 		rotatorConfiguration.setPort(rotatorConfiguration.getPort() + 1);
 		service = new RotatorService(rotatorConfiguration, predict, new ThreadPoolFactoryImpl(10000), clock);
 		service.start();
-		assertNull(service.schedule(createRequest(), clock.millis()));
+		assertNotNull(service.schedule(createRequest(), clock.millis()));
 	}
 
 	@Test
@@ -184,4 +186,10 @@ public class RotatorServiceTest {
 		serverMock.setHandler(requestHandler);
 	}
 
+	private static void assertRequests(List<String> actual, String... expected) {
+		assertEquals(expected.length, actual.size());
+		for (int i = 0; i < expected.length; i++) {
+			assertEquals(expected[i], actual.get(i));
+		}
+	}
 }

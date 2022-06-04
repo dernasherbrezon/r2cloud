@@ -46,18 +46,7 @@ public class RotatorService implements Lifecycle {
 	public synchronized void start() {
 		LOG.info("[{}] starting rotator on: {}:{}", config.getId(), config.getHostname(), config.getPort());
 		status.setHostport(config.getHostname() + ":" + config.getPort());
-		try {
-			rotClient = new RotctrldClient(config.getHostname(), config.getPort(), config.getTimeout());
-			rotClient.start();
-			status.setStatus(DeviceConnectionStatus.CONNECTED);
-			status.setModel(rotClient.getModelName());
-			LOG.info("[{}] initialized for model: {}", config.getId(), status.getModel());
-		} catch (Exception e) {
-			status.setStatus(DeviceConnectionStatus.FAILED);
-			status.setFailureMessage(e.getMessage());
-			Util.logIOException(LOG, "unable to connect to rotctrld", e);
-			return;
-		}
+		ensureClientConnected();
 		executor = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("rotator"));
 	}
 
@@ -101,14 +90,17 @@ public class RotatorService implements Lifecycle {
 					LOG.info("[{}] moving rotator to {}", req.getId(), currentPosition);
 				}
 
-				try {
-					rotClient.setPosition(currentPosition);
-				} catch (Exception e) {
-					LOG.error("unable to set rotator position: {}. cancelling rotation", currentPosition, e);
-					throw new RuntimeException(e);
+				ensureClientConnected();
+				if (RotatorService.this.rotClient != null) {
+					try {
+						RotatorService.this.rotClient.setPosition(currentPosition);
+						previousPosition = currentPosition;
+					} catch (Exception e) {
+						LOG.error("unable to set rotator position: {}", currentPosition, e);
+						RotatorService.this.rotClient.stop();
+						RotatorService.this.rotClient = null;
+					}
 				}
-
-				previousPosition = currentPosition;
 			}
 		}, req.getStartTimeMillis() - current, config.getCycleMillis(), TimeUnit.MILLISECONDS);
 		return result;
@@ -116,6 +108,26 @@ public class RotatorService implements Lifecycle {
 
 	public RotatorStatus getStatus() {
 		return status;
+	}
+
+	private synchronized void ensureClientConnected() {
+		if (this.rotClient != null) {
+			return;
+		}
+		RotctrldClient result = new RotctrldClient(config.getHostname(), config.getPort(), config.getTimeout());
+		try {
+			result.start();
+			status.setStatus(DeviceConnectionStatus.CONNECTED);
+			status.setModel(result.getModelName());
+			LOG.info("[{}] initialized for model: {}", config.getId(), status.getModel());
+			this.rotClient = result;
+			return;
+		} catch (Exception e) {
+			status.setStatus(DeviceConnectionStatus.FAILED);
+			status.setFailureMessage(e.getMessage());
+			Util.logIOException(LOG, "unable to connect to rotctrld", e);
+			return;
+		}
 	}
 
 }
