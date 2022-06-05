@@ -64,7 +64,13 @@ public class RotatorServiceTest {
 		service = new RotatorService(createValidConfig(), predict, new ScheduleFixedTimesTheadPoolFactory(3), new SteppingClock(req.getStartTimeMillis(), 70000));
 		service.start();
 		service.schedule(req, clock.millis());
-		assertRequests(handler.getRequests(), "\\get_info", "\\set_pos 13.012740887809334 4.795259842441547", "\\set_pos 13.088623261159723 10.736921202289226", "\\get_info", "\\set_pos 13.02476416487044 18.929574822190133");
+		int i = 0;
+		List<String> requests = handler.getRequests();
+		assertEquals("\\get_info", requests.get(i++));
+		assertPosition("\\set_pos 13.012740887809334 4.795259842441547", requests.get(i++));
+		assertPosition("\\set_pos 13.088623261159723 10.736921202289226", requests.get(i++));
+		assertEquals("\\get_info", requests.get(i++));
+		assertPosition("\\set_pos 13.02476416487044 18.929574822190133", requests.get(i++));
 	}
 
 	@Test(expected = RuntimeException.class)
@@ -186,10 +192,4 @@ public class RotatorServiceTest {
 		serverMock.setHandler(requestHandler);
 	}
 
-	private static void assertRequests(List<String> actual, String... expected) {
-		assertEquals(expected.length, actual.size());
-		for (int i = 0; i < expected.length; i++) {
-			assertEquals(expected[i], actual.get(i));
-		}
-	}
 }
