@@ -26,6 +26,7 @@ import ru.r2cloud.model.DemodulatorType;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
+import ru.r2cloud.sdrmodem.SdrModemClient;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -95,7 +96,11 @@ public abstract class TelemetryDecoder implements Decoder {
 			for (Integer cur : transmitter.getBaudRates()) {
 				ByteInput demodulator = createDemodulator(new DopplerCorrectedSource(predict, rawIq, req, transmitter), transmitter, cur);
 				result.add(createBeaconSource(demodulator, req));
-			}			
+			}
+			break;
+		case SDRMODEM:
+			ByteInput demodulator = new SdrModemClient(config, rawIq, req, transmitter);
+			result.add(createBeaconSource(demodulator, req));
 			break;
 		default:
 			LOG.error("unknown demodulator type: " + type);
