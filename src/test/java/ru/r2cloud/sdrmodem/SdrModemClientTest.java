@@ -101,6 +101,9 @@ public class SdrModemClientTest {
 		if (client != null) {
 			client.close();
 		}
+		if (modem != null) {
+			modem.stop();
+		}
 	}
 
 	private void startMockServer() throws IOException {
