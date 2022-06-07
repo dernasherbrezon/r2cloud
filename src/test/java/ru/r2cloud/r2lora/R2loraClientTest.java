@@ -19,6 +19,13 @@ import com.sun.net.httpserver.HttpServer;
 import ru.r2cloud.JsonHttpResponse;
 import ru.r2cloud.MultiHttpResponse;
 import ru.r2cloud.TestUtil;
+import ru.r2cloud.lora.LoraFrame;
+import ru.r2cloud.lora.LoraObservationRequest;
+import ru.r2cloud.lora.LoraResponse;
+import ru.r2cloud.lora.LoraStatus;
+import ru.r2cloud.lora.ModulationConfig;
+import ru.r2cloud.lora.ResponseStatus;
+import ru.r2cloud.lora.r2lora.R2loraClient;
 
 public class R2loraClientTest {
 
@@ -30,9 +37,8 @@ public class R2loraClientTest {
 	@Test
 	public void testStatus() {
 		setupContext("/status", new JsonHttpResponse("r2loratest/status.json", 200));
-		R2loraStatus status = client.getStatus();
+		LoraStatus status = client.getStatus();
 		assertEquals("IDLE", status.getStatus());
-		assertEquals(10, status.getChipTemperature());
 		assertEquals(1, status.getConfigs().size());
 		ModulationConfig loraConfig = status.getConfigs().get(0);
 		assertEquals("lora", loraConfig.getName());
@@ -43,9 +49,9 @@ public class R2loraClientTest {
 	@Test
 	public void testAuthFailure() {
 		setupContext("/status", new JsonHttpResponse("r2loratest/authfailure.json", 401));
-		R2loraStatus status = client.getStatus();
+		LoraStatus status = client.getStatus();
 		assertEquals("CONNECTION_FAILURE", status.getStatus());
-		R2loraResponse response = client.startObservation(createRequest());
+		LoraResponse response = client.startObservation(createRequest());
 		assertEquals(ResponseStatus.FAILURE, response.getStatus());
 		response = client.stopObservation();
 		assertEquals(ResponseStatus.FAILURE, response.getStatus());
@@ -56,13 +62,13 @@ public class R2loraClientTest {
 		JsonHttpResponse handler = new JsonHttpResponse("r2loratest/success.json", 200);
 		setupContext("/lora/rx/start", handler);
 		setupContext("/rx/stop", new JsonHttpResponse("r2loratest/successStop.json", 200));
-		R2loraResponse response = client.startObservation(createRequest());
+		LoraResponse response = client.startObservation(createRequest());
 		assertEquals(ResponseStatus.SUCCESS, response.getStatus());
 		TestUtil.assertJson("r2loratest/request.json", Json.parse(handler.getRequest()).asObject());
 		response = client.stopObservation();
 		assertEquals(ResponseStatus.SUCCESS, response.getStatus());
 		assertEquals(1, response.getFrames().size());
-		R2loraFrame r2loraFrame = response.getFrames().get(0);
+		LoraFrame r2loraFrame = response.getFrames().get(0);
 		assertArrayEquals(new byte[] { (byte) 0xca, (byte) 0xfe }, r2loraFrame.getData());
 		assertEquals(-121.75, r2loraFrame.getRssi(), 0.00001f);
 		assertEquals(-5.75, r2loraFrame.getSnr(), 0.00001f);
@@ -73,7 +79,7 @@ public class R2loraClientTest {
 	@Test
 	public void testFailToStart() {
 		setupContext("/lora/rx/start", new JsonHttpResponse("r2loratest/failure.json", 200));
-		R2loraResponse response = client.startObservation(createRequest());
+		LoraResponse response = client.startObservation(createRequest());
 		assertEquals(ResponseStatus.FAILURE, response.getStatus());
 		assertEquals("just a failure", response.getFailureMessage());
 	}
@@ -82,7 +88,7 @@ public class R2loraClientTest {
 	public void testStartEvenR2loraIsReceiving() {
 		setupContext("/lora/rx/start", new MultiHttpResponse(new JsonHttpResponse("r2loratest/receiving.json", 200), new JsonHttpResponse("r2loratest/success.json", 200)));
 		setupContext("/rx/stop", new JsonHttpResponse("r2loratest/successStop.json", 200));
-		R2loraResponse response = client.startObservation(createRequest());
+		LoraResponse response = client.startObservation(createRequest());
 		assertEquals(ResponseStatus.SUCCESS, response.getStatus());
 	}
 
@@ -111,8 +117,8 @@ public class R2loraClientTest {
 		}
 	}
 
-	private static R2loraObservationRequest createRequest() {
-		R2loraObservationRequest req = new R2loraObservationRequest();
+	private static LoraObservationRequest createRequest() {
+		LoraObservationRequest req = new LoraObservationRequest();
 		req.setBw(500.0f);
 		req.setCr(7);
 		req.setFrequency(433.125f);

@@ -20,15 +20,13 @@ import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.device.LoraAtDevice;
 import ru.r2cloud.device.LoraDevice;
 import ru.r2cloud.device.SdrDevice;
-import ru.r2cloud.loraat.LoraAtClient;
-import ru.r2cloud.loraat.LoraAtStatus;
+import ru.r2cloud.lora.LoraStatus;
+import ru.r2cloud.lora.loraat.LoraAtClient;
+import ru.r2cloud.lora.r2lora.R2loraClient;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.SdrType;
 import ru.r2cloud.predict.PredictOreKit;
-import ru.r2cloud.r2lora.ModulationConfig;
-import ru.r2cloud.r2lora.R2loraClient;
-import ru.r2cloud.r2lora.R2loraStatus;
 import ru.r2cloud.satellite.LoraTransmitterFilter;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.ObservationFactory;
@@ -274,25 +272,11 @@ public class R2Cloud {
 		}
 	}
 
-	private static void populateFrequencies(R2loraStatus status, DeviceConfiguration config) {
+	private static void populateFrequencies(LoraStatus status, DeviceConfiguration config) {
 		if (status.getConfigs() == null) {
 			return;
 		}
-		for (ModulationConfig cur : status.getConfigs()) {
-			if (!cur.getName().equalsIgnoreCase("lora")) {
-				continue;
-			}
-			config.setMinimumFrequency((long) (cur.getMinFrequency() * 1_000_000));
-			config.setMaximumFrequency((long) (cur.getMaxFrequency() * 1_000_000));
-			return;
-		}
-	}
-
-	private static void populateFrequencies(LoraAtStatus status, DeviceConfiguration config) {
-		if (status.getConfigs() == null) {
-			return;
-		}
-		for (ru.r2cloud.loraat.ModulationConfig cur : status.getConfigs()) {
+		for (ru.r2cloud.lora.ModulationConfig cur : status.getConfigs()) {
 			if (!cur.getName().equalsIgnoreCase("lora")) {
 				continue;
 			}

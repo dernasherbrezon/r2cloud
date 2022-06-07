@@ -12,14 +12,14 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.jradio.BeaconOutputStream;
 import ru.r2cloud.jradio.RawBeacon;
 import ru.r2cloud.jradio.RxMetadata;
+import ru.r2cloud.lora.LoraFrame;
+import ru.r2cloud.lora.LoraObservationRequest;
+import ru.r2cloud.lora.LoraResponse;
+import ru.r2cloud.lora.ResponseStatus;
+import ru.r2cloud.lora.r2lora.R2loraClient;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
-import ru.r2cloud.r2lora.R2loraClient;
-import ru.r2cloud.r2lora.R2loraFrame;
-import ru.r2cloud.r2lora.R2loraObservationRequest;
-import ru.r2cloud.r2lora.R2loraResponse;
-import ru.r2cloud.r2lora.ResponseStatus;
 import ru.r2cloud.util.Configuration;
 
 public class R2loraReader implements IQReader {
@@ -41,7 +41,7 @@ public class R2loraReader implements IQReader {
 
 	@Override
 	public IQData start() throws InterruptedException {
-		R2loraObservationRequest loraRequest = new R2loraObservationRequest();
+		LoraObservationRequest loraRequest = new LoraObservationRequest();
 		loraRequest.setBw((float) transmitter.getLoraBandwidth() / 1000);
 		loraRequest.setCr(transmitter.getLoraCodingRate());
 		loraRequest.setFrequency((float) req.getActualFrequency() / 1_000_000);
@@ -51,7 +51,7 @@ public class R2loraReader implements IQReader {
 		loraRequest.setSf(transmitter.getLoraSpreadFactor());
 		loraRequest.setSyncword(transmitter.getLoraSyncword());
 		LOG.info("[{}] starting lora observation for {} on {}Mhz", req.getId(), transmitter, loraRequest.getFrequency());
-		R2loraResponse response = client.startObservation(loraRequest);
+		LoraResponse response = client.startObservation(loraRequest);
 		if (!response.getStatus().equals(ResponseStatus.SUCCESS)) {
 			LOG.error("[{}] unable to start lora observation: {}", req.getId(), response.getFailureMessage());
 			return null;
@@ -68,7 +68,7 @@ public class R2loraReader implements IQReader {
 		// raw file is the same as binary file
 		// decoder just have to rename it
 		try (BeaconOutputStream bos = new BeaconOutputStream(new BufferedOutputStream(new FileOutputStream(rawFile)))) {
-			for (R2loraFrame cur : response.getFrames()) {
+			for (LoraFrame cur : response.getFrames()) {
 				bos.write(convert(cur));
 			}
 		} catch (IOException e) {
@@ -82,7 +82,7 @@ public class R2loraReader implements IQReader {
 		return result;
 	}
 
-	private static RawBeacon convert(R2loraFrame frame) {
+	private static RawBeacon convert(LoraFrame frame) {
 		RawBeacon result = new RawBeacon();
 		result.setBeginMillis(frame.getTimestamp() * 1000);
 		result.setRawData(frame.getData());

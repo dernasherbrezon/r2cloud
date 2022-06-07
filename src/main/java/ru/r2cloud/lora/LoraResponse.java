@@ -1,19 +1,19 @@
-package ru.r2cloud.loraat;
+package ru.r2cloud.lora;
 
 import java.util.Collections;
 import java.util.List;
 
-public class LoraAtResponse {
+public class LoraResponse {
 
 	private ResponseStatus status;
 	private String failureMessage;
-	private List<LoraAtFrame> frames = Collections.emptyList();
+	private List<LoraFrame> frames = Collections.emptyList();
 
-	public LoraAtResponse() {
+	public LoraResponse() {
 		// do nothing
 	}
 
-	public LoraAtResponse(String failureMessage) {
+	public LoraResponse(String failureMessage) {
 		status = ResponseStatus.FAILURE;
 		this.failureMessage = failureMessage;
 	}
@@ -34,11 +34,11 @@ public class LoraAtResponse {
 		this.failureMessage = failureMessage;
 	}
 
-	public List<LoraAtFrame> getFrames() {
+	public List<LoraFrame> getFrames() {
 		return frames;
 	}
 
-	public void setFrames(List<LoraAtFrame> frames) {
+	public void setFrames(List<LoraFrame> frames) {
 		this.frames = frames;
 	}
 

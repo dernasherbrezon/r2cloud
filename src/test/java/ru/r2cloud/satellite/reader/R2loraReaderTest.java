@@ -22,11 +22,11 @@ import com.sun.net.httpserver.HttpServer;
 import ru.r2cloud.JsonHttpResponse;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
+import ru.r2cloud.lora.r2lora.R2loraClient;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
-import ru.r2cloud.r2lora.R2loraClient;
 import ru.r2cloud.util.Configuration;
 
 public class R2loraReaderTest {

@@ -1,6 +1,6 @@
-package ru.r2cloud.r2lora;
+package ru.r2cloud.lora;
 
-public class R2loraFrame {
+public class LoraFrame {
 
 	private byte[] data;
 	private float rssi;

@@ -1,20 +1,20 @@
-package ru.r2cloud.loraat;
+package ru.r2cloud.lora;
 
 import java.util.List;
 
 import ru.r2cloud.model.DeviceConnectionStatus;
 
-public class LoraAtStatus {
+public class LoraStatus {
 
 	private DeviceConnectionStatus deviceStatus;
 	private String status;
 	private List<ModulationConfig> configs;
 
-	public LoraAtStatus() {
+	public LoraStatus() {
 		// do nothing
 	}
 
-	public LoraAtStatus(DeviceConnectionStatus deviceStatus, String status) {
+	public LoraStatus(DeviceConnectionStatus deviceStatus, String status) {
 		this.status = status;
 		this.deviceStatus = deviceStatus;
 	}

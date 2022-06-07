@@ -1,5 +1,7 @@
 package ru.r2cloud.device;
 
+import ru.r2cloud.lora.LoraStatus;
+import ru.r2cloud.lora.r2lora.R2loraClient;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.model.DeviceStatus;
@@ -7,8 +9,6 @@ import ru.r2cloud.model.DeviceType;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
-import ru.r2cloud.r2lora.R2loraClient;
-import ru.r2cloud.r2lora.R2loraStatus;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.TransmitterFilter;
@@ -40,7 +40,7 @@ public class LoraDevice extends Device {
 	public DeviceStatus getStatus() {
 		DeviceStatus result = super.getStatus();
 		result.setType(DeviceType.LORA);
-		R2loraStatus loraStatus = client.getStatus();
+		LoraStatus loraStatus = client.getStatus();
 		result.setStatus(loraStatus.getDeviceStatus());
 		if (loraStatus.getDeviceStatus().equals(DeviceConnectionStatus.FAILED)) {
 			result.setFailureMessage(loraStatus.getStatus());

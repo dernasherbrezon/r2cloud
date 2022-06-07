@@ -1,4 +1,4 @@
-package ru.r2cloud.loraat;
+package ru.r2cloud.lora.loraat;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,6 +16,12 @@ import org.slf4j.LoggerFactory;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortInvalidPortException;
 
+import ru.r2cloud.lora.LoraObservationRequest;
+import ru.r2cloud.lora.LoraResponse;
+import ru.r2cloud.lora.LoraStatus;
+import ru.r2cloud.lora.LoraFrame;
+import ru.r2cloud.lora.ModulationConfig;
+import ru.r2cloud.lora.ResponseStatus;
 import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.util.Util;
 
@@ -32,8 +38,8 @@ public class LoraAtClient {
 		this.timeout = timeout;
 	}
 
-	public LoraAtStatus getStatus() {
-		LoraAtStatus result = new LoraAtStatus();
+	public LoraStatus getStatus() {
+		LoraStatus result = new LoraStatus();
 		List<String> response;
 		try {
 			response = sendRequest("AT+CHIP?\r\n");
@@ -66,19 +72,19 @@ public class LoraAtClient {
 		return result;
 	}
 
-	public LoraAtResponse startObservation(LoraAtObservationRequest loraRequest) {
+	public LoraResponse startObservation(LoraObservationRequest loraRequest) {
 		// make sure lora internal clock is OK
 		try {
 			sendRequest("AT+TIME=" + (System.currentTimeMillis() / 1000));
 		} catch (LoraAtException e) {
-			return new LoraAtResponse(e.getMessage());
+			return new LoraResponse(e.getMessage());
 		}
-		LoraAtResponse result = startObservationImpl(loraRequest);
+		LoraResponse result = startObservationImpl(loraRequest);
 		if (result.getStatus().equals(ResponseStatus.RECEIVING)) {
 			LOG.info("lora-at is already receiving. stopping previous and starting again");
-			LoraAtResponse response = stopObservation();
+			LoraResponse response = stopObservation();
 			if (response.getFrames() != null && response.getFrames().size() > 0) {
-				for (LoraAtFrame cur : response.getFrames()) {
+				for (LoraFrame cur : response.getFrames()) {
 					LOG.info("previous unknown observation got some data. Logging it here for manual recovery: {}", Arrays.toString(cur.getData()));
 				}
 			}
@@ -87,8 +93,8 @@ public class LoraAtClient {
 		return result;
 	}
 
-	private LoraAtResponse startObservationImpl(LoraAtObservationRequest loraRequest) {
-		LoraAtResponse result = new LoraAtResponse();
+	private LoraResponse startObservationImpl(LoraObservationRequest loraRequest) {
+		LoraResponse result = new LoraResponse();
 		String request = "AT+LORARX=" + loraRequest.getFrequency() + "," + loraRequest.getBw() + "," + loraRequest.getSf() + "," + loraRequest.getCr() + "," + loraRequest.getSyncword() + ",10," + loraRequest.getPreambleLength() + "," + loraRequest.getGain() + "," + loraRequest.getLdro() + "\r\n";
 		try {
 			sendRequest(request);
@@ -98,30 +104,30 @@ public class LoraAtClient {
 				result.setStatus(ResponseStatus.RECEIVING);
 				return result;
 			}
-			return new LoraAtResponse(e.getMessage());
+			return new LoraResponse(e.getMessage());
 		}
 		result.setStatus(ResponseStatus.SUCCESS);
 		return result;
 	}
 
-	public LoraAtResponse stopObservation() {
+	public LoraResponse stopObservation() {
 		List<String> response;
 		try {
 			response = sendRequest("AT+STOPRX\r\n");
 		} catch (LoraAtException e) {
-			return new LoraAtResponse(e.getMessage());
+			return new LoraResponse(e.getMessage());
 		}
-		LoraAtResponse result = new LoraAtResponse();
+		LoraResponse result = new LoraResponse();
 		result.setStatus(ResponseStatus.SUCCESS);
 		if (!response.isEmpty()) {
-			List<LoraAtFrame> frames = new ArrayList<>(response.size());
+			List<LoraFrame> frames = new ArrayList<>(response.size());
 			for (String cur : response) {
 				String[] parts = COMMA.split(cur);
 				if (parts.length != 5) {
 					LOG.error("malformed response from lora: {}", cur);
 					continue;
 				}
-				LoraAtFrame curFrame = new LoraAtFrame();
+				LoraFrame curFrame = new LoraFrame();
 				curFrame.setData(Util.hexStringToByteArray(parts[0]));
 				curFrame.setRssi(Float.parseFloat(parts[1]));
 				curFrame.setSnr(Float.parseFloat(parts[2]));

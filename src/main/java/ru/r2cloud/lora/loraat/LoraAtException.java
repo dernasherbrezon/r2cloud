@@ -1,4 +1,4 @@
-package ru.r2cloud.loraat;
+package ru.r2cloud.lora.loraat;
 
 public class LoraAtException extends Exception {
 

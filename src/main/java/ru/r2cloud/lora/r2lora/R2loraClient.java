@@ -1,4 +1,4 @@
-package ru.r2cloud.r2lora;
+package ru.r2cloud.lora.r2lora;
 
 import java.io.IOException;
 import java.net.URI;
@@ -28,6 +28,12 @@ import com.eclipsesource.json.ParseException;
 
 import ru.r2cloud.R2Cloud;
 import ru.r2cloud.cloud.LeoSatDataClient;
+import ru.r2cloud.lora.LoraFrame;
+import ru.r2cloud.lora.LoraObservationRequest;
+import ru.r2cloud.lora.LoraResponse;
+import ru.r2cloud.lora.LoraStatus;
+import ru.r2cloud.lora.ModulationConfig;
+import ru.r2cloud.lora.ResponseStatus;
 import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.util.Util;
 
@@ -49,7 +55,7 @@ public class R2loraClient {
 		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMillis(timeout)).build();
 	}
 
-	public R2loraStatus getStatus() {
+	public LoraStatus getStatus() {
 		HttpRequest request = createRequest("/status").GET().build();
 		try {
 			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
@@ -57,25 +63,25 @@ public class R2loraClient {
 				if (LOG.isErrorEnabled()) {
 					LOG.error("unable to get r2lora status. response code: {}. response: {}", response.statusCode(), response.body());
 				}
-				return new R2loraStatus(DeviceConnectionStatus.FAILED, CONNECTION_FAILURE);
+				return new LoraStatus(DeviceConnectionStatus.FAILED, CONNECTION_FAILURE);
 			}
 			return readStatus(response.body());
 		} catch (IOException e) {
 			Util.logIOException(LOG, "unable to get r2lora status from: " + hostname, e);
-			return new R2loraStatus(DeviceConnectionStatus.FAILED, CONNECTION_FAILURE);
+			return new LoraStatus(DeviceConnectionStatus.FAILED, CONNECTION_FAILURE);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new IllegalStateException(e);
 		}
 	}
 
-	public R2loraResponse startObservation(R2loraObservationRequest req) {
-		R2loraResponse result = startObservationInternal(req);
+	public LoraResponse startObservation(LoraObservationRequest req) {
+		LoraResponse result = startObservationInternal(req);
 		if (result.getStatus().equals(ResponseStatus.RECEIVING)) {
 			LOG.info("r2lora is already receiving. stopping previous and starting again");
-			R2loraResponse response = stopObservation();
+			LoraResponse response = stopObservation();
 			if (response.getFrames() != null && response.getFrames().size() > 0) {
-				for (R2loraFrame cur : response.getFrames()) {
+				for (LoraFrame cur : response.getFrames()) {
 					LOG.info("previous unknown observation got some data. Logging it here for manual recovery: {}", Arrays.toString(cur.getData()));
 				}
 			}
@@ -84,7 +90,7 @@ public class R2loraClient {
 		return result;
 	}
 
-	private R2loraResponse startObservationInternal(R2loraObservationRequest req) {
+	private LoraResponse startObservationInternal(LoraObservationRequest req) {
 		HttpRequest request = createRequest("/lora/rx/start").header("Content-Type", "application/json").POST(BodyPublishers.ofString(toJson(req))).build();
 		try {
 			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
@@ -92,19 +98,19 @@ public class R2loraClient {
 				if (LOG.isErrorEnabled()) {
 					LOG.error("unable to start observation. response code: {}. response: {}", response.statusCode(), response.body());
 				}
-				return new R2loraResponse(CONNECTION_FAILURE);
+				return new LoraResponse(CONNECTION_FAILURE);
 			}
 			return readResponse(response.body());
 		} catch (IOException e) {
 			Util.logIOException(LOG, "unable to start observation", e);
-			return new R2loraResponse(CONNECTION_FAILURE);
+			return new LoraResponse(CONNECTION_FAILURE);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new IllegalStateException(e);
 		}
 	}
 
-	public R2loraResponse stopObservation() {
+	public LoraResponse stopObservation() {
 		HttpRequest request;
 		request = createRequest("/rx/stop").POST(BodyPublishers.noBody()).build();
 		try {
@@ -113,32 +119,32 @@ public class R2loraClient {
 				if (LOG.isErrorEnabled()) {
 					LOG.error("unable to stop observation. response code: {}. response: {}", response.statusCode(), response.body());
 				}
-				return new R2loraResponse(CONNECTION_FAILURE);
+				return new LoraResponse(CONNECTION_FAILURE);
 			}
 			return readResponse(response.body());
 		} catch (IOException e) {
 			Util.logIOException(LOG, "unable to stop observation", e);
-			return new R2loraResponse(CONNECTION_FAILURE);
+			return new LoraResponse(CONNECTION_FAILURE);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new IllegalStateException(e);
 		}
 	}
 
-	private static R2loraResponse readResponse(String con) {
+	private static LoraResponse readResponse(String con) {
 		JsonValue json;
 		try {
 			json = Json.parse(con);
 		} catch (ParseException e) {
 			LOG.info(MALFORMED_JSON);
-			return new R2loraResponse(MALFORMED_JSON);
+			return new LoraResponse(MALFORMED_JSON);
 		}
 		if (!json.isObject()) {
 			LOG.info(MALFORMED_JSON);
-			return new R2loraResponse(MALFORMED_JSON);
+			return new LoraResponse(MALFORMED_JSON);
 		}
 		JsonObject obj = json.asObject();
-		R2loraResponse result = new R2loraResponse();
+		LoraResponse result = new LoraResponse();
 		try {
 			result.setStatus(ResponseStatus.valueOf(obj.getString("status", "FAILURE")));
 		} catch (Exception e) {
@@ -151,9 +157,9 @@ public class R2loraClient {
 		JsonValue frames = obj.get("frames");
 		if (frames != null && frames.isArray()) {
 			JsonArray framesArray = frames.asArray();
-			List<R2loraFrame> loraFrames = new ArrayList<>(framesArray.size());
+			List<LoraFrame> loraFrames = new ArrayList<>(framesArray.size());
 			for (int i = 0; i < framesArray.size(); i++) {
-				R2loraFrame cur = readFrame(framesArray.get(i));
+				LoraFrame cur = readFrame(framesArray.get(i));
 				if (cur == null) {
 					continue;
 				}
@@ -164,12 +170,12 @@ public class R2loraClient {
 		return result;
 	}
 
-	private static R2loraFrame readFrame(JsonValue val) {
+	private static LoraFrame readFrame(JsonValue val) {
 		if (!val.isObject()) {
 			return null;
 		}
 		JsonObject obj = val.asObject();
-		R2loraFrame result = new R2loraFrame();
+		LoraFrame result = new LoraFrame();
 		result.setData(Util.hexStringToByteArray(obj.getString("data", null)));
 		result.setFrequencyError(obj.getFloat("frequencyError", 0));
 		result.setRssi(obj.getFloat("rssi", 0));
@@ -178,22 +184,21 @@ public class R2loraClient {
 		return result;
 	}
 
-	private static R2loraStatus readStatus(String con) {
+	private static LoraStatus readStatus(String con) {
 		JsonValue json;
 		try {
 			json = Json.parse(con);
 		} catch (ParseException e) {
 			LOG.info(MALFORMED_JSON);
-			return new R2loraStatus(DeviceConnectionStatus.FAILED, MALFORMED_JSON);
+			return new LoraStatus(DeviceConnectionStatus.FAILED, MALFORMED_JSON);
 		}
 		if (!json.isObject()) {
 			LOG.info(MALFORMED_JSON);
-			return new R2loraStatus(DeviceConnectionStatus.FAILED, MALFORMED_JSON);
+			return new LoraStatus(DeviceConnectionStatus.FAILED, MALFORMED_JSON);
 		}
 		JsonObject obj = json.asObject();
-		R2loraStatus result = new R2loraStatus();
+		LoraStatus result = new LoraStatus();
 		result.setStatus(obj.getString("status", null));
-		result.setChipTemperature(obj.getInt("chipTemperature", 0));
 		result.setDeviceStatus(DeviceConnectionStatus.CONNECTED);
 
 		List<ModulationConfig> configs = new ArrayList<>();
@@ -219,7 +224,7 @@ public class R2loraClient {
 		return result;
 	}
 
-	private static String toJson(R2loraObservationRequest req) {
+	private static String toJson(LoraObservationRequest req) {
 		JsonObject json = new JsonObject();
 		json.add("freq", req.getFrequency());
 		json.add("bw", req.getBw());

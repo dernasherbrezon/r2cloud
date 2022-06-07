@@ -1,4 +1,4 @@
-package ru.r2cloud.r2lora;
+package ru.r2cloud.lora;
 
 public enum ResponseStatus {
 

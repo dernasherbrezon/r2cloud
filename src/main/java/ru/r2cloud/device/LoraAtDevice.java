@@ -1,7 +1,7 @@
 package ru.r2cloud.device;
 
-import ru.r2cloud.loraat.LoraAtClient;
-import ru.r2cloud.loraat.LoraAtStatus;
+import ru.r2cloud.lora.LoraStatus;
+import ru.r2cloud.lora.loraat.LoraAtClient;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.model.DeviceStatus;
@@ -40,7 +40,7 @@ public class LoraAtDevice extends Device {
 	public DeviceStatus getStatus() {
 		DeviceStatus result = super.getStatus();
 		result.setType(DeviceType.LORA);
-		LoraAtStatus loraStatus = client.getStatus();
+		LoraStatus loraStatus = client.getStatus();
 		result.setStatus(loraStatus.getDeviceStatus());
 		if (loraStatus.getDeviceStatus().equals(DeviceConnectionStatus.FAILED)) {
 			result.setFailureMessage(loraStatus.getStatus());
