@@ -1,2 +1,3 @@
+[I] internal logging message here
 CAFE,-11.22,3.2,13.1,1605980902
 OK

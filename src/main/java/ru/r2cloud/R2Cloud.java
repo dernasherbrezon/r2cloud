@@ -148,7 +148,7 @@ public class R2Cloud {
 			deviceManager.addDevice(new LoraDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, client));
 		}
 		for (DeviceConfiguration cur : props.getLoraAtConfigurations()) {
-			LoraAtClient client = new LoraAtClient(cur.getHostport(), cur.getTimeout(), new JSerial());
+			LoraAtClient client = new LoraAtClient(cur.getHostport(), cur.getTimeout(), new JSerial(), clock);
 			populateFrequencies(client.getStatus(), cur);
 			deviceManager.addDevice(new LoraAtDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, client));
 		}

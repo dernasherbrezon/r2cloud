@@ -23,6 +23,7 @@ import ru.r2cloud.lora.LoraStatus;
 import ru.r2cloud.lora.ModulationConfig;
 import ru.r2cloud.lora.ResponseStatus;
 import ru.r2cloud.model.DeviceConnectionStatus;
+import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Util;
 
 public class LoraAtClient {
@@ -33,11 +34,13 @@ public class LoraAtClient {
 	private final String portDescriptor;
 	private final int timeout;
 	private final SerialInterface serial;
+	private final Clock clock;
 
-	public LoraAtClient(String portDescriptor, int timeout, SerialInterface serial) {
+	public LoraAtClient(String portDescriptor, int timeout, SerialInterface serial, Clock clock) {
 		this.portDescriptor = portDescriptor;
 		this.timeout = timeout;
 		this.serial = serial;
+		this.clock = clock;
 	}
 
 	public LoraStatus getStatus() {
@@ -77,7 +80,7 @@ public class LoraAtClient {
 	public LoraResponse startObservation(LoraObservationRequest loraRequest) {
 		// make sure lora internal clock is OK
 		try {
-			sendRequest("AT+TIME=" + (System.currentTimeMillis() / 1000));
+			sendRequest("AT+TIME=" + (clock.millis() / 1000) + "\r\n");
 		} catch (LoraAtException e) {
 			return new LoraResponse(e.getMessage());
 		}
@@ -90,7 +93,7 @@ public class LoraAtClient {
 					LOG.info("previous unknown observation got some data. Logging it here for manual recovery: {}", Arrays.toString(cur.getData()));
 				}
 			}
-			result = startObservation(loraRequest);
+			result = startObservationImpl(loraRequest);
 		}
 		return result;
 	}
