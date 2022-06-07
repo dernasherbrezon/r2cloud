@@ -16,10 +16,10 @@ import org.slf4j.LoggerFactory;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortInvalidPortException;
 
+import ru.r2cloud.lora.LoraFrame;
 import ru.r2cloud.lora.LoraObservationRequest;
 import ru.r2cloud.lora.LoraResponse;
 import ru.r2cloud.lora.LoraStatus;
-import ru.r2cloud.lora.LoraFrame;
 import ru.r2cloud.lora.ModulationConfig;
 import ru.r2cloud.lora.ResponseStatus;
 import ru.r2cloud.model.DeviceConnectionStatus;
@@ -32,10 +32,12 @@ public class LoraAtClient {
 
 	private final String portDescriptor;
 	private final int timeout;
+	private final SerialInterface serial;
 
-	public LoraAtClient(String portDescriptor, int timeout) {
+	public LoraAtClient(String portDescriptor, int timeout, SerialInterface serial) {
 		this.portDescriptor = portDescriptor;
 		this.timeout = timeout;
+		this.serial = serial;
 	}
 
 	public LoraStatus getStatus() {
@@ -133,7 +135,7 @@ public class LoraAtClient {
 				curFrame.setSnr(Float.parseFloat(parts[2]));
 				curFrame.setFrequencyError(Float.parseFloat(parts[3]));
 				curFrame.setTimestamp(Long.parseLong(parts[4]));
-
+				frames.add(curFrame);
 			}
 			result.setFrames(frames);
 		}
@@ -141,9 +143,9 @@ public class LoraAtClient {
 	}
 
 	private List<String> sendRequest(String request) throws LoraAtException {
-		SerialPort port;
+		SerialPortInterface port;
 		try {
-			port = SerialPort.getCommPort(portDescriptor);
+			port = serial.getCommPort(portDescriptor);
 		} catch (SerialPortInvalidPortException e) {
 			throw new LoraAtException("unable to send request: " + e.getMessage());
 		}
@@ -177,7 +179,7 @@ public class LoraAtClient {
 		}
 	}
 
-	private static List<String> readResponse(SerialPort port) throws IOException, LoraAtException {
+	private static List<String> readResponse(SerialPortInterface port) throws IOException, LoraAtException {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(port.getInputStream(), StandardCharsets.ISO_8859_1))) {
 			String curLine = null;
 			List<String> result = new ArrayList<>();

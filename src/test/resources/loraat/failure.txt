@@ -1,0 +1,2 @@
+controlled failure
+ERROR

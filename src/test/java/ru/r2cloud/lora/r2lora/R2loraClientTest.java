@@ -1,4 +1,4 @@
-package ru.r2cloud.r2lora;
+package ru.r2cloud.lora.r2lora;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -25,7 +25,6 @@ import ru.r2cloud.lora.LoraResponse;
 import ru.r2cloud.lora.LoraStatus;
 import ru.r2cloud.lora.ModulationConfig;
 import ru.r2cloud.lora.ResponseStatus;
-import ru.r2cloud.lora.r2lora.R2loraClient;
 
 public class R2loraClientTest {
 
