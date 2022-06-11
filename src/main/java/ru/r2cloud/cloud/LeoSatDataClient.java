@@ -49,11 +49,13 @@ public class LeoSatDataClient {
 	private HttpClient httpclient;
 	private final String hostname;
 	private final Configuration config;
+	private final Duration timeout;
 
 	public LeoSatDataClient(Configuration config) {
 		this.config = config;
 		this.hostname = config.getProperty("leosatdata.hostname");
-		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMillis(config.getInteger("leosatdata.connectionTimeout"))).build();
+		this.timeout = Duration.ofMillis(config.getInteger("leosatdata.connectionTimeout"));
+		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(timeout).build();
 	}
 
 	public Long saveMeta(Observation observation) {
@@ -319,7 +321,7 @@ public class LeoSatDataClient {
 
 	private HttpRequest.Builder createRequest(String path) {
 		Builder result = HttpRequest.newBuilder().uri(URI.create(hostname + path));
-		result.timeout(Duration.ofMinutes(1L));
+		result.timeout(timeout);
 		result.header("User-Agent", R2Cloud.getVersion() + " info@r2cloud.ru");
 		result.header("Authorization", config.getProperty("r2cloud.apiKey"));
 		return result;
