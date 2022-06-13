@@ -26,3 +26,4 @@ hs_err_pid*
 /keyword.txt
 /data/
 .DS_Store
+/.idea/

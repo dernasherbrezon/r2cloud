@@ -1,9 +1,20 @@
 package ru.r2cloud.cloud;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import ru.r2cloud.JsonHttpResponse;
+import ru.r2cloud.LeoSatDataServerMock;
+import ru.r2cloud.TestConfiguration;
+import ru.r2cloud.MultiHttpResponse;
+import ru.r2cloud.TestUtil;
+import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SdrType;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -11,22 +22,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
-
-import ru.r2cloud.JsonHttpResponse;
-import ru.r2cloud.LeoSatDataServerMock;
-import ru.r2cloud.TestConfiguration;
-import ru.r2cloud.TestUtil;
-import ru.r2cloud.model.Observation;
-import ru.r2cloud.model.Satellite;
-import ru.r2cloud.model.SdrType;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class LeoSatDataClientTest {
 
@@ -38,8 +37,9 @@ public class LeoSatDataClientTest {
 
 	@Test
 	public void testSaveMeta() {
+		JsonHttpResponse firstFailure = new JsonHttpResponse("r2cloudclienttest/auth-failure-response.json", 502);
 		JsonHttpResponse handler = new JsonHttpResponse("r2cloudclienttest/save-meta-response.json", 200);
-		server.setObservationMock(handler);
+		server.setObservationMock(new MultiHttpResponse(firstFailure, handler));
 		Long result = client.saveMeta(createRequest());
 		assertNotNull(result);
 		assertEquals(1L, result.longValue());
@@ -79,8 +79,9 @@ public class LeoSatDataClientTest {
 	@Test
 	public void testSaveBinary() throws Exception {
 		long id = 1L;
+		JsonHttpResponse firstFailure = new JsonHttpResponse("r2cloudclienttest/auth-failure-response.json", 502);
 		JsonHttpResponse handler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
-		server.setDataMock(id, handler);
+		server.setDataMock(id, new MultiHttpResponse(firstFailure, handler));
 		client.saveBinary(id, createFile());
 		handler.awaitRequest();
 		assertEquals("application/octet-stream", handler.getRequestContentType());
