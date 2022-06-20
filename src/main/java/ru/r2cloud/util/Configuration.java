@@ -255,7 +255,7 @@ public class Configuration {
 				rotatorEnabled = Boolean.valueOf(oldRotatorConfig);
 			}
 			if (rotatorEnabled) {
-				config.setRotatorConfiguration(getRotatorConfiguration(config.getId(), prefix));
+				config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			}
 			config.setSdrServerConfiguration(getSdrServerConfiguration(prefix));
 			result.add(config);
@@ -282,7 +282,7 @@ public class Configuration {
 			config.setPassword(getProperty("r2lora.device." + cur + ".password"));
 			config.setTimeout(timeout);
 			config.setId("lora-" + config.getHostport());
-			config.setRotatorConfiguration(getRotatorConfiguration(config.getId(), "r2lora.device." + cur + "."));
+			config.setRotatorConfiguration(getRotatorConfiguration("r2lora.device." + cur + "."));
 			config.setGain(gain);
 			result.add(config);
 		}
@@ -306,7 +306,7 @@ public class Configuration {
 			config.setHostport(getProperty("loraat.device." + cur + ".port"));
 			config.setTimeout(timeout);
 			config.setId("loraat-" + config.getHostport());
-			config.setRotatorConfiguration(getRotatorConfiguration(config.getId(), "loraat.device." + cur + "."));
+			config.setRotatorConfiguration(getRotatorConfiguration("loraat.device." + cur + "."));
 			config.setGain(gain);
 			result.add(config);
 		}
@@ -352,7 +352,7 @@ public class Configuration {
 		return result;
 	}
 
-	private RotatorConfiguration getRotatorConfiguration(String id, String prefix) {
+	private RotatorConfiguration getRotatorConfiguration(String prefix) {
 		String hostname = getProperty(prefix + "rotctrld.hostname");
 		if (hostname == null) {
 			return null;
@@ -386,7 +386,7 @@ public class Configuration {
 			return null;
 		}
 		RotatorConfiguration result = new RotatorConfiguration();
-		result.setId(id);
+		result.setId("rotator-" + hostname + ":" + port);
 		result.setHostname(hostname);
 		result.setPort(port);
 		result.setTimeout(timeout);

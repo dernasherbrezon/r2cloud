@@ -24,94 +24,93 @@ import ru.r2cloud.web.ModelAndView;
 
 public class PresentationMode extends AbstractHttpController {
 
-	private final SatelliteDao dao;
-	private final ObservationDao resultDao;
-	private final Configuration config;
-	private final DeviceManager deviceManager;
+    private final SatelliteDao dao;
+    private final ObservationDao resultDao;
+    private final Configuration config;
+    private final DeviceManager deviceManager;
 
-	public PresentationMode(Configuration config, SatelliteDao dao, ObservationDao resultDao, DeviceManager deviceManager) {
-		this.dao = dao;
-		this.resultDao = resultDao;
-		this.config = config;
-		this.deviceManager = deviceManager;
-	}
+    public PresentationMode(Configuration config, SatelliteDao dao, ObservationDao resultDao, DeviceManager deviceManager) {
+        this.dao = dao;
+        this.resultDao = resultDao;
+        this.config = config;
+        this.deviceManager = deviceManager;
+    }
 
-	@Override
-	public ModelAndView doGet(IHTTPSession session) {
-		boolean enabled = config.getBoolean("presentationMode");
-		ModelAndView result = new ModelAndView();
-		if (!enabled) {
-			result.setStatus(Response.Status.UNAUTHORIZED);
-			result.setData("{}");
-			return result;
-		}
-		long currentTimeMillis = System.currentTimeMillis();
-		List<Satellite> all = dao.findAll();
-		List<Observation> observations = new ArrayList<>();
-		List<ObservationRequest> requests = new ArrayList<>();
-		for (Satellite cur : all) {
-			observations.addAll(resultDao.findAllBySatelliteId(cur.getId()));
-			for (Transmitter curTransmitter : cur.getTransmitters()) {
-				ObservationRequest nextObservation = deviceManager.findFirstByTransmitterId(curTransmitter.getId(), currentTimeMillis);
-				if (nextObservation == null) {
-					continue;
-				}
-				requests.add(nextObservation);
-			}
-		}
-		Collections.sort(requests, ObservationRequestComparator.INSTANCE);
-		JsonArray jsonObservations = new JsonArray();
-		for (int i = 0; i < 5 && i < requests.size(); i++) {
-			ObservationRequest cur = requests.get(i);
-			Satellite curSatellite = dao.findById(cur.getSatelliteId());
-			JsonObject curRequest = new JsonObject();
-			curRequest.add("id", cur.getId());
-			curRequest.add("name", curSatellite.getName());
-			curRequest.add("satelliteId", cur.getSatelliteId());
-			curRequest.add("tle", cur.getTle().toJson());
-			curRequest.add("start", cur.getStartTimeMillis());
-			curRequest.add("end", cur.getEndTimeMillis());
-			curRequest.add("status", "NEW");
-			curRequest.add("numberOfDecodedPackets", 0);
-			curRequest.add("hasData", false);
-			jsonObservations.add(curRequest);
-		}
-		
-		Collections.sort(observations, ObservationFullComparator.INSTANCE);
-		for (int i = 0; i < 5 && i < observations.size(); i++) {
-			Observation cur = observations.get(i);
-			Satellite curSatellite = dao.findById(cur.getSatelliteId());
-			if (curSatellite == null || cur.getTle() == null) {
-				continue;
-			}
-			JsonObject curObservation = new JsonObject();
-			curObservation.add("id", cur.getId());
-			curObservation.add("name", curSatellite.getName());
-			curObservation.add("satelliteId", cur.getSatelliteId());
-			curObservation.add("tle", cur.getTle().toJson());
-			curObservation.add("start", cur.getStartTimeMillis());
-			curObservation.add("end", cur.getEndTimeMillis());
-			curObservation.add("status", cur.getStatus().name());
-			curObservation.add("numberOfDecodedPackets", cur.getNumberOfDecodedPackets());
-			curObservation.add("hasData", cur.hasData());
-			jsonObservations.add(curObservation);
-		}
+    @Override
+    public ModelAndView doGet(IHTTPSession session) {
+        boolean enabled = config.getBoolean("presentationMode");
+        ModelAndView result = new ModelAndView();
+        if (!enabled) {
+            result.setStatus(Response.Status.UNAUTHORIZED);
+            result.setData("{}");
+            return result;
+        }
+        List<Satellite> all = dao.findAll();
+        List<Observation> observations = new ArrayList<>();
+        List<ObservationRequest> requests = new ArrayList<>();
+        for (Satellite cur : all) {
+            observations.addAll(resultDao.findAllBySatelliteId(cur.getId()));
+            for (Transmitter curTransmitter : cur.getTransmitters()) {
+                ObservationRequest nextObservation = deviceManager.findFirstByTransmitter(curTransmitter);
+                if (nextObservation == null) {
+                    continue;
+                }
+                requests.add(nextObservation);
+            }
+        }
+        Collections.sort(requests, ObservationRequestComparator.INSTANCE);
+        JsonArray jsonObservations = new JsonArray();
+        for (int i = 0; i < 5 && i < requests.size(); i++) {
+            ObservationRequest cur = requests.get(i);
+            Satellite curSatellite = dao.findById(cur.getSatelliteId());
+            JsonObject curRequest = new JsonObject();
+            curRequest.add("id", cur.getId());
+            curRequest.add("name", curSatellite.getName());
+            curRequest.add("satelliteId", cur.getSatelliteId());
+            curRequest.add("tle", cur.getTle().toJson());
+            curRequest.add("start", cur.getStartTimeMillis());
+            curRequest.add("end", cur.getEndTimeMillis());
+            curRequest.add("status", "NEW");
+            curRequest.add("numberOfDecodedPackets", 0);
+            curRequest.add("hasData", false);
+            jsonObservations.add(curRequest);
+        }
 
-		JsonObject baseStation = new JsonObject();
-		baseStation.add("lat", config.getDouble("locaiton.lat"));
-		baseStation.add("lng", config.getDouble("locaiton.lon"));
+        Collections.sort(observations, ObservationFullComparator.INSTANCE);
+        for (int i = 0; i < 5 && i < observations.size(); i++) {
+            Observation cur = observations.get(i);
+            Satellite curSatellite = dao.findById(cur.getSatelliteId());
+            if (curSatellite == null || cur.getTle() == null) {
+                continue;
+            }
+            JsonObject curObservation = new JsonObject();
+            curObservation.add("id", cur.getId());
+            curObservation.add("name", curSatellite.getName());
+            curObservation.add("satelliteId", cur.getSatelliteId());
+            curObservation.add("tle", cur.getTle().toJson());
+            curObservation.add("start", cur.getStartTimeMillis());
+            curObservation.add("end", cur.getEndTimeMillis());
+            curObservation.add("status", cur.getStatus().name());
+            curObservation.add("numberOfDecodedPackets", cur.getNumberOfDecodedPackets());
+            curObservation.add("hasData", cur.hasData());
+            jsonObservations.add(curObservation);
+        }
 
-		JsonObject obj = new JsonObject();
-		obj.add("observations", jsonObservations);
-		obj.add("basestation", baseStation);
+        JsonObject baseStation = new JsonObject();
+        baseStation.add("lat", config.getDouble("locaiton.lat"));
+        baseStation.add("lng", config.getDouble("locaiton.lon"));
 
-		result.setData(obj.toString());
-		return result;
-	}
+        JsonObject obj = new JsonObject();
+        obj.add("observations", jsonObservations);
+        obj.add("basestation", baseStation);
 
-	@Override
-	public String getRequestMappingURL() {
-		return "/api/v1/presentationMode";
-	}
+        result.setData(obj.toString());
+        return result;
+    }
+
+    @Override
+    public String getRequestMappingURL() {
+        return "/api/v1/presentationMode";
+    }
 
 }

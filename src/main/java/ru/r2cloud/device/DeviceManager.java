@@ -18,6 +18,7 @@ import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.SatelliteDao;
+import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
@@ -33,14 +34,16 @@ public class DeviceManager implements Lifecycle, ConfigListener {
 	private final SatelliteDao dao;
 	private final ThreadPoolFactory threadpoolFactory;
 	private final List<Device> devices = new ArrayList<>();
+	private final Clock clock;
 	private ScheduledExecutorService rescheduleThread = null;
 
 	private int currentDevice = 0;
 
-	public DeviceManager(Configuration config, SatelliteDao dao, ThreadPoolFactory threadpoolFactory) {
+	public DeviceManager(Configuration config, SatelliteDao dao, ThreadPoolFactory threadpoolFactory, Clock clock) {
 		this.dao = dao;
 		this.config = config;
 		this.threadpoolFactory = threadpoolFactory;
+		this.clock = clock;
 		this.config.subscribe(this, "locaiton.lat");
 		this.config.subscribe(this, "locaiton.lon");
 	}
@@ -76,7 +79,7 @@ public class DeviceManager implements Lifecycle, ConfigListener {
 			devices.get(i).reschedule();
 		}
 		long period = (long) PredictOreKit.PREDICT_INTERVAL_SECONDS * 1000;
-		LOG.info("observations scheduled. next update at: {}", new Date(System.currentTimeMillis() + period));
+		LOG.info("observations scheduled. next update at: {}", new Date(clock.millis() + period));
 		synchronized (this) {
 			rescheduleThread.schedule(new SafeRunnable() {
 
@@ -109,7 +112,9 @@ public class DeviceManager implements Lifecycle, ConfigListener {
 	public void disableSatellite(Satellite satelliteToEdit) {
 		LOG.info("satellite {} disabled. reschedule", satelliteToEdit.getId());
 		for (int i = 0; i < devices.size(); i++) {
-			devices.get(i).disableSatellite(satelliteToEdit);
+			for (Transmitter curTransmitter : satelliteToEdit.getTransmitters()) {
+				devices.get(i).disableTransmitter(curTransmitter);
+			}
 		}
 	}
 
@@ -145,9 +150,9 @@ public class DeviceManager implements Lifecycle, ConfigListener {
 		return false;
 	}
 
-	public ObservationRequest findFirstByTransmitterId(String transmitterId, long current) {
+	public ObservationRequest findFirstByTransmitter(Transmitter transmitter) {
 		for (int i = 0; i < devices.size(); i++) {
-			ObservationRequest result = devices.get(i).findFirstByTransmitterId(transmitterId, current);
+			ObservationRequest result = devices.get(i).findFirstByTransmitter(transmitter);
 			if (result != null) {
 				return result;
 			}

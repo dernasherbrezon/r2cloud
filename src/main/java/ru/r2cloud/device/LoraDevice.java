@@ -11,6 +11,7 @@ import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.ObservationFactory;
+import ru.r2cloud.satellite.Schedule;
 import ru.r2cloud.satellite.TransmitterFilter;
 import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.reader.IQReader;
@@ -25,8 +26,8 @@ public class LoraDevice extends Device {
 	private final Configuration config;
 
 	public LoraDevice(String id, TransmitterFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, DeviceConfiguration deviceConfiguration, ObservationDao observationDao, DecoderService decoderService,
-			Configuration config, PredictOreKit predict, R2loraClient client) {
-		super(id, filter, numberOfConcurrentObservations, observationFactory, threadpoolFactory, clock, deviceConfiguration, observationDao, decoderService, predict);
+					  Configuration config, PredictOreKit predict, Schedule schedule, R2loraClient client) {
+		super(id, filter, numberOfConcurrentObservations, observationFactory, threadpoolFactory, clock, deviceConfiguration, observationDao, decoderService, predict, schedule);
 		this.client = client;
 		this.config = config;
 	}
