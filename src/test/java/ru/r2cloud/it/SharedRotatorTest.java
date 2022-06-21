@@ -12,6 +12,7 @@ import ru.r2cloud.util.Configuration;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.prefs.BackingStoreException;
 
 public class SharedRotatorTest extends RegisteredTest {
@@ -20,6 +21,7 @@ public class SharedRotatorTest extends RegisteredTest {
     public void testSuccess() {
         JsonArray schedule = client.getFullSchedule();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
         for (int i = 0; i < schedule.size(); i++) {
             JsonObject obj = schedule.get(i).asObject();
             obj.add("startFormatted", sdf.format(new Date(obj.get("start").asLong())));
