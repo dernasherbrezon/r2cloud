@@ -334,6 +334,23 @@ public class RestClient {
 		}
 	}
 
+	public JsonArray getFullSchedule() {
+		HttpRequest request = createAuthRequest("/api/v1/admin/schedule/full").GET().build();
+		try {
+			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				LOG.info("response: {}", response.body());
+				throw new RuntimeException("invalid status code: " + response.statusCode());
+			}
+			return (JsonArray) Json.parse(response.body());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
+
 	public JsonArray getSchedule() {
 		HttpRequest request = createAuthRequest("/api/v1/admin/schedule/list").GET().build();
 		try {

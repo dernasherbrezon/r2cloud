@@ -24,6 +24,7 @@ import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
+import com.eclipsesource.json.JsonArray;
 import org.junit.rules.TemporaryFolder;
 
 import com.eclipsesource.json.Json;
@@ -36,132 +37,147 @@ import ru.r2cloud.util.Util;
 
 public class TestUtil {
 
-	public static Observation loadObservation(String classpath) {
-		try (BufferedReader r = new BufferedReader(new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(classpath), StandardCharsets.UTF_8))) {
-			JsonObject meta = Json.parse(r).asObject();
-			return Observation.fromJson(meta);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    public static Observation loadObservation(String classpath) {
+        try (BufferedReader r = new BufferedReader(new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(classpath), StandardCharsets.UTF_8))) {
+            JsonObject meta = Json.parse(r).asObject();
+            return Observation.fromJson(meta);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public static String loadExpected(String name) {
-		StringBuilder expectedStr = new StringBuilder();
-		try (BufferedReader r = new BufferedReader(new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(name), StandardCharsets.UTF_8))) {
-			String curLine = null;
-			while ((curLine = r.readLine()) != null) {
-				expectedStr.append(curLine).append("\n");
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		return expectedStr.toString().trim();
-	}
+    public static String loadExpected(String name) {
+        StringBuilder expectedStr = new StringBuilder();
+        try (BufferedReader r = new BufferedReader(new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(name), StandardCharsets.UTF_8))) {
+            String curLine = null;
+            while ((curLine = r.readLine()) != null) {
+                expectedStr.append(curLine).append("\n");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return expectedStr.toString().trim();
+    }
 
-	public static String convert(InputStream is) {
-		try (StringWriter sw = new StringWriter()) {
-			copy(new InputStreamReader(is, StandardCharsets.UTF_8), sw);
-			sw.flush();
-			return sw.toString();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    public static String convert(InputStream is) {
+        try (StringWriter sw = new StringWriter()) {
+            copy(new InputStreamReader(is, StandardCharsets.UTF_8), sw);
+            sw.flush();
+            return sw.toString();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public static File setupClasspathResource(TemporaryFolder tempFolder, String name) throws IOException {
-		URL resource = TestUtil.class.getClassLoader().getResource(name);
-		if (resource == null) {
-			throw new IllegalArgumentException("unable to find: " + name + " in classpath");
-		}
-		if (resource.getProtocol().equals("file")) {
-			return new File(resource.getFile());
-		}
-		// copy only if resource is in jar
-		File result = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
-		try (FileOutputStream fos = new FileOutputStream(result); InputStream is = resource.openStream()) {
-			Util.copy(is, fos);
-		}
-		return result;
-	}
+    public static File setupClasspathResource(TemporaryFolder tempFolder, String name) throws IOException {
+        URL resource = TestUtil.class.getClassLoader().getResource(name);
+        if (resource == null) {
+            throw new IllegalArgumentException("unable to find: " + name + " in classpath");
+        }
+        if (resource.getProtocol().equals("file")) {
+            return new File(resource.getFile());
+        }
+        // copy only if resource is in jar
+        File result = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
+        try (FileOutputStream fos = new FileOutputStream(result); InputStream is = resource.openStream()) {
+            Util.copy(is, fos);
+        }
+        return result;
+    }
 
-	public static void copy(Reader input, Writer output) throws IOException {
-		char[] buffer = new char[1024 * 4];
-		int n = 0;
-		while (-1 != (n = input.read(buffer))) {
-			output.write(buffer, 0, n);
-		}
-	}
+    public static void copy(Reader input, Writer output) throws IOException {
+        char[] buffer = new char[1024 * 4];
+        int n = 0;
+        while (-1 != (n = input.read(buffer))) {
+            output.write(buffer, 0, n);
+        }
+    }
 
-	public static void copy(String classpathFrom, File to) throws IOException {
-		if (!to.getParentFile().exists() && !to.getParentFile().mkdirs()) {
-			throw new IOException("unable to create parent directory: " + to.getParentFile().getAbsolutePath());
-		}
-		try (InputStream is = TestUtil.class.getClassLoader().getResourceAsStream(classpathFrom); OutputStream w = new FileOutputStream(to)) {
-			Util.copy(is, w);
-		}
-	}
+    public static void copy(String classpathFrom, File to) throws IOException {
+        if (!to.getParentFile().exists() && !to.getParentFile().mkdirs()) {
+            throw new IOException("unable to create parent directory: " + to.getParentFile().getAbsolutePath());
+        }
+        try (InputStream is = TestUtil.class.getClassLoader().getResourceAsStream(classpathFrom); OutputStream w = new FileOutputStream(to)) {
+            Util.copy(is, w);
+        }
+    }
 
-	public static File setupScript(File to) throws IOException {
-		copy(to.getName(), to);
-		to.setExecutable(true);
-		return to;
-	}
+    public static File setupScript(File to) throws IOException {
+        copy(to.getName(), to);
+        to.setExecutable(true);
+        return to;
+    }
 
-	public static void assertImage(String expectedFilename, File bais) throws IOException {
-		try (InputStream is = new BufferedInputStream(new FileInputStream(bais))) {
-			assertImage(expectedFilename, is);
-		}
-	}
+    public static void assertImage(String expectedFilename, File bais) throws IOException {
+        try (InputStream is = new BufferedInputStream(new FileInputStream(bais))) {
+            assertImage(expectedFilename, is);
+        }
+    }
 
-	public static void assertImage(String expectedFilename, InputStream bais) throws IOException {
-		try (InputStream is1 = ObservationTest.class.getClassLoader().getResourceAsStream(expectedFilename)) {
-			BufferedImage expected = ImageIO.read(is1);
-			BufferedImage actual = ImageIO.read(bais);
-			for (int i = 0; i < expected.getWidth(); i++) {
-				for (int j = 0; j < expected.getHeight(); j++) {
-					assertEquals(expected.getRGB(i, j), actual.getRGB(i, j));
-				}
-			}
-		}
-	}
+    public static void assertImage(String expectedFilename, InputStream bais) throws IOException {
+        try (InputStream is1 = ObservationTest.class.getClassLoader().getResourceAsStream(expectedFilename)) {
+            BufferedImage expected = ImageIO.read(is1);
+            BufferedImage actual = ImageIO.read(bais);
+            for (int i = 0; i < expected.getWidth(); i++) {
+                for (int j = 0; j < expected.getHeight(); j++) {
+                    assertEquals(expected.getRGB(i, j), actual.getRGB(i, j));
+                }
+            }
+        }
+    }
 
-	public static void assertJson(String classPathResource, JsonObject actual) {
-		assertNotNull(actual);
-		try (Reader is = new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(classPathResource), StandardCharsets.UTF_8)) {
-			JsonValue value = Json.parse(is);
-			assertTrue(value.isObject());
-			assertJson(value.asObject(), actual);
-		} catch (Exception e) {
-			fail("unable to assert json: " + classPathResource + " " + e.getMessage());
-		}
-	}
+    public static void assertJson(String classPathResource, JsonArray actual) {
+        assertNotNull(actual);
+        try (Reader is = new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(classPathResource), StandardCharsets.UTF_8)) {
+            JsonValue value = Json.parse(is);
+            assertTrue(value.isArray());
+            JsonArray expected = value.asArray();
+            assertEquals(expected.size(), actual.size());
+            for (int i = 0; i < expected.size(); i++) {
+                assertJson(expected.get(i).asObject(), actual.get(i).asObject());
+            }
+        } catch (Exception e) {
+            fail("unable to assert json: " + classPathResource + " " + e.getMessage());
+        }
+    }
 
-	public static void assertJson(JsonObject expected, JsonObject actual) {
-		StringBuilder message = new StringBuilder();
-		for (String name : expected.names()) {
-			JsonValue value = actual.get(name);
-			if (value == null) {
-				message.append("missing field: " + name).append("\n");
-				continue;
-			}
-			if (expected.get(name).isObject() && value.isObject()) {
-				assertJson(expected.get(name).asObject(), value.asObject());
-				continue;
-			}
-			String expectedValue = expected.get(name).toString();
-			String actualValue = value.toString();
-			if (!actualValue.equals(expectedValue)) {
-				message.append("field: \"" + name + "\" expected: " + expectedValue + " actual: " + actualValue + "\n");
-			}
-		}
+    public static void assertJson(String classPathResource, JsonObject actual) {
+        assertNotNull(actual);
+        try (Reader is = new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(classPathResource), StandardCharsets.UTF_8)) {
+            JsonValue value = Json.parse(is);
+            assertTrue(value.isObject());
+            assertJson(value.asObject(), actual);
+        } catch (Exception e) {
+            fail("unable to assert json: " + classPathResource + " " + e.getMessage());
+        }
+    }
 
-		if (message.length() > 0) {
-			fail(message.toString().trim());
-		}
-	}
+    public static void assertJson(JsonObject expected, JsonObject actual) {
+        StringBuilder message = new StringBuilder();
+        for (String name : expected.names()) {
+            JsonValue value = actual.get(name);
+            if (value == null) {
+                message.append("missing field: " + name).append("\n");
+                continue;
+            }
+            if (expected.get(name).isObject() && value.isObject()) {
+                assertJson(expected.get(name).asObject(), value.asObject());
+                continue;
+            }
+            String expectedValue = expected.get(name).toString();
+            String actualValue = value.toString();
+            if (!actualValue.equals(expectedValue)) {
+                message.append("field: \"" + name + "\" expected: " + expectedValue + " actual: " + actualValue + "\n");
+            }
+        }
 
-	private TestUtil() {
-		// do nothing
-	}
+        if (message.length() > 0) {
+            fail(message.toString().trim());
+        }
+    }
+
+    private TestUtil() {
+        // do nothing
+    }
 
 }

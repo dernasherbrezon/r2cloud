@@ -57,6 +57,7 @@ import ru.r2cloud.web.api.observation.ObservationLoad;
 import ru.r2cloud.web.api.observation.ObservationLoadPresentation;
 import ru.r2cloud.web.api.observation.ObservationSpectrogram;
 import ru.r2cloud.web.api.schedule.ScheduleComplete;
+import ru.r2cloud.web.api.schedule.ScheduleFull;
 import ru.r2cloud.web.api.schedule.ScheduleList;
 import ru.r2cloud.web.api.schedule.ScheduleSave;
 import ru.r2cloud.web.api.schedule.ScheduleStart;
@@ -75,7 +76,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 public class R2Cloud {
 
@@ -181,6 +181,7 @@ public class R2Cloud {
         index(new ScheduleStart(satelliteDao, deviceManager));
         index(new ScheduleComplete(deviceManager));
         index(new PresentationMode(props, satelliteDao, resultDao, deviceManager));
+        index(new ScheduleFull(deviceManager));
         webServer = new WebServer(props, controllers, auth, signed);
     }
 

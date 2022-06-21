@@ -342,6 +342,14 @@ public abstract class Device implements Lifecycle {
         return batch.get(0);
     }
 
+    public List<ObservationRequest> findScheduledObservations() {
+        List<ObservationRequest> result = new ArrayList<>();
+        for (Transmitter cur : scheduledTransmitters) {
+            result.addAll(schedule.getByTransmitterId(cur.getId()));
+        }
+        return result;
+    }
+
     public synchronized void disableTransmitter(Transmitter transmitter) {
         if (removeTransmitter(transmitter.getId())) {
             reschedule();
