@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="R2Cloud" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="ru.r2cloud.R2Cloud" />
+    <module name="r2cloud" />
+    <option name="PROGRAM_PARAMETERS" value="./src/main/resources/config-dev.properties" />
+    <option name="VM_PARAMETERS" value="-Djava.util.logging.config.file=src/main/resources/logging-dev.properties -Duser.timezone=UTC -Djava.library.path=./target/sigar-lib  -Djradio.metrics.enabled=true" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="ru.r2cloud.*" />
+        <option name="ENABLED" value="false" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

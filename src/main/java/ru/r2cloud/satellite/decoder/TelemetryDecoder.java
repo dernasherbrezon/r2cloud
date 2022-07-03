@@ -99,9 +99,11 @@ public abstract class TelemetryDecoder implements Decoder {
 			}
 			break;
 		case SDRMODEM:
-			ByteInput demodulator = new SdrModemClient(config, rawIq, req, transmitter);
-			result.add(createBeaconSource(demodulator, req));
-			break;
+            for (Integer cur : transmitter.getBaudRates()) {
+                ByteInput demodulator = new SdrModemClient(config, rawIq, req, transmitter, cur);
+                result.add(createBeaconSource(demodulator, req));
+            }
+            break;
 		default:
 			LOG.error("unknown demodulator type: " + type);
 			return Collections.emptyList();

@@ -71,7 +71,7 @@ public class SdrModemClientTest {
 		// just load some observation
 		ObservationRequest req = TestUtil.loadObservation("data/aausat.raw.gz.json").getReq();
 		Satellite satellite = dao.findById("41460");
-		client = new SdrModemClient(config, nonExistingFile, req, satellite.getById("41460-0"));
+		client = new SdrModemClient(config, nonExistingFile, req, satellite.getById("41460-0"), 2400);
 		assertEquals(0xca, client.readByte() & 0xFF);
 		assertEquals(0xfe, client.readByte() & 0xFF);
 

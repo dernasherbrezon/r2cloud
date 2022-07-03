@@ -39,18 +39,20 @@ public class SdrModemClient implements ByteInput {
 	private final ObservationRequest req;
 	private final Transmitter transmitter;
 	private final Context ctx;
+	private final int baudRate;
 
 	private Socket socket = null;
 	private DataInputStream dis = null;
 	private long framePos = 0;
 
-	public SdrModemClient(Configuration config, File rawIq, ObservationRequest req, Transmitter transmitter) {
+	public SdrModemClient(Configuration config, File rawIq, ObservationRequest req, Transmitter transmitter, int baudRate) {
 		this.host = config.getProperty("sdrmodem.host");
 		this.port = config.getInteger("sdrmodem.port");
 		this.timeout = config.getInteger("sdrmodem.timeout");
 		this.rawIq = rawIq;
 		this.req = req;
 		this.transmitter = transmitter;
+		this.baudRate = baudRate;
 		this.ctx = new Context();
 		this.ctx.setSoftBits(true);
 		// try to restore sample from the input file
@@ -109,7 +111,7 @@ public class SdrModemClient implements ByteInput {
 		return result;
 	}
 
-	private static SdrMessage convert(File rawIq, ObservationRequest req, Transmitter transmitter) {
+	private SdrMessage convert(File rawIq, ObservationRequest req, Transmitter transmitter) {
 		fsk_demodulation_settings.Builder fskDemodSettings = fsk_demodulation_settings.newBuilder();
 		fskDemodSettings.setDemodFskDeviation(transmitter.getDeviation());
 		fskDemodSettings.setDemodFskTransitionWidth((int) transmitter.getTransitionWidth());
@@ -135,7 +137,6 @@ public class SdrModemClient implements ByteInput {
 		b.setFileSettings(fs.build());
 		b.setDemodDestination(demod_destination.SOCKET);
 		b.setDemodType(modem_type.GMSK);
-		Integer baudRate = transmitter.getBaudRates().get(0);
 		b.setDemodBaudRate(baudRate);
 		b.setDemodDecimation(Util.convertDecimation(baudRate));
 		b.setFskSettings(fskDemodSettings.build());
