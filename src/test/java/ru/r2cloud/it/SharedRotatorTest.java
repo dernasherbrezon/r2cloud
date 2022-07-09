@@ -1,19 +1,19 @@
 package ru.r2cloud.it;
 
-import com.eclipsesource.json.JsonArray;
-import com.eclipsesource.json.JsonObject;
-import net.bytebuddy.build.Plugin;
-import org.junit.Test;
-import ru.r2cloud.TestUtil;
-import ru.r2cloud.it.util.BaseTest;
-import ru.r2cloud.it.util.RegisteredTest;
-import ru.r2cloud.util.Configuration;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.prefs.BackingStoreException;
+
+import org.junit.Test;
+
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+
+import ru.r2cloud.TestUtil;
+import ru.r2cloud.it.util.BaseTest;
+import ru.r2cloud.it.util.RegisteredTest;
+import ru.r2cloud.util.Configuration;
 
 public class SharedRotatorTest extends RegisteredTest {
 

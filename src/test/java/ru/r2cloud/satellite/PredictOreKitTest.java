@@ -28,6 +28,12 @@ public class PredictOreKitTest {
 	private PredictOreKit predict;
 
 	@Test
+	public void testMeoOrbit() throws Exception {
+		TLEPropagator astroBio = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE("1 84002U          22194.52504630  .00000000  00000-0  00000-0 0    00", "2 84002  70.1600  50.0000 0000815  30.0000 147.0000  6.38669028    02"));
+		assertPosition("16:00:57", "16:45:56", predict.calculateNext(getDate("29-09-2022 14:54:00"), astroBio));
+	}
+
+	@Test
 	public void testCalculateBatch() throws Exception {
 		List<SatPass> next2Days = predict.calculateSchedule(getDate("29-09-2017 14:54:00"), noaa15);
 		assertPosition("18:05:57", "18:17:12", next2Days.get(0));

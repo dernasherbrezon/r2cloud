@@ -30,7 +30,6 @@ public class PresentationModeTest extends BaseTest {
 		
 		config.setProperty("presentationMode", true);
 		JsonObject data = client.getPresentationModeData();
-		System.out.println(data);
 		JsonArray observations = data.get("observations").asArray();
 		assertNotNull(observations);
 		assertEquals(4, observations.size());

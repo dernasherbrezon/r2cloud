@@ -154,9 +154,9 @@ public class PredictOreKit {
         ElevationDetector boundsDetector = new ElevationDetector(600, 1, baseStationFrame).withConstantElevation(FastMath.toRadians(minElevation)).withHandler(minElevationHandler);
         tlePropagator.clearEventsDetectors();
         tlePropagator.addEventDetector(boundsDetector);
-        // 20 mins before and 20 mins later
-        AbsoluteDate startDate = maxElevationTime.shiftedBy(-20 * 60.0);
-        tlePropagator.propagate(startDate, startDate.shiftedBy(40 * 60.0));
+        // 60 mins before and 60 mins later
+        AbsoluteDate startDate = maxElevationTime.shiftedBy(-60 * 60.0);
+        tlePropagator.propagate(startDate, maxElevationTime.shiftedBy(60 * 60.0));
 
         if (minElevationHandler.getStart() == null || minElevationHandler.getEnd() == null) {
             return null;
