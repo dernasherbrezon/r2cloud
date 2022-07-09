@@ -17,5 +17,23 @@
 		},
 		"start": 1601607600000,
 		"end": 1601611200000
+	},
+	{
+		"id": "R2CLOUD3",
+		"name": "ASTRO-BIO",
+		"modulation": "GFSK",
+		"framing": "AX25G3RUH",
+		"frequency": 435600000,
+		"bandwidth": 20000,
+		"baudRates": [
+			9600
+		],
+		"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+		"tle": {
+			"line1": "ASTRO-BIO",
+			"line2": "1 84002U          22194.52504630  .00000000  00000-0  00000-0 0    00",
+			"line3": "2 84002  70.1600  50.0000 0000815  30.0000 147.0000  6.38669028    02"
+		},
+		"start": 1601607600000
 	}
 ]

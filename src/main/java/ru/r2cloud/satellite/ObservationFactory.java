@@ -23,6 +23,7 @@ public class ObservationFactory {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationFactory.class);
 	public static final int DC_OFFSET = 10_000;
+	private static final long MAX_OBSERVATION_MILLIS = 15 * 60 * 1000;
 
 	private final TLEDao tleDao;
 	private final PredictOreKit predict;
@@ -47,26 +48,35 @@ public class ObservationFactory {
 		}
 		List<ObservationRequest> result = new ArrayList<>();
 		for (SatPass cur : batch) {
+			long endMillis = cur.getEndMillis();
+			long startMillis = cur.getStartMillis();
 			// ignore all observations out of satellite's active time
-			if (transmitter.getStart() != null && cur.getEndMillis() < transmitter.getStart().getTime()) {
+			if (transmitter.getStart() != null && endMillis < transmitter.getStart().getTime()) {
 				continue;
 			}
-			if (transmitter.getEnd() != null && cur.getStartMillis() > transmitter.getEnd().getTime()) {
+			if (transmitter.getEnd() != null && startMillis > transmitter.getEnd().getTime()) {
 				continue;
 			}
-			result.add(convert(transmitter, tle, tlePropagator, cur));
+			// MEO satellites can be visible several hours
+			// Raspberry PI might not be able to perform such long observations
+			// better split into several
+			while (endMillis - startMillis > MAX_OBSERVATION_MILLIS) {
+				result.add(convert(transmitter, tle, tlePropagator, startMillis, startMillis + MAX_OBSERVATION_MILLIS));
+				startMillis += MAX_OBSERVATION_MILLIS;
+			}
+			result.add(convert(transmitter, tle, tlePropagator, startMillis, endMillis));
 		}
 		return result;
 	}
 
-	private ObservationRequest convert(Transmitter transmitter, Tle tle, TLEPropagator tlePropagator, SatPass nextPass) {
+	private ObservationRequest convert(Transmitter transmitter, Tle tle, TLEPropagator tlePropagator, long startMillis, long endMillis) {
 		ObservationRequest result = new ObservationRequest();
 		result.setSatelliteId(transmitter.getSatelliteId());
 		result.setTransmitterId(transmitter.getId());
 		result.setTle(tle);
 		result.setGroundStation(predict.getPosition().getPoint());
-		result.setStartTimeMillis(nextPass.getStartMillis());
-		result.setEndTimeMillis(nextPass.getEndMillis());
+		result.setStartTimeMillis(startMillis);
+		result.setEndTimeMillis(endMillis);
 		result.setId(String.valueOf(result.getStartTimeMillis()) + "-" + transmitter.getId());
 		// only r2lora can handle lora modulation
 		if (transmitter.getModulation() != null && transmitter.getModulation().equals(Modulation.LORA)) {
@@ -88,7 +98,7 @@ public class ObservationFactory {
 				result.setActualFrequency(transmitter.getFrequency());
 			} else {
 				// at the beginning doppler freq is the max
-				long initialDopplerFrequency = predict.getDownlinkFreq(transmitter.getFrequency(), nextPass.getStartMillis(), predict.getPosition(), tlePropagator);
+				long initialDopplerFrequency = predict.getDownlinkFreq(transmitter.getFrequency(), startMillis, predict.getPosition(), tlePropagator);
 				result.setActualFrequency(initialDopplerFrequency + DC_OFFSET);
 			}
 			break;

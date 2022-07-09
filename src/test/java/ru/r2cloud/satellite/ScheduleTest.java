@@ -59,6 +59,7 @@ public class ScheduleTest {
 		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunch-for-scheduletest.json", 200));
 		satelliteDao.reload();
 		tleDao.reload();
+		current = getTime("2022-09-30 22:17:01.000");
 		List<ObservationRequest> expected = readExpected("expected/scheduleNewLaunches.txt");
 		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
