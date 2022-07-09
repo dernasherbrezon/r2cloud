@@ -90,7 +90,7 @@ public class SdrServerReader implements IQReader {
 
 	@Override
 	public void complete() {
-		if (socket == null) {
+		if (socket == null || socket.isClosed()) {
 			return;
 		}
 		try {
