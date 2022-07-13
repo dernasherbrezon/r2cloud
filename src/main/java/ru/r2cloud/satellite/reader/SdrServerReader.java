@@ -72,11 +72,15 @@ public class SdrServerReader implements IQReader {
 			} else {
 				LOG.error("[{}] unable to start: {}", req.getId(), response);
 				Util.closeQuietly(socket);
-				socket = null;
 				return null;
 			}
 		} catch (IOException e) {
 			LOG.error("[{}] unable to run", req.getId(), e);
+			try {
+				socket.close();
+			} catch (IOException e1) {
+				// ignore
+			}
 			return null;
 		} finally {
 			endTimeMillis = System.currentTimeMillis();
@@ -107,10 +111,15 @@ public class SdrServerReader implements IQReader {
 			while (is.read() != -1) {
 				// do nothing
 			}
-			socket.close();
 		} catch (IOException e1) {
 			if (!socket.isClosed()) {
 				Util.logIOException(LOG, "unable to disconnect from sdr-server", e1);
+			}
+		} finally {
+			try {
+				socket.close();
+			} catch (IOException e) {
+				// ignore
 			}
 		}
 		LOG.info("[{}] disconnected", req.getId());
