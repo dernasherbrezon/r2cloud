@@ -1,7 +1,12 @@
 package ru.r2cloud.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 public class Satellite {
 
@@ -104,6 +109,31 @@ public class Satellite {
 	@Override
 	public String toString() {
 		return name + "(" + id + ")";
+	}
+
+	public static Satellite fromJson(JsonObject meta) {
+		Satellite result = new Satellite();
+		result.setId(meta.getString("noradId", null));
+		result.setName(meta.getString("name", null));
+		result.setPriority(Priority.NORMAL);
+		result.setEnabled(meta.getBoolean("enabled", false));
+		List<Transmitter> transmitters = new ArrayList<>();
+		result.setTransmitters(transmitters);
+		JsonValue transmittersRaw = meta.get("transmitters");
+		if (transmittersRaw != null && transmittersRaw.isArray()) {
+			JsonArray transmittersArray = transmittersRaw.asArray();
+			for (int i = 0; i < transmittersArray.size(); i++) {
+				Transmitter cur = Transmitter.fromJson(transmittersArray.get(i).asObject());
+				cur.setId(result.getId() + "-" + String.valueOf(i));
+				cur.setEnabled(result.isEnabled());
+				cur.setPriority(result.getPriority());
+				cur.setSatelliteId(result.getId());
+				cur.setStart(result.getStart());
+				cur.setEnd(result.getEnd());
+				transmitters.add(cur);
+			}
+		}
+		return result;
 	}
 
 }

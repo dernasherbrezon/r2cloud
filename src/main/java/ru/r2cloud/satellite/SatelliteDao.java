@@ -1,5 +1,7 @@
 package ru.r2cloud.satellite;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,12 +11,12 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+
 import ru.r2cloud.cloud.LeoSatDataClient;
-import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.model.BandFrequency;
-import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.Modulation;
-import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteComparator;
 import ru.r2cloud.model.SdrType;
@@ -43,7 +45,7 @@ public class SatelliteDao {
 		satelliteByName.clear();
 		satelliteById.clear();
 
-		satellites.addAll(loadFromConfig(config));
+		satellites.addAll(loadFromConfig(config.getProperty("satellites.meta.location"), config));
 		if (config.getBoolean("r2cloud.newLaunches")) {
 			satellites.addAll(client.loadNewLaunches());
 		}
@@ -105,108 +107,20 @@ public class SatelliteDao {
 		Collections.sort(satellites, SatelliteComparator.ID_COMPARATOR);
 	}
 
-	@SuppressWarnings("unchecked")
-	private static List<Satellite> loadFromConfig(Configuration config) {
+	private static List<Satellite> loadFromConfig(String metaLocation, Configuration config) {
 		List<Satellite> result = new ArrayList<>();
-		for (String cur : config.getProperties("satellites.supported")) {
-			Satellite curSatellite = new Satellite();
-			curSatellite.setId(cur);
-			String name = config.getProperty("satellites." + curSatellite.getId() + ".name");
-			if (name == null) {
-				throw new IllegalStateException("unable to find satellite name for: " + cur);
-			}
-			curSatellite.setName(name);
-			curSatellite.setPriority(Priority.NORMAL);
-			curSatellite.setEnabled(config.getBoolean("satellites." + curSatellite.getId() + ".enabled"));
-			List<Transmitter> transmitters = new ArrayList<>();
-			for (String curId : config.getProperties("satellites." + curSatellite.getId() + ".transmitters")) {
-				String prefix = "satellites." + curSatellite.getId() + ".transmitter." + curId;
-				Transmitter curTransmitter = new Transmitter();
-				curTransmitter.setId(curSatellite.getId() + "-" + curId);
-				curTransmitter.setEnabled(curSatellite.isEnabled());
-				curTransmitter.setPriority(curSatellite.getPriority());
-				curTransmitter.setSatelliteId(curSatellite.getId());
-				curTransmitter.setStart(curSatellite.getStart());
-				curTransmitter.setEnd(curSatellite.getEnd());
-				curTransmitter.setFrequency(config.getLong(prefix + ".freq"));
-				Long bandwidth = config.getLong(prefix + ".bandwidth");
-				if (bandwidth != null) {
-					curTransmitter.setBandwidth(bandwidth);
-				}
-				curTransmitter.setBaudRates(config.getIntegerList(prefix + ".baud"));
-				String modulationStr = config.getProperty(prefix + ".modulation");
-				if (modulationStr != null) {
-					curTransmitter.setModulation(Modulation.valueOf(modulationStr));
-				}
-				curTransmitter.setFraming(Framing.valueOf(config.getProperty(prefix + ".framing")));
-				String beaconClassStr = config.getProperty(prefix + ".beacon");
-				if (beaconClassStr != null) {
-					try {
-						curTransmitter.setBeaconClass((Class<? extends Beacon>) Class.forName(beaconClassStr));
-					} catch (ClassNotFoundException e) {
-						throw new IllegalArgumentException(e);
-					}
-				}
-				String beaconSizeStr = config.getProperty(prefix + ".beaconSize");
-				if (beaconSizeStr != null) {
-					curTransmitter.setBeaconSizeBytes(Integer.valueOf(beaconSizeStr));
-				}
-
-				Long loraBandwidth = config.getLong(prefix + ".loraBw");
-				if (loraBandwidth != null) {
-					curTransmitter.setLoraBandwidth(loraBandwidth);
-				}
-				Integer loraSpreadFactor = config.getInteger(prefix + ".loraSf");
-				if (loraSpreadFactor != null) {
-					curTransmitter.setLoraSpreadFactor(loraSpreadFactor);
-				}
-				Integer loraCodingRate = config.getInteger(prefix + ".loraCr");
-				if (loraCodingRate != null) {
-					curTransmitter.setLoraCodingRate(loraCodingRate);
-				}
-				Integer loraSyncword = config.getInteger(prefix + ".loraSyncword");
-				if (loraSyncword != null) {
-					curTransmitter.setLoraSyncword(loraSyncword);
-				}
-				Integer loraPreambleLength = config.getInteger(prefix + ".loraPreambleLength");
-				if (loraPreambleLength != null) {
-					curTransmitter.setLoraPreambleLength(loraPreambleLength);
-				}
-				Integer loraLdro = config.getInteger(prefix + ".loraLdro");
-				if (loraLdro != null) {
-					curTransmitter.setLoraLdro(loraLdro);
-				}
-				curTransmitter.setAssistedHeader(config.getByteArray(prefix + ".header"));
-				Long deviation = config.getLong(prefix + ".deviation");
-				if (deviation != null) {
-					curTransmitter.setDeviation(deviation);
-				} else {
-					curTransmitter.setDeviation(5000);
-				}
-				Long bpskCenterFrequency = config.getLong(prefix + ".bpskCenterFrequency");
-				if (bpskCenterFrequency != null) {
-					curTransmitter.setBpskCenterFrequency(bpskCenterFrequency);
-				}
-				curTransmitter.setBpskDifferential(config.getBoolean(prefix + ".bpskDifferential"));
-				Long afCarrier = config.getLong(prefix + ".afCarrier");
-				if (afCarrier != null) {
-					curTransmitter.setAfCarrier(afCarrier);
-				}
-				Double transitionWidth = config.getDouble(prefix + ".transitionWidth");
-				if (transitionWidth != null) {
-					curTransmitter.setTransitionWidth(transitionWidth);
-				} else {
-					curTransmitter.setTransitionWidth(2000);
-				}
-				transmitters.add(curTransmitter);
-			}
-			if (transmitters.isEmpty()) {
-				LOG.error("no transmitters found for: {}", name);
-				continue;
-			}
-			curSatellite.setTransmitters(transmitters);
-
-			result.add(curSatellite);
+		JsonArray rawSatellites;
+		try (Reader r = new InputStreamReader(SatelliteDao.class.getClassLoader().getResourceAsStream(metaLocation))) {
+			rawSatellites = Json.parse(r).asArray();
+		} catch (Exception e) {
+			LOG.error("unable to parse satellites", e);
+			return Collections.emptyList();
+		}
+		for (int i = 0; i < rawSatellites.size(); i++) {
+			Satellite satellite = Satellite.fromJson(rawSatellites.get(i).asObject());
+			// user-specific
+			satellite.setEnabled(config.getBoolean("satellites." + satellite.getId() + ".enabled"));
+			result.add(satellite);
 		}
 		return result;
 	}

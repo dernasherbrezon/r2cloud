@@ -1,7 +1,13 @@
 package ru.r2cloud.model;
 
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.jradio.Beacon;
 
@@ -74,27 +80,27 @@ public class Transmitter {
 		this.loraPreambleLength = copy.loraPreambleLength;
 		this.loraLdro = copy.loraLdro;
 	}
-	
+
 	public double getTransitionWidth() {
 		return transitionWidth;
 	}
-	
+
 	public void setTransitionWidth(double transitionWidth) {
 		this.transitionWidth = transitionWidth;
 	}
-	
+
 	public long getAfCarrier() {
 		return afCarrier;
 	}
-	
+
 	public void setAfCarrier(long afCarrier) {
 		this.afCarrier = afCarrier;
 	}
-	
+
 	public long getDeviation() {
 		return deviation;
 	}
-	
+
 	public void setDeviation(long deviation) {
 		this.deviation = deviation;
 	}
@@ -298,10 +304,102 @@ public class Transmitter {
 	public void setLoraLdro(int loraLdro) {
 		this.loraLdro = loraLdro;
 	}
-	
+
 	@Override
 	public String toString() {
 		return id;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static Transmitter fromJson(JsonObject asObject) {
+		Transmitter result = new Transmitter();
+		result.setFrequency(asObject.getLong("frequency", 0));
+		JsonValue bandwidth = asObject.get("bandwidth");
+		if (bandwidth != null) {
+			result.setBandwidth(bandwidth.asLong());
+		}
+		JsonValue baudRates = asObject.get("baudRates");
+		if (baudRates != null && baudRates.isArray()) {
+			JsonArray baudRatesArray = baudRates.asArray();
+			List<Integer> bauds = new ArrayList<>(baudRatesArray.size());
+			for (int i = 0; i < baudRatesArray.size(); i++) {
+				bauds.add(baudRatesArray.get(i).asInt());
+			}
+			result.setBaudRates(bauds);
+		}
+		JsonValue modulation = asObject.get("modulation");
+		if (modulation != null) {
+			result.setModulation(Modulation.valueOf(modulation.asString()));
+		}
+		JsonValue framing = asObject.get("framing");
+		if (framing != null) {
+			result.setFraming(Framing.valueOf(framing.asString()));
+		}
+		JsonValue beaconClass = asObject.get("beaconClass");
+		if (beaconClass != null) {
+			try {
+				result.setBeaconClass((Class<? extends Beacon>) Class.forName(beaconClass.asString()));
+			} catch (ClassNotFoundException e) {
+				throw new IllegalArgumentException(e);
+			}
+		}
+		JsonValue beaconSizeBytes = asObject.get("beaconSizeBytes");
+		if (beaconSizeBytes != null) {
+			result.setBeaconSizeBytes(beaconSizeBytes.asInt());
+		}
+		JsonValue loraBandwidth = asObject.get("loraBandwidth");
+		if (loraBandwidth != null) {
+			result.setLoraBandwidth(loraBandwidth.asLong());
+		}
+		JsonValue loraSpreadFactor = asObject.get("loraSpreadFactor");
+		if (loraSpreadFactor != null) {
+			result.setLoraSpreadFactor(loraSpreadFactor.asInt());
+		}
+		JsonValue loraCodingRate = asObject.get("loraCodingRate");
+		if (loraCodingRate != null) {
+			result.setLoraCodingRate(loraCodingRate.asInt());
+		}
+		JsonValue loraSyncword = asObject.get("loraSyncword");
+		if (loraSyncword != null) {
+			result.setLoraSyncword(loraSyncword.asInt());
+		}
+		JsonValue loraPreambleLength = asObject.get("loraPreambleLength");
+		if (loraPreambleLength != null) {
+			result.setLoraPreambleLength(loraPreambleLength.asInt());
+		}
+		JsonValue loraLdro = asObject.get("loraLdro");
+		if (loraLdro != null) {
+			result.setLoraLdro(loraLdro.asInt());
+		}
+		JsonValue assistedHeader = asObject.get("assistedHeader");
+		if (assistedHeader != null) {
+			result.setAssistedHeader(Base64.getDecoder().decode(assistedHeader.asString()));
+		}
+		JsonValue deviation = asObject.get("deviation");
+		if (deviation != null) {
+			result.setDeviation(deviation.asLong());
+		} else {
+			result.setDeviation(5000);
+		}
+		JsonValue bpskCenterFrequency = asObject.get("bpskCenterFrequency");
+		if (bpskCenterFrequency != null) {
+			result.setBpskCenterFrequency(bpskCenterFrequency.asDouble());
+		}
+		JsonValue bpskDifferential = asObject.get("bpskDifferential");
+		if (bpskDifferential != null) {
+			result.setBpskDifferential(bpskDifferential.asBoolean());
+		}
+		JsonValue afCarrier = asObject.get("afCarrier");
+		if (afCarrier != null) {
+			result.setAfCarrier(afCarrier.asLong());
+		}
+		JsonValue transitionWidth = asObject.get("transitionWidth");
+		if (transitionWidth != null) {
+			result.setTransitionWidth(transitionWidth.asDouble());
+		} else {
+			result.setTransitionWidth(2000);
+		}
+		return result;
 	}
 
 }

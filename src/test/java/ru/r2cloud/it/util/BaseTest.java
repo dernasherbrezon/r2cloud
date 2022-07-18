@@ -33,7 +33,6 @@ import ru.r2cloud.CelestrakServer;
 import ru.r2cloud.CollectingRequestHandler;
 import ru.r2cloud.FixedClock;
 import ru.r2cloud.JsonHttpResponse;
-import ru.r2cloud.ManualClock;
 import ru.r2cloud.R2Cloud;
 import ru.r2cloud.RotctrldMock;
 import ru.r2cloud.RtlTestServer;
@@ -43,182 +42,182 @@ import ru.r2cloud.util.Configuration;
 
 public abstract class BaseTest {
 
-    private static final int RETRY_INTERVAL_MS = 5000;
-    private static final int MAX_RETRIES = 5;
-    private static final Logger LOG = LoggerFactory.getLogger(BaseTest.class);
-    public static final int ROTCTRLD_PORT = 8004;
-    private static final int ROTCTRLD_PORT_LORA = 8006;
-    private static final int R2LORA_PORT = 8005;
+	private static final int RETRY_INTERVAL_MS = 5000;
+	private static final int MAX_RETRIES = 5;
+	private static final Logger LOG = LoggerFactory.getLogger(BaseTest.class);
+	public static final int ROTCTRLD_PORT = 8004;
+	private static final int ROTCTRLD_PORT_LORA = 8006;
+	private static final int R2LORA_PORT = 8005;
 
-    private R2Cloud server;
-    private CelestrakServer celestrak;
-    private File rtlSdrMock;
-    private File rtlTestMock;
-    private RtlTestServer rtlTestServer;
-    private RotctrldMock rotctrlMock;
-    private RotctrldMock rotctrlMockForLora;
-    protected HttpServer r2loraServer;
+	private R2Cloud server;
+	private CelestrakServer celestrak;
+	private File rtlSdrMock;
+	private File rtlTestMock;
+	private RtlTestServer rtlTestServer;
+	private RotctrldMock rotctrlMock;
+	private RotctrldMock rotctrlMockForLora;
+	protected HttpServer r2loraServer;
 
-    protected RestClient client;
+	protected RestClient client;
 
-    protected String username = "info@r2cloud.ru";
-    protected String password = "1";
-    protected String keyword = "ittests";
+	protected String username = "info@r2cloud.ru";
+	protected String password = "1";
+	protected String keyword = "ittests";
 
-    protected Configuration config;
+	protected Configuration config;
 
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
+	@Rule
+	public TemporaryFolder tempFolder = new TemporaryFolder();
 
-    private File tempDirectory;
+	private File tempDirectory;
 
-    @Before
-    public void start() throws Exception {
+	@Before
+	public void start() throws Exception {
 		LogManager.getLogManager().reset();
-        tempDirectory = new File(tempFolder.getRoot(), "tmp");
-        if (!tempDirectory.mkdirs()) {
-            throw new RuntimeException("unable to create temp dir: " + tempDirectory.getAbsolutePath());
-        }
-        celestrak = new CelestrakServer();
-        celestrak.start();
-        celestrak.mockResponse(TestUtil.loadExpected("sample-tle.txt"));
+		tempDirectory = new File(tempFolder.getRoot(), "tmp");
+		if (!tempDirectory.mkdirs()) {
+			throw new RuntimeException("unable to create temp dir: " + tempDirectory.getAbsolutePath());
+		}
+		celestrak = new CelestrakServer();
+		celestrak.start();
+		celestrak.mockResponse(TestUtil.loadExpected("sample-tle.txt"));
 
-        rtlTestServer = new RtlTestServer();
-        rtlTestServer.mockDefault();
-        rtlTestServer.start();
+		rtlTestServer = new RtlTestServer();
+		rtlTestServer.mockDefault();
+		rtlTestServer.start();
 
-        rotctrlMock = new RotctrldMock(ROTCTRLD_PORT);
-        rotctrlMock.setHandler(new CollectingRequestHandler("RPRT 0\n"));
-        rotctrlMock.start();
+		rotctrlMock = new RotctrldMock(ROTCTRLD_PORT);
+		rotctrlMock.setHandler(new CollectingRequestHandler("RPRT 0\n"));
+		rotctrlMock.start();
 
-        rotctrlMockForLora = new RotctrldMock(ROTCTRLD_PORT_LORA);
-        rotctrlMockForLora.setHandler(new CollectingRequestHandler("RPRT 0\n"));
-        rotctrlMockForLora.start();
+		rotctrlMockForLora = new RotctrldMock(ROTCTRLD_PORT_LORA);
+		rotctrlMockForLora.setHandler(new CollectingRequestHandler("RPRT 0\n"));
+		rotctrlMockForLora.start();
 
-        r2loraServer = HttpServer.create(new InetSocketAddress("127.0.0.1", R2LORA_PORT), 0);
-        r2loraServer.createContext("/status", new JsonHttpResponse("r2loratest/status.json", 200));
-        r2loraServer.start();
+		r2loraServer = HttpServer.create(new InetSocketAddress("127.0.0.1", R2LORA_PORT), 0);
+		r2loraServer.createContext("/status", new JsonHttpResponse("r2loratest/status.json", 200));
+		r2loraServer.start();
 
-        rtlSdrMock = TestUtil.setupScript(new File(System.getProperty("java.io.tmpdir") + File.separator + "rtl_sdr_mock.sh"));
-        rtlTestMock = TestUtil.setupScript(new File(System.getProperty("java.io.tmpdir") + File.separator + "rtl_test_mock.sh"));
+		rtlSdrMock = TestUtil.setupScript(new File(System.getProperty("java.io.tmpdir") + File.separator + "rtl_sdr_mock.sh"));
+		rtlTestMock = TestUtil.setupScript(new File(System.getProperty("java.io.tmpdir") + File.separator + "rtl_test_mock.sh"));
 
-        config = prepareConfiguration();
-        config.update();
+		config = prepareConfiguration();
+		config.update();
 
-        server = new R2Cloud(config, new FixedClock(1559942730784L));
-        server.start();
-        assertStarted();
+		server = new R2Cloud(config, new FixedClock(1559942730784L));
+		server.start();
+		assertStarted();
 
-        client = new RestClient(System.getProperty("r2cloud.baseurl"));
-    }
+		client = new RestClient(System.getProperty("r2cloud.baseurl"));
+	}
 
-    protected Configuration prepareConfiguration() throws IOException {
-        File userSettingsLocation = new File(tempFolder.getRoot(), ".r2cloud-" + UUID.randomUUID().toString());
-        try (InputStream is = BaseTest.class.getClassLoader().getResourceAsStream("config-user-test.properties"); FileOutputStream fos = new FileOutputStream(userSettingsLocation)) {
-            Properties props = new Properties();
-            props.load(is);
-            props.put("sdr.device.1.sdrserver.port", String.valueOf(ROTCTRLD_PORT));
-            props.put("r2lora.device.0.rotctrld.port", String.valueOf(ROTCTRLD_PORT_LORA));
-            props.put("r2lora.device.0.hostport", "127.0.0.1:" + R2LORA_PORT);
-            props.store(fos, "");
-        }
-        Configuration config;
-        try (InputStream is = BaseTest.class.getClassLoader().getResourceAsStream("config-dev.properties")) {
-            config = new Configuration(is, userSettingsLocation.getAbsolutePath(), FileSystems.getDefault());
-        }
-        config.setProperty("satellites.sdr", SdrType.RTLSDR.name().toLowerCase());
-        config.setProperty("tle.urls", celestrak.getUrlsAsProperty());
-        config.setProperty("locaiton.lat", "56.189");
-        config.setProperty("locaiton.lon", "38.174");
-        config.setProperty("satellites.rtlsdr.path", rtlSdrMock.getAbsolutePath());
-        config.setProperty("satellites.rtlsdr.test.path", rtlTestMock.getAbsolutePath());
-        config.setProperty("satellites.sox.path", "sox");
-        config.setProperty("leosatdata.hostname", "http://localhost:8001");
-        config.setProperty("server.tmp.directory", tempDirectory.getAbsolutePath());
-        config.setProperty("server.static.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data");
-        config.setProperty("metrics.basepath.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "rrd");
-        config.setProperty("auto.update.basepath.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "auto-udpate");
-        config.setProperty("acme.basepath", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "ssl");
-        config.setProperty("acme.webroot", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "html");
-        config.setProperty("satellites.basepath.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "satellites");
-        config.setProperty("satellites.wxtoimg.license.path", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "wxtoimg" + File.separator + ".wxtoimglic");
-        File setupKeyword = new File(tempFolder.getRoot(), "r2cloud.txt");
-        try (Writer w = new FileWriter(setupKeyword)) {
-            w.append("ittests");
-        }
-        config.setProperty("server.keyword.location", setupKeyword.getAbsolutePath());
-        return config;
-    }
+	protected Configuration prepareConfiguration() throws IOException {
+		File userSettingsLocation = new File(tempFolder.getRoot(), ".r2cloud-" + UUID.randomUUID().toString());
+		try (InputStream is = BaseTest.class.getClassLoader().getResourceAsStream("config-user-test.properties"); FileOutputStream fos = new FileOutputStream(userSettingsLocation)) {
+			Properties props = new Properties();
+			props.load(is);
+			props.put("sdr.device.1.sdrserver.port", String.valueOf(ROTCTRLD_PORT));
+			props.put("r2lora.device.0.rotctrld.port", String.valueOf(ROTCTRLD_PORT_LORA));
+			props.put("r2lora.device.0.hostport", "127.0.0.1:" + R2LORA_PORT);
+			props.store(fos, "");
+		}
+		Configuration config;
+		try (InputStream is = BaseTest.class.getClassLoader().getResourceAsStream("config-dev.properties")) {
+			config = new Configuration(is, userSettingsLocation.getAbsolutePath(), "config-common-test.properties", FileSystems.getDefault());
+		}
+		config.setProperty("satellites.sdr", SdrType.RTLSDR.name().toLowerCase());
+		config.setProperty("tle.urls", celestrak.getUrlsAsProperty());
+		config.setProperty("locaiton.lat", "56.189");
+		config.setProperty("locaiton.lon", "38.174");
+		config.setProperty("satellites.rtlsdr.path", rtlSdrMock.getAbsolutePath());
+		config.setProperty("satellites.rtlsdr.test.path", rtlTestMock.getAbsolutePath());
+		config.setProperty("satellites.sox.path", "sox");
+		config.setProperty("leosatdata.hostname", "http://localhost:8001");
+		config.setProperty("server.tmp.directory", tempDirectory.getAbsolutePath());
+		config.setProperty("server.static.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data");
+		config.setProperty("metrics.basepath.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "rrd");
+		config.setProperty("auto.update.basepath.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "auto-udpate");
+		config.setProperty("acme.basepath", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "ssl");
+		config.setProperty("acme.webroot", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "html");
+		config.setProperty("satellites.basepath.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "satellites");
+		config.setProperty("satellites.wxtoimg.license.path", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "wxtoimg" + File.separator + ".wxtoimglic");
+		File setupKeyword = new File(tempFolder.getRoot(), "r2cloud.txt");
+		try (Writer w = new FileWriter(setupKeyword)) {
+			w.append("ittests");
+		}
+		config.setProperty("server.keyword.location", setupKeyword.getAbsolutePath());
+		return config;
+	}
 
-    @After
-    public void stop() {
-        if (server != null) {
-            server.stop();
-        }
-        if (rtlSdrMock != null && rtlSdrMock.exists() && !rtlSdrMock.delete()) {
-            LOG.error("unable to delete rtlsdr mock at: {}", rtlSdrMock.getAbsolutePath());
-        }
-        if (rtlTestMock != null && rtlTestMock.exists() && !rtlTestMock.delete()) {
-            LOG.error("unable to delete rtltest mock at: {}", rtlTestMock.getAbsolutePath());
-        }
-        if (celestrak != null) {
-            celestrak.stop();
-        }
-        if (rtlTestServer != null) {
-            rtlTestServer.stop();
-        }
-        if (rotctrlMock != null) {
-            rotctrlMock.stop();
-        }
-        if (rotctrlMockForLora != null) {
-            rotctrlMockForLora.stop();
-        }
-        if (r2loraServer != null) {
-            r2loraServer.stop(0);
-        }
-    }
+	@After
+	public void stop() {
+		if (server != null) {
+			server.stop();
+		}
+		if (rtlSdrMock != null && rtlSdrMock.exists() && !rtlSdrMock.delete()) {
+			LOG.error("unable to delete rtlsdr mock at: {}", rtlSdrMock.getAbsolutePath());
+		}
+		if (rtlTestMock != null && rtlTestMock.exists() && !rtlTestMock.delete()) {
+			LOG.error("unable to delete rtltest mock at: {}", rtlTestMock.getAbsolutePath());
+		}
+		if (celestrak != null) {
+			celestrak.stop();
+		}
+		if (rtlTestServer != null) {
+			rtlTestServer.stop();
+		}
+		if (rotctrlMock != null) {
+			rotctrlMock.stop();
+		}
+		if (rotctrlMockForLora != null) {
+			rotctrlMockForLora.stop();
+		}
+		if (r2loraServer != null) {
+			r2loraServer.stop(0);
+		}
+	}
 
-    public static void assertErrorInField(String field, HttpResponse<String> response) {
-        JsonObject result = (JsonObject) Json.parse(response.body());
-        JsonObject errors = (JsonObject) result.get("errors");
-        assertNotNull(errors);
-        assertNotNull(errors.get(field));
-    }
+	public static void assertErrorInField(String field, HttpResponse<String> response) {
+		JsonObject result = (JsonObject) Json.parse(response.body());
+		JsonObject errors = (JsonObject) result.get("errors");
+		assertNotNull(errors);
+		assertNotNull(errors.get(field));
+	}
 
-    static void assertStarted() {
-        int currentRetry = 0;
-        while (currentRetry < MAX_RETRIES) {
-            if (healthy()) {
-                LOG.info("healthy");
-                return;
-            }
-            LOG.info("not healthy yet");
-            currentRetry++;
-            try {
-                Thread.sleep(RETRY_INTERVAL_MS);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            }
-        }
-        fail("not healthy within timeout " + RETRY_INTERVAL_MS + " and max retries " + MAX_RETRIES);
-    }
+	static void assertStarted() {
+		int currentRetry = 0;
+		while (currentRetry < MAX_RETRIES) {
+			if (healthy()) {
+				LOG.info("healthy");
+				return;
+			}
+			LOG.info("not healthy yet");
+			currentRetry++;
+			try {
+				Thread.sleep(RETRY_INTERVAL_MS);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				break;
+			}
+		}
+		fail("not healthy within timeout " + RETRY_INTERVAL_MS + " and max retries " + MAX_RETRIES);
+	}
 
-    private static boolean healthy() {
-        RestClient client;
-        try {
-            client = new RestClient(System.getProperty("r2cloud.baseurl"));
-            return client.healthy();
-        } catch (Exception e) {
-            return false;
-        }
+	private static boolean healthy() {
+		RestClient client;
+		try {
+			client = new RestClient(System.getProperty("r2cloud.baseurl"));
+			return client.healthy();
+		} catch (Exception e) {
+			return false;
+		}
 
-    }
+	}
 
-    public void assertTempEmpty() {
-        assertTrue(tempDirectory.isDirectory());
-        File[] contents = tempDirectory.listFiles();
-        assertEquals("expected empty, but got: " + contents.length, 0, contents.length);
-    }
+	public void assertTempEmpty() {
+		assertTrue(tempDirectory.isDirectory());
+		File[] contents = tempDirectory.listFiles();
+		assertEquals("expected empty, but got: " + contents.length, 0, contents.length);
+	}
 
 }
