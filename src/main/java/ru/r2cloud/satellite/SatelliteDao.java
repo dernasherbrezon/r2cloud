@@ -119,7 +119,10 @@ public class SatelliteDao {
 		for (int i = 0; i < rawSatellites.size(); i++) {
 			Satellite satellite = Satellite.fromJson(rawSatellites.get(i).asObject());
 			// user-specific
-			satellite.setEnabled(config.getBoolean("satellites." + satellite.getId() + ".enabled"));
+			String enabled = config.getProperty("satellites." + satellite.getId() + ".enabled");
+			if (enabled != null) {
+				satellite.setEnabled(Boolean.valueOf(enabled));
+			}
 			result.add(satellite);
 		}
 		return result;

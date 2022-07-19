@@ -2,12 +2,10 @@ package ru.r2cloud.web.api.schedule;
 
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
+
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.Satellite;
-import ru.r2cloud.model.Transmitter;
-import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
 

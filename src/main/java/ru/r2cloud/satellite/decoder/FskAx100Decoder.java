@@ -1,20 +1,12 @@
 package ru.r2cloud.satellite.decoder;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import ru.r2cloud.jradio.Ax100BeaconSource;
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconSource;
 import ru.r2cloud.jradio.ByteInput;
-import ru.r2cloud.jradio.demod.FskDemodulator;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.Util;
 
 public class FskAx100Decoder extends TelemetryDecoder {
 

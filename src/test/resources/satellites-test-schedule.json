@@ -1,0 +1,48 @@
+[
+	{
+		"name": "PEGASUS",
+		"noradId": "42784",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.at03.At03Beacon",
+				"frequency": 436670000,
+				"bandwidth": 12000,
+				"baudRates": [
+					9600
+				]
+			}
+		]
+	},
+	{
+		"name": "NORBI",
+		"noradId": "46494",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.norbi.NorbiBeacon",
+				"frequency": 436700000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				]
+			},
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.norbi.NorbiBeacon",
+				"frequency": 436703000,
+				"loraBandwidth": 250000,
+				"loraSpreadFactor": 10,
+				"loraCodingRate": 5,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1
+			}
+		]
+	}
+]

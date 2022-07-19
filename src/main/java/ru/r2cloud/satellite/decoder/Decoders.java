@@ -86,7 +86,7 @@ public class Decoders {
 				if (transmitter.getBaudRates() == null || transmitter.getBaudRates().isEmpty()) {
 					continue;
 				}
-				if( transmitter.getFraming().equals(Framing.CUSTOM) ) {
+				if (transmitter.getFraming().equals(Framing.CUSTOM)) {
 					continue;
 				}
 				if (transmitter.getFraming().equals(Framing.AX25G3RUH)) {
@@ -124,16 +124,6 @@ public class Decoders {
 				if (!decoders.containsKey(new DecoderKey(cur.getId(), curTransmitter.getId()))) {
 					throw new IllegalStateException("decoder is not defined for satellite: " + cur.getId() + " transmitter: " + curTransmitter.getId());
 				}
-			}
-		}
-		for (DecoderKey id : decoders.keySet()) {
-			Satellite satellite = satelliteDao.findById(id.getSatelliteId());
-			if (satellite == null) {
-				throw new IllegalStateException("missing satellite configuration for: " + id);
-			}
-			Transmitter transmitter = satellite.getById(id.getTransmitterId());
-			if (transmitter == null) {
-				throw new IllegalStateException("missing transmitter configuration for: " + id);
 			}
 		}
 	}

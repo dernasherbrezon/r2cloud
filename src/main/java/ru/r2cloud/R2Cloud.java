@@ -101,7 +101,6 @@ public class R2Cloud {
     private final PredictOreKit predict;
     private final ThreadPoolFactory threadFactory;
     private final ObservationFactory observationFactory;
-    private final Clock clock;
     private final ProcessFactory processFactory;
     private final ObservationDao resultDao;
     private final LeoSatDataService leoSatDataService;
@@ -112,7 +111,6 @@ public class R2Cloud {
     private final DeviceManager deviceManager;
 
     public R2Cloud(Configuration props, Clock clock) {
-        this.clock = clock;
         threadFactory = new ThreadPoolFactoryImpl(props.getThreadPoolShutdownMillis());
         processFactory = new ProcessFactory();
 

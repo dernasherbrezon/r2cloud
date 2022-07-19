@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconSource;
 import ru.r2cloud.jradio.ByteInput;
@@ -24,8 +22,6 @@ import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
 public class Smog1Decoder extends TelemetryDecoder {
-
-    private static final Logger LOG = LoggerFactory.getLogger(Smog1Decoder.class);
 
     public Smog1Decoder(PredictOreKit predict, Configuration config) {
         super(predict, config);
