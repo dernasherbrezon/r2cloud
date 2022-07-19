@@ -106,6 +106,18 @@ public class Satellite {
 		return null;
 	}
 
+	public TransmitterStatus getOverallStatus() {
+		TransmitterStatus result = null;
+		for (Transmitter cur : transmitters) {
+			// at least 1 ENABLED is required for overall ENABLED
+			if (cur.getStatus().equals(TransmitterStatus.ENABLED)) {
+				return cur.getStatus();
+			}
+			result = cur.getStatus();
+		}
+		return result;
+	}
+
 	@Override
 	public String toString() {
 		return name + "(" + id + ")";

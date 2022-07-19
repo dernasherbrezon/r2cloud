@@ -37,6 +37,7 @@ public class Transmitter {
 	private int loraSyncword;
 	private int loraPreambleLength;
 	private int loraLdro;
+	private TransmitterStatus status;
 
 	// copied from satellite
 	// to simplify code
@@ -310,6 +311,14 @@ public class Transmitter {
 		return id;
 	}
 
+	public TransmitterStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(TransmitterStatus status) {
+		this.status = status;
+	}
+
 	@SuppressWarnings("unchecked")
 	public static Transmitter fromJson(JsonObject asObject) {
 		Transmitter result = new Transmitter();
@@ -398,6 +407,12 @@ public class Transmitter {
 			result.setTransitionWidth(transitionWidth.asDouble());
 		} else {
 			result.setTransitionWidth(2000);
+		}
+		JsonValue status = asObject.get("status");
+		if (status != null) {
+			result.setStatus(TransmitterStatus.valueOf(status.asString()));
+		} else {
+			result.setStatus(TransmitterStatus.ENABLED);
 		}
 		return result;
 	}

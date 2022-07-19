@@ -410,16 +410,6 @@
 		"enabled": true,
 		"transmitters": [
 			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.norbi.NorbiBeacon",
-				"frequency": 436700000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				]
-			},
-			{
 				"modulation": "LORA",
 				"framing": "LORA",
 				"beaconClass": "ru.r2cloud.jradio.norbi.NorbiBeacon",
@@ -429,7 +419,19 @@
 				"loraCodingRate": 5,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
+				"status": "WEAK",
 				"loraLdro": 1
+			},
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.norbi.NorbiBeacon",
+				"frequency": 436700000,
+				"bandwidth": 20000,
+				"status": "ENABLED",
+				"baudRates": [
+					9600
+				]
 			}
 		]
 	},
@@ -450,7 +452,7 @@
 				]
 			}
 		]
-	},	
+	},
 	{
 		"name": "BISONSAT",
 		"noradId": "40968",
@@ -462,6 +464,7 @@
 				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
 				"frequency": 437375000,
 				"bandwidth": 20000,
+				"status": "WEAK",
 				"baudRates": [
 					9600
 				]
@@ -1229,7 +1232,7 @@
 				"beaconClass": "ru.r2cloud.jradio.astrocast.Astrocast9k6Beacon",
 				"frequency": 437150000,
 				"bandwidth": 20000,
-				"deviation" :10000,
+				"deviation": 10000,
 				"baudRates": [
 					9600
 				]
