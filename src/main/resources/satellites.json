@@ -12,7 +12,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -29,7 +30,8 @@
 				"bandwidth": 10000,
 				"baudRates": [
 					1200
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -46,7 +48,8 @@
 				"bandwidth": 10000,
 				"baudRates": [
 					1200
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -64,7 +67,8 @@
 				"baudRates": [
 					9600
 				],
-				"assistedHeader": "AAEAAAEAAAEAAQEAAAEAAQABAAEBAAEAAAEAAAABAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQAAAAEAAAAAAQABAQAAAAABAAAAAQABAAEAAAAAAAABAAAAAAAAAAEAAAAAAAAAAQABAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE="
+				"assistedHeader": "AAEAAAEAAAEAAQEAAAEAAQABAAEBAAEAAAEAAAABAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQAAAAEAAAAAAQABAQAAAAABAAAAAQABAAEAAAAAAAABAAAAAAAAAAEAAAAAAAAAAQABAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -82,7 +86,8 @@
 				"baudRates": [
 					9600
 				],
-				"assistedHeader": "AAEBAAABAAEAAAAAAAEAAQABAAAAAAABAAEBAAAAAAEAAQABAAAAAQAAAAAAAAEAAAAAAAABAQAAAQEAAQAAAQAAAQABAAABAAEBAQABAQAAAQEAAAEAAQABAAAAAAABAAAAAQABAAEBAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE="
+				"assistedHeader": "AAEBAAABAAEAAAAAAAEAAQABAAAAAAABAAEBAAAAAAEAAQABAAAAAQAAAAAAAAEAAAAAAAABAQAAAQEAAQAAAQAAAQABAAABAAEBAQABAQAAAQEAAAEAAQABAAAAAAABAAAAAQABAAEBAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -100,7 +105,8 @@
 				"baudRates": [
 					1200
 				],
-				"assistedHeader": "AAEAAAEAAAEAAAEBAQAAAQAAAAEAAAABAAEAAQABAAEAAQEAAAEAAQAAAAEAAQABAQABAAEBAQAAAQAAAQAAAQAAAQEBAAABAAAAAQAAAAEAAQABAAEAAQABAQAAAQABAAABAAABAAEBAAEAAQEBAQEBAAAAAAAAAAAAAAEBAQE="
+				"assistedHeader": "AAEAAAEAAAEAAAEBAQAAAQAAAAEAAAABAAEAAQABAAEAAQEAAAEAAQAAAAEAAQABAQABAAEBAQAAAQAAAQAAAQAAAQEBAAABAAAAAQAAAAEAAQABAAEAAQABAQAAAQABAAABAAABAAEBAAEAAQEBAQEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -118,7 +124,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					4800
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -136,7 +143,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					4800
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -154,7 +162,8 @@
 				"baudRates": [
 					9600
 				],
-				"assistedHeader": "AAABAAAAAAEAAAEBAQAAAQAAAAAAAQEAAAEBAAAAAAEAAQEAAQAAAQABAAEAAQABAAAAAAABAQEAAAEAAAAAAQAAAQEBAAABAAAAAAABAQAAAQAAAQAAAQABAQEBAAABAAAAAQABAAEBAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE="
+				"assistedHeader": "AAABAAAAAAEAAAEBAQAAAQAAAAAAAQEAAAEBAAAAAAEAAQEAAQAAAQABAAEAAQABAAAAAAABAQEAAAEAAAAAAQAAAQEBAAABAAAAAAABAQAAAQAAAQAAAQABAQEBAAABAAAAAQABAAEBAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -169,6 +178,7 @@
 				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
 				"frequency": 437200000,
 				"bandwidth": 0,
+				"status": "ENABLED",
 				"loraBandwidth": 125000,
 				"loraSpreadFactor": 9,
 				"loraCodingRate": 5,
@@ -192,7 +202,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -210,7 +221,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					4800
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -227,7 +239,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -245,7 +258,8 @@
 				"baudRates": [
 					1200
 				],
-				"deviation": 600
+				"deviation": 600,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -265,7 +279,8 @@
 					2500,
 					5000,
 					12500
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -282,7 +297,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -299,7 +315,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					4800
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -318,7 +335,8 @@
 					4800
 				],
 				"deviation": -1200,
-				"afCarrier": 3600
+				"afCarrier": 3600,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -335,7 +353,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					500
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -352,7 +371,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -371,7 +391,8 @@
 					1200
 				],
 				"deviation": 1200,
-				"afCarrier": 1700
+				"afCarrier": 1700,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -388,7 +409,8 @@
 				"bandwidth": 10000,
 				"baudRates": [
 					1200
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -406,7 +428,8 @@
 				"bandwidth": 10000,
 				"baudRates": [
 					1200
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -423,7 +446,45 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"name": "ION-MK01",
+		"noradId": "46274",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"beaconSizeBytes": 512,
+				"frequency": 437515000,
+				"bandwidth": 10000,
+				"baudRates": [
+					1200
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"name": "PSAT",
+		"noradId": "40654",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437230000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -443,7 +504,8 @@
 					1200,
 					4800,
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -460,7 +522,8 @@
 				"bandwidth": 10000,
 				"baudRates": [
 					2400
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -477,7 +540,8 @@
 				"bandwidth": 10000,
 				"baudRates": [
 					2400
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -494,7 +558,8 @@
 				"bandwidth": 10000,
 				"baudRates": [
 					2400
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -511,7 +576,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -528,7 +594,8 @@
 				"bandwidth": 24000,
 				"baudRates": [
 					19200
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -545,7 +612,8 @@
 				"bandwidth": 10000,
 				"baudRates": [
 					1200
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -562,14 +630,15 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					4800
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
 	{
 		"name": "HIROGARI (OPUSAT-II)",
 		"noradId": "47930",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
@@ -579,7 +648,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "DECAYED"
 			}
 		]
 	},
@@ -596,7 +666,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -614,7 +685,8 @@
 				"baudRates": [
 					9600
 				],
-				"assistedHeader": "AAEBAAAAAAEAAQAAAAEAAQAAAAAAAAEAAAAAAAAAAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQAAAQAAAQAAAQABAAABAAABAAAAAAABAQAAAQABAAEAAQABAQAAAQABAAAAAAAAAQABAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQEBAAEAAQABAAEBAAABAAEA"
+				"assistedHeader": "AAEBAAAAAAEAAQAAAAEAAQAAAAAAAAEAAAAAAAAAAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQAAAQAAAQAAAQABAAABAAABAAAAAAABAQAAAQABAAEAAQABAQAAAQABAAAAAAAAAQABAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQEBAAEAAQABAAEBAAABAAEA",
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -631,7 +703,8 @@
 				"bandwidth": 15000,
 				"baudRates": [
 					4800
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -648,7 +721,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -666,7 +740,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -683,7 +758,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -700,7 +776,8 @@
 				"bandwidth": 15000,
 				"baudRates": [
 					4800
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -717,7 +794,8 @@
 				"bandwidth": 15000,
 				"baudRates": [
 					4800
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -734,7 +812,8 @@
 				"bandwidth": 10000,
 				"baudRates": [
 					1200
-				]
+				],
+				"status": "WEAK"
 			}
 		]
 	},
@@ -751,7 +830,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "WEAK"
 			}
 		]
 	},
@@ -768,7 +848,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -787,7 +868,8 @@
 					1200,
 					9600
 				],
-				"assistedHeader": "AAAAAQEAAAEAAQAAAAAAAQAAAAEAAQABAAEAAQEAAAEAAQEBAQAAAQABAQAAAQABAAAAAAABAQEAAAABAQAAAQABAAAAAAABAAAAAQABAAEAAQABAQAAAQABAQEBAAABAAEBAAABAAEBAQAAAAEBAAEBAAAAAAAAAAAAAAEBAQE="
+				"assistedHeader": "AAAAAQEAAAEAAQAAAAAAAQAAAAEAAQABAAEAAQEAAAEAAQEBAQAAAQABAQAAAQABAAAAAAABAQEAAAABAQAAAQABAAAAAAABAAAAAQABAAEAAQABAQAAAQABAQEBAAABAAEBAAABAAEBAQAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -804,7 +886,8 @@
 				"bandwidth": 10000,
 				"baudRates": [
 					2400
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -821,7 +904,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -840,7 +924,8 @@
 					1200
 				],
 				"deviation": 1200,
-				"afCarrier": 1700
+				"afCarrier": 1700,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -857,7 +942,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					1200
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -876,7 +962,8 @@
 					1200
 				],
 				"deviation": 1200,
-				"afCarrier": 1700
+				"afCarrier": 1700,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -894,7 +981,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -912,7 +1000,8 @@
 				"bandwidth": 15000,
 				"baudRates": [
 					4800
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -929,7 +1018,26 @@
 				"bandwidth": 10000,
 				"baudRates": [
 					2400
-				]
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"name": "SPOOQY-1",
+		"noradId": "44332",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"frequency": 437230000,
+				"bandwidth": 20000,
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"baudRates": [
+					9600
+				],
+				"status": "DECAYED"
 			}
 		]
 	},
@@ -948,7 +1056,8 @@
 					1200
 				],
 				"deviation": 1200,
-				"afCarrier": 1700
+				"afCarrier": 1700,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -965,7 +1074,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -982,7 +1092,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -999,7 +1110,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1016,7 +1128,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1035,7 +1148,8 @@
 					1200
 				],
 				"deviation": -600,
-				"afCarrier": 1500
+				"afCarrier": 1500,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1052,7 +1166,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1069,36 +1184,22 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			},
 			{
 				"modulation": "LORA",
 				"framing": "LORA",
 				"beaconClass": "ru.r2cloud.jradio.norbi.NorbiBeacon",
 				"frequency": 436703000,
+				"bandwidth": 0,
+				"status": "ENABLED",
 				"loraBandwidth": 250000,
 				"loraSpreadFactor": 10,
 				"loraCodingRate": 5,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
 				"loraLdro": 1
-			}
-		]
-	},
-	{
-		"name": "PEGASUS",
-		"noradId": "42784",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "CUSTOM",
-				"beaconClass": "ru.r2cloud.jradio.at03.At03Beacon",
-				"frequency": 436670000,
-				"bandwidth": 12000,
-				"baudRates": [
-					9600
-				]
 			}
 		]
 	},
@@ -1115,7 +1216,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "WEAK"
 			}
 		]
 	},
@@ -1132,7 +1234,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1149,7 +1252,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1167,14 +1271,15 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
 	{
 		"name": "ACRUX 1",
 		"noradId": "44369",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
@@ -1184,7 +1289,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "DECAYED"
 			}
 		]
 	},
@@ -1201,7 +1307,26 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "WEAK"
+			}
+		]
+	},
+	{
+		"name": "TBEX-A",
+		"noradId": "44356",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"frequency": 437230000,
+				"bandwidth": 20000,
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"baudRates": [
+					9600
+				],
+				"status": "DECAYED"
 			}
 		]
 	},
@@ -1218,7 +1343,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "WEAK"
 			}
 		]
 	},
@@ -1235,7 +1361,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1252,7 +1379,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1269,7 +1397,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "WEAK"
 			}
 		]
 	},
@@ -1286,7 +1415,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "WEAK"
 			}
 		]
 	},
@@ -1303,7 +1433,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "WEAK"
 			}
 		]
 	},
@@ -1320,7 +1451,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "WEAK"
 			}
 		]
 	},
@@ -1338,7 +1470,8 @@
 				"baudRates": [
 					19200
 				],
-				"assistedHeader": "AAEBAAEAAAEAAQEBAAEBAAABAAEBAAABAAEBAAABAAEAAQABAAEAAQAAAAAAAAEAAAAAAAABAQAAAQEAAQAAAQABAQEAAQEAAAEAAQEAAAEAAQEAAAEAAQABAAEAAQABAAAAAAAAAQABAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE="
+				"assistedHeader": "AAEBAAEAAAEAAQEBAAEBAAABAAEBAAABAAEBAAABAAEAAQABAAEAAQAAAAAAAAEAAAAAAAABAQAAAQEAAQAAAQABAQEAAQEAAAEAAQEAAAEAAQEAAAEAAQABAAEAAQABAAAAAAAAAQABAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1355,7 +1488,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					19200
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1372,7 +1506,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1389,7 +1524,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1406,7 +1542,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1423,7 +1560,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1440,7 +1578,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1457,7 +1596,8 @@
 				"bandwidth": 10000,
 				"baudRates": [
 					4800
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1475,7 +1615,8 @@
 				"baudRates": [
 					4800
 				],
-				"assistedHeader": "AAEBAAAAAAEAAQAAAAEAAQAAAAAAAAEAAAAAAAAAAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQAAAAEAAAAAAQAAAQABAAABAAEAAAABAQAAAQEAAAEAAQABAQABAAABAAAAAAAAAQABAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE="
+				"assistedHeader": "AAEBAAAAAAEAAQAAAAEAAQAAAAAAAAEAAAAAAAAAAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQAAAAEAAAAAAQAAAQABAAABAAEAAAABAQAAAQEAAAEAAQABAQABAAABAAAAAAAAAQABAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1492,7 +1633,26 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"name": "BRICSAT2 (NO-103)",
+		"noradId": "44355",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"frequency": 437230000,
+				"bandwidth": 20000,
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"baudRates": [
+					9600
+				],
+				"status": "DECAYED"
 			}
 		]
 	},
@@ -1509,7 +1669,8 @@
 				"bandwidth": 42000,
 				"baudRates": [
 					19200
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1526,7 +1687,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1543,7 +1705,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1560,7 +1723,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1577,7 +1741,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1596,7 +1761,8 @@
 					1200
 				],
 				"deviation": 500,
-				"afCarrier": 1700
+				"afCarrier": 1700,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1613,7 +1779,26 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"name": "HUSKYSAT-1",
+		"noradId": "45119",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"frequency": 437230000,
+				"bandwidth": 20000,
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"baudRates": [
+					9600
+				],
+				"status": "DECAYED"
 			}
 		]
 	},
@@ -1632,7 +1817,8 @@
 					200
 				],
 				"deviation": 1500,
-				"transitionWidth": 200.0
+				"transitionWidth": 200.0,
+				"status": "WEAK"
 			}
 		]
 	},
@@ -1651,7 +1837,8 @@
 					200
 				],
 				"deviation": 1500,
-				"transitionWidth": 200.0
+				"transitionWidth": 200.0,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1668,7 +1855,8 @@
 				"bandwidth": 5000,
 				"baudRates": [
 					200
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1687,7 +1875,26 @@
 					1200
 				],
 				"bpskCenterFrequency": -2000,
-				"bpskDifferential": true
+				"bpskDifferential": true,
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"name": "QARMAN",
+		"noradId": "45263",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"frequency": 437230000,
+				"bandwidth": 20000,
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"baudRates": [
+					9600
+				],
+				"status": "DECAYED"
 			}
 		]
 	},
@@ -1707,7 +1914,8 @@
 				],
 				"assistedHeader": "AAAAAAABAAEAAQAAAQEAAQAAAQAAAQEAAAEAAAAAAAEAAQABAAAAAQABAQAAAAABAAAAAAAAAAAAAAAAAAEAAQABAAABAQABAAAAAAABAQAAAQABAAAAAQABAAABAAABAAEAAAAAAAEAAAAAAAAAAAEBAAAAAAAAAAAAAAEBAQE=",
 				"bpskCenterFrequency": 0,
-				"bpskDifferential": false
+				"bpskDifferential": false,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1724,7 +1932,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1741,7 +1950,8 @@
 				"bandwidth": 10000,
 				"baudRates": [
 					1200
-				]
+				],
+				"status": "WEAK"
 			}
 		]
 	},
@@ -1758,7 +1968,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					4800
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1776,7 +1987,26 @@
 				"bandwidth": 10000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"name": "MYSAT-1",
+		"noradId": "44045",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"frequency": 437230000,
+				"bandwidth": 20000,
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1795,7 +2025,8 @@
 				"baudRates": [
 					4800,
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1812,7 +2043,8 @@
 				"bandwidth": 10000,
 				"baudRates": [
 					4800
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1829,7 +2061,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1848,7 +2081,8 @@
 					1200
 				],
 				"bpskCenterFrequency": 0,
-				"bpskDifferential": true
+				"bpskDifferential": true,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1865,7 +2099,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1880,10 +2115,10 @@
 				"beaconClass": "ru.r2cloud.jradio.astrocast.Astrocast9k6Beacon",
 				"frequency": 437150000,
 				"bandwidth": 20000,
-				"deviation": 10000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1900,7 +2135,8 @@
 				"bandwidth": 10000,
 				"baudRates": [
 					4800
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1917,7 +2153,8 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1936,7 +2173,8 @@
 					1200
 				],
 				"deviation": -600,
-				"afCarrier": 1500
+				"afCarrier": 1500,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1955,7 +2193,8 @@
 					1200
 				],
 				"deviation": -600,
-				"afCarrier": 1500
+				"afCarrier": 1500,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1974,7 +2213,8 @@
 					1200
 				],
 				"deviation": -600,
-				"afCarrier": 1500
+				"afCarrier": 1500,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -1993,7 +2233,8 @@
 					1200
 				],
 				"deviation": -600,
-				"afCarrier": 1500
+				"afCarrier": 1500,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -2010,7 +2251,26 @@
 				"bandwidth": 15000,
 				"baudRates": [
 					4800
-				]
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"name": "PEGASUS",
+		"noradId": "42784",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.at03.At03Beacon",
+				"frequency": 436670000,
+				"bandwidth": 12000,
+				"baudRates": [
+					9600
+				],
+				"status": "WEAK"
 			}
 		]
 	},
@@ -2029,7 +2289,8 @@
 					1200
 				],
 				"bpskCenterFrequency": 0,
-				"bpskDifferential": true
+				"bpskDifferential": true,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -2048,7 +2309,8 @@
 					1200
 				],
 				"bpskCenterFrequency": 0,
-				"bpskDifferential": true
+				"bpskDifferential": true,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -2067,7 +2329,8 @@
 					4800
 				],
 				"deviation": -1200,
-				"afCarrier": 3600
+				"afCarrier": 3600,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -2085,7 +2348,8 @@
 				"baudRates": [
 					2400
 				],
-				"deviation": 2500
+				"deviation": 2500,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -2101,7 +2365,8 @@
 				"bandwidth": 140000,
 				"baudRates": [
 					72000
-				]
+				],
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -2113,7 +2378,8 @@
 			{
 				"framing": "APT",
 				"frequency": 137100000,
-				"bandwidth": 34000
+				"bandwidth": 34000,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -2125,7 +2391,8 @@
 			{
 				"framing": "APT",
 				"frequency": 137912500,
-				"bandwidth": 34000
+				"bandwidth": 34000,
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -2137,7 +2404,8 @@
 			{
 				"framing": "APT",
 				"frequency": 137620000,
-				"bandwidth": 34000
+				"bandwidth": 34000,
+				"status": "ENABLED"
 			}
 		]
 	}

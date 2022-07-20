@@ -38,7 +38,7 @@ public class ObservationFactory {
 	public List<ObservationRequest> createSchedule(Date date, Transmitter transmitter) {
 		Tle tle = tleDao.findById(transmitter.getSatelliteId());
 		if (tle == null) {
-			LOG.error("unable to find tle for: {}", transmitter);
+			LOG.error("unable to find tle for: {}", transmitter.getSatelliteId());
 			return Collections.emptyList();
 		}
 		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(tle.getRaw()[1], tle.getRaw()[2]));
