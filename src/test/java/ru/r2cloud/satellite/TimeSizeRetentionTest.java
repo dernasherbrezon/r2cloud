@@ -24,7 +24,7 @@ public class TimeSizeRetentionTest {
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	@Test
-	public void testDeleteEmptySatelliteDir() throws Exception {
+	public void testDoNotDeleteEmptySatelliteDir() throws Exception {
 		File satelliteDir = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
 		if (!satelliteDir.exists() && !satelliteDir.mkdirs()) {
 			throw new RuntimeException("unable to create dir: " + satelliteDir.getAbsolutePath());
@@ -36,7 +36,7 @@ public class TimeSizeRetentionTest {
 			fail("unable to write: " + e.getMessage());
 		}
 		new TimeSizeRetention(22, tempFolder.getRoot().toPath());
-		assertFalse(satelliteDir.exists());
+		assertTrue(satelliteDir.exists());
 	}
 
 	@Test

@@ -30,8 +30,10 @@ public class TimeSizeRetention {
 			for (Path curSatellite : ds) {
 				Path dataRoot = curSatellite.resolve("data");
 				if (!Files.exists(dataRoot)) {
-					// satellite dir without observations shouldn't exist
-					Util.deleteDirectory(curSatellite);
+					// do not empty satellite directory
+					// it might contain cached tle.txt file which is useful
+					// when no internet connection present and new observation is about
+					// to schedule
 					continue;
 				}
 				try (DirectoryStream<Path> observationDirs = Files.newDirectoryStream(dataRoot)) {
