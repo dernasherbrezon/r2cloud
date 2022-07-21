@@ -262,11 +262,23 @@ public final class Util {
 	// do not log whole stacktrace for network-based exceptions
 	// they are expected because base station can work without internet
 	public static void logIOException(Logger log, String message, Throwable e) {
+		logIOException(log, true, message, e);
+	}
+
+	public static void logIOException(Logger log, boolean error, String message, Throwable e) {
 		String cause = getShortMessageToLog(e);
 		if (cause != null) {
-			log.error("{}: {}", message, cause);
+			if (error) {
+				log.error("{}: {}", message, cause);
+			} else {
+				log.info("{}: {}", message, cause);
+			}
 		} else {
-			log.error(message, e);
+			if (error) {
+				log.error(message, e);
+			} else {
+				log.info(message, e);
+			}
 		}
 	}
 

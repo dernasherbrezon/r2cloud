@@ -170,7 +170,7 @@ public class LeoSatDataClient {
 				if (currentRetry > MAX_RETRIES) {
 					throw e;
 				}
-				Util.logIOException(LOG, "unable to send. retry " + currentRetry, e);
+				Util.logIOException(LOG, false, "unable to send. retry " + currentRetry, e);
 			}
 			// linear backoff with random jitter
 			Thread.sleep(GUARANTEED_PERIOD * currentRetry + (long) (Math.random() * GUARANTEED_PERIOD * currentRetry));
