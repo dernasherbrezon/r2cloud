@@ -37,6 +37,7 @@ done
 
 _term() {
   kill -TERM "$rtl" 2>/dev/null
+  while $(kill -0 "$rtl" 2>/dev/null); do wait "$rtl"; done
 }
 
 trap _term SIGTERM
