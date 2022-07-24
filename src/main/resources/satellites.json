@@ -1313,24 +1313,6 @@
 		]
 	},
 	{
-		"name": "TBEX-A",
-		"noradId": "44356",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"frequency": 437230000,
-				"bandwidth": 20000,
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"baudRates": [
-					9600
-				],
-				"status": "DECAYED"
-			}
-		]
-	},
-	{
 		"name": "SNUGLITE",
 		"noradId": "43784",
 		"enabled": true,
@@ -1635,24 +1617,6 @@
 					9600
 				],
 				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"name": "BRICSAT2 (NO-103)",
-		"noradId": "44355",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"frequency": 437230000,
-				"bandwidth": 20000,
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"baudRates": [
-					9600
-				],
-				"status": "DECAYED"
 			}
 		]
 	},
