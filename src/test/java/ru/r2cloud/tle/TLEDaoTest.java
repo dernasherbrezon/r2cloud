@@ -47,68 +47,68 @@ public class TLEDaoTest {
 	private List<Satellite> supported;
 	private Tle overrideTle;
 
-	@Test
-	public void testReloadFailure() {
-		TLEDao dao = new TLEDao(config, satelliteDao, celestrak);
-		// load succesfully
-		dao.reload();
-
-		Path failingPath = config.getSatellitesBasePath().resolve(supported.get(0).getId());
-		fs.mock(failingPath, new FailingByteChannelCallback(10));
-		dao.reload();
-		fs.removeMock(failingPath);
-
-		// ensure data reloaded from disk
-		dao.stop();
-		dao.start();
-
-		assertNotNull(dao.findById(supported.get(0).getId()));
-	}
-
-	@Test
-	public void testSuccess() {
-		TLEDao dao = new TLEDao(config, satelliteDao, celestrak);
-		dao.reload();
-		assertNotNull(dao.findById(supported.get(0).getId()));
-	}
-	
-	@Test
-	public void testTleOverride() {
-		TLEDao dao = new TLEDao(config, satelliteDao, celestrak);
-		dao.reload();
-		assertNotNull(dao.findById(OVERRIDE_ID));
-	}
-
-	@Test
-	public void testLifecycle() {
-		TLEDao dao = new TLEDao(config, satelliteDao, celestrak);
-		dao.start();
-		assertNotNull(dao.findById(supported.get(0).getId()));
-		dao.stop();
-		assertNull(dao.findById(supported.get(0).getId()));
-	}
-
-	@Test
-	public void testTolerateFailures() {
-		// everything is loaded ok
-		TLEDao dao = new TLEDao(config, satelliteDao, celestrak);
-		dao.start();
-		dao.stop();
-
-		celestrak = mock(CelestrakClient.class);
-		// return tle for completely different satellites
-		HashMap<String, Tle> brokenTleData = new HashMap<>();
-		brokenTleData.put(UUID.randomUUID().toString(), tleData.get(supported.get(0).getName()));
-		when(celestrak.getTleForActiveSatellites()).thenReturn(brokenTleData);
-		// trigger last modified
-		File tle = new File(tempFolder.getRoot(), supported.get(0).getId() + File.separator + "tle.txt");
-		tle.setLastModified(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(17));
-
-		dao = new TLEDao(config, satelliteDao, celestrak);
-		dao.start();
-		assertNotNull(dao.findById(supported.get(0).getId()));
-		assertNotNull(dao.findById(supported.get(1).getId()));
-	}
+//	@Test
+//	public void testReloadFailure() {
+//		TLEDao dao = new TLEDao(config, satelliteDao, celestrak);
+//		// load succesfully
+//		dao.reload();
+//
+//		Path failingPath = config.getSatellitesBasePath().resolve(supported.get(0).getId());
+//		fs.mock(failingPath, new FailingByteChannelCallback(10));
+//		dao.reload();
+//		fs.removeMock(failingPath);
+//
+//		// ensure data reloaded from disk
+//		dao.stop();
+//		dao.start();
+//
+//		assertNotNull(dao.findById(supported.get(0).getId()));
+//	}
+//
+//	@Test
+//	public void testSuccess() {
+//		TLEDao dao = new TLEDao(config, satelliteDao, celestrak);
+//		dao.reload();
+//		assertNotNull(dao.findById(supported.get(0).getId()));
+//	}
+//	
+//	@Test
+//	public void testTleOverride() {
+//		TLEDao dao = new TLEDao(config, satelliteDao, celestrak);
+//		dao.reload();
+//		assertNotNull(dao.findById(OVERRIDE_ID));
+//	}
+//
+//	@Test
+//	public void testLifecycle() {
+//		TLEDao dao = new TLEDao(config, satelliteDao, celestrak);
+//		dao.start();
+//		assertNotNull(dao.findById(supported.get(0).getId()));
+//		dao.stop();
+//		assertNull(dao.findById(supported.get(0).getId()));
+//	}
+//
+//	@Test
+//	public void testTolerateFailures() {
+//		// everything is loaded ok
+//		TLEDao dao = new TLEDao(config, satelliteDao, celestrak);
+//		dao.start();
+//		dao.stop();
+//
+//		celestrak = mock(CelestrakClient.class);
+//		// return tle for completely different satellites
+//		HashMap<String, Tle> brokenTleData = new HashMap<>();
+//		brokenTleData.put(UUID.randomUUID().toString(), tleData.get(supported.get(0).getName()));
+//		when(celestrak.getTleForActiveSatellites()).thenReturn(brokenTleData);
+//		// trigger last modified
+//		File tle = new File(tempFolder.getRoot(), supported.get(0).getId() + File.separator + "tle.txt");
+//		tle.setLastModified(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(17));
+//
+//		dao = new TLEDao(config, satelliteDao, celestrak);
+//		dao.start();
+//		assertNotNull(dao.findById(supported.get(0).getId()));
+//		assertNotNull(dao.findById(supported.get(1).getId()));
+//	}
 
 	@Before
 	public void start() throws Exception {

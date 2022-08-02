@@ -1,7 +1,11 @@
 package ru.r2cloud.satellite;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,6 +24,7 @@ import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteComparator;
 import ru.r2cloud.model.SdrType;
+import ru.r2cloud.model.Tle;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.model.TransmitterComparator;
 import ru.r2cloud.util.Configuration;
@@ -51,8 +56,14 @@ public class SatelliteDao {
 		}
 		List<Transmitter> allTransmitters = new ArrayList<>();
 		for (Satellite curSatellite : satellites) {
+			// user overrides from UI or manually from config
+			String enabled = config.getProperty("satellites." + curSatellite.getId() + ".enabled");
+			if (enabled != null) {
+				curSatellite.setEnabled(Boolean.valueOf(enabled));
+			}
 			allTransmitters.addAll(curSatellite.getTransmitters());
 			for (Transmitter curTransmitter : curSatellite.getTransmitters()) {
+				curTransmitter.setEnabled(curSatellite.isEnabled());
 				switch (curTransmitter.getFraming()) {
 				case APT:
 					curTransmitter.setInputSampleRate(60_000);
@@ -118,12 +129,45 @@ public class SatelliteDao {
 		}
 		for (int i = 0; i < rawSatellites.size(); i++) {
 			Satellite satellite = Satellite.fromJson(rawSatellites.get(i).asObject());
-			// user-specific
-			String enabled = config.getProperty("satellites." + satellite.getId() + ".enabled");
-			if (enabled != null) {
-				satellite.setEnabled(Boolean.valueOf(enabled));
+			satellite.setTle(loadTle(satellite, config));
+			for (Transmitter cur : satellite.getTransmitters()) {
+				cur.setEnabled(satellite.isEnabled());
+				cur.setPriority(satellite.getPriority());
+				cur.setSatelliteId(satellite.getId());
+				cur.setStart(satellite.getStart());
+				cur.setEnd(satellite.getEnd());
+				cur.setTle(satellite.getTle());
 			}
 			result.add(satellite);
+		}
+		return result;
+	}
+
+	private static Tle loadTle(Satellite satellite, Configuration config) {
+		Path tleFile = config.getSatellitesBasePath().resolve(satellite.getId()).resolve("tle.txt");
+		if (!Files.exists(tleFile)) {
+			LOG.info("missing tle for {}", satellite.getName());
+			return null;
+		}
+		Tle result;
+		try (BufferedReader r = Files.newBufferedReader(tleFile)) {
+			String line1 = r.readLine();
+			if (line1 == null) {
+				return null;
+			}
+			String line2 = r.readLine();
+			if (line2 == null) {
+				return null;
+			}
+			result = new Tle(new String[] { satellite.getName(), line1, line2 });
+		} catch (IOException e) {
+			LOG.error("unable to load TLE for {}", satellite.getId(), e);
+			return null;
+		}
+		try {
+			result.setLastUpdateTime(Files.getLastModifiedTime(tleFile).toMillis());
+		} catch (IOException e1) {
+			LOG.error("unable to get last modified time", e1);
 		}
 		return result;
 	}

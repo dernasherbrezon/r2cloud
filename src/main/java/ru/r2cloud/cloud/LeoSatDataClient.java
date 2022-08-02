@@ -39,6 +39,7 @@ import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.model.Transmitter;
+import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -53,9 +54,11 @@ public class LeoSatDataClient {
 	private final String hostname;
 	private final Configuration config;
 	private final Duration timeout;
+	private final Clock clock;
 
-	public LeoSatDataClient(Configuration config) {
+	public LeoSatDataClient(Configuration config, Clock clock) {
 		this.config = config;
+		this.clock = clock;
 		this.hostname = config.getProperty("leosatdata.hostname");
 		this.timeout = Duration.ofMillis(config.getInteger("leosatdata.connectionTimeout"));
 		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(timeout).build();
@@ -220,18 +223,8 @@ public class LeoSatDataClient {
 		result.setName(name);
 		result.setPriority(Priority.HIGH);
 		// by default enabled, but can be overriden by user from UI
-		String enabledStr = config.getProperty("satellites." + result.getId() + ".enabled");
-		if (enabledStr != null) {
-			result.setEnabled(Boolean.parseBoolean(enabledStr));
-		} else {
-			result.setEnabled(true);
-		}
-		Tle tle = readTle(json.get("tle"));
-		if (tle == null) {
-			LOG.info("can't read tle for {}", name);
-			return null;
-		}
-		result.setTle(tle);
+		result.setEnabled(true);
+		result.setTle(readTle(json.get("tle")));
 		long startTimeMillis = json.getLong("start", 0);
 		if (startTimeMillis != 0) {
 			result.setStart(new Date(startTimeMillis));
@@ -247,6 +240,7 @@ public class LeoSatDataClient {
 		transmitter.setSatelliteId(result.getId());
 		transmitter.setStart(result.getStart());
 		transmitter.setEnd(result.getEnd());
+		transmitter.setTle(result.getTle());
 		long frequency = json.getLong("frequency", 0);
 		if (frequency == 0) {
 			return null;
@@ -303,7 +297,7 @@ public class LeoSatDataClient {
 		return result;
 	}
 
-	private static Tle readTle(JsonValue tle) {
+	private Tle readTle(JsonValue tle) {
 		if (tle == null || !tle.isObject()) {
 			return null;
 		}
@@ -325,7 +319,10 @@ public class LeoSatDataClient {
 			LOG.error("invalid tle format");
 			return null;
 		}
-		return new Tle(new String[] { line1, line2, line3 });
+		Tle result = new Tle(new String[] { line1, line2, line3 });
+		// assume downloaded TLE is always fresh
+		result.setLastUpdateTime(clock.millis());
+		return result;
 	}
 
 	private static List<Integer> convertToIntegerList(JsonArray array) {

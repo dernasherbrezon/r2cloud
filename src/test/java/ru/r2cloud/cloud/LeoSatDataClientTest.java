@@ -1,20 +1,9 @@
 package ru.r2cloud.cloud;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import ru.r2cloud.JsonHttpResponse;
-import ru.r2cloud.LeoSatDataServerMock;
-import ru.r2cloud.TestConfiguration;
-import ru.r2cloud.MultiHttpResponse;
-import ru.r2cloud.TestUtil;
-import ru.r2cloud.model.Observation;
-import ru.r2cloud.model.Satellite;
-import ru.r2cloud.model.SdrType;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -22,10 +11,24 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+
+import ru.r2cloud.JsonHttpResponse;
+import ru.r2cloud.LeoSatDataServerMock;
+import ru.r2cloud.MultiHttpResponse;
+import ru.r2cloud.TestConfiguration;
+import ru.r2cloud.TestUtil;
+import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SdrType;
+import ru.r2cloud.util.DefaultClock;
 
 public class LeoSatDataClientTest {
 
@@ -126,14 +129,16 @@ public class LeoSatDataClientTest {
 		List<Satellite> result = client.loadNewLaunches();
 		assertEquals(2, result.size());
 		assertSatellite("LUCKY-7", true, result.get(0));
-		assertSatellite("PAINANI 1", false, result.get(1));
+		// by default all enabled
+		assertSatellite("PAINANI 1", true, result.get(1));
 	}
 
 	@Test
 	public void testInvalidTleInNewLaunch() throws Exception {
 		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunchInvalidTle.json", 200));
 		List<Satellite> result = client.loadNewLaunches();
-		assertEquals(0, result.size());
+		assertEquals(1, result.size());
+		assertNull(result.get(0).getTle());
 	}
 
 	@Test
@@ -211,7 +216,7 @@ public class LeoSatDataClientTest {
 		config.setProperty("leosatdata.connectionTimeout", "1000");
 		config.setProperty("r2cloud.apiKey", UUID.randomUUID().toString());
 		config.setProperty("satellites.R2CLOUD3.enabled", false);
-		client = new LeoSatDataClient(config);
+		client = new LeoSatDataClient(config, new DefaultClock());
 	}
 
 	@After

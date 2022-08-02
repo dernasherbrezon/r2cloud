@@ -46,6 +46,7 @@ public class Transmitter {
 	private Priority priority;
 	private Date start;
 	private Date end;
+	private Tle tle;
 
 	public Transmitter() {
 		// do nothing
@@ -80,6 +81,7 @@ public class Transmitter {
 		this.loraSyncword = copy.loraSyncword;
 		this.loraPreambleLength = copy.loraPreambleLength;
 		this.loraLdro = copy.loraLdro;
+		this.tle = copy.tle;
 	}
 
 	public double getTransitionWidth() {
@@ -128,6 +130,14 @@ public class Transmitter {
 
 	public void setEnd(Date end) {
 		this.end = end;
+	}
+	
+	public Tle getTle() {
+		return tle;
+	}
+	
+	public void setTle(Tle tle) {
+		this.tle = tle;
 	}
 
 	public Priority getPriority() {

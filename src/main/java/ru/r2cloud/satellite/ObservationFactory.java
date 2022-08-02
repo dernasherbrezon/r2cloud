@@ -16,7 +16,6 @@ import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
-import ru.r2cloud.tle.TLEDao;
 import ru.r2cloud.util.Configuration;
 
 public class ObservationFactory {
@@ -25,23 +24,20 @@ public class ObservationFactory {
 	public static final int DC_OFFSET = 10_000;
 	private static final long MAX_OBSERVATION_MILLIS = 15 * 60 * 1000;
 
-	private final TLEDao tleDao;
 	private final PredictOreKit predict;
 	private final Configuration config;
 
-	public ObservationFactory(PredictOreKit predict, TLEDao tleDao, Configuration config) {
+	public ObservationFactory(PredictOreKit predict, Configuration config) {
 		this.predict = predict;
-		this.tleDao = tleDao;
 		this.config = config;
 	}
 
 	public List<ObservationRequest> createSchedule(Date date, Transmitter transmitter) {
-		Tle tle = tleDao.findById(transmitter.getSatelliteId());
-		if (tle == null) {
-			LOG.error("unable to find tle for: {}", transmitter.getSatelliteId());
+		if (transmitter.getTle() == null) {
+			LOG.error("no tle for: {}", transmitter.getSatelliteId());
 			return Collections.emptyList();
 		}
-		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(tle.getRaw()[1], tle.getRaw()[2]));
+		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(transmitter.getTle().getRaw()[1], transmitter.getTle().getRaw()[2]));
 		List<SatPass> batch = predict.calculateSchedule(date, tlePropagator);
 		if (batch == null || batch.isEmpty()) {
 			return Collections.emptyList();
@@ -61,10 +57,10 @@ public class ObservationFactory {
 			// Raspberry PI might not be able to perform such long observations
 			// better split into several
 			while (endMillis - startMillis > MAX_OBSERVATION_MILLIS) {
-				result.add(convert(transmitter, tle, tlePropagator, startMillis, startMillis + MAX_OBSERVATION_MILLIS));
+				result.add(convert(transmitter, transmitter.getTle(), tlePropagator, startMillis, startMillis + MAX_OBSERVATION_MILLIS));
 				startMillis += MAX_OBSERVATION_MILLIS;
 			}
-			result.add(convert(transmitter, tle, tlePropagator, startMillis, endMillis));
+			result.add(convert(transmitter, transmitter.getTle(), tlePropagator, startMillis, endMillis));
 		}
 		return result;
 	}

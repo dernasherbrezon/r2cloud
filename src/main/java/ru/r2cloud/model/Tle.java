@@ -7,6 +7,7 @@ import com.eclipsesource.json.JsonObject;
 public class Tle {
 
 	private final String[] raw;
+	private long lastUpdateTime;
 
 	public Tle(String[] tle) {
 		this.raw = tle;
@@ -14,6 +15,14 @@ public class Tle {
 
 	public String[] getRaw() {
 		return raw;
+	}
+	
+	public void setLastUpdateTime(long lastUpdateTime) {
+		this.lastUpdateTime = lastUpdateTime;
+	}
+	
+	public long getLastUpdateTime() {
+		return lastUpdateTime;
 	}
 
 	@Override

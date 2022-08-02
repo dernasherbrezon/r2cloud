@@ -137,11 +137,6 @@ public class Satellite {
 			for (int i = 0; i < transmittersArray.size(); i++) {
 				Transmitter cur = Transmitter.fromJson(transmittersArray.get(i).asObject());
 				cur.setId(result.getId() + "-" + String.valueOf(i));
-				cur.setEnabled(result.isEnabled());
-				cur.setPriority(result.getPriority());
-				cur.setSatelliteId(result.getId());
-				cur.setStart(result.getStart());
-				cur.setEnd(result.getEnd());
 				transmitters.add(cur);
 			}
 		}

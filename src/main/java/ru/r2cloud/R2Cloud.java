@@ -120,7 +120,7 @@ public class R2Cloud {
             ConcurrencyUtils.setNumberOfThreads(numberOfThreads);
         }
 
-        leoSatDataClient = new LeoSatDataClient(props);
+        leoSatDataClient = new LeoSatDataClient(props, clock);
         spectogramService = new SpectogramService(props);
         resultDao = new ObservationDao(props);
         leoSatDataService = new LeoSatDataService(props, resultDao, leoSatDataClient, spectogramService);
@@ -136,7 +136,7 @@ public class R2Cloud {
         decoders = new Decoders(predict, props, processFactory, satelliteDao);
         decoderService = new DecoderService(props, decoders, resultDao, leoSatDataService, threadFactory, metrics, satelliteDao);
 
-        observationFactory = new ObservationFactory(predict, tleDao, props);
+        observationFactory = new ObservationFactory(predict, props);
 
         deviceManager = new DeviceManager(props, satelliteDao, threadFactory, clock);
         Map<String, SharedSchedule> sharedSchedule = createSharedSchedules(props, observationFactory);

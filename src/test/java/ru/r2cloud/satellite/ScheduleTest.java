@@ -39,6 +39,7 @@ import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.tle.TLEDao;
+import ru.r2cloud.util.DefaultClock;
 
 public class ScheduleTest {
 
@@ -166,12 +167,12 @@ public class ScheduleTest {
 		config.setProperty("r2cloud.newLaunches", true);
 		config.setProperty("r2cloud.apiKey", UUID.randomUUID().toString());
 		config.setProperty("leosatdata.hostname", server.getUrl());
-		LeoSatDataClient r2cloudClient = new LeoSatDataClient(config);
+		LeoSatDataClient r2cloudClient = new LeoSatDataClient(config, new DefaultClock());
 		satelliteDao = new SatelliteDao(config, r2cloudClient);
 		tleDao = new TLEDao(config, satelliteDao, new CelestrakClient(celestrak.getUrls()));
 		tleDao.start();
 		PredictOreKit predict = new PredictOreKit(config);
-		factory = new ObservationFactory(predict, tleDao, config);
+		factory = new ObservationFactory(predict, config);
 		schedule = new Schedule(new SequentialTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
 
 		current = getTime("2020-09-30 22:17:01.000");

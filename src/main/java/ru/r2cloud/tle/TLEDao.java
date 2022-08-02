@@ -41,38 +41,10 @@ public class TLEDao {
 		boolean reload = false;
 		long periodMillis = config.getLong("tle.update.periodMillis");
 		for (Satellite cur : satelliteDao.findAll()) {
-			Path tleFile = basepath.resolve(cur.getId()).resolve("tle.txt");
-			if (!Files.exists(tleFile)) {
-				LOG.info("missing tle for {}. schedule reloading", cur.getName());
+			if (cur.getTle() == null || cur.getTle().getLastUpdateTime() == 0 || System.currentTimeMillis() - cur.getTle().getLastUpdateTime() > periodMillis) {
 				reload = true;
-				continue;
-			}
-			try {
-				long time = Files.getLastModifiedTime(tleFile).toMillis();
-				if (System.currentTimeMillis() - time > periodMillis) {
-					LOG.info("tle file: {} stale. Last updated at: {}. schedule reloading", tleFile.toAbsolutePath(), new Date(time));
-					reload = true;
-					// schedule reload, but read it anyway in case celestrak is not
-					// available. better to get stale results, rather than none
-				}
-			} catch (IOException e1) {
-				LOG.error("unable to get last modified time. schedule reloading", e1);
-				reload = true;
-			}
-			try (BufferedReader r = Files.newBufferedReader(tleFile)) {
-				String line1 = r.readLine();
-				if (line1 == null) {
-					continue;
-				}
-				String line2 = r.readLine();
-				if (line2 == null) {
-					continue;
-				}
-				this.tle.put(cur.getId(), new Tle(new String[] { cur.getName(), line1, line2 }));
-			} catch (IOException e) {
-				LOG.error("unable to load TLE for {}", cur.getId(), e);
-				reload = true;
-				continue;
+				LOG.info("missing or outdated TLE for {}. schedule reloading", cur.getName());
+				break;
 			}
 		}
 		// load as much as possible, because celestrak might be unavailable
@@ -81,10 +53,6 @@ public class TLEDao {
 		if (reload) {
 			reload();
 		}
-	}
-
-	public Tle findById(String id) {
-		return tle.get(id);
 	}
 
 	public Map<String, Tle> findAll() {

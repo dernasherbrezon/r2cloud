@@ -45,7 +45,7 @@ public class UtilizationTest {
 		SatelliteDao satelliteDao = new SatelliteDao(config, null);
 		TLEDao tleDao = new TLEDao(config, satelliteDao, new CelestrakClient(celestrak.getUrls()));
 		tleDao.start();
-		ObservationFactory factory = new ObservationFactory(predict, tleDao, config);
+		ObservationFactory factory = new ObservationFactory(predict, config);
 
 		List<Transmitter> enabledByDefault = getDefaultEnabled(satelliteDao);
 
