@@ -56,6 +56,11 @@ public class Satellite {
 
 	public void setTle(Tle tle) {
 		this.tle = tle;
+		if (transmitters != null) {
+			for (Transmitter cur : transmitters) {
+				cur.setTle(tle);
+			}
+		}
 	}
 
 	public Priority getPriority() {

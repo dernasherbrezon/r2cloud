@@ -1,7 +1,19 @@
 package ru.r2cloud;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.nio.file.FileSystems;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pl.edu.icm.jlargearrays.ConcurrencyUtils;
 import ru.r2cloud.cloud.LeoSatDataClient;
 import ru.r2cloud.cloud.LeoSatDataService;
@@ -30,7 +42,6 @@ import ru.r2cloud.satellite.SequentialTimetable;
 import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.decoder.Decoders;
 import ru.r2cloud.tle.CelestrakClient;
-import ru.r2cloud.tle.TLEDao;
 import ru.r2cloud.tle.TLEReloader;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
@@ -66,17 +77,6 @@ import ru.r2cloud.web.api.setup.Setup;
 import ru.r2cloud.web.api.status.MetricsController;
 import ru.r2cloud.web.api.status.Overview;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.nio.file.FileSystems;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 public class R2Cloud {
 
     static {
@@ -95,7 +95,6 @@ public class R2Cloud {
     private final AutoUpdate autoUpdate;
     private final DDNSClient ddnsClient;
     private final SatelliteDao satelliteDao;
-    private final TLEDao tleDao;
     private final TLEReloader tleReloader;
     private final DecoderService decoderService;
     private final PredictOreKit predict;
@@ -130,8 +129,7 @@ public class R2Cloud {
         autoUpdate = new AutoUpdate(props);
         ddnsClient = new DDNSClient(props);
         satelliteDao = new SatelliteDao(props, leoSatDataClient);
-        tleDao = new TLEDao(props, satelliteDao, new CelestrakClient(props.getProperties("tle.urls")));
-        tleReloader = new TLEReloader(props, tleDao, threadFactory, clock);
+        tleReloader = new TLEReloader(props, satelliteDao, threadFactory, clock, new CelestrakClient(props.getProperties("tle.urls")));
         signed = new SignedURL(props, clock);
         decoders = new Decoders(predict, props, processFactory, satelliteDao);
         decoderService = new DecoderService(props, decoders, resultDao, leoSatDataService, threadFactory, metrics, satelliteDao);
@@ -168,7 +166,7 @@ public class R2Cloud {
         index(new Overview(props, deviceManager));
         index(new General(props, autoUpdate));
         index(new DDNS(props, ddnsClient));
-        index(new TLE(props, tleDao));
+        index(new TLE(props, satelliteDao));
         index(new R2CloudSave(props));
         index(new ObservationSpectrogram(resultDao, spectogramService, signed));
         index(new ObservationList(satelliteDao, resultDao));
@@ -185,7 +183,6 @@ public class R2Cloud {
 
     public void start() {
         ddnsClient.start();
-        tleDao.start();
         tleReloader.start();
         decoderService.start();
         // device manager should start after tle (it uses TLE to schedule
@@ -204,7 +201,6 @@ public class R2Cloud {
         deviceManager.stop();
         decoderService.stop();
         tleReloader.stop();
-        tleDao.stop();
         ddnsClient.stop();
     }
 

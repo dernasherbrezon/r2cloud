@@ -38,8 +38,9 @@ import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.tle.CelestrakClient;
-import ru.r2cloud.tle.TLEDao;
+import ru.r2cloud.tle.TLEReloader;
 import ru.r2cloud.util.DefaultClock;
+import ru.r2cloud.util.ThreadPoolFactoryImpl;
 
 public class ScheduleTest {
 
@@ -51,7 +52,7 @@ public class ScheduleTest {
 	private LeoSatDataServerMock server;
 	private TestConfiguration config;
 	private SatelliteDao satelliteDao;
-	private TLEDao tleDao;
+	private TLEReloader tleDao;
 	private long current;
 	private ObservationFactory factory;
 
@@ -169,7 +170,7 @@ public class ScheduleTest {
 		config.setProperty("leosatdata.hostname", server.getUrl());
 		LeoSatDataClient r2cloudClient = new LeoSatDataClient(config, new DefaultClock());
 		satelliteDao = new SatelliteDao(config, r2cloudClient);
-		tleDao = new TLEDao(config, satelliteDao, new CelestrakClient(celestrak.getUrls()));
+		tleDao = new TLEReloader(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new DefaultClock(), new CelestrakClient(celestrak.getUrls()));
 		tleDao.start();
 		PredictOreKit predict = new PredictOreKit(config);
 		factory = new ObservationFactory(predict, config);
@@ -185,6 +186,9 @@ public class ScheduleTest {
 		}
 		if (server != null) {
 			server.stop();
+		}
+		if (tleDao != null) {
+			tleDao.stop();
 		}
 	}
 

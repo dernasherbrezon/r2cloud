@@ -1,12 +1,11 @@
 package ru.r2cloud.web.api;
 
-import java.util.Map.Entry;
-
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
-import ru.r2cloud.tle.TLEDao;
+import ru.r2cloud.model.Satellite;
+import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
@@ -14,9 +13,9 @@ import ru.r2cloud.web.ModelAndView;
 public class TLE extends AbstractHttpController {
 
 	private final Configuration config;
-	private final TLEDao service;
+	private final SatelliteDao service;
 
-	public TLE(Configuration config, TLEDao service) {
+	public TLE(Configuration config, SatelliteDao service) {
 		this.config = config;
 		this.service = service;
 	}
@@ -30,11 +29,14 @@ public class TLE extends AbstractHttpController {
 			entity.add("lastUpdated", lastUpdateMillis);
 		}
 		JsonArray tle = new JsonArray();
-		for (Entry<String, ru.r2cloud.model.Tle> cur : service.findAll().entrySet()) {
+		for (Satellite cur : service.findAll()) {
+			if (cur.getTle() == null) {
+				continue;
+			}
 			JsonObject curTle = new JsonObject();
-			curTle.add("id", cur.getKey());
+			curTle.add("id", cur.getId());
 			JsonArray curData = new JsonArray();
-			for (String curDataEntry : cur.getValue().getRaw()) {
+			for (String curDataEntry : cur.getTle().getRaw()) {
 				curData.add(curDataEntry);
 			}
 			curTle.add("data", curData);

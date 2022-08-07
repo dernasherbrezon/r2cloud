@@ -21,8 +21,10 @@ import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.tle.CelestrakClient;
-import ru.r2cloud.tle.TLEDao;
+import ru.r2cloud.tle.TLEReloader;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.DefaultClock;
+import ru.r2cloud.util.ThreadPoolFactoryImpl;
 
 public class UtilizationTest {
 
@@ -43,7 +45,7 @@ public class UtilizationTest {
 		celestrak.mockResponse(TestUtil.loadExpected("tle-2020-09-27.txt"));
 		PredictOreKit predict = new PredictOreKit(config);
 		SatelliteDao satelliteDao = new SatelliteDao(config, null);
-		TLEDao tleDao = new TLEDao(config, satelliteDao, new CelestrakClient(celestrak.getUrls()));
+		TLEReloader tleDao = new TLEReloader(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new DefaultClock(), new CelestrakClient(celestrak.getUrls()));
 		tleDao.start();
 		ObservationFactory factory = new ObservationFactory(predict, config);
 
@@ -64,6 +66,7 @@ public class UtilizationTest {
 			cm.remove(0);
 		}
 		celestrak.stop();
+		tleDao.stop();
 	}
 
 	private static List<Transmitter> loadFromFile(SatelliteDao satelliteDao, String file) throws Exception {
