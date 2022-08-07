@@ -39,6 +39,7 @@ import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.model.Transmitter;
+import ru.r2cloud.model.TransmitterStatus;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
@@ -280,6 +281,7 @@ public class LeoSatDataClient {
 		}
 		transmitter.setDeviation(5000);
 		transmitter.setTransitionWidth(2000);
+		transmitter.setStatus(TransmitterStatus.ENABLED);
 		transmitter.setBeaconSizeBytes(json.getInt("beaconSizeBytes", 0));
 		transmitter.setLoraBandwidth(json.getLong("loraBandwidth", 0));
 		transmitter.setLoraSpreadFactor(json.getInt("loraSpreadFactor", 0));

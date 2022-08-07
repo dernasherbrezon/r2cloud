@@ -28,6 +28,7 @@ import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SdrType;
+import ru.r2cloud.model.TransmitterStatus;
 import ru.r2cloud.util.DefaultClock;
 
 public class LeoSatDataClientTest {
@@ -258,6 +259,7 @@ public class LeoSatDataClientTest {
 	private static void assertSatellite(String name, boolean enabled, Satellite actual) {
 		assertEquals(name, actual.getName());
 		assertEquals(enabled, actual.isEnabled());
+		assertEquals(TransmitterStatus.ENABLED, actual.getOverallStatus());
 		assertNotNull(actual.getTle());
 	}
 }
