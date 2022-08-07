@@ -39,6 +39,7 @@ import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.model.Transmitter;
+import ru.r2cloud.model.TransmitterStatus;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
