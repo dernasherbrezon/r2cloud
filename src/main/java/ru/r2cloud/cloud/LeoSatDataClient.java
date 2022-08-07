@@ -286,6 +286,7 @@ public class LeoSatDataClient {
 		}
 		transmitter.setDeviation(5000);
 		transmitter.setTransitionWidth(2000);
+		transmitter.setStatus(TransmitterStatus.ENABLED);
 		transmitter.setBeaconSizeBytes(json.getInt("beaconSizeBytes", 0));
 		transmitter.setLoraBandwidth(json.getLong("loraBandwidth", 0));
 		transmitter.setLoraSpreadFactor(json.getInt("loraSpreadFactor", 0));
