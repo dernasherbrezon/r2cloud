@@ -36,6 +36,7 @@
 			{
 				"modulation": "LORA",
 				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
 				"frequency": 437250000,
 				"bandwidth": 62500,
 				"status": "ENABLED",
@@ -56,6 +57,7 @@
 			{
 				"modulation": "LORA",
 				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
 				"frequency": 401700000,
 				"bandwidth": 125000,
 				"status": "ENABLED",
@@ -76,6 +78,7 @@
 			{
 				"modulation": "LORA",
 				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
 				"frequency": 401700000,
 				"bandwidth": 125000,
 				"status": "ENABLED",
@@ -96,6 +99,7 @@
 			{
 				"modulation": "LORA",
 				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
 				"frequency": 401700000,
 				"bandwidth": 125000,
 				"status": "ENABLED",
@@ -116,6 +120,7 @@
 			{
 				"modulation": "LORA",
 				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
 				"frequency": 436000000,
 				"bandwidth": 125000,
 				"status": "ENABLED",
@@ -137,6 +142,7 @@
 				"modulation": "GFSK",
 				"framing": "AX25",
 				"frequency": 436750000,
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
 				"bandwidth": 20000,
 				"baudRates": [
 					2400,
@@ -154,6 +160,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
 				"frequency": 436500000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -171,6 +178,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
 				"frequency": 435310000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -189,6 +197,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
 				"frequency": 437425000,
 				"bandwidth": 20000,
 				"baudRates": [
