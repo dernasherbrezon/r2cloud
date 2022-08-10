@@ -1,5 +1,204 @@
 [
 	{
+		"name": "CTIM",
+		"noradId": "52950",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437250000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			},
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437396000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"name": "SATLLA-2B",
+		"noradId": "51014",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"frequency": 437250000,
+				"bandwidth": 62500,
+				"status": "ENABLED",
+				"loraBandwidth": 62500,
+				"loraSpreadFactor": 10,
+				"loraCodingRate": 5,
+				"loraSyncword": 42,
+				"loraPreambleLength": 8,
+				"loraLdro": 2
+			}
+		]
+	},
+	{
+		"name": "FOSSASAT-2E3",
+		"noradId": "50990",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"frequency": 401700000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 11,
+				"loraCodingRate": 8,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1
+			}
+		]
+	},
+	{
+		"name": "FOSSASAT-2E2",
+		"noradId": "50984",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"frequency": 401700000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 11,
+				"loraCodingRate": 8,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1
+			}
+		]
+	},
+	{
+		"name": "FOSSASAT-2E1",
+		"noradId": "50985",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"frequency": 401700000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 11,
+				"loraCodingRate": 8,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1
+			}
+		]
+	},
+	{
+		"name": "1998-067TD",
+		"noradId": "51441",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"frequency": 436000000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraCodingRate": 5,
+				"loraSyncword": 18,
+				"loraPreambleLength": 6,
+				"loraLdro": 2
+			}
+		]
+	},
+	{
+		"name": "MTCUBE 2 (ROBUSTA 1F)",
+		"noradId": "53106",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25",
+				"frequency": 436750000,
+				"bandwidth": 20000,
+				"baudRates": [
+					2400,
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"name": "CELESTA",
+		"noradId": "53111",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25",
+				"frequency": 436500000,
+				"bandwidth": 20000,
+				"baudRates": [
+					2400
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"name": "GREENCUBE",
+		"noradId": "53109",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"frequency": 435310000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200,
+					4800
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"name": "ASTROBIOCUBESAT",
+		"noradId": "53107",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"frequency": 437425000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"name": "TEVEL-7",
 		"noradId": "51062",
 		"enabled": true,
@@ -636,24 +835,6 @@
 		]
 	},
 	{
-		"name": "HIROGARI (OPUSAT-II)",
-		"noradId": "47930",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 145900000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "DECAYED"
-			}
-		]
-	},
-	{
 		"name": "RAMSAT",
 		"noradId": "48850",
 		"enabled": true,
@@ -1024,24 +1205,6 @@
 		]
 	},
 	{
-		"name": "SPOOQY-1",
-		"noradId": "44332",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"frequency": 437230000,
-				"bandwidth": 20000,
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"baudRates": [
-					9600
-				],
-				"status": "DECAYED"
-			}
-		]
-	},
-	{
 		"name": "AMICALSAT",
 		"noradId": "46287",
 		"enabled": true,
@@ -1273,24 +1436,6 @@
 					9600
 				],
 				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"name": "ACRUX 1",
-		"noradId": "44369",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 437200000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "DECAYED"
 			}
 		]
 	},
@@ -1749,24 +1894,6 @@
 		]
 	},
 	{
-		"name": "HUSKYSAT-1",
-		"noradId": "45119",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"frequency": 437230000,
-				"bandwidth": 20000,
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"baudRates": [
-					9600
-				],
-				"status": "DECAYED"
-			}
-		]
-	},
-	{
 		"name": "FOX-1D (AO-92)",
 		"noradId": "43137",
 		"enabled": true,
@@ -1841,24 +1968,6 @@
 				"bpskCenterFrequency": -2000,
 				"bpskDifferential": true,
 				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"name": "QARMAN",
-		"noradId": "45263",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"frequency": 437230000,
-				"bandwidth": 20000,
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"baudRates": [
-					9600
-				],
-				"status": "DECAYED"
 			}
 		]
 	},
@@ -1964,9 +2073,9 @@
 			{
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
 				"frequency": 437230000,
 				"bandwidth": 20000,
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
 				"baudRates": [
 					9600
 				],
