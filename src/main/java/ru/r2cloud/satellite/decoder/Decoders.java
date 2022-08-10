@@ -101,6 +101,8 @@ public class Decoders {
 					index(cur.getId(), transmitter.getId(), new Ax25Decoder(predict, props, transmitter.getBeaconClass(), transmitter.getAssistedHeader()));
 				} else if (transmitter.getModulation().equals(Modulation.AFSK) && transmitter.getFraming().equals(Framing.AX25)) {
 					index(cur.getId(), transmitter.getId(), new AfskAx25Decoder(predict, props, transmitter.getBeaconClass(), transmitter.getAssistedHeader()));
+				} else if (transmitter.getFraming().equals(Framing.USP)) {
+					index(cur.getId(), transmitter.getId(), new UspDecoder(predict, props, transmitter.getBeaconClass()));
 				} else {
 					LOG.error("unsupported combination of modulation and framing: {} - {}", transmitter.getModulation(), transmitter.getFraming());
 				}
