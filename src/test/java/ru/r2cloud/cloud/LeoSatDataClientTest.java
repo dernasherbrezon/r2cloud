@@ -166,46 +166,6 @@ public class LeoSatDataClientTest {
 		validNewLaunch.remove("name");
 		server.setNewLaunchMock(validNewLaunch);
 		assertTrue(client.loadNewLaunches().isEmpty());
-
-		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
-		validNewLaunch.remove("frequency");
-		server.setNewLaunchMock(validNewLaunch);
-		assertTrue(client.loadNewLaunches().isEmpty());
-
-		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
-		validNewLaunch.remove("modulation");
-		server.setNewLaunchMock(validNewLaunch);
-		assertTrue(client.loadNewLaunches().isEmpty());
-
-		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
-		validNewLaunch.set("modulation", UUID.randomUUID().toString());
-		server.setNewLaunchMock(validNewLaunch);
-		assertTrue(client.loadNewLaunches().isEmpty());
-
-		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
-		validNewLaunch.remove("framing");
-		server.setNewLaunchMock(validNewLaunch);
-		assertTrue(client.loadNewLaunches().isEmpty());
-
-		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
-		validNewLaunch.set("framing", UUID.randomUUID().toString());
-		server.setNewLaunchMock(validNewLaunch);
-		assertTrue(client.loadNewLaunches().isEmpty());
-
-		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
-		validNewLaunch.remove("bandwidth");
-		server.setNewLaunchMock(validNewLaunch);
-		assertTrue(client.loadNewLaunches().isEmpty());
-
-		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
-		validNewLaunch.remove("beaconClass");
-		server.setNewLaunchMock(validNewLaunch);
-		assertTrue(client.loadNewLaunches().isEmpty());
-
-		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
-		validNewLaunch.set("beaconClass", UUID.randomUUID().toString());
-		server.setNewLaunchMock(validNewLaunch);
-		assertTrue(client.loadNewLaunches().isEmpty());
 	}
 
 	@Before

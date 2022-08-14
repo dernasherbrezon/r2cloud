@@ -692,7 +692,7 @@
 				"baudRates": [
 					9600
 				],
-				"status": "ENABLED"
+				"status": "DECAYED"
 			}
 		]
 	},

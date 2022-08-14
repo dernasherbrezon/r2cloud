@@ -134,6 +134,14 @@ public class Satellite {
 		result.setName(meta.getString("name", null));
 		result.setPriority(Priority.NORMAL);
 		result.setEnabled(meta.getBoolean("enabled", false));
+		long startTimeMillis = meta.getLong("start", 0);
+		if (startTimeMillis != 0) {
+			result.setStart(new Date(startTimeMillis));
+		}
+		long endTimeMillis = meta.getLong("end", 0);
+		if (endTimeMillis != 0) {
+			result.setEnd(new Date(endTimeMillis));
+		}
 		List<Transmitter> transmitters = new ArrayList<>();
 		result.setTransmitters(transmitters);
 		JsonValue transmittersRaw = meta.get("transmitters");
@@ -142,6 +150,7 @@ public class Satellite {
 			for (int i = 0; i < transmittersArray.size(); i++) {
 				Transmitter cur = Transmitter.fromJson(transmittersArray.get(i).asObject());
 				cur.setId(result.getId() + "-" + String.valueOf(i));
+				cur.setEnabled(result.isEnabled());
 				transmitters.add(cur);
 			}
 		}

@@ -2,14 +2,20 @@
 	{
 		"id": "R2CLOUD2",
 		"name": "LUCKY-7",
-		"modulation": "GFSK",
-		"framing": "AX25G3RUH",
-		"frequency": 437525000,
-		"bandwidth": 20000,
-		"baudRates": [
-			4800
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.lucky7.Lucky7Beacon",
+				"frequency": 437525000,
+				"bandwidth": 20000,
+				"baudRates": [
+					4800
+				],
+				"status": "ENABLED"
+			}
 		],
-		"beaconClass": "ru.r2cloud.jradio.lucky7.Lucky7Beacon",
 		"tle": {
 			"line1": "LUCKY-7",
 			"line2": "1 44406U 19038W   20069.88080907  .00000505  00000-0  32890-4 0  9992",
@@ -21,14 +27,20 @@
 	{
 		"id": "R2CLOUD3",
 		"name": "PAINANI 1",
-		"modulation": "GFSK",
-		"framing": "AX25G3RUH",
-		"frequency": 437475000,
-		"bandwidth": 20000,
-		"baudRates": [
-			9600
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.painani1.Painani1Beacon",
+				"frequency": 437475000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
 		],
-		"beaconClass": "ru.r2cloud.jradio.painani1.Painani1Beacon",
 		"tle": {
 			"line1": "PAINANI 1",
 			"line2": "1 44365U 19037A   21224.51323972  .00003314  00000-0  84598-4 0  9994",

@@ -16,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -31,15 +30,11 @@ import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
 
 import ru.r2cloud.R2Cloud;
-import ru.r2cloud.jradio.Beacon;
-import ru.r2cloud.model.Framing;
-import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.model.Transmitter;
-import ru.r2cloud.model.TransmitterStatus;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
@@ -89,7 +84,7 @@ public class LeoSatDataClient {
 	}
 
 	public List<Satellite> loadNewLaunches() {
-		HttpRequest request = createRequest("/api/v1/satellite/newlaunch").GET().build();
+		HttpRequest request = createRequest("/api/v1/satellite/newlaunch2").GET().build();
 		try {
 			HttpResponse<String> response = sendWithRetry(request, BodyHandlers.ofString());
 			if (response.statusCode() != 200) {
@@ -200,102 +195,29 @@ public class LeoSatDataClient {
 			if (!jsonValue.isObject()) {
 				continue;
 			}
-			Satellite newLaunch = readNewLaunch(jsonValue.asObject());
-			if (newLaunch == null) {
+			JsonObject asObject = jsonValue.asObject();
+			Satellite newLaunch = Satellite.fromJson(asObject);
+			if (newLaunch == null || newLaunch.getName() == null) {
 				continue;
+			}
+			// new launch doesn't have noradId
+			newLaunch.setId(asObject.getString("id", null));
+			if (newLaunch.getId() == null) {
+				continue;
+			}
+			newLaunch.setPriority(Priority.HIGH);
+			newLaunch.setTle(readTle(asObject.get("tle")));
+			for (int j = 0; j < newLaunch.getTransmitters().size(); j++) {
+				Transmitter cur = newLaunch.getTransmitters().get(j);
+				cur.setId(newLaunch.getId() + "-" + String.valueOf(j));
+				cur.setTle(newLaunch.getTle());
+				cur.setSatelliteId(newLaunch.getId());
+				cur.setStart(newLaunch.getStart());
+				cur.setEnd(newLaunch.getEnd());
+				cur.setPriority(newLaunch.getPriority());
 			}
 			result.add(newLaunch);
 		}
-		return result;
-	}
-
-	@SuppressWarnings("unchecked")
-	private Satellite readNewLaunch(JsonObject json) {
-		Satellite result = new Satellite();
-		String id = json.getString("id", null);
-		if (id == null) {
-			return null;
-		}
-		result.setId(id);
-		String name = json.getString("name", null);
-		if (name == null) {
-			return null;
-		}
-		result.setName(name);
-		result.setPriority(Priority.HIGH);
-		// by default enabled, but can be overriden by user from UI
-		result.setEnabled(true);
-		result.setTle(readTle(json.get("tle")));
-		long startTimeMillis = json.getLong("start", 0);
-		if (startTimeMillis != 0) {
-			result.setStart(new Date(startTimeMillis));
-		}
-		long endTimeMillis = json.getLong("end", 0);
-		if (endTimeMillis != 0) {
-			result.setEnd(new Date(endTimeMillis));
-		}
-		Transmitter transmitter = new Transmitter();
-		transmitter.setId(result.getId() + "-0");
-		transmitter.setEnabled(result.isEnabled());
-		transmitter.setPriority(result.getPriority());
-		transmitter.setSatelliteId(result.getId());
-		transmitter.setStart(result.getStart());
-		transmitter.setEnd(result.getEnd());
-		transmitter.setTle(result.getTle());
-		long frequency = json.getLong("frequency", 0);
-		if (frequency == 0) {
-			return null;
-		}
-		transmitter.setFrequency(frequency);
-		String modulation = json.getString("modulation", null);
-		if (modulation == null) {
-			return null;
-		}
-		try {
-			transmitter.setModulation(Modulation.valueOf(modulation));
-		} catch (Exception e) {
-			return null;
-		}
-		String framing = json.getString("framing", null);
-		if (framing == null) {
-			return null;
-		}
-		try {
-			transmitter.setFraming(Framing.valueOf(framing));
-		} catch (Exception e) {
-			return null;
-		}
-		long bandwidth = json.getLong("bandwidth", 0);
-		if (bandwidth == 0) {
-			return null;
-		}
-		transmitter.setBandwidth(bandwidth);
-		String beaconClassStr = json.getString("beaconClass", null);
-		if (beaconClassStr == null) {
-			return null;
-		}
-		try {
-			transmitter.setBeaconClass((Class<? extends Beacon>) Class.forName(beaconClassStr));
-		} catch (ClassNotFoundException e) {
-			return null;
-		}
-		transmitter.setDeviation(5000);
-		transmitter.setTransitionWidth(2000);
-		transmitter.setStatus(TransmitterStatus.ENABLED);
-		transmitter.setBeaconSizeBytes(json.getInt("beaconSizeBytes", 0));
-		transmitter.setLoraBandwidth(json.getLong("loraBandwidth", 0));
-		transmitter.setLoraSpreadFactor(json.getInt("loraSpreadFactor", 0));
-		transmitter.setLoraCodingRate(json.getInt("loraCodingRate", 0));
-		transmitter.setLoraSyncword(json.getInt("loraSyncword", 0));
-		transmitter.setLoraPreambleLength(json.getInt("loraPreambleLength", 0));
-		transmitter.setLoraLdro(json.getInt("loraLdro", 0));
-		JsonValue jsonRates = json.get("baudRates");
-		if (jsonRates != null && jsonRates.isArray()) {
-			transmitter.setBaudRates(convertToIntegerList(jsonRates.asArray()));
-		} else {
-			transmitter.setBaudRates(Collections.emptyList());
-		}
-		result.setTransmitters(Collections.singletonList(transmitter));
 		return result;
 	}
 
@@ -324,14 +246,6 @@ public class LeoSatDataClient {
 		Tle result = new Tle(new String[] { line1, line2, line3 });
 		// assume downloaded TLE is always fresh
 		result.setLastUpdateTime(clock.millis());
-		return result;
-	}
-
-	private static List<Integer> convertToIntegerList(JsonArray array) {
-		List<Integer> result = new ArrayList<>(array.size());
-		for (int i = 0; i < array.size(); i++) {
-			result.add(array.get(i).asInt());
-		}
 		return result;
 	}
 

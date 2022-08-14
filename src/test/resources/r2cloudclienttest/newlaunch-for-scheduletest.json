@@ -2,33 +2,45 @@
 	{
 		"id": "R2CLOUD2",
 		"name": "LUCKY-7",
-		"modulation": "GFSK",
-		"framing": "AX25G3RUH",
-		"frequency": 437525000,
-		"bandwidth": 20000,
-		"baudRates": [
-			4800
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.lucky7.Lucky7Beacon",
+				"frequency": 437525000,
+				"bandwidth": 20000,
+				"baudRates": [
+					4800
+				],
+				"status": "ENABLED"
+			}
 		],
-		"beaconClass": "ru.r2cloud.jradio.lucky7.Lucky7Beacon",
 		"tle": {
 			"line1": "LUCKY-7",
-			"line2": "1 44406U 19038W   20270.83892069  .00000911  00000-0  56000-4 0  9991",
-			"line3": "2 44406  97.5506 230.9888 0025725 133.8757 226.4605 15.12329156 67895"
+			"line2": "1 44406U 19038W   20069.88080907  .00000505  00000-0  32890-4 0  9992",
+			"line3": "2 44406  97.5270  32.5584 0026284 107.4758 252.9348 15.12089395 37524"
 		},
-		"start": 1601607600000,
-		"end": 1601611200000
+		"start": 1639300332000,
+		"end": 1639386732000
 	},
 	{
 		"id": "R2CLOUD3",
 		"name": "ASTRO-BIO",
-		"modulation": "GFSK",
-		"framing": "AX25G3RUH",
-		"frequency": 435600000,
-		"bandwidth": 20000,
-		"baudRates": [
-			9600
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 435600000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
 		],
-		"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
 		"tle": {
 			"line1": "ASTRO-BIO",
 			"line2": "1 84002U          22194.52504630  .00000000  00000-0  00000-0 0    00",

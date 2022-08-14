@@ -37,7 +37,7 @@ public class LeoSatDataServerMock {
     }
 
     public void setNewLaunchMock(HttpHandler mock) {
-        String newLaunchPath = "/api/v1/satellite/newlaunch";
+        String newLaunchPath = "/api/v1/satellite/newlaunch2";
         if (newLaunchConfigured) {
             server.removeContext(newLaunchPath);
         }
