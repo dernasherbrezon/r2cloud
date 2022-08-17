@@ -449,7 +449,7 @@
 		"id": "R2CLOUD153",
 		"name": "TEVEL-7",
 		"noradId": "51062",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "BPSK",
@@ -468,7 +468,7 @@
 		"id": "R2CLOUD152",
 		"name": "PICSAT",
 		"noradId": "43132",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "BPSK",
@@ -487,7 +487,7 @@
 		"id": "R2CLOUD151",
 		"name": "EAGLET-I",
 		"noradId": "43790",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "BPSK",
@@ -679,25 +679,6 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					4800
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD141",
-		"name": "GASPACS",
-		"noradId": "51439",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "CUSTOM",
-				"beaconClass": "ru.r2cloud.jradio.gaspacs.GaspacsBeacon",
-				"frequency": 437364000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
 				],
 				"status": "ENABLED"
 			}
@@ -1194,44 +1175,6 @@
 		]
 	},
 	{
-		"id": "R2CLOUD110",
-		"name": "TAUSAT-1",
-		"noradId": "47926",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "BPSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.tausat.Tausat1Beacon",
-				"frequency": 436400000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD109",
-		"name": "TSURU",
-		"noradId": "47927",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 437375000,
-				"bandwidth": 15000,
-				"baudRates": [
-					4800
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
 		"id": "R2CLOUD108",
 		"name": "KSU-CUBESAT",
 		"noradId": "47954",
@@ -1383,25 +1326,6 @@
 				],
 				"deviation": 1200,
 				"afCarrier": 1700,
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD99",
-		"name": "NEUTRON-1",
-		"noradId": "46923",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "BPSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 435300000,
-				"bandwidth": 20000,
-				"baudRates": [
-					1200
-				],
 				"status": "ENABLED"
 			}
 		]
