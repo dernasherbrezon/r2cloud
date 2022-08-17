@@ -1,5 +1,234 @@
 [
 	{
+		"id": "R2CLOUD176",
+		"name": "2022-096K",
+		"noradId": "53379",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 435000000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD175",
+		"name": "RS21S (CUBESX-HSE-2)",
+		"noradId": "53383",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 435570000,
+				"bandwidth": 10000,
+				"baudRates": [
+					2400
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD174",
+		"name": "RS34S (SXC3-218 KUZBAS*)",
+		"noradId": "53375",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 437700000,
+				"bandwidth": 10000,
+				"baudRates": [
+					2400
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD173",
+		"name": "RS19S (SXC3-219 ISOI)",
+		"noradId": "53381",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 437650000,
+				"bandwidth": 10000,
+				"baudRates": [
+					2400
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD172",
+		"name": "RS28S (SXC3-214 MIET-A*)",
+		"noradId": "53377",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 437900000,
+				"bandwidth": 10000,
+				"baudRates": [
+					2400
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD171",
+		"name": "RS8S (SXC3-2111 RESHUC*)",
+		"noradId": "53382",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 435380000,
+				"bandwidth": 10000,
+				"baudRates": [
+					2400
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD170",
+		"name": "RS30S (SXC3-217 SIREN)",
+		"noradId": "53384",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 437750000,
+				"bandwidth": 10000,
+				"baudRates": [
+					2400
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD169",
+		"name": "RS23S (SXC3-21 UTMN)",
+		"noradId": "53376",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 435670000,
+				"bandwidth": 10000,
+				"baudRates": [
+					2400
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD168",
+		"name": "RS33S (SXC3-215 VIZARD)",
+		"noradId": "53386",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 437800000,
+				"bandwidth": 10000,
+				"baudRates": [
+					2400
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD167",
+		"name": "RS29S (SXC3-2110 CYCLO*)",
+		"noradId": "53373",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 436050000,
+				"bandwidth": 10000,
+				"baudRates": [
+					2400
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD166",
+		"name": "RS32S (SXC3-212 MONITO*)",
+		"noradId": "53374",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 437550000,
+				"bandwidth": 10000,
+				"baudRates": [
+					2400
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD165",
+		"name": "RS26S (KAI-1)",
+		"noradId": "53378",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "AFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 435665000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD164",
 		"name": "CTIM",
 		"noradId": "52950",
 		"enabled": false,
@@ -29,6 +258,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD163",
 		"name": "SATLLA-2B",
 		"noradId": "51014",
 		"enabled": false,
@@ -50,6 +280,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD162",
 		"name": "FOSSASAT-2E3",
 		"noradId": "50990",
 		"enabled": false,
@@ -71,6 +302,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD161",
 		"name": "FOSSASAT-2E2",
 		"noradId": "50984",
 		"enabled": false,
@@ -92,6 +324,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD160",
 		"name": "FOSSASAT-2E1",
 		"noradId": "50985",
 		"enabled": false,
@@ -113,6 +346,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD159",
 		"name": "1998-067TD",
 		"noradId": "51441",
 		"enabled": false,
@@ -134,6 +368,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD158",
 		"name": "MTCUBE 2 (ROBUSTA 1F)",
 		"noradId": "53106",
 		"enabled": false,
@@ -141,8 +376,8 @@
 			{
 				"modulation": "GFSK",
 				"framing": "AX25",
-				"frequency": 436750000,
 				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 436750000,
 				"bandwidth": 20000,
 				"baudRates": [
 					2400,
@@ -153,6 +388,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD157",
 		"name": "CELESTA",
 		"noradId": "53111",
 		"enabled": false,
@@ -171,6 +407,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD155",
 		"name": "GREENCUBE",
 		"noradId": "53109",
 		"enabled": false,
@@ -190,6 +427,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD154",
 		"name": "ASTROBIOCUBESAT",
 		"noradId": "53107",
 		"enabled": false,
@@ -208,6 +446,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD153",
 		"name": "TEVEL-7",
 		"noradId": "51062",
 		"enabled": true,
@@ -226,6 +465,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD152",
 		"name": "PICSAT",
 		"noradId": "43132",
 		"enabled": true,
@@ -244,6 +484,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD151",
 		"name": "EAGLET-I",
 		"noradId": "43790",
 		"enabled": true,
@@ -262,6 +503,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD150",
 		"name": "INSPIRESAT-1",
 		"noradId": "51657",
 		"enabled": true,
@@ -281,6 +523,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD149",
 		"name": "ORESAT0",
 		"noradId": "52017",
 		"enabled": true,
@@ -300,6 +543,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD148",
 		"name": "INS-2TD",
 		"noradId": "51658",
 		"enabled": true,
@@ -319,6 +563,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD147",
 		"name": "SUCHAI-3",
 		"noradId": "52191",
 		"enabled": true,
@@ -338,6 +583,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD146",
 		"name": "SUCHAI-2",
 		"noradId": "52192",
 		"enabled": true,
@@ -357,6 +603,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD145",
 		"name": "IRIS-A",
 		"noradId": "51044",
 		"enabled": true,
@@ -376,6 +623,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD144",
 		"name": "FEES",
 		"noradId": "48082",
 		"enabled": true,
@@ -397,6 +645,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD143",
 		"name": "XIAOXIANG-2",
 		"noradId": "43155",
 		"enabled": true,
@@ -416,6 +665,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD142",
 		"name": "VZLUSAT-2",
 		"noradId": "51085",
 		"enabled": true,
@@ -435,6 +685,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD141",
 		"name": "GASPACS",
 		"noradId": "51439",
 		"enabled": true,
@@ -453,6 +704,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD140",
 		"name": "DELFI-PQ",
 		"noradId": "51074",
 		"enabled": true,
@@ -472,6 +724,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD139",
 		"name": "SMOG-1",
 		"noradId": "47964",
 		"enabled": true,
@@ -493,6 +746,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD138",
 		"name": "CUTE",
 		"noradId": "49263",
 		"enabled": true,
@@ -511,6 +765,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD137",
 		"name": "XW-3 (CAS-9)",
 		"noradId": "50466",
 		"enabled": true,
@@ -529,6 +784,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD136",
 		"name": "VZLUSAT-1",
 		"noradId": "42790",
 		"enabled": true,
@@ -549,6 +805,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD135",
 		"name": "DIY-1 (ARDUIQUBE)",
 		"noradId": "47963",
 		"enabled": true,
@@ -567,6 +824,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD134",
 		"name": "BY70-3",
 		"noradId": "46839",
 		"enabled": true,
@@ -585,6 +843,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD133",
 		"name": "Aeneas",
 		"noradId": "38760",
 		"enabled": true,
@@ -605,6 +864,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD132",
 		"name": "NANOSATC-BR2",
 		"noradId": "47950",
 		"enabled": true,
@@ -623,6 +883,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD131",
 		"name": "ION SCV-003",
 		"noradId": "48912",
 		"enabled": true,
@@ -642,6 +903,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD130",
 		"name": "QMR-KWT",
 		"noradId": "48943",
 		"enabled": true,
@@ -660,6 +922,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD129",
 		"name": "ION-MK01",
 		"noradId": "46274",
 		"enabled": true,
@@ -679,24 +942,7 @@
 		]
 	},
 	{
-		"name": "PSAT",
-		"noradId": "40654",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 437230000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "DECAYED"
-			}
-		]
-	},
-	{
+		"id": "R2CLOUD126",
 		"name": "LEDSAT",
 		"noradId": "49069",
 		"enabled": true,
@@ -718,6 +964,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD125",
 		"name": "CUBESX-SIRIUS-HSE",
 		"noradId": "47951",
 		"enabled": true,
@@ -736,6 +983,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD124",
 		"name": "CUBESX-HSE",
 		"noradId": "47952",
 		"enabled": true,
@@ -754,6 +1002,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD123",
 		"name": "ORBICRAFT-ZORKY",
 		"noradId": "47960",
 		"enabled": true,
@@ -772,6 +1021,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD122",
 		"name": "MCUBED-2",
 		"noradId": "39469",
 		"enabled": true,
@@ -790,6 +1040,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD121",
 		"name": "IT-SPINS",
 		"noradId": "49017",
 		"enabled": true,
@@ -808,6 +1059,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD120",
 		"name": "DHABISAT",
 		"noradId": "49016",
 		"enabled": true,
@@ -826,6 +1078,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD119",
 		"name": "TUBIN",
 		"noradId": "48900",
 		"enabled": true,
@@ -844,6 +1097,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD116",
 		"name": "RAMSAT",
 		"noradId": "48850",
 		"enabled": true,
@@ -862,6 +1116,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD114",
 		"name": "UNISAT-7",
 		"noradId": "47945",
 		"enabled": true,
@@ -881,6 +1136,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD113",
 		"name": "BCCSAT 1",
 		"noradId": "48041",
 		"enabled": true,
@@ -899,6 +1155,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD112",
 		"name": "GRBALPHA",
 		"noradId": "47959",
 		"enabled": true,
@@ -917,6 +1174,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD111",
 		"name": "CUBEL",
 		"noradId": "47448",
 		"enabled": true,
@@ -936,6 +1194,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD110",
 		"name": "TAUSAT-1",
 		"noradId": "47926",
 		"enabled": true,
@@ -954,6 +1213,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD109",
 		"name": "TSURU",
 		"noradId": "47927",
 		"enabled": true,
@@ -972,6 +1232,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD108",
 		"name": "KSU-CUBESAT",
 		"noradId": "47954",
 		"enabled": true,
@@ -990,6 +1251,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD107",
 		"name": "NANOSATC-BR1",
 		"noradId": "40024",
 		"enabled": true,
@@ -1008,6 +1270,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD106",
 		"name": "CP12 (EXOCUBE 2)",
 		"noradId": "47319",
 		"enabled": true,
@@ -1026,6 +1289,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD105",
 		"name": "SOMP2B",
 		"noradId": "47445",
 		"enabled": true,
@@ -1044,6 +1308,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD104",
 		"name": "UVSQ-SAT",
 		"noradId": "47438",
 		"enabled": true,
@@ -1064,6 +1329,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD103",
 		"name": "DELFI-N3XT",
 		"noradId": "39428",
 		"enabled": true,
@@ -1082,6 +1348,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD101",
 		"name": "KAITUO 1B",
 		"noradId": "40912",
 		"enabled": true,
@@ -1100,6 +1367,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD100",
 		"name": "ROBUSTA-1B",
 		"noradId": "42792",
 		"enabled": true,
@@ -1120,6 +1388,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD99",
 		"name": "NEUTRON-1",
 		"noradId": "46923",
 		"enabled": true,
@@ -1138,6 +1407,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD97",
 		"name": "LAPAN-A2",
 		"noradId": "40931",
 		"enabled": true,
@@ -1158,6 +1428,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD96",
 		"name": "FACSAT-1",
 		"noradId": "43721",
 		"enabled": true,
@@ -1177,6 +1448,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD95",
 		"name": "INNOSAT-2",
 		"noradId": "43738",
 		"enabled": true,
@@ -1196,6 +1468,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD94",
 		"name": "MEZNSAT",
 		"noradId": "46489",
 		"enabled": true,
@@ -1214,6 +1487,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD92",
 		"name": "AMICALSAT",
 		"noradId": "46287",
 		"enabled": true,
@@ -1234,6 +1508,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD89",
 		"name": "XW-2D",
 		"noradId": "40907",
 		"enabled": true,
@@ -1252,6 +1527,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD88",
 		"name": "XW-2F",
 		"noradId": "40910",
 		"enabled": true,
@@ -1270,6 +1546,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD87",
 		"name": "XW-2E",
 		"noradId": "40909",
 		"enabled": true,
@@ -1288,6 +1565,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD85",
 		"name": "SHAONIAN XING",
 		"noradId": "43199",
 		"enabled": true,
@@ -1306,6 +1584,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD83",
 		"name": "SALSAT",
 		"noradId": "46495",
 		"enabled": true,
@@ -1326,6 +1605,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD82",
 		"name": "STRAND-1",
 		"noradId": "39090",
 		"enabled": true,
@@ -1344,6 +1624,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD81",
 		"name": "NORBI",
 		"noradId": "46494",
 		"enabled": true,
@@ -1376,6 +1657,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD80",
 		"name": "BISONSAT",
 		"noradId": "40968",
 		"enabled": true,
@@ -1394,6 +1676,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD79",
 		"name": "FALCONSAT-3",
 		"noradId": "30776",
 		"enabled": true,
@@ -1412,6 +1695,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD78",
 		"name": "ALSAT 1N",
 		"noradId": "41789",
 		"enabled": true,
@@ -1430,6 +1714,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD77",
 		"name": "AISTECHSAT 2",
 		"noradId": "43768",
 		"enabled": true,
@@ -1449,6 +1734,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD75",
 		"name": "TIGRISAT",
 		"noradId": "40043",
 		"enabled": true,
@@ -1467,6 +1753,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD72",
 		"name": "SNUGLITE",
 		"noradId": "43784",
 		"enabled": true,
@@ -1485,6 +1772,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD68",
 		"name": "CUBEBUG-2 (LO-74)",
 		"noradId": "39440",
 		"enabled": true,
@@ -1503,6 +1791,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD67",
 		"name": "NEXUS (FO-99)",
 		"noradId": "43937",
 		"enabled": true,
@@ -1521,6 +1810,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD66",
 		"name": "MINXSS-2",
 		"noradId": "43758",
 		"enabled": true,
@@ -1539,6 +1829,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD64",
 		"name": "LITUANICASAT-2",
 		"noradId": "42768",
 		"enabled": true,
@@ -1557,6 +1848,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD63",
 		"name": "LIGHTSAIL 2",
 		"noradId": "44420",
 		"enabled": true,
@@ -1575,6 +1867,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD62",
 		"name": "IRVINE01",
 		"noradId": "43693",
 		"enabled": true,
@@ -1593,6 +1886,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD61",
 		"name": "FIREBIRD 4",
 		"noradId": "40378",
 		"enabled": true,
@@ -1612,6 +1906,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD60",
 		"name": "FIREBIRD 3",
 		"noradId": "40377",
 		"enabled": true,
@@ -1630,6 +1925,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD58",
 		"name": "ELFIN-B",
 		"noradId": "43616",
 		"enabled": true,
@@ -1648,6 +1944,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD57",
 		"name": "ELFIN-A",
 		"noradId": "43617",
 		"enabled": true,
@@ -1666,6 +1963,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD56",
 		"name": "CUBEBEL-1 (BSUSAT-1)",
 		"noradId": "43666",
 		"enabled": true,
@@ -1684,6 +1982,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD55",
 		"name": "CSIM-FD",
 		"noradId": "43793",
 		"enabled": true,
@@ -1702,6 +2001,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD54",
 		"name": "GRIFEX",
 		"noradId": "40379",
 		"enabled": true,
@@ -1720,6 +2020,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD53",
 		"name": "ZHUHAI-1 02 (CAS-4B)",
 		"noradId": "42759",
 		"enabled": true,
@@ -1738,6 +2039,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD52",
 		"name": "ZHUHAI-1 01 (CAS-4A)",
 		"noradId": "42761",
 		"enabled": true,
@@ -1757,6 +2059,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD51",
 		"name": "BUGSAT-1 (TITA)",
 		"noradId": "40014",
 		"enabled": true,
@@ -1775,6 +2078,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD49",
 		"name": "ARMADILLO",
 		"noradId": "44352",
 		"enabled": true,
@@ -1793,6 +2097,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD48",
 		"name": "AALTO-1",
 		"noradId": "42775",
 		"enabled": true,
@@ -1811,6 +2116,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD47",
 		"name": "POLYITAN-1",
 		"noradId": "40042",
 		"enabled": true,
@@ -1829,6 +2135,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD46",
 		"name": "UNISAT-6",
 		"noradId": "40012",
 		"enabled": true,
@@ -1847,6 +2154,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD45",
 		"name": "UWE-4",
 		"noradId": "43880",
 		"enabled": true,
@@ -1865,6 +2173,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD44",
 		"name": "CHOMPTT",
 		"noradId": "43855",
 		"enabled": true,
@@ -1885,6 +2194,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD43",
 		"name": "PAINANI 1",
 		"noradId": "44365",
 		"enabled": true,
@@ -1903,6 +2213,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD41",
 		"name": "FOX-1D (AO-92)",
 		"noradId": "43137",
 		"enabled": true,
@@ -1923,6 +2234,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD40",
 		"name": "FOX-1CLIFF (AO-95)",
 		"noradId": "43770",
 		"enabled": true,
@@ -1943,6 +2255,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD39",
 		"name": "RADFXSAT (FOX-1B)",
 		"noradId": "43017",
 		"enabled": true,
@@ -1961,6 +2274,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD35",
 		"name": "DELFI-C3 (DO-64)",
 		"noradId": "32789",
 		"enabled": true,
@@ -1981,6 +2295,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD33",
 		"name": "ITASAT 1",
 		"noradId": "43786",
 		"enabled": true,
@@ -2002,6 +2317,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD31",
 		"name": "OPS-SAT",
 		"noradId": "44878",
 		"enabled": true,
@@ -2020,6 +2336,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD30",
 		"name": "FLORIPASAT-1",
 		"noradId": "44885",
 		"enabled": true,
@@ -2038,6 +2355,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD29",
 		"name": "LUCKY-7",
 		"noradId": "44406",
 		"enabled": true,
@@ -2056,6 +2374,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD26",
 		"name": "AISTECHSAT-3",
 		"noradId": "44103",
 		"enabled": true,
@@ -2075,6 +2394,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD25",
 		"name": "MYSAT-1",
 		"noradId": "44045",
 		"enabled": false,
@@ -2093,6 +2413,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD24",
 		"name": "LUME 1",
 		"noradId": "43908",
 		"enabled": true,
@@ -2113,6 +2434,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD23",
 		"name": "D-STAR ONE (SPARROW)",
 		"noradId": "43881",
 		"enabled": true,
@@ -2131,6 +2453,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD21",
 		"name": "SUOMI-100",
 		"noradId": "43804",
 		"enabled": true,
@@ -2149,6 +2472,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD20",
 		"name": "JY1SAT (JO-97)",
 		"noradId": "43803",
 		"enabled": true,
@@ -2169,6 +2493,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD19",
 		"name": "ASTROCAST 0.2",
 		"noradId": "44083",
 		"enabled": true,
@@ -2187,6 +2512,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD18",
 		"name": "ASTROCAST 0.1",
 		"noradId": "43798",
 		"enabled": true,
@@ -2205,6 +2531,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD17",
 		"name": "ESEO",
 		"noradId": "43792",
 		"enabled": true,
@@ -2223,6 +2550,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD16",
 		"name": "REAKTOR HELLO WORLD",
 		"noradId": "43743",
 		"enabled": true,
@@ -2241,6 +2569,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD15",
 		"name": "S-NET C",
 		"noradId": "43189",
 		"enabled": true,
@@ -2261,6 +2590,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD14",
 		"name": "S-NET A",
 		"noradId": "43188",
 		"enabled": true,
@@ -2281,6 +2611,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD13",
 		"name": "S-NET B",
 		"noradId": "43187",
 		"enabled": true,
@@ -2301,6 +2632,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD12",
 		"name": "S-NET D",
 		"noradId": "43186",
 		"enabled": true,
@@ -2321,6 +2653,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD11",
 		"name": "TECHNOSAT",
 		"noradId": "42829",
 		"enabled": true,
@@ -2339,6 +2672,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD10",
 		"name": "PEGASUS",
 		"noradId": "42784",
 		"enabled": true,
@@ -2357,6 +2691,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD9",
 		"name": "NAYIF-1 (EO-88)",
 		"noradId": "42017",
 		"enabled": true,
@@ -2377,6 +2712,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD8",
 		"name": "FUNCUBE-1 (AO-73)",
 		"noradId": "39444",
 		"enabled": true,
@@ -2397,6 +2733,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD7",
 		"name": "GOMX-1",
 		"noradId": "39430",
 		"enabled": true,
@@ -2417,6 +2754,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD5",
 		"name": "AAUSAT 4",
 		"noradId": "41460",
 		"enabled": true,
@@ -2436,6 +2774,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD4",
 		"name": "METEOR-M 2",
 		"noradId": "40069",
 		"enabled": true,
@@ -2453,6 +2792,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD3",
 		"name": "NOAA 19",
 		"noradId": "33591",
 		"enabled": true,
@@ -2466,6 +2806,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD2",
 		"name": "NOAA 18",
 		"noradId": "28654",
 		"enabled": true,
@@ -2479,6 +2820,7 @@
 		]
 	},
 	{
+		"id": "R2CLOUD1",
 		"name": "NOAA 15",
 		"noradId": "25338",
 		"enabled": true,
