@@ -240,7 +240,7 @@ public class R2loraClient {
 	private HttpRequest.Builder createRequest(String path) {
 		Builder result = HttpRequest.newBuilder().uri(URI.create(hostname + path));
 		result.timeout(Duration.ofMinutes(1L));
-		result.header("User-Agent", R2Cloud.getVersion() + " info@r2cloud.ru");
+		result.header("User-Agent", R2Cloud.getVersion() + " leosatdata.com");
 		result.header("Authorization", basicAuth);
 		return result;
 	}

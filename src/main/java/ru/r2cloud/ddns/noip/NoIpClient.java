@@ -38,7 +38,7 @@ public class NoIpClient {
 	public String update(String domain) throws NoIpException, RetryException, InterruptedException {
 		HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(hostname + "/nic/update?hostname=" + domain));
 		builder.timeout(Duration.ofMinutes(1L));
-		builder.header("User-Agent", R2Cloud.getVersion() + " info@r2cloud.ru");
+		builder.header("User-Agent", R2Cloud.getVersion() + " leosatdata.com");
 		builder.header("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.US_ASCII)));
 		HttpResponse<String> response;
 		try {

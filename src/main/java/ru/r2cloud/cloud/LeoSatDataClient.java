@@ -317,7 +317,7 @@ public class LeoSatDataClient {
 	private HttpRequest.Builder createRequest(String path) {
 		Builder result = HttpRequest.newBuilder().uri(URI.create(hostname + path));
 		result.timeout(timeout);
-		result.header("User-Agent", R2Cloud.getVersion() + " info@r2cloud.ru");
+		result.header("User-Agent", R2Cloud.getVersion() + " leosatdata.com");
 		result.header("Authorization", config.getProperty("r2cloud.apiKey"));
 		return result;
 	}

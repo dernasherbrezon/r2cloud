@@ -66,7 +66,7 @@ class OreKitDataClient {
 		Files.createDirectories(tempPath);
 		Builder result = HttpRequest.newBuilder().uri(URI.create(url));
 		result.timeout(Duration.ofMillis(TIMEOUT));
-		result.header("User-Agent", R2Cloud.getVersion() + " info@r2cloud.ru");
+		result.header("User-Agent", R2Cloud.getVersion() + " leosatdata.com");
 		HttpRequest request = result.build();
 		try {
 			HttpResponse<InputStream> response = httpclient.send(request, BodyHandlers.ofInputStream());

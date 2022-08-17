@@ -48,7 +48,7 @@ public class CelestrakClient {
 			con.setRequestMethod("GET");
 			con.setConnectTimeout(TIMEOUT);
 			con.setReadTimeout(TIMEOUT);
-			con.setRequestProperty("User-Agent", R2Cloud.getVersion() + " info@r2cloud.ru");
+			con.setRequestProperty("User-Agent", R2Cloud.getVersion() + " leosatdata.com");
 			int responseCode = con.getResponseCode();
 			if (responseCode != 200) {
 				LOG.error("unable to get tle from {}. response code: {}. See logs for details", location, responseCode);

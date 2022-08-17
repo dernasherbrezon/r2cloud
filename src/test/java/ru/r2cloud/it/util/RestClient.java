@@ -219,7 +219,7 @@ public class RestClient {
 	}
 
 	private HttpRequest.Builder createDefaultRequest(String path) {
-		return HttpRequest.newBuilder().uri(URI.create(baseUrl + path)).timeout(Duration.ofMinutes(1L)).header("User-Agent", "r2cloud/0.1 info@r2cloud.ru");
+		return HttpRequest.newBuilder().uri(URI.create(baseUrl + path)).timeout(Duration.ofMinutes(1L)).header("User-Agent", "r2cloud/0.1 leosatdata.com");
 	}
 
 	public HttpResponse<String> resetPasswordWithResponse(String username) {
