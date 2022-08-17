@@ -19,8 +19,10 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 
 import ru.r2cloud.cloud.LeoSatDataClient;
+import ru.r2cloud.cloud.SatnogsClient;
 import ru.r2cloud.model.BandFrequency;
 import ru.r2cloud.model.Modulation;
+import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteComparator;
 import ru.r2cloud.model.SdrType;
@@ -35,13 +37,15 @@ public class SatelliteDao {
 
 	private final Configuration config;
 	private final LeoSatDataClient client;
+	private final SatnogsClient satnogsClient;
 	private final List<Satellite> satellites = new ArrayList<>();
 	private final Map<String, Satellite> satelliteByName = new HashMap<>();
 	private final Map<String, Satellite> satelliteById = new HashMap<>();
 
-	public SatelliteDao(Configuration config, LeoSatDataClient client) {
+	public SatelliteDao(Configuration config, LeoSatDataClient client, SatnogsClient satnogsClient) {
 		this.config = config;
 		this.client = client;
+		this.satnogsClient = satnogsClient;
 		reload();
 	}
 
@@ -49,6 +53,20 @@ public class SatelliteDao {
 		satellites.clear();
 		satelliteByName.clear();
 		satelliteById.clear();
+
+		List<Satellite> satnogsSatellites = Collections.emptyList();
+		// satnogs data is too generic, load it first and override by handcrafted
+		// configs
+		if (config.getBoolean("satnogs.satellites")) {
+			satnogsSatellites = satnogsClient.loadSatellites();
+			for (Satellite cur : satnogsSatellites) {
+				if (cur.getPriority().equals(Priority.NORMAL)) {
+					//FIXME satellite name in satnogs doesn't equal celestrak tle line0
+					// thus no tle found for active satellite
+					satelliteById.put(cur.getId(), cur);
+				}
+			}
+		}
 
 		// default from config
 		for (Satellite cur : loadFromConfig(config.getProperty("satellites.meta.location"))) {
@@ -59,13 +77,31 @@ public class SatelliteDao {
 			for (Satellite cur : client.loadSatellites()) {
 				satelliteById.put(cur.getId(), cur);
 			}
-			// optionally new launches
-			if (config.getBoolean("r2cloud.newLaunches")) {
-				for (Satellite cur : client.loadNewLaunches()) {
-					satelliteById.put(cur.getId(), cur);
+		}
+
+		// optionally new launches
+		if (config.getBoolean("r2cloud.newLaunches")) {
+			// satnogs new launch ids are: ABXM-4898-9222-6959-5721
+			// leosatdata new launch ids are: R2CLOUD123
+			// Can't map them using ids. However leosatdata guarantees the same name for new
+			// launches as in satnogs
+			// use satellite name for deduplication
+			Map<String, Satellite> dedupByName = new HashMap<>();
+			for (Satellite cur : satnogsSatellites) {
+				if (cur.getPriority().equals(Priority.HIGH)) {
+					dedupByName.put(cur.getName().toLowerCase(), cur);
 				}
 			}
+			if (config.getProperty("r2cloud.apiKey") != null) {
+				for (Satellite cur : client.loadNewLaunches()) {
+					dedupByName.put(cur.getName().toLowerCase(), cur);
+				}
+			}
+			for (Satellite cur : dedupByName.values()) {
+				satelliteById.put(cur.getId(), cur);
+			}
 		}
+
 		satellites.addAll(satelliteById.values());
 		List<Transmitter> allTransmitters = new ArrayList<>();
 		for (Satellite curSatellite : satellites) {

@@ -108,13 +108,13 @@ public class LeoSatDataClient {
 			HttpResponse<String> response = sendWithRetry(request, BodyHandlers.ofString());
 			if (response.statusCode() != 200) {
 				if (LOG.isErrorEnabled()) {
-					LOG.error("unable to load new launches. response code: {}. response: {}", response.statusCode(), response.body());
+					LOG.error("unable to load satellites. response code: {}. response: {}", response.statusCode(), response.body());
 				}
 				return Collections.emptyList();
 			}
 			return readSatellites(response.body());
 		} catch (IOException e) {
-			Util.logIOException(LOG, "unable to load new launches", e);
+			Util.logIOException(LOG, "unable to load satellites from leosatdata", e);
 			return Collections.emptyList();
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();

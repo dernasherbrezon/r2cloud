@@ -12,6 +12,7 @@ public class Satellite {
 
 	private String id;
 	private String name;
+	// enable to automatic scheduling, otherwise have to be enabled manually
 	private boolean enabled;
 	private Tle tle;
 	private Priority priority;
