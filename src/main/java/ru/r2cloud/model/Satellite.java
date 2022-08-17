@@ -148,10 +148,7 @@ public class Satellite {
 		if (transmittersRaw != null && transmittersRaw.isArray()) {
 			JsonArray transmittersArray = transmittersRaw.asArray();
 			for (int i = 0; i < transmittersArray.size(); i++) {
-				Transmitter cur = Transmitter.fromJson(transmittersArray.get(i).asObject());
-				cur.setId(result.getId() + "-" + String.valueOf(i));
-				cur.setEnabled(result.isEnabled());
-				transmitters.add(cur);
+				transmitters.add(Transmitter.fromJson(transmittersArray.get(i).asObject()));
 			}
 		}
 		return result;

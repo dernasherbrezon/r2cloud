@@ -34,7 +34,6 @@ import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Tle;
-import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
@@ -94,6 +93,26 @@ public class LeoSatDataClient {
 				return Collections.emptyList();
 			}
 			return readNewLaunches(response.body());
+		} catch (IOException e) {
+			Util.logIOException(LOG, "unable to load new launches", e);
+			return Collections.emptyList();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new IllegalStateException(e);
+		}
+	}
+
+	public List<Satellite> loadSatellites() {
+		HttpRequest request = createRequest("/api/v1/satellite").GET().build();
+		try {
+			HttpResponse<String> response = sendWithRetry(request, BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				if (LOG.isErrorEnabled()) {
+					LOG.error("unable to load new launches. response code: {}. response: {}", response.statusCode(), response.body());
+				}
+				return Collections.emptyList();
+			}
+			return readSatellites(response.body());
 		} catch (IOException e) {
 			Util.logIOException(LOG, "unable to load new launches", e);
 			return Collections.emptyList();
@@ -176,6 +195,31 @@ public class LeoSatDataClient {
 		}
 	}
 
+	private static List<Satellite> readSatellites(String body) {
+		JsonValue parsedJson;
+		try {
+			parsedJson = Json.parse(body);
+		} catch (ParseException e) {
+			LOG.info("malformed json");
+			return Collections.emptyList();
+		}
+		if (!parsedJson.isArray()) {
+			LOG.info("malformed json");
+			return Collections.emptyList();
+		}
+		JsonArray parsedArray = parsedJson.asArray();
+		List<Satellite> result = new ArrayList<>();
+		for (int i = 0; i < parsedArray.size(); i++) {
+			JsonValue jsonValue = parsedArray.get(i);
+			if (!jsonValue.isObject()) {
+				continue;
+			}
+			JsonObject asObject = jsonValue.asObject();
+			result.add(Satellite.fromJson(asObject));
+		}
+		return result;
+	}
+
 	private List<Satellite> readNewLaunches(String body) {
 		JsonValue parsedJson;
 		try {
@@ -205,17 +249,9 @@ public class LeoSatDataClient {
 			if (newLaunch.getId() == null) {
 				continue;
 			}
+			// override priority and TLE
 			newLaunch.setPriority(Priority.HIGH);
 			newLaunch.setTle(readTle(asObject.get("tle")));
-			for (int j = 0; j < newLaunch.getTransmitters().size(); j++) {
-				Transmitter cur = newLaunch.getTransmitters().get(j);
-				cur.setId(newLaunch.getId() + "-" + String.valueOf(j));
-				cur.setTle(newLaunch.getTle());
-				cur.setSatelliteId(newLaunch.getId());
-				cur.setStart(newLaunch.getStart());
-				cur.setEnd(newLaunch.getEnd());
-				cur.setPriority(newLaunch.getPriority());
-			}
 			result.add(newLaunch);
 		}
 		return result;

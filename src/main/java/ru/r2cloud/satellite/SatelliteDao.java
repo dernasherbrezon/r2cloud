@@ -50,20 +50,28 @@ public class SatelliteDao {
 		satelliteByName.clear();
 		satelliteById.clear();
 
-		satellites.addAll(loadFromConfig(config.getProperty("satellites.meta.location"), config));
-		if (config.getBoolean("r2cloud.newLaunches")) {
-			satellites.addAll(client.loadNewLaunches());
+		// default from config
+		for (Satellite cur : loadFromConfig(config.getProperty("satellites.meta.location"))) {
+			satelliteById.put(cur.getId(), cur);
 		}
+		if (config.getProperty("r2cloud.apiKey") != null) {
+			// new and overrides from server
+			for (Satellite cur : client.loadSatellites()) {
+				satelliteById.put(cur.getId(), cur);
+			}
+			// optionally new launches
+			if (config.getBoolean("r2cloud.newLaunches")) {
+				for (Satellite cur : client.loadNewLaunches()) {
+					satelliteById.put(cur.getId(), cur);
+				}
+			}
+		}
+		satellites.addAll(satelliteById.values());
 		List<Transmitter> allTransmitters = new ArrayList<>();
 		for (Satellite curSatellite : satellites) {
-			// user overrides from UI or manually from config
-			String enabled = config.getProperty("satellites." + curSatellite.getId() + ".enabled");
-			if (enabled != null) {
-				curSatellite.setEnabled(Boolean.valueOf(enabled));
-			}
+			normalize(curSatellite);
 			allTransmitters.addAll(curSatellite.getTransmitters());
 			for (Transmitter curTransmitter : curSatellite.getTransmitters()) {
-				curTransmitter.setEnabled(curSatellite.isEnabled());
 				switch (curTransmitter.getFraming()) {
 				case APT:
 					curTransmitter.setInputSampleRate(60_000);
@@ -95,7 +103,7 @@ public class SatelliteDao {
 					break;
 				}
 			}
-			index(curSatellite);
+			satelliteByName.put(curSatellite.getName(), curSatellite);
 		}
 		long sdrServerBandwidth = config.getLong("satellites.sdrserver.bandwidth");
 		long bandwidthCrop = config.getLong("satellites.sdrserver.bandwidth.crop");
@@ -118,7 +126,28 @@ public class SatelliteDao {
 		Collections.sort(satellites, SatelliteComparator.ID_COMPARATOR);
 	}
 
-	private static List<Satellite> loadFromConfig(String metaLocation, Configuration config) {
+	private void normalize(Satellite satellite) {
+		// user overrides from UI or manually from config
+		String enabled = config.getProperty("satellites." + satellite.getId() + ".enabled");
+		if (enabled != null) {
+			satellite.setEnabled(Boolean.valueOf(enabled));
+		}
+		if (satellite.getTle() == null) {
+			satellite.setTle(loadTle(satellite, config));
+		}
+		for (int i = 0; i < satellite.getTransmitters().size(); i++) {
+			Transmitter cur = satellite.getTransmitters().get(i);
+			cur.setId(satellite.getId() + "-" + String.valueOf(i));
+			cur.setEnabled(satellite.isEnabled());
+			cur.setPriority(satellite.getPriority());
+			cur.setSatelliteId(satellite.getId());
+			cur.setStart(satellite.getStart());
+			cur.setEnd(satellite.getEnd());
+			cur.setTle(satellite.getTle());
+		}
+	}
+
+	private static List<Satellite> loadFromConfig(String metaLocation) {
 		List<Satellite> result = new ArrayList<>();
 		JsonArray rawSatellites;
 		try (Reader r = new InputStreamReader(SatelliteDao.class.getClassLoader().getResourceAsStream(metaLocation))) {
@@ -128,17 +157,7 @@ public class SatelliteDao {
 			return Collections.emptyList();
 		}
 		for (int i = 0; i < rawSatellites.size(); i++) {
-			Satellite satellite = Satellite.fromJson(rawSatellites.get(i).asObject());
-			satellite.setTle(loadTle(satellite, config));
-			for (Transmitter cur : satellite.getTransmitters()) {
-				cur.setEnabled(satellite.isEnabled());
-				cur.setPriority(satellite.getPriority());
-				cur.setSatelliteId(satellite.getId());
-				cur.setStart(satellite.getStart());
-				cur.setEnd(satellite.getEnd());
-				cur.setTle(satellite.getTle());
-			}
-			result.add(satellite);
+			result.add(Satellite.fromJson(rawSatellites.get(i).asObject()));
 		}
 		return result;
 	}
@@ -182,11 +201,6 @@ public class SatelliteDao {
 
 	public synchronized List<Satellite> findAll() {
 		return satellites;
-	}
-
-	private void index(Satellite satellite) {
-		satelliteByName.put(satellite.getName(), satellite);
-		satelliteById.put(satellite.getId(), satellite);
 	}
 
 	public void update(Satellite satelliteToEdit) {

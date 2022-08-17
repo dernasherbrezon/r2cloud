@@ -58,6 +58,7 @@ public class ScheduleTest {
 
 	@Test
 	public void testScheduleForNewLaunches() throws Exception {
+		server.setSatelliteMock(new JsonHttpResponse("r2cloudclienttest/satellite.json", 200));
 		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunch-for-scheduletest.json", 200));
 		satelliteDao.reload();
 		tleDao.reload();
@@ -160,6 +161,7 @@ public class ScheduleTest {
 		celestrak.mockResponse(TestUtil.loadExpected("tle-2020-09-27.txt"));
 		server = new LeoSatDataServerMock();
 		server.start();
+		server.setSatelliteMock("[]", 200);
 		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/empty-array-response.json", 200));
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("locaiton.lat", "51.49");
