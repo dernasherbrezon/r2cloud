@@ -1,5 +1,43 @@
 [
 	{
+		"id": "43908",
+		"name": "LUME-1",
+		"enabled": false,
+		"priority": "NORMAL",
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"beaconSizeBytes": 255,
+				"frequency": 437060000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600,
+					4800
+				],
+				"bpskDifferential": false,
+				"bpskCenterFrequency": 0.0,
+				"deviation": 0,
+				"afCarrier": 0,
+				"transitionWidth": 0.0,
+				"inputSampleRate": 0,
+				"outputSampleRate": 0,
+				"loraBandwidth": 0,
+				"loraSpreadFactor": 0,
+				"loraCodingRate": 0,
+				"loraSyncword": 0,
+				"loraPreambleLength": 0,
+				"loraLdro": 0,
+				"status": "ENABLED",
+				"updated": 1616533349387,
+				"enabled": false,
+				"satelliteId": "QXDQ-9755-0160-9983-1765"
+			}
+		],
+		"source": "SATNOGS"
+	},
+	{
 		"id": "52950",
 		"name": "CTIM",
 		"enabled": false,
@@ -33,7 +71,8 @@
 				"enabled": false,
 				"satelliteId": "CSGC-5605-1718-3109-5402"
 			}
-		]
+		],
+		"source": "SATNOGS"
 	},
 	{
 		"id": "BDML-1083-7096-5526-2883",
@@ -86,6 +125,7 @@
 					"lastUpdateTime": 1660816317365
 				}
 			}
-		]
+		],
+		"source": "SATNOGS"
 	}
 ]

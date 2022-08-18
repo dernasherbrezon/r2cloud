@@ -207,6 +207,7 @@ public class SatnogsClient {
 			cur.setSource(SatelliteSource.SATNOGS);
 			// can't detect if satellite is just launched or junk data
 			// thus disabled by default even if "new launch"
+			// https://gitlab.com/librespacefoundation/satnogs/satnogs-db/-/issues/551
 			cur.setEnabled(false);
 			// schedule observations anyway
 			if (status.equalsIgnoreCase("future")) {
