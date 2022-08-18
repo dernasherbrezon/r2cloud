@@ -36,6 +36,7 @@ import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SatnogsTransmitterKey;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.model.TransmitterKey;
@@ -79,6 +80,7 @@ public class SatnogsClient {
 		}
 		List<Satellite> result = loadAllSatellites(groupBySatelliteId);
 		for (Satellite cur : result) {
+			dedupTransmittersByKey(cur);
 			if (!cur.getPriority().equals(Priority.HIGH)) {
 				continue;
 			}
@@ -172,6 +174,8 @@ public class SatnogsClient {
 		}
 		JsonArray parsedArray = parsedJson.asArray();
 		List<Satellite> result = new ArrayList<>();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		for (int i = 0; i < parsedArray.size(); i++) {
 			JsonValue jsonValue = parsedArray.get(i);
 			if (!jsonValue.isObject()) {
@@ -210,8 +214,6 @@ public class SatnogsClient {
 				if (launchedStr != null) {
 					continue;
 				}
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-				sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 				try {
 					cur.setStart(sdf.parse(launchedStr));
 				} catch (Exception e) {
@@ -288,6 +290,8 @@ public class SatnogsClient {
 			LOG.info("malformed json");
 			return Collections.emptyList();
 		}
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		JsonArray parsedArray = parsedJson.asArray();
 		List<Transmitter> result = new ArrayList<>();
 		for (int i = 0; i < parsedArray.size(); i++) {
@@ -375,6 +379,15 @@ public class SatnogsClient {
 				continue;
 			}
 
+			String updatedStr = getStringSafely(transmitter, "updated");
+			if (updatedStr != null && updatedStr.length() >= 23) {
+				try {
+					cur.setUpdated(sdf.parse(updatedStr.substring(0, 23)));
+				} catch (java.text.ParseException e) {
+					// ignore
+				}
+			}
+
 			result.add(cur);
 		}
 		return result;
@@ -410,6 +423,26 @@ public class SatnogsClient {
 		} catch (Exception e) {
 			return 0;
 		}
+	}
+
+	private static void dedupTransmittersByKey(Satellite satellite) {
+		if (satellite.getTransmitters() == null || satellite.getTransmitters().isEmpty()) {
+			return;
+		}
+		Map<SatnogsTransmitterKey, Transmitter> byKey = new HashMap<>();
+		for (Transmitter cur : satellite.getTransmitters()) {
+			SatnogsTransmitterKey key = new SatnogsTransmitterKey(cur);
+			Transmitter old = byKey.get(key);
+			if (old == null) {
+				byKey.put(key, cur);
+			} else {
+				// replace transmitter with newer update timestamp
+				if (cur.getUpdated() != null && old.getUpdated() != null && cur.getUpdated().after(old.getUpdated())) {
+					byKey.put(key, cur);
+				}
+			}
+		}
+		satellite.setTransmitters(new ArrayList<>(byKey.values()));
 	}
 
 	private static Modulation convert(String modulation) {

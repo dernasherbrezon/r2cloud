@@ -38,6 +38,7 @@ public class Transmitter {
 	private int loraPreambleLength;
 	private int loraLdro;
 	private TransmitterStatus status;
+	private Date updated;
 
 	// copied from satellite
 	// to simplify code
@@ -82,6 +83,17 @@ public class Transmitter {
 		this.loraPreambleLength = copy.loraPreambleLength;
 		this.loraLdro = copy.loraLdro;
 		this.tle = copy.tle;
+		if (copy.updated != null) {
+			this.updated = new Date(copy.updated.getTime());
+		}
+	}
+
+	public Date getUpdated() {
+		return updated;
+	}
+
+	public void setUpdated(Date updated) {
+		this.updated = updated;
 	}
 
 	public double getTransitionWidth() {
@@ -131,11 +143,11 @@ public class Transmitter {
 	public void setEnd(Date end) {
 		this.end = end;
 	}
-	
+
 	public Tle getTle() {
 		return tle;
 	}
-	
+
 	public void setTle(Tle tle) {
 		this.tle = tle;
 	}
