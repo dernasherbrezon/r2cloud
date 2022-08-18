@@ -1,0 +1,124 @@
+[
+	{
+		"id": "52950",
+		"name": "CTIM",
+		"enabled": false,
+		"priority": "NORMAL",
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"beaconSizeBytes": 0,
+				"frequency": 437396000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"bpskDifferential": false,
+				"bpskCenterFrequency": 0.0,
+				"deviation": 0,
+				"afCarrier": 0,
+				"transitionWidth": 0.0,
+				"inputSampleRate": 0,
+				"outputSampleRate": 0,
+				"loraBandwidth": 0,
+				"loraSpreadFactor": 0,
+				"loraCodingRate": 0,
+				"loraSyncword": 0,
+				"loraPreambleLength": 0,
+				"loraLdro": 0,
+				"status": "ENABLED",
+				"enabled": false,
+				"satelliteId": "CSGC-5605-1718-3109-5402"
+			}
+		]
+	},
+	{
+		"id": "BDML-1083-7096-5526-2883",
+		"name": "Skoltech B2",
+		"enabled": false,
+		"tle": {
+			"raw": [
+				"0 OBJECT L",
+				"1 53380U 22096L   22229.57175693  .00005563  00000-0  22547-3 0  9990",
+				"2 53380  97.4353 130.9847 0005660  72.7520 287.4337 15.25041840  1267"
+			],
+			"lastUpdateTime": 1660816317365
+		},
+		"priority": "HIGH",
+		"start": 1660816307365,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"beaconSizeBytes": 0,
+				"frequency": 435598000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"bpskDifferential": false,
+				"bpskCenterFrequency": 0.0,
+				"deviation": 0,
+				"afCarrier": 0,
+				"transitionWidth": 0.0,
+				"inputSampleRate": 0,
+				"outputSampleRate": 0,
+				"loraBandwidth": 0,
+				"loraSpreadFactor": 0,
+				"loraCodingRate": 0,
+				"loraSyncword": 0,
+				"loraPreambleLength": 0,
+				"loraLdro": 0,
+				"status": "ENABLED",
+				"enabled": false,
+				"satelliteId": "BDML-1083-7096-5526-2883",
+				"tle": {
+					"raw": [
+						"0 OBJECT L",
+						"1 53380U 22096L   22229.57175693  .00005563  00000-0  22547-3 0  9990",
+						"2 53380  97.4353 130.9847 0005660  72.7520 287.4337 15.25041840  1267"
+					],
+					"lastUpdateTime": 1660816317365
+				}
+			},
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"beaconSizeBytes": 0,
+				"frequency": 435000000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"bpskDifferential": false,
+				"bpskCenterFrequency": 0.0,
+				"deviation": 0,
+				"afCarrier": 0,
+				"transitionWidth": 0.0,
+				"inputSampleRate": 0,
+				"outputSampleRate": 0,
+				"loraBandwidth": 0,
+				"loraSpreadFactor": 0,
+				"loraCodingRate": 0,
+				"loraSyncword": 0,
+				"loraPreambleLength": 0,
+				"loraLdro": 0,
+				"status": "ENABLED",
+				"enabled": false,
+				"satelliteId": "BDML-1083-7096-5526-2883",
+				"tle": {
+					"raw": [
+						"0 OBJECT L",
+						"1 53380U 22096L   22229.57175693  .00005563  00000-0  22547-3 0  9990",
+						"2 53380  97.4353 130.9847 0005660  72.7520 287.4337 15.25041840  1267"
+					],
+					"lastUpdateTime": 1660816317365
+				}
+			}
+		]
+	}
+]

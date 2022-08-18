@@ -93,7 +93,7 @@ public class DecoderTest {
 		config.setProperty("r2cloud.newLaunches", false);
 		config.update();
 		PredictOreKit predict = new PredictOreKit(config);
-		dao = new SatelliteDao(config, null);
+		dao = new SatelliteDao(config, null, null);
 		decoders = new Decoders(predict, config, null, dao);
 	}
 

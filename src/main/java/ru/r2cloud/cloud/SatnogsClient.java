@@ -1,6 +1,5 @@
 package ru.r2cloud.cloud;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -10,7 +9,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.nio.file.FileSystems;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -44,7 +42,6 @@ import ru.r2cloud.model.TransmitterKey;
 import ru.r2cloud.model.TransmitterStatus;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.DefaultClock;
 import ru.r2cloud.util.Util;
 
 public class SatnogsClient {
@@ -57,17 +54,6 @@ public class SatnogsClient {
 	private final String hostname;
 	private final Duration timeout;
 	private final Clock clock;
-
-	public static void main(String[] args) throws Exception {
-		Configuration config = new Configuration(SatnogsClient.class.getClassLoader().getResourceAsStream("config-dev.properties"), System.getProperty("user.home") + File.separator + ".r2cloud", FileSystems.getDefault());
-		config.setProperty("satnogs.hostname", "https://db.satnogs.org");
-		config.setProperty("satnogs.connectionTimeout", 10000);
-		SatnogsClient client = new SatnogsClient(config, new DefaultClock());
-		List<Satellite> all = client.loadSatellites();
-//		List<Transmitter> all = client.loadAllTransmitters();
-		// FIXME duplicate transmitters for Skoltech B2 sort by update time?
-		System.out.println(all.size());
-	}
 
 	public SatnogsClient(Configuration config, Clock clock) {
 		this.hostname = config.getProperty("satnogs.hostname");

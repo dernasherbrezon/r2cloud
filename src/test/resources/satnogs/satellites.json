@@ -1,0 +1,84 @@
+[
+    {
+        "sat_id": "CSGC-5605-1718-3109-5402",
+        "norad_cat_id": 52950,
+        "name": "CTIM",
+        "names": "Compact Total Irradiance Monitor, CTIM-FD",
+        "image": "satellites/ctim.png",
+        "status": "alive",
+        "decayed": null,
+        "launched": "2022-07-02T06:53:05Z",
+        "deployed": "2022-07-02T07:48:02Z",
+        "website": "https://lasp.colorado.edu/home/",
+        "operator": "None",
+        "countries": "US",
+        "telemetries": [
+            {
+                "decoder": "ctim"
+            }
+        ],
+        "updated": "2022-08-08T19:27:50.989362Z",
+        "citation": "https://archive.org/details/ikhnos-identification-52950/2022-07-07T22%3A03%3A16_6183819_52950_22074G_0-OBJECT-G_0.7368489051851839_B_r29.0_f-4.8.png",
+        "is_frequency_violator": false,
+        "associated_satellites": [
+            "MOJV-8566-2861-8382-5319"
+        ]
+    },
+    {
+        "sat_id": "BDML-1083-7096-5526-2883",
+        "norad_cat_id": 99353,
+        "name": "Skoltech B2",
+        "names": "",
+        "image": "satellites/SkoltechB1_MM6Teqr.jpg",
+        "status": "alive",
+        "decayed": null,
+        "launched": null,
+        "deployed": null,
+        "website": "https://skoltech.ru",
+        "operator": "None",
+        "countries": "RU",
+        "telemetries": [],
+        "updated": "2022-08-10T17:28:21.110472Z",
+        "citation": "https://gitlab.com/librespacefoundation/satnogs-ops/-/issues/244",
+        "is_frequency_violator": true,
+        "associated_satellites": []
+    },
+    {
+        "sat_id": "ANJN-0857-0652-4935-2307",
+        "norad_cat_id": null,
+        "name": "MESAT-1",
+        "names": "",
+        "image": "",
+        "status": "future",
+        "decayed": null,
+        "launched": "2022-06-01T00:00:00Z",
+        "deployed": null,
+        "website": "https://umaine.edu/wisenetlab/mesat1",
+        "operator": "None",
+        "countries": "US",
+        "telemetries": [],
+        "updated": "2021-09-16T07:19:16.559043Z",
+        "citation": "https://umaine.edu/wisenetlab/mesat1",
+        "is_frequency_violator": false,
+        "associated_satellites": []
+    },
+    {
+        "sat_id": "CAQR-8964-3870-2913-3373",
+        "norad_cat_id": 99484,
+        "name": "PyCubed-1",
+        "names": "",
+        "image": "",
+        "status": "future",
+        "decayed": null,
+        "launched": null,
+        "deployed": null,
+        "website": "https://pycubed.org/",
+        "operator": "None",
+        "countries": "",
+        "telemetries": [],
+        "updated": "2022-02-07T10:40:30.524963Z",
+        "citation": "http://www.amsatuk.me.uk/iaru/finished_detail.php?serialnum=774",
+        "is_frequency_violator": false,
+        "associated_satellites": []
+    }
+]

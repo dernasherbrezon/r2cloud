@@ -115,7 +115,7 @@ public class TLEReloaderTest {
 		config.setProperty("satellites.basepath.location", tempFolder.getRoot().getAbsolutePath());
 		config.update();
 
-		satelliteDao = new SatelliteDao(config, null);
+		satelliteDao = new SatelliteDao(config, null, null);
 
 		celestrak = mock(CelestrakClient.class);
 		when(celestrak.getTleForActiveSatellites()).thenReturn(tleData);
