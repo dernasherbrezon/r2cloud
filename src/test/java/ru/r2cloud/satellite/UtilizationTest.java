@@ -45,7 +45,7 @@ public class UtilizationTest {
 		celestrak.mockResponse(TestUtil.loadExpected("tle-2020-09-27.txt"));
 		PredictOreKit predict = new PredictOreKit(config);
 		SatelliteDao satelliteDao = new SatelliteDao(config, null, null);
-		TLEReloader tleDao = new TLEReloader(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new DefaultClock(), new CelestrakClient(celestrak.getUrls()));
+		TLEReloader tleDao = new TLEReloader(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new DefaultClock(), new CelestrakClient(celestrak.getUrls()), null);
 		tleDao.start();
 		ObservationFactory factory = new ObservationFactory(predict, config);
 

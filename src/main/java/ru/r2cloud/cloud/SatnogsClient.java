@@ -85,14 +85,36 @@ public class SatnogsClient {
 			if (!cur.getPriority().equals(Priority.HIGH)) {
 				continue;
 			}
-			cur.setTle(loadTleById(cur.getId()));
+			cur.setTle(loadTleBySatelliteId(cur.getId()));
 		}
 		LOG.info("satellites from satnogs were loaded: {}", result.size());
 		return result;
 	}
 
-	public Tle loadTleById(String satelliteId) {
+	private Tle loadTleBySatelliteId(String satelliteId) {
 		Builder request = HttpRequest.newBuilder().uri(URI.create(hostname + "/api/tle/?sat_id=" + satelliteId));
+		request.timeout(timeout);
+		request.header("User-Agent", R2Cloud.getVersion() + " leosatdata.com");
+		try {
+			HttpResponse<String> response = sendWithRetry(request.GET().build(), BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				if (LOG.isErrorEnabled()) {
+					LOG.error("unable to load tle. response code: {}. response: {}", response.statusCode(), response.body());
+				}
+				return null;
+			}
+			return readTle(response.body());
+		} catch (IOException e) {
+			Util.logIOException(LOG, "unable to load tle", e);
+			return null;
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new IllegalStateException(e);
+		}
+	}
+
+	public Tle loadTleByNoradId(String noradId) {
+		Builder request = HttpRequest.newBuilder().uri(URI.create(hostname + "/api/tle/?norad_cat_id=" + noradId));
 		request.timeout(timeout);
 		request.header("User-Agent", R2Cloud.getVersion() + " leosatdata.com");
 		try {

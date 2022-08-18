@@ -132,7 +132,7 @@ public class R2Cloud {
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
 		satelliteDao = new SatelliteDao(props, leoSatDataClient, satnogsClient);
-		tleReloader = new TLEReloader(props, satelliteDao, threadFactory, clock, new CelestrakClient(props.getProperties("tle.urls")));
+		tleReloader = new TLEReloader(props, satelliteDao, threadFactory, clock, new CelestrakClient(props.getProperties("tle.urls")), satnogsClient);
 		signed = new SignedURL(props, clock);
 		decoders = new Decoders(predict, props, processFactory, satelliteDao);
 		decoderService = new DecoderService(props, decoders, resultDao, leoSatDataService, threadFactory, metrics, satelliteDao);

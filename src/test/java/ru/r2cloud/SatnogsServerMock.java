@@ -1,6 +1,7 @@
 package ru.r2cloud;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -43,7 +44,7 @@ public class SatnogsServerMock {
 	public void setSatellitesMock(HttpHandler mock) {
 		addHandler(mock, "/api/satellites/");
 	}
-	
+
 	public void setTransmittersMock(String message, int code) {
 		HttpHandler mock = new HttpHandler() {
 
@@ -80,7 +81,19 @@ public class SatnogsServerMock {
 				URI req = exchange.getRequestURI();
 				String[] parts = EQ.split(req.getQuery());
 				if (parts.length == 2) {
-					String responseBody = TestUtil.loadExpected(tleBase + "/" + parts[1] + ".json");
+					String filepath = tleBase + "/" + parts[1] + ".json";
+					boolean filepathExists;
+					try (InputStream is = TestUtil.class.getClassLoader().getResourceAsStream(filepath)) {
+						filepathExists = (is != null);
+					} catch (Exception e) {
+						filepathExists = false;
+					}
+					String responseBody;
+					if (filepathExists) {
+						responseBody = TestUtil.loadExpected(filepath);
+					} else {
+						responseBody = "[]";
+					}
 					exchange.getResponseHeaders().add("Content-Type", "application/json");
 					exchange.sendResponseHeaders(200, responseBody.length());
 					OutputStream os = exchange.getResponseBody();

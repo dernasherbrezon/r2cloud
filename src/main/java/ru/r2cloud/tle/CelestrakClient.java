@@ -66,7 +66,8 @@ public class CelestrakClient {
 						if (line2 == null) {
 							break;
 						}
-						result.put(curLine.trim(), new Tle(new String[] { curLine.trim(), line1, line2 }));
+						String noradId = line2.substring(2, 2 + 5).trim();
+						result.put(noradId, new Tle(new String[] { curLine.trim(), line1, line2 }));
 					}
 				}
 			}

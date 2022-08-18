@@ -16,7 +16,6 @@ import java.net.http.HttpResponse;
 import java.nio.file.FileSystems;
 import java.util.Properties;
 import java.util.UUID;
-import java.util.logging.LogManager;
 
 import org.junit.After;
 import org.junit.Before;
@@ -36,6 +35,7 @@ import ru.r2cloud.JsonHttpResponse;
 import ru.r2cloud.R2Cloud;
 import ru.r2cloud.RotctrldMock;
 import ru.r2cloud.RtlTestServer;
+import ru.r2cloud.SatnogsServerMock;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.SdrType;
 import ru.r2cloud.util.Configuration;
@@ -56,6 +56,7 @@ public abstract class BaseTest {
 	private RtlTestServer rtlTestServer;
 	private RotctrldMock rotctrlMock;
 	private RotctrldMock rotctrlMockForLora;
+	private SatnogsServerMock satnogs;
 	protected HttpServer r2loraServer;
 
 	protected RestClient client;
@@ -73,7 +74,7 @@ public abstract class BaseTest {
 
 	@Before
 	public void start() throws Exception {
-		LogManager.getLogManager().reset();
+//		LogManager.getLogManager().reset();
 		tempDirectory = new File(tempFolder.getRoot(), "tmp");
 		if (!tempDirectory.mkdirs()) {
 			throw new RuntimeException("unable to create temp dir: " + tempDirectory.getAbsolutePath());
@@ -81,6 +82,11 @@ public abstract class BaseTest {
 		celestrak = new CelestrakServer();
 		celestrak.start();
 		celestrak.mockResponse(TestUtil.loadExpected("sample-tle.txt"));
+
+		satnogs = new SatnogsServerMock();
+		satnogs.start();
+		satnogs.setSatellitesMock("[]", 200);
+		satnogs.setTransmittersMock("[]", 200);
 
 		rtlTestServer = new RtlTestServer();
 		rtlTestServer.mockDefault();
@@ -133,6 +139,7 @@ public abstract class BaseTest {
 		config.setProperty("satellites.rtlsdr.test.path", rtlTestMock.getAbsolutePath());
 		config.setProperty("satellites.sox.path", "sox");
 		config.setProperty("leosatdata.hostname", "http://localhost:8001");
+		config.setProperty("satnogs.hostname", satnogs.getUrl());
 		config.setProperty("server.tmp.directory", tempDirectory.getAbsolutePath());
 		config.setProperty("server.static.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data");
 		config.setProperty("metrics.basepath.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "rrd");
@@ -174,6 +181,9 @@ public abstract class BaseTest {
 		}
 		if (r2loraServer != null) {
 			r2loraServer.stop(0);
+		}
+		if (satnogs != null) {
+			satnogs.stop();
 		}
 	}
 

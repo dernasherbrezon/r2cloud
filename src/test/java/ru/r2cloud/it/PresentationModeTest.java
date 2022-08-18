@@ -32,7 +32,7 @@ public class PresentationModeTest extends BaseTest {
 		JsonObject data = client.getPresentationModeData();
 		JsonArray observations = data.get("observations").asArray();
 		assertNotNull(observations);
-		assertEquals(4, observations.size());
+		assertEquals(6, observations.size());
 		JsonObject baseStation = data.get("basestation").asObject();
 		assertNotNull(baseStation);
 	}

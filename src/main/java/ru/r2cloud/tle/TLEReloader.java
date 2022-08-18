@@ -10,13 +10,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.cloud.SatnogsClient;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.satellite.SatelliteDao;
@@ -34,15 +34,17 @@ public class TLEReloader {
 	private final Configuration config;
 	private final Clock clock;
 	private final CelestrakClient celestrak;
+	private final SatnogsClient client;
 
 	private ScheduledExecutorService executor = null;
 
-	public TLEReloader(Configuration config, SatelliteDao dao, ThreadPoolFactory threadFactory, Clock clock, CelestrakClient celestrak) {
+	public TLEReloader(Configuration config, SatelliteDao dao, ThreadPoolFactory threadFactory, Clock clock, CelestrakClient celestrak, SatnogsClient client) {
 		this.config = config;
 		this.threadFactory = threadFactory;
 		this.clock = clock;
 		this.dao = dao;
 		this.celestrak = celestrak;
+		this.client = client;
 	}
 
 	public synchronized void start() {
@@ -104,14 +106,21 @@ public class TLEReloader {
 		if (newTle.isEmpty()) {
 			return;
 		}
-		for (Entry<String, Tle> cur : newTle.entrySet()) {
-			Satellite satellite = dao.findByName(cur.getKey());
-			if (satellite == null) {
+		for (Satellite satellite : dao.findAll()) {
+			if (satellite.getTle() != null) {
+				continue;
+			}
+			Tle tle = newTle.get(satellite.getId());
+			if (tle == null) {
+				tle = client.loadTleByNoradId(satellite.getId());
+			}
+			if (tle == null) {
+				LOG.error("unable to find tle for {}", satellite);
 				continue;
 			}
 			// even if save onto disk fails,
 			// make sure Tle is fresh in memory
-			satellite.setTle(cur.getValue());
+			satellite.setTle(tle);
 			Path output = config.getSatellitesBasePath().resolve(satellite.getId()).resolve("tle.txt");
 			if (!Files.exists(output.getParent())) {
 				try {
@@ -124,12 +133,12 @@ public class TLEReloader {
 			// ensure temp and output are on the same filestore
 			Path tempOutput = output.getParent().resolve("tle.txt.tmp");
 			try (BufferedWriter w = Files.newBufferedWriter(tempOutput)) {
-				w.append(cur.getValue().getRaw()[1]);
+				w.append(tle.getRaw()[1]);
 				w.newLine();
-				w.append(cur.getValue().getRaw()[2]);
+				w.append(tle.getRaw()[2]);
 				w.newLine();
 			} catch (IOException e) {
-				LOG.error("unable to write tle for: {}", cur.getKey(), e);
+				LOG.error("unable to write tle for {}", satellite, e);
 				continue;
 			}
 

@@ -185,7 +185,7 @@ public class ScheduleTest {
 		LeoSatDataClient r2cloudClient = new LeoSatDataClient(config, new DefaultClock());
 		SatnogsClient satnogsClient = new SatnogsClient(config, new DefaultClock());
 		satelliteDao = new SatelliteDao(config, r2cloudClient, satnogsClient);
-		tleDao = new TLEReloader(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new DefaultClock(), new CelestrakClient(celestrak.getUrls()));
+		tleDao = new TLEReloader(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new DefaultClock(), new CelestrakClient(celestrak.getUrls()), satnogsClient);
 		tleDao.start();
 		PredictOreKit predict = new PredictOreKit(config);
 		factory = new ObservationFactory(predict, config);

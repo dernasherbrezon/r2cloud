@@ -32,6 +32,7 @@ import com.aerse.mockfs.FailingByteChannelCallback;
 import com.aerse.mockfs.MockFileSystem;
 
 import ru.r2cloud.TestConfiguration;
+import ru.r2cloud.cloud.SatnogsClient;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.satellite.SatelliteDao;
@@ -51,6 +52,7 @@ public class TLEReloaderTest {
 	private TestConfiguration config;
 	private SatelliteDao satelliteDao;
 	private CelestrakClient celestrak;
+	private SatnogsClient satnogs;
 	private Map<String, Tle> tleData;
 	private TLEReloader dao;
 
@@ -60,7 +62,7 @@ public class TLEReloaderTest {
 		Satellite sat = satelliteDao.findById(satelliteId);
 		assertNull(sat.getTle());
 
-		dao = new TLEReloader(config, satelliteDao, threadPool, clock, celestrak);
+		dao = new TLEReloader(config, satelliteDao, threadPool, clock, celestrak, satnogs);
 		dao.reload();
 		assertNotNull(sat.getTle());
 
@@ -79,7 +81,7 @@ public class TLEReloaderTest {
 
 	@Test
 	public void testSuccess() throws Exception {
-		TLEReloader reloader = new TLEReloader(config, satelliteDao, threadPool, clock, celestrak);
+		TLEReloader reloader = new TLEReloader(config, satelliteDao, threadPool, clock, celestrak, satnogs);
 		reloader.start();
 
 		verify(clock).millis();
@@ -88,7 +90,7 @@ public class TLEReloaderTest {
 
 	@Test
 	public void testLifecycle() {
-		TLEReloader reloader = new TLEReloader(config, satelliteDao, threadPool, clock, celestrak);
+		TLEReloader reloader = new TLEReloader(config, satelliteDao, threadPool, clock, celestrak, satnogs);
 		reloader.start();
 		reloader.start();
 		verify(executor, times(1)).scheduleAtFixedRate(any(), anyLong(), anyLong(), any());
@@ -104,7 +106,7 @@ public class TLEReloaderTest {
 				lines.add(curLine);
 			}
 			for (int i = 0; i < lines.size(); i += 3) {
-				tleData.put(lines.get(i), new Tle(new String[] { lines.get(i), lines.get(i + 1), lines.get(i + 2) }));
+				tleData.put(lines.get(i + 2).substring(2, 2 + 5).trim(), new Tle(new String[] { lines.get(i), lines.get(i + 1), lines.get(i + 2) }));
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -119,6 +121,9 @@ public class TLEReloaderTest {
 
 		celestrak = mock(CelestrakClient.class);
 		when(celestrak.getTleForActiveSatellites()).thenReturn(tleData);
+		
+		satnogs = mock(SatnogsClient.class);
+		when(satnogs.loadTleByNoradId(any())).thenReturn(null);
 
 		clock = mock(Clock.class);
 		threadPool = mock(ThreadPoolFactory.class);

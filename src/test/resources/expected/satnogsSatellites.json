@@ -1,5 +1,42 @@
 [
 	{
+		"id": "53464",
+		"name": "TUMnanoSAT",
+		"enabled": false,
+		"priority": "NORMAL",
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"beaconSizeBytes": 0,
+				"frequency": 436680000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"bpskDifferential": false,
+				"bpskCenterFrequency": 0.0,
+				"deviation": 0,
+				"afCarrier": 0,
+				"transitionWidth": 0.0,
+				"inputSampleRate": 0,
+				"outputSampleRate": 0,
+				"loraBandwidth": 0,
+				"loraSpreadFactor": 0,
+				"loraCodingRate": 0,
+				"loraSyncword": 0,
+				"loraPreambleLength": 0,
+				"loraLdro": 0,
+				"status": "ENABLED",
+				"updated": 1660259232836,
+				"enabled": false,
+				"satelliteId": "EUEU-0112-5297-2105-4789"
+			}
+		],
+		"source": "SATNOGS"
+	},
+	{
 		"id": "43908",
 		"name": "LUME-1",
 		"enabled": false,

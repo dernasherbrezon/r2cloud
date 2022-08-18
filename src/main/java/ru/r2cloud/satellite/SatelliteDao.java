@@ -63,8 +63,6 @@ public class SatelliteDao {
 			satnogsSatellites = satnogsClient.loadSatellites();
 			for (Satellite cur : satnogsSatellites) {
 				if (cur.getPriority().equals(Priority.NORMAL)) {
-					// FIXME satellite name in satnogs doesn't equal celestrak tle line0
-					// thus no tle found for active satellite
 					satelliteById.put(cur.getId(), cur);
 				}
 			}

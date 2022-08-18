@@ -1,5 +1,36 @@
 [
     {
+        "uuid": "SMkBZk2ahA3JzrPBP2S2s8",
+        "description": "Mode U - GMSK9k6 AX.25 TLM",
+        "alive": true,
+        "type": "Transmitter",
+        "uplink_low": null,
+        "uplink_high": null,
+        "uplink_drift": null,
+        "downlink_low": 436680000,
+        "downlink_high": null,
+        "downlink_drift": null,
+        "mode": "GMSK",
+        "mode_id": 63,
+        "uplink_mode": null,
+        "invert": false,
+        "baud": 9600.0,
+        "sat_id": "EUEU-0112-5297-2105-4789",
+        "norad_cat_id": 53464,
+        "status": "active",
+        "updated": "2022-08-11T23:07:12.836897Z",
+        "citation": "http://www.amsatuk.me.uk/iaru/finished_detail.php?serialnum=733",
+        "service": "Amateur",
+        "iaru_coordination": "IARU Coordinated",
+        "iaru_coordination_url": "http://www.amsatuk.me.uk/iaru/finished_detail.php?serialnum=733",
+        "itu_notification": {
+            "urls": [
+                "https://www.itu.int/ITU-R/space/asreceived/Publication/DisplayPublication/13211"
+            ]
+        },
+        "frequency_violation": false
+    },
+    {
         "uuid": "4kFtAr7gkiCLnYvtuRygKA",
         "description": "Mode S - GFSK 500kbps (SpaceQuest TX-2400)",
         "alive": true,
