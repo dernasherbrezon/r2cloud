@@ -25,8 +25,38 @@ public class SatnogsServerMock {
 		this.tleBase = base;
 	}
 
+	public void setSatellitesMock(String message, int code) {
+		HttpHandler mock = new HttpHandler() {
+
+			@Override
+			public void handle(HttpExchange exchange) throws IOException {
+				exchange.getResponseHeaders().add("Content-Type", "application/json");
+				exchange.sendResponseHeaders(code, message.length());
+				OutputStream os = exchange.getResponseBody();
+				os.write(message.getBytes(StandardCharsets.UTF_8));
+				os.close();
+			}
+		};
+		addHandler(mock, "/api/satellites/");
+	}
+
 	public void setSatellitesMock(HttpHandler mock) {
 		addHandler(mock, "/api/satellites/");
+	}
+	
+	public void setTransmittersMock(String message, int code) {
+		HttpHandler mock = new HttpHandler() {
+
+			@Override
+			public void handle(HttpExchange exchange) throws IOException {
+				exchange.getResponseHeaders().add("Content-Type", "application/json");
+				exchange.sendResponseHeaders(code, message.length());
+				OutputStream os = exchange.getResponseBody();
+				os.write(message.getBytes(StandardCharsets.UTF_8));
+				os.close();
+			}
+		};
+		addHandler(mock, "/api/transmitters/");
 	}
 
 	public void setTransmittersMock(HttpHandler mock) {

@@ -28,6 +28,7 @@ import org.junit.rules.TemporaryFolder;
 import ru.r2cloud.CelestrakServer;
 import ru.r2cloud.JsonHttpResponse;
 import ru.r2cloud.LeoSatDataServerMock;
+import ru.r2cloud.SatnogsServerMock;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.cloud.LeoSatDataClient;
@@ -51,6 +52,7 @@ public class ScheduleTest {
 	private Schedule schedule;
 	private CelestrakServer celestrak;
 	private LeoSatDataServerMock server;
+	private SatnogsServerMock satnogs;
 	private TestConfiguration config;
 	private SatelliteDao satelliteDao;
 	private TLEReloader tleDao;
@@ -164,14 +166,19 @@ public class ScheduleTest {
 		server.start();
 		server.setSatelliteMock("[]", 200);
 		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/empty-array-response.json", 200));
+		satnogs = new SatnogsServerMock();
+		satnogs.start();
+		satnogs.setSatellitesMock("[]", 200);
+		satnogs.setTransmittersMock("[]", 200);
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("locaiton.lat", "51.49");
 		config.setProperty("locaiton.lon", "0.01");
 		config.setProperty("satellites.sdr", SdrType.RTLSDR.name().toLowerCase());
 		config.setProperty("r2cloud.newLaunches", true);
 		config.setProperty("r2cloud.apiKey", UUID.randomUUID().toString());
-		config.setProperty("satnogs.satellites", true);
 		config.setProperty("leosatdata.hostname", server.getUrl());
+		config.setProperty("satnogs.satellites", true);
+		config.setProperty("satnogs.hostname", satnogs.getUrl());
 		LeoSatDataClient r2cloudClient = new LeoSatDataClient(config, new DefaultClock());
 		SatnogsClient satnogsClient = new SatnogsClient(config, new DefaultClock());
 		satelliteDao = new SatelliteDao(config, r2cloudClient, satnogsClient);
@@ -191,6 +198,9 @@ public class ScheduleTest {
 		}
 		if (server != null) {
 			server.stop();
+		}
+		if (satnogs != null) {
+			satnogs.stop();
 		}
 		if (tleDao != null) {
 			tleDao.stop();
