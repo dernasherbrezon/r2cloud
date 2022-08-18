@@ -21,6 +21,15 @@ public class Satellite {
 	private Date start;
 	private Date end;
 	private List<Transmitter> transmitters;
+	private SatelliteSource source;
+	
+	public SatelliteSource getSource() {
+		return source;
+	}
+	
+	public void setSource(SatelliteSource source) {
+		this.source = source;
+	}
 
 	public String getId() {
 		return id;

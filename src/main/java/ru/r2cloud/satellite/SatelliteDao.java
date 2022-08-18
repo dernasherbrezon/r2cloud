@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteComparator;
+import ru.r2cloud.model.SatelliteSource;
 import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.model.Transmitter;
@@ -61,7 +63,7 @@ public class SatelliteDao {
 			satnogsSatellites = satnogsClient.loadSatellites();
 			for (Satellite cur : satnogsSatellites) {
 				if (cur.getPriority().equals(Priority.NORMAL)) {
-					//FIXME satellite name in satnogs doesn't equal celestrak tle line0
+					// FIXME satellite name in satnogs doesn't equal celestrak tle line0
 					// thus no tle found for active satellite
 					satelliteById.put(cur.getId(), cur);
 				}
@@ -160,6 +162,7 @@ public class SatelliteDao {
 			cur.setFrequencyBand(currentBand);
 		}
 		Collections.sort(satellites, SatelliteComparator.ID_COMPARATOR);
+		printStatsByPriorityAndSource();
 	}
 
 	private void normalize(Satellite satellite) {
@@ -193,7 +196,9 @@ public class SatelliteDao {
 			return Collections.emptyList();
 		}
 		for (int i = 0; i < rawSatellites.size(); i++) {
-			result.add(Satellite.fromJson(rawSatellites.get(i).asObject()));
+			Satellite cur = Satellite.fromJson(rawSatellites.get(i).asObject());
+			cur.setSource(SatelliteSource.CONFIG);
+			result.add(cur);
 		}
 		return result;
 	}
@@ -252,6 +257,31 @@ public class SatelliteDao {
 			}
 		}
 		return result;
+	}
+
+	private void printStatsByPriorityAndSource() {
+		printStatsBySource(Priority.HIGH);
+		printStatsBySource(Priority.NORMAL);
+	}
+
+	private void printStatsBySource(Priority priority) {
+		int total = 0;
+		Map<SatelliteSource, Integer> totalBySource = new HashMap<>();
+		for (Satellite cur : satellites) {
+			if (!cur.getPriority().equals(priority)) {
+				continue;
+			}
+			total++;
+			Integer previous = totalBySource.get(cur.getSource());
+			if (previous == null) {
+				previous = 0;
+			}
+			totalBySource.put(cur.getSource(), previous + 1);
+		}
+		LOG.info("{}: {}", priority, total);
+		for (Entry<SatelliteSource, Integer> cur : totalBySource.entrySet()) {
+			LOG.info("  {}: {}", cur.getKey(), cur.getValue());
+		}
 	}
 
 }

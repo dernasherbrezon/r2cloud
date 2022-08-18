@@ -205,5 +205,63 @@
             "urls": []
         },
         "frequency_violation": false
+    },
+    {
+        "uuid": "oXe5XCa53jwWzCac5W75Bm",
+        "description": "Mode U - GMSK9k6",
+        "alive": true,
+        "type": "Transmitter",
+        "uplink_low": null,
+        "uplink_high": null,
+        "uplink_drift": null,
+        "downlink_low": 437060000,
+        "downlink_high": null,
+        "downlink_drift": null,
+        "mode": "MSK AX.100 Mode 5",
+        "mode_id": 86,
+        "uplink_mode": null,
+        "invert": false,
+        "baud": 9600.0,
+        "sat_id": "QXDQ-9755-0160-9983-1765",
+        "norad_cat_id": 43908,
+        "status": "active",
+        "updated": "2021-03-23T21:02:29.387850Z",
+        "citation": "https://twitter.com/EU1AEM/status/1374462184915267584",
+        "service": "Unknown",
+        "iaru_coordination": "N/A",
+        "iaru_coordination_url": "",
+        "itu_notification": {
+            "urls": []
+        },
+        "frequency_violation": false
+    },
+    {
+        "uuid": "PVQ67hmaK6HTExvVRu2CDQ",
+        "description": "Mode U - GMSK4k8",
+        "alive": true,
+        "type": "Transmitter",
+        "uplink_low": null,
+        "uplink_high": null,
+        "uplink_drift": null,
+        "downlink_low": 437060000,
+        "downlink_high": null,
+        "downlink_drift": null,
+        "mode": "MSK AX.100 Mode 5",
+        "mode_id": 86,
+        "uplink_mode": null,
+        "invert": false,
+        "baud": 4800.0,
+        "sat_id": "QXDQ-9755-0160-9983-1765",
+        "norad_cat_id": 43908,
+        "status": "active",
+        "updated": "2021-03-23T21:02:40.436277Z",
+        "citation": "https://gomspace.com/news/gomspace-selected-for-the-delivery-of-nanosat.aspx and personal contact with Alen Space TOTEM manager by Surligas",
+        "service": "Unknown",
+        "iaru_coordination": "N/A",
+        "iaru_coordination_url": "",
+        "itu_notification": {
+            "urls": []
+        },
+        "frequency_violation": false
     }
 ]

@@ -61,6 +61,9 @@ public class ScheduleTest {
 
 	@Test
 	public void testScheduleForNewLaunches() throws Exception {
+		satnogs.setSatellitesMock(new JsonHttpResponse("satnogs/satellites.json", 200));
+		satnogs.setTransmittersMock(new JsonHttpResponse("satnogs/transmitters.json", 200));
+		satnogs.setTleMock("satnogs");
 		server.setSatelliteMock(new JsonHttpResponse("r2cloudclienttest/satellite.json", 200));
 		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunch-for-scheduletest.json", 200));
 		satelliteDao.reload();

@@ -33,6 +33,7 @@ import ru.r2cloud.R2Cloud;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SatelliteSource;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
@@ -215,7 +216,9 @@ public class LeoSatDataClient {
 				continue;
 			}
 			JsonObject asObject = jsonValue.asObject();
-			result.add(Satellite.fromJson(asObject));
+			Satellite cur = Satellite.fromJson(asObject);
+			cur.setSource(SatelliteSource.LEOSATDATA);
+			result.add(cur);
 		}
 		return result;
 	}
@@ -252,6 +255,7 @@ public class LeoSatDataClient {
 			// override priority and TLE
 			newLaunch.setPriority(Priority.HIGH);
 			newLaunch.setTle(readTle(asObject.get("tle")));
+			newLaunch.setSource(SatelliteSource.LEOSATDATA);
 			result.add(newLaunch);
 		}
 		return result;

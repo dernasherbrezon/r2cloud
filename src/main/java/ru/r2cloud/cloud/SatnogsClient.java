@@ -36,6 +36,7 @@ import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SatelliteSource;
 import ru.r2cloud.model.SatnogsTransmitterKey;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.model.Transmitter;
@@ -203,6 +204,7 @@ public class SatnogsClient {
 			Satellite cur = new Satellite();
 			cur.setName(name);
 			cur.setTransmitters(transmitters);
+			cur.setSource(SatelliteSource.SATNOGS);
 			// can't detect if satellite is just launched or junk data
 			// thus disabled by default even if "new launch"
 			cur.setEnabled(false);
