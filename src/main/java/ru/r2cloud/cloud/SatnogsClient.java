@@ -362,6 +362,8 @@ public class SatnogsClient {
 			cur.setModulation(modulation);
 			cur.setStatus(TransmitterStatus.ENABLED);
 			cur.setSatelliteId(satelliteId);
+			cur.setTransitionWidth(2000);
+			cur.setDeviation(5000);
 			if (description.contains(" usp ")) {
 				cur.setFraming(Framing.USP);
 				cur.setBeaconClass(UspBeacon.class);
