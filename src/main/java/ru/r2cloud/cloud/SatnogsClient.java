@@ -113,28 +113,6 @@ public class SatnogsClient {
 		}
 	}
 
-	public Tle loadTleByNoradId(String noradId) {
-		Builder request = HttpRequest.newBuilder().uri(URI.create(hostname + "/api/tle/?norad_cat_id=" + noradId));
-		request.timeout(timeout);
-		request.header("User-Agent", R2Cloud.getVersion() + " leosatdata.com");
-		try {
-			HttpResponse<String> response = sendWithRetry(request.GET().build(), BodyHandlers.ofString());
-			if (response.statusCode() != 200) {
-				if (LOG.isErrorEnabled()) {
-					LOG.error("unable to load tle. response code: {}. response: {}", response.statusCode(), response.body());
-				}
-				return null;
-			}
-			return readTle(response.body());
-		} catch (IOException e) {
-			Util.logIOException(LOG, "unable to load tle", e);
-			return null;
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new IllegalStateException(e);
-		}
-	}
-
 	private List<Satellite> loadAllSatellites(Map<String, List<Transmitter>> groupBySatelliteId) {
 		Builder request = HttpRequest.newBuilder().uri(URI.create(hostname + "/api/satellites/"));
 		request.timeout(timeout);

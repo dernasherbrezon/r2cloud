@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.r2cloud.cloud.SatnogsClient;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.satellite.SatelliteDao;
@@ -34,17 +33,15 @@ public class TLEReloader {
 	private final Configuration config;
 	private final Clock clock;
 	private final CelestrakClient celestrak;
-	private final SatnogsClient client;
 
 	private ScheduledExecutorService executor = null;
 
-	public TLEReloader(Configuration config, SatelliteDao dao, ThreadPoolFactory threadFactory, Clock clock, CelestrakClient celestrak, SatnogsClient client) {
+	public TLEReloader(Configuration config, SatelliteDao dao, ThreadPoolFactory threadFactory, Clock clock, CelestrakClient celestrak) {
 		this.config = config;
 		this.threadFactory = threadFactory;
 		this.clock = clock;
 		this.dao = dao;
 		this.celestrak = celestrak;
-		this.client = client;
 	}
 
 	public synchronized void start() {
@@ -107,13 +104,7 @@ public class TLEReloader {
 			return;
 		}
 		for (Satellite satellite : dao.findAll()) {
-			if (satellite.getTle() != null) {
-				continue;
-			}
 			Tle tle = newTle.get(satellite.getId());
-			if (tle == null) {
-				tle = client.loadTleByNoradId(satellite.getId());
-			}
 			if (tle == null) {
 				LOG.error("unable to find tle for {}", satellite);
 				continue;
