@@ -165,12 +165,13 @@ public class RestClient {
 		}
 	}
 
-	public HttpResponse<String> saveR2CloudConfigurationWithResponse(String apiKey, boolean syncSpectogram, boolean newLaunch) {
+	public HttpResponse<String> saveR2CloudConfigurationWithResponse(String apiKey, boolean syncSpectogram, boolean newLaunch, boolean satnogs) {
 		LOG.info("save r2cloud configuration");
 		JsonObject json = Json.object();
 		json.add("apiKey", apiKey);
 		json.add("syncSpectogram", syncSpectogram);
 		json.add("newLaunch", newLaunch);
+		json.add("satnogs", satnogs);
 		HttpRequest request = createJsonPost("/api/v1/admin/config/r2cloud", json).build();
 		try {
 			return httpclient.send(request, BodyHandlers.ofString());
@@ -194,8 +195,8 @@ public class RestClient {
 		}
 	}
 
-	public void saveR2CloudConfiguration(String apiKey, boolean syncSpectogram, boolean newLaunch) {
-		HttpResponse<String> response = saveR2CloudConfigurationWithResponse(apiKey, syncSpectogram, newLaunch);
+	public void saveR2CloudConfiguration(String apiKey, boolean syncSpectogram, boolean newLaunch, boolean satnogs) {
+		HttpResponse<String> response = saveR2CloudConfigurationWithResponse(apiKey, syncSpectogram, newLaunch, satnogs);
 		if (response.statusCode() != 200) {
 			LOG.info("status code: {}", response.statusCode());
 		}
