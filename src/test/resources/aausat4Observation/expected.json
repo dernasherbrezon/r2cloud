@@ -58,10 +58,7 @@
 					"frdp": false,
 					"fxtea": false
 				},
-				"hmac": [
-					-105,
-					86
-				],
+				"hmac": "9756",
 				"length": 86
 			}
 		}

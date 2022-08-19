@@ -23,7 +23,16 @@ public class SampleClass {
 	private List<Object> f14 = Arrays.asList(new Object());
 	private Map<String, Object> f15 = Collections.singletonMap("f15", new Object());
 	private Object[] f16 = new Object[] { new Object() };
+	private byte[] f17 = new byte[] { 1, 2, 3 };
 
+	public byte[] getF17() {
+		return f17;
+	}
+	
+	public void setF17(byte[] f17) {
+		this.f17 = f17;
+	}
+	
 	public Object[] getF16() {
 		return f16;
 	}
