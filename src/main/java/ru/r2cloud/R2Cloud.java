@@ -63,7 +63,7 @@ import ru.r2cloud.web.api.TLE;
 import ru.r2cloud.web.api.configuration.Configured;
 import ru.r2cloud.web.api.configuration.DDNS;
 import ru.r2cloud.web.api.configuration.General;
-import ru.r2cloud.web.api.configuration.R2CloudSave;
+import ru.r2cloud.web.api.configuration.Integrations;
 import ru.r2cloud.web.api.observation.ObservationList;
 import ru.r2cloud.web.api.observation.ObservationLoad;
 import ru.r2cloud.web.api.observation.ObservationLoadPresentation;
@@ -170,7 +170,7 @@ public class R2Cloud {
 		index(new General(props, autoUpdate));
 		index(new DDNS(props, ddnsClient));
 		index(new TLE(props, satelliteDao));
-		index(new R2CloudSave(props));
+		index(new Integrations(props));
 		index(new ObservationSpectrogram(resultDao, spectogramService, signed));
 		index(new ObservationList(satelliteDao, resultDao));
 		index(new ObservationLoad(resultDao, signed, satelliteDao));
