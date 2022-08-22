@@ -73,6 +73,7 @@ public class Decoders {
 		index("47964", "47964-0", new Smog1Decoder(predict, props));
 		index("51074", "51074-0", new DelfiPqDecoder(predict, props));
 		index("51439", "51439-0", new GaspacsDecoder(predict, props));
+		index("53385", "53385-0", new GeoscanDecoder(predict, props));
 
 		for (Satellite cur : satelliteDao.findAll()) {
 			for (Transmitter transmitter : cur.getTransmitters()) {

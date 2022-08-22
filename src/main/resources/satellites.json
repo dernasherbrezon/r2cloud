@@ -1,5 +1,44 @@
 [
 	{
+		"id": "R2CLOUD179",
+		"name": "RS20S (GEOSCAN-EDELVEIS)",
+		"noradId": "53385",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.geoscan.GeoscanBeacon",
+				"frequency": 436200000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD178",
+		"name": "MIMAN",
+		"noradId": "52900",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"beaconSizeBytes": 255,
+				"frequency": 436500000,
+				"bandwidth": 10000,
+				"baudRates": [
+					2400
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD176",
 		"name": "2022-096K",
 		"noradId": "53379",
