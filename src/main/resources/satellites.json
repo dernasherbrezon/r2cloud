@@ -512,7 +512,7 @@
 			{
 				"modulation": "BPSK",
 				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"beaconClass": "ru.r2cloud.jradio.picsat.PicsatBeacon",
 				"frequency": 435525000,
 				"bandwidth": 10000,
 				"baudRates": [
@@ -774,7 +774,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"beaconClass": "ru.r2cloud.jradio.cute.CuteBeacon",
 				"frequency": 437250000,
 				"bandwidth": 20000,
 				"baudRates": [
