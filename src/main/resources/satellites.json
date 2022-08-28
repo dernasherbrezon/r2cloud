@@ -1,5 +1,25 @@
 [
 	{
+		"id": "R2CLOUD180",
+		"name": "STEP CUBE LAB-II",
+		"noradId": "52897",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25NoRepeaterBeacon",
+				"frequency": 437485000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"assistedHeader": "AAEBAAABAAEAAQEBAQAAAQAAAAEBAAABAAAAAQABAAEAAQEBAAAAAQABAQAAAQABAAAAAAAAAQAAAQEAAAEAAQAAAAEAAQABAAEAAQAAAAEAAAAAAAEAAQAAAQAAAQEAAAAAAAAAAQAAAAAAAAABAAEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD179",
 		"name": "RS20S (GEOSCAN-EDELVEIS)",
 		"noradId": "53385",
@@ -270,12 +290,12 @@
 		"id": "R2CLOUD164",
 		"name": "CTIM",
 		"noradId": "52950",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"beaconClass": "ru.r2cloud.jradio.ctim.CtimBeacon",
 				"frequency": 437250000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -286,7 +306,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"beaconClass": "ru.r2cloud.jradio.ctim.CtimBeacon",
 				"frequency": 437396000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -507,7 +527,7 @@
 		"id": "R2CLOUD152",
 		"name": "PICSAT",
 		"noradId": "43132",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "BPSK",
@@ -550,7 +570,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"beaconClass": "ru.r2cloud.jradio.is1.InspireSat1Beacon",
 				"frequency": 437500000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -1953,7 +1973,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"beaconClass": "ru.r2cloud.jradio.csim.CsimBeacon",
 				"frequency": 437250000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -2035,25 +2055,6 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD49",
-		"name": "ARMADILLO",
-		"noradId": "44352",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.armadillo.ArmadilloBeacon",
-				"frequency": 437523000,
-				"bandwidth": 42000,
-				"baudRates": [
-					19200
 				],
 				"status": "ENABLED"
 			}
@@ -2349,25 +2350,6 @@
 				"beaconSizeBytes": 255,
 				"frequency": 436730000,
 				"bandwidth": 10000,
-				"baudRates": [
-					9600
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD25",
-		"name": "MYSAT-1",
-		"noradId": "44045",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 437230000,
-				"bandwidth": 20000,
 				"baudRates": [
 					9600
 				],
