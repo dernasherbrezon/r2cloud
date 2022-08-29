@@ -1,0 +1,32 @@
+[
+	{
+		"id": "R2CLOUD164",
+		"name": "CTIM",
+		"noradId": "52950",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ctim.CtimBeacon",
+				"frequency": 437250000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			},
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ctim.UnknownBeacon",
+				"frequency": 437396000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	}
+]

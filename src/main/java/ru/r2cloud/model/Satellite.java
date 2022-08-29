@@ -22,11 +22,11 @@ public class Satellite {
 	private Date end;
 	private List<Transmitter> transmitters;
 	private SatelliteSource source;
-	
+
 	public SatelliteSource getSource() {
 		return source;
 	}
-	
+
 	public void setSource(SatelliteSource source) {
 		this.source = source;
 	}
@@ -158,7 +158,11 @@ public class Satellite {
 		if (transmittersRaw != null && transmittersRaw.isArray()) {
 			JsonArray transmittersArray = transmittersRaw.asArray();
 			for (int i = 0; i < transmittersArray.size(); i++) {
-				transmitters.add(Transmitter.fromJson(transmittersArray.get(i).asObject()));
+				Transmitter cur = Transmitter.fromJson(transmittersArray.get(i).asObject());
+				if (cur == null) {
+					continue;
+				}
+				transmitters.add(cur);
 			}
 		}
 		return result;

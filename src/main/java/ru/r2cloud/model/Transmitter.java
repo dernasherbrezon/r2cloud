@@ -371,7 +371,9 @@ public class Transmitter {
 			try {
 				result.setBeaconClass((Class<? extends Beacon>) Class.forName(beaconClass.asString()));
 			} catch (ClassNotFoundException e) {
-				throw new IllegalArgumentException(e);
+				// server-side might have new beacons, while client side
+				// might not yet updated without new beacons
+				return null;
 			}
 		}
 		JsonValue beaconSizeBytes = asObject.get("beaconSizeBytes");
