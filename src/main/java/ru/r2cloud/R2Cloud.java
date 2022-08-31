@@ -133,9 +133,9 @@ public class R2Cloud {
 		auth = new Authenticator(props);
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
-		satelliteDao = new SatelliteDao(props, leoSatDataClient, satnogsClient);
+		satelliteDao = new SatelliteDao(props);
 		tleDao = new TleDao(props);
-		houseKeeping = new Housekeeping(props, satelliteDao, threadFactory, new CelestrakClient(props), tleDao);
+		houseKeeping = new Housekeeping(props, satelliteDao, threadFactory, new CelestrakClient(props), tleDao, satnogsClient, leoSatDataClient);
 		signed = new SignedURL(props, clock);
 		decoders = new Decoders(predict, props, processFactory, satelliteDao);
 		decoderService = new DecoderService(props, decoders, resultDao, leoSatDataService, threadFactory, metrics, satelliteDao);

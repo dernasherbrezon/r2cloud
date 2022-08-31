@@ -441,4 +441,69 @@ public class Transmitter {
 		return result;
 	}
 
+	public JsonObject toJson() {
+		JsonObject result = new JsonObject();
+		result.add("frequency", frequency);
+		if (bandwidth != 0) {
+			result.add("bandwidth", bandwidth);
+		}
+		JsonArray baudRatesArray = new JsonArray();
+		for (Integer cur : baudRates) {
+			baudRatesArray.add(cur);
+		}
+		result.add("baudRates", baudRatesArray);
+		if (modulation != null) {
+			result.add("modulation", modulation.name());
+		}
+		if (framing != null) {
+			result.add("framing", framing.name());
+		}
+		if (beaconClass != null) {
+			result.add("beaconClass", beaconClass.toString());
+		}
+		if (beaconSizeBytes != 0) {
+			result.add("beaconSizeBytes", beaconSizeBytes);
+		}
+		if (loraBandwidth != 0) {
+			result.add("loraBandwidth", loraBandwidth);
+		}
+		if (loraSpreadFactor != 0) {
+			result.add("loraSpreadFactor", loraSpreadFactor);
+		}
+		if (loraCodingRate != 0) {
+			result.add("loraCodingRate", loraCodingRate);
+		}
+		if (loraSyncword != 0) {
+			result.add("loraSyncword", loraSyncword);
+		}
+		if (loraPreambleLength != 0) {
+			result.add("loraPreambleLength", loraPreambleLength);
+		}
+		if (loraLdro != 0) {
+			result.add("loraLdro", loraLdro);
+		}
+		if (assistedHeader != null) {
+			result.add("assistedHeader", Base64.getEncoder().encodeToString(assistedHeader));
+		}
+		if (deviation != 5000) {
+			result.add("deviation", deviation);
+		}
+		if (bpskCenterFrequency != 0) {
+			result.add("bpskCenterFrequency", bpskCenterFrequency);
+		}
+		if (bpskDifferential) {
+			result.add("bpskDifferential", bpskDifferential);
+		}
+		if (afCarrier != 0) {
+			result.add("afCarrier", afCarrier);
+		}
+		if (transitionWidth != 2000) {
+			result.add("transitionWidth", transitionWidth);
+		}
+		if (status != null) {
+			result.add("status", status.name());
+		}
+		return result;
+	}
+
 }

@@ -33,7 +33,7 @@ public class SharedRotatorTest extends RegisteredTest {
 	@Override
 	protected Configuration prepareConfiguration() throws IOException {
 		Configuration result = super.prepareConfiguration();
-		result.setProperty("satellites.meta.location", "satellites-test-schedule.json");
+		result.setProperty("satellites.meta.location", "./src/test/resources/satellites-test-schedule.json");
 		result.setProperty("sdr.device.0.rotator.enabled", true);
 		result.setProperty("sdr.device.0.rotctrld.hostname", "127.0.0.1");
 		result.setProperty("sdr.device.0.rotctrld.port", BaseTest.ROTCTRLD_PORT);

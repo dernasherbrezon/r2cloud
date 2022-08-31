@@ -37,7 +37,7 @@ public class SatnogsClientTest {
 	public void testSuccess() {
 		server.setSatellitesMock(new JsonHttpResponse("satnogs/satellites.json", 200));
 		server.setTransmittersMock(new JsonHttpResponse("satnogs/transmitters.json", 200));
-		server.setTleMock("satnogs");
+		server.setTleMockDirectory("satnogs");
 		List<Satellite> actual = client.loadSatellites();
 		Gson GSON = new GsonBuilder().registerTypeAdapter(Date.class, new DateAdapter()).registerTypeAdapter(new TypeToken<Class<? extends Beacon>>() {
 		}.getType(), new ClassAdapter()).create();

@@ -13,10 +13,13 @@ import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -83,10 +86,13 @@ public class LeoSatDataClient {
 		}
 	}
 
-	public List<Satellite> loadNewLaunches() {
-		HttpRequest request = createRequest("/api/v1/satellite/newlaunch2").GET().build();
+	public List<Satellite> loadNewLaunches(long lastModified) throws NotModifiedException {
+		HttpRequest request = createRequest("/api/v1/satellite/newlaunch2", lastModified).GET().build();
 		try {
 			HttpResponse<String> response = sendWithRetry(request, BodyHandlers.ofString());
+			if (response.statusCode() == 304) {
+				throw new NotModifiedException();
+			}
 			if (response.statusCode() != 200) {
 				if (LOG.isErrorEnabled()) {
 					LOG.error("unable to load new launches. response code: {}. response: {}", response.statusCode(), response.body());
@@ -103,10 +109,13 @@ public class LeoSatDataClient {
 		}
 	}
 
-	public List<Satellite> loadSatellites() {
-		HttpRequest request = createRequest("/api/v1/satellite").GET().build();
+	public List<Satellite> loadSatellites(long lastModified) throws NotModifiedException {
+		HttpRequest request = createRequest("/api/v1/satellite", lastModified).GET().build();
 		try {
 			HttpResponse<String> response = sendWithRetry(request, BodyHandlers.ofString());
+			if (response.statusCode() == 304) {
+				throw new NotModifiedException();
+			}
 			if (response.statusCode() != 200) {
 				if (LOG.isErrorEnabled()) {
 					LOG.error("unable to load satellites. response code: {}. response: {}", response.statusCode(), response.body());
@@ -319,10 +328,19 @@ public class LeoSatDataClient {
 	}
 
 	private HttpRequest.Builder createRequest(String path) {
+		return createRequest(path, 0);
+	}
+
+	private HttpRequest.Builder createRequest(String path, long lastModified) {
 		Builder result = HttpRequest.newBuilder().uri(URI.create(hostname + path));
 		result.timeout(timeout);
 		result.header("User-Agent", R2Cloud.getVersion() + " leosatdata.com");
 		result.header("Authorization", config.getProperty("r2cloud.apiKey"));
+		if (lastModified != 0) {
+			SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+			sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+			result.header("If-Modified-Since", sdf.format(new Date(lastModified)));
+		}
 		return result;
 	}
 

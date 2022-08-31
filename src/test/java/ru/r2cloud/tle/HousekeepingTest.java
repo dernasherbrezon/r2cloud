@@ -52,14 +52,14 @@ public class HousekeepingTest {
 		Satellite sat = satelliteDao.findById(satelliteId);
 		assertNull(sat.getTle());
 
-		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao);
+		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, null);
 		dao.run();
 		assertNotNull(sat.getTle());
 	}
 
 	@Test
 	public void testSuccess() throws Exception {
-		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao);
+		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, null);
 		reloader.start();
 
 		verify(executor).scheduleAtFixedRate(any(), anyLong(), anyLong(), any());
@@ -67,7 +67,7 @@ public class HousekeepingTest {
 
 	@Test
 	public void testLifecycle() {
-		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao);
+		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, null);
 		reloader.start();
 		reloader.start();
 		verify(executor, times(1)).scheduleAtFixedRate(any(), anyLong(), anyLong(), any());
@@ -93,7 +93,7 @@ public class HousekeepingTest {
 		config.setProperty("tle.cacheFileLocation", new File(tempFolder.getRoot(), "tle.txt").getAbsolutePath());
 		config.update();
 
-		satelliteDao = new SatelliteDao(config, null, null);
+		satelliteDao = new SatelliteDao(config);
 
 		celestrak = mock(CelestrakClient.class);
 		when(celestrak.downloadTle()).thenReturn(tleData);

@@ -65,10 +65,9 @@ public class ScheduleTest {
 	public void testScheduleForNewLaunches() throws Exception {
 		satnogs.setSatellitesMock(new JsonHttpResponse("satnogs/satellites.json", 200));
 		satnogs.setTransmittersMock(new JsonHttpResponse("satnogs/transmitters.json", 200));
-		satnogs.setTleMock("satnogs");
+		satnogs.setTleMockDirectory("satnogs");
 		server.setSatelliteMock(new JsonHttpResponse("r2cloudclienttest/satellite.json", 200));
 		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunch-for-scheduletest.json", 200));
-		satelliteDao.reload();
 		houseKeeping.run();
 		current = getTime("2022-09-30 22:17:01.000");
 		List<ObservationRequest> expected = readExpected("expected/scheduleNewLaunches.txt");
@@ -78,6 +77,7 @@ public class ScheduleTest {
 
 	@Test
 	public void testSequentialTimetableForRotator() throws Exception {
+		houseKeeping.run();
 		schedule = new Schedule(new SequentialTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
 		List<ObservationRequest> expected = readExpected("expected/schedule.txt");
 		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
@@ -86,6 +86,7 @@ public class ScheduleTest {
 
 	@Test
 	public void testScheduleBasedOnOverlapedTimetable() throws Exception {
+		houseKeeping.run();
 		schedule = new Schedule(new OverlappedTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
 		List<ObservationRequest> expected = readExpected("expected/scheduleOverlapedTimetable.txt");
 		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
@@ -105,6 +106,7 @@ public class ScheduleTest {
 
 	@Test
 	public void testBasicOperations() throws Exception {
+		houseKeeping.run();
 		List<ObservationRequest> expected = readExpected("expected/schedule.txt");
 		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
@@ -186,12 +188,15 @@ public class ScheduleTest {
 		config.setProperty("satnogs.hostname", satnogs.getUrl());
 		config.setList("tle.urls", celestrak.getUrls());
 		config.setProperty("tle.cacheFileLocation", new File(tempFolder.getRoot(), "tle.txt").getAbsolutePath());
+		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-test.json");
+		config.setProperty("satellites.satnogs.location", new File(tempFolder.getRoot(), "satnogs.json").getAbsolutePath());
+		config.setProperty("satellites.leosatdata.location", new File(tempFolder.getRoot(), "leosatdata.json").getAbsolutePath());
+		config.setProperty("satellites.leosatdata.new.location", new File(tempFolder.getRoot(), "leosatdata.new.json").getAbsolutePath());
 		LeoSatDataClient r2cloudClient = new LeoSatDataClient(config, new DefaultClock());
 		SatnogsClient satnogsClient = new SatnogsClient(config, new DefaultClock());
-		satelliteDao = new SatelliteDao(config, r2cloudClient, satnogsClient);
+		satelliteDao = new SatelliteDao(config);
 		TleDao tleDao = new TleDao(config);
-		houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config), tleDao);
-		houseKeeping.start();
+		houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config), tleDao, satnogsClient, r2cloudClient);
 		PredictOreKit predict = new PredictOreKit(config);
 		factory = new ObservationFactory(predict, config);
 		schedule = new Schedule(new SequentialTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);

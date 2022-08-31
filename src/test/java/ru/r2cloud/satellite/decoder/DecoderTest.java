@@ -91,9 +91,10 @@ public class DecoderTest {
 		TestConfiguration config = new TestConfiguration(tempFolder);
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
 		config.setProperty("r2cloud.newLaunches", false);
+		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-test.json");
 		config.update();
 		PredictOreKit predict = new PredictOreKit(config);
-		dao = new SatelliteDao(config, null, null);
+		dao = new SatelliteDao(config);
 		decoders = new Decoders(predict, config, null, dao);
 	}
 

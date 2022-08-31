@@ -87,7 +87,6 @@ public class DeviceManager implements Lifecycle, ConfigListener {
                 @Override
                 public void safeRun() {
                     LOG.info("reschedule observations");
-                    dao.reload();
                     reschedule();
                 }
             }, period, TimeUnit.MILLISECONDS);

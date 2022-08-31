@@ -16,7 +16,6 @@ import java.net.http.HttpResponse;
 import java.nio.file.FileSystems;
 import java.util.Properties;
 import java.util.UUID;
-import java.util.logging.LogManager;
 
 import org.junit.After;
 import org.junit.Before;
@@ -75,7 +74,7 @@ public abstract class BaseTest {
 
 	@Before
 	public void start() throws Exception {
-		LogManager.getLogManager().reset();
+//		LogManager.getLogManager().reset();
 		tempDirectory = new File(tempFolder.getRoot(), "tmp");
 		if (!tempDirectory.mkdirs()) {
 			throw new RuntimeException("unable to create temp dir: " + tempDirectory.getAbsolutePath());
@@ -135,6 +134,10 @@ public abstract class BaseTest {
 		config.setProperty("satellites.sdr", SdrType.RTLSDR.name().toLowerCase());
 		config.setProperty("tle.urls", celestrak.getUrlsAsProperty());
 		config.setProperty("tle.cacheFileLocation", new File(tempFolder.getRoot(), "tle.txt").getAbsolutePath());
+		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-test.json");
+		config.setProperty("satellites.satnogs.location", new File(tempFolder.getRoot(), "satnogs.json").getAbsolutePath());
+		config.setProperty("satellites.leosatdata.location", new File(tempFolder.getRoot(), "leosatdata.json").getAbsolutePath());
+		config.setProperty("satellites.leosatdata.new.location", new File(tempFolder.getRoot(), "leosatdata.new.json").getAbsolutePath());
 		config.setProperty("locaiton.lat", "56.189");
 		config.setProperty("locaiton.lon", "38.174");
 		config.setProperty("satellites.rtlsdr.path", rtlSdrMock.getAbsolutePath());

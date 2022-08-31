@@ -142,7 +142,12 @@ public class Satellite {
 		Satellite result = new Satellite();
 		result.setId(meta.getString("noradId", null));
 		result.setName(meta.getString("name", null));
-		result.setPriority(Priority.NORMAL);
+		String priorityStr = meta.getString("priority", null);
+		if (priorityStr != null) {
+			result.setPriority(Priority.valueOf(priorityStr));
+		} else {
+			result.setPriority(Priority.NORMAL);
+		}
 		result.setEnabled(meta.getBoolean("enabled", false));
 		long startTimeMillis = meta.getLong("start", 0);
 		if (startTimeMillis != 0) {
@@ -165,6 +170,26 @@ public class Satellite {
 				transmitters.add(cur);
 			}
 		}
+		return result;
+	}
+
+	public JsonObject toJson() {
+		JsonObject result = new JsonObject();
+		result.add("noradId", id);
+		result.add("name", name);
+		result.add("priority", priority.name());
+		result.add("enabled", enabled);
+		if (start != null) {
+			result.add("start", start.getTime());
+		}
+		if (end != null) {
+			result.add("end", end.getTime());
+		}
+		JsonArray transmitters = new JsonArray();
+		for (Transmitter cur : this.transmitters) {
+			transmitters.add(cur.toJson());
+		}
+		result.add("transmitters", transmitters);
 		return result;
 	}
 

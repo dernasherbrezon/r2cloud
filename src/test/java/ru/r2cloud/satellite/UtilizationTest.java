@@ -45,9 +45,9 @@ public class UtilizationTest {
 		celestrak.mockResponse(TestUtil.loadExpected("tle-2020-09-27.txt"));
 		config.setList("tle.urls", celestrak.getUrls());
 		PredictOreKit predict = new PredictOreKit(config);
-		SatelliteDao satelliteDao = new SatelliteDao(config, null, null);
+		SatelliteDao satelliteDao = new SatelliteDao(config);
 		TleDao tleDao = new TleDao(config);
-		Housekeeping houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config), tleDao);
+		Housekeeping houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config), tleDao, null, null);
 		houseKeeping.start();
 		ObservationFactory factory = new ObservationFactory(predict, config);
 

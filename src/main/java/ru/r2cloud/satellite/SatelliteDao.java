@@ -1,13 +1,19 @@
 package ru.r2cloud.satellite;
 
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +21,6 @@ import org.slf4j.LoggerFactory;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 
-import ru.r2cloud.cloud.LeoSatDataClient;
-import ru.r2cloud.cloud.SatnogsClient;
 import ru.r2cloud.model.BandFrequency;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Priority;
@@ -27,36 +31,81 @@ import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.model.TransmitterComparator;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 
 public class SatelliteDao {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SatelliteDao.class);
 
 	private final Configuration config;
-	private final LeoSatDataClient client;
-	private final SatnogsClient satnogsClient;
+	// used for proper overrides during reload
+	private final List<Satellite> satnogs = new ArrayList<>();
+	private final List<Satellite> staticSatellites = new ArrayList<>();
+	private final List<Satellite> leosatdata = new ArrayList<>();
+	private final List<Satellite> leosatDataNewLaunches = new ArrayList<>();
+
 	private final List<Satellite> satellites = new ArrayList<>();
 	private final Map<String, Satellite> satelliteByName = new HashMap<>();
 	private final Map<String, Satellite> satelliteById = new HashMap<>();
 
-	public SatelliteDao(Configuration config, LeoSatDataClient client, SatnogsClient satnogsClient) {
+	private long satnogsLastUpdateTime;
+	private long leosatdataLastUpdateTime;
+	private long leosatdataNewLastUpdateTime;
+
+	public SatelliteDao(Configuration config) {
 		this.config = config;
-		this.client = client;
-		this.satnogsClient = satnogsClient;
-		reload();
+		loadFromDisk();
+		reindex();
 	}
 
-	public synchronized void reload() {
+	public synchronized void saveLeosatdata(List<Satellite> leosatdataSatellites, long currentTime) {
+		leosatdata.clear();
+		leosatdata.addAll(leosatdataSatellites);
+		leosatdataLastUpdateTime = currentTime;
+		save(config.getPathFromProperty("satellites.leosatdata.location"), leosatdataSatellites, currentTime);
+	}
+
+	public synchronized void saveLeosatdataNew(List<Satellite> loadNewLaunches, long currentTime) {
+		leosatDataNewLaunches.clear();
+		leosatDataNewLaunches.addAll(loadNewLaunches);
+		leosatdataNewLastUpdateTime = currentTime;
+		save(config.getPathFromProperty("satellites.leosatdata.new.location"), loadNewLaunches, currentTime);
+	}
+
+	public synchronized void saveSatnogs(List<Satellite> loadSatellites, long currentTime) {
+		satnogs.clear();
+		satnogs.addAll(loadSatellites);
+		satnogsLastUpdateTime = currentTime;
+		save(config.getPathFromProperty("satellites.satnogs.location"), satnogs, currentTime);
+	}
+
+	private void loadFromDisk() {
+		satnogsLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty("satellites.satnogs.location"));
+		satnogs.addAll(loadFromConfig(config.getPathFromProperty("satellites.satnogs.location")));
+
+		// default from config
+		staticSatellites.addAll(loadFromConfig(config.getPathFromProperty("satellites.meta.location")));
+
+		leosatdataLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty("satellites.leosatdata.location"));
+		leosatdata.addAll(loadFromConfig(config.getPathFromProperty("satellites.leosatdata.location")));
+
+		leosatdataNewLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty("satellites.leosatdata.new.location"));
+		leosatDataNewLaunches.addAll(loadFromConfig(config.getPathFromProperty("satellites.leosatdata.new.location")));
+	}
+
+	public synchronized void reindex() {
+		satelliteById.clear();
 		satellites.clear();
 		satelliteByName.clear();
-		satelliteById.clear();
 
-		List<Satellite> satnogsSatellites = Collections.emptyList();
-		// satnogs data is too generic, load it first and override by handcrafted
-		// configs
+		// 4 different lists of satellites due to:
+		// - import from satnogs is automatic and might contain errors
+		// - handcrafted configs have better quality
+		// - server-side might override both in case of emergency/quick fixes
+		// - new launches from satnogs even less reliable and
+		// - and everything else should be overriden by leosatdata new launches if any
 		if (config.getBoolean("satnogs.satellites")) {
-			satnogsSatellites = satnogsClient.loadSatellites();
-			for (Satellite cur : satnogsSatellites) {
+			for (Satellite cur : satnogs) {
 				if (cur.getPriority().equals(Priority.NORMAL)) {
 					satelliteById.put(cur.getId(), cur);
 				}
@@ -64,12 +113,13 @@ public class SatelliteDao {
 		}
 
 		// default from config
-		for (Satellite cur : loadFromConfig(config.getProperty("satellites.meta.location"))) {
+		for (Satellite cur : staticSatellites) {
 			satelliteById.put(cur.getId(), cur);
 		}
+
 		if (config.getProperty("r2cloud.apiKey") != null) {
 			// new and overrides from server
-			for (Satellite cur : client.loadSatellites()) {
+			for (Satellite cur : leosatdata) {
 				satelliteById.put(cur.getId(), cur);
 			}
 		}
@@ -82,13 +132,13 @@ public class SatelliteDao {
 			// launches as in satnogs
 			// use satellite name for deduplication
 			Map<String, Satellite> dedupByName = new HashMap<>();
-			for (Satellite cur : satnogsSatellites) {
+			for (Satellite cur : satnogs) {
 				if (cur.getPriority().equals(Priority.HIGH)) {
 					dedupByName.put(cur.getName().toLowerCase(), cur);
 				}
 			}
 			if (config.getProperty("r2cloud.apiKey") != null) {
-				for (Satellite cur : client.loadNewLaunches()) {
+				for (Satellite cur : leosatDataNewLaunches) {
 					dedupByName.put(cur.getName().toLowerCase(), cur);
 				}
 			}
@@ -176,10 +226,42 @@ public class SatelliteDao {
 		}
 	}
 
-	private static List<Satellite> loadFromConfig(String metaLocation) {
+	private static void save(Path location, List<Satellite> satellites, long lastUpdateTime) {
+		JsonArray array = new JsonArray();
+		for (Satellite cur : satellites) {
+			array.add(cur.toJson());
+		}
+		// it's ok to have temporary name for all type of satellites -
+		// save method is synchronized
+		Path tempOutput = location.getParent().resolve("satellites.json.tmp");
+		try (BufferedWriter w = Files.newBufferedWriter(tempOutput)) {
+			array.writeTo(w);
+		} catch (IOException e) {
+			Util.logIOException(LOG, "unable to save satellites: " + tempOutput.toAbsolutePath(), e);
+			return;
+		}
+
+		try {
+			Files.setLastModifiedTime(tempOutput, FileTime.from(lastUpdateTime, TimeUnit.MILLISECONDS));
+		} catch (IOException e) {
+			Util.logIOException(LOG, "can't set last modified time", e);
+			return;
+		}
+
+		try {
+			Files.move(tempOutput, location, StandardCopyOption.ATOMIC_MOVE);
+		} catch (IOException e) {
+			LOG.error("unable to move .tmp to dst", e);
+		}
+	}
+
+	private static List<Satellite> loadFromConfig(Path metaLocation) {
 		List<Satellite> result = new ArrayList<>();
+		if (!Files.exists(metaLocation)) {
+			return result;
+		}
 		JsonArray rawSatellites;
-		try (Reader r = new InputStreamReader(SatelliteDao.class.getClassLoader().getResourceAsStream(metaLocation))) {
+		try (BufferedReader r = Files.newBufferedReader(metaLocation)) {
 			rawSatellites = Json.parse(r).asArray();
 		} catch (Exception e) {
 			LOG.error("unable to parse satellites", e);
@@ -191,6 +273,17 @@ public class SatelliteDao {
 			result.add(cur);
 		}
 		return result;
+	}
+
+	private static long getLastModifiedTimeSafely(Path path) {
+		if (!Files.exists(path)) {
+			return 0;
+		}
+		try {
+			return Files.getLastModifiedTime(path).toMillis();
+		} catch (IOException e) {
+			return 0;
+		}
 	}
 
 	public synchronized Satellite findByName(String name) {
@@ -243,6 +336,18 @@ public class SatelliteDao {
 		for (Entry<SatelliteSource, Integer> cur : totalBySource.entrySet()) {
 			LOG.info("  {}: {}", cur.getKey(), cur.getValue());
 		}
+	}
+
+	public long getLeosatdataLastUpdateTime() {
+		return leosatdataLastUpdateTime;
+	}
+
+	public long getSatnogsLastUpdateTime() {
+		return satnogsLastUpdateTime;
+	}
+
+	public long getLeosatdataNewLastUpdateTime() {
+		return leosatdataNewLastUpdateTime;
 	}
 
 }

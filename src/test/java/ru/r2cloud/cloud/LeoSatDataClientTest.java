@@ -127,30 +127,30 @@ public class LeoSatDataClientTest {
 	@Test
 	public void testLoadSatellites() throws Exception {
 		server.setSatelliteMock(new JsonHttpResponse("r2cloudclienttest/satellite.json", 200));
-		List<Satellite> result = client.loadSatellites();
+		List<Satellite> result = client.loadSatellites(0);
 		assertEquals(1, result.size());
 		assertEquals("53379", result.get(0).getId());
 	}
 
 	@Test
 	public void testEmptySatellite() throws Exception {
-		assertTrue(client.loadSatellites().isEmpty());
+		assertTrue(client.loadSatellites(0).isEmpty());
 	}
 
 	@Test
 	public void testInvalidResponseSatellite() throws Exception {
 		server.setSatelliteMock("not a json", 200);
-		assertTrue(client.loadSatellites().isEmpty());
+		assertTrue(client.loadSatellites(0).isEmpty());
 		server.setSatelliteMock("{ \"test\": 1 }", 200);
-		assertTrue(client.loadSatellites().isEmpty());
+		assertTrue(client.loadSatellites(0).isEmpty());
 		server.setSatelliteMock("[ [1,2,3] ]", 200);
-		assertTrue(client.loadSatellites().isEmpty());
+		assertTrue(client.loadSatellites(0).isEmpty());
 	}
 
 	@Test
 	public void testLoadNewLaunch() throws Exception {
 		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunch.json", 200));
-		List<Satellite> result = client.loadNewLaunches();
+		List<Satellite> result = client.loadNewLaunches(0);
 		assertEquals(2, result.size());
 		assertSatellite("LUCKY-7", true, result.get(0));
 		// by default all enabled
@@ -160,35 +160,35 @@ public class LeoSatDataClientTest {
 	@Test
 	public void testInvalidTleInNewLaunch() throws Exception {
 		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunchInvalidTle.json", 200));
-		List<Satellite> result = client.loadNewLaunches();
+		List<Satellite> result = client.loadNewLaunches(0);
 		assertEquals(1, result.size());
 		assertNull(result.get(0).getTle());
 	}
 
 	@Test
 	public void testEmptyNewLaunch() throws Exception {
-		assertTrue(client.loadNewLaunches().isEmpty());
+		assertTrue(client.loadNewLaunches(0).isEmpty());
 	}
 
 	@Test
 	public void testInvalidResponseNewLaunches() throws Exception {
 		server.setNewLaunchMock("not a json", 200);
-		assertTrue(client.loadNewLaunches().isEmpty());
+		assertTrue(client.loadNewLaunches(0).isEmpty());
 		server.setNewLaunchMock("{ \"test\": 1 }", 200);
-		assertTrue(client.loadNewLaunches().isEmpty());
+		assertTrue(client.loadNewLaunches(0).isEmpty());
 		server.setNewLaunchMock("[ [1,2,3] ]", 200);
-		assertTrue(client.loadNewLaunches().isEmpty());
+		assertTrue(client.loadNewLaunches(0).isEmpty());
 
 		String validNewLaunchStr = TestUtil.loadExpected("r2cloudclienttest/single-newlaunch.json");
 		JsonObject validNewLaunch = Json.parse(validNewLaunchStr).asObject();
 		validNewLaunch.remove("id");
 		server.setNewLaunchMock(validNewLaunch);
-		assertTrue(client.loadNewLaunches().isEmpty());
+		assertTrue(client.loadNewLaunches(0).isEmpty());
 
 		validNewLaunch = Json.parse(validNewLaunchStr).asObject();
 		validNewLaunch.remove("name");
 		server.setNewLaunchMock(validNewLaunch);
-		assertTrue(client.loadNewLaunches().isEmpty());
+		assertTrue(client.loadNewLaunches(0).isEmpty());
 	}
 
 	@Before

@@ -93,7 +93,7 @@ public class SdrModemClientTest {
 		config.setProperty("sdrmodem.host", "127.0.0.1");
 		config.setProperty("sdrmodem.port", serverPort);
 		config.setProperty("sdrmodem.timeout", "1000");
-		dao = new SatelliteDao(config, null, null);
+		dao = new SatelliteDao(config);
 	}
 
 	@After

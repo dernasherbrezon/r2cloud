@@ -22,7 +22,7 @@ public class SatnogsServerMock {
 	private Set<String> pathsConfigured = new HashSet<>();
 	private String tleBase;
 
-	public void setTleMock(String base) {
+	public void setTleMockDirectory(String base) {
 		this.tleBase = base;
 	}
 
