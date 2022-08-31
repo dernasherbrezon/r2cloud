@@ -2,10 +2,7 @@ package ru.r2cloud.tle;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -24,15 +21,19 @@ public class TleDao {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TleDao.class);
 
-	private final File cacheFileLocation;
+	private final Path cacheFileLocation;
 	private final Map<String, Tle> cache = new ConcurrentHashMap<>();
 	private long lastUpdateTime;
 
 	public TleDao(Configuration config) {
-		cacheFileLocation = new File(config.getProperty("tle.cacheFileLocation"));
+		cacheFileLocation = config.getPathFromProperty("tle.cacheFileLocation");
 		cache.putAll(loadTle(cacheFileLocation));
-		if (cacheFileLocation.exists()) {
-			lastUpdateTime = cacheFileLocation.lastModified();
+		if (Files.exists(cacheFileLocation)) {
+			try {
+				lastUpdateTime = Files.getLastModifiedTime(cacheFileLocation).toMillis();
+			} catch (IOException e) {
+				lastUpdateTime = 0l;
+			}
 		} else {
 			lastUpdateTime = 0l;
 		}
@@ -52,9 +53,9 @@ public class TleDao {
 		return lastUpdateTime;
 	}
 
-	private static void saveTle(File file, Map<String, Tle> tle) {
+	private static void saveTle(Path file, Map<String, Tle> tle) {
 		// ensure temp and output are on the same filestore
-		Path tempOutput = file.toPath().getParent().resolve("tle.txt.tmp");
+		Path tempOutput = file.getParent().resolve("tle.txt.tmp");
 		try (BufferedWriter w = Files.newBufferedWriter(tempOutput)) {
 			for (Tle cur : tle.values()) {
 				w.append(cur.getRaw()[0]);
@@ -65,23 +66,23 @@ public class TleDao {
 				w.newLine();
 			}
 		} catch (IOException e) {
-			Util.logIOException(LOG, "unable to save tle: " + file.getAbsolutePath(), e);
+			Util.logIOException(LOG, "unable to save tle: " + file.toAbsolutePath(), e);
 			return;
 		}
 
 		try {
-			Files.move(tempOutput, file.toPath(), StandardCopyOption.ATOMIC_MOVE);
+			Files.move(tempOutput, file, StandardCopyOption.ATOMIC_MOVE);
 		} catch (IOException e) {
 			LOG.error("unable to move .tmp to dst", e);
 		}
 	}
 
-	private static Map<String, Tle> loadTle(File file) {
+	private static Map<String, Tle> loadTle(Path file) {
 		Map<String, Tle> result = new HashMap<>();
-		if (!file.exists()) {
+		if (!Files.exists(file)) {
 			return result;
 		}
-		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
+		try (BufferedReader in = Files.newBufferedReader(file)) {
 			// only first line matters
 			String curLine = null;
 			while ((curLine = in.readLine()) != null) {
@@ -97,7 +98,7 @@ public class TleDao {
 				result.put(noradId, new Tle(new String[] { curLine.trim(), line1, line2 }));
 			}
 		} catch (IOException e) {
-			Util.logIOException(LOG, "unable to load tle from cache: " + file.getAbsolutePath(), e);
+			Util.logIOException(LOG, "unable to load tle from cache: " + file.toAbsolutePath(), e);
 		}
 		return result;
 	}
