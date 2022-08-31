@@ -7,33 +7,40 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.CelestrakServer;
+import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.Tle;
 
 public class CelestrakClientTest {
 
+	@Rule
+	public TemporaryFolder tempFolder = new TemporaryFolder();
+
 	private CelestrakServer server;
+	private TestConfiguration config;
 
 	@Test
 	public void testSuccess() {
 		String expectedBody = TestUtil.loadExpected("sample-tle.txt");
 		Map<String, Tle> expected = convert(expectedBody);
 		server.mockResponse(expectedBody);
-
+		
 		// one slash is important here
-		CelestrakClient client = new CelestrakClient(server.getUrls());
-		Map<String, Tle> actual = client.getTleForActiveSatellites();
+		CelestrakClient client = new CelestrakClient(config);
+		Map<String, Tle> actual = client.downloadTle();
 		assertEquals(expected.size(), actual.size());
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void testFailure() {
-		CelestrakClient client = new CelestrakClient(server.getUrls());
-		assertEquals(0, client.getTleForActiveSatellites().size());
+		CelestrakClient client = new CelestrakClient(config);
+		assertEquals(0, client.downloadTle().size());
 	}
 
 	private static Map<String, Tle> convert(String body) {
@@ -49,6 +56,9 @@ public class CelestrakClientTest {
 	public void start() throws Exception {
 		server = new CelestrakServer();
 		server.start();
+		
+		config = new TestConfiguration(tempFolder);
+		config.setList("tle.urls", server.getUrls());
 	}
 
 	@After

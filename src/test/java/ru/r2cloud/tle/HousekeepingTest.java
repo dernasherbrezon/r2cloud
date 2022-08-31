@@ -11,15 +11,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.junit.After;
@@ -28,31 +26,25 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.aerse.mockfs.FailingByteChannelCallback;
-import com.aerse.mockfs.MockFileSystem;
-
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.satellite.SatelliteDao;
-import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.ThreadPoolFactory;
 
-public class TLEReloaderTest {
+public class HousekeepingTest {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
-	private MockFileSystem fs;
-	private Clock clock;
 	private ThreadPoolFactory threadPool;
 	private ScheduledExecutorService executor;
-	private long current;
 	private TestConfiguration config;
 	private SatelliteDao satelliteDao;
 	private CelestrakClient celestrak;
+	private TleDao tleDao;
 	private Map<String, Tle> tleData;
-	private TLEReloader dao;
+	private Housekeeping dao;
 
 	@Test
 	public void testReloadFailure() {
@@ -60,35 +52,22 @@ public class TLEReloaderTest {
 		Satellite sat = satelliteDao.findById(satelliteId);
 		assertNull(sat.getTle());
 
-		dao = new TLEReloader(config, satelliteDao, threadPool, clock, celestrak);
-		dao.reload();
+		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao);
+		dao.run();
 		assertNotNull(sat.getTle());
-
-		sat.setTle(null);
-		Path failingPath = config.getSatellitesBasePath().resolve(satelliteId);
-		fs.mock(failingPath, new FailingByteChannelCallback(10));
-		dao.reload();
-		fs.removeMock(failingPath);
-		// even if filesystem failed check in memory TLE exist
-		assertNotNull(sat.getTle());
-
-		// reload from disk
-		satelliteDao.reload();
-		assertNotNull(satelliteDao.findById(satelliteId).getTle());
 	}
 
 	@Test
 	public void testSuccess() throws Exception {
-		TLEReloader reloader = new TLEReloader(config, satelliteDao, threadPool, clock, celestrak);
+		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao);
 		reloader.start();
 
-		verify(clock).millis();
 		verify(executor).scheduleAtFixedRate(any(), anyLong(), anyLong(), any());
 	}
 
 	@Test
 	public void testLifecycle() {
-		TLEReloader reloader = new TLEReloader(config, satelliteDao, threadPool, clock, celestrak);
+		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao);
 		reloader.start();
 		reloader.start();
 		verify(executor, times(1)).scheduleAtFixedRate(any(), anyLong(), anyLong(), any());
@@ -97,7 +76,7 @@ public class TLEReloaderTest {
 	@Before
 	public void start() throws Exception {
 		tleData = new HashMap<>();
-		try (BufferedReader r = new BufferedReader(new InputStreamReader(TLEReloaderTest.class.getClassLoader().getResourceAsStream("sample-tle.txt")))) {
+		try (BufferedReader r = new BufferedReader(new InputStreamReader(HousekeepingTest.class.getClassLoader().getResourceAsStream("sample-tle.txt")))) {
 			String curLine = null;
 			List<String> lines = new ArrayList<>();
 			while ((curLine = r.readLine()) != null) {
@@ -110,26 +89,19 @@ public class TLEReloaderTest {
 			throw new RuntimeException(e);
 		}
 
-		fs = new MockFileSystem(FileSystems.getDefault());
-		config = new TestConfiguration(tempFolder, fs);
-		config.setProperty("satellites.basepath.location", tempFolder.getRoot().getAbsolutePath());
+		config = new TestConfiguration(tempFolder, FileSystems.getDefault());
+		config.setProperty("tle.cacheFileLocation", new File(tempFolder.getRoot(), "tle.txt").getAbsolutePath());
 		config.update();
 
 		satelliteDao = new SatelliteDao(config, null, null);
 
 		celestrak = mock(CelestrakClient.class);
-		when(celestrak.getTleForActiveSatellites()).thenReturn(tleData);
-		
-		clock = mock(Clock.class);
+		when(celestrak.downloadTle()).thenReturn(tleData);
+		tleDao = new TleDao(config);
+
 		threadPool = mock(ThreadPoolFactory.class);
 		executor = mock(ScheduledExecutorService.class);
 		when(threadPool.newScheduledThreadPool(anyInt(), any())).thenReturn(executor);
-
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss, SSS");
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-		current = sdf.parse("2017-10-23 00:00:00, 000").getTime();
-
-		when(clock.millis()).thenReturn(current);
 
 	}
 

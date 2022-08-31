@@ -43,7 +43,8 @@ import ru.r2cloud.satellite.SequentialTimetable;
 import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.decoder.Decoders;
 import ru.r2cloud.tle.CelestrakClient;
-import ru.r2cloud.tle.TLEReloader;
+import ru.r2cloud.tle.Housekeeping;
+import ru.r2cloud.tle.TleDao;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.DefaultClock;
@@ -96,7 +97,8 @@ public class R2Cloud {
 	private final AutoUpdate autoUpdate;
 	private final DDNSClient ddnsClient;
 	private final SatelliteDao satelliteDao;
-	private final TLEReloader tleReloader;
+	private final TleDao tleDao;
+	private final Housekeeping houseKeeping;
 	private final DecoderService decoderService;
 	private final PredictOreKit predict;
 	private final ThreadPoolFactory threadFactory;
@@ -132,7 +134,8 @@ public class R2Cloud {
 		autoUpdate = new AutoUpdate(props);
 		ddnsClient = new DDNSClient(props);
 		satelliteDao = new SatelliteDao(props, leoSatDataClient, satnogsClient);
-		tleReloader = new TLEReloader(props, satelliteDao, threadFactory, clock, new CelestrakClient(props.getProperties("tle.urls")));
+		tleDao = new TleDao(props);
+		houseKeeping = new Housekeeping(props, satelliteDao, threadFactory, new CelestrakClient(props), tleDao);
 		signed = new SignedURL(props, clock);
 		decoders = new Decoders(predict, props, processFactory, satelliteDao);
 		decoderService = new DecoderService(props, decoders, resultDao, leoSatDataService, threadFactory, metrics, satelliteDao);
@@ -186,7 +189,7 @@ public class R2Cloud {
 
 	public void start() {
 		ddnsClient.start();
-		tleReloader.start();
+		houseKeeping.start();
 		decoderService.start();
 		// device manager should start after tle (it uses TLE to schedule
 		// observations)
@@ -203,7 +206,7 @@ public class R2Cloud {
 		metrics.stop();
 		deviceManager.stop();
 		decoderService.stop();
-		tleReloader.stop();
+		houseKeeping.stop();
 		ddnsClient.stop();
 	}
 

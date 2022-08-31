@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,31 +13,30 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.R2Cloud;
 import ru.r2cloud.model.Tle;
+import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
 public class CelestrakClient {
 
-	private static final int TIMEOUT = 60 * 1000;
 	private static final Logger LOG = LoggerFactory.getLogger(CelestrakClient.class);
+
 	private final List<String> urls;
+	private final int timeout;
 
-	public CelestrakClient(String url) {
-		this(Collections.singletonList(url));
+	public CelestrakClient(Configuration props) {
+		this.urls = props.getProperties("tle.urls");
+		this.timeout = props.getInteger("tle.timeout");
 	}
 
-	public CelestrakClient(List<String> urls) {
-		this.urls = urls;
-	}
-
-	public Map<String, Tle> getTleForActiveSatellites() {
+	public Map<String, Tle> downloadTle() {
 		Map<String, Tle> result = new HashMap<>();
 		for (String cur : urls) {
-			result.putAll(loadTle(cur));
+			result.putAll(downloadTle(cur));
 		}
 		return result;
 	}
 
-	private static Map<String, Tle> loadTle(String location) {
+	private Map<String, Tle> downloadTle(String location) {
 		HttpURLConnection con = null;
 		Map<String, Tle> result = new HashMap<>();
 		try {
@@ -46,8 +44,8 @@ public class CelestrakClient {
 			URL obj = new URL(location);
 			con = (HttpURLConnection) obj.openConnection();
 			con.setRequestMethod("GET");
-			con.setConnectTimeout(TIMEOUT);
-			con.setReadTimeout(TIMEOUT);
+			con.setConnectTimeout(timeout);
+			con.setReadTimeout(timeout);
 			con.setRequestProperty("User-Agent", R2Cloud.getVersion() + " leosatdata.com");
 			int responseCode = con.getResponseCode();
 			if (responseCode != 200) {

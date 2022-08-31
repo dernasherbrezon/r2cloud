@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,7 +41,8 @@ import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.tle.CelestrakClient;
-import ru.r2cloud.tle.TLEReloader;
+import ru.r2cloud.tle.Housekeeping;
+import ru.r2cloud.tle.TleDao;
 import ru.r2cloud.util.DefaultClock;
 import ru.r2cloud.util.ThreadPoolFactoryImpl;
 
@@ -55,7 +57,7 @@ public class ScheduleTest {
 	private SatnogsServerMock satnogs;
 	private TestConfiguration config;
 	private SatelliteDao satelliteDao;
-	private TLEReloader tleDao;
+	private Housekeeping houseKeeping;
 	private long current;
 	private ObservationFactory factory;
 
@@ -67,7 +69,7 @@ public class ScheduleTest {
 		server.setSatelliteMock(new JsonHttpResponse("r2cloudclienttest/satellite.json", 200));
 		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunch-for-scheduletest.json", 200));
 		satelliteDao.reload();
-		tleDao.reload();
+		houseKeeping.run();
 		current = getTime("2022-09-30 22:17:01.000");
 		List<ObservationRequest> expected = readExpected("expected/scheduleNewLaunches.txt");
 		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
@@ -182,11 +184,14 @@ public class ScheduleTest {
 		config.setProperty("leosatdata.hostname", server.getUrl());
 		config.setProperty("satnogs.satellites", true);
 		config.setProperty("satnogs.hostname", satnogs.getUrl());
+		config.setList("tle.urls", celestrak.getUrls());
+		config.setProperty("tle.cacheFileLocation", new File(tempFolder.getRoot(), "tle.txt").getAbsolutePath());
 		LeoSatDataClient r2cloudClient = new LeoSatDataClient(config, new DefaultClock());
 		SatnogsClient satnogsClient = new SatnogsClient(config, new DefaultClock());
 		satelliteDao = new SatelliteDao(config, r2cloudClient, satnogsClient);
-		tleDao = new TLEReloader(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new DefaultClock(), new CelestrakClient(celestrak.getUrls()));
-		tleDao.start();
+		TleDao tleDao = new TleDao(config);
+		houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config), tleDao);
+		houseKeeping.start();
 		PredictOreKit predict = new PredictOreKit(config);
 		factory = new ObservationFactory(predict, config);
 		schedule = new Schedule(new SequentialTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
@@ -205,8 +210,8 @@ public class ScheduleTest {
 		if (satnogs != null) {
 			satnogs.stop();
 		}
-		if (tleDao != null) {
-			tleDao.stop();
+		if (houseKeeping != null) {
+			houseKeeping.stop();
 		}
 	}
 

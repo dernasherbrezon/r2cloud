@@ -288,7 +288,7 @@ public class Configuration {
 		}
 		return result;
 	}
-	
+
 	public List<DeviceConfiguration> getLoraAtConfigurations() {
 		List<String> loraDevices = getProperties("loraat.devices");
 		if (loraDevices.isEmpty()) {
@@ -404,6 +404,17 @@ public class Configuration {
 		return Util.splitComma(rawValue);
 	}
 
+	public void setList(String name, List<String> urls) {
+		StringBuilder str = new StringBuilder();
+		for (int i = 0; i < urls.size(); i++) {
+			if (i != 0) {
+				str.append(",");
+			}
+			str.append(urls.get(i));
+		}
+		setProperty(name, str.toString());
+	}
+
 	public DDNSType getDdnsType(String name) {
 		String str = getProperty(name);
 		if (str == null || str.trim().length() == 0) {
@@ -457,4 +468,5 @@ public class Configuration {
 		}
 		return DemodulatorType.valueOf(demodulatorType);
 	}
+
 }

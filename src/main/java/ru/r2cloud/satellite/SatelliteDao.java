@@ -1,11 +1,7 @@
 package ru.r2cloud.satellite;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,7 +24,6 @@ import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteComparator;
 import ru.r2cloud.model.SatelliteSource;
 import ru.r2cloud.model.SdrType;
-import ru.r2cloud.model.Tle;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.model.TransmitterComparator;
 import ru.r2cloud.util.Configuration;
@@ -169,9 +164,6 @@ public class SatelliteDao {
 		if (enabled != null) {
 			satellite.setEnabled(Boolean.valueOf(enabled));
 		}
-		if (satellite.getTle() == null) {
-			satellite.setTle(loadTle(satellite, config));
-		}
 		for (int i = 0; i < satellite.getTransmitters().size(); i++) {
 			Transmitter cur = satellite.getTransmitters().get(i);
 			cur.setId(satellite.getId() + "-" + String.valueOf(i));
@@ -197,35 +189,6 @@ public class SatelliteDao {
 			Satellite cur = Satellite.fromJson(rawSatellites.get(i).asObject());
 			cur.setSource(SatelliteSource.CONFIG);
 			result.add(cur);
-		}
-		return result;
-	}
-
-	private static Tle loadTle(Satellite satellite, Configuration config) {
-		Path tleFile = config.getSatellitesBasePath().resolve(satellite.getId()).resolve("tle.txt");
-		if (!Files.exists(tleFile)) {
-			LOG.info("missing tle for {}", satellite.getName());
-			return null;
-		}
-		Tle result;
-		try (BufferedReader r = Files.newBufferedReader(tleFile)) {
-			String line1 = r.readLine();
-			if (line1 == null) {
-				return null;
-			}
-			String line2 = r.readLine();
-			if (line2 == null) {
-				return null;
-			}
-			result = new Tle(new String[] { satellite.getName(), line1, line2 });
-		} catch (IOException e) {
-			LOG.error("unable to load TLE for {}", satellite.getId(), e);
-			return null;
-		}
-		try {
-			result.setLastUpdateTime(Files.getLastModifiedTime(tleFile).toMillis());
-		} catch (IOException e1) {
-			LOG.error("unable to get last modified time", e1);
 		}
 		return result;
 	}
