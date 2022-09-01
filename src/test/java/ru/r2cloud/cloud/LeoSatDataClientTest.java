@@ -131,6 +131,12 @@ public class LeoSatDataClientTest {
 		assertEquals(1, result.size());
 		assertEquals("53379", result.get(0).getId());
 	}
+	
+	@Test(expected = NotModifiedException.class)
+	public void testNoUpdateSatellites() throws Exception {
+		server.setSatelliteMock(new JsonHttpResponse("r2cloudclienttest/satellite.json", 304));
+		client.loadSatellites(0);
+	}
 
 	@Test
 	public void testEmptySatellite() throws Exception {
@@ -155,6 +161,12 @@ public class LeoSatDataClientTest {
 		assertSatellite("LUCKY-7", true, result.get(0));
 		// by default all enabled
 		assertSatellite("PAINANI 1", true, result.get(1));
+	}
+
+	@Test(expected = NotModifiedException.class)
+	public void testNoUpdateLoadNewLaunch() throws Exception {
+		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunch.json", 304));
+		client.loadNewLaunches(0);
 	}
 
 	@Test

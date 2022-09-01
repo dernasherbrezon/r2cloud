@@ -33,6 +33,10 @@ public class JsonHttpResponse implements HttpHandler {
 			baos.close();
 			request = baos.toByteArray();
 		}
+		if( statusCode == 304 ) {
+			exchange.sendResponseHeaders(statusCode, -1);
+			return;
+		}
 		exchange.getResponseHeaders().add("Content-Type", "application/json");
 		exchange.sendResponseHeaders(statusCode, responseBody.length());
 		OutputStream os = exchange.getResponseBody();
