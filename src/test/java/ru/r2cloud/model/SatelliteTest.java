@@ -18,6 +18,20 @@ import ru.r2cloud.satellite.SatelliteDao;
 public class SatelliteTest {
 
 	@Test
+	public void testSaveLoadFromJson() {
+		List<Satellite> result = loadFromConfig("satellites.json");
+		List<Satellite> actual = new ArrayList<>(result.size());
+		for (Satellite cur : result) {
+			actual.add(Satellite.fromJson(cur.toJson()));
+		}
+		// don't do deep comparison just overall match
+		assertEquals(result.size(), actual.size());
+		for (int i = 0; i < result.size(); i++) {
+			assertEquals(result.get(i).getTransmitters().size(), actual.get(i).getTransmitters().size());
+		}
+	}
+
+	@Test
 	public void testIncompatibleJradio() {
 		List<Satellite> result = loadFromConfig("satellites-incompatible.json");
 		assertEquals(1, result.size());

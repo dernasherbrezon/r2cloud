@@ -443,15 +443,6 @@ public class Transmitter {
 
 	public JsonObject toJson() {
 		JsonObject result = new JsonObject();
-		result.add("frequency", frequency);
-		if (bandwidth != 0) {
-			result.add("bandwidth", bandwidth);
-		}
-		JsonArray baudRatesArray = new JsonArray();
-		for (Integer cur : baudRates) {
-			baudRatesArray.add(cur);
-		}
-		result.add("baudRates", baudRatesArray);
 		if (modulation != null) {
 			result.add("modulation", modulation.name());
 		}
@@ -459,10 +450,27 @@ public class Transmitter {
 			result.add("framing", framing.name());
 		}
 		if (beaconClass != null) {
-			result.add("beaconClass", beaconClass.toString());
+			result.add("beaconClass", beaconClass.getCanonicalName());
 		}
 		if (beaconSizeBytes != 0) {
 			result.add("beaconSizeBytes", beaconSizeBytes);
+		}
+		result.add("frequency", frequency);
+		if (bandwidth != 0) {
+			result.add("bandwidth", bandwidth);
+		}
+		if (baudRates != null) {
+			JsonArray baudRatesArray = new JsonArray();
+			for (Integer cur : baudRates) {
+				baudRatesArray.add(cur);
+			}
+			result.add("baudRates", baudRatesArray);
+		}
+		if (assistedHeader != null) {
+			result.add("assistedHeader", Base64.getEncoder().encodeToString(assistedHeader));
+		}
+		if (status != null) {
+			result.add("status", status.name());
 		}
 		if (loraBandwidth != 0) {
 			result.add("loraBandwidth", loraBandwidth);
@@ -482,9 +490,6 @@ public class Transmitter {
 		if (loraLdro != 0) {
 			result.add("loraLdro", loraLdro);
 		}
-		if (assistedHeader != null) {
-			result.add("assistedHeader", Base64.getEncoder().encodeToString(assistedHeader));
-		}
 		if (deviation != 5000) {
 			result.add("deviation", deviation);
 		}
@@ -499,9 +504,6 @@ public class Transmitter {
 		}
 		if (transitionWidth != 2000) {
 			result.add("transitionWidth", transitionWidth);
-		}
-		if (status != null) {
-			result.add("status", status.name());
 		}
 		return result;
 	}

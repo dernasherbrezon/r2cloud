@@ -175,8 +175,8 @@ public class Satellite {
 
 	public JsonObject toJson() {
 		JsonObject result = new JsonObject();
-		result.add("noradId", id);
 		result.add("name", name);
+		result.add("noradId", id);
 		result.add("priority", priority.name());
 		result.add("enabled", enabled);
 		if (start != null) {
