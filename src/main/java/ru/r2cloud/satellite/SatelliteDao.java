@@ -81,16 +81,16 @@ public class SatelliteDao {
 
 	private void loadFromDisk() {
 		satnogsLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty("satellites.satnogs.location"));
-		satnogs.addAll(loadFromConfig(config.getPathFromProperty("satellites.satnogs.location")));
+		satnogs.addAll(loadFromConfig(config.getPathFromProperty("satellites.satnogs.location"), SatelliteSource.SATNOGS));
 
 		// default from config
-		staticSatellites.addAll(loadFromConfig(config.getPathFromProperty("satellites.meta.location")));
+		staticSatellites.addAll(loadFromConfig(config.getPathFromProperty("satellites.meta.location"), SatelliteSource.CONFIG));
 
 		leosatdataLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty("satellites.leosatdata.location"));
-		leosatdata.addAll(loadFromConfig(config.getPathFromProperty("satellites.leosatdata.location")));
+		leosatdata.addAll(loadFromConfig(config.getPathFromProperty("satellites.leosatdata.location"), SatelliteSource.LEOSATDATA));
 
 		leosatdataNewLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty("satellites.leosatdata.new.location"));
-		leosatDataNewLaunches.addAll(loadFromConfig(config.getPathFromProperty("satellites.leosatdata.new.location")));
+		leosatDataNewLaunches.addAll(loadFromConfig(config.getPathFromProperty("satellites.leosatdata.new.location"), SatelliteSource.LEOSATDATA));
 	}
 
 	public synchronized void reindex() {
@@ -255,7 +255,7 @@ public class SatelliteDao {
 		}
 	}
 
-	private static List<Satellite> loadFromConfig(Path metaLocation) {
+	private static List<Satellite> loadFromConfig(Path metaLocation, SatelliteSource source) {
 		List<Satellite> result = new ArrayList<>();
 		if (!Files.exists(metaLocation)) {
 			return result;
@@ -269,7 +269,7 @@ public class SatelliteDao {
 		}
 		for (int i = 0; i < rawSatellites.size(); i++) {
 			Satellite cur = Satellite.fromJson(rawSatellites.get(i).asObject());
-			cur.setSource(SatelliteSource.CONFIG);
+			cur.setSource(source);
 			result.add(cur);
 		}
 		return result;

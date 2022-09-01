@@ -98,7 +98,7 @@ public class DecoderService implements Lifecycle {
 	private void runInternally(File rawFile, ObservationRequest request) {
 		Decoder decoder = decoders.findByKey(request.getSatelliteId(), request.getTransmitterId());
 		if (decoder == null) {
-			LOG.error("[{}] unknown decoder for {}", request.getId(), request.getSatelliteId());
+			LOG.error("[{}] unknown decoder for {} transmitter {}", request.getId(), request.getSatelliteId(), request.getTransmitterId());
 			return;
 		}
 		if (!rawFile.getParentFile().exists()) {
