@@ -62,6 +62,9 @@ public class DecoderService implements Lifecycle {
 	}
 
 	public void retryObservations() {
+		if (decoderThread == null) {
+			return;
+		}
 		LOG.info("check for not processed observations");
 		List<Observation> all = dao.findAll();
 		String apiKey = config.getProperty("r2cloud.apiKey");

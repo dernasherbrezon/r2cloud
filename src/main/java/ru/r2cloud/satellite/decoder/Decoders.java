@@ -27,14 +27,13 @@ public class Decoders {
 	private final Map<DecoderKey, Decoder> decoders = new HashMap<>();
 	private final PredictOreKit predict;
 	private final Configuration props;
+	private final ProcessFactory processFactory;
 
 	public Decoders(PredictOreKit predict, Configuration props, ProcessFactory processFactory) {
 		this.predict = predict;
 		this.props = props;
-		index("25338", "25338-0", new APTDecoder(props, processFactory));
-		index("28654", "28654-0", new APTDecoder(props, processFactory));
+		this.processFactory = processFactory;
 		index("32789", "32789-0", new DelfiC3Decoder(predict, props));
-		index("33591", "33591-0", new APTDecoder(props, processFactory));
 		index("39430", "39430-0", new Gomx1Decoder(predict, props));
 		index("39444", "39444-0", new Ao73Decoder(predict, props));
 		index("41460", "41460-0", new Aausat4Decoder(predict, props));
@@ -88,6 +87,9 @@ public class Decoders {
 		}
 		if (transmitter.getFraming().equals(Framing.LRPT)) {
 			return new LRPTDecoder(predict, props);
+		}
+		if (transmitter.getFraming().equals(Framing.APT)) {
+			return new APTDecoder(props, processFactory);
 		}
 		if (transmitter.getFraming() == null || transmitter.getModulation() == null || transmitter.getBeaconClass() == null) {
 			LOG.error("framing or modulation or beacon class are empty for: {}", transmitter.getId());
