@@ -28,7 +28,7 @@ import ru.r2cloud.model.ObservationStatus;
 import ru.r2cloud.model.RotatorStatus;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
-import ru.r2cloud.satellite.ObservationDao;
+import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.ObservationRequestComparator;
 import ru.r2cloud.satellite.OverlappedTimetable;
@@ -59,7 +59,7 @@ public abstract class Device implements Lifecycle {
 	private final Object sdrServerLock = new Object();
 	private final Clock clock;
 	private final RotatorService rotatorService;
-	private final ObservationDao observationDao;
+	private final IObservationDao observationDao;
 	private final DecoderService decoderService;
 	private final DeviceConfiguration deviceConfiguration;
 
@@ -68,7 +68,7 @@ public abstract class Device implements Lifecycle {
 	private ScheduledExecutorService startThread = null;
 	private ScheduledExecutorService stopThread = null;
 
-	protected Device(String id, TransmitterFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, DeviceConfiguration deviceConfiguration, ObservationDao observationDao, DecoderService decoderService,
+	protected Device(String id, TransmitterFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, DeviceConfiguration deviceConfiguration, IObservationDao observationDao, DecoderService decoderService,
 			PredictOreKit predict, Schedule schedule) {
 		this.id = id;
 		this.filter = filter;

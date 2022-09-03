@@ -27,8 +27,10 @@ public class PresentationModeTest extends BaseTest {
 		File basepath = new File(config.getProperty("satellites.basepath.location") + File.separator + "41460" + File.separator + "data" + File.separator + "1559942730784");
 		TestUtil.copy("aausat4Observation/1559942730784.json", new File(basepath, "meta.json"));
 		TestUtil.copy("aausat4Observation/data.bin", new File(basepath, "data.bin"));
-		
 		config.setProperty("presentationMode", true);
+		// force cache reload
+		client.getObservationPresentation("41460", "1559942730784");
+		
 		JsonObject data = client.getPresentationModeData();
 		JsonArray observations = data.get("observations").asArray();
 		assertNotNull(observations);

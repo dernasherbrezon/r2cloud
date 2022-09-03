@@ -15,7 +15,7 @@ import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
-import ru.r2cloud.satellite.ObservationDao;
+import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.satellite.ObservationRequestComparator;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.Configuration;
@@ -25,11 +25,11 @@ import ru.r2cloud.web.ModelAndView;
 public class PresentationMode extends AbstractHttpController {
 
     private final SatelliteDao dao;
-    private final ObservationDao resultDao;
+    private final IObservationDao resultDao;
     private final Configuration config;
     private final DeviceManager deviceManager;
 
-    public PresentationMode(Configuration config, SatelliteDao dao, ObservationDao resultDao, DeviceManager deviceManager) {
+    public PresentationMode(Configuration config, SatelliteDao dao, IObservationDao resultDao, DeviceManager deviceManager) {
         this.dao = dao;
         this.resultDao = resultDao;
         this.config = config;

@@ -1,6 +1,5 @@
 package ru.r2cloud.web.api.observation;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,7 +10,7 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.ObservationFullComparator;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Satellite;
-import ru.r2cloud.satellite.ObservationDao;
+import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
@@ -19,20 +18,16 @@ import ru.r2cloud.web.ModelAndView;
 public class ObservationList extends AbstractHttpController {
 
 	private final SatelliteDao dao;
-	private final ObservationDao resultDao;
+	private final IObservationDao resultDao;
 
-	public ObservationList(SatelliteDao dao, ObservationDao resultDao) {
+	public ObservationList(SatelliteDao dao, IObservationDao resultDao) {
 		this.dao = dao;
 		this.resultDao = resultDao;
 	}
 
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
-		List<Satellite> all = dao.findAll();
-		List<Observation> observations = new ArrayList<>();
-		for (Satellite cur : all) {
-			observations.addAll(resultDao.findAllBySatelliteId(cur.getId()));
-		}
+		List<Observation> observations = resultDao.findAll();
 		Collections.sort(observations, ObservationFullComparator.INSTANCE);
 		JsonArray satellites = new JsonArray();
 		for (Observation cur : observations) {

@@ -37,6 +37,7 @@ public class ObservationListTest extends RegisteredTest {
 	private void copyObservation(String name) throws IOException {
 		File basepath = new File(config.getProperty("satellites.basepath.location") + File.separator + "40069" + File.separator + "data" + File.separator + name + File.separator + "meta.json");
 		TestUtil.copy("observationListIT/" + name + ".json", basepath);
+		client.getObservation("40069", name);
 	}
 
 }

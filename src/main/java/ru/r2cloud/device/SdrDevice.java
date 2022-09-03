@@ -8,7 +8,7 @@ import ru.r2cloud.model.SdrStatus;
 import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
-import ru.r2cloud.satellite.ObservationDao;
+import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.Schedule;
 import ru.r2cloud.satellite.TransmitterFilter;
@@ -30,7 +30,7 @@ public class SdrDevice extends Device {
     private final ProcessFactory processFactory;
     private final SdrStatusDao statusDao;
 
-    public SdrDevice(String id, TransmitterFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, DeviceConfiguration deviceConfiguration, ObservationDao observationDao, DecoderService decoderService,
+    public SdrDevice(String id, TransmitterFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, DeviceConfiguration deviceConfiguration, IObservationDao observationDao, DecoderService decoderService,
                      PredictOreKit predict, Schedule schedule, Configuration config, ProcessFactory processFactory) {
         super(id, filter, numberOfConcurrentObservations, observationFactory, threadpoolFactory, clock, deviceConfiguration, observationDao, decoderService, predict, schedule);
         this.config = config;

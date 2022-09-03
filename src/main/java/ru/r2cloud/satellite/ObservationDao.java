@@ -27,7 +27,7 @@ import ru.r2cloud.model.ObservationComparator;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
-public class ObservationDao {
+public class ObservationDao implements IObservationDao {
 
 	private static final String DEST_ALREADY_EXIST_MESSAGE = "unable to save. dest already exist: {}";
 	private static final String SPECTOGRAM_FILENAME = "spectogram.png";
@@ -63,7 +63,11 @@ public class ObservationDao {
 		}
 	}
 
+	@Override
 	public List<Observation> findAll() {
+		if (!Files.exists(basepath)) {
+			return Collections.emptyList();
+		}
 		try (DirectoryStream<Path> ds = Files.newDirectoryStream(basepath)) {
 			List<Observation> result = new ArrayList<>();
 			for (Path curSatellite : ds) {
@@ -76,6 +80,7 @@ public class ObservationDao {
 		}
 	}
 
+	@Override
 	public List<Observation> findAllBySatelliteId(String satelliteId) {
 		List<Observation> result = new ArrayList<>();
 		result.addAll(loadFromDisk(satelliteId));
@@ -113,6 +118,7 @@ public class ObservationDao {
 		return result;
 	}
 
+	@Override
 	public Observation find(String satelliteId, String observationId) {
 		synchronized (IN_FLIGHT_OBSERVATIONS) {
 			List<Observation> inFlight = IN_FLIGHT_OBSERVATIONS.get(satelliteId);
@@ -181,6 +187,7 @@ public class ObservationDao {
 		return baseDir.resolve(OUTPUT_RAW_FILENAME);
 	}
 
+	@Override
 	public File saveImage(String satelliteId, String observationId, File a) {
 		Path dest = getObservationBasepath(satelliteId, observationId).resolve(IMAGE_FILENAME);
 		if (Files.exists(dest)) {
@@ -193,6 +200,7 @@ public class ObservationDao {
 		return dest.toFile();
 	}
 
+	@Override
 	public File saveData(String satelliteId, String observationId, File a) {
 		Path dest = getObservationBasepath(satelliteId, observationId).resolve(DATA_FILENAME);
 		if (Files.exists(dest)) {
@@ -205,6 +213,7 @@ public class ObservationDao {
 		return dest.toFile();
 	}
 
+	@Override
 	public File saveSpectogram(String satelliteId, String observationId, File a) {
 		Path dest = getObservationBasepath(satelliteId, observationId).resolve(SPECTOGRAM_FILENAME);
 		if (Files.exists(dest)) {
@@ -217,6 +226,7 @@ public class ObservationDao {
 		return dest.toFile();
 	}
 
+	@Override
 	public void insert(Observation observation) {
 		synchronized (IN_FLIGHT_OBSERVATIONS) {
 			List<Observation> inFlight = IN_FLIGHT_OBSERVATIONS.get(observation.getSatelliteId());
@@ -228,6 +238,7 @@ public class ObservationDao {
 		}
 	}
 
+	@Override
 	public void cancel(Observation observation) {
 		synchronized (IN_FLIGHT_OBSERVATIONS) {
 			List<Observation> inFlight = IN_FLIGHT_OBSERVATIONS.get(observation.getSatelliteId());
@@ -247,6 +258,7 @@ public class ObservationDao {
 		}
 	}
 
+	@Override
 	public File update(Observation observation, File rawFile) {
 		synchronized (IN_FLIGHT_OBSERVATIONS) {
 			cancel(observation);
@@ -321,6 +333,7 @@ public class ObservationDao {
 		return dest.toFile();
 	}
 
+	@Override
 	public boolean update(Observation cur) {
 		JsonObject meta = cur.toJson(null);
 		Path temp = getObservationBasepath(cur).resolve(META_FILENAME + ".tmp");

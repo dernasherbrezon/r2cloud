@@ -18,7 +18,7 @@ import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationStatus;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
-import ru.r2cloud.satellite.ObservationDao;
+import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
@@ -33,7 +33,7 @@ public class DecoderService implements Lifecycle {
 	private ScheduledExecutorService decoderThread = null;
 
 	private final Decoders decoders;
-	private final ObservationDao dao;
+	private final IObservationDao dao;
 	private final LeoSatDataService r2cloudService;
 	private final ThreadPoolFactory threadpoolFactory;
 	private final Configuration config;
@@ -43,7 +43,7 @@ public class DecoderService implements Lifecycle {
 	private Counter lrpt;
 	private Counter telemetry;
 
-	public DecoderService(Configuration config, Decoders decoders, ObservationDao dao, LeoSatDataService r2cloudService, ThreadPoolFactory threadpoolFactory, Metrics metrics, SatelliteDao satelliteDao) {
+	public DecoderService(Configuration config, Decoders decoders, IObservationDao dao, LeoSatDataService r2cloudService, ThreadPoolFactory threadpoolFactory, Metrics metrics, SatelliteDao satelliteDao) {
 		this.config = config;
 		this.decoders = decoders;
 		this.dao = dao;
@@ -105,19 +105,6 @@ public class DecoderService implements Lifecycle {
 			LOG.error("[{}] satellite is missing. cannot decode: {}", request.getId(), request.getSatelliteId());
 			return;
 		}
-		Decoder decoder = decoders.findByTransmitter(satellite.getById(request.getTransmitterId()));
-		if (decoder == null) {
-			LOG.error("[{}] unknown decoder for {} transmitter {}", request.getId(), request.getSatelliteId(), request.getTransmitterId());
-			return;
-		}
-		if (!rawFile.getParentFile().exists()) {
-			LOG.info("[{}] observation no longer exist. This can be caused by slow decoding of other observations and too aggressive retention. Increase scheduler.data.retention.count or reduce number of scheduled satellites or use faster hardware", request.getId());
-			return;
-		}
-		if (!rawFile.exists()) {
-			LOG.info("[{}] raw data for observation is missing. This can be caused by slow decoding of other observations and too aggressive retention. Increase scheduler.data.retention.raw.count or reduce number of scheduled satellites or use faster hardware", request.getId());
-			return;
-		}
 		Transmitter transmitter = null;
 		if (request.getTransmitterId() != null) {
 			transmitter = satellite.getById(request.getTransmitterId());
@@ -130,6 +117,19 @@ public class DecoderService implements Lifecycle {
 		}
 		if (transmitter == null) {
 			LOG.error("[{}] cannot find transmitter for satellite {}", request.getId(), request.getSatelliteId());
+			return;
+		}
+		Decoder decoder = decoders.findByTransmitter(transmitter);
+		if (decoder == null) {
+			LOG.error("[{}] unknown decoder for {} transmitter {}", request.getId(), request.getSatelliteId(), request.getTransmitterId());
+			return;
+		}
+		if (!rawFile.getParentFile().exists()) {
+			LOG.info("[{}] observation no longer exist. This can be caused by slow decoding of other observations and too aggressive retention. Increase scheduler.data.retention.count or reduce number of scheduled satellites or use faster hardware", request.getId());
+			return;
+		}
+		if (!rawFile.exists()) {
+			LOG.info("[{}] raw data for observation is missing. This can be caused by slow decoding of other observations and too aggressive retention. Increase scheduler.data.retention.raw.count or reduce number of scheduled satellites or use faster hardware", request.getId());
 			return;
 		}
 		LOG.info("[{}] decoding", request.getId());

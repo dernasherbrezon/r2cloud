@@ -33,8 +33,10 @@ import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.SharedSchedule;
 import ru.r2cloud.predict.PredictOreKit;
+import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.satellite.LoraTransmitterFilter;
 import ru.r2cloud.satellite.ObservationDao;
+import ru.r2cloud.satellite.ObservationDaoCache;
 import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.Schedule;
@@ -104,7 +106,7 @@ public class R2Cloud {
 	private final ThreadPoolFactory threadFactory;
 	private final ObservationFactory observationFactory;
 	private final ProcessFactory processFactory;
-	private final ObservationDao resultDao;
+	private final IObservationDao resultDao;
 	private final LeoSatDataService leoSatDataService;
 	private final LeoSatDataClient leoSatDataClient;
 	private final SatnogsClient satnogsClient;
@@ -126,7 +128,7 @@ public class R2Cloud {
 		leoSatDataClient = new LeoSatDataClient(props, clock);
 		satnogsClient = new SatnogsClient(props, clock);
 		spectogramService = new SpectogramService(props);
-		resultDao = new ObservationDao(props);
+		resultDao = new ObservationDaoCache(new ObservationDao(props));
 		leoSatDataService = new LeoSatDataService(props, resultDao, leoSatDataClient, spectogramService);
 		metrics = new Metrics(props, clock);
 		predict = new PredictOreKit(props);

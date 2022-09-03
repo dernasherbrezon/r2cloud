@@ -9,7 +9,7 @@ import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.SpectogramService;
 import ru.r2cloud.model.Observation;
-import ru.r2cloud.satellite.ObservationDao;
+import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.util.SignedURL;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
@@ -24,11 +24,11 @@ public class ObservationSpectrogram extends AbstractHttpController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationSpectrogram.class);
 
-	private final ObservationDao dao;
+	private final IObservationDao dao;
 	private final SpectogramService spectogramService;
 	private final SignedURL signed;
 
-	public ObservationSpectrogram(ObservationDao dao, SpectogramService spectogramService, SignedURL signed) {
+	public ObservationSpectrogram(IObservationDao dao, SpectogramService spectogramService, SignedURL signed) {
 		this.dao = dao;
 		this.spectogramService = spectogramService;
 		this.signed = signed;

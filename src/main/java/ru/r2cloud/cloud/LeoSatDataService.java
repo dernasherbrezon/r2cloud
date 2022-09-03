@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.SpectogramService;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationStatus;
-import ru.r2cloud.satellite.ObservationDao;
+import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.util.Configuration;
 
 public class LeoSatDataService {
@@ -16,11 +16,11 @@ public class LeoSatDataService {
 	private static final Logger LOG = LoggerFactory.getLogger(LeoSatDataService.class);
 
 	private final Configuration config;
-	private final ObservationDao dao;
+	private final IObservationDao dao;
 	private final LeoSatDataClient client;
 	private final SpectogramService spectogramService;
 
-	public LeoSatDataService(Configuration config, ObservationDao dao, LeoSatDataClient client, SpectogramService spectogramService) {
+	public LeoSatDataService(Configuration config, IObservationDao dao, LeoSatDataClient client, SpectogramService spectogramService) {
 		this.config = config;
 		this.dao = dao;
 		this.client = client;

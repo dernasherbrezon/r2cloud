@@ -2,7 +2,7 @@ package ru.r2cloud.web.api.observation;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import fi.iki.elonen.NanoHTTPD.Response;
-import ru.r2cloud.satellite.ObservationDao;
+import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.SignedURL;
@@ -14,7 +14,7 @@ public class ObservationLoadPresentation extends AbstractHttpController {
 	private final ObservationLoad impl;
 	private final Configuration config;
 
-	public ObservationLoadPresentation(Configuration config, ObservationDao resultDao, SignedURL signed, SatelliteDao satelliteDao) {
+	public ObservationLoadPresentation(Configuration config, IObservationDao resultDao, SignedURL signed, SatelliteDao satelliteDao) {
 		this.config = config;
 		this.impl = new ObservationLoad(resultDao, signed, satelliteDao);
 	}

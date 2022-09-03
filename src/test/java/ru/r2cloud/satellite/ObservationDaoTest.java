@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +26,7 @@ import org.orekit.bodies.GeodeticPoint;
 import com.aerse.mockfs.FailingByteChannelCallback;
 import com.aerse.mockfs.MockFileSystem;
 
+import ru.r2cloud.ObservationFullComparator;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationStatus;
@@ -37,7 +39,7 @@ public class ObservationDaoTest {
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private TestConfiguration config;
-	private ObservationDao dao;
+	private IObservationDao dao;
 	private MockFileSystem fs;
 
 	@Test
@@ -131,12 +133,14 @@ public class ObservationDaoTest {
 
 		List<Observation> all = dao.findAll();
 		assertEquals(2, all.size());
+		Collections.sort(all, ObservationFullComparator.INSTANCE);
 		// test desc sorting
 		assertEquals(2, all.get(0).getStartTimeMillis());
 		assertEquals(1, all.get(1).getStartTimeMillis());
 
 		all = dao.findAllBySatelliteId(req.getSatelliteId());
 		assertEquals(2, all.size());
+		Collections.sort(all, ObservationFullComparator.INSTANCE);
 		// test desc sorting
 		assertEquals(2, all.get(0).getStartTimeMillis());
 		assertEquals(1, all.get(1).getStartTimeMillis());
@@ -229,6 +233,6 @@ public class ObservationDaoTest {
 		config.setProperty("satellites.basepath.location", tempFolder.getRoot().getAbsolutePath());
 		config.update();
 
-		dao = new ObservationDao(config);
+		dao = new ObservationDaoCache(new ObservationDao(config));
 	}
 }

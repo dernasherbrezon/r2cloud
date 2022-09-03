@@ -16,7 +16,7 @@ import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
-import ru.r2cloud.satellite.ObservationDao;
+import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.SignedURL;
 import ru.r2cloud.util.Util;
@@ -32,11 +32,11 @@ public class ObservationLoad extends AbstractHttpController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationLoad.class);
 
-	private final ObservationDao resultDao;
+	private final IObservationDao resultDao;
 	private final SignedURL signed;
 	private final SatelliteDao satelliteDao;
 
-	public ObservationLoad(ObservationDao resultDao, SignedURL signed, SatelliteDao satelliteDao) {
+	public ObservationLoad(IObservationDao resultDao, SignedURL signed, SatelliteDao satelliteDao) {
 		this.resultDao = resultDao;
 		this.signed = signed;
 		this.satelliteDao = satelliteDao;
