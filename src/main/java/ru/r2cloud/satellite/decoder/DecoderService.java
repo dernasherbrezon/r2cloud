@@ -96,7 +96,12 @@ public class DecoderService implements Lifecycle {
 	}
 
 	private void runInternally(File rawFile, ObservationRequest request) {
-		Decoder decoder = decoders.findByKey(request.getSatelliteId(), request.getTransmitterId());
+		Satellite satellite = satelliteDao.findById(request.getSatelliteId());
+		if (satellite == null) {
+			LOG.error("[{}] satellite is missing. cannot decode: {}", request.getId(), request.getSatelliteId());
+			return;
+		}
+		Decoder decoder = decoders.findByTransmitter(satellite.getById(request.getTransmitterId()));
 		if (decoder == null) {
 			LOG.error("[{}] unknown decoder for {} transmitter {}", request.getId(), request.getSatelliteId(), request.getTransmitterId());
 			return;
@@ -107,11 +112,6 @@ public class DecoderService implements Lifecycle {
 		}
 		if (!rawFile.exists()) {
 			LOG.info("[{}] raw data for observation is missing. This can be caused by slow decoding of other observations and too aggressive retention. Increase scheduler.data.retention.raw.count or reduce number of scheduled satellites or use faster hardware", request.getId());
-			return;
-		}
-		Satellite satellite = satelliteDao.findById(request.getSatelliteId());
-		if (satellite == null) {
-			LOG.error("[{}] satellite is missing. cannot decode: {}", request.getId(), request.getSatelliteId());
 			return;
 		}
 		Transmitter transmitter = null;

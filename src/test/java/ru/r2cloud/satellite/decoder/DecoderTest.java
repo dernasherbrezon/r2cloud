@@ -52,7 +52,7 @@ public class DecoderTest {
 		ObservationRequest req = TestUtil.loadObservation(rawFileMeta).getReq();
 		Satellite satellite = dao.findById(satelliteId);
 		Transmitter transmitter = satellite.getById(transmitterId);
-		Decoder decoder = decoders.findByKey(satelliteId, transmitterId);
+		Decoder decoder = decoders.findByTransmitter(transmitter);
 		DecoderResult result = decoder.decode(wav, req, transmitter);
 		assertEquals(expectedPackets, result.getNumberOfDecodedPackets().longValue());
 		assertNotNull(result.getDataPath());
@@ -95,7 +95,7 @@ public class DecoderTest {
 		config.update();
 		PredictOreKit predict = new PredictOreKit(config);
 		dao = new SatelliteDao(config);
-		decoders = new Decoders(predict, config, null, dao);
+		decoders = new Decoders(predict, config, null);
 	}
 
 }

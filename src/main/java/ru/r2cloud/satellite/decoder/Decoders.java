@@ -15,10 +15,8 @@ import ru.r2cloud.jradio.usp.UspBeacon;
 import ru.r2cloud.model.DecoderKey;
 import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.Modulation;
-import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
-import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
 
@@ -26,18 +24,19 @@ public class Decoders {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Decoders.class);
 
-	private final SatelliteDao satelliteDao;
 	private final Map<DecoderKey, Decoder> decoders = new HashMap<>();
+	private final PredictOreKit predict;
+	private final Configuration props;
 
-	public Decoders(PredictOreKit predict, Configuration props, ProcessFactory processFactory, SatelliteDao satelliteDao) {
-		this.satelliteDao = satelliteDao;
+	public Decoders(PredictOreKit predict, Configuration props, ProcessFactory processFactory) {
+		this.predict = predict;
+		this.props = props;
 		index("25338", "25338-0", new APTDecoder(props, processFactory));
 		index("28654", "28654-0", new APTDecoder(props, processFactory));
 		index("32789", "32789-0", new DelfiC3Decoder(predict, props));
 		index("33591", "33591-0", new APTDecoder(props, processFactory));
 		index("39430", "39430-0", new Gomx1Decoder(predict, props));
 		index("39444", "39444-0", new Ao73Decoder(predict, props));
-		index("40069", "40069-0", new LRPTDecoder(predict, props));
 		index("41460", "41460-0", new Aausat4Decoder(predict, props));
 		index("42017", "42017-0", new Nayif1Decoder(predict, props));
 		index("42784", "42784-0", new PegasusDecoder(predict, props));
@@ -74,61 +73,56 @@ public class Decoders {
 		index("51074", "51074-0", new DelfiPqDecoder(predict, props));
 		index("51439", "51439-0", new GaspacsDecoder(predict, props));
 		index("53385", "53385-0", new GeoscanDecoder(predict, props));
-
-		for (Satellite cur : satelliteDao.findAll()) {
-			for (Transmitter transmitter : cur.getTransmitters()) {
-				if (transmitter.getFraming() == null || transmitter.getModulation() == null || transmitter.getBeaconClass() == null) {
-					continue;
-				}
-				if (transmitter.getModulation().equals(Modulation.LORA)) {
-					index(cur.getId(), transmitter.getId(), new LoraDecoder(transmitter.getBeaconClass()));
-					continue;
-				}
-				if (transmitter.getBaudRates() == null || transmitter.getBaudRates().isEmpty()) {
-					continue;
-				}
-				if (transmitter.getFraming().equals(Framing.CUSTOM)) {
-					continue;
-				}
-				if (transmitter.getFraming().equals(Framing.AX25G3RUH)) {
-					index(cur.getId(), transmitter.getId(), new Ax25G3ruhDecoder(predict, props, transmitter.getBeaconClass(), transmitter.getAssistedHeader()));
-				} else if (transmitter.getModulation().equals(Modulation.GFSK) && transmitter.getFraming().equals(Framing.AX100)) {
-					if (transmitter.getBeaconSizeBytes() == 0) {
-						LOG.error("beacon size bytes are missing for GFSK AX100: {}", cur.getId());
-						continue;
-					}
-					index(cur.getId(), transmitter.getId(), new FskAx100Decoder(predict, props, transmitter.getBeaconSizeBytes(), transmitter.getBeaconClass()));
-				} else if (transmitter.getFraming().equals(Framing.AX25)) {
-					index(cur.getId(), transmitter.getId(), new Ax25Decoder(predict, props, transmitter.getBeaconClass(), transmitter.getAssistedHeader()));
-				} else if (transmitter.getModulation().equals(Modulation.AFSK) && transmitter.getFraming().equals(Framing.AX25)) {
-					index(cur.getId(), transmitter.getId(), new AfskAx25Decoder(predict, props, transmitter.getBeaconClass(), transmitter.getAssistedHeader()));
-				} else if (transmitter.getFraming().equals(Framing.USP)) {
-					index(cur.getId(), transmitter.getId(), new UspDecoder(predict, props, transmitter.getBeaconClass()));
-				} else {
-					LOG.error("unsupported combination of modulation and framing: {} - {}", transmitter.getModulation(), transmitter.getFraming());
-				}
-			}
-		}
-
-		validateDecoders();
 	}
 
-	public Decoder findByKey(String satelliteId, String transmitterId) {
-		return decoders.get(new DecoderKey(satelliteId, transmitterId));
+	public Decoder findByTransmitter(Transmitter transmitter) {
+		if (transmitter == null) {
+			return null;
+		}
+		if (transmitter.getFraming().equals(Framing.CUSTOM)) {
+			Decoder result = decoders.get(new DecoderKey(transmitter.getSatelliteId(), transmitter.getId()));
+			if (result == null) {
+				LOG.error("unable to find decoder for custom framing: {}", transmitter.getId());
+			}
+			return result;
+		}
+		if (transmitter.getFraming().equals(Framing.LRPT)) {
+			return new LRPTDecoder(predict, props);
+		}
+		if (transmitter.getFraming() == null || transmitter.getModulation() == null || transmitter.getBeaconClass() == null) {
+			LOG.error("framing or modulation or beacon class are empty for: {}", transmitter.getId());
+			return null;
+		}
+		if (transmitter.getModulation().equals(Modulation.LORA)) {
+			return new LoraDecoder(transmitter.getBeaconClass());
+		}
+		if (transmitter.getBaudRates() == null || transmitter.getBaudRates().isEmpty()) {
+			LOG.error("baud rates are missing: {}", transmitter.getId());
+			return null;
+		}
+
+		if (transmitter.getFraming().equals(Framing.AX25G3RUH)) {
+			return new Ax25G3ruhDecoder(predict, props, transmitter.getBeaconClass(), transmitter.getAssistedHeader());
+		} else if (transmitter.getModulation().equals(Modulation.GFSK) && transmitter.getFraming().equals(Framing.AX100)) {
+			if (transmitter.getBeaconSizeBytes() == 0) {
+				LOG.error("beacon size bytes are missing for GFSK AX100: {}", transmitter.getId());
+				return null;
+			}
+			return new FskAx100Decoder(predict, props, transmitter.getBeaconSizeBytes(), transmitter.getBeaconClass());
+		} else if (transmitter.getFraming().equals(Framing.AX25)) {
+			return new Ax25Decoder(predict, props, transmitter.getBeaconClass(), transmitter.getAssistedHeader());
+		} else if (transmitter.getModulation().equals(Modulation.AFSK) && transmitter.getFraming().equals(Framing.AX25)) {
+			return new AfskAx25Decoder(predict, props, transmitter.getBeaconClass(), transmitter.getAssistedHeader());
+		} else if (transmitter.getFraming().equals(Framing.USP)) {
+			return new UspDecoder(predict, props, transmitter.getBeaconClass());
+		} else {
+			LOG.error("unsupported combination of modulation and framing: {} - {}", transmitter.getModulation(), transmitter.getFraming());
+			return null;
+		}
 	}
 
 	private void index(String satelliteId, String transmitterId, Decoder decoder) {
 		decoders.put(new DecoderKey(satelliteId, transmitterId), decoder);
-	}
-
-	private void validateDecoders() {
-		for (Satellite cur : satelliteDao.findAll()) {
-			for (Transmitter curTransmitter : cur.getTransmitters()) {
-				if (!decoders.containsKey(new DecoderKey(cur.getId(), curTransmitter.getId()))) {
-					throw new IllegalStateException("decoder is not defined for satellite: " + cur.getId() + " transmitter: " + curTransmitter.getId());
-				}
-			}
-		}
 	}
 
 }
