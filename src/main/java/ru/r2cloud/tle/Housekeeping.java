@@ -11,6 +11,7 @@ import ru.r2cloud.cloud.SatnogsClient;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.satellite.SatelliteDao;
+import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
 import ru.r2cloud.util.ThreadPoolFactory;
@@ -25,10 +26,11 @@ public class Housekeeping {
 	private final LeoSatDataClient leosatdata;
 	private final SatnogsClient satnogs;
 	private final TleDao tleDao;
+	private final DecoderService decoder;
 
 	private ScheduledExecutorService executor = null;
 
-	public Housekeeping(Configuration config, SatelliteDao dao, ThreadPoolFactory threadFactory, CelestrakClient celestrak, TleDao tleDao, SatnogsClient satnogs, LeoSatDataClient leosatdata) {
+	public Housekeeping(Configuration config, SatelliteDao dao, ThreadPoolFactory threadFactory, CelestrakClient celestrak, TleDao tleDao, SatnogsClient satnogs, LeoSatDataClient leosatdata, DecoderService decoder) {
 		this.config = config;
 		this.threadFactory = threadFactory;
 		this.dao = dao;
@@ -36,6 +38,7 @@ public class Housekeeping {
 		this.tleDao = tleDao;
 		this.satnogs = satnogs;
 		this.leosatdata = leosatdata;
+		this.decoder = decoder;
 	}
 
 	public synchronized void start() {
@@ -58,6 +61,10 @@ public class Housekeeping {
 	public void run() {
 		reloadSatellites();
 		reloadTle();
+		// decoder is null in tests only
+		if (decoder != null) {
+			decoder.retryObservations();
+		}
 	}
 
 	private void reloadSatellites() {

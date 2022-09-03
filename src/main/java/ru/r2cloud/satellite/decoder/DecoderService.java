@@ -59,6 +59,10 @@ public class DecoderService implements Lifecycle {
 		telemetry = metrics.getRegistry().counter("telemetry");
 
 		decoderThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("decoder"));
+	}
+
+	public void retryObservations() {
+		LOG.info("check for not processed observations");
 		List<Observation> all = dao.findAll();
 		String apiKey = config.getProperty("r2cloud.apiKey");
 		for (Observation cur : all) {

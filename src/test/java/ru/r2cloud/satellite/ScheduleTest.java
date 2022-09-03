@@ -196,7 +196,7 @@ public class ScheduleTest {
 		SatnogsClient satnogsClient = new SatnogsClient(config, new DefaultClock());
 		satelliteDao = new SatelliteDao(config);
 		TleDao tleDao = new TleDao(config);
-		houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config), tleDao, satnogsClient, r2cloudClient);
+		houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config), tleDao, satnogsClient, r2cloudClient, null);
 		PredictOreKit predict = new PredictOreKit(config);
 		factory = new ObservationFactory(predict, config);
 		schedule = new Schedule(new SequentialTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);

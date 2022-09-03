@@ -135,10 +135,10 @@ public class R2Cloud {
 		ddnsClient = new DDNSClient(props);
 		satelliteDao = new SatelliteDao(props);
 		tleDao = new TleDao(props);
-		houseKeeping = new Housekeeping(props, satelliteDao, threadFactory, new CelestrakClient(props), tleDao, satnogsClient, leoSatDataClient);
 		signed = new SignedURL(props, clock);
 		decoders = new Decoders(predict, props, processFactory);
 		decoderService = new DecoderService(props, decoders, resultDao, leoSatDataService, threadFactory, metrics, satelliteDao);
+		houseKeeping = new Housekeeping(props, satelliteDao, threadFactory, new CelestrakClient(props), tleDao, satnogsClient, leoSatDataClient, decoderService);
 
 		observationFactory = new ObservationFactory(predict, props);
 

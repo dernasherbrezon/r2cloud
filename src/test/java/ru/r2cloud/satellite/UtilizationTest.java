@@ -47,7 +47,7 @@ public class UtilizationTest {
 		PredictOreKit predict = new PredictOreKit(config);
 		SatelliteDao satelliteDao = new SatelliteDao(config);
 		TleDao tleDao = new TleDao(config);
-		Housekeeping houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config), tleDao, null, null);
+		Housekeeping houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config), tleDao, null, null, null);
 		houseKeeping.start();
 		ObservationFactory factory = new ObservationFactory(predict, config);
 
