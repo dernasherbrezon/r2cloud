@@ -1,0 +1,21 @@
+[
+    {
+        "sat_id": "EUEU-0112-5297-2105-4780",
+        "norad_cat_id": 53464,
+        "name": "TUMnanoSAT",
+        "names": "",
+        "image": "",
+        "status": "alive",
+        "decayed": null,
+        "launched": null,
+        "deployed": "2022-08-12T09:45:00Z",
+        "website": "https://nanosat.utm.md/",
+        "operator": "None",
+        "countries": "MD",
+        "telemetries": [],
+        "updated": "2022-08-15T12:23:42.623063Z",
+        "citation": "Identified after all other satellites from the same deployment have been identified, https://community.libre.space/t/iss-deployment-jaxa-j-ssod-22-2022-08-12-12-40-utc/9497/13",
+        "is_frequency_violator": false,
+        "associated_satellites": []
+    }
+]

@@ -1,5 +1,9 @@
 package ru.r2cloud.cloud;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +36,44 @@ public class SatnogsClientTest {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
+
+	@Test
+	public void testInvalidResponse() throws Exception {
+		server.setSatellitesMock(new JsonHttpResponse("satnogs/empty-response.json", 404));
+		server.setTransmittersMock(new JsonHttpResponse("satnogs/transmitters.json", 200));
+		server.setTleMockDirectory("satnogs");
+		assertTrue(client.loadSatellites().isEmpty());
+
+		server.setSatellitesMock(new JsonHttpResponse("satnogs/satellites.json", 200));
+		server.setTransmittersMock(new JsonHttpResponse("satnogs/empty-response.json", 404));
+		server.setTleMockDirectory("satnogs");
+		assertTrue(client.loadSatellites().isEmpty());
+
+		server.setSatellitesMock(new JsonHttpResponse("satnogs/satellites-notle.json", 200));
+		server.setTransmittersMock(new JsonHttpResponse("satnogs/transmitters-notle.json", 200));
+		server.setTleMockDirectory("satnogs");
+		List<Satellite> satellite = client.loadSatellites();
+		assertEquals(1, satellite.size());
+		assertNull(satellite.get(0).getTle());
+		
+		server.setTransmittersMock(new JsonHttpResponse("satnogs/transmitters.json", 200));
+		server.setTleMockDirectory("satnogs");
+
+		server.setSatellitesMock("not a json", 200);
+		assertTrue(client.loadSatellites().isEmpty());
+		server.setSatellitesMock("{ \"test\": 1 }", 200);
+		assertTrue(client.loadSatellites().isEmpty());
+		server.setSatellitesMock("[ [1,2,3] ]", 200);
+		assertTrue(client.loadSatellites().isEmpty());
+		
+		server.setSatellitesMock(new JsonHttpResponse("satnogs/satellites.json", 200));
+		server.setTransmittersMock("not a json", 200);
+		assertTrue(client.loadSatellites().isEmpty());
+		server.setTransmittersMock("{ \"test\": 1 }", 200);
+		assertTrue(client.loadSatellites().isEmpty());
+		server.setTransmittersMock("[ [1,2,3] ]", 200);
+		assertTrue(client.loadSatellites().isEmpty());
+	}
 
 	@Test
 	public void testSuccess() {
