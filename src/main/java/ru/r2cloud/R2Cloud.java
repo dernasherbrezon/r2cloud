@@ -191,8 +191,8 @@ public class R2Cloud {
 
 	public void start() {
 		ddnsClient.start();
-		houseKeeping.start();
 		decoderService.start();
+		houseKeeping.start();
 		// device manager should start after tle (it uses TLE to schedule
 		// observations)
 		deviceManager.start();
@@ -207,8 +207,8 @@ public class R2Cloud {
 		webServer.stop();
 		metrics.stop();
 		deviceManager.stop();
-		decoderService.stop();
 		houseKeeping.stop();
+		decoderService.stop();
 		ddnsClient.stop();
 	}
 

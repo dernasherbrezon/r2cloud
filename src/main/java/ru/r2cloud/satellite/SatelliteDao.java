@@ -35,6 +35,9 @@ import ru.r2cloud.util.Util;
 
 public class SatelliteDao {
 
+	private static final String SATNOGS_LOCATION = "satellites.satnogs.location";
+	private static final String LEOSATDATA_NEW_LOCATION = "satellites.leosatdata.new.location";
+	private static final String LEOSATDATA_LOCATION = "satellites.leosatdata.location";
 	private static final Logger LOG = LoggerFactory.getLogger(SatelliteDao.class);
 
 	private final Configuration config;
@@ -62,35 +65,35 @@ public class SatelliteDao {
 		leosatdata.clear();
 		leosatdata.addAll(leosatdataSatellites);
 		leosatdataLastUpdateTime = currentTime;
-		save(config.getPathFromProperty("satellites.leosatdata.location"), leosatdataSatellites, currentTime);
+		save(config.getPathFromProperty(LEOSATDATA_LOCATION), leosatdataSatellites, currentTime);
 	}
 
 	public synchronized void saveLeosatdataNew(List<Satellite> loadNewLaunches, long currentTime) {
 		leosatDataNewLaunches.clear();
 		leosatDataNewLaunches.addAll(loadNewLaunches);
 		leosatdataNewLastUpdateTime = currentTime;
-		save(config.getPathFromProperty("satellites.leosatdata.new.location"), loadNewLaunches, currentTime);
+		save(config.getPathFromProperty(LEOSATDATA_NEW_LOCATION), loadNewLaunches, currentTime);
 	}
 
 	public synchronized void saveSatnogs(List<Satellite> loadSatellites, long currentTime) {
 		satnogs.clear();
 		satnogs.addAll(loadSatellites);
 		satnogsLastUpdateTime = currentTime;
-		save(config.getPathFromProperty("satellites.satnogs.location"), satnogs, currentTime);
+		save(config.getPathFromProperty(SATNOGS_LOCATION), satnogs, currentTime);
 	}
 
 	private void loadFromDisk() {
-		satnogsLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty("satellites.satnogs.location"));
-		satnogs.addAll(loadFromConfig(config.getPathFromProperty("satellites.satnogs.location"), SatelliteSource.SATNOGS));
+		satnogsLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty(SATNOGS_LOCATION));
+		satnogs.addAll(loadFromConfig(config.getPathFromProperty(SATNOGS_LOCATION), SatelliteSource.SATNOGS));
 
 		// default from config
 		staticSatellites.addAll(loadFromConfig(config.getPathFromProperty("satellites.meta.location"), SatelliteSource.CONFIG));
 
-		leosatdataLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty("satellites.leosatdata.location"));
-		leosatdata.addAll(loadFromConfig(config.getPathFromProperty("satellites.leosatdata.location"), SatelliteSource.LEOSATDATA));
+		leosatdataLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty(LEOSATDATA_LOCATION));
+		leosatdata.addAll(loadFromConfig(config.getPathFromProperty(LEOSATDATA_LOCATION), SatelliteSource.LEOSATDATA));
 
-		leosatdataNewLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty("satellites.leosatdata.new.location"));
-		leosatDataNewLaunches.addAll(loadFromConfig(config.getPathFromProperty("satellites.leosatdata.new.location"), SatelliteSource.LEOSATDATA));
+		leosatdataNewLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty(LEOSATDATA_NEW_LOCATION));
+		leosatDataNewLaunches.addAll(loadFromConfig(config.getPathFromProperty(LEOSATDATA_NEW_LOCATION), SatelliteSource.LEOSATDATA));
 	}
 
 	public synchronized void reindex() {
@@ -216,7 +219,7 @@ public class SatelliteDao {
 		}
 		for (int i = 0; i < satellite.getTransmitters().size(); i++) {
 			Transmitter cur = satellite.getTransmitters().get(i);
-			cur.setId(satellite.getId() + "-" + String.valueOf(i));
+			cur.setId(satellite.getId() + "-" + i);
 			cur.setEnabled(satellite.isEnabled());
 			cur.setPriority(satellite.getPriority());
 			cur.setSatelliteId(satellite.getId());

@@ -185,11 +185,11 @@ public class Satellite {
 		if (end != null) {
 			result.add("end", end.getTime());
 		}
-		JsonArray transmitters = new JsonArray();
-		for (Transmitter cur : this.transmitters) {
-			transmitters.add(cur.toJson());
+		JsonArray transmittersJson = new JsonArray();
+		for (Transmitter cur : transmitters) {
+			transmittersJson.add(cur.toJson());
 		}
-		result.add("transmitters", transmitters);
+		result.add("transmitters", transmittersJson);
 		return result;
 	}
 
