@@ -27,6 +27,7 @@
 			<unpackOptions>
 				<encoding>UTF-8</encoding>
 				<includes>
+					<include>**/*.json</include>
 					<include>**/*.xml</include>
 					<include>**/*.conf</include>
 					<include>**/*.properties</include>
