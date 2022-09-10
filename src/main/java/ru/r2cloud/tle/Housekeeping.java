@@ -116,11 +116,18 @@ public class Housekeeping {
 	private void reloadTle() {
 		long periodMillis = config.getLong("housekeeping.tle.periodMillis");
 		Map<String, Tle> tle = tleDao.loadTle();
+		boolean missingTle = false;
+		for (Satellite cur : dao.findAll()) {
+			if (cur.getTle() == null && !tle.containsKey(cur.getId())) {
+				missingTle = true;
+				break;
+			}
+		}
 		// do not store on disk ever growing tle list
-		// store only supproted satellites
+		// store only supported satellites
 		Map<String, Tle> updated = new HashMap<>();
 		boolean reloadTle = System.currentTimeMillis() - tleDao.getLastUpdateTime() > periodMillis;
-		if (reloadTle) {
+		if (reloadTle || missingTle) {
 			tle.putAll(celestrak.downloadTle());
 		}
 		for (Satellite cur : dao.findAll()) {

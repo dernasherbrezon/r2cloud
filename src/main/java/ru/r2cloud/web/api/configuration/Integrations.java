@@ -42,6 +42,8 @@ public class Integrations extends AbstractHttpController {
 		boolean satnogs = WebServer.getBoolean(request, SATNOGS_PARAMETER);
 		if (apiKey != null && apiKey.length() > 0) {
 			config.setProperty("r2cloud.apiKey", apiKey);
+		} else {
+			config.remove("r2cloud.apiKey");
 		}
 		config.setProperty("r2cloud.syncSpectogram", String.valueOf(syncSpectogram));
 		config.setProperty("r2cloud.newLaunches", String.valueOf(newLaunches));

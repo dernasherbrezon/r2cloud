@@ -15,9 +15,11 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.junit.After;
@@ -27,8 +29,12 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
+import ru.r2cloud.model.Framing;
+import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SatelliteSource;
 import ru.r2cloud.model.Tle;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.ThreadPoolFactory;
 
@@ -45,6 +51,28 @@ public class HousekeepingTest {
 	private TleDao tleDao;
 	private Map<String, Tle> tleData;
 	private Housekeeping dao;
+
+	@Test
+	public void testReloadTleForNewSatellites() {
+		config.setProperty("r2cloud.apiKey", UUID.randomUUID().toString());
+		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, null, null);
+		// this will setup tle cache
+		dao.run();
+
+		String id = "00001";
+		satelliteDao.saveLeosatdata(Collections.singletonList(create(id)), System.currentTimeMillis());
+		satelliteDao.reindex();
+		Satellite sat = satelliteDao.findById(id);
+		assertNotNull(sat);
+		assertNull(sat.getTle());
+
+		// this should reload tle even it was cached before
+		dao.run();
+
+		sat = satelliteDao.findById(id);
+		assertNotNull(sat);
+		assertNotNull(sat.getTle());
+	}
 
 	@Test
 	public void testReloadFailure() {
@@ -103,6 +131,19 @@ public class HousekeepingTest {
 		executor = mock(ScheduledExecutorService.class);
 		when(threadPool.newScheduledThreadPool(anyInt(), any())).thenReturn(executor);
 
+	}
+
+	private static Satellite create(String id) {
+		Satellite result = new Satellite();
+		result.setId(id);
+		result.setName(UUID.randomUUID().toString());
+		result.setPriority(Priority.NORMAL);
+		result.setSource(SatelliteSource.LEOSATDATA);
+		Transmitter transmitter = new Transmitter();
+		transmitter.setFrequency(466000000);
+		transmitter.setFraming(Framing.CUSTOM);
+		result.setTransmitters(Collections.singletonList(transmitter));
+		return result;
 	}
 
 	@After

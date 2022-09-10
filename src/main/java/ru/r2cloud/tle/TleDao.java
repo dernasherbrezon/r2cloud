@@ -28,7 +28,7 @@ public class TleDao {
 	public TleDao(Configuration config) {
 		cacheFileLocation = config.getPathFromProperty("tle.cacheFileLocation");
 		cache.putAll(loadTle(cacheFileLocation));
-		if (Files.exists(cacheFileLocation)) {
+		if (!cache.isEmpty() && Files.exists(cacheFileLocation)) {
 			try {
 				lastUpdateTime = Files.getLastModifiedTime(cacheFileLocation).toMillis();
 			} catch (IOException e) {
