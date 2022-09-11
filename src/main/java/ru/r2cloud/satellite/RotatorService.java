@@ -46,7 +46,7 @@ public class RotatorService implements Lifecycle {
 	public synchronized void start() {
 		LOG.info("[{}] starting rotator on: {}:{}", config.getId(), config.getHostname(), config.getPort());
 		status.setHostport(config.getHostname() + ":" + config.getPort());
-		ensureClientConnected();
+		ensureClientConnected(null, true);
 		executor = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("rotator"));
 	}
 
@@ -70,6 +70,7 @@ public class RotatorService implements Lifecycle {
 		Future<?> result = executor.scheduleAtFixedRate(new Runnable() {
 
 			private Position previousPosition;
+			private boolean log = true;
 
 			@Override
 			public void run() {
@@ -87,16 +88,24 @@ public class RotatorService implements Lifecycle {
 						return;
 					}
 				} else {
-					LOG.info("[{}] moving rotator to {}", req.getId(), currentPosition);
+					if (log) {
+						LOG.info("[{}] moving rotator to {}", req.getId(), currentPosition);
+					}
 				}
 
-				ensureClientConnected();
+				if (!ensureClientConnected(req.getId(), log)) {
+					log = false;
+				}
 				if (RotatorService.this.rotClient != null) {
 					try {
 						RotatorService.this.rotClient.setPosition(currentPosition);
 						previousPosition = currentPosition;
+						log = true;
 					} catch (Exception e) {
-						LOG.error("unable to set rotator position: {}", currentPosition, e);
+						if (log) {
+							LOG.error("[{}] unable to set rotator position: {}", req.getId(), currentPosition, e);
+						}
+						log = false;
 						RotatorService.this.rotClient.stop();
 						RotatorService.this.rotClient = null;
 					}
@@ -110,9 +119,9 @@ public class RotatorService implements Lifecycle {
 		return status;
 	}
 
-	private synchronized void ensureClientConnected() {
+	private synchronized boolean ensureClientConnected(String id, boolean shouldLogError) {
 		if (this.rotClient != null) {
-			return;
+			return true;
 		}
 		RotctrldClient result = new RotctrldClient(config.getHostname(), config.getPort(), config.getTimeout());
 		try {
@@ -121,12 +130,18 @@ public class RotatorService implements Lifecycle {
 			status.setModel(result.getModelName());
 			LOG.info("[{}] initialized for model: {}", config.getId(), status.getModel());
 			this.rotClient = result;
-			return;
+			return true;
 		} catch (Exception e) {
 			status.setStatus(DeviceConnectionStatus.FAILED);
 			status.setFailureMessage(e.getMessage());
-			Util.logIOException(LOG, "unable to connect to rotctrld", e);
-			return;
+			if (shouldLogError) {
+				if (id != null) {
+					Util.logIOException(LOG, "[" + id + "] unable to connect to rotctrld", e);
+				} else {
+					Util.logIOException(LOG, "unable to connect to rotctrld", e);
+				}
+			}
+			return false;
 		}
 	}
 
