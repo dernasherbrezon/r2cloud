@@ -206,7 +206,7 @@ public abstract class Device implements Lifecycle {
 			Future<?> startFuture = startThread.schedule(readTask, req.getStartTimeMillis() - current, TimeUnit.MILLISECONDS);
 			Future<?> rotatorFuture = null;
 			if (rotatorService != null) {
-				rotatorFuture = rotatorService.schedule(req, current);
+				rotatorFuture = rotatorService.schedule(req, current, startFuture);
 			}
 			Runnable completeTask = new SafeRunnable() {
 

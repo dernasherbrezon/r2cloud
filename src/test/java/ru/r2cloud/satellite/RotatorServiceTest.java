@@ -2,6 +2,8 @@ package ru.r2cloud.satellite;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
 import org.hipparchus.util.FastMath;
@@ -63,7 +66,7 @@ public class RotatorServiceTest {
 		ObservationRequest req = createRequest();
 		service = new RotatorService(createValidConfig(), predict, new ScheduleFixedTimesTheadPoolFactory(3), new SteppingClock(req.getStartTimeMillis(), 70000));
 		service.start();
-		service.schedule(req, clock.millis());
+		service.schedule(req, clock.millis(), null);
 		int i = 0;
 		List<String> requests = handler.getRequests();
 		assertEquals("\\get_info", requests.get(i++));
@@ -79,7 +82,7 @@ public class RotatorServiceTest {
 		int times = (int) ((req.getEndTimeMillis() - req.getStartTimeMillis()) / 1000);
 		service = new RotatorService(createValidConfig(), predict, new ScheduleFixedTimesTheadPoolFactory(times), new SteppingClock(req.getEndTimeMillis() + 1000, 1000));
 		service.start();
-		service.schedule(req, req.getStartTimeMillis());
+		service.schedule(req, req.getStartTimeMillis(), null);
 	}
 
 	@Test
@@ -89,7 +92,19 @@ public class RotatorServiceTest {
 		rotatorConfiguration.setPort(rotatorConfiguration.getPort() + 1);
 		service = new RotatorService(rotatorConfiguration, predict, new ThreadPoolFactoryImpl(10000), clock);
 		service.start();
-		assertNotNull(service.schedule(createRequest(), clock.millis()));
+		assertNotNull(service.schedule(createRequest(), clock.millis(), null));
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void testDoNotRunIfSdrCancelled() throws Exception {
+		Future<?> rtlsdrFuture = mock(Future.class);
+		when(rtlsdrFuture.isDone()).thenReturn(true);
+
+		ObservationRequest req = createRequest();
+		int times = (int) ((req.getEndTimeMillis() - req.getStartTimeMillis()) / 1000);
+		service = new RotatorService(createValidConfig(), predict, new ScheduleFixedTimesTheadPoolFactory(times), new SteppingClock(req.getStartTimeMillis(), 1000));
+		service.start();
+		service.schedule(req, req.getStartTimeMillis(), rtlsdrFuture);
 	}
 
 	@Test
@@ -98,7 +113,7 @@ public class RotatorServiceTest {
 		int times = (int) ((req.getEndTimeMillis() - req.getStartTimeMillis()) / 1000);
 		service = new RotatorService(createValidConfig(), predict, new ScheduleFixedTimesTheadPoolFactory(times), new SteppingClock(req.getStartTimeMillis(), 1000));
 		service.start();
-		assertNotNull(service.schedule(req, req.getStartTimeMillis()));
+		assertNotNull(service.schedule(req, req.getStartTimeMillis(), null));
 		try (BufferedReader r = new BufferedReader(new InputStreamReader(RotatorService.class.getClassLoader().getResourceAsStream("expected/rotctrld-requests.txt"), StandardCharsets.UTF_8))) {
 			String curLine = null;
 			int i = 0;

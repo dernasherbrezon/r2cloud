@@ -61,7 +61,7 @@ public class RotatorService implements Lifecycle {
 		LOG.info("[{}] stopped", config.getId());
 	}
 
-	public Future<?> schedule(ObservationRequest req, long current) {
+	public Future<?> schedule(ObservationRequest req, long current, Future<?> startFuture) {
 		if (executor == null) {
 			return null;
 		}
@@ -78,6 +78,10 @@ public class RotatorService implements Lifecycle {
 				if (current > req.getEndTimeMillis()) {
 					LOG.info("[{}] observation time passed. cancelling rotation", req.getId());
 					throw new RuntimeException("observation time passed");
+				}
+				if (startFuture != null && startFuture.isDone()) {
+					LOG.info("[{}] observation stopped. cancelling rotation", req.getId());
+					throw new RuntimeException("observation stopped");
 				}
 				Position currentPosition = predict.getSatellitePosition(current, groundStation, tlePropagator);
 				if (previousPosition != null) {
