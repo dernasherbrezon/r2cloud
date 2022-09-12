@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
+import ru.r2cloud.cloud.LeoSatDataClient;
 import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
@@ -48,14 +49,15 @@ public class HousekeepingTest {
 	private TestConfiguration config;
 	private SatelliteDao satelliteDao;
 	private CelestrakClient celestrak;
+	private LeoSatDataClient leosatdata;
 	private TleDao tleDao;
 	private Map<String, Tle> tleData;
 	private Housekeeping dao;
 
 	@Test
-	public void testReloadTleForNewSatellites() {
+	public void testReloadTleForNewSatellites() throws Exception {
 		config.setProperty("r2cloud.apiKey", UUID.randomUUID().toString());
-		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, null, null);
+		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null);
 		// this will setup tle cache
 		dao.run();
 
@@ -80,14 +82,14 @@ public class HousekeepingTest {
 		Satellite sat = satelliteDao.findById(satelliteId);
 		assertNull(sat.getTle());
 
-		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, null, null);
+		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null);
 		dao.run();
 		assertNotNull(sat.getTle());
 	}
 
 	@Test
 	public void testSuccess() throws Exception {
-		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, null, null);
+		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null);
 		reloader.start();
 
 		verify(executor).scheduleAtFixedRate(any(), anyLong(), anyLong(), any());
@@ -95,7 +97,7 @@ public class HousekeepingTest {
 
 	@Test
 	public void testLifecycle() {
-		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, null, null);
+		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null);
 		reloader.start();
 		reloader.start();
 		verify(executor, times(1)).scheduleAtFixedRate(any(), anyLong(), anyLong(), any());
@@ -131,6 +133,8 @@ public class HousekeepingTest {
 		executor = mock(ScheduledExecutorService.class);
 		when(threadPool.newScheduledThreadPool(anyInt(), any())).thenReturn(executor);
 
+		leosatdata = mock(LeoSatDataClient.class);
+		when(leosatdata.loadSatellites(anyLong())).thenReturn(Collections.emptyList());
 	}
 
 	private static Satellite create(String id) {

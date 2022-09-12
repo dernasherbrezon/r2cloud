@@ -203,7 +203,10 @@ public class Configuration {
 
 	public String getProperty(String name) {
 		String result = userSettings.getProperty(name);
-		if (result != null && result.trim().length() != 0) {
+		if (result != null) {
+			if (result.trim().length() == 0) {
+				return null;
+			}
 			return result;
 		}
 		result = systemSettings.getProperty(name);
