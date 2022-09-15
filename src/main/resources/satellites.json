@@ -1,5 +1,115 @@
 [
 	{
+		"id": "R2CLOUD185",
+		"name": "FOSSASAT-2E8",
+		"noradId": "52779",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 401700000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 11,
+				"loraCodingRate": 8,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD184",
+		"name": "FOSSASAT-2E11",
+		"noradId": "52750",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 401700000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 11,
+				"loraCodingRate": 8,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD183",
+		"name": "FOSSASAT-2E13",
+		"noradId": "52776",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 401700000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 11,
+				"loraCodingRate": 8,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD182",
+		"name": "2022-096B",
+		"noradId": "53371",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 437575000,
+				"bandwidth": 62500,
+				"status": "ENABLED",
+				"loraBandwidth": 62500,
+				"loraSpreadFactor": 8,
+				"loraCodingRate": 6,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD181",
+		"name": "2022-096C",
+		"noradId": "53372",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 436895000,
+				"bandwidth": 62500,
+				"status": "ENABLED",
+				"loraBandwidth": 62500,
+				"loraSpreadFactor": 8,
+				"loraCodingRate": 6,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD180",
 		"name": "STEP CUBE LAB-II",
 		"noradId": "52897",
@@ -585,7 +695,7 @@
 		"id": "R2CLOUD149",
 		"name": "ORESAT0",
 		"noradId": "52017",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
@@ -605,7 +715,7 @@
 		"id": "R2CLOUD148",
 		"name": "INS-2TD",
 		"noradId": "51658",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
@@ -670,7 +780,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"beaconClass": "ru.r2cloud.jradio.iris.IrisABeacon",
 				"frequency": 436915000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -690,9 +800,9 @@
 			{
 				"modulation": "LORA",
 				"framing": "LORA",
-				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconClass": "ru.r2cloud.jradio.fees.FeesBeacon",
 				"frequency": 437200000,
-				"bandwidth": 0,
+				"bandwidth": 125000,
 				"status": "ENABLED",
 				"loraBandwidth": 125000,
 				"loraSpreadFactor": 9,
@@ -732,7 +842,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "AX100",
-				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"beaconClass": "ru.r2cloud.jradio.vzlusat.Vzlusat2Beacon",
 				"beaconSizeBytes": 512,
 				"frequency": 437326000,
 				"bandwidth": 20000,
@@ -808,7 +918,7 @@
 		"id": "R2CLOUD137",
 		"name": "XW-3 (CAS-9)",
 		"noradId": "50466",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
@@ -1491,10 +1601,48 @@
 		]
 	},
 	{
+		"id": "R2CLOUD91",
+		"name": "XW-2B",
+		"noradId": "40911",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 145705000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD90",
+		"name": "XW-2C",
+		"noradId": "40906",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 145770000,
+				"bandwidth": 48000,
+				"baudRates": [
+					19200
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD89",
 		"name": "XW-2D",
 		"noradId": "40907",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
@@ -1513,7 +1661,7 @@
 		"id": "R2CLOUD88",
 		"name": "XW-2F",
 		"noradId": "40910",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
@@ -1532,7 +1680,7 @@
 		"id": "R2CLOUD87",
 		"name": "XW-2E",
 		"noradId": "40909",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
@@ -1548,10 +1696,29 @@
 		]
 	},
 	{
+		"id": "R2CLOUD86",
+		"name": "XW-2A",
+		"noradId": "40903",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 145640000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD85",
 		"name": "SHAONIAN XING",
 		"noradId": "43199",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "BPSK",
@@ -2303,7 +2470,7 @@
 		"id": "R2CLOUD30",
 		"name": "FLORIPASAT-1",
 		"noradId": "44885",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
