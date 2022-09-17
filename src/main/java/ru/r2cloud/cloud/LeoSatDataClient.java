@@ -226,6 +226,9 @@ public class LeoSatDataClient {
 			}
 			JsonObject asObject = jsonValue.asObject();
 			Satellite cur = Satellite.fromJson(asObject);
+			if (cur == null) {
+				continue;
+			}
 			cur.setSource(SatelliteSource.LEOSATDATA);
 			result.add(cur);
 		}

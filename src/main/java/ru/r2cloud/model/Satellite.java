@@ -170,6 +170,9 @@ public class Satellite {
 				transmitters.add(cur);
 			}
 		}
+		if (transmitters.isEmpty()) {
+			return null;
+		}
 		return result;
 	}
 

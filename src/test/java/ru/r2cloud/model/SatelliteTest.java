@@ -34,8 +34,7 @@ public class SatelliteTest {
 	@Test
 	public void testIncompatibleJradio() {
 		List<Satellite> result = loadFromConfig("satellites-incompatible.json");
-		assertEquals(1, result.size());
-		assertEquals(1, result.get(0).getTransmitters().size());
+		assertEquals(0, result.size());
 	}
 
 	private static List<Satellite> loadFromConfig(String metaLocation) {
@@ -48,6 +47,9 @@ public class SatelliteTest {
 		}
 		for (int i = 0; i < rawSatellites.size(); i++) {
 			Satellite cur = Satellite.fromJson(rawSatellites.get(i).asObject());
+			if (cur == null) {
+				continue;
+			}
 			cur.setSource(SatelliteSource.CONFIG);
 			result.add(cur);
 		}

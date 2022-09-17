@@ -272,6 +272,9 @@ public class SatelliteDao {
 		}
 		for (int i = 0; i < rawSatellites.size(); i++) {
 			Satellite cur = Satellite.fromJson(rawSatellites.get(i).asObject());
+			if (cur == null) {
+				continue;
+			}
 			cur.setSource(source);
 			result.add(cur);
 		}
