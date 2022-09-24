@@ -1100,7 +1100,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "AX100",
-				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"beaconClass": "ru.r2cloud.jradio.ledsat.LedSatBeacon",
 				"beaconSizeBytes": 255,
 				"frequency": 435190000,
 				"bandwidth": 20000,
@@ -2094,25 +2094,6 @@
 		]
 	},
 	{
-		"id": "R2CLOUD57",
-		"name": "ELFIN-A",
-		"noradId": "43617",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 437450000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
 		"id": "R2CLOUD56",
 		"name": "CUBEBEL-1 (BSUSAT-1)",
 		"noradId": "43666",
@@ -2894,7 +2875,8 @@
 			{
 				"modulation": "QPSK",
 				"framing": "LRPT",
-				"frequency": 137900000,
+				"beaconClass": "ru.r2cloud.jradio.lrpt.Vcdu",
+				"frequency": 137100000,
 				"bandwidth": 140000,
 				"baudRates": [
 					72000
