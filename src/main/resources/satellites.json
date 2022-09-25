@@ -2875,7 +2875,6 @@
 			{
 				"modulation": "QPSK",
 				"framing": "LRPT",
-				"beaconClass": "ru.r2cloud.jradio.lrpt.Vcdu",
 				"frequency": 137100000,
 				"bandwidth": 140000,
 				"baudRates": [
