@@ -147,6 +147,10 @@ public class DecoderService implements Lifecycle {
 		}
 
 		Observation observation = dao.find(request.getSatelliteId(), request.getId());
+		if (observation == null) {
+			LOG.info("[{}] observation was deleted before any data saved", request.getId());
+			return;
+		}
 		observation.setRawPath(result.getRawPath());
 		observation.setChannelA(result.getChannelA());
 		observation.setChannelB(result.getChannelB());
