@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.CelestrakServer;
+import ru.r2cloud.FixedClock;
 import ru.r2cloud.JsonHttpResponse;
 import ru.r2cloud.LeoSatDataServerMock;
 import ru.r2cloud.SatnogsServerMock;
@@ -43,7 +44,6 @@ import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.tle.Housekeeping;
 import ru.r2cloud.tle.TleDao;
-import ru.r2cloud.util.DefaultClock;
 import ru.r2cloud.util.ThreadPoolFactoryImpl;
 
 public class ScheduleTest {
@@ -166,6 +166,8 @@ public class ScheduleTest {
 
 	@Before
 	public void start() throws Exception {
+		current = getTime("2020-09-30 22:17:01.000");
+
 		celestrak = new CelestrakServer();
 		celestrak.start();
 		celestrak.mockResponse(TestUtil.loadExpected("tle-2020-09-27.txt"));
@@ -192,8 +194,8 @@ public class ScheduleTest {
 		config.setProperty("satellites.satnogs.location", new File(tempFolder.getRoot(), "satnogs.json").getAbsolutePath());
 		config.setProperty("satellites.leosatdata.location", new File(tempFolder.getRoot(), "leosatdata.json").getAbsolutePath());
 		config.setProperty("satellites.leosatdata.new.location", new File(tempFolder.getRoot(), "leosatdata.new.json").getAbsolutePath());
-		LeoSatDataClient r2cloudClient = new LeoSatDataClient(config, new DefaultClock());
-		SatnogsClient satnogsClient = new SatnogsClient(config, new DefaultClock());
+		LeoSatDataClient r2cloudClient = new LeoSatDataClient(config, new FixedClock(current));
+		SatnogsClient satnogsClient = new SatnogsClient(config, new FixedClock(current));
 		satelliteDao = new SatelliteDao(config);
 		TleDao tleDao = new TleDao(config);
 		houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config), tleDao, satnogsClient, r2cloudClient, null);
@@ -201,7 +203,6 @@ public class ScheduleTest {
 		factory = new ObservationFactory(predict, config);
 		schedule = new Schedule(new SequentialTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
 
-		current = getTime("2020-09-30 22:17:01.000");
 	}
 
 	@After
