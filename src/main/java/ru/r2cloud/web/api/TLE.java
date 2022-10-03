@@ -6,26 +6,26 @@ import com.eclipsesource.json.JsonObject;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.satellite.SatelliteDao;
-import ru.r2cloud.util.Configuration;
+import ru.r2cloud.tle.TleDao;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
 
 public class TLE extends AbstractHttpController {
 
-	private final Configuration config;
 	private final SatelliteDao service;
+	private final TleDao tleDao;
 
-	public TLE(Configuration config, SatelliteDao service) {
-		this.config = config;
+	public TLE(SatelliteDao service, TleDao tleDao) {
 		this.service = service;
+		this.tleDao = tleDao;
 	}
 
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
 		ModelAndView result = new ModelAndView();
 		JsonObject entity = new JsonObject();
-		Long lastUpdateMillis = config.getLong("satellites.tle.lastupdateAtMillis");
-		if (lastUpdateMillis != null) {
+		long lastUpdateMillis = tleDao.getLastUpdateTime();
+		if (lastUpdateMillis != 0) {
 			entity.add("lastUpdated", lastUpdateMillis);
 		}
 		JsonArray tle = new JsonArray();

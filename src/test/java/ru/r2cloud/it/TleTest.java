@@ -34,6 +34,7 @@ public class TleTest extends RegisteredTest {
 		assertTrue(data.isArray());
 		JsonArray dataArray = data.asArray();
 		assertEquals(createTle(), findData("40069", dataArray));
+		assertNotNull(tle.get("lastUpdated"));
 	}
 
 	private static List<String> createTle() {

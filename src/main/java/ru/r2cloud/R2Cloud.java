@@ -174,7 +174,7 @@ public class R2Cloud {
 		index(new Overview(props, deviceManager));
 		index(new General(props, autoUpdate));
 		index(new DDNS(props, ddnsClient));
-		index(new TLE(props, satelliteDao));
+		index(new TLE(satelliteDao, tleDao));
 		index(new Integrations(props));
 		index(new ObservationSpectrogram(resultDao, spectogramService, signed));
 		index(new ObservationList(satelliteDao, resultDao));
