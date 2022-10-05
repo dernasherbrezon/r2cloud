@@ -54,7 +54,7 @@
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
 			<artifactId>protobuf-java</artifactId>
-			<version>3.17.3</version>
+			<version>3.19.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.orekit</groupId>
@@ -172,27 +172,20 @@
 						<phase>validate</phase>
 						<configuration>
 							<target>
-								<echo message="Downloading sigar native binaries..." />
-								<get src="${sigar.download.url}"
-									dest="${sigar.download.path}/" skipExisting="true" />
-								<checksum
-									file="${sigar.download.path}/hyperic-sigar-${sigar.version}.zip"
-									algorithm="SHA1" property="${sigar.SHA1}"
-									verifyProperty="validChecksum" />
-								<fail
-									message="Checksum validation failed for hyperic-sigar-${sigar.version}.zip">
+								<echo message="Downloading sigar native binaries..."/>
+								<get src="${sigar.download.url}" dest="${sigar.download.path}/" skipExisting="true"/>
+								<checksum file="${sigar.download.path}/hyperic-sigar-${sigar.version}.zip" algorithm="SHA1" property="${sigar.SHA1}" verifyProperty="validChecksum"/>
+								<fail message="Checksum validation failed for hyperic-sigar-${sigar.version}.zip">
 									<condition>
-										<isfalse value="${validChecksum}" />
+										<isfalse value="${validChecksum}"/>
 									</condition>
 								</fail>
-								<unzip
-									src="${sigar.download.path}/hyperic-sigar-${sigar.version}.zip"
-									dest="${project.build.directory}/sigar-lib">
+								<unzip src="${sigar.download.path}/hyperic-sigar-${sigar.version}.zip" dest="${project.build.directory}/sigar-lib">
 									<patternset>
-										<include name="**/lib/libsigar-*" />
-										<include name="**/lib/sigar-*" />
+										<include name="**/lib/libsigar-*"/>
+										<include name="**/lib/sigar-*"/>
 									</patternset>
-									<mapper type="flatten" />
+									<mapper type="flatten"/>
 								</unzip>
 							</target>
 						</configuration>
@@ -353,7 +346,7 @@
 						<libxft2>>=2.3.2</libxft2>
 						<sox>>=14.4.1</sox>
 						<!-- required by deps-maven-plugin -->
-						<wget />
+						<wget/>
 					</osDependencies>
 					<javaServiceWrapper>false</javaServiceWrapper>
 					<fileSets>
