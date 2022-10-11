@@ -87,10 +87,12 @@ public class LeoSatDataClient {
 	}
 
 	public List<Satellite> loadNewLaunches(long lastModified) throws NotModifiedException {
+		LOG.info("loading new satellites from leosatdata");
 		HttpRequest request = createRequest("/api/v1/satellite/newlaunch2", lastModified).GET().build();
 		try {
 			HttpResponse<String> response = sendWithRetry(request, BodyHandlers.ofString());
 			if (response.statusCode() == 304) {
+				LOG.info("no new satellite updates from leosatdata");
 				throw new NotModifiedException();
 			}
 			if (response.statusCode() != 200) {
@@ -99,7 +101,9 @@ public class LeoSatDataClient {
 				}
 				return Collections.emptyList();
 			}
-			return readNewLaunches(response.body());
+			List<Satellite> result = readNewLaunches(response.body());
+			LOG.info("new satellites from leosatdata were loaded: {}", result.size());
+			return result;
 		} catch (IOException e) {
 			Util.logIOException(LOG, "unable to load new launches", e);
 			return Collections.emptyList();
@@ -110,10 +114,12 @@ public class LeoSatDataClient {
 	}
 
 	public List<Satellite> loadSatellites(long lastModified) throws NotModifiedException {
+		LOG.info("loading satellites from leosatdata");
 		HttpRequest request = createRequest("/api/v1/satellite", lastModified).GET().build();
 		try {
 			HttpResponse<String> response = sendWithRetry(request, BodyHandlers.ofString());
 			if (response.statusCode() == 304) {
+				LOG.info("no satellite updates from leosatdata");
 				throw new NotModifiedException();
 			}
 			if (response.statusCode() != 200) {
@@ -122,7 +128,9 @@ public class LeoSatDataClient {
 				}
 				return Collections.emptyList();
 			}
-			return readSatellites(response.body());
+			List<Satellite> result = readSatellites(response.body());
+			LOG.info("satellites from leosatdata were loaded: {}", result.size());
+			return result;
 		} catch (IOException e) {
 			Util.logIOException(LOG, "unable to load satellites from leosatdata", e);
 			return Collections.emptyList();
