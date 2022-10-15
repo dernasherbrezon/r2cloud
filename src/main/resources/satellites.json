@@ -1105,9 +1105,7 @@
 				"frequency": 435190000,
 				"bandwidth": 20000,
 				"baudRates": [
-					1200,
-					4800,
-					9600
+					1200
 				],
 				"status": "ENABLED"
 			}
@@ -1235,7 +1233,7 @@
 		"transmitters": [
 			{
 				"modulation": "GFSK",
-				"framing": "CUSTOM",
+				"framing": "TUBIX20",
 				"beaconClass": "ru.r2cloud.jradio.technosat.TechnosatBeacon",
 				"frequency": 435950000,
 				"bandwidth": 20000,
@@ -2534,7 +2532,7 @@
 		"transmitters": [
 			{
 				"modulation": "GFSK",
-				"framing": "CUSTOM",
+				"framing": "MOBITEX",
 				"beaconClass": "ru.r2cloud.jradio.suomi100.Suomi100Beacon",
 				"frequency": 435700000,
 				"bandwidth": 10000,
@@ -2753,7 +2751,7 @@
 		"transmitters": [
 			{
 				"modulation": "GFSK",
-				"framing": "CUSTOM",
+				"framing": "TUBIX20",
 				"beaconClass": "ru.r2cloud.jradio.technosat.TechnosatBeacon",
 				"frequency": 435950000,
 				"bandwidth": 15000,
