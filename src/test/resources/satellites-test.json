@@ -1159,7 +1159,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "MOBITEX",
-				"beaconClass": "ru.r2cloud.jradio.suomi100.Suomi100Beacon",
+				"beaconClass": "ru.r2cloud.jradio.dstar1.Dstar1Beacon",
 				"frequency": 435700000,
 				"bandwidth": 10000,
 				"baudRates": [
