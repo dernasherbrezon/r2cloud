@@ -71,7 +71,7 @@ public class CelestrakClient {
 			}
 			LOG.info("received tle for {} satellites", result.size());
 		} catch (Exception e) {
-			Util.logIOException(LOG, "unable to get tle", e);
+			Util.logIOException(LOG, "unable to get tle from " + location, e);
 		} finally {
 			if (con != null) {
 				con.disconnect();
