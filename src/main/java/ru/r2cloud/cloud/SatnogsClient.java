@@ -31,6 +31,8 @@ import com.eclipsesource.json.ParseException;
 import ru.r2cloud.R2Cloud;
 import ru.r2cloud.jradio.ax25.Ax25Beacon;
 import ru.r2cloud.jradio.csp.CspBeacon;
+import ru.r2cloud.jradio.mobitex.MobitexBeacon;
+import ru.r2cloud.jradio.tubix20.TUBiX20Beacon;
 import ru.r2cloud.jradio.usp.UspBeacon;
 import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.Modulation;
@@ -373,6 +375,12 @@ public class SatnogsClient {
 			} else if (description.contains("ax.25") || description.contains("ax25")) {
 				cur.setFraming(Framing.AX25);
 				cur.setBeaconClass(Ax25Beacon.class);
+			} else if (description.contains("mobitex-nx")) {
+				cur.setFraming(Framing.TUBIX20);
+				cur.setBeaconClass(TUBiX20Beacon.class);
+			} else if (description.contains("mobitex")) {
+				cur.setFraming(Framing.MOBITEX);
+				cur.setBeaconClass(MobitexBeacon.class);
 			}
 			if (modulationStr.contains(" AX.100 ")) {
 				cur.setFraming(Framing.AX100);

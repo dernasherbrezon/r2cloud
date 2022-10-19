@@ -1,5 +1,63 @@
 [
 	{
+		"id": "R2CLOUD190",
+		"name": "DEKART",
+		"noradId": "46493",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "MOBITEX",
+				"beaconClass": "ru.r2cloud.jradio.mobitex.MobitexBeacon",
+				"frequency": 437000000,
+				"bandwidth": 15000,
+				"baudRates": [
+					4800
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD187",
+		"name": "BRO-4",
+		"noradId": "49066",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"beaconSizeBytes": 512,
+				"frequency": 401735000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD186",
+		"name": "SELFIESAT",
+		"noradId": "53951",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.selfiesat.SelfieSatBeacon",
+				"frequency": 437500000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD185",
 		"name": "FOSSASAT-2E8",
 		"noradId": "52779",
@@ -407,17 +465,6 @@
 				"framing": "AX25G3RUH",
 				"beaconClass": "ru.r2cloud.jradio.ctim.CtimBeacon",
 				"frequency": 437250000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "ENABLED"
-			},
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ctim.CtimBeacon",
-				"frequency": 437396000,
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
@@ -2069,25 +2116,6 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					19200
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD58",
-		"name": "ELFIN-B",
-		"noradId": "43616",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 437476000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
 				],
 				"status": "ENABLED"
 			}
