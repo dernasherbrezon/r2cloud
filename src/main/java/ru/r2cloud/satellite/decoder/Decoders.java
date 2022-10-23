@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.jradio.ax25.Ax25Beacon;
+import ru.r2cloud.jradio.ccsds.TransferFrame;
 import ru.r2cloud.jradio.csp.CspBeacon;
 import ru.r2cloud.jradio.fox.Fox1BBeacon;
 import ru.r2cloud.jradio.fox.Fox1CBeacon;
@@ -68,6 +69,7 @@ public class Decoders {
 		index("51074", "51074-0", new DelfiPqDecoder(predict, props));
 		index("51439", "51439-0", new GaspacsDecoder(predict, props));
 		index("53385", "53385-0", new GeoscanDecoder(predict, props));
+		index("53108", "53108-0", new CcsdsDecoder(predict, props, TransferFrame.class));
 	}
 
 	public Decoder findByTransmitter(Transmitter transmitter) {

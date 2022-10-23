@@ -1,5 +1,158 @@
 [
 	{
+		"id": "R2CLOUD198",
+		"name": "JAISAT-1",
+		"noradId": "44419",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "MOBITEX",
+				"beaconClass": "ru.r2cloud.jradio.dstar1.Dstar1Beacon",
+				"frequency": 435700000,
+				"bandwidth": 20000,
+				"baudRates": [
+					4800
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD197",
+		"name": "GOMX-4B",
+		"noradId": "43196",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 400800000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD196",
+		"name": "KSM1-A",
+		"noradId": "46912",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 401030000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD195",
+		"name": "GOMX-4A",
+		"noradId": "43197",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 400800000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD194",
+		"name": "KSM1-B",
+		"noradId": "46914",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 401060000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD193",
+		"name": "PLATFORM-1",
+		"noradId": "52770",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 400358000,
+				"bandwidth": 15000,
+				"baudRates": [
+					4800
+				],
+				"assistedHeader": "AAEAAQAAAAEAAQEAAAEAAQABAQEAAAABAAEBAAABAAEAAAAAAAEBAAABAAAAAQEAAAAAAAABAQEAAQEAAAEAAQABAQAAAQABAAABAAABAQAAAQAAAAEBAAAAAAEAAQEAAAEAAAABAQABAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD192",
+		"name": "ALFACRUX",
+		"noradId": "52160",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 437100000,
+				"bandwidth": 20000,
+				"baudRates": [
+					4800
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD191",
+		"name": "TRISAT-R",
+		"noradId": "53108",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.ccsds.TransferFrame",
+				"frequency": 435613000,
+				"bandwidth": 15000,
+				"baudRates": [
+					1000
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD190",
 		"name": "DEKART",
 		"noradId": "46493",
