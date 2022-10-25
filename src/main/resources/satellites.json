@@ -2077,7 +2077,7 @@
 				"frequency": 436600000,
 				"bandwidth": 20000,
 				"baudRates": [
-					9600
+					4800, 9600
 				],
 				"status": "ENABLED"
 			}
@@ -2676,11 +2676,10 @@
 				"modulation": "GFSK",
 				"framing": "AX100",
 				"beaconClass": "ru.r2cloud.jradio.aistechsat3.Aistechsat3Beacon",
-				"beaconSizeBytes": 255,
 				"frequency": 436730000,
 				"bandwidth": 10000,
 				"baudRates": [
-					9600
+					4800, 9600
 				],
 				"status": "ENABLED"
 			}
