@@ -1,5 +1,101 @@
 [
 	{
+		"id": "R2CLOUD203",
+		"name": "BLUEWALKER-3",
+		"noradId": "53807",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 437500000,
+				"bandwidth": 20000,
+				"baudRates": [
+					2400,
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD202",
+		"name": "LIGHT-1",
+		"noradId": "51509",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 437710000,
+				"bandwidth": 10000,
+				"baudRates": [
+					2400
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD201",
+		"name": "ISAT",
+		"noradId": "43879",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "MOBITEX",
+				"beaconClass": "ru.r2cloud.jradio.dstar1.Dstar1Beacon",
+				"frequency": 435700000,
+				"bandwidth": 15000,
+				"baudRates": [
+					4800
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD200",
+		"name": "PLANTSAT",
+		"noradId": "52188",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 437240000,
+				"bandwidth": 15000,
+				"baudRates": [
+					4800
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD199",
+		"name": "D-STAR ONE (LIGHTSAT)",
+		"noradId": "44393",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "MOBITEX",
+				"beaconClass": "ru.r2cloud.jradio.dstar1.Dstar1Beacon",
+				"frequency": 435700000,
+				"bandwidth": 15000,
+				"baudRates": [
+					4800
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD198",
 		"name": "JAISAT-1",
 		"noradId": "44419",
@@ -180,7 +276,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "AX100",
-				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
 				"beaconSizeBytes": 512,
 				"frequency": 401735000,
 				"bandwidth": 20000,
@@ -2077,7 +2173,8 @@
 				"frequency": 436600000,
 				"bandwidth": 20000,
 				"baudRates": [
-					4800, 9600
+					4800,
+					9600
 				],
 				"status": "ENABLED"
 			}
@@ -2676,10 +2773,12 @@
 				"modulation": "GFSK",
 				"framing": "AX100",
 				"beaconClass": "ru.r2cloud.jradio.aistechsat3.Aistechsat3Beacon",
+				"beaconSizeBytes": 255,
 				"frequency": 436730000,
 				"bandwidth": 10000,
 				"baudRates": [
-					4800, 9600
+					4800,
+					9600
 				],
 				"status": "ENABLED"
 			}
