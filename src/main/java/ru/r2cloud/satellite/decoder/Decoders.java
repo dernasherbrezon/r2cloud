@@ -6,6 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.jradio.RawBeacon;
 import ru.r2cloud.jradio.ax25.Ax25Beacon;
 import ru.r2cloud.jradio.ccsds.TransferFrame;
 import ru.r2cloud.jradio.csp.CspBeacon;
@@ -70,6 +71,8 @@ public class Decoders {
 		index("51439", "51439-0", new GaspacsDecoder(predict, props));
 		index("53385", "53385-0", new GeoscanDecoder(predict, props));
 		index("53108", "53108-0", new CcsdsDecoder(predict, props, TransferFrame.class));
+		index("53807", "53807-0", new BlueWalker3Decoder(predict, props, RawBeacon.class));
+		index("51509", "51509-0", new BlueWalker3Decoder(predict, props, RawBeacon.class));
 	}
 
 	public Decoder findByTransmitter(Transmitter transmitter) {
