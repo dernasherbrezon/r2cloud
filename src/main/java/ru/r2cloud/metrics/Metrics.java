@@ -1,9 +1,5 @@
 package ru.r2cloud.metrics;
 
-import java.io.File;
-
-import org.hyperic.sigar.Sigar;
-import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +22,6 @@ public class Metrics {
 
 	private JmxReporter jmxReporter;
 	private RRD4JReporter reporter;
-	private Sigar sigar;
 	private final Configuration config;
 	private final Clock clock;
 
@@ -61,64 +56,6 @@ public class Metrics {
 		});
 
 		try {
-			sigar = new Sigar();
-			File f = sigar.getNativeLibrary();
-			if (f != null && f.exists()) {
-				registry.gauge("load-average", new MetricSupplier<>() {
-					@Override
-					public Gauge<Double> newMetric() {
-						return new FormattedGauge<Double>(MetricFormat.NORMAL) {
-
-							@Override
-							public Double getValue() {
-								try {
-									return sigar.getLoadAverage()[0];
-								} catch (SigarException e) {
-									return null;
-								}
-							}
-						};
-					}
-				});
-				registry.gauge("ram-used", new MetricSupplier<>() {
-					@Override
-					public Gauge<Double> newMetric() {
-						return new FormattedGauge<Double>(MetricFormat.NORMAL) {
-
-							@Override
-							public Double getValue() {
-								try {
-									return sigar.getMem().getUsedPercent();
-								} catch (SigarException e) {
-									return null;
-								}
-							}
-						};
-					}
-				});
-				registry.gauge("disk-used", new MetricSupplier<>() {
-					@Override
-					public Gauge<Double> newMetric() {
-						return new FormattedGauge<Double>(MetricFormat.NORMAL) {
-
-							@Override
-							public Double getValue() {
-								try {
-									return sigar.getFileSystemUsage("/").getUsePercent() * 100;
-								} catch (SigarException e) {
-									return null;
-								}
-							}
-						};
-					}
-				});
-				LOG.info("SIGAR library was loaded");
-			}
-		} catch (UnsatisfiedLinkError linkError) {
-			LOG.info("Could not initialize SIGAR library: {}", linkError.getMessage());
-		}
-
-		try {
 			jmxReporter = JmxReporter.forRegistry(registry).inDomain("ru.r2cloud.metrics").build();
 			jmxReporter.start();
 		} catch (NoClassDefFoundError e) {
@@ -132,9 +69,6 @@ public class Metrics {
 	}
 
 	public void stop() {
-		if (sigar != null) {
-			sigar.close();
-		}
 		if (reporter != null) {
 			reporter.close();
 		}

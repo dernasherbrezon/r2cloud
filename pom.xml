@@ -31,10 +31,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<sigar.version>1.6.4</sigar.version>
-		<sigar.download.url>https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/magelan/hyperic-sigar-${sigar.version}.zip</sigar.download.url>
-		<sigar.SHA1>8f79d4039ca3ec6c88039d5897a80a268213e6b7</sigar.SHA1>
-		<sigar.download.path>${settings.localRepository}/org/fusesource/sigar/${sigar.version}</sigar.download.path>
 	</properties>
 
 	<distributionManagement>
@@ -76,18 +72,6 @@
 			<artifactId>jradio</artifactId>
 			<version>1.87</version>
 		</dependency>
-		<dependency>
-			<groupId>org.fusesource</groupId>
-			<artifactId>sigar</artifactId>
-			<version>${sigar.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-core</artifactId>
@@ -162,46 +146,6 @@
 			</extension>
 		</extensions>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.6</version>
-				<executions>
-					<execution>
-						<id>prepare</id>
-						<phase>validate</phase>
-						<configuration>
-							<target>
-								<echo message="Downloading sigar native binaries..." />
-								<get src="${sigar.download.url}"
-									dest="${sigar.download.path}/" skipExisting="true" />
-								<checksum
-									file="${sigar.download.path}/hyperic-sigar-${sigar.version}.zip"
-									algorithm="SHA1" property="${sigar.SHA1}"
-									verifyProperty="validChecksum" />
-								<fail
-									message="Checksum validation failed for hyperic-sigar-${sigar.version}.zip">
-									<condition>
-										<isfalse value="${validChecksum}" />
-									</condition>
-								</fail>
-								<unzip
-									src="${sigar.download.path}/hyperic-sigar-${sigar.version}.zip"
-									dest="${project.build.directory}/sigar-lib">
-									<patternset>
-										<include name="**/lib/libsigar-*" />
-										<include name="**/lib/sigar-*" />
-									</patternset>
-									<mapper type="flatten" />
-								</unzip>
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>com.aerse.maven</groupId>
 				<artifactId>apt-maven-plugin</artifactId>
@@ -344,7 +288,6 @@
 						<r2cloud-ui>>=1513613469</r2cloud-ui>
 						<r2cloud-jdk>>=11.0.13-1</r2cloud-jdk>
 						<nginx-light>>=1.10.3</nginx-light>
-						<libhyperic-sigar-java>>=1.6.4</libhyperic-sigar-java>
 						<rtl-sdr>>=0.6.4</rtl-sdr>
 						<!-- required for stdbuf to force stderr flushing -->
 						<coreutils>>=8.26</coreutils>
