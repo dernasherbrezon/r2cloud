@@ -18,6 +18,15 @@ public class DeviceConfiguration {
 	private boolean biast;
 	private SdrServerConfiguration sdrServerConfiguration;
 	private int ppm;
+	private String bluetoothAddress;
+	
+	public String getBluetoothAddress() {
+		return bluetoothAddress;
+	}
+	
+	public void setBluetoothAddress(String bluetoothAddress) {
+		this.bluetoothAddress = bluetoothAddress;
+	}
 	
 	public int getPpm() {
 		return ppm;

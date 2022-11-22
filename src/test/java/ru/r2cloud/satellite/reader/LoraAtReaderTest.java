@@ -16,6 +16,7 @@ import org.junit.rules.TemporaryFolder;
 import ru.r2cloud.SteppingClock;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.lora.loraat.LoraAtClient;
+import ru.r2cloud.lora.loraat.LoraAtSerialClient;
 import ru.r2cloud.lora.loraat.MultiStreamInputStream;
 import ru.r2cloud.lora.loraat.SerialMock;
 import ru.r2cloud.model.IQData;
@@ -34,7 +35,7 @@ public class LoraAtReaderTest {
 
 	@Test
 	public void testStartFailed() throws Exception {
-		client = new LoraAtClient(UUID.randomUUID().toString(), 10000, new SerialMock(false, new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream()), new SteppingClock(1649679986400L, 1000));
+		client = new LoraAtSerialClient(UUID.randomUUID().toString(), 10000, new SerialMock(false, new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream()), new SteppingClock(1649679986400L, 1000));
 		LoraAtReader reader = new LoraAtReader(config, createValidRequest(), client, createSatellite().getTransmitters().get(0));
 		// make sure we won't stuck in the reader.start
 		reader.complete();
@@ -44,7 +45,7 @@ public class LoraAtReaderTest {
 
 	@Test
 	public void testStopFailed() throws Exception {
-		client = new LoraAtClient(UUID.randomUUID().toString(), 10000, new SerialMock(true, new MultiStreamInputStream("loraat/success.txt", "loraat/success.txt", "loraat/failure.txt"), new ByteArrayOutputStream()), new SteppingClock(1649679986400L, 1000));
+		client = new LoraAtSerialClient(UUID.randomUUID().toString(), 10000, new SerialMock(true, new MultiStreamInputStream("loraat/success.txt", "loraat/success.txt", "loraat/failure.txt"), new ByteArrayOutputStream()), new SteppingClock(1649679986400L, 1000));
 		LoraAtReader reader = new LoraAtReader(config, createValidRequest(), client, createSatellite().getTransmitters().get(0));
 		// make sure we won't stuck in the reader.start
 		reader.complete();
@@ -54,7 +55,7 @@ public class LoraAtReaderTest {
 
 	@Test
 	public void testSuccess() throws Exception {
-		client = new LoraAtClient(UUID.randomUUID().toString(), 10000, new SerialMock(true, new MultiStreamInputStream("loraat/success.txt", "loraat/success.txt", "loraat/successStop.txt"), new ByteArrayOutputStream()), new SteppingClock(1649679986400L, 1000));
+		client = new LoraAtSerialClient(UUID.randomUUID().toString(), 10000, new SerialMock(true, new MultiStreamInputStream("loraat/success.txt", "loraat/success.txt", "loraat/successStop.txt"), new ByteArrayOutputStream()), new SteppingClock(1649679986400L, 1000));
 		LoraAtReader reader = new LoraAtReader(config, createValidRequest(), client, createSatellite().getTransmitters().get(0));
 		// make sure we won't stuck in the reader.start
 		reader.complete();

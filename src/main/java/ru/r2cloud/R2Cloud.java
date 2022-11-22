@@ -26,7 +26,9 @@ import ru.r2cloud.device.LoraDevice;
 import ru.r2cloud.device.SdrDevice;
 import ru.r2cloud.lora.LoraStatus;
 import ru.r2cloud.lora.loraat.JSerial;
+import ru.r2cloud.lora.loraat.LoraAtBluetoothClient;
 import ru.r2cloud.lora.loraat.LoraAtClient;
+import ru.r2cloud.lora.loraat.LoraAtSerialClient;
 import ru.r2cloud.lora.r2lora.R2loraClient;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.DeviceConfiguration;
@@ -159,8 +161,12 @@ public class R2Cloud {
 			deviceManager.addDevice(new LoraDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), client));
 		}
 		for (DeviceConfiguration cur : props.getLoraAtConfigurations()) {
-			LoraAtClient client = new LoraAtClient(cur.getHostport(), cur.getTimeout(), new JSerial(), clock);
+			LoraAtClient client = new LoraAtSerialClient(cur.getHostport(), cur.getTimeout(), new JSerial(), clock);
 			populateFrequencies(client.getStatus(), cur);
+			deviceManager.addDevice(new LoraAtDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), client));
+		}
+		for (DeviceConfiguration cur : props.getLoraAtBluetoothConfigurations()) {
+			LoraAtClient client = new LoraAtBluetoothClient(cur.getHostport(), cur.getBluetoothAddress(), cur.getTimeout());
 			deviceManager.addDevice(new LoraAtDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), client));
 		}
 

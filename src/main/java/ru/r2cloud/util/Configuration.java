@@ -316,6 +316,31 @@ public class Configuration {
 		return result;
 	}
 
+	public List<DeviceConfiguration> getLoraAtBluetoothConfigurations() {
+		List<String> loraDevices = getProperties("loraatble.devices");
+		if (loraDevices.isEmpty()) {
+			return Collections.emptyList();
+		}
+		int timeout = getInteger("loraatble.timeout");
+		List<DeviceConfiguration> result = new ArrayList<>(loraDevices.size());
+		for (String cur : loraDevices) {
+			Integer gain = getInteger("loraatble.device." + cur + ".gain");
+			if (gain == null) {
+				// by default should be auto
+				gain = 0;
+			}
+			DeviceConfiguration config = new DeviceConfiguration();
+			config.setHostport(getProperty("loraatble.device." + cur + ".hostport"));
+			config.setBluetoothAddress(getProperty("loraatble.device." + cur + ".btaddress"));
+			config.setTimeout(timeout);
+			config.setId("loraatble-" + config.getHostport() + "-" + config.getBluetoothAddress());
+			config.setRotatorConfiguration(getRotatorConfiguration("loraatble.device." + cur + "."));
+			config.setGain(gain);
+			result.add(config);
+		}
+		return result;
+	}
+
 	private SdrServerConfiguration getSdrServerConfiguration(String prefix) {
 		String hostname = getProperty(prefix + "sdrserver.host");
 		if (hostname == null) {
