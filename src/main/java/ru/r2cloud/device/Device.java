@@ -403,4 +403,8 @@ public abstract class Device implements Lifecycle {
 		return result;
 	}
 
+	public String getId() {
+		return id;
+	}
+
 }

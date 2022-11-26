@@ -8,15 +8,33 @@ public class DeviceStatus {
 	private String failureMessage;
 	private String model;
 	private RotatorStatus rotatorStatus;
+	private Integer batteryLevel;
+	private Integer signalLevel;
+
+	public Integer getBatteryLevel() {
+		return batteryLevel;
+	}
+	
+	public void setBatteryLevel(Integer batteryLevel) {
+		this.batteryLevel = batteryLevel;
+	}
+
+	public void setSignalLevel(Integer signalLevel) {
+		this.signalLevel = signalLevel;
+	}
+	
+	public Integer getSignalLevel() {
+		return signalLevel;
+	}
 
 	public String getModel() {
 		return model;
 	}
-	
+
 	public void setModel(String model) {
 		this.model = model;
 	}
-	
+
 	public DeviceType getType() {
 		return type;
 	}

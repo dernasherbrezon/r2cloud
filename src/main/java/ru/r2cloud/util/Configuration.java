@@ -34,6 +34,8 @@ public class Configuration {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Configuration.class);
 
+	public static final String LORA_AT_DEVICE_PREFIX = "lora-at-";
+
 	private final Properties userSettings = new Properties();
 	private final Path userSettingsLocation;
 	private final FileSystem fs;
@@ -333,7 +335,7 @@ public class Configuration {
 			config.setHostport(getProperty("loraatble.device." + cur + ".hostport"));
 			config.setBluetoothAddress(getProperty("loraatble.device." + cur + ".btaddress"));
 			config.setTimeout(timeout);
-			config.setId("loraatble-" + config.getHostport() + "-" + config.getBluetoothAddress());
+			config.setId(LORA_AT_DEVICE_PREFIX + config.getBluetoothAddress());
 			config.setRotatorConfiguration(getRotatorConfiguration("loraatble.device." + cur + "."));
 			config.setGain(gain);
 			result.add(config);
