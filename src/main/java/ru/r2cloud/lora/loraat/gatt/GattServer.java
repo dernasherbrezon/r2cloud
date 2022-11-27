@@ -26,7 +26,7 @@ public class GattServer implements Lifecycle {
 
 	private static String LORA_SERVICE_UUID = "3f5f0b4d-e311-4921-b29d-936afb8734cc";
 	private static String SCHEDULE_CHARACTERISTIC_UUID = "40d6f70c-5e28-4da4-a99e-c5298d1613fe";
-	private static String BATTERY_CHARACTERISTIC_UUID = "5b53256e-76d2-4259-b3aa-15b5b4cfdd32";
+	private static String STATUS_CHARACTERISTIC_UUID = "5b53256e-76d2-4259-b3aa-15b5b4cfdd32";
 	private static String LORA_SERVICE_PATH = "/org/bluez/r2cloud/service0";
 
 	private final DeviceManager manager;
@@ -62,7 +62,7 @@ public class GattServer implements Lifecycle {
 			advertisingManager = dbusConn.getRemoteObject("org.bluez", serviceManagerPath.getPath(), LEAdvertisingManager1.class);
 
 			ScheduleCharacteristic schedule = new ScheduleCharacteristic(LORA_SERVICE_PATH + "/char0", new String[] { "read", "write" }, SCHEDULE_CHARACTERISTIC_UUID, LORA_SERVICE_PATH, manager);
-			DeviceStatus status = new DeviceStatus(LORA_SERVICE_PATH + "/char1", new String[] { "write" }, BATTERY_CHARACTERISTIC_UUID, LORA_SERVICE_PATH, manager);
+			DeviceStatus status = new DeviceStatus(LORA_SERVICE_PATH + "/char1", new String[] { "write" }, STATUS_CHARACTERISTIC_UUID, LORA_SERVICE_PATH, manager);
 			List<BleCharacteristic> characteristics = new ArrayList<>();
 			characteristics.add(schedule);
 			characteristics.add(status);
