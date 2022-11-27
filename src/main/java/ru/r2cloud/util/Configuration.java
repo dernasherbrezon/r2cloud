@@ -318,7 +318,7 @@ public class Configuration {
 		return result;
 	}
 
-	public List<DeviceConfiguration> getLoraAtBluetoothConfigurations() {
+	public List<DeviceConfiguration> getLoraAtBleConfigurations() {
 		List<String> loraDevices = getProperties("loraatble.devices");
 		if (loraDevices.isEmpty()) {
 			return Collections.emptyList();

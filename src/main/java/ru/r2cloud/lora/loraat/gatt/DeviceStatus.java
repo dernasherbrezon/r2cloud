@@ -40,7 +40,7 @@ public class DeviceStatus extends BleCharacteristic {
 	private LoraAtBleDevice getLoraDevice(String bluetoothAddress) {
 		Device device = manager.findDeviceById(Configuration.LORA_AT_DEVICE_PREFIX + bluetoothAddress);
 		if (device == null) {
-			LOG.info("unknown bluetooth device: {}", bluetoothAddress);
+			LOG.info("ble device is not configured {}", bluetoothAddress);
 			return null;
 		}
 		if (!(device instanceof LoraAtBleDevice)) {

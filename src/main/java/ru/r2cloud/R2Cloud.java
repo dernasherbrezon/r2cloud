@@ -168,11 +168,11 @@ public class R2Cloud {
 			populateFrequencies(client.getStatus(), cur);
 			deviceManager.addDevice(new LoraAtDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), client));
 		}
-		for (DeviceConfiguration cur : props.getLoraAtBluetoothConfigurations()) {
+		for (DeviceConfiguration cur : props.getLoraAtBleConfigurations()) {
 			if (gattServer != null) {
 				gattServer = new GattServer(deviceManager);
 			}
-			deviceManager.addDevice(new LoraAtBleDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur)));
+			deviceManager.addDevice(new LoraAtBleDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props));
 		}
 
 		// setup web server

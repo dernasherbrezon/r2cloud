@@ -360,7 +360,7 @@ public abstract class Device implements Lifecycle {
 		}
 	}
 
-	private Transmitter findById(String id) {
+	public synchronized Transmitter findById(String id) {
 		for (Transmitter cur : scheduledTransmitters) {
 			if (cur.getId().equals(id)) {
 				return cur;

@@ -1,5 +1,9 @@
 package ru.r2cloud.device;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import ru.r2cloud.lora.LoraFrame;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.model.DeviceStatus;
@@ -13,22 +17,28 @@ import ru.r2cloud.satellite.Schedule;
 import ru.r2cloud.satellite.TransmitterFilter;
 import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.reader.IQReader;
+import ru.r2cloud.satellite.reader.LoraAtBleReader;
 import ru.r2cloud.util.Clock;
+import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ThreadPoolFactory;
 
 public class LoraAtBleDevice extends Device {
 
+	private final Configuration config;
 	private Integer batteryLevel;
 	private Integer signalLevel;
+	private List<LoraFrame> frames;
 
 	public LoraAtBleDevice(String id, TransmitterFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, DeviceConfiguration deviceConfiguration, IObservationDao observationDao, DecoderService decoderService,
-			PredictOreKit predict, Schedule schedule) {
+			PredictOreKit predict, Schedule schedule, Configuration config) {
 		super(id, filter, numberOfConcurrentObservations, observationFactory, threadpoolFactory, clock, deviceConfiguration, observationDao, decoderService, predict, schedule);
+		this.frames = new ArrayList<>();
+		this.config = config;
 	}
 
 	@Override
 	public IQReader createReader(ObservationRequest req, Transmitter satellite) {
-		return null;
+		return new LoraAtBleReader(config, req, this);
 	}
 
 	@Override
@@ -51,4 +61,12 @@ public class LoraAtBleDevice extends Device {
 		this.signalLevel = signalLevel;
 	}
 
+	public void addFrame(LoraFrame frame) {
+		frames.add(frame);
+	}
+
+	public List<LoraFrame> getFrames() {
+		return frames;
+	}
+	
 }
