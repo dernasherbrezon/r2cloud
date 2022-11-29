@@ -34,7 +34,7 @@ public class Configuration {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Configuration.class);
 
-	public static final String LORA_AT_DEVICE_PREFIX = "lora-at-";
+	public static final String LORA_AT_DEVICE_PREFIX = "loraat-";
 
 	private final Properties userSettings = new Properties();
 	private final Path userSettingsLocation;
@@ -326,18 +326,25 @@ public class Configuration {
 		int timeout = getInteger("loraatble.timeout");
 		List<DeviceConfiguration> result = new ArrayList<>(loraDevices.size());
 		for (String cur : loraDevices) {
-			Integer gain = getInteger("loraatble.device." + cur + ".gain");
+			String prefix = "loraatble.device." + cur + ".";
+			Integer gain = getInteger(prefix + "gain");
 			if (gain == null) {
 				// by default should be auto
 				gain = 0;
 			}
 			DeviceConfiguration config = new DeviceConfiguration();
-			config.setHostport(getProperty("loraatble.device." + cur + ".hostport"));
-			config.setBluetoothAddress(getProperty("loraatble.device." + cur + ".btaddress"));
+			String address = getProperty(prefix + "btaddress");
+			if (address == null) {
+				LOG.error("btaddress is missing for {}", prefix);
+				continue;
+			}
+			config.setHostport(address.toLowerCase(Locale.UK));
 			config.setTimeout(timeout);
-			config.setId(LORA_AT_DEVICE_PREFIX + config.getBluetoothAddress());
-			config.setRotatorConfiguration(getRotatorConfiguration("loraatble.device." + cur + "."));
+			config.setId(LORA_AT_DEVICE_PREFIX + config.getHostport());
+			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			config.setGain(gain);
+			config.setMinimumFrequency(getLong(prefix + "minFrequency"));
+			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
 			result.add(config);
 		}
 		return result;

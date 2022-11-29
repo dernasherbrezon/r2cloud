@@ -3,6 +3,9 @@ package ru.r2cloud.device;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ru.r2cloud.lora.LoraFrame;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceConnectionStatus;
@@ -23,6 +26,8 @@ import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ThreadPoolFactory;
 
 public class LoraAtBleDevice extends Device {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(LoraAtBleDevice.class);
 
 	private final Configuration config;
 	private Integer batteryLevel;
@@ -57,6 +62,7 @@ public class LoraAtBleDevice extends Device {
 	}
 
 	public void setStatus(int batteryLevel, int signalLevel) {
+		LOG.info("level: {} signal: {}", batteryLevel, signalLevel);
 		this.batteryLevel = batteryLevel;
 		this.signalLevel = signalLevel;
 	}

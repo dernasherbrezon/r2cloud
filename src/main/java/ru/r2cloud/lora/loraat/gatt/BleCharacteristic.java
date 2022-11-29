@@ -1,6 +1,7 @@
 package ru.r2cloud.lora.loraat.gatt;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.bluez.GattCharacteristic1;
@@ -83,7 +84,7 @@ public abstract class BleCharacteristic implements GattCharacteristic1, Properti
 		if (index == -1) {
 			return null;
 		}
-		return deviceStr.substring(index + prefix.length()).replace('_', ':');
+		return deviceStr.substring(index + prefix.length()).replace('_', ':').toLowerCase(Locale.UK);
 	}
 
 	@Override
