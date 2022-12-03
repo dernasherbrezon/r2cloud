@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.freedesktop.dbus.utils.AddressBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,7 +171,7 @@ public class R2Cloud {
 		}
 		for (DeviceConfiguration cur : props.getLoraAtBleConfigurations()) {
 			if (gattServer == null) {
-				gattServer = new GattServer(deviceManager);
+				gattServer = new GattServer(deviceManager, AddressBuilder.getSystemConnection());
 			}
 			deviceManager.addDevice(new LoraAtBleDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props));
 		}

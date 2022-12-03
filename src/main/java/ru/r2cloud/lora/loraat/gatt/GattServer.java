@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import org.bluez.GattManager1;
 import org.bluez.LEAdvertisingManager1;
 import org.freedesktop.dbus.DBusPath;
+import org.freedesktop.dbus.connections.BusAddress;
 import org.freedesktop.dbus.connections.impl.DBusConnection;
 import org.freedesktop.dbus.connections.impl.DBusConnectionBuilder;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -30,6 +31,7 @@ public class GattServer implements Lifecycle {
 	private static String LORA_SERVICE_PATH = "/org/bluez/r2cloud/service0";
 
 	private final DeviceManager manager;
+	private final BusAddress address;
 
 	private DBusConnection dbusConn;
 	private GattManager1 serviceManager;
@@ -37,14 +39,15 @@ public class GattServer implements Lifecycle {
 	private BleApplication application;
 	private BleAdvertisement advertisement;
 
-	public GattServer(DeviceManager manager) {
+	public GattServer(DeviceManager manager, BusAddress address) {
 		this.manager = manager;
+		this.address = address;
 	}
 
 	@Override
 	public void start() {
 		try {
-			dbusConn = DBusConnectionBuilder.forSystemBus().build();
+			dbusConn = DBusConnectionBuilder.forAddress(address).withShared(false).build();
 			LOG.info("dbus connected");
 			ObjectManager adapter = dbusConn.getRemoteObject("org.bluez", "/", ObjectManager.class);
 			if (adapter == null || adapter.GetManagedObjects() == null) {
@@ -81,7 +84,7 @@ public class GattServer implements Lifecycle {
 			advertisingManager.RegisterAdvertisement(new DBusPath(advertisement.getObjectPath()), new HashMap<>());
 			LOG.info("Gatt application advertised");
 
-		} catch (DBusException e) {
+		} catch (Exception e) {
 			LOG.error("unable to start Gatt server", e);
 			stop();
 		}
@@ -120,6 +123,7 @@ public class GattServer implements Lifecycle {
 	}
 
 	private static void exportAll(DBusConnection dbusConn, BleApplication application) throws DBusException {
+		dbusConn.requestBusName("com.github.loraat");
 		for (BleService cur : application.getServices()) {
 			for (BleCharacteristic curChar : cur.getCharacteristics()) {
 				dbusConn.exportObject(curChar);
