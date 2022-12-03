@@ -13,8 +13,8 @@ public class DeviceStatus extends BleCharacteristic {
 	private static final Logger LOG = LoggerFactory.getLogger(DeviceStatus.class);
 	private final DeviceManager manager;
 
-	public DeviceStatus(String objectPath, String[] flags, String uuId, String servicePath, DeviceManager manager) {
-		super(objectPath, flags, uuId, servicePath);
+	public DeviceStatus(String objectPath, String[] flags, String uuId, String servicePath, BleDescriptor descriptor, DeviceManager manager) {
+		super(objectPath, flags, uuId, servicePath, descriptor);
 		this.manager = manager;
 	}
 

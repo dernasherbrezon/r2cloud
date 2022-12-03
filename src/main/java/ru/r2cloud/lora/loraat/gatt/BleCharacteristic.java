@@ -23,14 +23,16 @@ public abstract class BleCharacteristic implements GattCharacteristic1, Properti
 
 	private final String objectPath;
 	private final String[] flags;
-	private final String uuId;
+	private final String uuid;
 	private final String servicePath;
+	private final BleDescriptor descriptor;
 
-	public BleCharacteristic(String objectPath, String[] flags, String uuId, String servicePath) {
+	public BleCharacteristic(String objectPath, String[] flags, String uuid, String servicePath, BleDescriptor descriptor) {
 		this.objectPath = objectPath;
 		this.flags = flags;
-		this.uuId = uuId;
+		this.uuid = uuid;
 		this.servicePath = servicePath;
+		this.descriptor = descriptor;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -48,9 +50,9 @@ public abstract class BleCharacteristic implements GattCharacteristic1, Properti
 	public Map<String, Variant<?>> GetAll(String interfaceName) {
 		Map<String, Variant<?>> result = new HashMap<>();
 		result.put("Service", new Variant<>(new DBusPath(servicePath)));
-		result.put("UUID", new Variant<>(uuId));
+		result.put("UUID", new Variant<>(uuid));
 		result.put("Flags", new Variant<>(flags));
-		result.put("Descriptors", new Variant<>(new DBusPath[0]));
+//		result.put("Descriptors", new Variant<>(new DBusPath[] { new DBusPath(descriptor.getObjectPath()) }));
 		return result;
 	}
 
@@ -67,6 +69,10 @@ public abstract class BleCharacteristic implements GattCharacteristic1, Properti
 	@Override
 	public void WriteValue(byte[] value, Map<String, Variant<?>> options) throws BluezFailedException, BluezInProgressException, BluezNotPermittedException, BluezInvalidValueLengthException, BluezNotAuthorizedException, BluezNotSupportedException {
 		write(value, convertBluetoothAddress(options));
+	}
+
+	public BleDescriptor getDescriptor() {
+		return descriptor;
 	}
 
 	public abstract byte[] read(String bluetoothAddress);

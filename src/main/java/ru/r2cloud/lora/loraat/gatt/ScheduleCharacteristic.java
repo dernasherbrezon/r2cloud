@@ -25,8 +25,8 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 	private static final Logger LOG = LoggerFactory.getLogger(ScheduleCharacteristic.class);
 	private final DeviceManager manager;
 
-	public ScheduleCharacteristic(String objectPath, String[] flags, String uuId, String servicePath, DeviceManager manager) {
-		super(objectPath, flags, uuId, servicePath);
+	public ScheduleCharacteristic(String objectPath, String[] flags, String uuId, String servicePath, BleDescriptor descriptor, DeviceManager manager) {
+		super(objectPath, flags, uuId, servicePath, descriptor);
 		this.manager = manager;
 	}
 

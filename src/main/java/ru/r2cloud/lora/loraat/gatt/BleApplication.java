@@ -27,6 +27,9 @@ public class BleApplication implements ObjectManager {
 				value = new HashMap<>();
 				value.put("org.bluez.GattCharacteristic1", characteristic.GetAll(null));
 				result.put(new DBusPath(characteristic.getObjectPath()), value);
+				value = new HashMap<>();
+				value.put("org.bluez.GattDescriptor1", characteristic.getDescriptor().GetAll(null));
+				result.put(new DBusPath(characteristic.getDescriptor().getObjectPath()), value);
 			}
 		}
 		return result;
@@ -36,7 +39,7 @@ public class BleApplication implements ObjectManager {
 	public String getObjectPath() {
 		return "/";
 	}
-	
+
 	public List<BleService> getServices() {
 		return services;
 	}

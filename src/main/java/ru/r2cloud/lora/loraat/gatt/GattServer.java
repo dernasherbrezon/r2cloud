@@ -63,9 +63,12 @@ public class GattServer implements Lifecycle {
 			}
 			serviceManager = dbusConn.getRemoteObject("org.bluez", serviceManagerPath.getPath(), GattManager1.class);
 			advertisingManager = dbusConn.getRemoteObject("org.bluez", serviceManagerPath.getPath(), LEAdvertisingManager1.class);
+			
+			BleDescriptor scheduleDesc = new BleDescriptor(LORA_SERVICE_PATH + "/char0" + "/desc0", new String[] { "read" }, "5604f205-0c14-4926-9d7d-21dbab315f2e", LORA_SERVICE_PATH + "/char0", "Schedule for LoRa module");
+			ScheduleCharacteristic schedule = new ScheduleCharacteristic(LORA_SERVICE_PATH + "/char0", new String[] { "read", "write" }, SCHEDULE_CHARACTERISTIC_UUID, LORA_SERVICE_PATH, scheduleDesc, manager);
 
-			ScheduleCharacteristic schedule = new ScheduleCharacteristic(LORA_SERVICE_PATH + "/char0", new String[] { "read", "write" }, SCHEDULE_CHARACTERISTIC_UUID, LORA_SERVICE_PATH, manager);
-			DeviceStatus status = new DeviceStatus(LORA_SERVICE_PATH + "/char1", new String[] { "write" }, STATUS_CHARACTERISTIC_UUID, LORA_SERVICE_PATH, manager);
+			BleDescriptor statusDesc = new BleDescriptor(LORA_SERVICE_PATH + "/char1" + "/desc0", new String[] { "read" }, "5604f205-0c14-4926-9d7d-21dbab315f2f", LORA_SERVICE_PATH + "/char1", "Status of all connected LoRa modules");
+			DeviceStatus status = new DeviceStatus(LORA_SERVICE_PATH + "/char1", new String[] { "write" }, STATUS_CHARACTERISTIC_UUID, LORA_SERVICE_PATH, statusDesc, manager);
 			List<BleCharacteristic> characteristics = new ArrayList<>();
 			characteristics.add(schedule);
 			characteristics.add(status);
@@ -127,6 +130,7 @@ public class GattServer implements Lifecycle {
 		for (BleService cur : application.getServices()) {
 			for (BleCharacteristic curChar : cur.getCharacteristics()) {
 				dbusConn.exportObject(curChar);
+				dbusConn.exportObject(curChar.getDescriptor());
 			}
 			dbusConn.exportObject(cur);
 		}
@@ -136,6 +140,7 @@ public class GattServer implements Lifecycle {
 	private static void unExportAll(DBusConnection dbusConn, BleApplication application) {
 		for (BleService cur : application.getServices()) {
 			for (BleCharacteristic curChar : cur.getCharacteristics()) {
+				dbusConn.unExportObject(curChar.getDescriptor().getObjectPath());
 				dbusConn.unExportObject(curChar.getObjectPath());
 			}
 			dbusConn.unExportObject(cur.getObjectPath());
