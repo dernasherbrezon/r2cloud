@@ -52,7 +52,6 @@ public abstract class BleCharacteristic implements GattCharacteristic1, Properti
 		result.put("Service", new Variant<>(new DBusPath(servicePath)));
 		result.put("UUID", new Variant<>(uuid));
 		result.put("Flags", new Variant<>(flags));
-//		result.put("Descriptors", new Variant<>(new DBusPath[] { new DBusPath(descriptor.getObjectPath()) }));
 		return result;
 	}
 

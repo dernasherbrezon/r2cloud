@@ -26,7 +26,7 @@ import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ThreadPoolFactory;
 
 public class LoraAtBleDevice extends Device {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(LoraAtBleDevice.class);
 
 	private final Configuration config;
@@ -63,7 +63,11 @@ public class LoraAtBleDevice extends Device {
 
 	public void setStatus(int batteryLevel, int signalLevel) {
 		LOG.info("level: {} signal: {}", batteryLevel, signalLevel);
-		this.batteryLevel = batteryLevel;
+		if (batteryLevel == 255) {
+			this.batteryLevel = null;
+		} else {
+			this.batteryLevel = batteryLevel;
+		}
 		this.signalLevel = signalLevel;
 	}
 
@@ -74,5 +78,5 @@ public class LoraAtBleDevice extends Device {
 	public List<LoraFrame> getFrames() {
 		return frames;
 	}
-	
+
 }

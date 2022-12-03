@@ -126,7 +126,6 @@ public class GattServer implements Lifecycle {
 	}
 
 	private static void exportAll(DBusConnection dbusConn, BleApplication application) throws DBusException {
-		dbusConn.requestBusName("com.github.loraat");
 		for (BleService cur : application.getServices()) {
 			for (BleCharacteristic curChar : cur.getCharacteristics()) {
 				dbusConn.exportObject(curChar);
