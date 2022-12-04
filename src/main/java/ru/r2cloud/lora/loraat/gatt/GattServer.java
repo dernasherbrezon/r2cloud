@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.Lifecycle;
 import ru.r2cloud.device.DeviceManager;
+import ru.r2cloud.util.Clock;
 
 public class GattServer implements Lifecycle {
 
@@ -32,6 +33,7 @@ public class GattServer implements Lifecycle {
 
 	private final DeviceManager manager;
 	private final BusAddress address;
+	private final Clock clock;
 
 	private DBusConnection dbusConn;
 	private GattManager1 serviceManager;
@@ -39,9 +41,10 @@ public class GattServer implements Lifecycle {
 	private BleApplication application;
 	private BleAdvertisement advertisement;
 
-	public GattServer(DeviceManager manager, BusAddress address) {
+	public GattServer(DeviceManager manager, BusAddress address, Clock clock) {
 		this.manager = manager;
 		this.address = address;
+		this.clock = clock;
 	}
 
 	@Override
@@ -65,7 +68,7 @@ public class GattServer implements Lifecycle {
 			advertisingManager = dbusConn.getRemoteObject("org.bluez", serviceManagerPath.getPath(), LEAdvertisingManager1.class);
 			
 			BleDescriptor scheduleDesc = new BleDescriptor(LORA_SERVICE_PATH + "/char0" + "/desc0", new String[] { "read" }, "5604f205-0c14-4926-9d7d-21dbab315f2e", LORA_SERVICE_PATH + "/char0", "Schedule for LoRa module");
-			ScheduleCharacteristic schedule = new ScheduleCharacteristic(LORA_SERVICE_PATH + "/char0", new String[] { "read", "write" }, SCHEDULE_CHARACTERISTIC_UUID, LORA_SERVICE_PATH, scheduleDesc, manager);
+			ScheduleCharacteristic schedule = new ScheduleCharacteristic(LORA_SERVICE_PATH + "/char0", new String[] { "read", "write" }, SCHEDULE_CHARACTERISTIC_UUID, LORA_SERVICE_PATH, scheduleDesc, manager, clock);
 
 			BleDescriptor statusDesc = new BleDescriptor(LORA_SERVICE_PATH + "/char1" + "/desc0", new String[] { "read" }, "5604f205-0c14-4926-9d7d-21dbab315f2f", LORA_SERVICE_PATH + "/char1", "Status of all connected LoRa modules");
 			DeviceStatus status = new DeviceStatus(LORA_SERVICE_PATH + "/char1", new String[] { "write" }, STATUS_CHARACTERISTIC_UUID, LORA_SERVICE_PATH, statusDesc, manager);

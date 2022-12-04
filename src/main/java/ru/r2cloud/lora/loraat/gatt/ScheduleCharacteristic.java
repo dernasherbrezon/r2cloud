@@ -18,16 +18,19 @@ import ru.r2cloud.lora.LoraFrame;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.satellite.ObservationRequestComparator;
+import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 
 public class ScheduleCharacteristic extends BleCharacteristic {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ScheduleCharacteristic.class);
 	private final DeviceManager manager;
+	private final Clock clock;
 
-	public ScheduleCharacteristic(String objectPath, String[] flags, String uuId, String servicePath, BleDescriptor descriptor, DeviceManager manager) {
+	public ScheduleCharacteristic(String objectPath, String[] flags, String uuId, String servicePath, BleDescriptor descriptor, DeviceManager manager, Clock clock) {
 		super(objectPath, flags, uuId, servicePath, descriptor);
 		this.manager = manager;
+		this.clock = clock;
 	}
 
 	@Override
@@ -41,8 +44,19 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 			return new byte[0];
 		}
 		Collections.sort(requests, ObservationRequestComparator.INSTANCE);
+		long currentTime = clock.millis();
+		ObservationRequest req = null;
+		for (ObservationRequest cur : requests) {
+			if (cur.getStartTimeMillis() > currentTime) {
+				req = cur;
+				break;
+			}
+		}
+		if (req == null) {
+			LOG.info("can't find first observation");
+			return new byte[0];
+		}
 
-		ObservationRequest req = requests.get(0);
 		Transmitter transmitter = device.findById(req.getTransmitterId());
 		if (transmitter == null) {
 			LOG.error("can't find transmitter: {}", req.getTransmitterId());
@@ -52,13 +66,13 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 		try (DataOutputStream dos = new DataOutputStream(baos)) {
 			dos.writeLong(req.getStartTimeMillis());
 			dos.writeLong(req.getEndTimeMillis());
-			dos.writeLong(System.currentTimeMillis());
+			dos.writeLong(currentTime);
 			dos.writeFloat((float) req.getActualFrequency() / 1_000_000);
 			dos.writeFloat((float) transmitter.getLoraBandwidth() / 1000);
 			dos.writeByte(transmitter.getLoraSpreadFactor());
 			dos.writeByte(transmitter.getLoraCodingRate());
 			dos.writeByte(transmitter.getLoraSyncword());
-			dos.writeByte(0); // power
+			dos.writeByte(10); // power
 			dos.writeShort(transmitter.getLoraPreambleLength());
 			dos.writeByte((int) req.getGain());
 			dos.writeByte(transmitter.getLoraLdro());
@@ -90,6 +104,7 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 			byte[] data = new byte[dataLength];
 			dis.readFully(data);
 			frame.setData(data);
+			LOG.info("[{}] received frame: {}", bluetoothAddress, frame);
 			device.addFrame(frame);
 		} catch (IOException e) {
 			LOG.error("can't read input from {}", bluetoothAddress, e);

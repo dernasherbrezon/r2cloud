@@ -48,4 +48,9 @@ public class LoraFrame {
 		this.timestamp = timestamp;
 	}
 
+	@Override
+	public String toString() {
+		return "LoraFrame [rssi=" + rssi + ", snr=" + snr + ", frequencyError=" + frequencyError + ", timestamp=" + timestamp + ", dataLength=" + data.length + "]";
+	}
+
 }
