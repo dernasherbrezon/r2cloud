@@ -47,7 +47,7 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 		long currentTime = clock.millis();
 		ObservationRequest req = null;
 		for (ObservationRequest cur : requests) {
-			if (cur.getStartTimeMillis() > currentTime) {
+			if (currentTime < cur.getEndTimeMillis()) {
 				req = cur;
 				break;
 			}
