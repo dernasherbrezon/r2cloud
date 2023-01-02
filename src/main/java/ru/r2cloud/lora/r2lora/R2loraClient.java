@@ -177,8 +177,8 @@ public class R2loraClient {
 		JsonObject obj = val.asObject();
 		LoraFrame result = new LoraFrame();
 		result.setData(Util.hexStringToByteArray(obj.getString("data", null)));
-		result.setFrequencyError(obj.getFloat("frequencyError", 0));
-		result.setRssi(obj.getFloat("rssi", 0));
+		result.setFrequencyError(obj.getLong("frequencyError", 0));
+		result.setRssi((short) obj.getInt("rssi", 0));
 		result.setSnr(obj.getFloat("snr", 0));
 		result.setTimestamp(obj.getLong("timestamp", 0));
 		return result;

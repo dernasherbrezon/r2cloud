@@ -92,8 +92,8 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 		ByteArrayInputStream bais = new ByteArrayInputStream(value);
 		try (DataInputStream dis = new DataInputStream(bais)) {
 			LoraFrame frame = new LoraFrame();
-			frame.setFrequencyError(dis.readFloat());
-			frame.setRssi(dis.readFloat());
+			frame.setFrequencyError(dis.readLong());
+			frame.setRssi(dis.readShort());
 			frame.setSnr(dis.readFloat());
 			frame.setTimestamp(dis.readLong());
 			int dataLength = dis.readInt();
