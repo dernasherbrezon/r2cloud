@@ -324,7 +324,7 @@
 				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
@@ -346,7 +346,7 @@
 				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
@@ -368,7 +368,7 @@
 				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
@@ -390,7 +390,7 @@
 				"loraCodingRate": 6,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
@@ -412,7 +412,7 @@
 				"loraCodingRate": 6,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
@@ -740,7 +740,7 @@
 				"loraCodingRate": 5,
 				"loraSyncword": 42,
 				"loraPreambleLength": 8,
-				"loraLdro": 2
+				"loraLdro": 0
 			}
 		]
 	},
@@ -762,7 +762,7 @@
 				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
@@ -784,7 +784,7 @@
 				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
@@ -806,7 +806,7 @@
 				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
@@ -828,7 +828,7 @@
 				"loraCodingRate": 5,
 				"loraSyncword": 18,
 				"loraPreambleLength": 6,
-				"loraLdro": 2
+				"loraLdro": 0
 			}
 		]
 	},
@@ -1105,7 +1105,7 @@
 				"loraCodingRate": 5,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
@@ -2098,7 +2098,7 @@
 				"loraCodingRate": 5,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
