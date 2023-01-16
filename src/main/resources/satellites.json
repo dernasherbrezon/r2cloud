@@ -1,5 +1,174 @@
 [
 	{
+		"id": "R2CLOUD212",
+		"name": "SPORT",
+		"noradId": "55129",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 400860000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600,
+					1200
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD211",
+		"name": "INS-2B",
+		"noradId": "54365",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 435080000,
+				"bandwidth": 10000,
+				"baudRates": [
+					1200
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD210",
+		"name": "MARIO",
+		"noradId": "55123",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437485000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD209",
+		"name": "NUTSAT",
+		"noradId": "55124",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 436850000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			},
+			{
+				"modulation": "AFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 436850000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"deviation": 500,
+				"afCarrier": 1700,
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD207",
+		"name": "1998-067UY",
+		"noradId": "55181",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "AFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 145825000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"deviation": 500,
+				"afCarrier": 1700,
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD206",
+		"name": "HSKSAT",
+		"noradId": "55182",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437275000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD205",
+		"name": "CAS-5A (FO-118)",
+		"noradId": "54684",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 435650000,
+				"bandwidth": 20000,
+				"baudRates": [
+					4800
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD204",
+		"name": "CONNECTA T1.1",
+		"noradId": "52739",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 401525000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"assistedHeader": "AAAAAAABAAEAAAABAQAAAQABAAAAAAABAAABAQEAAAEAAQEAAAEAAQABAAAAAQEAAAAAAAABAQEAAQEAAAAAAQABAQEBAAABAAABAQEAAAEAAAABAAEAAQABAAAAAQEAAAEAAAABAQABAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD203",
 		"name": "BLUEWALKER-3",
 		"noradId": "53807",
@@ -324,7 +493,7 @@
 				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
@@ -346,7 +515,7 @@
 				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
@@ -368,7 +537,7 @@
 				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
@@ -390,7 +559,7 @@
 				"loraCodingRate": 6,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
@@ -412,7 +581,7 @@
 				"loraCodingRate": 6,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
@@ -654,8 +823,8 @@
 		"transmitters": [
 			{
 				"modulation": "GFSK",
-				"framing": "USP",
-				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
 				"frequency": 436050000,
 				"bandwidth": 10000,
 				"baudRates": [
@@ -740,7 +909,7 @@
 				"loraCodingRate": 5,
 				"loraSyncword": 42,
 				"loraPreambleLength": 8,
-				"loraLdro": 2
+				"loraLdro": 0
 			}
 		]
 	},
@@ -762,7 +931,7 @@
 				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
@@ -784,7 +953,7 @@
 				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
@@ -806,7 +975,7 @@
 				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
@@ -828,14 +997,14 @@
 				"loraCodingRate": 5,
 				"loraSyncword": 18,
 				"loraPreambleLength": 6,
-				"loraLdro": 2
+				"loraLdro": 0
 			}
 		]
 	},
 	{
 		"id": "R2CLOUD158",
 		"name": "MTCUBE 2 (ROBUSTA 1F)",
-		"noradId": "53106",
+		"noradId": "53109",
 		"enabled": false,
 		"transmitters": [
 			{
@@ -874,7 +1043,7 @@
 	{
 		"id": "R2CLOUD155",
 		"name": "GREENCUBE",
-		"noradId": "53109",
+		"noradId": "53106",
 		"enabled": false,
 		"transmitters": [
 			{
@@ -1105,7 +1274,7 @@
 				"loraCodingRate": 5,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
@@ -1537,25 +1706,6 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					4800
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD116",
-		"name": "RAMSAT",
-		"noradId": "48850",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 436300000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
 				],
 				"status": "ENABLED"
 			}
@@ -2091,14 +2241,14 @@
 				"framing": "LORA",
 				"beaconClass": "ru.r2cloud.jradio.norbi.NorbiBeacon",
 				"frequency": 436703000,
-				"bandwidth": 0,
+				"bandwidth": 250000,
 				"status": "ENABLED",
 				"loraBandwidth": 250000,
 				"loraSpreadFactor": 10,
 				"loraCodingRate": 5,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 1
+				"loraLdro": 0
 			}
 		]
 	},
