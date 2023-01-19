@@ -1,5 +1,107 @@
 [
 	{
+		"id": "R2CLOUD217",
+		"name": "TSIOLKOVSKY-RYAZAN 2 (*)",
+		"noradId": "53313",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "AFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437012500,
+				"bandwidth": 20000,
+				"baudRates": [
+					1135
+				],
+				"deviation": 565,
+				"afCarrier": 1700,
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD216",
+		"name": "TSIOLKOVSKY-RYAZAN 1 (*)",
+		"noradId": "53312",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "AFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437025000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1135
+				],
+				"deviation": 565,
+				"afCarrier": 1700,
+				"assistedHeader": "AAEAAAAAAAEAAAABAQAAAQAAAAEBAAABAAAAAAAAAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQEAAAEAAAEAAQABAQAAAQABAAEAAAEBAQAAAQEAAAEAAQAAAAAAAAEAAAAAAAAAAQABAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD215",
+		"name": "XW-4 (CAS-10)",
+		"noradId": "54816",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 435725000,
+				"bandwidth": 20000,
+				"baudRates": [
+					4800
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD214",
+		"name": "2023-001D",
+		"noradId": "55012",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 512,
+				"frequency": 401735000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD213",
+		"name": "BRO-7",
+		"noradId": "52174",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 512,
+				"frequency": 401735000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD212",
 		"name": "SPORT",
 		"noradId": "55129",
