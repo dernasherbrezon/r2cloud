@@ -42,8 +42,8 @@ public class LoraAtBleDevice extends Device {
 	}
 
 	@Override
-	public IQReader createReader(ObservationRequest req, Transmitter satellite) {
-		return new LoraAtBleReader(config, req, this);
+	public IQReader createReader(ObservationRequest req, Transmitter transmitter) {
+		return new LoraAtBleReader(config, req, this, transmitter);
 	}
 
 	@Override

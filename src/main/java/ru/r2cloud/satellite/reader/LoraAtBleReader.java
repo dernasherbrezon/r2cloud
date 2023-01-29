@@ -14,6 +14,7 @@ import ru.r2cloud.jradio.BeaconOutputStream;
 import ru.r2cloud.lora.LoraFrame;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
 
 public class LoraAtBleReader implements IQReader {
@@ -23,19 +24,25 @@ public class LoraAtBleReader implements IQReader {
 	private final LoraAtBleDevice device;
 	private final Configuration config;
 	private final ObservationRequest req;
+	private final Transmitter transmitter;
 	private final CountDownLatch latch = new CountDownLatch(1);
 
-	public LoraAtBleReader(Configuration config, ObservationRequest req, LoraAtBleDevice device) {
+	public LoraAtBleReader(Configuration config, ObservationRequest req, LoraAtBleDevice device, Transmitter transmitter) {
 		this.device = device;
 		this.config = config;
 		this.req = req;
+		this.transmitter = transmitter;
 	}
 
 	@Override
 	public IQData start() throws InterruptedException {
-		LOG.info("waiting for messages from lora-at");
+		LOG.info("[{}] waiting for frames from lora-at: {}", req.getId(), toLoraAtFriendlyString(req, transmitter));
 		long startTimeMillis = System.currentTimeMillis();
 		latch.await();
+		if (device.getFrames().isEmpty()) {
+			LOG.info("[{}] no frames received", req.getId());
+			return null;
+		}
 		long endTimeMillis = System.currentTimeMillis();
 		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw");
 		// raw file is the same as binary file
@@ -59,6 +66,11 @@ public class LoraAtBleReader implements IQReader {
 	@Override
 	public void complete() {
 		latch.countDown();
+	}
+
+	private static String toLoraAtFriendlyString(ObservationRequest req, Transmitter transmitter) {
+		return String.format("%f,%d,%d,%d,%d,%d,%d,%d,%d", transmitter.getFrequency() / 1000000, transmitter.getLoraBandwidth(), transmitter.getLoraSpreadFactor(), transmitter.getLoraCodingRate(), transmitter.getLoraSyncword(), 10, transmitter.getLoraPreambleLength(), req.getGain(),
+				transmitter.getLoraLdro());
 	}
 
 }
