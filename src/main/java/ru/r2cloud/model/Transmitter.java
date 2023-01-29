@@ -17,6 +17,7 @@ public class Transmitter {
 	private Modulation modulation;
 	private Framing framing;
 	private Class<? extends Beacon> beaconClass;
+	// can be used for lora in implicit mode
 	private int beaconSizeBytes;
 	private long frequency;
 	private BandFrequency frequencyBand;
@@ -33,12 +34,13 @@ public class Transmitter {
 
 	private long loraBandwidth;
 	private int loraSpreadFactor;
-	private int loraCodingRate;
 	private int loraSyncword;
 	private int loraPreambleLength;
 	private int loraLdro;
-	private boolean loraCrc;
 	private boolean loraExplicitHeader;
+	// should be configured only for implicit mode header. 
+	private int loraCodingRate;
+	private boolean loraCrc;
 	private TransmitterStatus status;
 	private Date updated;
 

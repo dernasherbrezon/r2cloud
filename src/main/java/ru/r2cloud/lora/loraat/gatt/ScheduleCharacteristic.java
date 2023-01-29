@@ -86,6 +86,8 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 			} else {
 				dos.writeByte(0);
 			}
+			// lora packet size cannot be more than 255 bytes
+			dos.writeByte(transmitter.getBeaconSizeBytes());
 		} catch (IOException e) {
 			LOG.error("can't serialize output", e);
 			return new byte[0];
