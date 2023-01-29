@@ -37,6 +37,8 @@ public class Transmitter {
 	private int loraSyncword;
 	private int loraPreambleLength;
 	private int loraLdro;
+	private boolean loraCrc;
+	private boolean loraExplicitHeader;
 	private TransmitterStatus status;
 	private Date updated;
 
@@ -82,10 +84,28 @@ public class Transmitter {
 		this.loraSyncword = copy.loraSyncword;
 		this.loraPreambleLength = copy.loraPreambleLength;
 		this.loraLdro = copy.loraLdro;
+		this.loraExplicitHeader = copy.loraExplicitHeader;
+		this.loraCrc = copy.loraCrc;
 		this.tle = copy.tle;
 		if (copy.updated != null) {
 			this.updated = new Date(copy.updated.getTime());
 		}
+	}
+
+	public boolean isLoraCrc() {
+		return loraCrc;
+	}
+
+	public void setLoraCrc(boolean loraCrc) {
+		this.loraCrc = loraCrc;
+	}
+
+	public boolean isLoraExplicitHeader() {
+		return loraExplicitHeader;
+	}
+
+	public void setLoraExplicitHeader(boolean loraExplicitHeader) {
+		this.loraExplicitHeader = loraExplicitHeader;
 	}
 
 	public Date getUpdated() {
@@ -403,6 +423,18 @@ public class Transmitter {
 		JsonValue loraLdro = asObject.get("loraLdro");
 		if (loraLdro != null) {
 			result.setLoraLdro(loraLdro.asInt());
+		}
+		JsonValue loraCrc = asObject.get("loraCrc");
+		if (loraCrc != null) {
+			result.setLoraCrc(loraCrc.asBoolean());
+		} else {
+			result.setLoraCrc(true);
+		}
+		JsonValue loraExplicitHeader = asObject.get("loraExplicitHeader");
+		if (loraExplicitHeader != null) {
+			result.setLoraExplicitHeader(loraExplicitHeader.asBoolean());
+		} else {
+			result.setLoraExplicitHeader(true);
 		}
 		JsonValue assistedHeader = asObject.get("assistedHeader");
 		if (assistedHeader != null) {

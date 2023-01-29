@@ -76,6 +76,16 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 			dos.writeShort(transmitter.getLoraPreambleLength());
 			dos.writeByte((int) req.getGain());
 			dos.writeByte(transmitter.getLoraLdro());
+			if (transmitter.isLoraCrc()) {
+				dos.writeByte(1);
+			} else {
+				dos.writeByte(0);
+			}
+			if (transmitter.isLoraExplicitHeader()) {
+				dos.writeByte(1);
+			} else {
+				dos.writeByte(0);
+			}
 		} catch (IOException e) {
 			LOG.error("can't serialize output", e);
 			return new byte[0];
