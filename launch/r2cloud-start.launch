@@ -9,9 +9,13 @@
     <mapAttribute key="org.eclipse.debug.core.environmentVariables">
         <mapEntry key="LD_LIBRARY_PATH" value="./target/classes/resources"/>
     </mapAttribute>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_ATTR_USE_ARGFILE" value="false"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_SHOW_CODEDETAILS_IN_EXCEPTION_MESSAGES" value="true"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_CLASSPATH_ONLY_JAR" value="false"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
     <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
     <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ru.r2cloud.R2Cloud"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="r2cloud"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="./src/main/resources/config-dev.properties"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="r2cloud"/>
     <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>

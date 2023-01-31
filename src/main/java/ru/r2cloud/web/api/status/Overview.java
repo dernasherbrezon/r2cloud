@@ -43,6 +43,12 @@ public class Overview extends AbstractHttpController {
 			if (cur.getModel() != null) {
 				curObj.add("model", cur.getModel());
 			}
+			if (cur.getBatteryLevel() != null) {
+				curObj.add("batteryLevel", cur.getBatteryLevel());
+			}
+			if (cur.getSignalLevel() != null) {
+				curObj.add("signalLevel", cur.getSignalLevel());
+			}
 			if (cur.getType().equals(DeviceType.LORA)) {
 				curObj.add(CONNECTION_PROPERTY, "LoRa - " + cur.getConfig().getHostport());
 			} else if (cur.getType().equals(DeviceType.SDR)) {

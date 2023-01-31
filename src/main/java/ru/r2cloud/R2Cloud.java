@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.freedesktop.dbus.utils.AddressBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,12 +22,15 @@ import ru.r2cloud.cloud.SatnogsClient;
 import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.device.Device;
 import ru.r2cloud.device.DeviceManager;
+import ru.r2cloud.device.LoraAtBleDevice;
 import ru.r2cloud.device.LoraAtDevice;
 import ru.r2cloud.device.LoraDevice;
 import ru.r2cloud.device.SdrDevice;
 import ru.r2cloud.lora.LoraStatus;
 import ru.r2cloud.lora.loraat.JSerial;
 import ru.r2cloud.lora.loraat.LoraAtClient;
+import ru.r2cloud.lora.loraat.LoraAtSerialClient;
+import ru.r2cloud.lora.loraat.gatt.GattServer;
 import ru.r2cloud.lora.r2lora.R2loraClient;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.DeviceConfiguration;
@@ -115,6 +119,8 @@ public class R2Cloud {
 	private final SignedURL signed;
 	private final DeviceManager deviceManager;
 
+	private GattServer gattServer;
+
 	public R2Cloud(Configuration props, Clock clock) {
 		threadFactory = new ThreadPoolFactoryImpl(props.getThreadPoolShutdownMillis());
 		processFactory = new ProcessFactory();
@@ -159,9 +165,15 @@ public class R2Cloud {
 			deviceManager.addDevice(new LoraDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), client));
 		}
 		for (DeviceConfiguration cur : props.getLoraAtConfigurations()) {
-			LoraAtClient client = new LoraAtClient(cur.getHostport(), cur.getTimeout(), new JSerial(), clock);
+			LoraAtClient client = new LoraAtSerialClient(cur.getHostport(), cur.getTimeout(), new JSerial(), clock);
 			populateFrequencies(client.getStatus(), cur);
 			deviceManager.addDevice(new LoraAtDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), client));
+		}
+		for (DeviceConfiguration cur : props.getLoraAtBleConfigurations()) {
+			if (gattServer == null) {
+				gattServer = new GattServer(deviceManager, AddressBuilder.getSystemConnection(), clock);
+			}
+			deviceManager.addDevice(new LoraAtBleDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props));
 		}
 
 		// setup web server
@@ -196,6 +208,9 @@ public class R2Cloud {
 		// device manager should start after tle (it uses TLE to schedule
 		// observations)
 		deviceManager.start();
+		if (gattServer != null) {
+			gattServer.start();
+		}
 		metrics.start();
 		webServer.start();
 		LOG.info("=================================");
@@ -206,6 +221,9 @@ public class R2Cloud {
 	public void stop() {
 		webServer.stop();
 		metrics.stop();
+		if (gattServer != null) {
+			gattServer.stop();
+		}
 		deviceManager.stop();
 		houseKeeping.stop();
 		decoderService.stop();

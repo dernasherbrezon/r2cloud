@@ -3,9 +3,9 @@ package ru.r2cloud.lora;
 public class LoraFrame {
 
 	private byte[] data;
-	private float rssi;
+	private short rssi;
 	private float snr;
-	private float frequencyError;
+	private long frequencyError;
 	private long timestamp;
 
 	public byte[] getData() {
@@ -16,11 +16,11 @@ public class LoraFrame {
 		this.data = data;
 	}
 
-	public float getRssi() {
+	public short getRssi() {
 		return rssi;
 	}
 
-	public void setRssi(float rssi) {
+	public void setRssi(short rssi) {
 		this.rssi = rssi;
 	}
 
@@ -32,11 +32,11 @@ public class LoraFrame {
 		this.snr = snr;
 	}
 
-	public float getFrequencyError() {
+	public long getFrequencyError() {
 		return frequencyError;
 	}
 
-	public void setFrequencyError(float frequencyError) {
+	public void setFrequencyError(long frequencyError) {
 		this.frequencyError = frequencyError;
 	}
 
@@ -46,6 +46,11 @@ public class LoraFrame {
 
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
+	}
+
+	@Override
+	public String toString() {
+		return "LoraFrame [rssi=" + rssi + ", snr=" + snr + ", frequencyError=" + frequencyError + ", timestamp=" + timestamp + ", dataLength=" + data.length + "]";
 	}
 
 }

@@ -82,7 +82,7 @@ public class LoraAtReader implements IQReader {
 		return result;
 	}
 
-	private static RawBeacon convert(LoraFrame frame) {
+	public static RawBeacon convert(LoraFrame frame) {
 		RawBeacon result = new RawBeacon();
 		result.setBeginMillis(frame.getTimestamp() * 1000);
 		result.setRawData(frame.getData());
