@@ -110,11 +110,8 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 			frame.setRssi(dis.readShort());
 			frame.setSnr(dis.readFloat());
 			frame.setTimestamp(dis.readLong());
-			int dataLength = dis.readInt();
-			if (dataLength > 256) {
-				LOG.info("[{}] invalid data length: {}", bluetoothAddress, dataLength);
-				return;
-			}
+			int dataLength = dis.readUnsignedByte();
+			// cannot be more than 255, unlikely cause OOM
 			byte[] data = new byte[dataLength];
 			dis.readFully(data);
 			frame.setData(data);

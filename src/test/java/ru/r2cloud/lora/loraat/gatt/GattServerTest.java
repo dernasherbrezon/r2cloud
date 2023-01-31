@@ -114,11 +114,6 @@ public class GattServerTest {
 		writeValue(app.getSource(), application, new byte[] { (byte) 24 }, GattServer.SCHEDULE_CHARACTERISTIC_UUID);
 		assertTrue(device.getFrames().isEmpty());
 
-		LoraFrame frame = createFrame();
-		frame.setData(new byte[512]);
-		writeValue(app.getSource(), application, serialize(frame), GattServer.SCHEDULE_CHARACTERISTIC_UUID);
-		assertTrue(device.getFrames().isEmpty());
-
 		// simulate unknown device
 		bluetoothAddress = "00:DD:08:A3:A7:00";
 		writeValue(app.getSource(), application, new byte[] { (byte) 24, 33 }, GattServer.STATUS_CHARACTERISTIC_UUID);
@@ -127,7 +122,7 @@ public class GattServerTest {
 		byte[] empty = readValue(app.getSource(), application, GattServer.SCHEDULE_CHARACTERISTIC_UUID);
 		assertEquals(0, empty.length);
 		
-		frame = createFrame();
+		LoraFrame frame = createFrame();
 		writeValue(app.getSource(), application, serialize(frame), GattServer.SCHEDULE_CHARACTERISTIC_UUID);
 		assertTrue(device.getFrames().isEmpty());
 	}
@@ -220,7 +215,7 @@ public class GattServerTest {
 		dos.writeShort(frame.getRssi());
 		dos.writeFloat(frame.getSnr());
 		dos.writeLong(frame.getTimestamp());
-		dos.writeInt(frame.getData().length);
+		dos.writeByte(frame.getData().length);
 		dos.write(frame.getData());
 		return baos.toByteArray();
 	}
