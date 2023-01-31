@@ -1,5 +1,46 @@
 [
 	{
+		"id": "R2CLOUD219",
+		"name": "DANTESAT",
+		"noradId": "55127",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 437600000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraCodingRate": 5,
+				"loraSyncword": 18,
+				"loraPreambleLength": 6,
+				"loraLdro": 0
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD218",
+		"name": "2023-001CZ",
+		"noradId": "55104",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437325000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD217",
 		"name": "TSIOLKOVSKY-RYAZAN 2 (*)",
 		"noradId": "53313",
@@ -63,20 +104,20 @@
 	},
 	{
 		"id": "R2CLOUD214",
-		"name": "2023-001D",
+		"name": "CONNECTAT1.2",
 		"noradId": "55012",
 		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
-				"framing": "AX100",
-				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
-				"beaconSizeBytes": 512,
-				"frequency": 401735000,
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 401525000,
 				"bandwidth": 20000,
 				"baudRates": [
-					9600
+					4800
 				],
+				"assistedHeader": "AAAAAAABAAEAAAABAQAAAQABAAAAAAABAAABAQEAAAEAAQEAAAEAAQABAAAAAQEAAAAAAAABAQEAAQEAAAAAAQABAQEBAAABAAABAQEAAAEAAAABAAEAAQABAAAAAQEAAAABAAABAQABAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
 		]
@@ -187,6 +228,26 @@
 				],
 				"deviation": 500,
 				"afCarrier": 1700,
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD208",
+		"name": "BDSAT-2",
+		"noradId": "55098",
+		"enabled": true,
+		"start": 1641168000000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 436025000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
 				"status": "ENABLED"
 			}
 		]
@@ -1077,28 +1138,6 @@
 				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 0
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD159",
-		"name": "1998-067TD",
-		"noradId": "51441",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "LORA",
-				"framing": "LORA",
-				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
-				"frequency": 436000000,
-				"bandwidth": 125000,
-				"status": "ENABLED",
-				"loraBandwidth": 125000,
-				"loraSpreadFactor": 9,
-				"loraCodingRate": 5,
-				"loraSyncword": 18,
-				"loraPreambleLength": 6,
 				"loraLdro": 0
 			}
 		]
@@ -2374,25 +2413,6 @@
 		]
 	},
 	{
-		"id": "R2CLOUD79",
-		"name": "FALCONSAT-3",
-		"noradId": "30776",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.falconsat3.Falconsat3Beacon",
-				"frequency": 435103000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
 		"id": "R2CLOUD78",
 		"name": "ALSAT 1N",
 		"noradId": "41789",
@@ -2615,7 +2635,7 @@
 				"framing": "AX25G3RUH",
 				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
 				"frequency": 437397000,
-				"bandwidth": 20000,
+				"bandwidth": 40000,
 				"baudRates": [
 					19200
 				],
