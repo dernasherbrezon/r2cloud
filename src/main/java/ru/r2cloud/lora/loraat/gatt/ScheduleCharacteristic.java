@@ -20,6 +20,7 @@ import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.satellite.ObservationRequestComparator;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 
 public class ScheduleCharacteristic extends BleCharacteristic {
 
@@ -37,10 +38,12 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 	public byte[] read(String bluetoothAddress) {
 		LoraAtBleDevice device = getLoraDevice(bluetoothAddress);
 		if (device == null) {
+			LOG.info("[{}] ble device is not configured", bluetoothAddress);
 			return new byte[0];
 		}
 		List<ObservationRequest> requests = device.findScheduledObservations();
 		if (requests.isEmpty()) {
+			LOG.info("[{}] no scheduled observations", bluetoothAddress);
 			return new byte[0];
 		}
 		Collections.sort(requests, ObservationRequestComparator.INSTANCE);
@@ -53,13 +56,13 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 			}
 		}
 		if (req == null) {
-			LOG.info("can't find first observation");
+			LOG.info("[{}] can't find first observation", bluetoothAddress);
 			return new byte[0];
 		}
 
 		Transmitter transmitter = device.findById(req.getTransmitterId());
 		if (transmitter == null) {
-			LOG.error("can't find transmitter: {}", req.getTransmitterId());
+			LOG.error("[{}] can't find transmitter: {}", bluetoothAddress, req.getTransmitterId());
 			return new byte[0];
 		}
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -89,7 +92,7 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 			// lora packet size cannot be more than 255 bytes
 			dos.writeByte(transmitter.getBeaconSizeBytes());
 		} catch (IOException e) {
-			LOG.error("can't serialize output", e);
+			LOG.error("[{}] can't serialize output", bluetoothAddress, e);
 			return new byte[0];
 		}
 		return baos.toByteArray();
@@ -109,8 +112,8 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 			frame.setSnr(dis.readFloat());
 			frame.setTimestamp(dis.readLong());
 			int dataLength = dis.readInt();
-			if (dataLength > 10000) {
-				LOG.error("invalid data length: {}", dataLength);
+			if (dataLength > 256) {
+				LOG.info("[{}] invalid data length: {}", bluetoothAddress, dataLength);
 				return;
 			}
 			byte[] data = new byte[dataLength];
@@ -119,7 +122,7 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 			LOG.info("[{}] received frame: {}", bluetoothAddress, frame);
 			device.addFrame(frame);
 		} catch (IOException e) {
-			LOG.error("can't read input from {}", bluetoothAddress, e);
+			Util.logIOException(LOG, false, "[" + bluetoothAddress + "] can't read input", e);
 			return;
 		}
 	}
@@ -127,7 +130,7 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 	private LoraAtBleDevice getLoraDevice(String bluetoothAddress) {
 		Device device = manager.findDeviceById(Configuration.LORA_AT_DEVICE_PREFIX + bluetoothAddress);
 		if (device == null) {
-			LOG.info("ble device is not configured {}", bluetoothAddress);
+			LOG.info("[{}] ble device is not configured", bluetoothAddress);
 			return null;
 		}
 		if (!(device instanceof LoraAtBleDevice)) {

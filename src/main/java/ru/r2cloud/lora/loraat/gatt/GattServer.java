@@ -24,11 +24,12 @@ import ru.r2cloud.util.Clock;
 
 public class GattServer implements Lifecycle {
 
+	public static final String SCHEDULE_CHARACTERISTIC_UUID = "40d6f70c-5e28-4da4-a99e-c5298d1613fe";
+	public static final String STATUS_CHARACTERISTIC_UUID = "5b53256e-76d2-4259-b3aa-15b5b4cfdd32";
+
 	private static final Logger LOG = LoggerFactory.getLogger(GattServer.class);
 
 	private static final String LORA_SERVICE_UUID = "3f5f0b4d-e311-4921-b29d-936afb8734cc";
-	private static final String SCHEDULE_CHARACTERISTIC_UUID = "40d6f70c-5e28-4da4-a99e-c5298d1613fe";
-	private static final String STATUS_CHARACTERISTIC_UUID = "5b53256e-76d2-4259-b3aa-15b5b4cfdd32";
 
 	private static final String LORA_APPLICATION_PATH = "/org/bluez/r2cloud";
 	private static final String LORA_ADVERTISEMENT_PATH = LORA_APPLICATION_PATH + "/advertisement0";

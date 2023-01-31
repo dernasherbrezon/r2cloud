@@ -27,7 +27,7 @@ public class DeviceStatus extends BleCharacteristic {
 	@Override
 	public void write(byte[] value, String bluetoothAddress) {
 		if (value.length < 2) {
-			LOG.info("not enough byte. expected 2, got: {}", value.length);
+			LOG.info("[{}] not enough bytes. expected 2, got: {}", bluetoothAddress, value.length);
 			return;
 		}
 		LoraAtBleDevice device = getLoraDevice(bluetoothAddress);
@@ -40,7 +40,7 @@ public class DeviceStatus extends BleCharacteristic {
 	private LoraAtBleDevice getLoraDevice(String bluetoothAddress) {
 		Device device = manager.findDeviceById(Configuration.LORA_AT_DEVICE_PREFIX + bluetoothAddress);
 		if (device == null) {
-			LOG.info("ble device is not configured {}", bluetoothAddress);
+			LOG.info("[{}] ble device is not configured", bluetoothAddress);
 			return null;
 		}
 		if (!(device instanceof LoraAtBleDevice)) {
