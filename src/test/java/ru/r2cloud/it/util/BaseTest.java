@@ -150,8 +150,6 @@ public abstract class BaseTest {
 		config.setProperty("server.static.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data");
 		config.setProperty("metrics.basepath.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "rrd");
 		config.setProperty("auto.update.basepath.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "auto-udpate");
-		config.setProperty("acme.basepath", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "ssl");
-		config.setProperty("acme.webroot", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "html");
 		config.setProperty("satellites.basepath.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "satellites");
 		config.setProperty("satellites.wxtoimg.license.path", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "wxtoimg" + File.separator + ".wxtoimglic");
 		File setupKeyword = new File(tempFolder.getRoot(), "r2cloud.txt");

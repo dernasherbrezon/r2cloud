@@ -5,20 +5,36 @@ r2cloud can track and decode various radio signals from satellites such as:
   - APT (weather satellite)
   - LRPT (weather satellite)
   - Cubesats (FSK, BPSK, QPSK, AFSK, AX.25, AX100 &etc)
+  - LoRa
  
 ## Screenshots ([r2cloud-ui](https://github.com/dernasherbrezon/r2cloud-ui)) 
 
 <img src="https://github.com/dernasherbrezon/r2cloud/raw/master/docs/screen1.png" width="20%">&nbsp;<img src="https://github.com/dernasherbrezon/r2cloud/raw/master/docs/screen2.png" width="20%">&nbsp;<img src="https://github.com/dernasherbrezon/r2cloud/raw/master/docs/screen3.png" width="20%">&nbsp;<img src="https://github.com/dernasherbrezon/r2cloud/raw/master/docs/screen4.png" width="20%">&nbsp;<img src="https://github.com/dernasherbrezon/r2cloud/raw/master/docs/screen5.png" width="18%">
  
-## Principal diagram
+## Diagram
 
 ![diagram](docs/diagram.png)
 
-## Assemble base station
+## Main features
 
-Base station might include different hardware components. Please check recommended [bill of materials](https://github.com/dernasherbrezon/r2cloud/wiki/Bill-of-materials). This is very basic setup, but it is guaranteed to be working.
+ - r2cloud knows about hundreds of satellites, their orbits, radio channels and communication protocols
+ - it can automatically schedule observations for the selected satellites
+ - once satellite is within the antenna range, r2cloud will receive the signal, save it and decode it
+ - decoded data will be displayed on UI or can be forwarded to the central data warehouses for the analysis
 
-## Installation 
+Detailed features could be found in the [documentation](https://github.com/dernasherbrezon/r2cloud/wiki/Features).
+
+## Hardware
+
+The following hardware is required:
+
+ - Antenna
+ - SDR receiver
+ - *nix-based computer
+
+Please check recommended [bill of materials](https://github.com/dernasherbrezon/r2cloud/wiki/Bill-of-materials). This is very basic setup, but it is guaranteed to be working.
+
+## Software 
 
 1. Install r2cloud
   - From the image. This is the easiest way to install r2cloud on Raspberry PI. It will require brand new SD card:
@@ -26,7 +42,7 @@ Base station might include different hardware components. Please check recommend
     - Insert SD card into the card reader and flash it. You could use [Etcher](https://etcher.io) to do this
     - Insert SD card into the card reader and create file ```r2cloud.txt``` in the root directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
   
-  - Or from [repository binaries](https://leosatdata.com/apt.html):
+  - Or from [repository binaries](https://leosatdata.com/apt.html). Suitable for Ubuntu or Debian:
     - Login via SSH and create ```r2cloud.txt``` file in /boot directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
     - Execute the following commands:
 ```
@@ -37,32 +53,19 @@ sudo apt-get update
 sudo apt-get install r2cloud
 ```
 2. Open [https://raspberrypi.local](https://raspberrypi.local) address.
-3. Accept self-signed certificate. This is unique certificate that was generated during installation. Once setup is complete, you could enable proper SSL using [Letsencrypt](https://letsencrypt.org). 
+3. Accept self-signed certificate. This is unique certificate that was generated during installation.
 
-## Main features
+## What to do next?
 
-  - Autonomous:
-    - Ability to operate without internet connection
-    - synchronize state once connection restored
-    - new decoders could be added after auto-update
-  - Integration with external systems:
-    - [https://leosatdata.com](https://leosatdata.com)
-    - [SatNOGS](https://satnogs.org)
-    - [Amsat TLM](https://www.amsat.org/tlm/leaderboard.php?id=0&db=FOXDB)
-    - [Funcube warehouse](http://data.amsat-uk.org/registration)
-    - and more
-  - Decode satellite signal right after reception
-    - full list of supported satellite is available at [jradio](https://github.com/dernasherbrezon/jradio)
-    - display images if they supported by the satellite
-  - Multiple devices
-    - [RTL-SDR](https://www.rtl-sdr.com/buy-rtl-sdr-dvb-t-dongles/)
-    - [PlutoSDR](https://github.com/dernasherbrezon/r2cloud/wiki/PlutoSDR)
-    - [sdr-server](https://github.com/dernasherbrezon/r2cloud/wiki/sdr-server)
-    - [LoRa via r2lora](https://github.com/dernasherbrezon/r2cloud/wiki/LoRa)
-  - Security
-    - safe to expose administration UI to the internet
-   
-Detailed features could be found in the [documentation](https://github.com/dernasherbrezon/r2cloud/wiki/Features).
+ 1. Configure the station
+ 2. Select satellites for observation based on their frequency / your personal preferences
+ 3. Wait for several observations to happen
+ 4. Analyze the results using "Spectogram" feature and number of frames. The more frames - the better!
+ 5. Tune your software configuration and hardware setup for better performance
+ 6. Install rotator to maximize signal strength
+ 7. Setup additional LNAs or band pass filters 
+ 8. Subscribe for "new launches" 
+ 9. Share the data with community using [leosatdata.com](https://leosatdata.com) integrations
 
 ## Contribution
 
