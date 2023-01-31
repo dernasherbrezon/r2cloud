@@ -26,10 +26,15 @@ public class GattServer implements Lifecycle {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GattServer.class);
 
-	private static String LORA_SERVICE_UUID = "3f5f0b4d-e311-4921-b29d-936afb8734cc";
-	private static String SCHEDULE_CHARACTERISTIC_UUID = "40d6f70c-5e28-4da4-a99e-c5298d1613fe";
-	private static String STATUS_CHARACTERISTIC_UUID = "5b53256e-76d2-4259-b3aa-15b5b4cfdd32";
-	private static String LORA_SERVICE_PATH = "/org/bluez/r2cloud/service0";
+	private static final String LORA_SERVICE_UUID = "3f5f0b4d-e311-4921-b29d-936afb8734cc";
+	private static final String SCHEDULE_CHARACTERISTIC_UUID = "40d6f70c-5e28-4da4-a99e-c5298d1613fe";
+	private static final String STATUS_CHARACTERISTIC_UUID = "5b53256e-76d2-4259-b3aa-15b5b4cfdd32";
+
+	private static final String LORA_APPLICATION_PATH = "/org/bluez/r2cloud";
+	private static final String LORA_ADVERTISEMENT_PATH = LORA_APPLICATION_PATH + "/advertisement0";
+	private static final String LORA_SERVICE_PATH = LORA_APPLICATION_PATH + "/service0";
+	private static final String LORA_SCHEDULE_PATH = LORA_SERVICE_PATH + "/char0";
+	private static final String LORA_STATUS_PATH = LORA_SERVICE_PATH + "/char1";
 
 	private final DeviceManager manager;
 	private final BusAddress address;
@@ -66,24 +71,24 @@ public class GattServer implements Lifecycle {
 			}
 			serviceManager = dbusConn.getRemoteObject("org.bluez", serviceManagerPath.getPath(), GattManager1.class);
 			advertisingManager = dbusConn.getRemoteObject("org.bluez", serviceManagerPath.getPath(), LEAdvertisingManager1.class);
-			
-			BleDescriptor scheduleDesc = new BleDescriptor(LORA_SERVICE_PATH + "/char0" + "/desc0", new String[] { "read" }, "5604f205-0c14-4926-9d7d-21dbab315f2e", LORA_SERVICE_PATH + "/char0", "Schedule for LoRa module");
-			ScheduleCharacteristic schedule = new ScheduleCharacteristic(LORA_SERVICE_PATH + "/char0", new String[] { "read", "write" }, SCHEDULE_CHARACTERISTIC_UUID, LORA_SERVICE_PATH, scheduleDesc, manager, clock);
 
-			BleDescriptor statusDesc = new BleDescriptor(LORA_SERVICE_PATH + "/char1" + "/desc0", new String[] { "read" }, "5604f205-0c14-4926-9d7d-21dbab315f2f", LORA_SERVICE_PATH + "/char1", "Status of all connected LoRa modules");
-			DeviceStatus status = new DeviceStatus(LORA_SERVICE_PATH + "/char1", new String[] { "write" }, STATUS_CHARACTERISTIC_UUID, LORA_SERVICE_PATH, statusDesc, manager);
+			BleDescriptor scheduleDesc = new BleDescriptor(LORA_SCHEDULE_PATH + "/desc0", new String[] { "read" }, "5604f205-0c14-4926-9d7d-21dbab315f2e", LORA_SCHEDULE_PATH, "Schedule for LoRa module");
+			ScheduleCharacteristic schedule = new ScheduleCharacteristic(LORA_SCHEDULE_PATH, new String[] { "read", "write" }, SCHEDULE_CHARACTERISTIC_UUID, LORA_SERVICE_PATH, scheduleDesc, manager, clock);
+
+			BleDescriptor statusDesc = new BleDescriptor(LORA_STATUS_PATH + "/desc0", new String[] { "read" }, "5604f205-0c14-4926-9d7d-21dbab315f2f", LORA_STATUS_PATH, "Status of all connected LoRa modules");
+			DeviceStatus status = new DeviceStatus(LORA_STATUS_PATH, new String[] { "write" }, STATUS_CHARACTERISTIC_UUID, LORA_SERVICE_PATH, statusDesc, manager);
 			List<BleCharacteristic> characteristics = new ArrayList<>();
 			characteristics.add(schedule);
 			characteristics.add(status);
 			BleService service = new BleService(LORA_SERVICE_PATH, LORA_SERVICE_UUID, true, characteristics);
 			List<BleService> allServices = new ArrayList<>();
 			allServices.add(service);
-			application = new BleApplication(allServices);
+			application = new BleApplication(LORA_APPLICATION_PATH, allServices);
 			exportAll(dbusConn, application);
 
 			serviceManager.RegisterApplication(new DBusPath(application.getObjectPath()), new HashMap<>());
 
-			advertisement = new BleAdvertisement("/org/bluez/r2cloud/advertisement0", "r2cloud", "peripheral", LORA_SERVICE_UUID);
+			advertisement = new BleAdvertisement(LORA_ADVERTISEMENT_PATH, "r2cloud", "peripheral", LORA_SERVICE_UUID);
 			dbusConn.exportObject(advertisement);
 			LOG.info("Gatt application registered");
 

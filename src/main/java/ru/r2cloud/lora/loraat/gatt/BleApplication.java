@@ -10,9 +10,11 @@ import org.freedesktop.dbus.types.Variant;
 
 public class BleApplication implements ObjectManager {
 
+	private final String objectPath;
 	private final List<BleService> services;
 
-	public BleApplication(List<BleService> services) {
+	public BleApplication(String objectPath, List<BleService> services) {
+		this.objectPath = objectPath;
 		this.services = services;
 	}
 
@@ -37,7 +39,7 @@ public class BleApplication implements ObjectManager {
 
 	@Override
 	public String getObjectPath() {
-		return "/";
+		return objectPath;
 	}
 
 	public List<BleService> getServices() {
