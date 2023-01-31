@@ -64,8 +64,8 @@ sudo apt-get install r2cloud
  5. Tune your software configuration and hardware setup for better performance
  6. Install rotator to maximize signal strength
  7. Setup additional LNAs or band pass filters 
- 8. Subscribe for "new launches" 
- 9. Share the data with community using [leosatdata.com](https://leosatdata.com) integrations
+ 8. Help tracking [just launched satellites](https://github.com/dernasherbrezon/r2cloud/wiki/Tracking-newly-launched-satellites)
+ 9. [Share the data](https://github.com/dernasherbrezon/r2cloud/wiki/LEOSatData) with community using [leosatdata.com](https://leosatdata.com) integrations
 
 ## Contribution
 
