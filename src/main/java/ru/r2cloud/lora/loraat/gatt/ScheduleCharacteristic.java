@@ -38,7 +38,6 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 	public byte[] read(String bluetoothAddress) {
 		LoraAtBleDevice device = getLoraDevice(bluetoothAddress);
 		if (device == null) {
-			LOG.info("[{}] ble device is not configured", bluetoothAddress);
 			return new byte[0];
 		}
 		List<ObservationRequest> requests = device.findScheduledObservations();

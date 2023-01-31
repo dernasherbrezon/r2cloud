@@ -126,6 +126,10 @@ public class GattServerTest {
 
 		byte[] empty = readValue(app.getSource(), application, GattServer.SCHEDULE_CHARACTERISTIC_UUID);
 		assertEquals(0, empty.length);
+		
+		frame = createFrame();
+		writeValue(app.getSource(), application, serialize(frame), GattServer.SCHEDULE_CHARACTERISTIC_UUID);
+		assertTrue(device.getFrames().isEmpty());
 	}
 
 	@Before
