@@ -23,9 +23,10 @@ jobs:
           ${{ runner.os }}-maven-
       
     - name: Set up Ruby 2.6
-      uses: actions/setup-ruby@v1
+      uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.6
+        ruby-version: '3.0'
+        bundler-cache: true
 
     - name: Check license
       run: |
