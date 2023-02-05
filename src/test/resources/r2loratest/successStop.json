@@ -3,9 +3,9 @@
 	"frames": [
 		{
 			"data": "CAFE",
-			"rssi": -121.75,
+			"rssi": -121,
 			"snr": -5.75,
-			"frequencyError": -729.8089,
+			"frequencyError": -729,
 			"timestamp": 1641987504
 		}
 	]
