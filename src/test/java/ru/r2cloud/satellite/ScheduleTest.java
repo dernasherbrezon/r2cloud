@@ -72,6 +72,7 @@ public class ScheduleTest {
 		current = getTime("2022-09-30 22:17:01.000");
 		List<ObservationRequest> expected = readExpected("expected/scheduleNewLaunches.txt");
 		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
+		printObservations(actual);
 		assertObservations(expected, actual);
 	}
 
