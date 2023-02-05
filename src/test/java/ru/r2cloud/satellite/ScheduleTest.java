@@ -197,6 +197,7 @@ public class ScheduleTest {
 		config.setProperty("satellites.satnogs.location", new File(tempFolder.getRoot(), "satnogs.json").getAbsolutePath());
 		config.setProperty("satellites.leosatdata.location", new File(tempFolder.getRoot(), "leosatdata.json").getAbsolutePath());
 		config.setProperty("satellites.leosatdata.new.location", new File(tempFolder.getRoot(), "leosatdata.new.json").getAbsolutePath());
+		config.setProperty("scheduler.orekit.path", "./src/test/resources/data/orekit-data");
 		LeoSatDataClient r2cloudClient = new LeoSatDataClient(config, new FixedClock(current));
 		SatnogsClient satnogsClient = new SatnogsClient(config, new FixedClock(current));
 		satelliteDao = new SatelliteDao(config);
