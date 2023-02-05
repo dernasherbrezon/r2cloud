@@ -189,6 +189,11 @@ public abstract class BaseTest {
 		if (satnogs != null) {
 			satnogs.stop();
 		}
+		try {
+			LogManager.getLogManager().readConfiguration();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void assertErrorInField(String field, HttpResponse<String> response) {
