@@ -170,16 +170,16 @@ public class ScheduleTest {
 		current = getTime("2020-09-30 22:17:01.000");
 
 		celestrak = new CelestrakServer();
-		celestrak.start();
 		celestrak.mockResponse(TestUtil.loadExpected("tle-2020-09-27.txt"));
+		celestrak.start();
 		server = new LeoSatDataServerMock();
-		server.start();
 		server.setSatelliteMock("[]", 200);
 		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/empty-array-response.json", 200));
+		server.start();
 		satnogs = new SatnogsServerMock();
-		satnogs.start();
 		satnogs.setSatellitesMock("[]", 200);
 		satnogs.setTransmittersMock("[]", 200);
+		satnogs.start();
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("locaiton.lat", "51.49");
 		config.setProperty("locaiton.lon", "0.01");

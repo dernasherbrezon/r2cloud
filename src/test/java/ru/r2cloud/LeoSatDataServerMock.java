@@ -15,6 +15,10 @@ public class LeoSatDataServerMock {
 	private HttpServer server;
 	private boolean newLaunchConfigured = false;
 	private boolean satelliteConfigured = false;
+	
+	public LeoSatDataServerMock() throws IOException {
+		server = HttpServer.create(new InetSocketAddress("localhost", 8001), 0);
+	}
 
 	public void setObservationMock(HttpHandler observationMock) {
 		server.createContext("/api/v1/observation", new HttpHandler() {
@@ -90,8 +94,7 @@ public class LeoSatDataServerMock {
 		setNewLaunchMock(message, 200);
 	}
 
-	public void start() throws IOException {
-		server = HttpServer.create(new InetSocketAddress("localhost", 8001), 0);
+	public void start() {
 		server.start();
 	}
 

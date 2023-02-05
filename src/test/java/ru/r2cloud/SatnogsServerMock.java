@@ -21,6 +21,10 @@ public class SatnogsServerMock {
 	private HttpServer server;
 	private Set<String> pathsConfigured = new HashSet<>();
 	private String tleBase;
+	
+	public SatnogsServerMock() throws IOException {
+		server = HttpServer.create(new InetSocketAddress("localhost", 8007), 0);
+	}
 
 	public void setTleMockDirectory(String base) {
 		this.tleBase = base;
@@ -71,9 +75,7 @@ public class SatnogsServerMock {
 		server.createContext(path, mock);
 	}
 
-	public void start() throws IOException {
-		server = HttpServer.create(new InetSocketAddress("localhost", 8007), 0);
-		server.start();
+	public void start() {
 		HttpHandler plainHandler = new HttpHandler() {
 
 			@Override
@@ -105,6 +107,7 @@ public class SatnogsServerMock {
 			}
 		};
 		addHandler(plainHandler, "/api/tle/");
+		server.start();
 	}
 
 	public void stop() {
