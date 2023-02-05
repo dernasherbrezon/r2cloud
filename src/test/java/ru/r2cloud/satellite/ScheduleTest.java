@@ -189,6 +189,8 @@ public class ScheduleTest {
 		config.setProperty("leosatdata.hostname", server.getUrl());
 		config.setProperty("satnogs.satellites", true);
 		config.setProperty("satnogs.hostname", satnogs.getUrl());
+		config.setProperty("scheduler.elevation.min", 8);
+		config.setProperty("scheduler.elevation.guaranteed", 20);
 		config.setList("tle.urls", celestrak.getUrls());
 		config.setProperty("tle.cacheFileLocation", new File(tempFolder.getRoot(), "tle.txt").getAbsolutePath());
 		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-test.json");
