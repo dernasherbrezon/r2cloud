@@ -72,7 +72,6 @@ public class ScheduleTest {
 		current = getTime("2022-09-30 22:17:01.000");
 		List<ObservationRequest> expected = readExpected("expected/scheduleNewLaunches.txt");
 		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
-		printObservations(actual);
 		assertObservations(expected, actual);
 	}
 
@@ -242,8 +241,10 @@ public class ScheduleTest {
 		for (ObservationRequest cur : req) {
 			ids.add(cur.getSatelliteId());
 		}
+		List<String> sorted = new ArrayList<>(ids);
+		Collections.sort(sorted);
 		List<Transmitter> result = new ArrayList<>();
-		for (String cur : ids) {
+		for (String cur : sorted) {
 			Satellite curSatellite = dao.findById(cur);
 			if (curSatellite == null) {
 				continue;
