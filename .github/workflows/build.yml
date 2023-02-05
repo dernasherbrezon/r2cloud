@@ -24,6 +24,8 @@ jobs:
       
     - name: License Approval
       uses: ralexander-phi/license_approval@0.0.1
+      with:
+        package_manager: 'bundler'
 
     - uses: actions/setup-java@v3
       with:
