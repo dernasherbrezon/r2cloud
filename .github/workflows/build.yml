@@ -38,8 +38,8 @@ jobs:
 
     - uses: actions/setup-java@v3
       with:
-        distribution: 'temurin'
-        java-version: '11'
+        distribution: 'liberica'
+        java-version: '17'
 
     - name: SonarCloud Scan
       run: mvn clean verify sonar:sonar -Pcoverage -Dsonar.scm.disabled=true -Dsonar.projectKey=ru.r2cloud:r2cloud -Dsonar.organization=dernasherbrezon-github -Dsonar.host.url=https://sonarcloud.io -Dsonar.language=java
