@@ -37,10 +37,6 @@ public class ObservationFactory {
 			LOG.error("no tle for: {}", transmitter.getSatelliteId());
 			return Collections.emptyList();
 		}
-		if (transmitter.getSatelliteId().equals("44830")) {
-			System.out.println("tle: " + transmitter.getTle().getRaw()[0] + " " + transmitter.getTle().getRaw()[1] + " " + transmitter.getTle().getRaw()[2]);
-			System.out.println("date: " + date);
-		}
 		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(transmitter.getTle().getRaw()[1], transmitter.getTle().getRaw()[2]));
 		List<SatPass> batch = predict.calculateSchedule(date, tlePropagator);
 		if (batch == null || batch.isEmpty()) {
