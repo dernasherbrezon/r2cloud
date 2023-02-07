@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.hipparchus.ode.events.Action;
 import org.hipparchus.util.FastMath;
@@ -116,19 +115,11 @@ public class PredictOreKit {
 			LOG.error("unable to calculate schedule for {} date: {}", tlePropagator.getTLE().getSatelliteNumber(), initialDate, e);
 			return Collections.emptyList();
 		}
-		if (tlePropagator.getTLE().getSatelliteNumber() == 44830) {
-			System.out.println("max: " + max.size() + " date " + current + " guaranteedElevation: " + guaranteedElevation + " " + baseStationFrame.getPoint() + " " + tlePropagator.getTLE());
-
-		}
-		TimeZone tz = TimeZone.getTimeZone("GMT");
 		for (AbsoluteDate curMax : max) {
 			SatPass cur = findStartEnd(tlePropagator, baseStationFrame, curMax);
 			if (cur != null) {
 				if (cur.getStartMillis() < current.getTime()) {
 					cur.setStart(initialDate);
-				}
-				if (tlePropagator.getTLE().getSatelliteNumber() == 44830) {
-					System.out.println(cur.getStart().toString(tz) + " " + cur.getEnd().toString(tz));
 				}
 				result.add(cur);
 			}
