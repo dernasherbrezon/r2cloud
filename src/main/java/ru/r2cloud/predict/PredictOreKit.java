@@ -110,7 +110,6 @@ public class PredictOreKit {
 		});
 		tlePropagator.clearEventsDetectors();
 		tlePropagator.addEventDetector(new EventSlopeFilter<EventDetector>(maxDetector, FilterType.TRIGGER_ONLY_DECREASING_EVENTS));
-		tlePropagator.setSlaveMode();
 		try {
 			tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, PREDICT_INTERVAL_SECONDS));
 		} catch (Exception e) {
@@ -149,7 +148,6 @@ public class PredictOreKit {
 		ElevationExtremumDetector maxDetector = new ElevationExtremumDetector(600, 1, baseStationFrame).withMaxIter(48 * 60).withHandler(maxElevationHandler);
 		tlePropagator.clearEventsDetectors();
 		tlePropagator.addEventDetector(new EventSlopeFilter<EventDetector>(maxDetector, FilterType.TRIGGER_ONLY_DECREASING_EVENTS));
-		tlePropagator.setSlaveMode();
 		tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, PREDICT_INTERVAL_SECONDS));
 		if (maxElevationHandler.getDate() == null) {
 			return null;
