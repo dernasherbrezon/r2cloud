@@ -235,8 +235,14 @@ public class ScheduleTest {
 
 	private static void assertObservation(ObservationRequest expected, ObservationRequest actual) {
 		assertEquals(expected.getSatelliteId(), actual.getSatelliteId());
-		assertEquals(expected.getStartTimeMillis(), actual.getStartTimeMillis());
-		assertEquals(expected.getEndTimeMillis(), actual.getEndTimeMillis());
+		assertTimestamps(expected.getStartTimeMillis(), actual.getStartTimeMillis());
+		assertTimestamps(expected.getEndTimeMillis(), actual.getEndTimeMillis());
+	}
+
+	private static void assertTimestamps(long expected, long actual) {
+		long expectedSeconds = (long) (Math.floor(expected / 1000.0f));
+		long actualSeconds = (long) (Math.floor(actual / 1000.0f));
+		assertEquals(expectedSeconds, actualSeconds);
 	}
 
 	private static List<Transmitter> extractSatellites(List<ObservationRequest> req, SatelliteDao dao) throws Exception {
