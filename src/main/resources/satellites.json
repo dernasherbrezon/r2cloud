@@ -1,5 +1,24 @@
 [
 	{
+		"id": "R2CLOUD220",
+		"name": "BDSAT",
+		"noradId": "52175",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 436025000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD219",
 		"name": "DANTESAT",
 		"noradId": "55127",
@@ -2899,7 +2918,7 @@
 		"id": "R2CLOUD40",
 		"name": "FOX-1CLIFF (AO-95)",
 		"noradId": "43770",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
@@ -2912,7 +2931,7 @@
 				],
 				"deviation": 1500,
 				"transitionWidth": 200.0,
-				"status": "ENABLED"
+				"status": "WEAK"
 			}
 		]
 	},
