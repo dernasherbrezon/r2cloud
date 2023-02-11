@@ -72,6 +72,7 @@ jobs:
       run: |
         cd ./target/
         wget --quiet https://github.com/dernasherbrezon/apt-cli/releases/download/apt-cli-1.6/apt-cli.jar
+        gpg --default-key F2DCBFDCA5A70917 --output doc.sig --sign *.deb
         java -jar apt-cli.jar --url s3://r2cloud --component main --codename r2cloud --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
         java -jar apt-cli.jar --url s3://r2cloud --component main --codename stretch --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
         java -jar apt-cli.jar --url s3://r2cloud --component main --codename buster --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
