@@ -25,5 +25,10 @@ hs_err_pid*
 /config-dev.properties
 /keyword.txt
 /data/
+.classpath
 .DS_Store
 /.idea/
+/.settings/
+.classpath
+.project
+/bin/

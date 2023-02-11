@@ -6,7 +6,7 @@ on:
       - master
 name: Main Workflow
 jobs:
-  sonarcloud:
+  build:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
@@ -47,3 +47,35 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    - name: Run integration tests
+      run: |
+         cp ./target/*.deb ./target/it-tests
+         docker run --rm --privileged multiarch/qemu-user-static:register
+         docker build -t r2cloud ./target/it-tests
+         docker run --volume /sys/fs/cgroup:/sys/fs/cgroup:ro --privileged=true --name r2cloud -d --tty r2cloud
+         docker exec r2cloud /home/pi/r2cloud-tests/bin/start-tests.sh
+  deploy:
+    runs-on: ubuntu-20.04
+    needs: build
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v5
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Deploy
+        run: |
+         deb-s3 upload -c r2cloud   -m main --sign=A5A70917  --digest-algo SHA256" --bucket r2cloud ./target/*.deb
+         deb-s3 upload -c stretch   -m main --sign=A5A70917  --digest-algo SHA256" --bucket r2cloud ./target/*.deb
+         deb-s3 upload -c buster   -m main --sign=A5A70917  --digest-algo SHA256" --bucket r2cloud ./target/*.deb
+         deb-s3 upload -c bullseye   -m main --sign=A5A70917  --digest-algo SHA256" --bucket r2cloud ./target/*.deb
+         deb-s3 upload -c bionic   -m main --sign=A5A70917  --digest-algo SHA256" --bucket r2cloud ./target/*.deb
+         deb-s3 upload -c focal  -m main --sign=A5A70917  --digest-algo SHA256" --bucket r2cloud ./target/*.deb
