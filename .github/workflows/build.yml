@@ -71,9 +71,11 @@ jobs:
       if: github.ref == 'refs/heads/master'
       run: |
         wget https://github.com/dernasherbrezon/apt-cli/releases/download/apt-cli-1.6/apt-cli.jar
-        java -jar apt-cli.jar --url s3://r2cloud --component main --codename r2cloud --gpg-keyname F2DCBFDCA5A70917 --gpg-arguments "--pinentry-mode,loopback" save --patterns ./target/*.deb
-        java -jar apt-cli.jar --url s3://r2cloud --component main --codename stretch --gpg-keyname F2DCBFDCA5A70917 --gpg-arguments "--pinentry-mode,loopback" save --patterns ./target/*.deb
-        java -jar apt-cli.jar --url s3://r2cloud --component main --codename buster --gpg-keyname F2DCBFDCA5A70917 --gpg-arguments "--pinentry-mode,loopback" save --patterns ./target/*.deb
-        java -jar apt-cli.jar --url s3://r2cloud --component main --codename bullseye --gpg-keyname F2DCBFDCA5A70917 --gpg-arguments "--pinentry-mode,loopback" save --patterns ./target/*.deb
-        java -jar apt-cli.jar --url s3://r2cloud --component main --codename bionic --gpg-keyname F2DCBFDCA5A70917 --gpg-arguments "--pinentry-mode,loopback" save --patterns ./target/*.deb
-        java -jar apt-cli.jar --url s3://r2cloud --component main --codename focal --gpg-keyname F2DCBFDCA5A70917 --gpg-arguments "--pinentry-mode,loopback" save --patterns ./target/*.deb
+        ls -lh .
+        ls -lh ./target/
+        java -jar apt-cli.jar --url s3://r2cloud --component main --codename r2cloud --gpg-keyname F2DCBFDCA5A70917 --gpg-arguments "--pinentry-mode,loopback" save --patterns "./target/*.deb"
+        java -jar apt-cli.jar --url s3://r2cloud --component main --codename stretch --gpg-keyname F2DCBFDCA5A70917 --gpg-arguments "--pinentry-mode,loopback" save --patterns "./target/*.deb"
+        java -jar apt-cli.jar --url s3://r2cloud --component main --codename buster --gpg-keyname F2DCBFDCA5A70917 --gpg-arguments "--pinentry-mode,loopback" save --patterns "./target/*.deb"
+        java -jar apt-cli.jar --url s3://r2cloud --component main --codename bullseye --gpg-keyname F2DCBFDCA5A70917 --gpg-arguments "--pinentry-mode,loopback" save --patterns "./target/*.deb"
+        java -jar apt-cli.jar --url s3://r2cloud --component main --codename bionic --gpg-keyname F2DCBFDCA5A70917 --gpg-arguments "--pinentry-mode,loopback" save --patterns "./target/*.deb"
+        java -jar apt-cli.jar --url s3://r2cloud --component main --codename focal --gpg-keyname F2DCBFDCA5A70917 --gpg-arguments "--pinentry-mode,loopback" save --patterns "./target/*.deb"
