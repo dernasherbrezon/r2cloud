@@ -59,9 +59,6 @@ jobs:
     needs: build
     if: github.ref == 'refs/heads/master'
     steps:
-      - name: Install deb-s3
-        run: |
-          gem install deb-s3 -v 0.10.0
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v5
         with:
@@ -75,9 +72,10 @@ jobs:
           aws-region: us-east-1
       - name: Deploy
         run: |
-         deb-s3 upload -c r2cloud   -m main --sign=A5A70917  --digest-algo SHA256" --bucket r2cloud ./target/*.deb
-         deb-s3 upload -c stretch   -m main --sign=A5A70917  --digest-algo SHA256" --bucket r2cloud ./target/*.deb
-         deb-s3 upload -c buster   -m main --sign=A5A70917  --digest-algo SHA256" --bucket r2cloud ./target/*.deb
-         deb-s3 upload -c bullseye   -m main --sign=A5A70917  --digest-algo SHA256" --bucket r2cloud ./target/*.deb
-         deb-s3 upload -c bionic   -m main --sign=A5A70917  --digest-algo SHA256" --bucket r2cloud ./target/*.deb
-         deb-s3 upload -c focal  -m main --sign=A5A70917  --digest-algo SHA256" --bucket r2cloud ./target/*.deb
+          wget https://github.com/dernasherbrezon/apt-cli/releases/download/apt-cli-1.6/apt-cli.jar
+          java -jar apt-cli.jar --url s3://r2cloud --component main --codename r2cloud --gpg-keyname F2DCBFDCA5A70917 --gpg-arguments "--pinentry-mode,loopback" save --patterns ./target/*.deb
+          java -jar apt-cli.jar --url s3://r2cloud --component main --codename stretch --gpg-keyname F2DCBFDCA5A70917 --gpg-arguments "--pinentry-mode,loopback" save --patterns ./target/*.deb
+          java -jar apt-cli.jar --url s3://r2cloud --component main --codename buster --gpg-keyname F2DCBFDCA5A70917 --gpg-arguments "--pinentry-mode,loopback" save --patterns ./target/*.deb
+          java -jar apt-cli.jar --url s3://r2cloud --component main --codename bullseye --gpg-keyname F2DCBFDCA5A70917 --gpg-arguments "--pinentry-mode,loopback" save --patterns ./target/*.deb
+          java -jar apt-cli.jar --url s3://r2cloud --component main --codename bionic --gpg-keyname F2DCBFDCA5A70917 --gpg-arguments "--pinentry-mode,loopback" save --patterns ./target/*.deb
+          java -jar apt-cli.jar --url s3://r2cloud --component main --codename focal --gpg-keyname F2DCBFDCA5A70917 --gpg-arguments "--pinentry-mode,loopback" save --patterns ./target/*.deb
