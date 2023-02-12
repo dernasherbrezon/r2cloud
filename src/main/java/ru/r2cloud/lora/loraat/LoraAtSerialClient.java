@@ -90,7 +90,7 @@ public class LoraAtSerialClient implements LoraAtClient {
 		if (result.getStatus().equals(ResponseStatus.RECEIVING)) {
 			LOG.info("lora-at is already receiving. stopping previous and starting again");
 			LoraResponse response = stopObservation();
-			if (response.getFrames() != null && response.getFrames().size() > 0) {
+			if (LOG.isInfoEnabled() && response.getFrames() != null && !response.getFrames().isEmpty()) {
 				for (LoraFrame cur : response.getFrames()) {
 					LOG.info("previous unknown observation got some data. Logging it here for manual recovery: {}", Arrays.toString(cur.getData()));
 				}
