@@ -1,4 +1,4 @@
-## About [![Build Status](https://app.travis-ci.com/dernasherbrezon/r2cloud.svg?branch=master)](https://app.travis-ci.com/github/dernasherbrezon/r2cloud) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ru.r2cloud%3Ar2cloud&metric=alert_status)](https://sonarcloud.io/dashboard?id=ru.r2cloud%3Ar2cloud) [![Discussions](https://img.shields.io/badge/discussions-chat-green)](https://github.com/dernasherbrezon/r2cloud/discussions)
+## About [![Main](https://github.com/dernasherbrezon/r2cloud/actions/workflows/build.yml/badge.svg)](https://github.com/dernasherbrezon/r2cloud/actions/workflows/build.yml) [![Quality Status](https://sonarcloud.io/api/project_badges/measure?project=ru.r2cloud%3Ar2cloud&metric=alert_status)](https://sonarcloud.io/dashboard?id=ru.r2cloud%3Ar2cloud) [![Discussions](https://img.shields.io/badge/discussions-chat-green)](https://github.com/dernasherbrezon/r2cloud/discussions)
 
 r2cloud can track and decode various radio signals from satellites such as:
 
