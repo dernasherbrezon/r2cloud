@@ -26,24 +26,26 @@ public class TimeSizeRetention {
 
 	public TimeSizeRetention(long maxSize, Path basedir) {
 		this.maxSize = maxSize;
-		try (DirectoryStream<Path> ds = Files.newDirectoryStream(basedir)) {
-			for (Path curSatellite : ds) {
-				Path dataRoot = curSatellite.resolve("data");
-				if (!Files.exists(dataRoot)) {
-					// do not empty satellite directory
-					// it might contain cached tle.txt file which is useful
-					// when no internet connection present and new observation is about
-					// to schedule
-					continue;
-				}
-				try (DirectoryStream<Path> observationDirs = Files.newDirectoryStream(dataRoot)) {
-					for (Path curObservation : observationDirs) {
-						indexAndCleanup(curObservation);
+		if (Files.exists(basedir)) {
+			try (DirectoryStream<Path> ds = Files.newDirectoryStream(basedir)) {
+				for (Path curSatellite : ds) {
+					Path dataRoot = curSatellite.resolve("data");
+					if (!Files.exists(dataRoot)) {
+						// do not empty satellite directory
+						// it might contain cached tle.txt file which is useful
+						// when no internet connection present and new observation is about
+						// to schedule
+						continue;
+					}
+					try (DirectoryStream<Path> observationDirs = Files.newDirectoryStream(dataRoot)) {
+						for (Path curObservation : observationDirs) {
+							indexAndCleanup(curObservation);
+						}
 					}
 				}
+			} catch (IOException e) {
+				LOG.error("unable to index all", e);
 			}
-		} catch (IOException e) {
-			LOG.error("unable to index all", e);
 		}
 	}
 
