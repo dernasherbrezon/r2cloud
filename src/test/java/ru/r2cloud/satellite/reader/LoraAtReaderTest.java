@@ -70,13 +70,7 @@ public class LoraAtReaderTest {
 	}
 
 	private static Satellite createSatellite() {
-		Transmitter transmitter = new Transmitter();
-		transmitter.setLoraCodingRate(7);
-		transmitter.setLoraPreambleLength(8);
-		transmitter.setLoraSpreadFactor(9);
-		transmitter.setLoraSyncword(18);
-		transmitter.setLoraLdro(0);
-		transmitter.setLoraBandwidth(500000);
+		Transmitter transmitter = createValidTransmitter();
 
 		Satellite satellite = new Satellite();
 		satellite.setId(UUID.randomUUID().toString());
@@ -84,7 +78,18 @@ public class LoraAtReaderTest {
 		return satellite;
 	}
 
-	private static ObservationRequest createValidRequest() {
+	public static Transmitter createValidTransmitter() {
+		Transmitter transmitter = new Transmitter();
+		transmitter.setLoraCodingRate(7);
+		transmitter.setLoraPreambleLength(8);
+		transmitter.setLoraSpreadFactor(9);
+		transmitter.setLoraSyncword(18);
+		transmitter.setLoraLdro(0);
+		transmitter.setLoraBandwidth(500000);
+		return transmitter;
+	}
+
+	public static ObservationRequest createValidRequest() {
 		ObservationRequest req = new ObservationRequest();
 		req.setActualFrequency(433125000);
 		req.setGain(0.0);

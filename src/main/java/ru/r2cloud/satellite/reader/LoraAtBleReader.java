@@ -1,9 +1,9 @@
 package ru.r2cloud.satellite.reader;
 
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.CountDownLatch;
 
 import org.slf4j.Logger;
@@ -44,22 +44,24 @@ public class LoraAtBleReader implements IQReader {
 			return null;
 		}
 		long endTimeMillis = System.currentTimeMillis();
-		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw");
+		Path rawFile = config.getTempDirectoryPath().resolve(req.getSatelliteId() + "-" + req.getId() + ".raw");
 		// raw file is the same as binary file
 		// decoder just have to rename it
-		try (BeaconOutputStream bos = new BeaconOutputStream(new BufferedOutputStream(new FileOutputStream(rawFile)))) {
+		try (BeaconOutputStream bos = new BeaconOutputStream(new BufferedOutputStream(Files.newOutputStream(rawFile)))) {
 			for (LoraFrame cur : device.getFrames()) {
 				bos.write(LoraAtReader.convert(cur));
 			}
 		} catch (IOException e) {
 			LOG.error("[{}] unable to save beacons", req.getId(), e);
+			return null;
+		} finally {
+			device.getFrames().clear();
 		}
-		device.getFrames().clear();
 		LOG.info("[{}] observation completed", req.getId());
 		IQData result = new IQData();
 		result.setActualStart(startTimeMillis);
 		result.setActualEnd(endTimeMillis);
-		result.setDataFile(rawFile);
+		result.setDataFile(rawFile.toFile());
 		return result;
 	}
 
