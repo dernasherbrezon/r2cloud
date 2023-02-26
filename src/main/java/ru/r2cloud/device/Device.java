@@ -50,7 +50,7 @@ public abstract class Device implements Lifecycle {
 	private static final Logger LOG = LoggerFactory.getLogger(Device.class);
 	public static final Long PARTIAL_TOLERANCE_MILLIS = 60 * 4 * 1000L;
 
-	private final String id;
+	protected final String id;
 	private final List<Transmitter> scheduledTransmitters = new ArrayList<>();
 	private final TransmitterFilter filter;
 	private final Schedule schedule;

@@ -62,7 +62,7 @@ public class LoraAtBleDevice extends Device {
 	}
 
 	public void setStatus(int batteryLevel, int signalLevel) {
-		LOG.info("level: {} signal: {}", batteryLevel, signalLevel);
+		LOG.info("[{}] battery level: {} signal: {}", id, batteryLevel, signalLevel);
 		if (batteryLevel == 255) {
 			this.batteryLevel = null;
 		} else {
