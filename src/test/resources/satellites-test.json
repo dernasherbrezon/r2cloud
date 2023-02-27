@@ -23,7 +23,7 @@
 		"transmitters": [
 			{
 				"modulation": "GFSK",
-				"framing": "CUSTOM",
+				"framing": "AX25G3RUH",
 				"beaconClass": "ru.r2cloud.jradio.delfipq.DelfiPqBeacon",
 				"frequency": 436650000,
 				"bandwidth": 5000,
@@ -394,7 +394,7 @@
 		"transmitters": [
 			{
 				"modulation": "GFSK",
-				"framing": "CUSTOM",
+				"framing": "AX25G3RUH",
 				"beaconClass": "ru.r2cloud.jradio.strand1.Strand1Beacon",
 				"frequency": 437568000,
 				"bandwidth": 20000,

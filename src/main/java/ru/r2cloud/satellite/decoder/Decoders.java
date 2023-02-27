@@ -58,7 +58,6 @@ public class Decoders {
 		index("43137", "43137-0", new FoxDecoder<>(predict, props, Fox1DBeacon.class));
 		index("43855", "43855-0", new ChompttDecoder(predict, props));
 		index("41789", "41789-0", new Alsat1nDecoder(predict, props));
-		index("39090", "39090-0", new Strand1Decoder(predict, props));
 		index("46495", "46495-0", new SalsatDecoder(predict, props));
 		index("42790", "42790-0", new Gomx1Decoder(predict, props, CspBeacon.class, false, true, true));
 		index("49017", "49017-0", new ItSpinsDecoder(predict, props, Ax25Beacon.class));
@@ -67,7 +66,6 @@ public class Decoders {
 		index("47951", "47951-0", new UspDecoder(predict, props, UspBeacon.class));
 		index("47963", "47963-0", new Diy1Decoder(predict, props));
 		index("47964", "47964-0", new Smog1Decoder(predict, props));
-		index("51074", "51074-0", new DelfiPqDecoder(predict, props));
 		index("51439", "51439-0", new GaspacsDecoder(predict, props));
 		index("53385", "53385-0", new GeoscanDecoder(predict, props));
 		index("53108", "53108-0", new CcsdsDecoder(predict, props, TransferFrame.class));
