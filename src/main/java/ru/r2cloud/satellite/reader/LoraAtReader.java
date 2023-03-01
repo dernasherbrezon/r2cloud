@@ -88,7 +88,7 @@ public class LoraAtReader implements IQReader {
 		result.setRawData(frame.getData());
 		RxMetadata meta = new RxMetadata();
 		meta.setFrequencyError((long) frame.getFrequencyError());
-		meta.setRssi(frame.getRssi());
+		meta.setRssi((float) frame.getRssi());
 		meta.setSnr(frame.getSnr());
 		result.setRxMeta(meta);
 		return result;

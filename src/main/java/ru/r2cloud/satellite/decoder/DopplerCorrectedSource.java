@@ -32,22 +32,26 @@ public class DopplerCorrectedSource implements FloatInput {
 	private final FloatInput input;
 
 	public DopplerCorrectedSource(PredictOreKit predict, File rawIq, ObservationRequest req, Transmitter transmitter) throws IOException {
+		this(predict, rawIq, req, transmitter, false);
+	}
+
+	public DopplerCorrectedSource(PredictOreKit predict, File rawIq, ObservationRequest req, Transmitter transmitter, boolean snrAnalysis) throws IOException {
 		Long totalBytes = Util.readTotalBytes(rawIq.toPath());
 		if (totalBytes == null) {
 			throw new IllegalArgumentException("unable to read total samples");
 		}
 
-		FloatInput source;
+		FloatInput next;
 		InputStream is = new BufferedInputStream(new FileInputStream(rawIq));
 		if (rawIq.toString().endsWith(".gz")) {
 			is = new GZIPInputStream(is);
 		}
 		switch (req.getSdrType()) {
 		case RTLSDR:
-			source = new RtlSdr(is, req.getSampleRate(), totalBytes / 2);
+			next = new RtlSdr(is, req.getSampleRate(), totalBytes / 2);
 			break;
 		case PLUTOSDR:
-			source = new PlutoSdr(is, req.getSampleRate(), totalBytes / 4);
+			next = new PlutoSdr(is, req.getSampleRate(), totalBytes / 4);
 			break;
 		case SDRSERVER:
 			Context ctx = new Context();
@@ -55,7 +59,7 @@ public class DopplerCorrectedSource implements FloatInput {
 			ctx.setSampleSizeInBits(4 * 8); // float = 4 bytes
 			ctx.setSampleRate(req.getSampleRate());
 			ctx.setTotalSamples(totalBytes / 8);
-			source = new InputStreamSource(is, ctx);
+			next = new InputStreamSource(is, ctx);
 			break;
 		default:
 			Util.closeQuietly(is);
@@ -68,18 +72,31 @@ public class DopplerCorrectedSource implements FloatInput {
 
 		long maxOffset = Math.max(Math.abs(transmitter.getFrequency() - startFrequency), Math.abs(transmitter.getFrequency() - endFrequency));
 
-		long finalBandwidth = maxOffset + transmitter.getBandwidth() / 2;
+		int decimation = req.getSampleRate() / transmitter.getOutputSampleRate();
+		if (snrAnalysis) {
+			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) next.getContext().getSampleRate(), new DopplerValueSource(next.getContext().getSampleRate(), transmitter.getFrequency(), 1000L, req.getStartTimeMillis()) {
 
-		float[] taps = Firdes.lowPass(1.0, source.getContext().getSampleRate(), finalBandwidth, 1600, Window.WIN_HAMMING, 6.76);
-		FrequencyXlatingFIRFilter xlating = new FrequencyXlatingFIRFilter(source, taps, req.getSampleRate() / transmitter.getOutputSampleRate(), (double) transmitter.getFrequency() - req.getActualFrequency());
-		SigSource source2 = new SigSource(Waveform.COMPLEX, (long) xlating.getContext().getSampleRate(), new DopplerValueSource(xlating.getContext().getSampleRate(), transmitter.getFrequency(), 1000L, req.getStartTimeMillis()) {
+				@Override
+				public long getDopplerFrequency(long satelliteFrequency, long currentTimeMillis) {
+					return predict.getDownlinkFreq(satelliteFrequency, currentTimeMillis, groundStation, tlePropagator);
+				}
+			}, 1.0);
+			next = new Multiply(next, source2);
+			float[] taps = Firdes.lowPass(1.0, next.getContext().getSampleRate(), transmitter.getBandwidth(), 1600, Window.WIN_HAMMING, 6.76);
+			input = new FrequencyXlatingFIRFilter(next, taps, decimation, (double) transmitter.getFrequency() - req.getActualFrequency());
+		} else {
+			float[] taps = Firdes.lowPass(1.0, next.getContext().getSampleRate(), maxOffset + transmitter.getBandwidth() / 2, 1600, Window.WIN_HAMMING, 6.76);
+			next = new FrequencyXlatingFIRFilter(next, taps, decimation, (double) transmitter.getFrequency() - req.getActualFrequency());
+			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) next.getContext().getSampleRate(), new DopplerValueSource(next.getContext().getSampleRate(), transmitter.getFrequency(), 1000L, req.getStartTimeMillis()) {
 
-			@Override
-			public long getDopplerFrequency(long satelliteFrequency, long currentTimeMillis) {
-				return predict.getDownlinkFreq(satelliteFrequency, currentTimeMillis, groundStation, tlePropagator);
-			}
-		}, 1.0);
-		input = new Multiply(xlating, source2);
+				@Override
+				public long getDopplerFrequency(long satelliteFrequency, long currentTimeMillis) {
+					return predict.getDownlinkFreq(satelliteFrequency, currentTimeMillis, groundStation, tlePropagator);
+				}
+			}, 1.0);
+			input = new Multiply(next, source2);
+		}
+
 	}
 
 	@Override

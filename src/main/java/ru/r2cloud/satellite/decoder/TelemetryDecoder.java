@@ -21,6 +21,7 @@ import ru.r2cloud.jradio.FloatInput;
 import ru.r2cloud.jradio.demod.AfskDemodulator;
 import ru.r2cloud.jradio.demod.BpskDemodulator;
 import ru.r2cloud.jradio.demod.FskDemodulator;
+import ru.r2cloud.jradio.sink.SnrCalculator;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.DemodulatorType;
 import ru.r2cloud.model.ObservationRequest;
@@ -36,10 +37,12 @@ public abstract class TelemetryDecoder implements Decoder {
 
 	protected final Configuration config;
 	protected final PredictOreKit predict;
+	private final boolean calculateSnr;
 
 	public TelemetryDecoder(PredictOreKit predict, Configuration config) {
 		this.config = config;
 		this.predict = predict;
+		this.calculateSnr = config.getBoolean("satellites.snr");
 	}
 
 	@Override
@@ -56,23 +59,33 @@ public abstract class TelemetryDecoder implements Decoder {
 		File binFile = new File(config.getTempDirectory(), req.getId() + ".bin");
 		List<BeaconSource<? extends Beacon>> input = null;
 		try (BeaconOutputStream aos = new BeaconOutputStream(new FileOutputStream(binFile))) {
-			input = createBeaconSources(rawIq, req, transmitter);
-			for (int i = 0; i < input.size(); i++) {
-				if (Thread.currentThread().isInterrupted()) {
-					LOG.info("decoding thread interrupted. stopping...");
-					break;
-				}
-				// process each beaconsource
-				BeaconSource<? extends Beacon> currentInput = input.get(i);
-				try {
-					while (currentInput.hasNext()) {
-						Beacon next = currentInput.next();
-						next.setBeginMillis(req.getStartTimeMillis() + (long) ((next.getBeginSample() * 1000) / sampleRate));
-						aos.write(next);
-						numberOfDecodedPackets++;
+			for (Integer baudRate : transmitter.getBaudRates()) {
+				input = createBeaconSources(rawIq, req, transmitter, baudRate);
+				for (int i = 0; i < input.size(); i++) {
+					if (Thread.currentThread().isInterrupted()) {
+						LOG.info("decoding thread interrupted. stopping...");
+						break;
 					}
-				} finally {
-					Util.closeQuietly(currentInput);
+					// process each beaconsource
+					BeaconSource<? extends Beacon> currentInput = input.get(i);
+					try {
+						List<Beacon> beacons = new ArrayList<>();
+						while (currentInput.hasNext()) {
+							Beacon next = currentInput.next();
+							next.setBeginMillis(req.getStartTimeMillis() + (long) ((next.getBeginSample() * 1000) / sampleRate));
+							beacons.add(next);
+							numberOfDecodedPackets++;
+						}
+						if (calculateSnr) {
+							FloatInput next = new DopplerCorrectedSource(predict, rawIq, req, transmitter, true);
+							SnrCalculator.enrichSnr(next, beacons, transmitter.getBandwidth(), (int) (req.getSampleRate() / transmitter.getOutputSampleRate()));
+						}
+						for (Beacon cur : beacons) {
+							aos.write(cur);
+						}
+					} finally {
+						Util.closeQuietly(currentInput);
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -88,22 +101,18 @@ public abstract class TelemetryDecoder implements Decoder {
 		return result;
 	}
 
-	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, ObservationRequest req, final Transmitter transmitter) throws IOException {
+	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, ObservationRequest req, final Transmitter transmitter, Integer baudRate) throws IOException {
 		DemodulatorType type = config.getDemodulatorType(transmitter.getModulation());
 		List<BeaconSource<? extends Beacon>> result = new ArrayList<>(transmitter.getBaudRates().size());
 		switch (type) {
 		case JRADIO:
-			for (Integer cur : transmitter.getBaudRates()) {
-				ByteInput demodulator = createDemodulator(new DopplerCorrectedSource(predict, rawIq, req, transmitter), transmitter, cur);
-				result.add(createBeaconSource(demodulator, req));
-			}
+			ByteInput demodulator = createDemodulator(new DopplerCorrectedSource(predict, rawIq, req, transmitter), transmitter, baudRate);
+			result.add(createBeaconSource(demodulator, req));
 			break;
 		case SDRMODEM:
-            for (Integer cur : transmitter.getBaudRates()) {
-                ByteInput demodulator = new SdrModemClient(config, rawIq, req, transmitter, cur);
-                result.add(createBeaconSource(demodulator, req));
-            }
-            break;
+			demodulator = new SdrModemClient(config, rawIq, req, transmitter, baudRate);
+			result.add(createBeaconSource(demodulator, req));
+			break;
 		default:
 			LOG.error("unknown demodulator type: " + type);
 			return Collections.emptyList();

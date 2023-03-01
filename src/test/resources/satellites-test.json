@@ -943,7 +943,7 @@
 				"framing": "CUSTOM",
 				"beaconClass": "ru.r2cloud.jradio.chomptt.ChompttBeacon",
 				"frequency": 437560000,
-				"bandwidth": 10000,
+				"bandwidth": 15000,
 				"baudRates": [
 					1200
 				],
@@ -1232,7 +1232,6 @@
 				"beaconClass": "ru.r2cloud.jradio.astrocast.Astrocast9k6Beacon",
 				"frequency": 437150000,
 				"bandwidth": 20000,
-				"deviation": 10000,
 				"baudRates": [
 					9600
 				]

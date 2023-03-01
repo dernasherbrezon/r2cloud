@@ -41,22 +41,29 @@ public class FoxDecoder<T extends Beacon> extends FoxSlowDecoder<T> {
 	}
 
 	@Override
-	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, ObservationRequest req, final Transmitter transmitter) throws IOException {
+	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, ObservationRequest req, final Transmitter transmitter, Integer baudRate) throws IOException {
 		List<BeaconSource<? extends Beacon>> result = new ArrayList<>();
-		// slow fox
-		DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req, transmitter);
-		FskDemodulator byteInput = new FskDemodulator(source, 200, 1500.0f, 120, 200.0f);
-		result.add(createBeaconSource(byteInput, req));
-
-		DopplerCorrectedSource source2 = new DopplerCorrectedSource(predict, rawIq, req, transmitter);
-		GmskDemodulator gmsk = new GmskDemodulator(source2, 9600, transmitter.getBandwidth(), 0.175f * 3);
-		SoftToHard s2h = new SoftToHard(gmsk);
-		Set<String> codes = new HashSet<>();
-		codes.add("0011111010");
-		codes.add("1100000101");
-		CorrelateSyncword correlate = new CorrelateSyncword(s2h, 0, codes, HighSpeedFox.HIGH_SPEED_FRAME_SIZE * 10);
-		result.add(new HighSpeedFox<>(correlate, Fox1DBeacon.class));
-
+		switch (baudRate) {
+		case 200: {
+			DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req, transmitter);
+			FskDemodulator byteInput = new FskDemodulator(source, 200, 1500.0f, 120, 200.0f);
+			result.add(createBeaconSource(byteInput, req));
+			break;
+		}
+		case 9600: {
+			DopplerCorrectedSource source2 = new DopplerCorrectedSource(predict, rawIq, req, transmitter);
+			GmskDemodulator gmsk = new GmskDemodulator(source2, 9600, transmitter.getBandwidth(), 0.175f * 3);
+			SoftToHard s2h = new SoftToHard(gmsk);
+			Set<String> codes = new HashSet<>();
+			codes.add("0011111010");
+			codes.add("1100000101");
+			CorrelateSyncword correlate = new CorrelateSyncword(s2h, 0, codes, HighSpeedFox.HIGH_SPEED_FRAME_SIZE * 10);
+			result.add(new HighSpeedFox<>(correlate, Fox1DBeacon.class));
+			break;
+		}
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + baudRate);
+		}
 		return result;
 	}
 

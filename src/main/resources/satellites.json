@@ -2864,7 +2864,7 @@
 				"framing": "CUSTOM",
 				"beaconClass": "ru.r2cloud.jradio.chomptt.ChompttBeacon",
 				"frequency": 437560000,
-				"bandwidth": 10000,
+				"bandwidth": 15000,
 				"baudRates": [
 					1200
 				],
