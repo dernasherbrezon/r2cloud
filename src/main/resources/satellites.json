@@ -1,5 +1,44 @@
 [
 	{
+		"id": "R2CLOUD223",
+		"name": "NETSAT-2",
+		"noradId": "46507",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.netsat.NetSatBeacon",
+				"frequency": 435600000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD222",
+		"name": "ORBITAL FACTORY 2 (OF-2)",
+		"noradId": "45113",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 435040000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"assistedHeader": "AAEBAAAAAAEAAQAAAAEAAQAAAAAAAAEAAAAAAAAAAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQEAAQEAAQAAAQABAQEAAAABAAEAAQABAQAAAQABAAEAAQABAAAAAAABAAEBAAEAAAEBAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD220",
 		"name": "BDSAT",
 		"noradId": "52175",
@@ -33,10 +72,10 @@
 				"status": "ENABLED",
 				"loraBandwidth": 125000,
 				"loraSpreadFactor": 9,
-				"loraCodingRate": 5,
 				"loraSyncword": 18,
 				"loraPreambleLength": 6,
-				"loraLdro": 0
+				"loraLdro": 0,
+				"loraCodingRate": 5
 			}
 		]
 	},
@@ -55,49 +94,6 @@
 				"baudRates": [
 					9600
 				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD217",
-		"name": "TSIOLKOVSKY-RYAZAN 2 (*)",
-		"noradId": "53313",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "AFSK",
-				"framing": "AX25",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 437012500,
-				"bandwidth": 20000,
-				"baudRates": [
-					1135
-				],
-				"deviation": 565,
-				"afCarrier": 1700,
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD216",
-		"name": "TSIOLKOVSKY-RYAZAN 1 (*)",
-		"noradId": "53312",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "AFSK",
-				"framing": "AX25",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 437025000,
-				"bandwidth": 20000,
-				"baudRates": [
-					1135
-				],
-				"deviation": 565,
-				"afCarrier": 1700,
-				"assistedHeader": "AAEAAAAAAAEAAAABAQAAAQAAAAEBAAABAAAAAAAAAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQEAAAEAAAEAAQABAQAAAQABAAEAAAEBAQAAAQEAAAEAAQAAAAAAAAEAAAAAAAAAAQABAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
 		]
@@ -365,25 +361,6 @@
 				"baudRates": [
 					2400,
 					9600
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD202",
-		"name": "LIGHT-1",
-		"noradId": "51509",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "CUSTOM",
-				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
-				"frequency": 437710000,
-				"bandwidth": 10000,
-				"baudRates": [
-					2400
 				],
 				"status": "ENABLED"
 			}
@@ -672,10 +649,10 @@
 				"status": "ENABLED",
 				"loraBandwidth": 125000,
 				"loraSpreadFactor": 11,
-				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 0
+				"loraLdro": 0,
+				"loraCodingRate": 8
 			}
 		]
 	},
@@ -694,10 +671,10 @@
 				"status": "ENABLED",
 				"loraBandwidth": 125000,
 				"loraSpreadFactor": 11,
-				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 0
+				"loraLdro": 0,
+				"loraCodingRate": 8
 			}
 		]
 	},
@@ -716,10 +693,10 @@
 				"status": "ENABLED",
 				"loraBandwidth": 125000,
 				"loraSpreadFactor": 11,
-				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 0
+				"loraLdro": 0,
+				"loraCodingRate": 8
 			}
 		]
 	},
@@ -738,10 +715,10 @@
 				"status": "ENABLED",
 				"loraBandwidth": 62500,
 				"loraSpreadFactor": 8,
-				"loraCodingRate": 6,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 0
+				"loraLdro": 0,
+				"loraCodingRate": 6
 			}
 		]
 	},
@@ -760,10 +737,10 @@
 				"status": "ENABLED",
 				"loraBandwidth": 62500,
 				"loraSpreadFactor": 8,
-				"loraCodingRate": 6,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 0
+				"loraLdro": 0,
+				"loraCodingRate": 6
 			}
 		]
 	},
@@ -791,7 +768,7 @@
 		"id": "R2CLOUD179",
 		"name": "RS20S (GEOSCAN-EDELVEIS)",
 		"noradId": "53385",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
@@ -1088,10 +1065,10 @@
 				"status": "ENABLED",
 				"loraBandwidth": 62500,
 				"loraSpreadFactor": 10,
-				"loraCodingRate": 5,
 				"loraSyncword": 42,
 				"loraPreambleLength": 8,
-				"loraLdro": 0
+				"loraLdro": 0,
+				"loraCodingRate": 5
 			}
 		]
 	},
@@ -1110,10 +1087,10 @@
 				"status": "ENABLED",
 				"loraBandwidth": 125000,
 				"loraSpreadFactor": 11,
-				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 0
+				"loraLdro": 0,
+				"loraCodingRate": 8
 			}
 		]
 	},
@@ -1132,10 +1109,10 @@
 				"status": "ENABLED",
 				"loraBandwidth": 125000,
 				"loraSpreadFactor": 11,
-				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 0
+				"loraLdro": 0,
+				"loraCodingRate": 8
 			}
 		]
 	},
@@ -1154,10 +1131,10 @@
 				"status": "ENABLED",
 				"loraBandwidth": 125000,
 				"loraSpreadFactor": 11,
-				"loraCodingRate": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 0
+				"loraLdro": 0,
+				"loraCodingRate": 8
 			}
 		]
 	},
@@ -1431,10 +1408,10 @@
 				"status": "ENABLED",
 				"loraBandwidth": 125000,
 				"loraSpreadFactor": 9,
-				"loraCodingRate": 5,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 0
+				"loraLdro": 0,
+				"loraCodingRate": 5
 			}
 		]
 	},
@@ -2147,26 +2124,6 @@
 		]
 	},
 	{
-		"id": "R2CLOUD95",
-		"name": "INNOSAT-2",
-		"noradId": "43738",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX100",
-				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
-				"beaconSizeBytes": 512,
-				"frequency": 435500000,
-				"bandwidth": 15000,
-				"baudRates": [
-					4800
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
 		"id": "R2CLOUD94",
 		"name": "MEZNSAT",
 		"noradId": "46489",
@@ -2405,10 +2362,10 @@
 				"status": "ENABLED",
 				"loraBandwidth": 250000,
 				"loraSpreadFactor": 10,
-				"loraCodingRate": 5,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
-				"loraLdro": 0
+				"loraLdro": 0,
+				"loraCodingRate": 5
 			}
 		]
 	},
@@ -3426,10 +3383,11 @@
 				"modulation": "GFSK",
 				"framing": "CUSTOM",
 				"beaconClass": "ru.r2cloud.jradio.aausat4.Aausat4Beacon",
-				"frequency": 437424000,
+				"frequency": 437425000,
 				"bandwidth": 7000,
 				"baudRates": [
-					2400
+					2400,
+					9600
 				],
 				"deviation": 2500,
 				"status": "ENABLED"
