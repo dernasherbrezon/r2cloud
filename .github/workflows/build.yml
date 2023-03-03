@@ -70,10 +70,9 @@ jobs:
     - name: Deploy
       if: github.ref == 'refs/heads/master'
       run: |
+        ls -lh ./target/
         cd ./target/
         wget --no-clobber --quiet -O ~/.m2/repository/apt-cli-1.6.jar https://github.com/dernasherbrezon/apt-cli/releases/download/apt-cli-1.6/apt-cli.jar
-        echo ${{ secrets.PASSPHRASE }} | /usr/lib/gnupg2/gpg-preset-passphrase -c C4646FB23638AE9010EB1F7F37A0505CF4C5B746
-        echo ${{ secrets.PASSPHRASE }} | /usr/lib/gnupg2/gpg-preset-passphrase -c 9B66E29FF6DDAD62FA3F2570E02775B6EFAF6609
         java -jar ~/.m2/repository/apt-cli-1.6.jar --url s3://r2cloud --component main --codename r2cloud --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
         java -jar ~/.m2/repository/apt-cli-1.6.jar --url s3://r2cloud --component main --codename stretch --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
         java -jar ~/.m2/repository/apt-cli-1.6.jar --url s3://r2cloud --component main --codename buster --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
