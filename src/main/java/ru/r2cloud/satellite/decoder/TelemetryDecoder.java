@@ -66,25 +66,26 @@ public abstract class TelemetryDecoder implements Decoder {
 						LOG.info("decoding thread interrupted. stopping...");
 						break;
 					}
+					List<Beacon> beacons = new ArrayList<>();
 					// process each beaconsource
 					BeaconSource<? extends Beacon> currentInput = input.get(i);
 					try {
-						List<Beacon> beacons = new ArrayList<>();
 						while (currentInput.hasNext()) {
 							Beacon next = currentInput.next();
 							next.setBeginMillis(req.getStartTimeMillis() + (long) ((next.getBeginSample() * 1000) / sampleRate));
 							beacons.add(next);
 							numberOfDecodedPackets++;
 						}
-						if (calculateSnr) {
-							FloatInput next = new DopplerCorrectedSource(predict, rawIq, req, transmitter, true);
-							SnrCalculator.enrichSnr(next, beacons, transmitter.getBandwidth(), (int) (req.getSampleRate() / transmitter.getOutputSampleRate()));
-						}
-						for (Beacon cur : beacons) {
-							aos.write(cur);
-						}
 					} finally {
 						Util.closeQuietly(currentInput);
+					}
+					if (calculateSnr) {
+						try (FloatInput next = new DopplerCorrectedSource(predict, rawIq, req, transmitter, true)) {
+							SnrCalculator.enrichSnr(next, beacons, transmitter.getBandwidth(), (int) (req.getSampleRate() / transmitter.getOutputSampleRate()));
+						}
+					}
+					for (Beacon cur : beacons) {
+						aos.write(cur);
 					}
 				}
 			}

@@ -13,6 +13,7 @@ import com.eclipsesource.json.JsonValue;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconInputStream;
+import ru.r2cloud.jradio.RxMetadata;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
@@ -108,10 +109,17 @@ public class ObservationLoad extends AbstractHttpController {
 			convertObject.asObject().remove("rawData").remove("beginMillis").remove("beginSample").remove("rxMeta");
 			result.add("body", convertObject);
 		}
-		if (b.getRxMeta() != null && b.getRxMeta().getFrequencyError() != 0) {
-			result.add("frequencyError", b.getRxMeta().getFrequencyError());
-			result.add("rssi", b.getRxMeta().getRssi());
-			result.add("snr", b.getRxMeta().getSnr());
+		RxMetadata rxMeta = b.getRxMeta();
+		if (rxMeta != null) {
+			if (rxMeta.getFrequencyError() != null) {
+				result.add("frequencyError", rxMeta.getFrequencyError());
+			}
+			if (rxMeta.getRssi() != null) {
+				result.add("rssi", rxMeta.getRssi());
+			}
+			if (rxMeta.getSnr() != null) {
+				result.add("snr", rxMeta.getSnr());
+			}
 		}
 		return result;
 	}

@@ -58,7 +58,8 @@ public class SdrModemClient implements ByteInput {
 		// try to restore sample from the input file
 		// MM clock sync can skip more or less than decimation
 		// shouldn't affect much
-		this.ctx.setCurrentSample(() -> (long) (framePos * Util.convertDecimation(transmitter.getBaudRates().get(0))));
+		// formula: current symbol * sps * decimation
+		this.ctx.setCurrentSample(() -> (long) (framePos * transmitter.getInputSampleRate() / baudRate));
 	}
 
 	@Override

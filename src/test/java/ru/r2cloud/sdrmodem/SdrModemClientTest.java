@@ -1,16 +1,18 @@
 package ru.r2cloud.sdrmodem;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.BindException;
 import java.net.Socket;
-import java.util.UUID;
 
 import org.junit.After;
 import org.junit.Before;
@@ -20,13 +22,27 @@ import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.AssertJson;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
+import ru.r2cloud.jradio.BeaconInputStream;
+import ru.r2cloud.jradio.ByteInput;
+import ru.r2cloud.jradio.FloatInput;
+import ru.r2cloud.jradio.delfipq.DelfiPqBeacon;
+import ru.r2cloud.jradio.demod.FskDemodulator;
+import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.Transmitter;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.SatelliteDao;
+import ru.r2cloud.satellite.decoder.Decoder;
+import ru.r2cloud.satellite.decoder.Decoders;
+import ru.r2cloud.satellite.decoder.DopplerCorrectedSource;
 import ru.r2cloud.sdrmodem.SdrmodemApi.Response;
+import ru.r2cloud.sdrmodem.SdrmodemApi.RxRequest;
 import ru.r2cloud.sdrmodem.SdrmodemApi.response_status;
+import ru.r2cloud.util.Util;
 
 public class SdrModemClientTest {
 
@@ -37,12 +53,17 @@ public class SdrModemClientTest {
 
 	private TestConfiguration config;
 	private SdrModemMock modem;
-	private SdrModemClient client;
 	private SatelliteDao dao;
 	private int serverPort;
+	private Decoders decoders;
+	private PredictOreKit predict;
 
 	@Test
 	public void testSuccess() throws Exception {
+		Satellite satellite = dao.findById("51074");
+		Transmitter transmitter = satellite.getById("51074-0");
+		ObservationRequest req = TestUtil.loadObservation("data/delfipq.raw.gz.json").getReq();
+
 		final SdrMessage actual = new SdrMessage();
 		modem.setHandler(new SdrModemHandler() {
 
@@ -55,6 +76,11 @@ public class SdrModemClientTest {
 				byte[] payload = new byte[messageLength];
 				dis.readFully(payload);
 				actual.setMessage(payload);
+
+				RxRequest rx = RxRequest.parseFrom(new ByteArrayInputStream(payload));
+				FloatInput next = new DopplerCorrectedSource(predict, new File(rx.getFileSettings().getFilename()), req, transmitter);
+				ByteInput input = new FskDemodulator(next, rx.getDemodBaudRate(), transmitter.getDeviation(), Util.convertDecimation(rx.getDemodBaudRate()), transmitter.getTransitionWidth(), true);
+
 				DataOutputStream out = new DataOutputStream(client.getOutputStream());
 				out.writeByte(0);
 				out.writeByte(MessageType.RESPONSE.getCode());
@@ -64,26 +90,30 @@ public class SdrModemClientTest {
 				byte[] output = response.build().toByteArray();
 				out.writeInt(output.length);
 				out.write(output);
-				out.write(new byte[] { (byte) 0xca, (byte) 0xfe });
+
+				try {
+					while (true) {
+						out.writeByte(input.readByte());
+					}
+				} catch (EOFException e) {
+					return;
+				} finally {
+					input.close();
+				}
 			}
 		});
-		File nonExistingFile = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
-		// just load some observation
-		ObservationRequest req = TestUtil.loadObservation("data/aausat.raw.gz.json").getReq();
-		Satellite satellite = dao.findById("41460");
-		client = new SdrModemClient(config, nonExistingFile, req, satellite.getById("41460-0"), 2400);
-		assertEquals(0xca, client.readByte() & 0xFF);
-		assertEquals(0xfe, client.readByte() & 0xFF);
+
+		File wav = TestUtil.setupClasspathResource(tempFolder, "data/delfipq.raw.gz");
+		Decoder decoder = decoders.findByTransmitter(transmitter);
+		DecoderResult result = decoder.decode(wav, req, transmitter);
+		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
+		try (BeaconInputStream<DelfiPqBeacon> source = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(result.getDataPath())), DelfiPqBeacon.class)) {
+			assertTrue(source.hasNext());
+			AssertJson.assertObjectsEqual("DelfiPqBeacon.json", source.next());
+		}
 
 		assertEquals(0, actual.getProtocolVersion());
 		assertEquals(MessageType.RX_REQUEST, actual.getType());
-
-		try {
-			client.readByte();
-			fail("eof expected");
-		} catch (EOFException e) {
-			// ignore
-		}
 	}
 
 	@Before
@@ -93,14 +123,16 @@ public class SdrModemClientTest {
 		config.setProperty("sdrmodem.host", "127.0.0.1");
 		config.setProperty("sdrmodem.port", serverPort);
 		config.setProperty("sdrmodem.timeout", "1000");
+		config.setProperty("satellites.snr", true);
+		config.setProperty("satellites.sdr", "SDRSERVER");
+		config.setProperty("satellites.demod.GFSK", "SDRMODEM");
 		dao = new SatelliteDao(config);
+		predict = new PredictOreKit(config);
+		decoders = new Decoders(predict, config, null);
 	}
 
 	@After
 	public void stop() throws Exception {
-		if (client != null) {
-			client.close();
-		}
 		if (modem != null) {
 			modem.stop();
 		}
@@ -123,8 +155,6 @@ public class SdrModemClientTest {
 		if (modem == null) {
 			throw new RuntimeException("unable to start mock server");
 		}
-//		requestHandler = new CollectingRequestHandler("RPRT 0\n");
-//		serverMock.setHandler(requestHandler);
 	}
 
 }
