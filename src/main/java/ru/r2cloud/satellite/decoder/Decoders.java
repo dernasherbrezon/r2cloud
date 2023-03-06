@@ -13,6 +13,7 @@ import ru.r2cloud.jradio.csp.CspBeacon;
 import ru.r2cloud.jradio.fox.Fox1BBeacon;
 import ru.r2cloud.jradio.fox.Fox1CBeacon;
 import ru.r2cloud.jradio.fox.Fox1DBeacon;
+import ru.r2cloud.jradio.gomx1.Gomx1Beacon;
 import ru.r2cloud.jradio.usp.UspBeacon;
 import ru.r2cloud.model.DecoderKey;
 import ru.r2cloud.model.Framing;
@@ -35,7 +36,7 @@ public class Decoders {
 		this.props = props;
 		this.processFactory = processFactory;
 		index("32789", "32789-0", new DelfiC3Decoder(predict, props));
-		index("39430", "39430-0", new Gomx1Decoder(predict, props));
+		index("39430", "39430-0", new U482cDecoder(predict, props, Gomx1Beacon.class));
 		index("39444", "39444-0", new Ao73Decoder(predict, props));
 		index("41460", "41460-0", new Aausat4Decoder(predict, props));
 		index("42017", "42017-0", new Nayif1Decoder(predict, props));
@@ -59,7 +60,7 @@ public class Decoders {
 		index("43855", "43855-0", new ChompttDecoder(predict, props));
 		index("41789", "41789-0", new Alsat1nDecoder(predict, props));
 		index("46495", "46495-0", new SalsatDecoder(predict, props));
-		index("42790", "42790-0", new Gomx1Decoder(predict, props, CspBeacon.class, false, true, true));
+		index("42790", "42790-0", new U482cDecoder(predict, props, CspBeacon.class));
 		index("49017", "49017-0", new ItSpinsDecoder(predict, props, Ax25Beacon.class));
 		index("47960", "47960-0", new UspDecoder(predict, props, UspBeacon.class));
 		index("47952", "47952-0", new UspDecoder(predict, props, UspBeacon.class));
@@ -108,6 +109,8 @@ public class Decoders {
 			return new Ax25Decoder(predict, props, transmitter.getBeaconClass(), transmitter.getAssistedHeader());
 		} else if (transmitter.getFraming().equals(Framing.AX100)) {
 			return new Ax100Decoder(predict, props, transmitter.getBeaconClass());
+		} else if (transmitter.getFraming().equals(Framing.U482C)) {
+			return new U482cDecoder(predict, props, transmitter.getBeaconClass());
 		} else if (transmitter.getFraming().equals(Framing.USP)) {
 			return new UspDecoder(predict, props, transmitter.getBeaconClass());
 		} else if (transmitter.getFraming().equals(Framing.TUBIX20)) {

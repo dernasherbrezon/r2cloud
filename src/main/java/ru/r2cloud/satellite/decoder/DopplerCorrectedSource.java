@@ -85,7 +85,7 @@ public class DopplerCorrectedSource implements FloatInput {
 			float[] taps = Firdes.lowPass(1.0, next.getContext().getSampleRate(), transmitter.getBandwidth(), 1600, Window.WIN_HAMMING, 6.76);
 			input = new FrequencyXlatingFIRFilter(next, taps, decimation, (double) transmitter.getFrequency() - req.getActualFrequency());
 		} else {
-			float[] taps = Firdes.lowPass(1.0, next.getContext().getSampleRate(), maxOffset + transmitter.getBandwidth() / 2, 1600, Window.WIN_HAMMING, 6.76);
+			float[] taps = Firdes.lowPass(1.0, next.getContext().getSampleRate(), maxOffset + (double) transmitter.getBandwidth() / 2, 1600, Window.WIN_HAMMING, 6.76);
 			next = new FrequencyXlatingFIRFilter(next, taps, decimation, (double) transmitter.getFrequency() - req.getActualFrequency());
 			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) next.getContext().getSampleRate(), new DopplerValueSource(next.getContext().getSampleRate(), transmitter.getFrequency(), 1000L, req.getStartTimeMillis()) {
 

@@ -79,9 +79,9 @@ public abstract class TelemetryDecoder implements Decoder {
 					} finally {
 						Util.closeQuietly(currentInput);
 					}
-					if (calculateSnr) {
+					if (calculateSnr && !beacons.isEmpty()) {
 						try (FloatInput next = new DopplerCorrectedSource(predict, rawIq, req, transmitter, true)) {
-							SnrCalculator.enrichSnr(next, beacons, transmitter.getBandwidth(), (int) (req.getSampleRate() / transmitter.getOutputSampleRate()));
+							SnrCalculator.enrichSnr(next, beacons, transmitter.getBandwidth(), req.getSampleRate() / transmitter.getOutputSampleRate());
 						}
 					}
 					for (Beacon cur : beacons) {
