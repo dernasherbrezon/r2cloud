@@ -144,7 +144,11 @@ public class Satellite {
 		result.setName(meta.getString("name", null));
 		String priorityStr = meta.getString("priority", null);
 		if (priorityStr != null) {
-			result.setPriority(Priority.valueOf(priorityStr));
+			try {
+				result.setPriority(Priority.valueOf(priorityStr));
+			} catch (IllegalArgumentException e) {
+				return null;
+			}
 		} else {
 			result.setPriority(Priority.NORMAL);
 		}

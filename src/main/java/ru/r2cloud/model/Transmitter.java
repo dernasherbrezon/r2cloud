@@ -38,7 +38,7 @@ public class Transmitter {
 	private int loraPreambleLength;
 	private int loraLdro;
 	private boolean loraExplicitHeader;
-	// should be configured only for implicit mode header. 
+	// should be configured only for implicit mode header.
 	private int loraCodingRate;
 	private boolean loraCrc;
 	private TransmitterStatus status;
@@ -382,11 +382,19 @@ public class Transmitter {
 		}
 		JsonValue modulation = asObject.get("modulation");
 		if (modulation != null) {
-			result.setModulation(Modulation.valueOf(modulation.asString()));
+			try {
+				result.setModulation(Modulation.valueOf(modulation.asString()));
+			} catch (IllegalArgumentException e) {
+				return null;
+			}
 		}
 		JsonValue framing = asObject.get("framing");
 		if (framing != null) {
-			result.setFraming(Framing.valueOf(framing.asString()));
+			try {
+				result.setFraming(Framing.valueOf(framing.asString()));
+			} catch (IllegalArgumentException e) {
+				return null;
+			}
 		}
 		JsonValue beaconClass = asObject.get("beaconClass");
 		if (beaconClass != null) {
@@ -468,7 +476,11 @@ public class Transmitter {
 		}
 		JsonValue status = asObject.get("status");
 		if (status != null) {
-			result.setStatus(TransmitterStatus.valueOf(status.asString()));
+			try {
+				result.setStatus(TransmitterStatus.valueOf(status.asString()));
+			} catch (IllegalArgumentException e) {
+				result.setStatus(TransmitterStatus.ENABLED);
+			}
 		} else {
 			result.setStatus(TransmitterStatus.ENABLED);
 		}
@@ -524,6 +536,8 @@ public class Transmitter {
 		if (loraLdro != 0) {
 			result.add("loraLdro", loraLdro);
 		}
+		result.add("loraExplicitHeader", loraExplicitHeader);
+		result.add("loraCrc", loraCrc);
 		if (deviation != 5000) {
 			result.add("deviation", deviation);
 		}
