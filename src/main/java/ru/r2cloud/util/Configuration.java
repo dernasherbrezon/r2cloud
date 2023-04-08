@@ -156,6 +156,14 @@ public class Configuration {
 		}
 		return Long.valueOf(strValue.trim());
 	}
+	
+	public Long getLong(String name, Long def) {
+		Long result = getLong(name);
+		if (result == null) {
+			return def;
+		}
+		return result;
+	}
 
 	public Integer getInteger(String name) {
 		String strValue = getProperty(name);

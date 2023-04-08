@@ -46,7 +46,6 @@ public class LeoSatDataClient {
 
 	private static final String OBSERVATION_BASEPATH = "/api/v1/observation";
 	private static final int MAX_RETRIES = 3;
-	private static final long GUARANTEED_PERIOD = 1000L;
 	private static final Logger LOG = LoggerFactory.getLogger(LeoSatDataClient.class);
 
 	private final HttpClient httpclient;
@@ -54,12 +53,14 @@ public class LeoSatDataClient {
 	private final Configuration config;
 	private final Duration timeout;
 	private final Clock clock;
+	private final long retryGuaranteedInterval;
 
 	public LeoSatDataClient(Configuration config, Clock clock) {
 		this.config = config;
 		this.clock = clock;
 		this.hostname = config.getProperty("leosatdata.hostname");
 		this.timeout = Duration.ofMillis(config.getInteger("leosatdata.connectionTimeout"));
+		this.retryGuaranteedInterval = config.getLong("leosatdata.retryInterval", 1000L);
 		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(timeout).build();
 	}
 
@@ -106,7 +107,8 @@ public class LeoSatDataClient {
 			return result;
 		} catch (IOException e) {
 			Util.logIOException(LOG, "unable to load new launches", e);
-			return Collections.emptyList();
+			// On any connectivity issues assume satellites not modified on the server side
+			throw new NotModifiedException();
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new IllegalStateException(e);
@@ -133,7 +135,8 @@ public class LeoSatDataClient {
 			return result;
 		} catch (IOException e) {
 			Util.logIOException(LOG, "unable to load satellites from leosatdata", e);
-			return Collections.emptyList();
+			// On any connectivity issues assume satellites not modified on the server side
+			throw new NotModifiedException();
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new IllegalStateException(e);
@@ -178,7 +181,7 @@ public class LeoSatDataClient {
 		}
 		// linear backoff with random jitter
 		try {
-			Thread.sleep(GUARANTEED_PERIOD * currentRetry + (long) (Math.random() * GUARANTEED_PERIOD * currentRetry));
+			Thread.sleep(retryGuaranteedInterval * currentRetry + (long) (Math.random() * retryGuaranteedInterval * currentRetry));
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			return CompletableFuture.failedFuture(e);
@@ -209,7 +212,7 @@ public class LeoSatDataClient {
 				Util.logIOException(LOG, false, "unable to send. retry " + currentRetry, e);
 			}
 			// linear backoff with random jitter
-			Thread.sleep(GUARANTEED_PERIOD * currentRetry + (long) (Math.random() * GUARANTEED_PERIOD * currentRetry));
+			Thread.sleep(retryGuaranteedInterval * currentRetry + (long) (Math.random() * retryGuaranteedInterval * currentRetry));
 		}
 	}
 

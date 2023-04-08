@@ -35,6 +35,7 @@ public class LeoSatDataClientTest {
 
 	private LeoSatDataServerMock server;
 	private LeoSatDataClient client;
+	private TestConfiguration config;
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -133,6 +134,15 @@ public class LeoSatDataClientTest {
 	}
 	
 	@Test(expected = NotModifiedException.class)
+	public void testLoadSatellitesWithError() throws Exception {
+		config.setProperty("leosatdata.hostname", "http://255.255.255.0");
+		config.setProperty("leosatdata.connectionTimeout", 100);
+		config.setProperty("leosatdata.retryInterval", 100);
+		client = new LeoSatDataClient(config, new DefaultClock());
+		client.loadSatellites(0);
+	}
+	
+	@Test(expected = NotModifiedException.class)
 	public void testNoUpdateSatellites() throws Exception {
 		server.setSatelliteMock(new JsonHttpResponse("r2cloudclienttest/satellite.json", 304));
 		client.loadSatellites(0);
@@ -166,6 +176,15 @@ public class LeoSatDataClientTest {
 	@Test(expected = NotModifiedException.class)
 	public void testNoUpdateLoadNewLaunch() throws Exception {
 		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunch.json", 304));
+		client.loadNewLaunches(0);
+	}
+	
+	@Test(expected = NotModifiedException.class)
+	public void tesLoadNewLaunchWithError() throws Exception {
+		config.setProperty("leosatdata.hostname", "http://255.255.255.0");
+		config.setProperty("leosatdata.connectionTimeout", 100);
+		config.setProperty("leosatdata.retryInterval", 100);
+		client = new LeoSatDataClient(config, new DefaultClock());
 		client.loadNewLaunches(0);
 	}
 
@@ -207,7 +226,7 @@ public class LeoSatDataClientTest {
 	public void start() throws Exception {
 		server = new LeoSatDataServerMock();
 		server.start();
-		TestConfiguration config = new TestConfiguration(tempFolder);
+		config = new TestConfiguration(tempFolder);
 		config.setProperty("leosatdata.hostname", server.getUrl());
 		config.setProperty("leosatdata.connectionTimeout", "1000");
 		config.setProperty("r2cloud.apiKey", UUID.randomUUID().toString());
