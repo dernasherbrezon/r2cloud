@@ -19,7 +19,7 @@ public class U482cDecoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, ObservationRequest req) {
-		return new Ax100BeaconSource<>(demodulator, 512, "11000011101010100110011001010101", clazz, false, false, false);
+		return new Ax100BeaconSource<>(demodulator, 512, "11000011101010100110011001010101", clazz, false, true, true);
 	}
 
 	@Override

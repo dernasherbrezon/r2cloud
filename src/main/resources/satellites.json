@@ -2611,7 +2611,7 @@
 				"framing": "AX25G3RUH",
 				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
 				"frequency": 437397000,
-				"bandwidth": 40000,
+				"bandwidth": 24000,
 				"baudRates": [
 					19200
 				],

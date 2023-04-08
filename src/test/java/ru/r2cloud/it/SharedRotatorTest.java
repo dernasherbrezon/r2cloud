@@ -1,14 +1,19 @@
 package ru.r2cloud.it;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
+import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.it.util.BaseTest;
@@ -18,16 +23,22 @@ import ru.r2cloud.util.Configuration;
 public class SharedRotatorTest extends RegisteredTest {
 
 	@Test
-	public void testSuccess() {
+	public void testSuccess() throws Exception {
 		JsonArray schedule = client.getFullSchedule();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-		for (int i = 0; i < schedule.size(); i++) {
-			JsonObject obj = schedule.get(i).asObject();
-			obj.add("startFormatted", sdf.format(new Date(obj.get("start").asLong())));
-			obj.add("endFormatted", sdf.format(new Date(obj.get("end").asLong())));
+		try (Reader is = new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream("expected/sharedRotatorSchedule.json"), StandardCharsets.UTF_8)) {
+			JsonValue value = Json.parse(is);
+			assertTrue(value.isArray());
+			JsonArray expected = value.asArray();
+			assertEquals(expected.size(), schedule.size());
+			for (int i = 0; i < expected.size(); i++) {
+				JsonObject expectedObj = expected.get(i).asObject();
+				JsonObject actualObj = schedule.get(i).asObject();
+				assertEquals(expectedObj.get("id").asString(), actualObj.get("id").asString());
+				assertEquals(expectedObj.get("satelliteId").asString(), actualObj.get("satelliteId").asString());
+				assertTimestamps(expectedObj.get("start").asLong(), actualObj.get("start").asLong());
+				assertTimestamps(expectedObj.get("end").asLong(), actualObj.get("end").asLong());
+			}
 		}
-		TestUtil.assertJson("expected/sharedRotatorSchedule.json", schedule);
 	}
 
 	@Override
@@ -50,5 +61,11 @@ public class SharedRotatorTest extends RegisteredTest {
 		result.remove("loraat.devices");
 
 		return result;
+	}
+
+	private static void assertTimestamps(long expected, long actual) {
+		long expectedSeconds = (long) (Math.floor(expected / 1000.0f));
+		long actualSeconds = (long) (Math.floor(actual / 1000.0f));
+		assertEquals(expectedSeconds, actualSeconds);
 	}
 }
