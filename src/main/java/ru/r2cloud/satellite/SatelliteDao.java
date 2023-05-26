@@ -3,6 +3,9 @@ package ru.r2cloud.satellite;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -39,6 +42,7 @@ public class SatelliteDao {
 	private static final String LEOSATDATA_NEW_LOCATION = "satellites.leosatdata.new.location";
 	private static final String LEOSATDATA_LOCATION = "satellites.leosatdata.location";
 	private static final Logger LOG = LoggerFactory.getLogger(SatelliteDao.class);
+	private static final String CLASSPATH_PREFIX = "classpath:";
 
 	private final Configuration config;
 	// used for proper overrides during reload
@@ -87,7 +91,12 @@ public class SatelliteDao {
 		satnogs.addAll(loadFromConfig(config.getPathFromProperty(SATNOGS_LOCATION), SatelliteSource.SATNOGS));
 
 		// default from config
-		staticSatellites.addAll(loadFromConfig(config.getPathFromProperty("satellites.meta.location"), SatelliteSource.CONFIG));
+		String metaLocation = config.getProperty("satellites.meta.location");
+		if (metaLocation.startsWith("classpath:")) {
+			staticSatellites.addAll(loadFromClasspathConfig(metaLocation.substring(CLASSPATH_PREFIX.length()), SatelliteSource.CONFIG));
+		} else {
+			staticSatellites.addAll(loadFromConfig(config.getPathFromProperty("satellites.meta.location"), SatelliteSource.CONFIG));
+		}
 
 		leosatdataLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty(LEOSATDATA_LOCATION));
 		leosatdata.addAll(loadFromConfig(config.getPathFromProperty(LEOSATDATA_LOCATION), SatelliteSource.LEOSATDATA));
@@ -258,6 +267,30 @@ public class SatelliteDao {
 		}
 	}
 
+	private static List<Satellite> loadFromClasspathConfig(String metaLocation, SatelliteSource source) {
+		List<Satellite> result = new ArrayList<>();
+		InputStream is = SatelliteDao.class.getClassLoader().getResourceAsStream(metaLocation);
+		if (is == null) {
+			return result;
+		}
+		JsonArray rawSatellites;
+		try (BufferedReader r = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+			rawSatellites = Json.parse(r).asArray();
+		} catch (Exception e) {
+			LOG.error("unable to parse satellites", e);
+			return result;
+		}
+		for (int i = 0; i < rawSatellites.size(); i++) {
+			Satellite cur = Satellite.fromJson(rawSatellites.get(i).asObject());
+			if (cur == null) {
+				continue;
+			}
+			cur.setSource(source);
+			result.add(cur);
+		}
+		return result;
+	}
+
 	private static List<Satellite> loadFromConfig(Path metaLocation, SatelliteSource source) {
 		List<Satellite> result = new ArrayList<>();
 		if (!Files.exists(metaLocation)) {
@@ -268,7 +301,7 @@ public class SatelliteDao {
 			rawSatellites = Json.parse(r).asArray();
 		} catch (Exception e) {
 			LOG.error("unable to parse satellites", e);
-			return Collections.emptyList();
+			return result;
 		}
 		for (int i = 0; i < rawSatellites.size(); i++) {
 			Satellite cur = Satellite.fromJson(rawSatellites.get(i).asObject());
