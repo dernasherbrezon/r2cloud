@@ -72,6 +72,7 @@ public class Decoders {
 		index("53108", "53108-0", new CcsdsDecoder(predict, props, TransferFrame.class));
 		index("53807", "53807-0", new BlueWalker3Decoder(predict, props, RawBeacon.class));
 		index("51509", "51509-0", new BlueWalker3Decoder(predict, props, RawBeacon.class));
+		index("56180", "56180-0", new BlueWalker3Decoder(predict, props, RawBeacon.class));
 	}
 
 	public Decoder findByTransmitter(Transmitter transmitter) {
