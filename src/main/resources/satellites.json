@@ -1,5 +1,24 @@
 [
 	{
+		"id": "R2CLOUD250",
+		"name": "IRIS-C",
+		"noradId": "56221",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 436915000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD249",
 		"name": "DEWASAT-2",
 		"noradId": "56180",
@@ -167,11 +186,12 @@
 			{
 				"modulation": "BPSK",
 				"framing": "AX25",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"beaconClass": "ru.r2cloud.jradio.roseycub.RoseyCubesatBeacon",
 				"frequency": 436825000,
-				"bandwidth": 10000,
+				"bandwidth": 20000,
 				"baudRates": [
-					1200
+					1200,
+					9600
 				],
 				"status": "ENABLED"
 			}
@@ -269,7 +289,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"beaconClass": "ru.r2cloud.jradio.cirbe.CirbeBeacon",
 				"frequency": 437250000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -1436,9 +1456,10 @@
 				"framing": "USP",
 				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
 				"frequency": 435380000,
-				"bandwidth": 10000,
+				"bandwidth": 40000,
 				"baudRates": [
-					2400
+					2400,
+					19200
 				],
 				"status": "ENABLED"
 			}
@@ -1455,9 +1476,11 @@
 				"framing": "USP",
 				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
 				"frequency": 437750000,
-				"bandwidth": 10000,
+				"bandwidth": 20000,
 				"baudRates": [
-					2400
+					2400,
+					4800,
+					9600
 				],
 				"status": "ENABLED"
 			}
