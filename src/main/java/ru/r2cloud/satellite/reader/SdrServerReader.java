@@ -76,11 +76,7 @@ public class SdrServerReader implements IQReader {
 			}
 		} catch (IOException e) {
 			LOG.error("[{}] unable to run", req.getId(), e);
-			try {
-				socket.close();
-			} catch (IOException e1) {
-				// ignore
-			}
+			Util.closeQuietly(socket);
 			return null;
 		} finally {
 			endTimeMillis = System.currentTimeMillis();
