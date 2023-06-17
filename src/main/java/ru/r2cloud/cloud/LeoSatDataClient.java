@@ -116,8 +116,16 @@ public class LeoSatDataClient {
 	}
 
 	public List<Satellite> loadSatellites(long lastModified) throws NotModifiedException {
+		return loadSatellites(lastModified, null);
+	}
+
+	public List<Satellite> loadSatellites(long lastModified, Boolean all) throws NotModifiedException {
 		LOG.info("loading satellites from leosatdata");
-		HttpRequest request = createRequest("/api/v1/satellite", lastModified).GET().build();
+		String path = "/api/v1/satellite";
+		if (all != null) {
+			path += "?all=true";
+		}
+		HttpRequest request = createRequest(path, lastModified).GET().build();
 		try {
 			HttpResponse<String> response = sendWithRetry(request, BodyHandlers.ofString());
 			if (response.statusCode() == 304) {

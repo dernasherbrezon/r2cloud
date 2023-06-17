@@ -75,7 +75,7 @@ public class SdrServerReader implements IQReader {
 				return null;
 			}
 		} catch (IOException e) {
-			LOG.error("[{}] unable to run", req.getId(), e);
+			Util.logIOException(LOG, "[" + req.getId() + "] unable to start observation", e);
 			Util.closeQuietly(socket);
 			return null;
 		} finally {
@@ -112,11 +112,7 @@ public class SdrServerReader implements IQReader {
 				Util.logIOException(LOG, "unable to disconnect from sdr-server", e1);
 			}
 		} finally {
-			try {
-				socket.close();
-			} catch (IOException e) {
-				// ignore
-			}
+			Util.closeQuietly(socket);
 		}
 		LOG.info("[{}] disconnected", req.getId());
 		latch.countDown();
