@@ -117,7 +117,11 @@ public class ExecuteNowThreadFactory implements ThreadPoolFactory, ScheduledExec
 
 	@Override
 	public void execute(Runnable command) {
-		// do nothing
+		if (sameThread) {
+			command.run();
+		} else {
+			impl.execute(command);
+		}
 	}
 
 	@Override

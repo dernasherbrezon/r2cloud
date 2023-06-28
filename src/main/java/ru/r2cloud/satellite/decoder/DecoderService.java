@@ -1,9 +1,7 @@
 package ru.r2cloud.satellite.decoder;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
@@ -41,7 +39,6 @@ public class DecoderService implements Lifecycle {
 	private final Configuration config;
 	private final Metrics metrics;
 	private final SatelliteDao satelliteDao;
-	private final Set<String> resumed = new HashSet<>();
 
 	private Counter lrpt;
 	private Counter telemetry;
@@ -60,7 +57,6 @@ public class DecoderService implements Lifecycle {
 	public synchronized void start() {
 		lrpt = metrics.getRegistry().counter("lrpt");
 		telemetry = metrics.getRegistry().counter("telemetry");
-
 		decoderThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("decoder"));
 	}
 
@@ -72,9 +68,6 @@ public class DecoderService implements Lifecycle {
 		List<Observation> all = dao.findAll();
 		String apiKey = config.getProperty("r2cloud.apiKey");
 		for (Observation cur : all) {
-			if (resumed.contains(cur.getId())) {
-				continue;
-			}
 			if (cur.getStatus().equals(ObservationStatus.RECEIVED)) {
 				LOG.info("resuming decoding: {}", cur.getId());
 				if (cur.getRawPath() == null) {
@@ -82,37 +75,51 @@ public class DecoderService implements Lifecycle {
 					cur.setStatus(ObservationStatus.FAILED);
 					dao.update(cur);
 				} else {
-					resumed.add(cur.getId());
-					run(cur.getRawPath(), cur.getReq());
+					decode(cur.getSatelliteId(), cur.getId());
 				}
 			}
 			if (apiKey != null && cur.getStatus().equals(ObservationStatus.DECODED)) {
 				LOG.info("resume uploading: {}", cur.getId());
-				resumed.add(cur.getId());
-				decoderThread.execute(new SafeRunnable() {
-
-					@Override
-					public void safeRun() {
-						r2cloudService.uploadObservation(cur);
-						resumed.remove(cur.getId());
-					}
-				});
+				resumeUploading(cur.getSatelliteId(), cur.getId());
 			}
 		}
 	}
 
-	public void run(File dataFile, ObservationRequest request) {
+	// Skip double decode/upload using single threaded decoderThread as a queue
+	// Check status first because previous attempts might update the state on disk
+	private void resumeUploading(String satelliteId, String observationId) {
 		decoderThread.execute(new SafeRunnable() {
 
 			@Override
 			public void safeRun() {
-				runInternally(dataFile, request);
-				resumed.remove(request.getId());
+				Observation observation = dao.find(satelliteId, observationId);
+				if (observation == null) {
+					return;
+				}
+				if (observation.getStatus().equals(ObservationStatus.DECODED)) {
+					r2cloudService.uploadObservation(observation);
+				}
 			}
 		});
 	}
 
-	private void runInternally(File rawFile, ObservationRequest request) {
+	public void decode(String satelliteId, String observationId) {
+		decoderThread.execute(new SafeRunnable() {
+
+			@Override
+			public void safeRun() {
+				Observation observation = dao.find(satelliteId, observationId);
+				if (observation == null) {
+					return;
+				}
+				if (observation.getStatus().equals(ObservationStatus.RECEIVED)) {
+					decodeInternally(observation.getRawPath(), observation.getReq());
+				}
+			}
+		});
+	}
+
+	private void decodeInternally(File rawFile, ObservationRequest request) {
 		Satellite satellite = satelliteDao.findById(request.getSatelliteId());
 		if (satellite == null) {
 			LOG.error("[{}] satellite is missing. cannot decode: {}", request.getId(), request.getSatelliteId());

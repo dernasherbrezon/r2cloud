@@ -193,7 +193,7 @@ public abstract class Device implements Lifecycle {
 						return;
 					}
 
-					decoderService.run(dataFile, req);
+					decoderService.decode(req.getSatelliteId(), req.getId());
 				}
 
 			}
