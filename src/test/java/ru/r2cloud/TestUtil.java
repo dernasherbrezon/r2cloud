@@ -74,14 +74,18 @@ public class TestUtil {
 		if (resource == null) {
 			throw new IllegalArgumentException("unable to find: " + name + " in classpath");
 		}
+		InputStream is = null;
 		if (resource.getProtocol().equals("file")) {
-			return new File(resource.getFile());
+			is = new FileInputStream(resource.getFile());
+		} else {
+			is = resource.openStream();
 		}
 		// copy only if resource is in jar
 		File result = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
-		try (FileOutputStream fos = new FileOutputStream(result); InputStream is = resource.openStream()) {
+		try (FileOutputStream fos = new FileOutputStream(result)) {
 			Util.copy(is, fos);
 		}
+		is.close();
 		return result;
 	}
 
