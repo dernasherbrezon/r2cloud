@@ -40,7 +40,8 @@ public class DecoderServiceTest {
 
 	@Test
 	public void testScheduleTwice() throws Exception {
-		File wav = TestUtil.setupClasspathResource(tempFolder, "data/aausat.raw.gz");
+		File wav = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
+		TestUtil.copy("data/aausat.raw.gz", wav);
 		ObservationRequest req = TestUtil.loadObservation("data/aausat.raw.gz.json").getReq();
 		Observation observation = new Observation(req);
 		observation.setStatus(ObservationStatus.RECEIVED);

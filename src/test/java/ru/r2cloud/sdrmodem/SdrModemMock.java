@@ -32,11 +32,13 @@ public class SdrModemMock {
 
 			@Override
 			public void run() {
+				LOG.info("started");
 				while (!Thread.currentThread().isInterrupted()) {
 					try {
 						Socket client = socket.accept();
 						handler.handleClient(client);
 					} catch (IOException e) {
+						LOG.info("shutting down");
 						return;
 					}
 				}
