@@ -197,6 +197,20 @@ public class LeoSatDataClientTest {
 	}
 
 	@Test
+	public void testInvalidSatelliteInNewLaunch() throws Exception {
+		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/malformed3-response.json", 200));
+		List<Satellite> result = client.loadNewLaunches(0);
+		assertEquals(0, result.size());
+	}
+	
+	@Test
+	public void testInvalidSatellite() throws Exception {
+		server.setSatelliteMock(new JsonHttpResponse("r2cloudclienttest/malformed3-response.json", 200));
+		List<Satellite> result = client.loadSatellites(0);
+		assertEquals(0, result.size());
+	}
+
+	@Test
 	public void testEmptyNewLaunch() throws Exception {
 		assertTrue(client.loadNewLaunches(0).isEmpty());
 	}

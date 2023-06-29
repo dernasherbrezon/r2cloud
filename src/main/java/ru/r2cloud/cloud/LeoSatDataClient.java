@@ -244,7 +244,13 @@ public class LeoSatDataClient {
 				continue;
 			}
 			JsonObject asObject = jsonValue.asObject();
-			Satellite cur = Satellite.fromJson(asObject);
+			Satellite cur = null;
+			try {
+				cur = Satellite.fromJson(asObject);
+			} catch (Exception e) {
+				LOG.error("unable to read satellite", e);
+				continue;
+			}
 			if (cur == null) {
 				continue;
 			}
@@ -274,7 +280,13 @@ public class LeoSatDataClient {
 				continue;
 			}
 			JsonObject asObject = jsonValue.asObject();
-			Satellite newLaunch = Satellite.fromJson(asObject);
+			Satellite newLaunch = null;
+			try {
+				newLaunch = Satellite.fromJson(asObject);
+			} catch (Exception e) {
+				LOG.error("unable to read satellite", e);
+				continue;
+			}
 			if (newLaunch == null || newLaunch.getName() == null) {
 				continue;
 			}
