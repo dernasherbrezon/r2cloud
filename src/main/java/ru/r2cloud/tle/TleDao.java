@@ -23,11 +23,12 @@ public class TleDao {
 
 	private final Path cacheFileLocation;
 	private final Map<String, Tle> cache = new ConcurrentHashMap<>();
+	private final Map<String, Tle> cacheByName = new ConcurrentHashMap<>();
 	private long lastUpdateTime;
 
 	public TleDao(Configuration config) {
 		cacheFileLocation = config.getPathFromProperty("tle.cacheFileLocation");
-		cache.putAll(loadTle(cacheFileLocation));
+		index(loadTle(cacheFileLocation));
 		if (!cache.isEmpty() && Files.exists(cacheFileLocation)) {
 			try {
 				lastUpdateTime = Files.getLastModifiedTime(cacheFileLocation).toMillis();
@@ -39,12 +40,39 @@ public class TleDao {
 		}
 	}
 
-	public Map<String, Tle> loadTle() {
+	public Map<String, Tle> findAll() {
 		return cache;
 	}
 
+	public Tle find(String id, String name) {
+		if (id == null) {
+			return null;
+		}
+		Tle result = cache.get(id);
+		if (result != null) {
+			return result;
+		}
+		if (name == null) {
+			return null;
+		}
+		return cacheByName.get(name);
+	}
+
+	private void index(Map<String, Tle> tleById) {
+		cache.clear();
+		cacheByName.clear();
+		putAll(tleById);
+	}
+	
+	public void putAll(Map<String, Tle> tleById) {
+		cache.putAll(tleById);
+		for (Tle cur : tleById.values()) {
+			cacheByName.put(cur.getRaw()[0], cur);
+		}
+	}
+
 	public void saveTle(Map<String, Tle> tle) {
-		cache.putAll(tle);
+		index(tle);
 		lastUpdateTime = System.currentTimeMillis();
 		saveTle(cacheFileLocation, tle);
 	}

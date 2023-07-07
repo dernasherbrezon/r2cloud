@@ -57,18 +57,25 @@ public class HousekeepingTest {
 	@Test
 	public void testReloadTleForNewSatellites() throws Exception {
 		config.setProperty("r2cloud.apiKey", UUID.randomUUID().toString());
+		config.setProperty("r2cloud.newLaunches", true);
 		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null);
-		// this will setup tle cache
+
+		String id = "R2CLOUD001";
+		List<Satellite> newLaunches = Collections.singletonList(createNewLaunch(id));
+		when(leosatdata.loadNewLaunches(anyLong())).thenReturn(newLaunches);
+
+		// call leosatdata and setup caches
 		dao.run();
 
-		String id = "00001";
-		satelliteDao.saveLeosatdata(Collections.singletonList(create(id)), System.currentTimeMillis());
-		satelliteDao.reindex();
 		Satellite sat = satelliteDao.findById(id);
 		assertNotNull(sat);
-		assertNull(sat.getTle());
+		assertNotNull(sat.getTle());
 
-		// this should reload tle even it was cached before
+		// this will force load from the disk
+		// TLE is not saved onto disk
+		satelliteDao = new SatelliteDao(config);
+		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null);
+		// this will setup tle cache
 		dao.run();
 
 		sat = satelliteDao.findById(id);
@@ -121,6 +128,9 @@ public class HousekeepingTest {
 
 		config = new TestConfiguration(tempFolder, FileSystems.getDefault());
 		config.setProperty("tle.cacheFileLocation", new File(tempFolder.getRoot(), "tle.txt").getAbsolutePath());
+		config.setProperty("satellites.leosatdata.location", new File(tempFolder.getRoot(), "leosatdata.json").getAbsolutePath());
+		config.setProperty("satellites.leosatdata.new.location", new File(tempFolder.getRoot(), "leosatdata.new.json").getAbsolutePath());
+		config.setProperty("satellites.satnogs.location",  new File(tempFolder.getRoot(), "satnogs.json").getAbsolutePath());
 		config.update();
 
 		satelliteDao = new SatelliteDao(config);
@@ -147,6 +157,12 @@ public class HousekeepingTest {
 		transmitter.setFrequency(466000000);
 		transmitter.setFraming(Framing.CUSTOM);
 		result.setTransmitters(Collections.singletonList(transmitter));
+		return result;
+	}
+
+	private static Satellite createNewLaunch(String id) {
+		Satellite result = create(id);
+		result.setTle(new Tle(new String[] { result.getName(), "1 00001U 17036V   22114.09726310  .00014064  00000+0  52305-3 0  9992", "2 00001  97.2058 157.8198 0011701 152.8519 207.3335 15.27554982268713" }));
 		return result;
 	}
 

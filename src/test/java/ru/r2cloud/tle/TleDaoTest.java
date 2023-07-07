@@ -33,7 +33,7 @@ public class TleDaoTest {
 
 	@Test
 	public void testLoadEmpty() {
-		Map<String, Tle> result = dao.loadTle();
+		Map<String, Tle> result = dao.findAll();
 		assertTrue(result.isEmpty());
 	}
 
@@ -45,7 +45,7 @@ public class TleDaoTest {
 
 		dao.saveTle(tle);
 
-		Map<String, Tle> actual = dao.loadTle();
+		Map<String, Tle> actual = dao.findAll();
 		assertEquals(1, actual.size());
 
 		// simulate failure to save
@@ -56,12 +56,12 @@ public class TleDaoTest {
 		fs.removeMock(failingPath);
 
 		// the new value cached in-memory
-		actual = dao.loadTle();
+		actual = dao.findAll();
 		assertEquals(2, actual.size());
 
 		// old disk cached value exist
 		dao = new TleDao(config);
-		actual = dao.loadTle();
+		actual = dao.findAll();
 		assertEquals(1, actual.size());
 	}
 

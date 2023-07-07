@@ -115,10 +115,9 @@ public class Housekeeping {
 
 	private void reloadTle() {
 		long periodMillis = config.getLong("housekeeping.tle.periodMillis");
-		Map<String, Tle> tle = tleDao.loadTle();
 		boolean missingTle = false;
 		for (Satellite cur : dao.findAll()) {
-			if (cur.getTle() == null && !tle.containsKey(cur.getId())) {
+			if (cur.getTle() == null && tleDao.find(cur.getId(), cur.getName()) == null) {
 				missingTle = true;
 				break;
 			}
@@ -128,14 +127,14 @@ public class Housekeeping {
 		Map<String, Tle> updated = new HashMap<>();
 		boolean reloadTle = System.currentTimeMillis() - tleDao.getLastUpdateTime() > periodMillis;
 		if (reloadTle || missingTle) {
-			tle.putAll(celestrak.downloadTle());
+			tleDao.putAll(celestrak.downloadTle());
 		}
 		for (Satellite cur : dao.findAll()) {
 			Tle curTle;
 			if (cur.getTle() != null) {
 				curTle = cur.getTle();
 			} else {
-				curTle = tle.get(cur.getId());
+				curTle = tleDao.find(cur.getId(), cur.getName());
 			}
 			cur.setTle(curTle);
 			if (curTle != null) {
