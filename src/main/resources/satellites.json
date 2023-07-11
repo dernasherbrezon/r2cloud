@@ -1,5 +1,45 @@
 [
 	{
+		"id": "R2CLOUD282",
+		"name": "UmKA-1",
+		"noradId": "57172",
+		"enabled": false,
+		"start": 1687865640000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437625000,
+				"bandwidth": 20000,
+				"baudRates": [
+					2400
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD281",
+		"name": "CUBEBEL 2 (EU11S)",
+		"noradId": "57175",
+		"enabled": true,
+		"start": 1687865640000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 436990000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD279",
 		"name": "TAUSAT-2",
 		"noradId": "55073",
@@ -671,7 +711,7 @@
 				"framing": "AX100",
 				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
 				"frequency": 401150000,
-				"bandwidth": 200000,
+				"bandwidth": 20000,
 				"baudRates": [
 					9600
 				],
@@ -690,7 +730,7 @@
 				"framing": "AX100",
 				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
 				"frequency": 401150000,
-				"bandwidth": 200000,
+				"bandwidth": 20000,
 				"baudRates": [
 					9600
 				],
@@ -709,7 +749,7 @@
 				"framing": "AX100",
 				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
 				"frequency": 401150000,
-				"bandwidth": 200000,
+				"bandwidth": 20000,
 				"baudRates": [
 					9600
 				],
@@ -2249,13 +2289,12 @@
 		"id": "R2CLOUD147",
 		"name": "SUCHAI-3",
 		"noradId": "52191",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "AX100",
 				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
-				"beaconSizeBytes": 512,
 				"frequency": 437250000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -2786,7 +2825,7 @@
 		"id": "R2CLOUD113",
 		"name": "BCCSAT 1",
 		"noradId": "48041",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
@@ -2797,7 +2836,7 @@
 				"baudRates": [
 					4800
 				],
-				"status": "ENABLED"
+				"status": "WEAK"
 			}
 		]
 	},
@@ -2844,17 +2883,18 @@
 		"id": "R2CLOUD108",
 		"name": "KSU-CUBESAT",
 		"noradId": "47954",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
 				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
 				"frequency": 437130000,
-				"bandwidth": 15000,
+				"bandwidth": 20000,
 				"baudRates": [
 					4800
 				],
+				"assistedHeader": "AAEBAQABAQAAAAEAAQEAAQABAAAAAQEAAAEBAAEAAAEAAQEAAAEAAQABAAEAAQABAAAAAAABAQAAAQEAAQAAAQABAQAAAQABAAEAAQABAAEAAQEAAAAAAQABAAAAAQEAAAAAAAAAAQABAAAAAQEBAAAAAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
 		]
@@ -3741,25 +3781,6 @@
 				],
 				"deviation": 500,
 				"afCarrier": 1700,
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD43",
-		"name": "PAINANI 1",
-		"noradId": "44365",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.painani1.Painani1Beacon",
-				"frequency": 437475000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
 				"status": "ENABLED"
 			}
 		]
