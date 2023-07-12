@@ -33,7 +33,16 @@ public class LeoSatDataService {
 			return;
 		}
 		LOG.info("[{}] uploading observation", observation.getId());
-		Long id = client.saveMeta(observation);
+		Long id = null;
+		try {
+			id = client.saveMeta(observation);
+		} catch (IllegalArgumentException e) {
+			// can happen on permanent error on the server side
+			// make sure observation won't be uploaded again
+			observation.setStatus(ObservationStatus.FAILED);
+			dao.update(observation);
+			return;
+		}
 		if (id == null) {
 			return;
 		}

@@ -75,6 +75,9 @@ public class LeoSatDataClient {
 				if (LOG.isErrorEnabled()) {
 					LOG.error("unable to save meta. response code: {}. response: {}", response.statusCode(), response.body());
 				}
+				if (response.statusCode() == 400) {
+					throw new IllegalArgumentException();
+				}
 				return null;
 			}
 			return readObservationId(response.body());

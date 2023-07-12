@@ -57,6 +57,13 @@ public class LeoSatDataClientTest {
 		server.setObservationMock(new JsonHttpResponse("r2cloudclienttest/auth-failure-response.json", 403));
 		assertNull(client.saveMeta(createRequest()));
 	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testInvalidRequestFailure() {
+		server.setObservationMock(new JsonHttpResponse("r2cloudclienttest/auth-failure-response.json", 400));
+		client.saveMeta(createRequest());
+	}
+
 
 	@Test
 	public void testMalformedJsonInResponse() {
