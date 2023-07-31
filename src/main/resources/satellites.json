@@ -1,5 +1,82 @@
 [
 	{
+		"id": "R2CLOUD286",
+		"name": "MRC-100",
+		"noradId": "56993",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.mrc100.Mrc100Beacon",
+				"frequency": 436720000,
+				"bandwidth": 40000,
+				"baudRates": [
+					12500
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD285",
+		"name": "ION SCV-011",
+		"noradId": "56957",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 401415000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD284",
+		"name": "SPEI SATELLES",
+		"noradId": "56991",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437500000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"assistedHeader": "AAEBAAABAAEAAAAAAAEAAQABAAEAAAABAAEAAAEAAAEAAQEAAAEAAQAAAAEAAQABAAAAAAAAAAAAAQAAAAAAAQAAAAEBAAABAAAAAQEAAAEAAQAAAAAAAQAAAAEBAAABAAAAAQEAAAEBAAAAAAAAAAEBAAAAAAAAAAABAQAAAQE=",
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD283",
+		"name": "WILDTRACKCUBE-SIMBA",
+		"noradId": "47941",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 435310000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD282",
 		"name": "UmKA-1",
 		"noradId": "57172",
@@ -2508,25 +2585,6 @@
 		]
 	},
 	{
-		"id": "R2CLOUD135",
-		"name": "DIY-1 (ARDUIQUBE)",
-		"noradId": "47963",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "CUSTOM",
-				"beaconClass": "ru.r2cloud.jradio.diy1.Diy1Beacon",
-				"frequency": 437128000,
-				"bandwidth": 20000,
-				"baudRates": [
-					500
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
 		"id": "R2CLOUD134",
 		"name": "BY70-3",
 		"noradId": "46839",
@@ -4242,27 +4300,6 @@
 					9600
 				],
 				"status": "WEAK"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD9",
-		"name": "NAYIF-1 (EO-88)",
-		"noradId": "42017",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "BPSK",
-				"framing": "CUSTOM",
-				"beaconClass": "ru.r2cloud.jradio.nayif1.Nayif1Beacon",
-				"frequency": 145939000,
-				"bandwidth": 4000,
-				"baudRates": [
-					1200
-				],
-				"bpskCenterFrequency": 0,
-				"bpskDifferential": true,
-				"status": "ENABLED"
 			}
 		]
 	},

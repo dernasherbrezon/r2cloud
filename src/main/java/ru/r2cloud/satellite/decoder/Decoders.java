@@ -14,6 +14,7 @@ import ru.r2cloud.jradio.fox.Fox1BBeacon;
 import ru.r2cloud.jradio.fox.Fox1CBeacon;
 import ru.r2cloud.jradio.fox.Fox1DBeacon;
 import ru.r2cloud.jradio.gomx1.Gomx1Beacon;
+import ru.r2cloud.jradio.mrc100.Mrc100Beacon;
 import ru.r2cloud.jradio.usp.UspBeacon;
 import ru.r2cloud.model.DecoderKey;
 import ru.r2cloud.model.Framing;
@@ -73,6 +74,7 @@ public class Decoders {
 		index("53807", "53807-0", new BlueWalker3Decoder(predict, props, RawBeacon.class));
 		index("51509", "51509-0", new BlueWalker3Decoder(predict, props, RawBeacon.class));
 		index("56180", "56180-0", new BlueWalker3Decoder(predict, props, RawBeacon.class));
+		index("56993", "56993-0", new Mrc100Decoder(predict, props, Mrc100Beacon.class));
 	}
 
 	public Decoder findByTransmitter(Transmitter transmitter) {
