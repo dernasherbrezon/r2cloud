@@ -106,7 +106,7 @@ public class ObservationLoad extends AbstractHttpController {
 		result.add("time", b.getBeginMillis());
 		JsonValue convertObject = Util.convertObject(b);
 		if (convertObject != null) {
-			convertObject.asObject().remove("rawData").remove("beginMillis").remove("beginSample").remove("rxMeta");
+			convertObject.asObject().remove("rawData").remove("beginMillis").remove("beginSample").remove("rxMeta").remove("endSample");
 			result.add("body", convertObject);
 		}
 		RxMetadata rxMeta = b.getRxMeta();
