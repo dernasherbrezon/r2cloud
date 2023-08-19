@@ -111,7 +111,10 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 			frame.setSnr(dis.readFloat());
 			frame.setTimestamp(dis.readLong());
 			int dataLength = dis.readUnsignedByte();
-			// cannot be more than 255, unlikely cause OOM
+			// max lora packet is 255 bytes
+			if (dataLength > 255) {
+				return;
+			}
 			byte[] data = new byte[dataLength];
 			dis.readFully(data);
 			frame.setData(data);

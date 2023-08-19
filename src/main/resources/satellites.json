@@ -1,5 +1,45 @@
 [
 	{
+		"id": "R2CLOUD288",
+		"name": "MAYA-6",
+		"noradId": "57420",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 437375000,
+				"bandwidth": 20000,
+				"baudRates": [
+					4800
+				],
+				"assistedHeader": "AAABAAAAAQAAAAABAQABAAEAAAABAQAAAQEAAAEAAQABAAAAAAABAAAAAQABAAEAAAAAAAEBAAAAAAEAAAABAAAAAAEBAAEAAAEBAAEBAAABAAEBAAABAAEAAAEBAAEAAQAAAAAAAQAAAAAAAQEAAAABAQEBAQAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD287",
+		"name": "MAYA-5",
+		"noradId": "57419",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 437375000,
+				"bandwidth": 20000,
+				"baudRates": [
+					4800
+				],
+				"assistedHeader": "AAABAAAAAQAAAAABAQABAAEAAAABAQAAAQEAAAEAAQABAAAAAAABAAAAAQABAAEAAAAAAAEBAAAAAAEAAAABAAAAAAEBAAEAAAEBAAEBAAABAAEBAAABAAEAAAEBAAEAAQAAAAAAAQAAAAAAAQEAAAABAQEBAQAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD286",
 		"name": "MRC-100",
 		"noradId": "56993",
