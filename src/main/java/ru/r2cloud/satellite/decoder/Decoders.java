@@ -75,6 +75,8 @@ public class Decoders {
 		index("51509", "51509-0", new BlueWalker3Decoder(predict, props, RawBeacon.class));
 		index("56180", "56180-0", new BlueWalker3Decoder(predict, props, RawBeacon.class));
 		index("56993", "56993-0", new Mrc100Decoder(predict, props, Mrc100Beacon.class));
+		index("56211", "56211-1", new InspireSat7SpinoDecoder(predict, props));
+		index("57167", "57167-0", new StratosatTk1Decoder(predict, props));
 	}
 
 	public Decoder findByTransmitter(Transmitter transmitter) {

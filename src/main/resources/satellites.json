@@ -1,5 +1,139 @@
 [
 	{
+		"id": "R2CLOUD294",
+		"name": "RS52SE",
+		"noradId": "57327",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.sstk1.StratosatTk1PicoBeacon",
+				"frequency": 436260000,
+				"bandwidth": 250000,
+				"status": "ENABLED",
+				"loraBandwidth": 250000,
+				"loraSpreadFactor": 10,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD293",
+		"name": "RS52SD",
+		"noradId": "57326",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.sstk1.StratosatTk1PicoBeacon",
+				"frequency": 436260000,
+				"bandwidth": 250000,
+				"status": "ENABLED",
+				"loraBandwidth": 250000,
+				"loraSpreadFactor": 10,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD292",
+		"name": "RS52SG",
+		"noradId": "57325",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.sstk1.StratosatTk1PicoBeacon",
+				"frequency": 436260000,
+				"bandwidth": 250000,
+				"status": "ENABLED",
+				"loraBandwidth": 250000,
+				"loraSpreadFactor": 10,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD291",
+		"name": "RS52SV",
+		"noradId": "57324",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.sstk1.StratosatTk1PicoBeacon",
+				"frequency": 436260000,
+				"bandwidth": 250000,
+				"status": "ENABLED",
+				"loraBandwidth": 250000,
+				"loraSpreadFactor": 10,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD290",
+		"name": "RS52SB",
+		"noradId": "57323",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.sstk1.StratosatTk1PicoBeacon",
+				"frequency": 436260000,
+				"bandwidth": 250000,
+				"status": "ENABLED",
+				"loraBandwidth": 250000,
+				"loraSpreadFactor": 10,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD289",
+		"name": "STRATOSAT-TK 1 (RS52S)",
+		"noradId": "57167",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.sstk1.StratosatTk1Beacon",
+				"frequency": 435872000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD288",
 		"name": "MAYA-6",
 		"noradId": "57420",
@@ -744,13 +878,25 @@
 			{
 				"modulation": "BPSK",
 				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"beaconClass": "ru.r2cloud.jradio.is7.InspireSat7Beacon",
 				"frequency": 437410000,
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
 				],
 				"assistedHeader": "AAEAAQABAAEAAAEBAAEAAQABAQAAAQABAAEAAAABAAEAAAAAAAEAAQAAAAEBAAABAAAAAAABAQEAAQABAAEAAQAAAQEAAQABAAEBAAABAAEAAQAAAAEAAQAAAAAAAQABAAAAAQEAAAEBAQAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			},
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.is7.InspireSat7Beacon",
+				"frequency": 435200000,
+				"bandwidth": 20000,
+				"baudRates": [
+					2400,
+					9600
+				],
 				"status": "ENABLED"
 			}
 		]
@@ -1121,28 +1267,6 @@
 		]
 	},
 	{
-		"id": "R2CLOUD219",
-		"name": "DANTESAT",
-		"noradId": "55127",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "LORA",
-				"framing": "LORA",
-				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
-				"frequency": 437600000,
-				"bandwidth": 125000,
-				"status": "ENABLED",
-				"loraBandwidth": 125000,
-				"loraSpreadFactor": 9,
-				"loraSyncword": 18,
-				"loraPreambleLength": 6,
-				"loraLdro": 0,
-				"loraCodingRate": 5
-			}
-		]
-	},
-	{
 		"id": "R2CLOUD218",
 		"name": "2023-001CZ",
 		"noradId": "55104",
@@ -1393,12 +1517,12 @@
 		"id": "R2CLOUD204",
 		"name": "CONNECTA T1.1",
 		"noradId": "52739",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"beaconClass": "ru.r2cloud.jradio.connecta.Connecta11Beacon",
 				"frequency": 401525000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -2231,12 +2355,12 @@
 		"id": "R2CLOUD157",
 		"name": "CELESTA",
 		"noradId": "53111",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "AX25",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"beaconClass": "ru.r2cloud.jradio.celesta.CelestaBeacon",
 				"frequency": 436500000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -2870,7 +2994,7 @@
 			{
 				"modulation": "BPSK",
 				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"beaconClass": "ru.r2cloud.jradio.dhabi.DhabisatBeacon",
 				"frequency": 436908000,
 				"bandwidth": 10000,
 				"baudRates": [

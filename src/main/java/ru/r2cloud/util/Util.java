@@ -299,7 +299,10 @@ public final class Util {
 			return getShortMessageToLog(e.getCause());
 		}
 		if (e instanceof IOException) {
-			return e.getMessage();
+			if (e.getMessage() != null) {
+				return e.getMessage();
+			}
+			return e.toString();
 		}
 		if (e instanceof UnresolvedAddressException) {
 			return e.toString();
