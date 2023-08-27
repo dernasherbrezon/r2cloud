@@ -38,10 +38,10 @@ public class SpectogramService {
 		if (observation == null) {
 			return null;
 		}
-		LOG.info("[{}] generating spectogram", observation.getId());
 		if (observation.getRawPath() == null) {
 			return null;
 		}
+		LOG.info("[{}] generating spectogram", observation.getId());
 		File result;
 		if (observation.getRawPath().getName().endsWith(".wav")) {
 			result = createFromWav(observation.getRawPath());

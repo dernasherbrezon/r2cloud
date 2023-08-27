@@ -70,9 +70,9 @@ public class LeoSatDataService {
 			spectogram = spectogramService.create(observation);
 			if (spectogram != null) {
 				spectogram = dao.saveSpectogram(observation.getSatelliteId(), observation.getId(), spectogram);
-			}
-			if (spectogram == null) {
-				LOG.info("[{}] unable to save spectogram", observation.getId());
+				if (spectogram == null) {
+					LOG.info("[{}] unable to save spectogram", observation.getId());
+				}
 			}
 		} else {
 			spectogram = observation.getSpectogramPath();
