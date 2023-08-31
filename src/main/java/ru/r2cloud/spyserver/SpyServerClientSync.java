@@ -104,4 +104,10 @@ public class SpyServerClientSync implements CommandResponse {
 		maximumFFTCenterFrequency = dis.readUnsignedInt();
 	}
 
+	@Override
+	public String toString() {
+		return "SpyServerClientSync [canControl=" + canControl + ", gain=" + gain + ", deviceCenterFrequency=" + deviceCenterFrequency + ", iQCenterFrequency=" + iQCenterFrequency + ", fFTCenterFrequency=" + fFTCenterFrequency + ", minimumIQCenterFrequency=" + minimumIQCenterFrequency
+				+ ", maximumIQCenterFrequency=" + maximumIQCenterFrequency + ", minimumFFTCenterFrequency=" + minimumFFTCenterFrequency + ", maximumFFTCenterFrequency=" + maximumFFTCenterFrequency + "]";
+	}
+
 }

@@ -1,5 +1,6 @@
 package ru.r2cloud.spyserver;
 
+import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DeviceConnectionStatus;
 
 public class SpyServerStatus {
@@ -8,6 +9,15 @@ public class SpyServerStatus {
 	private String failureMessage;
 	private long minFrequency;
 	private long maxFrequency;
+	private DataFormat format;
+	
+	public DataFormat getFormat() {
+		return format;
+	}
+	
+	public void setFormat(DataFormat format) {
+		this.format = format;
+	}
 
 	public DeviceConnectionStatus getStatus() {
 		return status;

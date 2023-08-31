@@ -1,13 +1,24 @@
 package ru.r2cloud.spyserver;
 
+import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.util.Util;
 
@@ -17,11 +28,22 @@ public class SpyServerClient {
 	private static final int SPYSERVER_CMD_HELLO = 0;
 	private static final int SPYSERVER_CMD_SET_SETTING = 2;
 
+	private static final int SPYSERVER_STREAM_MODE_IQ_ONLY = 1;
+
+	private static final int SPYSERVER_STREAM_FORMAT_INVALID = 0;
+	private static final int SPYSERVER_STREAM_FORMAT_UINT8 = 1;
+	private static final int SPYSERVER_STREAM_FORMAT_INT16 = 2;
+	private static final int SPYSERVER_STREAM_FORMAT_FLOAT = 4;
+
 	private static final int SPYSERVER_MSG_TYPE_DEVICE_INFO = 0;
 	private static final int SPYSERVER_MSG_TYPE_CLIENT_SYNC = 1;
+	private static final int SPYSERVER_MSG_TYPE_INT16_IQ = 101;
+	private static final int SPYSERVER_MSG_TYPE_FLOAT_IQ = 103;
 
 	private static final int SPYSERVER_PROTOCOL_VERSION = (((2) << 24) | ((0) << 16) | (1700));
 	private static final String CLIENT_ID = "r2cloud";
+
+	private static final int SPYSERVER_MAX_MESSAGE_BODY_SIZE = (1 << 20);
 
 	private final String host;
 	private final int port;
@@ -31,7 +53,12 @@ public class SpyServerClient {
 	private SpyServerStatus status;
 	private CommandResponse response;
 	private SpyServerClientSync sync;
+	// FIXME
+	private byte[] body = new byte[SPYSERVER_MAX_MESSAGE_BODY_SIZE];
+	private final Map<Long, Long> supportedSamplingRates = new HashMap<>();
+	private OnDataCallback callback;
 	private Object lock = new Object();
+	long totalSamples = 0;
 
 	public SpyServerClient(String host, int port, int socketTimeout) {
 		this.host = host;
@@ -46,20 +73,32 @@ public class SpyServerClient {
 
 			@Override
 			public void run() {
+				InputStream inputStream;
+				try {
+					inputStream = socket.getInputStream();
+				} catch (IOException e) {
+					Util.logIOException(LOG, "unable to read response", e);
+					return;
+				}
+				long currentSequence = 0;
 				while (!socket.isClosed()) {
 					// FIXME reconnect
 					synchronized (lock) {
-						try {
-							lock.wait();
-						} catch (InterruptedException e) {
-							break;
+						if (callback == null) {
+							try {
+								lock.wait();
+							} catch (InterruptedException e) {
+								break;
+							}
 						}
 						if (socket.isClosed()) {
 							break;
 						}
 						try {
-							InputStream inputStream = socket.getInputStream();
+							// FIXME zero gc
 							ResponseHeader header = ResponseHeader.read(inputStream);
+							// ignore any sequence mismatches.
+							// rtl-sdr for some reason report 2155905152
 							if (header.getMessageType() == SPYSERVER_MSG_TYPE_DEVICE_INFO) {
 								response = new SpyServerDeviceInfo();
 								response.read(inputStream);
@@ -71,9 +110,18 @@ public class SpyServerClient {
 								if (response != null) {
 									sync = new SpyServerClientSync();
 									sync.read(inputStream);
+									LOG.info("state: {}", sync.toString());
 								} else {
 									response = new SpyServerClientSync();
 									response.read(inputStream);
+									LOG.info("state: {}", response.toString());
+								}
+							}
+							if (header.getMessageType() == SPYSERVER_MSG_TYPE_INT16_IQ || header.getMessageType() == SPYSERVER_MSG_TYPE_FLOAT_IQ) {
+								if (callback != null) {
+									callback.onData(inputStream, (int) header.getBodySize());
+								} else {
+									inputStream.skipNBytes(header.getBodySize());
 								}
 							}
 						} catch (IOException e) {
@@ -82,40 +130,77 @@ public class SpyServerClient {
 						} finally {
 							lock.notifyAll();
 						}
-
 					}
 				}
 				LOG.info("spyserver client stopped");
 			}
 		}, "spyserver-client").start();
+		status = new SpyServerStatus();
+		SpyServerDeviceInfo response = (SpyServerDeviceInfo) sendCommandSync(SPYSERVER_CMD_HELLO, new CommandHello(SPYSERVER_PROTOCOL_VERSION, CLIENT_ID));
+		// cache status because handshake between client and spyserver can happen only
+		// once
+		if (response != null) {
+			status.setStatus(DeviceConnectionStatus.CONNECTED);
+			status.setMinFrequency(response.getMinimumFrequency());
+			status.setMaxFrequency(response.getMaximumFrequency());
+			status.setFormat(resolveDataFormat(response));
+			setParameter(SpyServerParameter.SPYSERVER_SETTING_STREAMING_MODE, SPYSERVER_STREAM_MODE_IQ_ONLY);
+			setParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_FORMAT, convertDataFormat(status.getFormat()));
+			for (long i = response.getMinimumIQDecimation(); i < response.getDecimationStageCount(); i++) {
+				supportedSamplingRates.put(response.getMaximumSampleRate() / (1 << i), i);
+			}
+		} else {
+			status.setStatus(DeviceConnectionStatus.FAILED);
+			status.setFailureMessage("Device is not connected");
+		}
 	}
 
 	public SpyServerStatus getStatus() {
-		// cache status because handshake between client and spyserver can happen only
-		// once
-		if (status != null) {
-			return status;
+		return status;
+	}
+
+	public void setGain(long value) throws IOException {
+		if (status == null || status.getStatus() != DeviceConnectionStatus.CONNECTED) {
+			throw new IOException("not connected");
 		}
-		SpyServerStatus result = new SpyServerStatus();
-		try {
-			SpyServerDeviceInfo response = (SpyServerDeviceInfo) sendCommand(SPYSERVER_CMD_HELLO, new CommandHello(SPYSERVER_PROTOCOL_VERSION, CLIENT_ID));
-			if (response != null) {
-				result.setStatus(DeviceConnectionStatus.CONNECTED);
-				result.setMinFrequency(response.getMinimumFrequency());
-				result.setMaxFrequency(response.getMaximumFrequency());
-			}
-		} catch (IOException e) {
-			Util.logIOException(LOG, "unable to get status", e);
-			result.setFailureMessage(e.getMessage());
-			result.setStatus(DeviceConnectionStatus.FAILED);
+		if (sync != null && sync.getCanControl() == 0) {
+			LOG.info("can't control gain. will use server-default: {}", sync.getGain());
+			return;
 		}
-		status = result;
+		setParameter(SpyServerParameter.SPYSERVER_SETTING_GAIN, value);
+	}
+
+	public void setFrequency(long value) throws IOException {
+		if (status == null || status.getStatus() != DeviceConnectionStatus.CONNECTED) {
+			throw new IOException("not connected");
+		}
+		setParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_FREQUENCY, value);
+	}
+
+	public void setSamplingRate(long value) throws IOException {
+		if (status == null || status.getStatus() != DeviceConnectionStatus.CONNECTED) {
+			throw new IOException("not connected");
+		}
+		Long decimation = supportedSamplingRates.get(value);
+		if (decimation == null) {
+			throw new IOException("sampling rate is not supported: " + value);
+		}
+		setParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_DECIMATION, decimation);
+	}
+
+	public List<Long> getSupportedSamplingRates() {
+		List<Long> result = new ArrayList<>(supportedSamplingRates.keySet());
+		Collections.sort(result);
 		return result;
 	}
 
-	public void setParameter(SpyServerParameter parameter, long value) throws IOException {
+	private void setParameter(SpyServerParameter parameter, long value) throws IOException {
 		try {
-			sendCommand(SPYSERVER_CMD_SET_SETTING, new CommandSetParameter(parameter.getCode(), value));
+			if (parameter.isAsync()) {
+				sendCommandAsync(SPYSERVER_CMD_SET_SETTING, new CommandSetParameter(parameter.getCode(), value));
+			} else {
+				sendCommandSync(SPYSERVER_CMD_SET_SETTING, new CommandSetParameter(parameter.getCode(), value));
+			}
 		} catch (IOException e) {
 			if (status != null) {
 				status.setStatus(DeviceConnectionStatus.FAILED);
@@ -125,7 +210,22 @@ public class SpyServerClient {
 		}
 	}
 
-	private CommandResponse sendCommand(int commandType, CommandRequest command) throws IOException {
+	public void startStream(OnDataCallback callback) throws IOException {
+		synchronized (lock) {
+			this.callback = callback;
+			setParameter(SpyServerParameter.SPYSERVER_SETTING_STREAMING_ENABLED, 1);
+			lock.notifyAll();
+		}
+	}
+
+	public void stopStream() throws IOException {
+		synchronized (lock) {
+			setParameter(SpyServerParameter.SPYSERVER_SETTING_STREAMING_ENABLED, 0);
+			this.callback = null;
+		}
+	}
+
+	private CommandResponse sendCommandSync(int commandType, CommandRequest command) throws IOException {
 		byte[] body = command.toByteArray();
 		synchronized (lock) {
 			response = null;
@@ -145,6 +245,15 @@ public class SpyServerClient {
 		}
 	}
 
+	private void sendCommandAsync(int commandType, CommandRequest command) throws IOException {
+		byte[] body = command.toByteArray();
+		LittleEndianDataOutputStream out = new LittleEndianDataOutputStream(new DataOutputStream(socket.getOutputStream()));
+		out.writeInt(commandType);
+		out.writeInt(body.length);
+		out.write(body);
+		out.flush();
+	}
+
 	public void stop() {
 		LOG.info("stopping spyserver client...");
 		if (socket != null) {
@@ -155,20 +264,49 @@ public class SpyServerClient {
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
-		String host = "192.168.18.15";
-		int port = 5555;
-		SpyServerClient client = new SpyServerClient(host, port, 10000);
-		client.start();
-		SpyServerStatus status = client.getStatus();
-		System.out.println(status.getStatus());
-		System.out.println(status.getFailureMessage());
-		System.out.println(status.getMinFrequency());
-		System.out.println(status.getMaxFrequency());
-		client.setParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_FREQUENCY, 434000000);
-		Thread.sleep(10000);
-		client.stop();
+	
 
+	private static DataFormat resolveDataFormat(SpyServerDeviceInfo response) throws IOException {
+		if (response.getForcedIQFormat() != SPYSERVER_STREAM_FORMAT_INVALID) {
+			switch ((int) response.getForcedIQFormat()) {
+			case SPYSERVER_STREAM_FORMAT_UINT8:
+				return DataFormat.COMPLEX_UNSIGNED_BYTE;
+			case SPYSERVER_STREAM_FORMAT_INT16:
+				return DataFormat.COMPLEX_SIGNED_SHORT;
+			case SPYSERVER_STREAM_FORMAT_FLOAT:
+				return DataFormat.COMPLEX_FLOAT;
+			default:
+				throw new IOException("unsupported forced data format: " + response.getForcedIQFormat());
+			}
+		} else {
+			switch ((int) response.getResolution()) {
+			case 8:
+				// rtl-sdr
+				return DataFormat.COMPLEX_UNSIGNED_BYTE;
+			case 12:
+			case 16:
+				// air-spy
+				return DataFormat.COMPLEX_SIGNED_SHORT;
+			case 32:
+				// something else
+				return DataFormat.COMPLEX_FLOAT;
+			default:
+				throw new IOException("unsupported resolution: " + response.getResolution());
+			}
+		}
+	}
+
+	private static int convertDataFormat(DataFormat format) throws IOException {
+		switch (format) {
+		case COMPLEX_FLOAT:
+			return SPYSERVER_STREAM_FORMAT_FLOAT;
+		case COMPLEX_SIGNED_SHORT:
+			return SPYSERVER_STREAM_FORMAT_INT16;
+		case COMPLEX_UNSIGNED_BYTE:
+			return SPYSERVER_STREAM_FORMAT_UINT8;
+		default:
+			throw new IOException("unsupported format: " + format);
+		}
 	}
 
 }
