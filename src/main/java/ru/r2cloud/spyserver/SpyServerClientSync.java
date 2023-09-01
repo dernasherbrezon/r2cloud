@@ -1,10 +1,7 @@
 package ru.r2cloud.spyserver;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import ru.r2cloud.jradio.util.LittleEndianDataInputStream;
 
 public class SpyServerClientSync implements CommandResponse {
 
@@ -92,16 +89,15 @@ public class SpyServerClientSync implements CommandResponse {
 
 	@Override
 	public void read(InputStream is) throws IOException {
-		LittleEndianDataInputStream dis = new LittleEndianDataInputStream(new DataInputStream(is));
-		canControl = dis.readUnsignedInt();
-		gain = dis.readUnsignedInt();
-		deviceCenterFrequency = dis.readUnsignedInt();
-		iQCenterFrequency = dis.readUnsignedInt();
-		fFTCenterFrequency = dis.readUnsignedInt();
-		minimumIQCenterFrequency = dis.readUnsignedInt();
-		maximumIQCenterFrequency = dis.readUnsignedInt();
-		minimumFFTCenterFrequency = dis.readUnsignedInt();
-		maximumFFTCenterFrequency = dis.readUnsignedInt();
+		canControl = SpyServerClient.readUnsignedInt(is);
+		gain = SpyServerClient.readUnsignedInt(is);
+		deviceCenterFrequency = SpyServerClient.readUnsignedInt(is);
+		iQCenterFrequency = SpyServerClient.readUnsignedInt(is);
+		fFTCenterFrequency = SpyServerClient.readUnsignedInt(is);
+		minimumIQCenterFrequency = SpyServerClient.readUnsignedInt(is);
+		maximumIQCenterFrequency = SpyServerClient.readUnsignedInt(is);
+		minimumFFTCenterFrequency = SpyServerClient.readUnsignedInt(is);
+		maximumFFTCenterFrequency = SpyServerClient.readUnsignedInt(is);
 	}
 
 	@Override

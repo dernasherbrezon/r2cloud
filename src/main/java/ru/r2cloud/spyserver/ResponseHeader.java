@@ -1,10 +1,7 @@
 package ru.r2cloud.spyserver;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import ru.r2cloud.jradio.util.LittleEndianDataInputStream;
 
 public class ResponseHeader {
 
@@ -63,17 +60,14 @@ public class ResponseHeader {
 		this.bodySize = bodySize;
 	}
 
-	public static ResponseHeader read(InputStream is) throws IOException {
-		LittleEndianDataInputStream dis = new LittleEndianDataInputStream(new DataInputStream(is));
-		ResponseHeader result = new ResponseHeader();
-		result.protocolID = dis.readUnsignedInt();
-		long mTypeRaw = dis.readUnsignedInt();
-		result.messageType = (int) (mTypeRaw & 0xFFFF);
-		result.flags = (int) (mTypeRaw & 0xFFFF0000) >> 16;
-		result.streamType = dis.readUnsignedInt();
-		result.sequenceNumber = dis.readUnsignedInt();
-		result.bodySize = dis.readUnsignedInt();
-		return result;
+	public void read(InputStream is) throws IOException {
+		protocolID = SpyServerClient.readUnsignedInt(is);
+		long mTypeRaw = SpyServerClient.readUnsignedInt(is);
+		messageType = (int) (mTypeRaw & 0xFFFF);
+		flags = (int) (mTypeRaw & 0xFFFF0000) >> 16;
+		streamType = SpyServerClient.readUnsignedInt(is);
+		sequenceNumber = SpyServerClient.readUnsignedInt(is);
+		bodySize = SpyServerClient.readUnsignedInt(is);
 	}
 
 }

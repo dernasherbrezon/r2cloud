@@ -1,9 +1,7 @@
 package ru.r2cloud.spyserver;
 
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,7 +11,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,24 +34,25 @@ public class SpyServerClient {
 
 	private static final int SPYSERVER_MSG_TYPE_DEVICE_INFO = 0;
 	private static final int SPYSERVER_MSG_TYPE_CLIENT_SYNC = 1;
+	private static final int SPYSERVER_MSG_TYPE_UINT8_IQ = 100;
 	private static final int SPYSERVER_MSG_TYPE_INT16_IQ = 101;
 	private static final int SPYSERVER_MSG_TYPE_FLOAT_IQ = 103;
 
 	private static final int SPYSERVER_PROTOCOL_VERSION = (((2) << 24) | ((0) << 16) | (1700));
 	private static final String CLIENT_ID = "r2cloud";
 
-	private static final int SPYSERVER_MAX_MESSAGE_BODY_SIZE = (1 << 20);
-
 	private final String host;
 	private final int port;
 	private final int socketTimeout;
 
 	private Socket socket;
+	private OutputStream socketOut;
 	private SpyServerStatus status;
+
+	private ResponseHeader responseHeader = new ResponseHeader();
 	private CommandResponse response;
 	private SpyServerClientSync sync;
-	// FIXME
-	private byte[] body = new byte[SPYSERVER_MAX_MESSAGE_BODY_SIZE];
+	private byte[] buffer = new byte[4096];
 	private final Map<Long, Long> supportedSamplingRates = new HashMap<>();
 	private OnDataCallback callback;
 	private Object lock = new Object();
@@ -69,6 +67,8 @@ public class SpyServerClient {
 	public void start() throws IOException {
 		socket = new Socket(host, port);
 		socket.setSoTimeout(socketTimeout);
+		socket.setTcpNoDelay(true);
+		socketOut = socket.getOutputStream();
 		new Thread(new Runnable() {
 
 			@Override
@@ -80,7 +80,6 @@ public class SpyServerClient {
 					Util.logIOException(LOG, "unable to read response", e);
 					return;
 				}
-				long currentSequence = 0;
 				while (!socket.isClosed()) {
 					// FIXME reconnect
 					synchronized (lock) {
@@ -95,18 +94,15 @@ public class SpyServerClient {
 							break;
 						}
 						try {
-							// FIXME zero gc
-							ResponseHeader header = ResponseHeader.read(inputStream);
-							// ignore any sequence mismatches.
-							// rtl-sdr for some reason report 2155905152
-							if (header.getMessageType() == SPYSERVER_MSG_TYPE_DEVICE_INFO) {
+							responseHeader.read(inputStream);
+							if (responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_DEVICE_INFO) {
 								response = new SpyServerDeviceInfo();
 								response.read(inputStream);
 								LOG.info("spyserver connected: {}", response.toString());
 								// initial sync contains 2 responses
-								header = ResponseHeader.read(inputStream);
+								responseHeader.read(inputStream);
 							}
-							if (header.getMessageType() == SPYSERVER_MSG_TYPE_CLIENT_SYNC) {
+							if (responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_CLIENT_SYNC) {
 								if (response != null) {
 									sync = new SpyServerClientSync();
 									sync.read(inputStream);
@@ -116,13 +112,15 @@ public class SpyServerClient {
 									response.read(inputStream);
 									LOG.info("state: {}", response.toString());
 								}
-							}
-							if (header.getMessageType() == SPYSERVER_MSG_TYPE_INT16_IQ || header.getMessageType() == SPYSERVER_MSG_TYPE_FLOAT_IQ) {
+							} else if (responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_INT16_IQ || responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_FLOAT_IQ || responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_UINT8_IQ) {
 								if (callback != null) {
-									callback.onData(inputStream, (int) header.getBodySize());
+									callback.onData(inputStream, (int) responseHeader.getBodySize());
 								} else {
-									inputStream.skipNBytes(header.getBodySize());
+									inputStream.skipNBytes(responseHeader.getBodySize());
 								}
+							} else {
+								LOG.info("unknown message received: {}", responseHeader.getMessageType());
+								inputStream.skipNBytes(responseHeader.getBodySize());
 							}
 						} catch (IOException e) {
 							Util.logIOException(LOG, "unable to read response", e);
@@ -213,6 +211,7 @@ public class SpyServerClient {
 	public void startStream(OnDataCallback callback) throws IOException {
 		synchronized (lock) {
 			this.callback = callback;
+			setParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_FORMAT, convertDataFormat(status.getFormat()));
 			setParameter(SpyServerParameter.SPYSERVER_SETTING_STREAMING_ENABLED, 1);
 			lock.notifyAll();
 		}
@@ -229,11 +228,14 @@ public class SpyServerClient {
 		byte[] body = command.toByteArray();
 		synchronized (lock) {
 			response = null;
-			LittleEndianDataOutputStream out = new LittleEndianDataOutputStream(new DataOutputStream(socket.getOutputStream()));
-			out.writeInt(commandType);
-			out.writeInt(body.length);
-			out.write(body);
-			out.flush();
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			writeUnsignedInt(baos, commandType);
+			writeUnsignedInt(baos, body.length);
+			writeUnsignedInt(baos, body.length);
+			baos.write(body);
+			baos.close();
+			socketOut.write(baos.toByteArray());
+			socketOut.flush();
 			lock.notifyAll();
 			try {
 				lock.wait(socketTimeout);
@@ -247,11 +249,13 @@ public class SpyServerClient {
 
 	private void sendCommandAsync(int commandType, CommandRequest command) throws IOException {
 		byte[] body = command.toByteArray();
-		LittleEndianDataOutputStream out = new LittleEndianDataOutputStream(new DataOutputStream(socket.getOutputStream()));
-		out.writeInt(commandType);
-		out.writeInt(body.length);
-		out.write(body);
-		out.flush();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		writeUnsignedInt(baos, commandType);
+		writeUnsignedInt(baos, body.length);
+		baos.write(body);
+		baos.close();
+		socketOut.write(baos.toByteArray());
+		socketOut.flush();
 	}
 
 	public void stop() {
@@ -263,8 +267,6 @@ public class SpyServerClient {
 			lock.notifyAll();
 		}
 	}
-
-	
 
 	private static DataFormat resolveDataFormat(SpyServerDeviceInfo response) throws IOException {
 		if (response.getForcedIQFormat() != SPYSERVER_STREAM_FORMAT_INVALID) {
@@ -307,6 +309,23 @@ public class SpyServerClient {
 		default:
 			throw new IOException("unsupported format: " + format);
 		}
+	}
+
+	public static long readUnsignedInt(InputStream is) throws IOException {
+		int ch1 = is.read();
+		int ch2 = is.read();
+		int ch3 = is.read();
+		int ch4 = is.read();
+		if ((ch1 | ch2 | ch3 | ch4) < 0)
+			throw new EOFException();
+		return ((ch4 << 24) | (ch3 << 16) | (ch2 << 8) | ch1) & 0xFFFFFFFFL;
+	}
+
+	public static void writeUnsignedInt(OutputStream os, int v) throws IOException {
+		os.write(0xFF & v);
+		os.write(0xFF & (v >> 8));
+		os.write(0xFF & (v >> 16));
+		os.write(0xFF & (v >> 24));
 	}
 
 }

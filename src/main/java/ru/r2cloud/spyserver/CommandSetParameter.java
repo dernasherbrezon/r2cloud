@@ -1,7 +1,6 @@
 package ru.r2cloud.spyserver;
 
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class CommandSetParameter implements CommandRequest {
@@ -35,10 +34,9 @@ public class CommandSetParameter implements CommandRequest {
 	public byte[] toByteArray() {
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			LittleEndianDataOutputStream dis = new LittleEndianDataOutputStream(new DataOutputStream(baos));
-			dis.writeInt((int) setting);
-			dis.writeInt((int) value);
-			dis.flush();
+			SpyServerClient.writeUnsignedInt(baos, (int) setting);
+			SpyServerClient.writeUnsignedInt(baos, (int) value);
+			baos.close();
 			return baos.toByteArray();
 		} catch (IOException e) {
 			return new byte[0];
