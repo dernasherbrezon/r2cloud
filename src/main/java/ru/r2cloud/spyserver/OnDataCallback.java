@@ -4,6 +4,6 @@ import java.io.InputStream;
 
 public interface OnDataCallback {
 
-	void onData(InputStream is, int len);
+	boolean onData(InputStream is, int len);
 
 }

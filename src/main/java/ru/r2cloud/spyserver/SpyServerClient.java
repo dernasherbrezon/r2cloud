@@ -111,7 +111,9 @@ public class SpyServerClient {
 								}
 							} else if (responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_INT16_IQ || responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_FLOAT_IQ || responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_UINT8_IQ) {
 								if (callback != null) {
-									callback.onData(inputStream, (int) responseHeader.getBodySize());
+									if (!callback.onData(inputStream, (int) responseHeader.getBodySize())) {
+										stopStream();
+									}
 								} else {
 									inputStream.skipNBytes(responseHeader.getBodySize());
 								}
@@ -143,6 +145,7 @@ public class SpyServerClient {
 			status.setFormat(resolveDataFormat(response));
 			setParameter(SpyServerParameter.SPYSERVER_SETTING_STREAMING_MODE, SPYSERVER_STREAM_MODE_IQ_ONLY);
 			setParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_FORMAT, convertDataFormat(status.getFormat()));
+			// FIMXE maybe set digital iq gain to ffffffff?
 			for (long i = response.getMinimumIQDecimation(); i < response.getDecimationStageCount(); i++) {
 				supportedSamplingRates.put(response.getMaximumBandwidth() / (1 << i), i);
 			}
@@ -182,7 +185,7 @@ public class SpyServerClient {
 		if (decimation == null) {
 			throw new IOException("sampling rate is not supported: " + value);
 		}
-		setParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_DECIMATION, decimation);
+		setParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_DECIMATION, decimation - 1);
 	}
 
 	public List<Long> getSupportedSamplingRates() {
@@ -207,9 +210,6 @@ public class SpyServerClient {
 	public void startStream(OnDataCallback callback) throws IOException {
 		synchronized (lock) {
 			this.callback = callback;
-			// TODO check if needed
-//			setParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_FORMAT, convertDataFormat(status.getFormat()));
-
 			setParameter(SpyServerParameter.SPYSERVER_SETTING_STREAMING_ENABLED, 1);
 			lock.notifyAll();
 		}
@@ -325,5 +325,5 @@ public class SpyServerClient {
 		os.write(0xFF & (v >> 16));
 		os.write(0xFF & (v >> 24));
 	}
-
+	
 }
