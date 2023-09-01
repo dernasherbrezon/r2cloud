@@ -44,19 +44,17 @@ public class SpyServerClient {
 	private final String host;
 	private final int port;
 	private final int socketTimeout;
+	private final ResponseHeader responseHeader = new ResponseHeader();
+	private final Map<Long, Long> supportedSamplingRates = new HashMap<>();
+	private final Object lock = new Object();
 
 	private Socket socket;
 	private OutputStream socketOut;
 	private SpyServerStatus status;
 
-	private ResponseHeader responseHeader = new ResponseHeader();
 	private CommandResponse response;
 	private SpyServerClientSync sync;
-	private byte[] buffer = new byte[4096];
-	private final Map<Long, Long> supportedSamplingRates = new HashMap<>();
 	private OnDataCallback callback;
-	private Object lock = new Object();
-	long totalSamples = 0;
 
 	public SpyServerClient(String host, int port, int socketTimeout) {
 		this.host = host;
@@ -78,10 +76,10 @@ public class SpyServerClient {
 					inputStream = socket.getInputStream();
 				} catch (IOException e) {
 					Util.logIOException(LOG, "unable to read response", e);
+					markStatusAsFailed(e);
 					return;
 				}
 				while (!socket.isClosed()) {
-					// FIXME reconnect
 					synchronized (lock) {
 						if (callback == null) {
 							try {
@@ -124,6 +122,7 @@ public class SpyServerClient {
 							}
 						} catch (IOException e) {
 							Util.logIOException(LOG, "unable to read response", e);
+							markStatusAsFailed(e);
 							break;
 						} finally {
 							lock.notifyAll();
@@ -132,6 +131,7 @@ public class SpyServerClient {
 				}
 				LOG.info("spyserver client stopped");
 			}
+
 		}, "spyserver-client").start();
 		status = new SpyServerStatus();
 		SpyServerDeviceInfo response = (SpyServerDeviceInfo) sendCommandSync(SPYSERVER_CMD_HELLO, new CommandHello(SPYSERVER_PROTOCOL_VERSION, CLIENT_ID));
@@ -200,10 +200,7 @@ public class SpyServerClient {
 				sendCommandSync(SPYSERVER_CMD_SET_SETTING, new CommandSetParameter(parameter.getCode(), value));
 			}
 		} catch (IOException e) {
-			if (status != null) {
-				status.setStatus(DeviceConnectionStatus.FAILED);
-				status.setFailureMessage(e.getMessage());
-			}
+			markStatusAsFailed(e);
 			throw e;
 		}
 	}
@@ -212,6 +209,7 @@ public class SpyServerClient {
 		synchronized (lock) {
 			this.callback = callback;
 			setParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_FORMAT, convertDataFormat(status.getFormat()));
+			// TODO check if needed
 			setParameter(SpyServerParameter.SPYSERVER_SETTING_STREAMING_ENABLED, 1);
 			lock.notifyAll();
 		}
@@ -225,17 +223,9 @@ public class SpyServerClient {
 	}
 
 	private CommandResponse sendCommandSync(int commandType, CommandRequest command) throws IOException {
-		byte[] body = command.toByteArray();
 		synchronized (lock) {
 			response = null;
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			writeUnsignedInt(baos, commandType);
-			writeUnsignedInt(baos, body.length);
-			writeUnsignedInt(baos, body.length);
-			baos.write(body);
-			baos.close();
-			socketOut.write(baos.toByteArray());
-			socketOut.flush();
+			sendCommandAsync(commandType, command);
 			lock.notifyAll();
 			try {
 				lock.wait(socketTimeout);
@@ -256,6 +246,14 @@ public class SpyServerClient {
 		baos.close();
 		socketOut.write(baos.toByteArray());
 		socketOut.flush();
+	}
+
+	private void markStatusAsFailed(IOException e) {
+		if (status == null) {
+			status = new SpyServerStatus();
+		}
+		status.setStatus(DeviceConnectionStatus.FAILED);
+		status.setFailureMessage(e.getMessage());
 	}
 
 	public void stop() {
