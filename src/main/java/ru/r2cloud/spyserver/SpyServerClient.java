@@ -65,7 +65,6 @@ public class SpyServerClient {
 	public void start() throws IOException {
 		socket = new Socket(host, port);
 		socket.setSoTimeout(socketTimeout);
-		socket.setTcpNoDelay(true);
 		socketOut = socket.getOutputStream();
 		new Thread(new Runnable() {
 
@@ -145,7 +144,7 @@ public class SpyServerClient {
 			setParameter(SpyServerParameter.SPYSERVER_SETTING_STREAMING_MODE, SPYSERVER_STREAM_MODE_IQ_ONLY);
 			setParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_FORMAT, convertDataFormat(status.getFormat()));
 			for (long i = response.getMinimumIQDecimation(); i < response.getDecimationStageCount(); i++) {
-				supportedSamplingRates.put(response.getMaximumSampleRate() / (1 << i), i);
+				supportedSamplingRates.put(response.getMaximumBandwidth() / (1 << i), i);
 			}
 		} else {
 			status.setStatus(DeviceConnectionStatus.FAILED);
@@ -208,8 +207,9 @@ public class SpyServerClient {
 	public void startStream(OnDataCallback callback) throws IOException {
 		synchronized (lock) {
 			this.callback = callback;
-			setParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_FORMAT, convertDataFormat(status.getFormat()));
 			// TODO check if needed
+//			setParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_FORMAT, convertDataFormat(status.getFormat()));
+
 			setParameter(SpyServerParameter.SPYSERVER_SETTING_STREAMING_ENABLED, 1);
 			lock.notifyAll();
 		}
