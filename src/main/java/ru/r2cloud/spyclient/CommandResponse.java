@@ -1,4 +1,4 @@
-package ru.r2cloud.spyserver;
+package ru.r2cloud.spyclient;
 
 import java.io.IOException;
 import java.io.InputStream;

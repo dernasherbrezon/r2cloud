@@ -1,4 +1,4 @@
-package ru.r2cloud.spyserver;
+package ru.r2cloud.spyclient;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,13 +61,13 @@ public class ResponseHeader {
 	}
 
 	public void read(InputStream is) throws IOException {
-		protocolID = SpyServerClient.readUnsignedInt(is);
-		long mTypeRaw = SpyServerClient.readUnsignedInt(is);
+		protocolID = SpyClient.readUnsignedInt(is);
+		long mTypeRaw = SpyClient.readUnsignedInt(is);
 		messageType = (int) (mTypeRaw & 0xFFFF);
 		flags = (int) (mTypeRaw & 0xFFFF0000) >> 16;
-		streamType = SpyServerClient.readUnsignedInt(is);
-		sequenceNumber = SpyServerClient.readUnsignedInt(is);
-		bodySize = SpyServerClient.readUnsignedInt(is);
+		streamType = SpyClient.readUnsignedInt(is);
+		sequenceNumber = SpyClient.readUnsignedInt(is);
+		bodySize = SpyClient.readUnsignedInt(is);
 	}
 
 }

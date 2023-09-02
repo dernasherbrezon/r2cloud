@@ -1,4 +1,4 @@
-package ru.r2cloud.spyserver;
+package ru.r2cloud.spyclient;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -116,18 +116,18 @@ public class SpyServerDeviceInfo implements CommandResponse {
 
 	@Override
 	public void read(InputStream is) throws IOException {
-		deviceType = SpyServerClient.readUnsignedInt(is);
-		deviceSerial = SpyServerClient.readUnsignedInt(is);
-		maximumSampleRate = SpyServerClient.readUnsignedInt(is);
-		maximumBandwidth = SpyServerClient.readUnsignedInt(is);
-		decimationStageCount = SpyServerClient.readUnsignedInt(is);
-		gainStageCount = SpyServerClient.readUnsignedInt(is);
-		maximumGainIndex = SpyServerClient.readUnsignedInt(is);
-		minimumFrequency = SpyServerClient.readUnsignedInt(is);
-		maximumFrequency = SpyServerClient.readUnsignedInt(is);
-		resolution = SpyServerClient.readUnsignedInt(is);
-		minimumIQDecimation = SpyServerClient.readUnsignedInt(is);
-		forcedIQFormat = SpyServerClient.readUnsignedInt(is);
+		deviceType = SpyClient.readUnsignedInt(is);
+		deviceSerial = SpyClient.readUnsignedInt(is);
+		maximumSampleRate = SpyClient.readUnsignedInt(is);
+		maximumBandwidth = SpyClient.readUnsignedInt(is);
+		decimationStageCount = SpyClient.readUnsignedInt(is);
+		gainStageCount = SpyClient.readUnsignedInt(is);
+		maximumGainIndex = SpyClient.readUnsignedInt(is);
+		minimumFrequency = SpyClient.readUnsignedInt(is);
+		maximumFrequency = SpyClient.readUnsignedInt(is);
+		resolution = SpyClient.readUnsignedInt(is);
+		minimumIQDecimation = SpyClient.readUnsignedInt(is);
+		forcedIQFormat = SpyClient.readUnsignedInt(is);
 	}
 
 	@Override

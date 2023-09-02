@@ -14,7 +14,7 @@ public class ObservationRequest {
 
 	private SdrType sdrType;
 	private int sampleRate;
-	//FIXME rename to just frequency
+	// FIXME rename to just frequency
 	private long actualFrequency;
 	private double gain;
 	private boolean biast;
@@ -22,6 +22,15 @@ public class ObservationRequest {
 	private int rtlDeviceId;
 	private int ppm;
 	private SdrServerConfiguration sdrServerConfiguration;
+	private SpyServerConfiguration spyServerConfiguration;
+
+	public SpyServerConfiguration getSpyServerConfiguration() {
+		return spyServerConfiguration;
+	}
+
+	public void setSpyServerConfiguration(SpyServerConfiguration spyServerConfiguration) {
+		this.spyServerConfiguration = spyServerConfiguration;
+	}
 
 	public String getId() {
 		return id;

@@ -1,4 +1,4 @@
-package ru.r2cloud.spyserver;
+package ru.r2cloud.spyclient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
@@ -19,9 +19,9 @@ import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.util.Util;
 
-public class SpyServerClient {
+public class SpyClient {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SpyServerClient.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SpyClient.class);
 	private static final int SPYSERVER_CMD_HELLO = 0;
 	private static final int SPYSERVER_CMD_SET_SETTING = 2;
 
@@ -44,7 +44,6 @@ public class SpyServerClient {
 	private final String host;
 	private final int port;
 	private final int socketTimeout;
-	private final ResponseHeader responseHeader = new ResponseHeader();
 	private final Map<Long, Long> supportedSamplingRates = new HashMap<>();
 	private final Object lock = new Object();
 
@@ -52,11 +51,11 @@ public class SpyServerClient {
 	private OutputStream socketOut;
 	private SpyServerStatus status;
 
-	private CommandResponse response;
-	private SpyServerClientSync sync;
+	private SpyServerDeviceInfo deviceInfo;
+	private SpyClientSync sync;
 	private OnDataCallback callback;
 
-	public SpyServerClient(String host, int port, int socketTimeout) {
+	public SpyClient(String host, int port, int socketTimeout) {
 		this.host = host;
 		this.port = port;
 		this.socketTimeout = socketTimeout;
@@ -78,38 +77,26 @@ public class SpyServerClient {
 					markStatusAsFailed(e);
 					return;
 				}
+				ResponseHeader responseHeader = new ResponseHeader();
 				while (!socket.isClosed()) {
-					synchronized (lock) {
-						if (callback == null) {
-							try {
-								lock.wait();
-							} catch (InterruptedException e) {
-								break;
+					try {
+						responseHeader.read(inputStream);
+						if (responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_DEVICE_INFO) {
+							synchronized (lock) {
+								deviceInfo = new SpyServerDeviceInfo();
+								deviceInfo.read(inputStream);
+								LOG.info("spyserver connected: {}", deviceInfo.toString());
+								lock.notifyAll();
 							}
-						}
-						if (socket.isClosed()) {
-							break;
-						}
-						try {
-							responseHeader.read(inputStream);
-							if (responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_DEVICE_INFO) {
-								response = new SpyServerDeviceInfo();
-								response.read(inputStream);
-								LOG.info("spyserver connected: {}", response.toString());
-								// initial sync contains 2 responses
-								responseHeader.read(inputStream);
+						} else if (responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_CLIENT_SYNC) {
+							synchronized (lock) {
+								sync = new SpyClientSync();
+								sync.read(inputStream);
+								LOG.info("state: {}", sync.toString());
+								lock.notifyAll();
 							}
-							if (responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_CLIENT_SYNC) {
-								if (response != null) {
-									sync = new SpyServerClientSync();
-									sync.read(inputStream);
-									LOG.info("state: {}", sync.toString());
-								} else {
-									response = new SpyServerClientSync();
-									response.read(inputStream);
-									LOG.info("state: {}", response.toString());
-								}
-							} else if (responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_INT16_IQ || responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_FLOAT_IQ || responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_UINT8_IQ) {
+						} else if (responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_INT16_IQ || responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_FLOAT_IQ || responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_UINT8_IQ) {
+							synchronized (lock) {
 								if (callback != null) {
 									if (!callback.onData(inputStream, (int) responseHeader.getBodySize())) {
 										stopStream();
@@ -117,41 +104,56 @@ public class SpyServerClient {
 								} else {
 									inputStream.skipNBytes(responseHeader.getBodySize());
 								}
-							} else {
-								LOG.info("unknown message received: {}", responseHeader.getMessageType());
-								inputStream.skipNBytes(responseHeader.getBodySize());
 							}
-						} catch (IOException e) {
-							Util.logIOException(LOG, "unable to read response", e);
-							markStatusAsFailed(e);
-							break;
-						} finally {
-							lock.notifyAll();
+						} else {
+							LOG.info("unknown message received: {}", responseHeader.getMessageType());
+							inputStream.skipNBytes(responseHeader.getBodySize());
 						}
+					} catch (IOException e) {
+						Util.logIOException(LOG, "unable to read response", e);
+						markStatusAsFailed(e);
+						break;
 					}
 				}
-				LOG.info("spyserver client stopped");
+				LOG.info("spyclient stopped");
 			}
 
 		}, "spyserver-client").start();
-		status = new SpyServerStatus();
-		SpyServerDeviceInfo response = (SpyServerDeviceInfo) sendCommandSync(SPYSERVER_CMD_HELLO, new CommandHello(SPYSERVER_PROTOCOL_VERSION, CLIENT_ID));
-		// cache status because handshake between client and spyserver can happen only
-		// once
-		if (response != null) {
-			status.setStatus(DeviceConnectionStatus.CONNECTED);
-			status.setMinFrequency(response.getMinimumFrequency());
-			status.setMaxFrequency(response.getMaximumFrequency());
-			status.setFormat(resolveDataFormat(response));
-			setParameter(SpyServerParameter.SPYSERVER_SETTING_STREAMING_MODE, SPYSERVER_STREAM_MODE_IQ_ONLY);
-			setParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_FORMAT, convertDataFormat(status.getFormat()));
-			// FIMXE maybe set digital iq gain to ffffffff?
-			for (long i = response.getMinimumIQDecimation(); i < response.getDecimationStageCount(); i++) {
-				supportedSamplingRates.put(response.getMaximumBandwidth() / (1 << i), i);
+		sendCommandAsync(SPYSERVER_CMD_HELLO, new CommandHello(SPYSERVER_PROTOCOL_VERSION, CLIENT_ID));
+		synchronized (lock) {
+			int remainingMillis = socketTimeout;
+			while (deviceInfo == null || sync == null) {
+				if (remainingMillis <= 0) {
+					status = new SpyServerStatus();
+					status.setStatus(DeviceConnectionStatus.FAILED);
+					status.setFailureMessage("Device is not connected");
+					throw new IOException("timeout waiting for sync");
+				}
+				long start = System.currentTimeMillis();
+				try {
+					lock.wait(remainingMillis);
+				} catch (InterruptedException e) {
+					status = new SpyServerStatus();
+					status.setStatus(DeviceConnectionStatus.FAILED);
+					status.setFailureMessage("Device is not connected");
+					Thread.currentThread().interrupt();
+					return;
+				}
+				remainingMillis -= (System.currentTimeMillis() - start);
 			}
-		} else {
-			status.setStatus(DeviceConnectionStatus.FAILED);
-			status.setFailureMessage("Device is not connected");
+			status = new SpyServerStatus();
+			// cache status because handshake between client and spyserver can happen only
+			// once
+			status.setStatus(DeviceConnectionStatus.CONNECTED);
+			status.setMinFrequency(deviceInfo.getMinimumFrequency());
+			status.setMaxFrequency(deviceInfo.getMaximumFrequency());
+			status.setFormat(resolveDataFormat(deviceInfo));
+			sendCommandAsync(SPYSERVER_CMD_SET_SETTING, new CommandSetParameter(SpyServerParameter.SPYSERVER_SETTING_STREAMING_MODE.getCode(), SPYSERVER_STREAM_MODE_IQ_ONLY));
+			sendCommandAsync(SPYSERVER_CMD_SET_SETTING, new CommandSetParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_FORMAT.getCode(), convertDataFormat(status.getFormat())));
+			// FIMXE maybe set digital iq gain to ffffffff?
+			for (long i = deviceInfo.getMinimumIQDecimation(); i < deviceInfo.getDecimationStageCount(); i++) {
+				supportedSamplingRates.put(deviceInfo.getMaximumBandwidth() / (1 << i), i);
+			}
 		}
 	}
 
@@ -167,14 +169,14 @@ public class SpyServerClient {
 			LOG.info("can't control gain. will use server-default: {}", sync.getGain());
 			return;
 		}
-		setParameter(SpyServerParameter.SPYSERVER_SETTING_GAIN, value);
+		sendCommandAsync(SPYSERVER_CMD_SET_SETTING, new CommandSetParameter(SpyServerParameter.SPYSERVER_SETTING_GAIN.getCode(), value));
 	}
 
 	public void setFrequency(long value) throws IOException {
 		if (status == null || status.getStatus() != DeviceConnectionStatus.CONNECTED) {
 			throw new IOException("not connected");
 		}
-		setParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_FREQUENCY, value);
+		sendCommandAsync(SPYSERVER_CMD_SET_SETTING, new CommandSetParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_FREQUENCY.getCode(), value));
 	}
 
 	public void setSamplingRate(long value) throws IOException {
@@ -185,7 +187,7 @@ public class SpyServerClient {
 		if (decimation == null) {
 			throw new IOException("sampling rate is not supported: " + value);
 		}
-		setParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_DECIMATION, decimation - 1);
+		sendCommandAsync(SPYSERVER_CMD_SET_SETTING, new CommandSetParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_DECIMATION.getCode(), decimation));
 	}
 
 	public List<Long> getSupportedSamplingRates() {
@@ -194,47 +196,18 @@ public class SpyServerClient {
 		return result;
 	}
 
-	private void setParameter(SpyServerParameter parameter, long value) throws IOException {
-		try {
-			if (parameter.isAsync()) {
-				sendCommandAsync(SPYSERVER_CMD_SET_SETTING, new CommandSetParameter(parameter.getCode(), value));
-			} else {
-				sendCommandSync(SPYSERVER_CMD_SET_SETTING, new CommandSetParameter(parameter.getCode(), value));
-			}
-		} catch (IOException e) {
-			markStatusAsFailed(e);
-			throw e;
-		}
-	}
-
 	public void startStream(OnDataCallback callback) throws IOException {
 		synchronized (lock) {
 			this.callback = callback;
-			setParameter(SpyServerParameter.SPYSERVER_SETTING_STREAMING_ENABLED, 1);
-			lock.notifyAll();
 		}
+		sendCommandAsync(SPYSERVER_CMD_SET_SETTING, new CommandSetParameter(SpyServerParameter.SPYSERVER_SETTING_STREAMING_ENABLED.getCode(), 1));
 	}
 
 	public void stopStream() throws IOException {
 		synchronized (lock) {
-			setParameter(SpyServerParameter.SPYSERVER_SETTING_STREAMING_ENABLED, 0);
 			this.callback = null;
 		}
-	}
-
-	private CommandResponse sendCommandSync(int commandType, CommandRequest command) throws IOException {
-		synchronized (lock) {
-			response = null;
-			sendCommandAsync(commandType, command);
-			lock.notifyAll();
-			try {
-				lock.wait(socketTimeout);
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-				return null;
-			}
-			return response;
-		}
+		sendCommandAsync(SPYSERVER_CMD_SET_SETTING, new CommandSetParameter(SpyServerParameter.SPYSERVER_SETTING_STREAMING_ENABLED.getCode(), 0));
 	}
 
 	private void sendCommandAsync(int commandType, CommandRequest command) throws IOException {
@@ -249,20 +222,19 @@ public class SpyServerClient {
 	}
 
 	private void markStatusAsFailed(IOException e) {
-		if (status == null) {
-			status = new SpyServerStatus();
+		synchronized (lock) {
+			if (status == null) {
+				status = new SpyServerStatus();
+			}
+			status.setStatus(DeviceConnectionStatus.FAILED);
+			status.setFailureMessage(e.getMessage());
 		}
-		status.setStatus(DeviceConnectionStatus.FAILED);
-		status.setFailureMessage(e.getMessage());
 	}
 
 	public void stop() {
-		LOG.info("stopping spyserver client...");
+		LOG.info("stopping spyclient...");
 		if (socket != null) {
 			Util.closeQuietly(socket);
-		}
-		synchronized (lock) {
-			lock.notifyAll();
 		}
 	}
 
@@ -325,5 +297,5 @@ public class SpyServerClient {
 		os.write(0xFF & (v >> 16));
 		os.write(0xFF & (v >> 24));
 	}
-	
+
 }

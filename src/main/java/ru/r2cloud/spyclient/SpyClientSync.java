@@ -1,9 +1,9 @@
-package ru.r2cloud.spyserver;
+package ru.r2cloud.spyclient;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class SpyServerClientSync implements CommandResponse {
+public class SpyClientSync implements CommandResponse {
 
 	private long canControl;
 	private long gain;
@@ -89,15 +89,15 @@ public class SpyServerClientSync implements CommandResponse {
 
 	@Override
 	public void read(InputStream is) throws IOException {
-		canControl = SpyServerClient.readUnsignedInt(is);
-		gain = SpyServerClient.readUnsignedInt(is);
-		deviceCenterFrequency = SpyServerClient.readUnsignedInt(is);
-		iQCenterFrequency = SpyServerClient.readUnsignedInt(is);
-		fFTCenterFrequency = SpyServerClient.readUnsignedInt(is);
-		minimumIQCenterFrequency = SpyServerClient.readUnsignedInt(is);
-		maximumIQCenterFrequency = SpyServerClient.readUnsignedInt(is);
-		minimumFFTCenterFrequency = SpyServerClient.readUnsignedInt(is);
-		maximumFFTCenterFrequency = SpyServerClient.readUnsignedInt(is);
+		canControl = SpyClient.readUnsignedInt(is);
+		gain = SpyClient.readUnsignedInt(is);
+		deviceCenterFrequency = SpyClient.readUnsignedInt(is);
+		iQCenterFrequency = SpyClient.readUnsignedInt(is);
+		fFTCenterFrequency = SpyClient.readUnsignedInt(is);
+		minimumIQCenterFrequency = SpyClient.readUnsignedInt(is);
+		maximumIQCenterFrequency = SpyClient.readUnsignedInt(is);
+		minimumFFTCenterFrequency = SpyClient.readUnsignedInt(is);
+		maximumFFTCenterFrequency = SpyClient.readUnsignedInt(is);
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package ru.r2cloud.spyserver;
+package ru.r2cloud.spyclient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class CommandHello implements CommandRequest {
 	public byte[] toByteArray() {
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			SpyServerClient.writeUnsignedInt(baos, protocolVersion);
+			SpyClient.writeUnsignedInt(baos, protocolVersion);
 			baos.write(clientId.getBytes(StandardCharsets.US_ASCII));
 			baos.close();
 			return baos.toByteArray();
