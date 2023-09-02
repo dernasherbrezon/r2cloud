@@ -14,7 +14,7 @@ import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ProcessWrapper;
 import ru.r2cloud.util.Util;
 
-class PlutoStatusProcess implements SdrStatusProcess {
+public class PlutoStatusProcess implements SdrStatusProcess {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PlutoStatusProcess.class);
 	private static final String HW_MODEL = "hw_model:";
@@ -22,7 +22,7 @@ class PlutoStatusProcess implements SdrStatusProcess {
 	private final Configuration config;
 	private final ProcessFactory factory;
 
-	PlutoStatusProcess(Configuration config, ProcessFactory factory) {
+	public PlutoStatusProcess(Configuration config, ProcessFactory factory) {
 		this.config = config;
 		this.factory = factory;
 	}

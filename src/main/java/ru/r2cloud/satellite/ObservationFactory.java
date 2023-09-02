@@ -9,27 +9,21 @@ import org.orekit.propagation.analytical.tle.TLEPropagator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.SatPass;
-import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
-import ru.r2cloud.util.Configuration;
 
 public class ObservationFactory {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationFactory.class);
-	public static final int DC_OFFSET = 10_000;
 	private static final long MAX_OBSERVATION_MILLIS = 15 * 60 * 1000;
 
 	private final PredictOreKit predict;
-	private final Configuration config;
 
-	public ObservationFactory(PredictOreKit predict, Configuration config) {
+	public ObservationFactory(PredictOreKit predict) {
 		this.predict = predict;
-		this.config = config;
 	}
 
 	public List<ObservationRequest> createSchedule(Date date, Transmitter transmitter) {
@@ -57,15 +51,15 @@ public class ObservationFactory {
 			// Raspberry PI might not be able to perform such long observations
 			// better split into several
 			while (endMillis - startMillis > MAX_OBSERVATION_MILLIS) {
-				result.add(convert(transmitter, transmitter.getTle(), tlePropagator, startMillis, startMillis + MAX_OBSERVATION_MILLIS));
+				result.add(convert(transmitter, transmitter.getTle(), startMillis, startMillis + MAX_OBSERVATION_MILLIS));
 				startMillis += MAX_OBSERVATION_MILLIS;
 			}
-			result.add(convert(transmitter, transmitter.getTle(), tlePropagator, startMillis, endMillis));
+			result.add(convert(transmitter, transmitter.getTle(), startMillis, endMillis));
 		}
 		return result;
 	}
 
-	private ObservationRequest convert(Transmitter transmitter, Tle tle, TLEPropagator tlePropagator, long startMillis, long endMillis) {
+	private ObservationRequest convert(Transmitter transmitter, Tle tle, long startMillis, long endMillis) {
 		ObservationRequest result = new ObservationRequest();
 		result.setSatelliteId(transmitter.getSatelliteId());
 		result.setTransmitterId(transmitter.getId());
@@ -74,31 +68,8 @@ public class ObservationFactory {
 		result.setStartTimeMillis(startMillis);
 		result.setEndTimeMillis(endMillis);
 		result.setId(String.valueOf(result.getStartTimeMillis()) + "-" + transmitter.getId());
-		// only r2lora can handle lora modulation
-		if (transmitter.getModulation() != null && transmitter.getModulation().equals(Modulation.LORA)) {
-			result.setSdrType(SdrType.R2LORA);
-		} else {
-			result.setSdrType(config.getSdrType());
-		}
+		result.setFrequency(transmitter.getFrequency());
 		result.setCenterBandFrequency(transmitter.getFrequencyBand().getCenter());
-		switch (transmitter.getFraming()) {
-		case APT:
-			result.setActualFrequency(transmitter.getFrequency());
-			break;
-		case LRPT:
-			result.setActualFrequency(transmitter.getFrequency());
-			break;
-		default:
-			// compensate DC offset only for non sdr-server observations
-			if (result.getSdrType().equals(SdrType.SDRSERVER) || result.getSdrType().equals(SdrType.R2LORA)) {
-				result.setActualFrequency(transmitter.getFrequency());
-			} else {
-				// at the beginning doppler freq is the max
-				long initialDopplerFrequency = predict.getDownlinkFreq(transmitter.getFrequency(), startMillis, predict.getPosition(), tlePropagator);
-				result.setActualFrequency(initialDopplerFrequency + DC_OFFSET);
-			}
-			break;
-		}
 		return result;
 	}
 

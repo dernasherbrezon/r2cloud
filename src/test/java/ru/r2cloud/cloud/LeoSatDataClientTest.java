@@ -276,7 +276,7 @@ public class LeoSatDataClientTest {
 		result.setStartTimeMillis(1L);
 		result.setEndTimeMillis(1L);
 		result.setSampleRate(1);
-		result.setActualFrequency(100L);
+		result.setFrequency(100L);
 		result.setSatelliteId("1");
 		result.setTransmitterId("1");
 		result.setChannelA("1");

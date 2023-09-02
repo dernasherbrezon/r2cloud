@@ -22,7 +22,7 @@ import ru.r2cloud.jradio.source.PlutoSdr;
 import ru.r2cloud.jradio.source.RtlSdr;
 import ru.r2cloud.jradio.source.SigSource;
 import ru.r2cloud.jradio.source.Waveform;
-import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Util;
@@ -31,11 +31,11 @@ public class DopplerCorrectedSource implements FloatInput {
 
 	private final FloatInput input;
 
-	public DopplerCorrectedSource(PredictOreKit predict, File rawIq, ObservationRequest req, Transmitter transmitter) throws IOException {
+	public DopplerCorrectedSource(PredictOreKit predict, File rawIq, Observation req, Transmitter transmitter) throws IOException {
 		this(predict, rawIq, req, transmitter, false);
 	}
 
-	public DopplerCorrectedSource(PredictOreKit predict, File rawIq, ObservationRequest req, Transmitter transmitter, boolean snrAnalysis) throws IOException {
+	public DopplerCorrectedSource(PredictOreKit predict, File rawIq, Observation req, Transmitter transmitter, boolean snrAnalysis) throws IOException {
 		Long totalBytes = Util.readTotalBytes(rawIq.toPath());
 		if (totalBytes == null) {
 			throw new IllegalArgumentException("unable to read total samples");
@@ -46,14 +46,16 @@ public class DopplerCorrectedSource implements FloatInput {
 		if (rawIq.toString().endsWith(".gz")) {
 			is = new GZIPInputStream(is);
 		}
-		switch (req.getSdrType()) {
-		case RTLSDR:
+		// rough approximation between device and data type
+		// i.e. "complex signed short" not always 12-bit
+		switch (req.getDataFormat()) {
+		case COMPLEX_UNSIGNED_BYTE:
 			next = new RtlSdr(is, req.getSampleRate(), totalBytes / 2);
 			break;
-		case PLUTOSDR:
+		case COMPLEX_SIGNED_SHORT:
 			next = new PlutoSdr(is, req.getSampleRate(), totalBytes / 4);
 			break;
-		case SDRSERVER:
+		case COMPLEX_FLOAT:
 			Context ctx = new Context();
 			ctx.setChannels(2);
 			ctx.setSampleSizeInBits(4 * 8); // float = 4 bytes
@@ -63,7 +65,7 @@ public class DopplerCorrectedSource implements FloatInput {
 			break;
 		default:
 			Util.closeQuietly(is);
-			throw new IllegalArgumentException("unsupported sdr type: " + req.getSdrType());
+			throw new IllegalArgumentException("unsupported data format: " + req.getDataFormat());
 		}
 		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(req.getTle().getRaw()[1], req.getTle().getRaw()[2]));
 		TopocentricFrame groundStation = predict.getPosition(req.getGroundStation());
@@ -83,10 +85,10 @@ public class DopplerCorrectedSource implements FloatInput {
 			}, 1.0);
 			next = new Multiply(next, source2);
 			float[] taps = Firdes.lowPass(1.0, next.getContext().getSampleRate(), transmitter.getBandwidth(), 1600, Window.WIN_HAMMING, 6.76);
-			input = new FrequencyXlatingFIRFilter(next, taps, decimation, (double) transmitter.getFrequency() - req.getActualFrequency());
+			input = new FrequencyXlatingFIRFilter(next, taps, decimation, (double) transmitter.getFrequency() - req.getFrequency());
 		} else {
 			float[] taps = Firdes.lowPass(1.0, next.getContext().getSampleRate(), maxOffset + (double) transmitter.getBandwidth() / 2, 1600, Window.WIN_HAMMING, 6.76);
-			next = new FrequencyXlatingFIRFilter(next, taps, decimation, (double) transmitter.getFrequency() - req.getActualFrequency());
+			next = new FrequencyXlatingFIRFilter(next, taps, decimation, (double) transmitter.getFrequency() - req.getFrequency());
 			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) next.getContext().getSampleRate(), new DopplerValueSource(next.getContext().getSampleRate(), transmitter.getFrequency(), 1000L, req.getStartTimeMillis()) {
 
 				@Override

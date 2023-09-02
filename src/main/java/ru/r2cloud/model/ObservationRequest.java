@@ -11,16 +11,17 @@ public class ObservationRequest {
 	private String transmitterId;
 	private Tle tle;
 	private GeodeticPoint groundStation;
-
-	private SdrType sdrType;
 	private int sampleRate;
-	// FIXME rename to just frequency
-	private long actualFrequency;
-	private double gain;
-	private boolean biast;
+	private long frequency;
 	private long centerBandFrequency;
-	private int rtlDeviceId;
-	private int ppm;
+	
+	public long getCenterBandFrequency() {
+		return centerBandFrequency;
+	}
+	
+	public void setCenterBandFrequency(long centerBandFrequency) {
+		this.centerBandFrequency = centerBandFrequency;
+	}
 
 	public String getId() {
 		return id;
@@ -78,14 +79,6 @@ public class ObservationRequest {
 		this.groundStation = groundStation;
 	}
 
-	public SdrType getSdrType() {
-		return sdrType;
-	}
-
-	public void setSdrType(SdrType sdrType) {
-		this.sdrType = sdrType;
-	}
-
 	public int getSampleRate() {
 		return sampleRate;
 	}
@@ -94,52 +87,12 @@ public class ObservationRequest {
 		this.sampleRate = sampleRate;
 	}
 
-	public long getActualFrequency() {
-		return actualFrequency;
+	public long getFrequency() {
+		return frequency;
 	}
-
-	public void setActualFrequency(long actualFrequency) {
-		this.actualFrequency = actualFrequency;
-	}
-
-	public double getGain() {
-		return gain;
-	}
-
-	public void setGain(double gain) {
-		this.gain = gain;
-	}
-
-	public boolean isBiast() {
-		return biast;
-	}
-
-	public void setBiast(boolean biast) {
-		this.biast = biast;
-	}
-
-	public long getCenterBandFrequency() {
-		return centerBandFrequency;
-	}
-
-	public void setCenterBandFrequency(long centerBandFrequency) {
-		this.centerBandFrequency = centerBandFrequency;
-	}
-
-	public int getRtlDeviceId() {
-		return rtlDeviceId;
-	}
-
-	public void setRtlDeviceId(int rtlDeviceId) {
-		this.rtlDeviceId = rtlDeviceId;
-	}
-
-	public int getPpm() {
-		return ppm;
-	}
-
-	public void setPpm(int ppm) {
-		this.ppm = ppm;
+	
+	public void setFrequency(long frequency) {
+		this.frequency = frequency;
 	}
 
 }

@@ -14,7 +14,7 @@ import ru.r2cloud.jradio.smog1.Smog1Beacon;
 import ru.r2cloud.jradio.smog1.Smog1RaCoded;
 import ru.r2cloud.jradio.smog1.Smog1Short;
 import ru.r2cloud.model.DemodulatorType;
-import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.sdrmodem.SdrModemClient;
@@ -28,7 +28,7 @@ public class Smog1Decoder extends TelemetryDecoder {
 	}
 
 	@Override
-	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, ObservationRequest req, final Transmitter transmitter, Integer baudRate) throws IOException {
+	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, Observation req, final Transmitter transmitter, Integer baudRate) throws IOException {
 		List<BeaconSource<? extends Beacon>> result = new ArrayList<>();
 		result.add(new Smog1RaCoded(createDemodulator(baudRate, rawIq, req, transmitter), 128, 260));
 		result.add(new Smog1RaCoded(createDemodulator(baudRate, rawIq, req, transmitter), 256, 514));
@@ -37,7 +37,7 @@ public class Smog1Decoder extends TelemetryDecoder {
 		return result;
 	}
 
-	private ByteInput createDemodulator(int baudRate, File rawIq, ObservationRequest req, final Transmitter transmitter) throws IOException {
+	private ByteInput createDemodulator(int baudRate, File rawIq, Observation req, final Transmitter transmitter) throws IOException {
 		DemodulatorType type = config.getDemodulatorType(transmitter.getModulation());
 		if (type.equals(DemodulatorType.SDRMODEM)) {
 			return new SdrModemClient(config, rawIq, req, transmitter, baudRate);

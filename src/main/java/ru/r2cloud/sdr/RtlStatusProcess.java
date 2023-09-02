@@ -16,7 +16,7 @@ import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ProcessWrapper;
 import ru.r2cloud.util.Util;
 
-class RtlStatusProcess implements SdrStatusProcess {
+public class RtlStatusProcess implements SdrStatusProcess {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RtlStatusProcess.class);
 	private static final Pattern DEVICEPATTERN = Pattern.compile("^  (\\d+):  (.*), (.*), SN: (.*)$");
@@ -25,7 +25,7 @@ class RtlStatusProcess implements SdrStatusProcess {
 	private final ProcessFactory factory;
 	private final int expectedRtlDeviceId;
 
-	RtlStatusProcess(Configuration config, ProcessFactory factory, int expectedRtlDeviceId) {
+	public RtlStatusProcess(Configuration config, ProcessFactory factory, int expectedRtlDeviceId) {
 		this.config = config;
 		this.factory = factory;
 		this.expectedRtlDeviceId = expectedRtlDeviceId;

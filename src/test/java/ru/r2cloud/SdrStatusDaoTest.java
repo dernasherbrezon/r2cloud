@@ -13,7 +13,7 @@ import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.model.SdrStatus;
-import ru.r2cloud.sdr.SdrStatusDao;
+import ru.r2cloud.sdr.RtlStatusProcess;
 import ru.r2cloud.util.ProcessFactory;
 
 public class SdrStatusDaoTest {
@@ -23,7 +23,7 @@ public class SdrStatusDaoTest {
 
 	private int expectedRtlDeviceId = 0;
 	private TestConfiguration config;
-	private SdrStatusDao dao;
+	private RtlStatusProcess dao;
 	private RtlTestServer rtlTestServer;
 
 	@Test
@@ -66,7 +66,7 @@ public class SdrStatusDaoTest {
 		rtlTestServer = new RtlTestServer();
 		rtlTestServer.start();
 
-		dao = new SdrStatusDao(config, new ProcessFactory(), expectedRtlDeviceId);
+		dao = new RtlStatusProcess(config, new ProcessFactory(), expectedRtlDeviceId);
 	}
 
 	@After

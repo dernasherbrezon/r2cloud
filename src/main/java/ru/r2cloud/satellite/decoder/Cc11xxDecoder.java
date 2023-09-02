@@ -4,7 +4,7 @@ import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconSource;
 import ru.r2cloud.jradio.ByteInput;
 import ru.r2cloud.jradio.cc11xx.Cc11xxBeaconSource;
-import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
@@ -38,7 +38,7 @@ public class Cc11xxDecoder extends TelemetryDecoder {
 	}
 
 	@Override
-	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, ObservationRequest req) {
+	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, Observation req) {
 		return new Cc11xxBeaconSource<>(demodulator, clazz, syncword, beaconLength, true, true);
 	}
 

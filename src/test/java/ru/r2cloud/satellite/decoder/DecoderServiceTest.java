@@ -21,7 +21,6 @@ import ru.r2cloud.cloud.LeoSatDataService;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.Observation;
-import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationStatus;
 import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.satellite.ObservationDao;
@@ -42,9 +41,9 @@ public class DecoderServiceTest {
 	public void testScheduleTwice() throws Exception {
 		File wav = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
 		TestUtil.copy("data/aausat.raw.gz", wav);
-		ObservationRequest req = TestUtil.loadObservation("data/aausat.raw.gz.json").getReq();
-		Observation observation = new Observation(req);
+		Observation observation = TestUtil.loadObservation("data/aausat.raw.gz.json");
 		observation.setStatus(ObservationStatus.RECEIVED);
+		observation.setGain("0.0");
 		dao.insert(observation);
 		dao.update(observation, wav);
 
@@ -58,7 +57,7 @@ public class DecoderServiceTest {
 		service.retryObservations();
 		service.decode(observation.getSatelliteId(), observation.getId());
 
-		observation = dao.find(req.getSatelliteId(), req.getId());
+		observation = dao.find(observation.getSatelliteId(), observation.getId());
 		assertNotNull(observation);
 		assertEquals(1, observation.getNumberOfDecodedPackets().longValue());
 	}

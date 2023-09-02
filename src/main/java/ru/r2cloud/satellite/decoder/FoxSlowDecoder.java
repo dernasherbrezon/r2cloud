@@ -9,7 +9,7 @@ import ru.r2cloud.jradio.ByteInput;
 import ru.r2cloud.jradio.blocks.CorrelateSyncword;
 import ru.r2cloud.jradio.blocks.SoftToHard;
 import ru.r2cloud.jradio.fox.Fox;
-import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
@@ -23,7 +23,7 @@ public class FoxSlowDecoder<T extends Beacon> extends TelemetryDecoder {
 	}
 
 	@Override
-	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, ObservationRequest req) {
+	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, Observation req) {
 		SoftToHard s2h = new SoftToHard(demodulator);
 		Set<String> codes = new HashSet<>();
 		codes.add("0011111010");

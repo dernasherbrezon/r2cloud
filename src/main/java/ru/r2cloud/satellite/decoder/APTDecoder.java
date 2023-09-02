@@ -12,9 +12,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.model.DecoderResult;
+import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ProcessWrapper;
@@ -33,7 +33,7 @@ public class APTDecoder implements Decoder {
 	}
 
 	@Override
-	public DecoderResult decode(final File wavFile, final ObservationRequest request, final Transmitter transmitter) {
+	public DecoderResult decode(final File wavFile, final Observation request, final Transmitter transmitter) {
 		DecoderResult result = new DecoderResult();
 		result.setRawPath(wavFile);
 		File image = new File(config.getTempDirectory(), "apt-" + request.getId() + ".jpg");

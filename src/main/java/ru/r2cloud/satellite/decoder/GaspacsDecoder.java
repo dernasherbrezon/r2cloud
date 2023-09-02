@@ -18,7 +18,7 @@ import ru.r2cloud.jradio.gaspacs.Gaspacs;
 import ru.r2cloud.jradio.gaspacs.GaspacsBeacon;
 import ru.r2cloud.jradio.gaspacs.GaspacsPacketSource;
 import ru.r2cloud.model.DecoderResult;
-import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.ssdv.SsdvDecoder;
@@ -34,7 +34,7 @@ public class GaspacsDecoder extends TelemetryDecoder {
 	}
 
 	@Override
-	public DecoderResult decode(File rawIq, ObservationRequest req, final Transmitter transmitter) {
+	public DecoderResult decode(File rawIq, Observation req, final Transmitter transmitter) {
 		DecoderResult result = super.decode(rawIq, req, transmitter);
 		if (result.getDataPath() != null) {
 			List<GaspacsBeacon> beacons = new ArrayList<>();
@@ -67,7 +67,7 @@ public class GaspacsDecoder extends TelemetryDecoder {
 	}
 
 	@Override
-	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, ObservationRequest req) {
+	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, Observation req) {
 		return new Gaspacs(demodulator);
 	}
 

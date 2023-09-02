@@ -141,7 +141,7 @@ public class GattServerTest {
 		config.setProperty("loraatble.device.0.maxFrequency", 500_000_000);
 		DeviceConfiguration deviceConfiguration = config.getLoraAtBleConfigurations().get(0);
 		PredictOreKit predict = new PredictOreKit(config);
-		ObservationFactory factory = new ObservationFactory(predict, config);
+		ObservationFactory factory = new ObservationFactory(predict);
 		SatelliteDao satelliteDao = new SatelliteDao(config);
 		ThreadPoolFactoryImpl threadFactory = new ThreadPoolFactoryImpl(60000);
 		Clock clock = new FixedClock(currentTime);

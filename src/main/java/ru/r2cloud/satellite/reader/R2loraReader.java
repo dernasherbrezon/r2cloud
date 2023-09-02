@@ -17,6 +17,7 @@ import ru.r2cloud.lora.LoraObservationRequest;
 import ru.r2cloud.lora.LoraResponse;
 import ru.r2cloud.lora.ResponseStatus;
 import ru.r2cloud.lora.r2lora.R2loraClient;
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
@@ -27,13 +28,15 @@ public class R2loraReader implements IQReader {
 	private static final Logger LOG = LoggerFactory.getLogger(R2loraReader.class);
 
 	private final Configuration config;
+	private final DeviceConfiguration deviceConfiguration;
 	private final ObservationRequest req;
 	private final R2loraClient client;
 	private final Transmitter transmitter;
 	private final CountDownLatch latch = new CountDownLatch(1);
 
-	public R2loraReader(Configuration config, ObservationRequest req, R2loraClient client, Transmitter transmitter) {
+	public R2loraReader(Configuration config, DeviceConfiguration deviceConfiguration, ObservationRequest req, R2loraClient client, Transmitter transmitter) {
 		this.config = config;
+		this.deviceConfiguration = deviceConfiguration;
 		this.req = req;
 		this.client = client;
 		this.transmitter = transmitter;
@@ -44,8 +47,8 @@ public class R2loraReader implements IQReader {
 		LoraObservationRequest loraRequest = new LoraObservationRequest();
 		loraRequest.setBw((float) transmitter.getLoraBandwidth() / 1000);
 		loraRequest.setCr(transmitter.getLoraCodingRate());
-		loraRequest.setFrequency((float) req.getActualFrequency() / 1_000_000);
-		loraRequest.setGain((int) req.getGain());
+		loraRequest.setFrequency((float) req.getFrequency() / 1_000_000);
+		loraRequest.setGain((int) deviceConfiguration.getGain());
 		loraRequest.setLdro(transmitter.getLoraLdro());
 		loraRequest.setPreambleLength(transmitter.getLoraPreambleLength());
 		loraRequest.setSf(transmitter.getLoraSpreadFactor());

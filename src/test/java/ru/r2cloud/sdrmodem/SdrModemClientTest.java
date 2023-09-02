@@ -31,7 +31,7 @@ import ru.r2cloud.jradio.FloatInput;
 import ru.r2cloud.jradio.delfipq.DelfiPqBeacon;
 import ru.r2cloud.jradio.demod.FskDemodulator;
 import ru.r2cloud.model.DecoderResult;
-import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
@@ -62,7 +62,7 @@ public class SdrModemClientTest {
 	public void testSuccess() throws Exception {
 		Satellite satellite = dao.findById("51074");
 		Transmitter transmitter = satellite.getById("51074-0");
-		ObservationRequest req = TestUtil.loadObservation("data/delfipq.raw.gz.json").getReq();
+		Observation req = TestUtil.loadObservation("data/delfipq.raw.gz.json");
 
 		final SdrMessage actual = new SdrMessage();
 		modem.setHandler(new SdrModemHandler() {

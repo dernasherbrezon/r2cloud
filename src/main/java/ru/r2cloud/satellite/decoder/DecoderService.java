@@ -14,7 +14,6 @@ import ru.r2cloud.cloud.LeoSatDataService;
 import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.Observation;
-import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.ObservationStatus;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
@@ -113,13 +112,13 @@ public class DecoderService implements Lifecycle {
 					return;
 				}
 				if (observation.getStatus().equals(ObservationStatus.RECEIVED)) {
-					decodeInternally(observation.getRawPath(), observation.getReq());
+					decodeInternally(observation.getRawPath(), observation);
 				}
 			}
 		});
 	}
 
-	private void decodeInternally(File rawFile, ObservationRequest request) {
+	private void decodeInternally(File rawFile, Observation request) {
 		Satellite satellite = satelliteDao.findById(request.getSatelliteId());
 		if (satellite == null) {
 			LOG.error("[{}] satellite is missing. cannot decode: {}", request.getId(), request.getSatelliteId());

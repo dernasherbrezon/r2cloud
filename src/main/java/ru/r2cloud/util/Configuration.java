@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.ddns.DDNSType;
+import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DemodulatorType;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.Modulation;
@@ -276,8 +277,10 @@ public class Configuration {
 				config.setHost(config.getSdrServerConfiguration().getHost());
 				config.setPort(config.getSdrServerConfiguration().getPort());
 				config.setTimeout(config.getSdrServerConfiguration().getTimeout());
+				config.setCompencateDcOffset(false);
 			} else {
 				config.setName("RTL-SDR " + config.getRtlDeviceId());
+				config.setCompencateDcOffset(true);
 			}
 			result.add(config);
 		}
@@ -322,6 +325,8 @@ public class Configuration {
 			config.setName("LoRa - " + config.getHost() + ":" + config.getPort());
 			config.setRotatorConfiguration(getRotatorConfiguration("r2lora.device." + cur + "."));
 			config.setGain(gain);
+			config.setCompencateDcOffset(false);
+			config.setDataFormat(DataFormat.UNKNOWN);
 			result.add(config);
 		}
 		return result;
@@ -348,6 +353,8 @@ public class Configuration {
 			config.setName("LoRa - " + config.getHost());
 			config.setRotatorConfiguration(getRotatorConfiguration("loraat.device." + cur + "."));
 			config.setGain(gain);
+			config.setCompencateDcOffset(false);
+			config.setDataFormat(DataFormat.UNKNOWN);
 			result.add(config);
 		}
 		return result;
@@ -381,6 +388,8 @@ public class Configuration {
 			config.setGain(gain);
 			config.setMinimumFrequency(getLong(prefix + "minFrequency"));
 			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
+			config.setCompencateDcOffset(false);
+			config.setDataFormat(DataFormat.UNKNOWN);
 			result.add(config);
 		}
 		return result;

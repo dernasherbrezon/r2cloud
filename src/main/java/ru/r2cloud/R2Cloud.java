@@ -25,7 +25,9 @@ import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.device.LoraAtBleDevice;
 import ru.r2cloud.device.LoraAtDevice;
 import ru.r2cloud.device.LoraDevice;
-import ru.r2cloud.device.SdrDevice;
+import ru.r2cloud.device.PlutoSdrDevice;
+import ru.r2cloud.device.RtlSdrDevice;
+import ru.r2cloud.device.SdrServerDevice;
 import ru.r2cloud.lora.LoraStatus;
 import ru.r2cloud.lora.loraat.JSerial;
 import ru.r2cloud.lora.loraat.LoraAtClient;
@@ -33,6 +35,7 @@ import ru.r2cloud.lora.loraat.LoraAtSerialClient;
 import ru.r2cloud.lora.loraat.gatt.GattServer;
 import ru.r2cloud.lora.r2lora.R2loraClient;
 import ru.r2cloud.metrics.Metrics;
+import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.SharedSchedule;
@@ -148,7 +151,7 @@ public class R2Cloud {
 		decoderService = new DecoderService(props, decoders, resultDao, leoSatDataService, threadFactory, metrics, satelliteDao);
 		houseKeeping = new Housekeeping(props, satelliteDao, threadFactory, new CelestrakClient(props), tleDao, satnogsClient, leoSatDataClient, decoderService);
 
-		observationFactory = new ObservationFactory(predict, props);
+		observationFactory = new ObservationFactory(predict);
 
 		deviceManager = new DeviceManager(props, satelliteDao, threadFactory, clock);
 		Map<String, SharedSchedule> sharedSchedule = createSharedSchedules(props, observationFactory);
@@ -157,7 +160,24 @@ public class R2Cloud {
 			if (props.getSdrType().equals(SdrType.SDRSERVER) && cur.getRotatorConfiguration() == null) {
 				numberOfConcurrentObservations = 5;
 			}
-			deviceManager.addDevice(new SdrDevice(cur.getId(), new SdrTransmitterFilter(cur), numberOfConcurrentObservations, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, processFactory));
+			// make configs backward compatible
+			switch (props.getSdrType()) {
+			case SDRSERVER:
+				cur.setDataFormat(DataFormat.COMPLEX_FLOAT);
+				deviceManager.addDevice(new SdrServerDevice(cur.getId(), new SdrTransmitterFilter(cur), numberOfConcurrentObservations, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur)));
+				break;
+			case PLUTOSDR:
+				cur.setDataFormat(DataFormat.COMPLEX_SIGNED_SHORT);
+				deviceManager.addDevice(new PlutoSdrDevice(cur.getId(), new SdrTransmitterFilter(cur), numberOfConcurrentObservations, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, processFactory));
+				break;
+			case RTLSDR:
+				cur.setDataFormat(DataFormat.COMPLEX_UNSIGNED_BYTE);
+				deviceManager.addDevice(new RtlSdrDevice(cur.getId(), new SdrTransmitterFilter(cur), numberOfConcurrentObservations, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, processFactory));
+				break;
+			default:
+				throw new IllegalArgumentException("unsupported sdr type: " + props.getSdrType());
+			}
+
 		}
 		for (DeviceConfiguration cur : props.getLoraConfigurations()) {
 			R2loraClient client = new R2loraClient(cur.getHost(), cur.getPort(), cur.getUsername(), cur.getPassword(), cur.getTimeout());

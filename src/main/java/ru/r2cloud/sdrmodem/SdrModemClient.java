@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.jradio.ByteInput;
 import ru.r2cloud.jradio.Context;
-import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.sdrmodem.SdrmodemApi.Response;
 import ru.r2cloud.sdrmodem.SdrmodemApi.RxRequest;
@@ -36,7 +36,7 @@ public class SdrModemClient implements ByteInput {
 	private final int port;
 	private final int timeout;
 	private final File rawIq;
-	private final ObservationRequest req;
+	private final Observation req;
 	private final Transmitter transmitter;
 	private final Context ctx;
 	private final int baudRate;
@@ -45,7 +45,7 @@ public class SdrModemClient implements ByteInput {
 	private DataInputStream dis = null;
 	private long framePos = 0;
 
-	public SdrModemClient(Configuration config, File rawIq, ObservationRequest req, Transmitter transmitter, int baudRate) {
+	public SdrModemClient(Configuration config, File rawIq, Observation req, Transmitter transmitter, int baudRate) {
 		this.host = config.getProperty("sdrmodem.host");
 		this.port = config.getInteger("sdrmodem.port");
 		this.timeout = config.getInteger("sdrmodem.timeout");
@@ -112,7 +112,7 @@ public class SdrModemClient implements ByteInput {
 		return result;
 	}
 
-	private SdrMessage convert(File rawIq, ObservationRequest req, Transmitter transmitter) {
+	private SdrMessage convert(File rawIq, Observation req, Transmitter transmitter) {
 		fsk_demodulation_settings.Builder fskDemodSettings = fsk_demodulation_settings.newBuilder();
 		fskDemodSettings.setDemodFskDeviation(transmitter.getDeviation());
 		fskDemodSettings.setDemodFskTransitionWidth((int) transmitter.getTransitionWidth());
@@ -133,7 +133,7 @@ public class SdrModemClient implements ByteInput {
 		RxRequest.Builder b = RxRequest.newBuilder();
 		b.setRxSamplingFreq(transmitter.getInputSampleRate());
 		b.setRxOffset(0);
-		b.setRxCenterFreq(req.getActualFrequency());
+		b.setRxCenterFreq(req.getFrequency());
 		b.setRxDumpFile(false);
 		b.setFileSettings(fs.build());
 		b.setDemodDestination(demod_destination.SOCKET);

@@ -17,7 +17,7 @@ import org.junit.runners.Parameterized;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.DecoderResult;
-import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
@@ -49,7 +49,7 @@ public class DecoderTest {
 	@Test
 	public void testSuccess() throws Exception {
 		File wav = TestUtil.setupClasspathResource(tempFolder, rawFile);
-		ObservationRequest req = TestUtil.loadObservation(rawFileMeta).getReq();
+		Observation req = TestUtil.loadObservation(rawFileMeta);
 		Satellite satellite = dao.findById(satelliteId);
 		Transmitter transmitter = satellite.getById(transmitterId);
 		Decoder decoder = decoders.findByTransmitter(transmitter);

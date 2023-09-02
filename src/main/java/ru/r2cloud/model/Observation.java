@@ -21,9 +21,10 @@ public class Observation {
 	private Tle tle;
 	private GeodeticPoint groundStation;
 
+	private DataFormat dataFormat;
 	private SdrType sdrType;
 	private int sampleRate;
-	private long actualFrequency;
+	private long frequency;
 	private String gain;
 	private boolean biast;
 	private long centerBandFrequency;
@@ -61,14 +62,8 @@ public class Observation {
 		transmitterId = req.getTransmitterId();
 		tle = req.getTle();
 		groundStation = req.getGroundStation();
-		sdrType = req.getSdrType();
 		sampleRate = req.getSampleRate();
-		actualFrequency = req.getActualFrequency();
-		gain = String.valueOf(req.getGain());
-		biast = req.isBiast();
-		centerBandFrequency = req.getCenterBandFrequency();
-		rtlDeviceId = req.getRtlDeviceId();
-		ppm = req.getPpm();
+		frequency = req.getFrequency();
 	}
 
 	public ObservationRequest getReq() {
@@ -80,19 +75,17 @@ public class Observation {
 		result.setTransmitterId(transmitterId);
 		result.setTle(tle);
 		result.setGroundStation(groundStation);
-		result.setSdrType(sdrType);
 		result.setSampleRate(sampleRate);
-		result.setActualFrequency(actualFrequency);
-		if (gain != null) {
-			result.setGain(Double.valueOf(gain));
-		} else {
-			result.setGain(45.0);
-		}
-		result.setBiast(biast);
-		result.setCenterBandFrequency(centerBandFrequency);
-		result.setRtlDeviceId(rtlDeviceId);
-		result.setPpm(ppm);
+		result.setFrequency(frequency);
 		return result;
+	}
+
+	public DataFormat getDataFormat() {
+		return dataFormat;
+	}
+
+	public void setDataFormat(DataFormat dataFormat) {
+		this.dataFormat = dataFormat;
 	}
 
 	public long getCenterBandFrequency() {
@@ -103,10 +96,12 @@ public class Observation {
 		this.centerBandFrequency = centerBandFrequency;
 	}
 
+	@Deprecated
 	public SdrType getSdrType() {
 		return sdrType;
 	}
 
+	@Deprecated
 	public void setSdrType(SdrType sdrType) {
 		this.sdrType = sdrType;
 	}
@@ -175,12 +170,12 @@ public class Observation {
 		this.groundStation = groundStation;
 	}
 
-	public long getActualFrequency() {
-		return actualFrequency;
+	public long getFrequency() {
+		return frequency;
 	}
 
-	public void setActualFrequency(long actualFrequency) {
-		this.actualFrequency = actualFrequency;
+	public void setFrequency(long frequency) {
+		this.frequency = frequency;
 	}
 
 	public String getRawURL() {
@@ -334,13 +329,32 @@ public class Observation {
 			sdrType = SdrType.RTLSDR;
 		}
 		result.setSdrType(sdrType);
+		String dataFormatStr = meta.getString("dataFormat", null);
+		if (dataFormatStr == null) {
+			// backward compatible
+			switch (sdrType) {
+			case PLUTOSDR:
+				result.setDataFormat(DataFormat.COMPLEX_SIGNED_SHORT);
+				break;
+			case RTLSDR:
+				result.setDataFormat(DataFormat.COMPLEX_UNSIGNED_BYTE);
+				break;
+			case SDRSERVER:
+				result.setDataFormat(DataFormat.COMPLEX_FLOAT);
+				break;
+			default:
+				result.setDataFormat(DataFormat.UNKNOWN);
+			}
+		} else {
+			result.setDataFormat(DataFormat.valueOf(dataFormatStr));
+		}
 		int legacyInputRate = meta.getInt("inputSampleRate", 0);
 		if (legacyInputRate != 0) {
 			result.setSampleRate(legacyInputRate);
 		} else {
 			result.setSampleRate(meta.getInt("sampleRate", -1));
 		}
-		result.setActualFrequency(meta.getLong("actualFrequency", -1));
+		result.setFrequency(meta.getLong("actualFrequency", -1));
 		result.setGain(meta.getString("gain", null));
 		result.setBiast(meta.getBoolean("biast", false));
 		result.setCenterBandFrequency(meta.getLong("centerBandFrequency", 0));
@@ -380,9 +394,14 @@ public class Observation {
 		if (getGroundStation() != null) {
 			json.add("groundStation", toJson(getGroundStation()));
 		}
-		json.add("sdrType", sdrType.name());
+		if (sdrType != null) {
+			json.add("sdrType", sdrType.name());
+		}
+		if (dataFormat != null) {
+			json.add("dataFormat", dataFormat.name());
+		}
 		json.add("sampleRate", getSampleRate());
-		json.add("actualFrequency", getActualFrequency());
+		json.add("actualFrequency", getFrequency());
 		json.add("gain", getGain());
 		json.add("biast", isBiast());
 		json.add("centerBandFrequency", centerBandFrequency);

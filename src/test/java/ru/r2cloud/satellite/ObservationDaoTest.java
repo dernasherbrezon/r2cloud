@@ -156,7 +156,7 @@ public class ObservationDaoTest {
 		assertNull(actual.getDataPath());
 		assertNull(actual.getImagePath());
 		assertNull(actual.getSpectogramPath());
-		assertEquals(2, actual.getActualFrequency());
+		assertEquals(2, actual.getFrequency());
 		assertEquals(req.getTle(), actual.getTle());
 		assertEquals(req.getGroundStation().getLatitude(), actual.getGroundStation().getLatitude(), 0.0);
 		assertEquals(req.getGroundStation().getLongitude(), actual.getGroundStation().getLongitude(), 0.0);
@@ -181,9 +181,9 @@ public class ObservationDaoTest {
 		full.setChannelB(UUID.randomUUID().toString());
 		full.setNumberOfDecodedPackets(1L);
 		full.setStatus(ObservationStatus.DECODED);
+		full.setGain("0.0");
 		assertTrue(dao.update(full));
 		actual = dao.find(req.getSatelliteId(), req.getId());
-		assertEquals("45.0", actual.getGain());
 		assertEquals(1, actual.getNumberOfDecodedPackets().longValue());
 		assertEquals(ObservationStatus.DECODED, actual.getStatus());
 
@@ -193,12 +193,12 @@ public class ObservationDaoTest {
 
 	private static Observation createObservation() {
 		Observation result = new Observation();
-		result.setActualFrequency(1L);
+		result.setFrequency(1L);
 		result.setEndTimeMillis(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5));
 		result.setId(UUID.randomUUID().toString());
 		result.setSampleRate(1);
 		result.setTle(create());
-		result.setActualFrequency(2);
+		result.setFrequency(2);
 		result.setSatelliteId(UUID.randomUUID().toString());
 		result.setTransmitterId(UUID.randomUUID().toString());
 		result.setStartTimeMillis(System.currentTimeMillis());

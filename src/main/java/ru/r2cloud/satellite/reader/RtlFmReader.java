@@ -7,6 +7,7 @@ import java.lang.ProcessBuilder.Redirect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
@@ -22,13 +23,15 @@ public class RtlFmReader implements IQReader {
 
 	private ProcessWrapper rtlfm = null;
 
+	private final DeviceConfiguration deviceConfiguration;
 	private final ObservationRequest req;
 	private final Configuration config;
 	private final ProcessFactory factory;
 	private final Transmitter transmitter;
 
-	public RtlFmReader(Configuration config, ProcessFactory factory, ObservationRequest req, Transmitter transmitter) {
+	public RtlFmReader(Configuration config, DeviceConfiguration deviceConfiguration, ProcessFactory factory, ObservationRequest req, Transmitter transmitter) {
 		this.config = config;
+		this.deviceConfiguration = deviceConfiguration;
 		this.factory = factory;
 		this.req = req;
 		this.transmitter = transmitter;
@@ -40,13 +43,13 @@ public class RtlFmReader implements IQReader {
 		ProcessWrapper sox = null;
 		Long startTimeMillis = null;
 		Long endTimeMillis = null;
-		if (!RtlSdrReader.startBiasT(config, factory, req)) {
+		if (!RtlSdrReader.startBiasT(config, deviceConfiguration, factory, req)) {
 			return null;
 		}
 		try {
 			sox = factory.create(config.getProperty("satellites.sox.path") + " -t raw -r " + req.getSampleRate() + " -es -b 16 - " + wavPath.getAbsolutePath() + " rate " + transmitter.getOutputSampleRate(), Redirect.INHERIT, false);
-			rtlfm = factory.create(config.getProperty("satellites.rtlfm.path") + " -f " + req.getActualFrequency() + " -d " + req.getRtlDeviceId() + " -s " + req.getSampleRate() + " -g " + req.getGain() + " -p " + req.getPpm() + " -E deemp -F 9 -", Redirect.INHERIT,
-					false);
+			rtlfm = factory.create(config.getProperty("satellites.rtlfm.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + req.getSampleRate() + " -g " + deviceConfiguration.getGain() + " -p " + deviceConfiguration.getPpm() + " -E deemp -F 9 -",
+					Redirect.INHERIT, false);
 			byte[] buf = new byte[BUF_SIZE];
 			while (!Thread.currentThread().isInterrupted()) {
 				int r = rtlfm.getInputStream().read(buf);
@@ -76,7 +79,7 @@ public class RtlFmReader implements IQReader {
 			Util.shutdown("rtl_sdr for satellites", rtlfm, 10000);
 			Util.shutdown("sox", sox, 10000);
 			endTimeMillis = System.currentTimeMillis();
-			RtlSdrReader.stopBiasT(config, factory, req);
+			RtlSdrReader.stopBiasT(config, deviceConfiguration, factory, req);
 		}
 
 		IQData result = new IQData();

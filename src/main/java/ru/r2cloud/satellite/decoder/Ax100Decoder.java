@@ -4,7 +4,7 @@ import ru.r2cloud.jradio.Ax100BeaconSource;
 import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconSource;
 import ru.r2cloud.jradio.ByteInput;
-import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
@@ -18,7 +18,7 @@ public class Ax100Decoder extends TelemetryDecoder {
 	}
 
 	@Override
-	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput source, ObservationRequest req) {
+	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput source, Observation req) {
 		return new Ax100BeaconSource<>(source, beacon);
 	}
 

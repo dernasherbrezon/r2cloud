@@ -44,8 +44,8 @@ public class SpyServerReader implements IQReader {
 		Long endTimeMillis = null;
 		try (OutputStream os = new BufferedOutputStream(new FileOutputStream(rawFile))) {
 			client.start();
-			client.setGain((long) req.getGain());
-			client.setFrequency(req.getActualFrequency());
+			client.setGain((long) deviceConfiguraiton.getGain());
+			client.setFrequency(req.getFrequency());
 			client.startStream(new OnDataCallback() {
 
 				private byte[] buffer = new byte[4096];

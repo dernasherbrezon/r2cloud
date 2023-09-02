@@ -23,6 +23,7 @@ import ru.r2cloud.JsonHttpResponse;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.lora.r2lora.R2loraClient;
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
@@ -41,7 +42,7 @@ public class R2loraReaderTest {
 
 	@Test
 	public void testStartFailed() throws Exception {
-		R2loraReader reader = new R2loraReader(config, createValidRequest(), client, createSatellite().getTransmitters().get(0));
+		R2loraReader reader = new R2loraReader(config, createDeviceConfiguration(), createValidRequest(), client, createSatellite().getTransmitters().get(0));
 		// make sure we won't stuck in the reader.start
 		reader.complete();
 		IQData iqData = reader.start();
@@ -52,7 +53,7 @@ public class R2loraReaderTest {
 	public void testStopFailed() throws Exception {
 		JsonHttpResponse handler = new JsonHttpResponse("r2loratest/success.json", 200);
 		setupContext("/lora/rx/start", handler);
-		R2loraReader reader = new R2loraReader(config, createValidRequest(), client, createSatellite().getTransmitters().get(0));
+		R2loraReader reader = new R2loraReader(config, createDeviceConfiguration(), createValidRequest(), client, createSatellite().getTransmitters().get(0));
 		// make sure we won't stuck in the reader.start
 		reader.complete();
 		IQData iqData = reader.start();
@@ -65,7 +66,7 @@ public class R2loraReaderTest {
 		setupContext("/lora/rx/start", handler);
 		setupContext("/rx/stop", new JsonHttpResponse("r2loratest/successStop.json", 200));
 
-		R2loraReader reader = new R2loraReader(config, createValidRequest(), client, createSatellite().getTransmitters().get(0));
+		R2loraReader reader = new R2loraReader(config, createDeviceConfiguration(), createValidRequest(), client, createSatellite().getTransmitters().get(0));
 		// make sure we won't stuck in the reader.start
 		reader.complete();
 		IQData iqData = reader.start();
@@ -110,10 +111,15 @@ public class R2loraReaderTest {
 
 	private static ObservationRequest createValidRequest() {
 		ObservationRequest req = new ObservationRequest();
-		req.setActualFrequency(433125000);
-		req.setGain(0.0);
+		req.setFrequency(433125000);
 		req.setId(UUID.randomUUID().toString());
 		return req;
+	}
+
+	private static DeviceConfiguration createDeviceConfiguration() {
+		DeviceConfiguration result = new DeviceConfiguration();
+		result.setGain(0.0f);
+		return result;
 	}
 
 	private void setupContext(String name, HttpHandler handler) {

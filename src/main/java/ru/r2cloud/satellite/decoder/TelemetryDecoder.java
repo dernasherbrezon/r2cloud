@@ -24,7 +24,7 @@ import ru.r2cloud.jradio.demod.FskDemodulator;
 import ru.r2cloud.jradio.sink.SnrCalculator;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.DemodulatorType;
-import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.sdrmodem.SdrModemClient;
@@ -46,7 +46,7 @@ public abstract class TelemetryDecoder implements Decoder {
 	}
 
 	@Override
-	public DecoderResult decode(File rawIq, ObservationRequest req, final Transmitter transmitter) {
+	public DecoderResult decode(File rawIq, Observation req, final Transmitter transmitter) {
 		DecoderResult result = new DecoderResult();
 		result.setRawPath(rawIq);
 		if (transmitter.getBaudRates() == null || transmitter.getBaudRates().isEmpty()) {
@@ -102,7 +102,7 @@ public abstract class TelemetryDecoder implements Decoder {
 		return result;
 	}
 
-	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, ObservationRequest req, final Transmitter transmitter, Integer baudRate) throws IOException {
+	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, Observation req, final Transmitter transmitter, Integer baudRate) throws IOException {
 		DemodulatorType type = config.getDemodulatorType(transmitter.getModulation());
 		List<BeaconSource<? extends Beacon>> result = new ArrayList<>(transmitter.getBaudRates().size());
 		switch (type) {
@@ -152,7 +152,7 @@ public abstract class TelemetryDecoder implements Decoder {
 	}
 
 	@SuppressWarnings("unused")
-	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput source, ObservationRequest req) {
+	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput source, Observation req) {
 		return null;
 	}
 

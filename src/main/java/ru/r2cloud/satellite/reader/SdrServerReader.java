@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.sdrserver.ResponseStatus;
 import ru.r2cloud.sdrserver.SdrServerResponse;
 import ru.r2cloud.util.Util;
@@ -25,13 +26,15 @@ public class SdrServerReader implements IQReader {
 
 	private final ObservationRequest req;
 	private final DeviceConfiguration deviceConfiguration;
+	private final Transmitter transmitter;
 	private final CountDownLatch latch = new CountDownLatch(1);
 
 	private Socket socket;
 
-	public SdrServerReader(ObservationRequest req, DeviceConfiguration deviceConfiguration) {
+	public SdrServerReader(ObservationRequest req, DeviceConfiguration deviceConfiguration, Transmitter transmitter) {
 		this.req = req;
 		this.deviceConfiguration = deviceConfiguration;
+		this.transmitter = transmitter;
 	}
 
 	@Override
@@ -46,9 +49,9 @@ public class SdrServerReader implements IQReader {
 			DataOutputStream dos = new DataOutputStream(os);
 			dos.writeByte(0x00); // protocol version
 			dos.writeByte(0x00); // type = TYPE_REQUEST
-			dos.writeInt((int) req.getActualFrequency()); // center freq
+			dos.writeInt((int) req.getFrequency()); // center freq
 			dos.writeInt(req.getSampleRate()); // bandwidth
-			dos.writeInt((int) req.getCenterBandFrequency()); // band frequency
+			dos.writeInt((int) transmitter.getFrequencyBand().getCenter()); // band frequency
 			dos.writeByte(0); // destination=REQUEST_DESTINATION_FILE
 			dos.flush();
 

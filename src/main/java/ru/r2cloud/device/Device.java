@@ -12,6 +12,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.orekit.propagation.analytical.tle.TLEPropagator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +50,7 @@ public abstract class Device implements Lifecycle {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Device.class);
 	public static final Long PARTIAL_TOLERANCE_MILLIS = 60 * 4 * 1000L;
+	public static final int DC_OFFSET = 10_000;
 
 	protected final String id;
 	private final List<Transmitter> scheduledTransmitters = new ArrayList<>();
@@ -62,6 +64,7 @@ public abstract class Device implements Lifecycle {
 	private final IObservationDao observationDao;
 	private final DecoderService decoderService;
 	private final DeviceConfiguration deviceConfiguration;
+	private final PredictOreKit predict;
 
 	private Long currentBandFrequency = null;
 	private int numberOfObservationsOnCurrentBand = 0;
@@ -72,6 +75,7 @@ public abstract class Device implements Lifecycle {
 			PredictOreKit predict, Schedule schedule) {
 		this.id = id;
 		this.filter = filter;
+		this.predict = predict;
 		this.numberOfConcurrentObservations = numberOfConcurrentObservations;
 		this.threadpoolFactory = threadpoolFactory;
 		this.clock = clock;
@@ -103,12 +107,14 @@ public abstract class Device implements Lifecycle {
 	}
 
 	private void schedule(ObservationRequest req, Transmitter transmitter) {
-		// write some device-specific parameters
-		req.setGain(deviceConfiguration.getGain());
-		req.setBiast(deviceConfiguration.isBiast());
-		req.setRtlDeviceId(deviceConfiguration.getRtlDeviceId());
-		req.setPpm(deviceConfiguration.getPpm());
+		// FIXME move sample rates from transmitter / observation request to observation
+		// sample rates depend on devices
 		req.setSampleRate(transmitter.getInputSampleRate());
+		if (deviceConfiguration.isCompencateDcOffset()) {
+			TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(transmitter.getTle().getRaw()[1], transmitter.getTle().getRaw()[2]));
+			long initialDopplerFrequency = predict.getDownlinkFreq(transmitter.getFrequency(), req.getStartTimeMillis(), predict.getPosition(), tlePropagator);
+			req.setFrequency(initialDopplerFrequency + DC_OFFSET);
+		}
 		LOG.info("[{}] scheduled next pass for {}. start: {} end: {}", id, transmitter, new Date(req.getStartTimeMillis()), new Date(req.getEndTimeMillis()));
 		IQReader reader = createReader(req, transmitter, deviceConfiguration);
 		Runnable readTask = new SafeRunnable() {
@@ -117,11 +123,17 @@ public abstract class Device implements Lifecycle {
 			public void safeRun() {
 				IQData data;
 				Observation observation = new Observation(req);
+				observation.setGain(String.valueOf(deviceConfiguration.getGain()));
+				// write some device-specific parameters
+				observation.setBiast(deviceConfiguration.isBiast());
+				observation.setRtlDeviceId(deviceConfiguration.getRtlDeviceId());
+				observation.setPpm(deviceConfiguration.getPpm());
 				observation.setStatus(ObservationStatus.RECEIVING_DATA);
+				observation.setDataFormat(deviceConfiguration.getDataFormat());
 				// do not use lock for multiple concurrent observations
 				if (numberOfConcurrentObservations > 1) {
 					synchronized (sdrServerLock) {
-						while (currentBandFrequency != null && currentBandFrequency != req.getCenterBandFrequency()) {
+						while (currentBandFrequency != null && currentBandFrequency != transmitter.getFrequencyBand().getCenter()) {
 							try {
 								sdrServerLock.wait();
 							} catch (InterruptedException e) {
@@ -134,7 +146,7 @@ public abstract class Device implements Lifecycle {
 							return;
 						}
 						if (currentBandFrequency == null) {
-							currentBandFrequency = req.getCenterBandFrequency();
+							currentBandFrequency = transmitter.getFrequencyBand().getCenter();
 							LOG.info("starting observations on {} hz", currentBandFrequency);
 						}
 						numberOfObservationsOnCurrentBand++;

@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.satellite.ProcessFactoryMock;
@@ -33,10 +34,12 @@ public class RtlSdrReaderTest {
 		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 143, true), new ProcessWrapperMock(null, null, 0)), satelliteId);
 
 		ObservationRequest req = new ObservationRequest();
-		req.setBiast(true);
 		req.setSatelliteId(satelliteId);
 
-		RtlSdrReader o = new RtlSdrReader(config, factory, req);
+		DeviceConfiguration deviceConfiguration = new DeviceConfiguration();
+		deviceConfiguration.setBiast(true);
+		
+		RtlSdrReader o = new RtlSdrReader(config, deviceConfiguration, factory, req);
 		IQData iqData = o.start();
 		o.complete();
 		assertNotNull(iqData.getDataFile());
@@ -48,10 +51,12 @@ public class RtlSdrReaderTest {
 		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 143, true), new ProcessWrapperMock(null, null, 1)), satelliteId);
 
 		ObservationRequest req = new ObservationRequest();
-		req.setBiast(true);
 		req.setSatelliteId(satelliteId);
 
-		RtlSdrReader o = new RtlSdrReader(config, factory, req);
+		DeviceConfiguration deviceConfiguration = new DeviceConfiguration();
+		deviceConfiguration.setBiast(true);
+
+		RtlSdrReader o = new RtlSdrReader(config, deviceConfiguration, factory, req);
 		IQData iqData = o.start();
 		o.complete();
 		assertNull(iqData);
@@ -63,10 +68,9 @@ public class RtlSdrReaderTest {
 		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 0)), satelliteId);
 
 		ObservationRequest req = new ObservationRequest();
-		req.setBiast(false);
 		req.setSatelliteId(satelliteId);
 
-		RtlSdrReader o = new RtlSdrReader(config, factory, req);
+		RtlSdrReader o = new RtlSdrReader(config, new DeviceConfiguration(), factory, req);
 		IQData iqData = o.start();
 		o.complete();
 		assertNull(iqData.getDataFile());
@@ -78,10 +82,9 @@ public class RtlSdrReaderTest {
 		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 143, true)), satelliteId);
 
 		ObservationRequest req = new ObservationRequest();
-		req.setBiast(false);
 		req.setSatelliteId(satelliteId);
 
-		RtlSdrReader o = new RtlSdrReader(config, factory, req);
+		RtlSdrReader o = new RtlSdrReader(config, new DeviceConfiguration(), factory, req);
 		IQData iqData = o.start();
 		o.complete();
 		assertNotNull(iqData.getDataFile());

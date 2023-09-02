@@ -49,7 +49,7 @@ public class UtilizationTest {
 		TleDao tleDao = new TleDao(config);
 		Housekeeping houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config), tleDao, null, null, null);
 		houseKeeping.start();
-		ObservationFactory factory = new ObservationFactory(predict, config);
+		ObservationFactory factory = new ObservationFactory(predict);
 
 		List<Transmitter> enabledByDefault = getDefaultEnabled(satelliteDao);
 

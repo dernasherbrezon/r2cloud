@@ -13,9 +13,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.SdrType;
 
 public class SpectogramServiceTest {
 
@@ -68,12 +68,11 @@ public class SpectogramServiceTest {
 	}
 
 	private static Observation createIq(File iq, int sampleRate) {
-		ObservationRequest req = new ObservationRequest();
+		Observation req = new Observation();
 		req.setSampleRate(sampleRate);
-		req.setSdrType(SdrType.RTLSDR);
-		Observation result = new Observation(req);
-		result.setRawPath(iq);
-		return result;
+		req.setDataFormat(DataFormat.COMPLEX_UNSIGNED_BYTE);
+		req.setRawPath(iq);
+		return req;
 	}
 
 	@Before

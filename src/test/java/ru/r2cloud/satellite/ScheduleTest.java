@@ -203,7 +203,7 @@ public class ScheduleTest {
 		TleDao tleDao = new TleDao(config);
 		houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config), tleDao, satnogsClient, r2cloudClient, null);
 		PredictOreKit predict = new PredictOreKit(config);
-		factory = new ObservationFactory(predict, config);
+		factory = new ObservationFactory(predict);
 		schedule = new Schedule(new SequentialTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
 
 	}

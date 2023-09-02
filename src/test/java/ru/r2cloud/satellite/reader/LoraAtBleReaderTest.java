@@ -68,7 +68,7 @@ public class LoraAtBleReaderTest {
 		config = new TestConfiguration(tempFolder, fs);
 		DeviceConfiguration deviceConfig = new DeviceConfiguration();
 		device = new LoraAtBleDevice(UUID.randomUUID().toString(), null, 0, null, null, null, deviceConfig, null, null, null, null, config);
-		reader = new LoraAtBleReader(config, LoraAtReaderTest.createValidRequest(), device, LoraAtReaderTest.createValidTransmitter());
+		reader = new LoraAtBleReader(config, LoraAtReaderTest.createDeviceConfiguration(), LoraAtReaderTest.createValidRequest(), device, LoraAtReaderTest.createValidTransmitter());
 	}
 
 	private static LoraFrame createValidFrame() {

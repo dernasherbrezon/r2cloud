@@ -7,6 +7,7 @@ import java.lang.ProcessBuilder.Redirect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.util.Configuration;
@@ -21,15 +22,17 @@ public class PlutoSdrReader implements IQReader {
 	private ProcessWrapper plutoSdrCli = null;
 
 	private final Configuration config;
+	private final DeviceConfiguration deviceConfiguration;
 	private final ProcessFactory factory;
 	private final ObservationRequest req;
 
-	public PlutoSdrReader(Configuration config, ProcessFactory factory, ObservationRequest req) {
+	public PlutoSdrReader(Configuration config, DeviceConfiguration deviceConfiguration, ProcessFactory factory, ObservationRequest req) {
 		this.config = config;
+		this.deviceConfiguration = deviceConfiguration;
 		this.factory = factory;
 		this.req = req;
 	}
-	
+
 	@Override
 	public IQData start() throws InterruptedException {
 		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw.gz");
@@ -37,7 +40,8 @@ public class PlutoSdrReader implements IQReader {
 		Long endTimeMillis = null;
 		try {
 			startTimeMillis = System.currentTimeMillis();
-			plutoSdrCli = factory.create(config.getProperty("satellites.plutosdr.wrapper.path") + " -cli " + config.getProperty("satellites.plutosdr.path") + " -f " + req.getActualFrequency() + " -s " + req.getSampleRate() + " -g " + req.getGain() + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
+			plutoSdrCli = factory.create(config.getProperty("satellites.plutosdr.wrapper.path") + " -cli " + config.getProperty("satellites.plutosdr.path") + " -f " + req.getFrequency() + " -s " + req.getSampleRate() + " -g " + deviceConfiguration.getGain() + " -o " + rawFile.getAbsolutePath(),
+					Redirect.INHERIT, false);
 			int responseCode = plutoSdrCli.waitFor();
 			if (responseCode != 143) {
 				LOG.error("[{}] invalid response code plutoSdrCli: {}", req.getId(), responseCode);
@@ -62,7 +66,7 @@ public class PlutoSdrReader implements IQReader {
 
 	@Override
 	public void complete() {
-		Util.shutdown("plutoSdrCli for " + req.getId(), plutoSdrCli, 10000);		
+		Util.shutdown("plutoSdrCli for " + req.getId(), plutoSdrCli, 10000);
 	}
 
 }

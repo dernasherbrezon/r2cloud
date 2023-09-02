@@ -69,14 +69,14 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 			dos.writeLong(req.getStartTimeMillis());
 			dos.writeLong(req.getEndTimeMillis());
 			dos.writeLong(currentTime);
-			dos.writeFloat((float) req.getActualFrequency() / 1_000_000);
+			dos.writeFloat((float) req.getFrequency() / 1_000_000);
 			dos.writeFloat((float) transmitter.getLoraBandwidth() / 1000);
 			dos.writeByte(transmitter.getLoraSpreadFactor());
 			dos.writeByte(transmitter.getLoraCodingRate());
 			dos.writeByte(transmitter.getLoraSyncword());
 			dos.writeByte(10); // power
 			dos.writeShort(transmitter.getLoraPreambleLength());
-			dos.writeByte((int) req.getGain());
+			dos.writeByte((int) device.getDeviceConfiguration().getGain());
 			dos.writeByte(transmitter.getLoraLdro());
 			if (transmitter.isLoraCrc()) {
 				dos.writeByte(1);

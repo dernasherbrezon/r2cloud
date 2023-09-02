@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
@@ -50,10 +51,9 @@ public class RtlFmReaderTest {
 		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, baos, 0), new ProcessWrapperMock(bais, null, 0)), satelliteId);
 
 		ObservationRequest req = new ObservationRequest();
-		req.setBiast(false);
 		req.setSatelliteId(satelliteId);
 
-		RtlFmReader o = new RtlFmReader(config, factory, req, new Transmitter());
+		RtlFmReader o = new RtlFmReader(config, new DeviceConfiguration(), factory, req, new Transmitter());
 		IQData iqData = o.start();
 		o.complete();
 		assertNull(iqData.getDataFile());
@@ -71,7 +71,7 @@ public class RtlFmReaderTest {
 
 		ObservationRequest req = new ObservationRequest();
 
-		RtlFmReader o = new RtlFmReader(config, factory, req, new Transmitter());
+		RtlFmReader o = new RtlFmReader(config, new DeviceConfiguration(), factory, req, new Transmitter());
 		o.start();
 		o.complete();
 		assertEquals(data, new String(baos.toByteArray(), StandardCharsets.UTF_8));

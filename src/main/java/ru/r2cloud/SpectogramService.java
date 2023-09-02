@@ -83,14 +83,14 @@ public class SpectogramService {
 			if (req.getRawPath().toString().endsWith(".gz")) {
 				is = new GZIPInputStream(is);
 			}
-			switch (req.getSdrType()) {
-			case RTLSDR:
+			switch (req.getDataFormat()) {
+			case COMPLEX_UNSIGNED_BYTE:
 				source = new RtlSdr(is, req.getSampleRate(), totalBytes / 2);
 				break;
-			case PLUTOSDR:
+			case COMPLEX_SIGNED_SHORT:
 				source = new PlutoSdr(is, req.getSampleRate(), totalBytes / 4);
 				break;
-			case SDRSERVER:
+			case COMPLEX_FLOAT:
 				Context ctx = new Context();
 				ctx.setChannels(2);
 				ctx.setSampleSizeInBits(4 * 8); // float = 4 bytes
@@ -99,7 +99,7 @@ public class SpectogramService {
 				source = new InputStreamSource(is, ctx);
 				break;
 			default:
-				throw new IllegalArgumentException("unsupported sdr type: " + req.getSdrType());
+				throw new IllegalArgumentException("unsupported data format: " + req.getDataFormat());
 			}
 			Spectogram spectogram = new Spectogram((int) (source.getContext().getSampleRate() / OPTIMAL_WIDTH));
 			BufferedImage image = spectogram.process(source);

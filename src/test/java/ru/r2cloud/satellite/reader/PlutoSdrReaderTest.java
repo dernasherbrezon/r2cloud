@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.satellite.ProcessFactoryMock;
@@ -25,7 +26,7 @@ public class PlutoSdrReaderTest {
 
 	private TestConfiguration config;
 	private String plutoSdrPath;
-	
+
 	@Test
 	public void testFailure() throws Exception {
 		String satelliteId = UUID.randomUUID().toString();
@@ -34,7 +35,7 @@ public class PlutoSdrReaderTest {
 		ObservationRequest req = new ObservationRequest();
 		req.setSatelliteId(satelliteId);
 
-		PlutoSdrReader o = new PlutoSdrReader(config, factory, req);
+		PlutoSdrReader o = new PlutoSdrReader(config, new DeviceConfiguration(), factory, req);
 		IQData iqData = o.start();
 		o.complete();
 		assertNull(iqData.getDataFile());
@@ -48,12 +49,12 @@ public class PlutoSdrReaderTest {
 		ObservationRequest req = new ObservationRequest();
 		req.setSatelliteId(satelliteId);
 
-		PlutoSdrReader o = new PlutoSdrReader(config, factory, req);
+		PlutoSdrReader o = new PlutoSdrReader(config, new DeviceConfiguration(), factory, req);
 		IQData iqData = o.start();
 		o.complete();
 		assertNotNull(iqData.getDataFile());
 	}
-	
+
 	@Before
 	public void start() throws Exception {
 		plutoSdrPath = UUID.randomUUID().toString();
@@ -63,7 +64,7 @@ public class PlutoSdrReaderTest {
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
 		config.update();
 	}
-	
+
 	private Map<String, ProcessWrapperMock> create(ProcessWrapperMock pluto) {
 		Map<String, ProcessWrapperMock> result = new HashMap<>();
 		result.put(plutoSdrPath, pluto);

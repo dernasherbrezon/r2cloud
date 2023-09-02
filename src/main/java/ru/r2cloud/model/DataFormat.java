@@ -2,7 +2,10 @@ package ru.r2cloud.model;
 
 public enum DataFormat {
 
-	COMPLEX_UNSIGNED_BYTE("cu8", 16, 8), COMPLEX_SIGNED_SHORT("cs16", 32, 16), COMPLEX_FLOAT("cf32", 64, 32);
+	COMPLEX_UNSIGNED_BYTE("cu8", 16, 8), COMPLEX_SIGNED_SHORT("cs16", 32, 16), COMPLEX_FLOAT("cf32", 64, 32),
+
+	// used for LoRa
+	UNKNOWN("raw", 0, 0);
 
 	private final int numberOfBits;
 	private final int bitsPerSample;
@@ -13,7 +16,7 @@ public enum DataFormat {
 		this.bitsPerSample = bitsPerSample;
 		this.numberOfBits = numberOfBits;
 	}
-	
+
 	public int getBitsPerSample() {
 		return bitsPerSample;
 	}

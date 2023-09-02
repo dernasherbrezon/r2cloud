@@ -6,7 +6,6 @@ public class DeviceConfiguration {
 	private String name;
 	private long minimumFrequency;
 	private long maximumFrequency;
-	private float gain;
 
 	private String host;
 	private int port;
@@ -16,10 +15,29 @@ public class DeviceConfiguration {
 
 	private RotatorConfiguration rotatorConfiguration;
 
+	private float gain;
+	private DataFormat dataFormat;
 	private int rtlDeviceId;
 	private boolean biast;
-	private SdrServerConfiguration sdrServerConfiguration;
+	private boolean compencateDcOffset;
 	private int ppm;
+	private SdrServerConfiguration sdrServerConfiguration;
+	
+	public DataFormat getDataFormat() {
+		return dataFormat;
+	}
+	
+	public void setDataFormat(DataFormat dataFormat) {
+		this.dataFormat = dataFormat;
+	}
+	
+	public void setCompencateDcOffset(boolean compencateDcOffset) {
+		this.compencateDcOffset = compencateDcOffset;
+	}
+	
+	public boolean isCompencateDcOffset() {
+		return compencateDcOffset;
+	}
 
 	public void setName(String name) {
 		this.name = name;

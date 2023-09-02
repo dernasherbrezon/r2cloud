@@ -33,7 +33,7 @@ public class LoraDevice extends Device {
 
 	@Override
 	public IQReader createReader(ObservationRequest req, Transmitter satellite, DeviceConfiguration deviceConfiguration) {
-		return new R2loraReader(config, req, client, satellite);
+		return new R2loraReader(config, deviceConfiguration, req, client, satellite);
 	}
 
 	@Override

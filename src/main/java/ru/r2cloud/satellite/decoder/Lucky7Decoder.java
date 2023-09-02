@@ -20,7 +20,7 @@ import ru.r2cloud.jradio.lucky7.Lucky7;
 import ru.r2cloud.jradio.lucky7.Lucky7Beacon;
 import ru.r2cloud.jradio.lucky7.Lucky7PictureDecoder;
 import ru.r2cloud.model.DecoderResult;
-import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
@@ -34,7 +34,7 @@ public class Lucky7Decoder extends TelemetryDecoder {
 	}
 
 	@Override
-	public DecoderResult decode(File rawIq, ObservationRequest req, final Transmitter transmitter) {
+	public DecoderResult decode(File rawIq, Observation req, final Transmitter transmitter) {
 		DecoderResult result = super.decode(rawIq, req, transmitter);
 		if (result.getDataPath() != null) {
 			List<Lucky7Beacon> beacons = new ArrayList<>();
@@ -59,7 +59,7 @@ public class Lucky7Decoder extends TelemetryDecoder {
 	}
 
 	@Override
-	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, ObservationRequest req) {
+	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, Observation req) {
 		SoftToHard bs = new SoftToHard(demodulator);
 		CorrelateSyncword correlate = new CorrelateSyncword(bs, 3, "0010110111010100", 37 * 8);
 		return new Lucky7(correlate);

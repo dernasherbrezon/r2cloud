@@ -7,7 +7,7 @@ import ru.r2cloud.jradio.astrocast.Astrocast9k6;
 import ru.r2cloud.jradio.astrocast.Astrocast9k6Beacon;
 import ru.r2cloud.jradio.blocks.CorrelateSyncword;
 import ru.r2cloud.jradio.blocks.SoftToHard;
-import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 
@@ -18,7 +18,7 @@ public class AstrocastDecoder extends TelemetryDecoder {
 	}
 
 	@Override
-	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, ObservationRequest req) {
+	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, Observation req) {
 		SoftToHard s2h = new SoftToHard(demodulator);
 		CorrelateSyncword correlate = new CorrelateSyncword(s2h, 4, "00011010110011111111110000011101", 255 * 8 * 5);
 		return new Astrocast9k6(correlate);

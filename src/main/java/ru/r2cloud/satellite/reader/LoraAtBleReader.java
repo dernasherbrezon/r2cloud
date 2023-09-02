@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.device.LoraAtBleDevice;
 import ru.r2cloud.jradio.BeaconOutputStream;
 import ru.r2cloud.lora.LoraFrame;
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
@@ -22,13 +23,15 @@ public class LoraAtBleReader implements IQReader {
 	private static final Logger LOG = LoggerFactory.getLogger(LoraAtBleReader.class);
 
 	private final LoraAtBleDevice device;
+	private final DeviceConfiguration deviceConfiguration;
 	private final Configuration config;
 	private final ObservationRequest req;
 	private final Transmitter transmitter;
 	private final CountDownLatch latch = new CountDownLatch(1);
 
-	public LoraAtBleReader(Configuration config, ObservationRequest req, LoraAtBleDevice device, Transmitter transmitter) {
+	public LoraAtBleReader(Configuration config, DeviceConfiguration deviceConfiguration, ObservationRequest req, LoraAtBleDevice device, Transmitter transmitter) {
 		this.device = device;
+		this.deviceConfiguration = deviceConfiguration;
 		this.config = config;
 		this.req = req;
 		this.transmitter = transmitter;
@@ -36,7 +39,7 @@ public class LoraAtBleReader implements IQReader {
 
 	@Override
 	public IQData start() throws InterruptedException {
-		LOG.info("[{}] waiting for frames from lora-at: {}", req.getId(), toLoraAtFriendlyString(req, transmitter));
+		LOG.info("[{}] waiting for frames from lora-at: {}", req.getId(), toLoraAtFriendlyString());
 		long startTimeMillis = System.currentTimeMillis();
 		latch.await();
 		if (device.getFrames().isEmpty()) {
@@ -70,9 +73,9 @@ public class LoraAtBleReader implements IQReader {
 		latch.countDown();
 	}
 
-	private static String toLoraAtFriendlyString(ObservationRequest req, Transmitter transmitter) {
+	private String toLoraAtFriendlyString() {
 		return String.format("%f,%f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", transmitter.getFrequency() / 1000000.0f, transmitter.getLoraBandwidth() / 1000.0f, transmitter.getLoraSpreadFactor(), transmitter.getLoraCodingRate(), transmitter.getLoraSyncword(), 10, transmitter.getLoraPreambleLength(),
-				(int) req.getGain(), transmitter.getLoraLdro(), transmitter.isLoraCrc() ? 1 : 0, transmitter.isLoraExplicitHeader() ? 1 : 0, transmitter.getBeaconSizeBytes());
+				(int) deviceConfiguration.getGain(), transmitter.getLoraLdro(), transmitter.isLoraCrc() ? 1 : 0, transmitter.isLoraExplicitHeader() ? 1 : 0, transmitter.getBeaconSizeBytes());
 	}
 
 }

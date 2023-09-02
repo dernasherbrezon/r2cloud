@@ -24,7 +24,7 @@ import ru.r2cloud.jradio.fox.FoxPictureDecoder;
 import ru.r2cloud.jradio.fox.HighSpeedFox;
 import ru.r2cloud.jradio.fox.PictureScanLine;
 import ru.r2cloud.model.DecoderResult;
-import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
@@ -41,7 +41,7 @@ public class FoxDecoder<T extends Beacon> extends FoxSlowDecoder<T> {
 	}
 
 	@Override
-	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, ObservationRequest req, final Transmitter transmitter, Integer baudRate) throws IOException {
+	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, Observation req, final Transmitter transmitter, Integer baudRate) throws IOException {
 		List<BeaconSource<? extends Beacon>> result = new ArrayList<>();
 		switch (baudRate) {
 		case 200: {
@@ -68,7 +68,7 @@ public class FoxDecoder<T extends Beacon> extends FoxSlowDecoder<T> {
 	}
 
 	@Override
-	public DecoderResult decode(File rawIq, ObservationRequest req, final Transmitter transmitter) {
+	public DecoderResult decode(File rawIq, Observation req, final Transmitter transmitter) {
 		DecoderResult result = super.decode(rawIq, req, transmitter);
 		if (result.getDataPath() != null) {
 			try (BeaconInputStream<Fox1DBeacon> bis = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(result.getDataPath())), Fox1DBeacon.class)) {
