@@ -98,7 +98,7 @@ public class R2loraClientTest {
 		int port = 8000;
 		server = HttpServer.create(new InetSocketAddress(host, port), 0);
 		server.start();
-		client = new R2loraClient(host + ":" + port, UUID.randomUUID().toString(), UUID.randomUUID().toString(), 10000);
+		client = new R2loraClient(host, port, UUID.randomUUID().toString(), UUID.randomUUID().toString(), 10000);
 	}
 
 	private void setupContext(String name, HttpHandler handler) {

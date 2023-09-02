@@ -10,7 +10,6 @@ import ru.r2cloud.lora.LoraFrame;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.model.DeviceStatus;
-import ru.r2cloud.model.DeviceType;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
@@ -42,14 +41,13 @@ public class LoraAtBleDevice extends Device {
 	}
 
 	@Override
-	public IQReader createReader(ObservationRequest req, Transmitter transmitter) {
+	public IQReader createReader(ObservationRequest req, Transmitter transmitter, DeviceConfiguration deviceConfiguration) {
 		return new LoraAtBleReader(config, req, this, transmitter);
 	}
 
 	@Override
 	public DeviceStatus getStatus() {
 		DeviceStatus result = super.getStatus();
-		result.setType(DeviceType.LORA);
 		if (signalLevel != null) {
 			result.setStatus(DeviceConnectionStatus.CONNECTED);
 		} else {

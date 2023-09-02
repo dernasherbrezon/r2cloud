@@ -2,7 +2,7 @@ package ru.r2cloud.model;
 
 public class DeviceStatus {
 
-	private DeviceType type;
+	private String deviceName;
 	private DeviceConfiguration config;
 	private DeviceConnectionStatus status;
 	private String failureMessage;
@@ -35,12 +35,12 @@ public class DeviceStatus {
 		this.model = model;
 	}
 
-	public DeviceType getType() {
-		return type;
+	public String getDeviceName() {
+		return deviceName;
 	}
-
-	public void setType(DeviceType type) {
-		this.type = type;
+	
+	public void setDeviceName(String deviceName) {
+		this.deviceName = deviceName;
 	}
 
 	public DeviceConfiguration getConfig() {

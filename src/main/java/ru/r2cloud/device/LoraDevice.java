@@ -5,7 +5,6 @@ import ru.r2cloud.lora.r2lora.R2loraClient;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.model.DeviceStatus;
-import ru.r2cloud.model.DeviceType;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
@@ -33,14 +32,13 @@ public class LoraDevice extends Device {
 	}
 
 	@Override
-	public IQReader createReader(ObservationRequest req, Transmitter satellite) {
+	public IQReader createReader(ObservationRequest req, Transmitter satellite, DeviceConfiguration deviceConfiguration) {
 		return new R2loraReader(config, req, client, satellite);
 	}
 
 	@Override
 	public DeviceStatus getStatus() {
 		DeviceStatus result = super.getStatus();
-		result.setType(DeviceType.LORA);
 		LoraStatus loraStatus = client.getStatus();
 		result.setStatus(loraStatus.getDeviceStatus());
 		if (loraStatus.getDeviceStatus().equals(DeviceConnectionStatus.FAILED)) {

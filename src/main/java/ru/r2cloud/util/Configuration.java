@@ -156,7 +156,7 @@ public class Configuration {
 		}
 		return Long.valueOf(strValue.trim());
 	}
-	
+
 	public Long getLong(String name, Long def) {
 		Long result = getLong(name);
 		if (result == null) {
@@ -271,6 +271,11 @@ public class Configuration {
 				config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			}
 			config.setSdrServerConfiguration(getSdrServerConfiguration(prefix));
+			if (config.getSdrServerConfiguration() != null) {
+				config.setName("SDR-SERVER - " + config.getSdrServerConfiguration().getHost() + ":" + config.getSdrServerConfiguration().getPort());
+			} else {
+				config.setName("RTL-SDR " + config.getRtlDeviceId());
+			}
 			result.add(config);
 		}
 		return result;
@@ -290,11 +295,28 @@ public class Configuration {
 				gain = 0;
 			}
 			DeviceConfiguration config = new DeviceConfiguration();
-			config.setHostport(getProperty("r2lora.device." + cur + ".hostport"));
+			String hostport = getProperty("r2lora.device." + cur + ".hostport");
+			String host;
+			int port;
+			if (hostport != null) {
+				int index = hostport.indexOf(':');
+				if (index > 0) {
+					host = hostport.substring(0, index);
+					port = Integer.parseInt(hostport.substring(index + 1));
+				} else {
+					continue;
+				}
+			} else {
+				host = getProperty("r2lora.device." + cur + ".host");
+				port = getInteger("r2lora.device." + cur + ".port");
+			}
+			config.setHost(host);
+			config.setPort(port);
 			config.setUsername(getProperty("r2lora.device." + cur + ".username"));
 			config.setPassword(getProperty("r2lora.device." + cur + ".password"));
 			config.setTimeout(timeout);
-			config.setId("lora-" + config.getHostport());
+			config.setId("lora-" + config.getHost() + ":" + config.getPort());
+			config.setName("LoRa - " + config.getHost() + ":" + config.getPort());
 			config.setRotatorConfiguration(getRotatorConfiguration("r2lora.device." + cur + "."));
 			config.setGain(gain);
 			result.add(config);
@@ -316,9 +338,11 @@ public class Configuration {
 				gain = 0;
 			}
 			DeviceConfiguration config = new DeviceConfiguration();
-			config.setHostport(getProperty("loraat.device." + cur + ".port"));
+			// Yes save port into "host" to be backward compatible
+			config.setHost(getProperty("loraat.device." + cur + ".port"));
 			config.setTimeout(timeout);
-			config.setId("loraat-" + config.getHostport());
+			config.setId("loraat-" + config.getHost());
+			config.setName("LoRa - " + config.getHost());
 			config.setRotatorConfiguration(getRotatorConfiguration("loraat.device." + cur + "."));
 			config.setGain(gain);
 			result.add(config);
@@ -346,9 +370,10 @@ public class Configuration {
 				LOG.error("btaddress is missing for {}", prefix);
 				continue;
 			}
-			config.setHostport(address.toLowerCase(Locale.UK));
+			config.setHost(address.toLowerCase(Locale.UK));
 			config.setTimeout(timeout);
-			config.setId(LORA_AT_DEVICE_PREFIX + config.getHostport());
+			config.setId(LORA_AT_DEVICE_PREFIX + config.getHost());
+			config.setName("LoRa - " + address);
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			config.setGain(gain);
 			config.setMinimumFrequency(getLong(prefix + "minFrequency"));

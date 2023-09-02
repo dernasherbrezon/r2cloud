@@ -11,6 +11,7 @@ import java.util.concurrent.CountDownLatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.spyclient.OnDataCallback;
@@ -24,19 +25,21 @@ public class SpyServerReader implements IQReader {
 
 	private final Configuration config;
 	private final ObservationRequest req;
+	private final DeviceConfiguration deviceConfiguraiton;
 
 	private SpyClient client;
 	private CountDownLatch latch = new CountDownLatch(1);
 	private Long startTimeMillis = null;
 
-	public SpyServerReader(Configuration config, ObservationRequest req) {
+	public SpyServerReader(Configuration config, ObservationRequest req, DeviceConfiguration deviceConfiguration) {
 		this.config = config;
 		this.req = req;
+		this.deviceConfiguraiton = deviceConfiguration;
 	}
 
 	@Override
 	public IQData start() throws InterruptedException {
-		client = new SpyClient(req.getSpyServerConfiguration().getHost(), req.getSpyServerConfiguration().getPort(), req.getSpyServerConfiguration().getTimeout());
+		client = new SpyClient(deviceConfiguraiton.getHost(), deviceConfiguraiton.getPort(), deviceConfiguraiton.getTimeout());
 		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + "." + client.getStatus().getFormat().getExtension());
 		Long endTimeMillis = null;
 		try (OutputStream os = new BufferedOutputStream(new FileOutputStream(rawFile))) {

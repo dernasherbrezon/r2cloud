@@ -49,8 +49,8 @@ public class R2loraClient {
 	private final String hostname;
 	private final String basicAuth;
 
-	public R2loraClient(String hostport, String username, String password, int timeout) {
-		this.hostname = "http://" + hostport;
+	public R2loraClient(String host, int port, String username, String password, int timeout) {
+		this.hostname = "http://" + host + ":" + port;
 		this.basicAuth = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.ISO_8859_1));
 		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMillis(timeout)).build();
 	}

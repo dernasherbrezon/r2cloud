@@ -22,15 +22,6 @@ public class ObservationRequest {
 	private int rtlDeviceId;
 	private int ppm;
 	private SdrServerConfiguration sdrServerConfiguration;
-	private SpyServerConfiguration spyServerConfiguration;
-
-	public SpyServerConfiguration getSpyServerConfiguration() {
-		return spyServerConfiguration;
-	}
-
-	public void setSpyServerConfiguration(SpyServerConfiguration spyServerConfiguration) {
-		this.spyServerConfiguration = spyServerConfiguration;
-	}
 
 	public String getId() {
 		return id;

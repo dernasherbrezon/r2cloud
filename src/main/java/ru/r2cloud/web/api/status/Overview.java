@@ -12,21 +12,17 @@ import com.eclipsesource.json.JsonObject;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.model.DeviceStatus;
-import ru.r2cloud.model.DeviceType;
 import ru.r2cloud.model.RotatorStatus;
-import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
 
 public class Overview extends AbstractHttpController {
 
 	private static final String CONNECTION_PROPERTY = "connection";
-	private final Configuration config;
 	private final DeviceManager deviceManager;
 
-	public Overview(Configuration config, DeviceManager deviceManager) {
+	public Overview(DeviceManager deviceManager) {
 		this.deviceManager = deviceManager;
-		this.config = config;
 	}
 
 	@Override
@@ -49,23 +45,8 @@ public class Overview extends AbstractHttpController {
 			if (cur.getSignalLevel() != null) {
 				curObj.add("signalLevel", cur.getSignalLevel());
 			}
-			if (cur.getType().equals(DeviceType.LORA)) {
-				curObj.add(CONNECTION_PROPERTY, "LoRa - " + cur.getConfig().getHostport());
-			} else if (cur.getType().equals(DeviceType.SDR)) {
-				switch (config.getSdrType()) {
-				case RTLSDR:
-					curObj.add(CONNECTION_PROPERTY, "RTL-SDR " + cur.getConfig().getRtlDeviceId());
-					break;
-				case SDRSERVER:
-					curObj.add(CONNECTION_PROPERTY, "SDR-SERVER - " + cur.getConfig().getSdrServerConfiguration().getHost() + ":" + cur.getConfig().getSdrServerConfiguration().getPort());
-					break;
-				case PLUTOSDR:
-					curObj.add(CONNECTION_PROPERTY, "PLUTOSDR");
-					break;
-				default:
-					break;
-				}
-
+			if (cur.getDeviceName() != null) {
+				curObj.add(CONNECTION_PROPERTY, cur.getDeviceName());
 			}
 			curObj.add("minFrequency", cur.getConfig().getMinimumFrequency());
 			curObj.add("maxFrequency", cur.getConfig().getMaximumFrequency());

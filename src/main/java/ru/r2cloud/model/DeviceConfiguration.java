@@ -3,11 +3,13 @@ package ru.r2cloud.model;
 public class DeviceConfiguration {
 
 	private String id;
+	private String name;
 	private long minimumFrequency;
 	private long maximumFrequency;
 	private float gain;
 
-	private String hostport;
+	private String host;
+	private int port;
 	private int timeout;
 	private String username;
 	private String password;
@@ -18,11 +20,35 @@ public class DeviceConfiguration {
 	private boolean biast;
 	private SdrServerConfiguration sdrServerConfiguration;
 	private int ppm;
-	
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
 	public int getPpm() {
 		return ppm;
 	}
-	
+
 	public void setPpm(int ppm) {
 		this.ppm = ppm;
 	}
@@ -73,14 +99,6 @@ public class DeviceConfiguration {
 
 	public void setMaximumFrequency(long maximumFrequency) {
 		this.maximumFrequency = maximumFrequency;
-	}
-
-	public String getHostport() {
-		return hostport;
-	}
-
-	public void setHostport(String hostport) {
-		this.hostport = hostport;
 	}
 
 	public int getTimeout() {

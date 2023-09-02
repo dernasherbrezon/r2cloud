@@ -82,7 +82,7 @@ public class R2loraReaderTest {
 		int port = 8000;
 		server = HttpServer.create(new InetSocketAddress(host, port), 0);
 		server.start();
-		client = new R2loraClient(host + ":" + port, UUID.randomUUID().toString(), UUID.randomUUID().toString(), 10000);
+		client = new R2loraClient(host, port, UUID.randomUUID().toString(), UUID.randomUUID().toString(), 10000);
 		config = new TestConfiguration(tempFolder);
 	}
 
@@ -101,7 +101,7 @@ public class R2loraReaderTest {
 		transmitter.setLoraSyncword(18);
 		transmitter.setLoraLdro(0);
 		transmitter.setLoraBandwidth(500000);
-		
+
 		Satellite satellite = new Satellite();
 		satellite.setId(UUID.randomUUID().toString());
 		satellite.setTransmitters(Collections.singletonList(transmitter));

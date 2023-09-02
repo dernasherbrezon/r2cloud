@@ -111,7 +111,7 @@ public abstract class Device implements Lifecycle {
 		req.setSdrServerConfiguration(deviceConfiguration.getSdrServerConfiguration());
 		req.setSampleRate(transmitter.getInputSampleRate());
 		LOG.info("[{}] scheduled next pass for {}. start: {} end: {}", id, transmitter, new Date(req.getStartTimeMillis()), new Date(req.getEndTimeMillis()));
-		IQReader reader = createReader(req, transmitter);
+		IQReader reader = createReader(req, transmitter, deviceConfiguration);
 		Runnable readTask = new SafeRunnable() {
 
 			@Override
@@ -259,7 +259,7 @@ public abstract class Device implements Lifecycle {
 		}
 	}
 
-	public abstract IQReader createReader(ObservationRequest req, Transmitter satellite);
+	public abstract IQReader createReader(ObservationRequest req, Transmitter satellite, DeviceConfiguration deviceConfiguration);
 
 	@Override
 	public void stop() {
@@ -393,6 +393,7 @@ public abstract class Device implements Lifecycle {
 	public DeviceStatus getStatus() {
 		DeviceStatus result = new DeviceStatus();
 		result.setConfig(deviceConfiguration);
+		result.setDeviceName(deviceConfiguration.getName());
 		if (rotatorService != null) {
 			result.setRotatorStatus(rotatorService.getStatus());
 		} else {
@@ -405,6 +406,10 @@ public abstract class Device implements Lifecycle {
 
 	public String getId() {
 		return id;
+	}
+
+	public DeviceConfiguration getDeviceConfiguration() {
+		return deviceConfiguration;
 	}
 
 }

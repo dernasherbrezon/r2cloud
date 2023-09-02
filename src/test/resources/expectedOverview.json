@@ -32,7 +32,7 @@
 		{
 			"status": "FAILED",
 			"failureMessage": "unable to find device",
-			"connection": "RTL-SDR 1",
+			"connection": "SDR-SERVER - 127.0.0.1:8004",
 			"minFrequency": 100000000,
 			"maxFrequency": 1700000000,
 			"rotator": {
