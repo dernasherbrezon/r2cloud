@@ -7,6 +7,7 @@ import java.lang.ProcessBuilder.Redirect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
@@ -94,7 +95,8 @@ public class RtlFmReader implements IQReader {
 			result.setActualStart(req.getStartTimeMillis());
 		}
 		result.setActualEnd(endTimeMillis);
-
+		result.setDataFormat(DataFormat.UNKNOWN);
+		
 		return result;
 	}
 

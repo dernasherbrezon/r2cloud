@@ -7,6 +7,7 @@ import java.lang.ProcessBuilder.Redirect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
@@ -57,7 +58,7 @@ public class PlutoSdrReader implements IQReader {
 		IQData result = new IQData();
 		result.setActualStart(startTimeMillis);
 		result.setActualEnd(endTimeMillis);
-
+		result.setDataFormat(DataFormat.COMPLEX_SIGNED_SHORT);
 		if (rawFile.exists()) {
 			result.setDataFile(rawFile);
 		}

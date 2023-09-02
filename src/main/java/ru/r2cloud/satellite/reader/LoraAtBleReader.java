@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.device.LoraAtBleDevice;
 import ru.r2cloud.jradio.BeaconOutputStream;
 import ru.r2cloud.lora.LoraFrame;
+import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
@@ -65,6 +66,7 @@ public class LoraAtBleReader implements IQReader {
 		result.setActualStart(startTimeMillis);
 		result.setActualEnd(endTimeMillis);
 		result.setDataFile(rawFile.toFile());
+		result.setDataFormat(DataFormat.UNKNOWN);
 		return result;
 	}
 

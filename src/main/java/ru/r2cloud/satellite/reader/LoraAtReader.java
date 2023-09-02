@@ -17,6 +17,7 @@ import ru.r2cloud.lora.LoraResponse;
 import ru.r2cloud.lora.LoraFrame;
 import ru.r2cloud.lora.ResponseStatus;
 import ru.r2cloud.lora.loraat.LoraAtClient;
+import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
@@ -82,6 +83,7 @@ public class LoraAtReader implements IQReader {
 		result.setActualStart(startTimeMillis);
 		result.setActualEnd(endTimeMillis);
 		result.setDataFile(rawFile);
+		result.setDataFormat(DataFormat.UNKNOWN);
 		return result;
 	}
 

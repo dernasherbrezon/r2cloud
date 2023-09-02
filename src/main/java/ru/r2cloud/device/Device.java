@@ -129,7 +129,6 @@ public abstract class Device implements Lifecycle {
 				observation.setRtlDeviceId(deviceConfiguration.getRtlDeviceId());
 				observation.setPpm(deviceConfiguration.getPpm());
 				observation.setStatus(ObservationStatus.RECEIVING_DATA);
-				observation.setDataFormat(deviceConfiguration.getDataFormat());
 				// do not use lock for multiple concurrent observations
 				if (numberOfConcurrentObservations > 1) {
 					synchronized (sdrServerLock) {
@@ -193,6 +192,7 @@ public abstract class Device implements Lifecycle {
 				observation.setStartTimeMillis(data.getActualStart());
 				observation.setEndTimeMillis(data.getActualEnd());
 				observation.setStatus(ObservationStatus.RECEIVED);
+				observation.setDataFormat(data.getDataFormat());
 
 				File dataFile = observationDao.update(observation, data.getDataFile());
 				if (dataFile == null) {

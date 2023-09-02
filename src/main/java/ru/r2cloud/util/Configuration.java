@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.ddns.DDNSType;
-import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DemodulatorType;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.Modulation;
@@ -326,7 +325,33 @@ public class Configuration {
 			config.setRotatorConfiguration(getRotatorConfiguration("r2lora.device." + cur + "."));
 			config.setGain(gain);
 			config.setCompencateDcOffset(false);
-			config.setDataFormat(DataFormat.UNKNOWN);
+			result.add(config);
+		}
+		return result;
+	}
+
+	public List<DeviceConfiguration> getSpyServerConfigurations() {
+		List<String> deviceIndices = getProperties("spyserver.devices");
+		if (deviceIndices.isEmpty()) {
+			return Collections.emptyList();
+		}
+		int timeout = getInteger("spyserver.timeout");
+		List<DeviceConfiguration> result = new ArrayList<>(deviceIndices.size());
+		for (String cur : deviceIndices) {
+			DeviceConfiguration config = new DeviceConfiguration();
+			config.setHost(getProperty("spyserver.device." + cur + ".host"));
+			config.setPort(getInteger("spyserver.device." + cur + ".port"));
+			config.setTimeout(timeout);
+			config.setId("spyserver-" + config.getHost() + ":" + config.getPort());
+			config.setName("SpyServer - " + config.getHost() + ":" + config.getPort());
+			config.setRotatorConfiguration(getRotatorConfiguration("spyserver.device." + cur + "."));
+			Integer gain = getInteger("spyserver.device." + cur + ".gain");
+			if (gain == null) {
+				// by default should be auto
+				gain = 0;
+			}
+			config.setGain(gain);
+			config.setCompencateDcOffset(false);
 			result.add(config);
 		}
 		return result;
@@ -354,7 +379,6 @@ public class Configuration {
 			config.setRotatorConfiguration(getRotatorConfiguration("loraat.device." + cur + "."));
 			config.setGain(gain);
 			config.setCompencateDcOffset(false);
-			config.setDataFormat(DataFormat.UNKNOWN);
 			result.add(config);
 		}
 		return result;
@@ -389,7 +413,6 @@ public class Configuration {
 			config.setMinimumFrequency(getLong(prefix + "minFrequency"));
 			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
 			config.setCompencateDcOffset(false);
-			config.setDataFormat(DataFormat.UNKNOWN);
 			result.add(config);
 		}
 		return result;

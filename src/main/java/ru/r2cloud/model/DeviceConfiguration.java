@@ -16,20 +16,11 @@ public class DeviceConfiguration {
 	private RotatorConfiguration rotatorConfiguration;
 
 	private float gain;
-	private DataFormat dataFormat;
 	private int rtlDeviceId;
 	private boolean biast;
 	private boolean compencateDcOffset;
 	private int ppm;
 	private SdrServerConfiguration sdrServerConfiguration;
-	
-	public DataFormat getDataFormat() {
-		return dataFormat;
-	}
-	
-	public void setDataFormat(DataFormat dataFormat) {
-		this.dataFormat = dataFormat;
-	}
 	
 	public void setCompencateDcOffset(boolean compencateDcOffset) {
 		this.compencateDcOffset = compencateDcOffset;

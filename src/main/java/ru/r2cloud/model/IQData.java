@@ -4,9 +4,18 @@ import java.io.File;
 
 public class IQData {
 
+	private DataFormat dataFormat;
 	private File dataFile;
 	private long actualStart;
 	private long actualEnd;
+	
+	public DataFormat getDataFormat() {
+		return dataFormat;
+	}
+	
+	public void setDataFormat(DataFormat dataFormat) {
+		this.dataFormat = dataFormat;
+	}
 
 	public long getActualStart() {
 		return actualStart;

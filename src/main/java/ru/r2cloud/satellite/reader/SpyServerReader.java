@@ -16,6 +16,7 @@ import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.spyclient.OnDataCallback;
 import ru.r2cloud.spyclient.SpyClient;
+import ru.r2cloud.spyclient.SpyServerStatus;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -42,8 +43,10 @@ public class SpyServerReader implements IQReader {
 		client = new SpyClient(deviceConfiguraiton.getHost(), deviceConfiguraiton.getPort(), deviceConfiguraiton.getTimeout());
 		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + "." + client.getStatus().getFormat().getExtension());
 		Long endTimeMillis = null;
+		SpyServerStatus status = null;
 		try (OutputStream os = new BufferedOutputStream(new FileOutputStream(rawFile))) {
 			client.start();
+			status = client.getStatus();
 			client.setGain((long) deviceConfiguraiton.getGain());
 			client.setFrequency(req.getFrequency());
 			client.startStream(new OnDataCallback() {
@@ -89,7 +92,7 @@ public class SpyServerReader implements IQReader {
 		try {
 			client.stopStream();
 		} catch (IOException e) {
-			Util.logIOException(LOG, "[" + req.getId() + "]unable to gracefully stop", e);
+			Util.logIOException(LOG, "[" + req.getId() + "] unable to gracefully stop", e);
 		}
 		client.stop();
 
@@ -101,6 +104,7 @@ public class SpyServerReader implements IQReader {
 		}
 		result.setActualEnd(endTimeMillis);
 		result.setDataFile(rawFile);
+		result.setDataFormat(status.getFormat());
 		return result;
 	}
 
