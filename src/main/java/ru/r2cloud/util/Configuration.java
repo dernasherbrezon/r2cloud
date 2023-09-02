@@ -273,6 +273,9 @@ public class Configuration {
 			config.setSdrServerConfiguration(getSdrServerConfiguration(prefix));
 			if (config.getSdrServerConfiguration() != null) {
 				config.setName("SDR-SERVER - " + config.getSdrServerConfiguration().getHost() + ":" + config.getSdrServerConfiguration().getPort());
+				config.setHost(config.getSdrServerConfiguration().getHost());
+				config.setPort(config.getSdrServerConfiguration().getPort());
+				config.setTimeout(config.getSdrServerConfiguration().getTimeout());
 			} else {
 				config.setName("RTL-SDR " + config.getRtlDeviceId());
 			}

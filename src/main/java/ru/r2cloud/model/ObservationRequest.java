@@ -21,7 +21,6 @@ public class ObservationRequest {
 	private long centerBandFrequency;
 	private int rtlDeviceId;
 	private int ppm;
-	private SdrServerConfiguration sdrServerConfiguration;
 
 	public String getId() {
 		return id;
@@ -141,14 +140,6 @@ public class ObservationRequest {
 
 	public void setPpm(int ppm) {
 		this.ppm = ppm;
-	}
-
-	public SdrServerConfiguration getSdrServerConfiguration() {
-		return sdrServerConfiguration;
-	}
-
-	public void setSdrServerConfiguration(SdrServerConfiguration sdrServerConfiguration) {
-		this.sdrServerConfiguration = sdrServerConfiguration;
 	}
 
 }

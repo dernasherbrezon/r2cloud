@@ -18,7 +18,6 @@ import ru.r2cloud.web.ModelAndView;
 
 public class Overview extends AbstractHttpController {
 
-	private static final String CONNECTION_PROPERTY = "connection";
 	private final DeviceManager deviceManager;
 
 	public Overview(DeviceManager deviceManager) {
@@ -46,7 +45,7 @@ public class Overview extends AbstractHttpController {
 				curObj.add("signalLevel", cur.getSignalLevel());
 			}
 			if (cur.getDeviceName() != null) {
-				curObj.add(CONNECTION_PROPERTY, cur.getDeviceName());
+				curObj.add("connection", cur.getDeviceName());
 			}
 			curObj.add("minFrequency", cur.getConfig().getMinimumFrequency());
 			curObj.add("maxFrequency", cur.getConfig().getMaximumFrequency());
@@ -68,7 +67,7 @@ public class Overview extends AbstractHttpController {
 			rotator.add("model", cur.getModel());
 		}
 		if (cur.getHostport() != null) {
-			rotator.add(CONNECTION_PROPERTY, cur.getHostport());
+			rotator.add("connection", cur.getHostport());
 		}
 		if (cur.getFailureMessage() != null) {
 			rotator.add("failureMessage", cur.getFailureMessage());

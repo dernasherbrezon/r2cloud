@@ -12,6 +12,7 @@ import java.util.concurrent.CountDownLatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.sdrserver.ResponseStatus;
@@ -23,12 +24,14 @@ public class SdrServerReader implements IQReader {
 	private static final Logger LOG = LoggerFactory.getLogger(SdrServerReader.class);
 
 	private final ObservationRequest req;
+	private final DeviceConfiguration deviceConfiguration;
 	private final CountDownLatch latch = new CountDownLatch(1);
 
 	private Socket socket;
 
-	public SdrServerReader(ObservationRequest req) {
+	public SdrServerReader(ObservationRequest req, DeviceConfiguration deviceConfiguration) {
 		this.req = req;
+		this.deviceConfiguration = deviceConfiguration;
 	}
 
 	@Override
@@ -37,8 +40,8 @@ public class SdrServerReader implements IQReader {
 		Long startTimeMillis = null;
 		Long endTimeMillis = null;
 		try {
-			socket = new Socket(req.getSdrServerConfiguration().getHost(), req.getSdrServerConfiguration().getPort());
-			socket.setSoTimeout(req.getSdrServerConfiguration().getTimeout());
+			socket = new Socket(deviceConfiguration.getHost(), deviceConfiguration.getPort());
+			socket.setSoTimeout(deviceConfiguration.getTimeout());
 			OutputStream os = socket.getOutputStream();
 			DataOutputStream dos = new DataOutputStream(os);
 			dos.writeByte(0x00); // protocol version
@@ -55,7 +58,7 @@ public class SdrServerReader implements IQReader {
 			if (response.getStatus().equals(ResponseStatus.SUCCESS)) {
 				LOG.info("[{}] response from sdr-server: {}", req.getId(), response);
 				startTimeMillis = System.currentTimeMillis();
-				String basepath = req.getSdrServerConfiguration().getBasepath();
+				String basepath = deviceConfiguration.getSdrServerConfiguration().getBasepath();
 				if (basepath == null) {
 					basepath = System.getenv("TMPDIR");
 					if (basepath == null) {
@@ -63,7 +66,7 @@ public class SdrServerReader implements IQReader {
 					}
 				}
 				String path = basepath + File.separator + response.getDetails() + ".cf32";
-				if (req.getSdrServerConfiguration().isUseGzip()) {
+				if (deviceConfiguration.getSdrServerConfiguration().isUseGzip()) {
 					path += ".gz";
 				}
 				rawFile = new File(path);

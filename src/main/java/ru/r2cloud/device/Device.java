@@ -108,7 +108,6 @@ public abstract class Device implements Lifecycle {
 		req.setBiast(deviceConfiguration.isBiast());
 		req.setRtlDeviceId(deviceConfiguration.getRtlDeviceId());
 		req.setPpm(deviceConfiguration.getPpm());
-		req.setSdrServerConfiguration(deviceConfiguration.getSdrServerConfiguration());
 		req.setSampleRate(transmitter.getInputSampleRate());
 		LOG.info("[{}] scheduled next pass for {}. start: {} end: {}", id, transmitter, new Date(req.getStartTimeMillis()), new Date(req.getEndTimeMillis()));
 		IQReader reader = createReader(req, transmitter, deviceConfiguration);
