@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.DeviceConfiguration;
+import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
@@ -44,13 +45,21 @@ public class SpyServerReader implements IQReader {
 	@Override
 	public IQData start() throws InterruptedException {
 		client = new SpyClient(deviceConfiguraiton.getHost(), deviceConfiguraiton.getPort(), deviceConfiguraiton.getTimeout());
-		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + "." + client.getStatus().getFormat().getExtension());
 		Long endTimeMillis = null;
-		SpyServerStatus status = null;
+		try {
+			client.start();
+		} catch (IOException e) {
+			Util.logIOException(LOG, "[" + req.getId() + "] unable to start client", e);
+			client.stop();
+			return null;
+		}
+		SpyServerStatus status = client.getStatus();
+		if (!status.getStatus().equals(DeviceConnectionStatus.CONNECTED)) {
+			return null;
+		}
+		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + "." + status.getFormat().getExtension());
 		long sampleRate = 0;
 		try (OutputStream os = new BufferedOutputStream(new FileOutputStream(rawFile))) {
-			client.start();
-			status = client.getStatus();
 
 			int expectedSampleRate = Util.convertToReasonableSampleRate(transmitter.getBaudRates());
 			if (expectedSampleRate == 0) {
@@ -108,14 +117,14 @@ public class SpyServerReader implements IQReader {
 		} catch (IOException e) {
 			Util.logIOException(LOG, "[" + req.getId() + "] unable to start client", e);
 			return null;
+		} finally {
+			try {
+				client.stopStream();
+			} catch (IOException e) {
+				Util.logIOException(LOG, "[" + req.getId() + "] unable to gracefully stop", e);
+			}
+			client.stop();
 		}
-
-		try {
-			client.stopStream();
-		} catch (IOException e) {
-			Util.logIOException(LOG, "[" + req.getId() + "] unable to gracefully stop", e);
-		}
-		client.stop();
 
 		IQData result = new IQData();
 		if (startTimeMillis != null) {

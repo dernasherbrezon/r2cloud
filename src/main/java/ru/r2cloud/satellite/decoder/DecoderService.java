@@ -178,15 +178,17 @@ public class DecoderService implements Lifecycle {
 		dao.update(observation);
 		r2cloudService.uploadObservation(observation);
 
-		switch (transmitter.getFraming()) {
-		case APT:
-			break;
-		case LRPT:
-			lrpt.inc(observation.getNumberOfDecodedPackets());
-			break;
-		default:
-			telemetry.inc(observation.getNumberOfDecodedPackets());
-			break;
+		if (observation.getNumberOfDecodedPackets() != null) {
+			switch (transmitter.getFraming()) {
+			case APT:
+				break;
+			case LRPT:
+				lrpt.inc(observation.getNumberOfDecodedPackets());
+				break;
+			default:
+				telemetry.inc(observation.getNumberOfDecodedPackets());
+				break;
+			}
 		}
 	}
 

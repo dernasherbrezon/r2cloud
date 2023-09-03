@@ -2,6 +2,7 @@ package ru.r2cloud;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.file.FileSystems;
@@ -51,6 +52,8 @@ import ru.r2cloud.satellite.SdrTransmitterFilter;
 import ru.r2cloud.satellite.SequentialTimetable;
 import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.decoder.Decoders;
+import ru.r2cloud.spyclient.SpyClient;
+import ru.r2cloud.spyclient.SpyServerStatus;
 import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.tle.Housekeeping;
 import ru.r2cloud.tle.TleDao;
@@ -193,6 +196,17 @@ public class R2Cloud {
 			deviceManager.addDevice(new LoraAtBleDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props));
 		}
 		for (DeviceConfiguration cur : props.getSpyServerConfigurations()) {
+			SpyClient client = new SpyClient(cur.getHost(), cur.getPort(), cur.getTimeout());
+			try {
+				client.start();
+				SpyServerStatus status = client.getStatus();
+				cur.setMinimumFrequency(status.getMinFrequency());
+				cur.setMaximumFrequency(status.getMaxFrequency());
+				client.stop();
+			} catch (IOException e) {
+				Util.logIOException(LOG, "unable to init device", e);
+				continue;
+			}
 			deviceManager.addDevice(new SpyServerDevice(cur.getId(), new SdrTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur)));
 		}
 
