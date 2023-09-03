@@ -185,7 +185,7 @@ public class Schedule {
 			TimeSlot slot = new TimeSlot();
 			slot.setStart(cur.getStartTimeMillis());
 			slot.setEnd(cur.getEndTimeMillis());
-			slot.setFrequency(transmitter.getFrequencyBand().getCenter());
+			slot.setFrequency(transmitter.getFrequencyBand());
 			if (timetable.addFully(slot)) {
 				batch.add(cur);
 				timeSlotById.put(cur.getId(), slot);

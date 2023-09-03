@@ -20,7 +20,7 @@ public class Transmitter {
 	// can be used for lora in implicit mode
 	private int beaconSizeBytes;
 	private long frequency;
-	private BandFrequency frequencyBand;
+	private long frequencyBand;
 	private long bandwidth;
 	private List<Integer> baudRates;
 	private byte[] assistedHeader;
@@ -29,8 +29,6 @@ public class Transmitter {
 	private long deviation;
 	private long afCarrier;
 	private double transitionWidth;
-	private int inputSampleRate;
-	private int outputSampleRate;
 
 	private long loraBandwidth;
 	private int loraSpreadFactor;
@@ -78,8 +76,6 @@ public class Transmitter {
 		this.deviation = copy.deviation;
 		this.afCarrier = copy.afCarrier;
 		this.transitionWidth = copy.transitionWidth;
-		this.inputSampleRate = copy.inputSampleRate;
-		this.outputSampleRate = copy.outputSampleRate;
 		this.loraBandwidth = copy.loraBandwidth;
 		this.loraSpreadFactor = copy.loraSpreadFactor;
 		this.loraCodingRate = copy.loraCodingRate;
@@ -92,6 +88,14 @@ public class Transmitter {
 		if (copy.updated != null) {
 			this.updated = new Date(copy.updated.getTime());
 		}
+	}
+	
+	public long getFrequencyBand() {
+		return frequencyBand;
+	}
+	
+	public void setFrequencyBand(long frequencyBand) {
+		this.frequencyBand = frequencyBand;
 	}
 
 	public boolean isLoraCrc() {
@@ -190,22 +194,6 @@ public class Transmitter {
 		this.enabled = enabled;
 	}
 
-	public int getInputSampleRate() {
-		return inputSampleRate;
-	}
-
-	public void setInputSampleRate(int inputSampleRate) {
-		this.inputSampleRate = inputSampleRate;
-	}
-
-	public int getOutputSampleRate() {
-		return outputSampleRate;
-	}
-
-	public void setOutputSampleRate(int outputSampleRate) {
-		this.outputSampleRate = outputSampleRate;
-	}
-
 	public String getId() {
 		return id;
 	}
@@ -252,14 +240,6 @@ public class Transmitter {
 
 	public void setFrequency(long frequency) {
 		this.frequency = frequency;
-	}
-
-	public BandFrequency getFrequencyBand() {
-		return frequencyBand;
-	}
-
-	public void setFrequencyBand(BandFrequency frequencyBand) {
-		this.frequencyBand = frequencyBand;
 	}
 
 	public long getBandwidth() {

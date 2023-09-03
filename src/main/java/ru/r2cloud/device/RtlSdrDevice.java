@@ -38,9 +38,9 @@ public class RtlSdrDevice extends Device {
 	@Override
 	public IQReader createReader(ObservationRequest req, Transmitter transmitter, DeviceConfiguration deviceConfiguration) {
 		if (transmitter.getFraming() == Framing.APT) {
-			return new RtlFmReader(config, deviceConfiguration, processFactory, req, transmitter);
+			return new RtlFmReader(config, deviceConfiguration, processFactory, req);
 		} else {
-			return new RtlSdrReader(config, deviceConfiguration, processFactory, req);
+			return new RtlSdrReader(config, deviceConfiguration, processFactory, req, transmitter);
 		}
 	}
 

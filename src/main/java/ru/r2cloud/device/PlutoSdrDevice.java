@@ -35,7 +35,7 @@ public class PlutoSdrDevice extends Device {
 
 	@Override
 	public IQReader createReader(ObservationRequest req, Transmitter transmitter, DeviceConfiguration deviceConfiguration) {
-		return new PlutoSdrReader(config, deviceConfiguration, processFactory, req);
+		return new PlutoSdrReader(config, deviceConfiguration, processFactory, req, transmitter);
 	}
 
 	@Override

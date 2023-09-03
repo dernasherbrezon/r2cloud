@@ -42,7 +42,6 @@ import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.device.LoraAtBleDevice;
 import ru.r2cloud.jradio.norbi.NorbiBeacon;
 import ru.r2cloud.lora.LoraFrame;
-import ru.r2cloud.model.BandFrequency;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceStatus;
 import ru.r2cloud.model.Framing;
@@ -182,9 +181,7 @@ public class GattServerTest {
 		result.setLoraLdro(0);
 		result.setTle(new Tle(new String[] { "NORBI", "1 46494U 20068J   22336.90274690  .00003263  00000+0  22606-3 0  9998", "2 46494  97.7471 278.8262 0018953  74.3629 285.9691 15.06230312119549" }));
 		result.setEnabled(true);
-		BandFrequency frequencyBand = new BandFrequency();
-		frequencyBand.setCenter(result.getFrequency());
-		result.setFrequencyBand(frequencyBand);
+		result.setFrequencyBand(result.getFrequency());
 		result.setPriority(Priority.NORMAL);
 		result.setId("46494-1");
 		return result;

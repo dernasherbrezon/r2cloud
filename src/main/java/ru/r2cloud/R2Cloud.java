@@ -163,7 +163,7 @@ public class R2Cloud {
 			// make configs backward compatible
 			switch (props.getSdrType()) {
 			case SDRSERVER:
-				deviceManager.addDevice(new SdrServerDevice(cur.getId(), new SdrTransmitterFilter(cur), numberOfConcurrentObservations, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur)));
+				deviceManager.addDevice(new SdrServerDevice(cur.getId(), new SdrTransmitterFilter(cur), numberOfConcurrentObservations, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props));
 				break;
 			case PLUTOSDR:
 				deviceManager.addDevice(new PlutoSdrDevice(cur.getId(), new SdrTransmitterFilter(cur), numberOfConcurrentObservations, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, processFactory));

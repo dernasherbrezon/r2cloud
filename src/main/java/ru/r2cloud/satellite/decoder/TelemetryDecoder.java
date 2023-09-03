@@ -55,7 +55,7 @@ public abstract class TelemetryDecoder implements Decoder {
 		}
 
 		long numberOfDecodedPackets = 0;
-		float sampleRate = transmitter.getInputSampleRate();
+		float sampleRate = req.getSampleRate();
 		File binFile = new File(config.getTempDirectory(), req.getId() + ".bin");
 		List<BeaconSource<? extends Beacon>> input = null;
 		try (BeaconOutputStream aos = new BeaconOutputStream(new FileOutputStream(binFile))) {
@@ -81,7 +81,7 @@ public abstract class TelemetryDecoder implements Decoder {
 					}
 					if (calculateSnr && !beacons.isEmpty()) {
 						try (FloatInput next = new DopplerCorrectedSource(predict, rawIq, req, transmitter, true)) {
-							SnrCalculator.enrichSnr(next, beacons, transmitter.getBandwidth(), req.getSampleRate() / transmitter.getOutputSampleRate());
+							SnrCalculator.enrichSnr(next, beacons, transmitter.getBandwidth(), Util.convertDecimationFromSampleRate(req.getSampleRate()));
 						}
 					}
 					for (Beacon cur : beacons) {

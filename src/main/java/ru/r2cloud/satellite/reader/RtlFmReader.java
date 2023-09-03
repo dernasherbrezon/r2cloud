@@ -11,7 +11,6 @@ import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ProcessWrapper;
@@ -28,14 +27,12 @@ public class RtlFmReader implements IQReader {
 	private final ObservationRequest req;
 	private final Configuration config;
 	private final ProcessFactory factory;
-	private final Transmitter transmitter;
 
-	public RtlFmReader(Configuration config, DeviceConfiguration deviceConfiguration, ProcessFactory factory, ObservationRequest req, Transmitter transmitter) {
+	public RtlFmReader(Configuration config, DeviceConfiguration deviceConfiguration, ProcessFactory factory, ObservationRequest req) {
 		this.config = config;
 		this.deviceConfiguration = deviceConfiguration;
 		this.factory = factory;
 		this.req = req;
-		this.transmitter = transmitter;
 	}
 
 	@Override
@@ -47,9 +44,14 @@ public class RtlFmReader implements IQReader {
 		if (!RtlSdrReader.startBiasT(config, deviceConfiguration, factory, req)) {
 			return null;
 		}
+
+		// RTL-FM is used only for APT. Thus harded sample rates
+		int inputSampleRate = 60_000;
+		int outputSampleRate = 11_025;
+
 		try {
-			sox = factory.create(config.getProperty("satellites.sox.path") + " -t raw -r " + req.getSampleRate() + " -es -b 16 - " + wavPath.getAbsolutePath() + " rate " + transmitter.getOutputSampleRate(), Redirect.INHERIT, false);
-			rtlfm = factory.create(config.getProperty("satellites.rtlfm.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + req.getSampleRate() + " -g " + deviceConfiguration.getGain() + " -p " + deviceConfiguration.getPpm() + " -E deemp -F 9 -",
+			sox = factory.create(config.getProperty("satellites.sox.path") + " -t raw -r " + inputSampleRate + " -es -b 16 - " + wavPath.getAbsolutePath() + " rate " + outputSampleRate, Redirect.INHERIT, false);
+			rtlfm = factory.create(config.getProperty("satellites.rtlfm.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + inputSampleRate + " -g " + deviceConfiguration.getGain() + " -p " + deviceConfiguration.getPpm() + " -E deemp -F 9 -",
 					Redirect.INHERIT, false);
 			byte[] buf = new byte[BUF_SIZE];
 			while (!Thread.currentThread().isInterrupted()) {
@@ -96,7 +98,9 @@ public class RtlFmReader implements IQReader {
 		}
 		result.setActualEnd(endTimeMillis);
 		result.setDataFormat(DataFormat.UNKNOWN);
-		
+		result.setInputSampleRate(inputSampleRate);
+		result.setOutputSampleRate(outputSampleRate);
+
 		return result;
 	}
 

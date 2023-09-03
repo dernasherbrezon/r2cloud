@@ -8,7 +8,7 @@ public class BandFrequencyComparator implements Comparator<BandFrequency> {
 
 	@Override
 	public int compare(BandFrequency o1, BandFrequency o2) {
-		return Long.compare(o1.getCenter(), o2.getCenter());
+		return Long.compare(o1.getLower(), o2.getLower());
 	}
 
 }

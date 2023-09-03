@@ -11,7 +11,6 @@ public class ObservationRequest {
 	private String transmitterId;
 	private Tle tle;
 	private GeodeticPoint groundStation;
-	private int sampleRate;
 	private long frequency;
 	private long centerBandFrequency;
 	
@@ -77,14 +76,6 @@ public class ObservationRequest {
 
 	public void setGroundStation(GeodeticPoint groundStation) {
 		this.groundStation = groundStation;
-	}
-
-	public int getSampleRate() {
-		return sampleRate;
-	}
-
-	public void setSampleRate(int sampleRate) {
-		this.sampleRate = sampleRate;
 	}
 
 	public long getFrequency() {

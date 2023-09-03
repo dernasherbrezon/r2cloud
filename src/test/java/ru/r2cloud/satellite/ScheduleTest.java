@@ -36,6 +36,8 @@ import ru.r2cloud.TestUtil;
 import ru.r2cloud.cloud.LeoSatDataClient;
 import ru.r2cloud.cloud.SatnogsClient;
 import ru.r2cloud.device.Device;
+import ru.r2cloud.device.SdrServerDevice;
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SdrType;
@@ -245,7 +247,7 @@ public class ScheduleTest {
 		assertEquals(expectedSeconds, actualSeconds);
 	}
 
-	private static List<Transmitter> extractSatellites(List<ObservationRequest> req, SatelliteDao dao) throws Exception {
+	private List<Transmitter> extractSatellites(List<ObservationRequest> req, SatelliteDao dao) throws Exception {
 		Set<String> ids = new HashSet<>();
 		for (ObservationRequest cur : req) {
 			ids.add(cur.getSatelliteId());
@@ -260,6 +262,8 @@ public class ScheduleTest {
 			}
 			result.addAll(curSatellite.getTransmitters());
 		}
+		SdrServerDevice device = new SdrServerDevice(null, null, 0, null, null, null, new DeviceConfiguration(), null, null, null, null, config);
+		device.reCalculateFrequencyBands(result);
 		return result;
 	}
 
@@ -298,7 +302,7 @@ public class ScheduleTest {
 		for (ObservationRequest cur : actual) {
 			Satellite sat = satelliteDao.findById(cur.getSatelliteId());
 			Transmitter transmitter = sat.getTransmitters().get(0);
-			System.out.println(sdf.format(new Date(cur.getStartTimeMillis())) + ",  " + sdf.format(new Date(cur.getEndTimeMillis())) + ",\t\t" + cur.getSatelliteId() + "," + transmitter.getFrequencyBand().getCenter() + ", " + sat.getName());
+			System.out.println(sdf.format(new Date(cur.getStartTimeMillis())) + ",  " + sdf.format(new Date(cur.getEndTimeMillis())) + ",\t\t" + cur.getSatelliteId() + "," + transmitter.getFrequencyBand() + ", " + sat.getName());
 		}
 	}
 }

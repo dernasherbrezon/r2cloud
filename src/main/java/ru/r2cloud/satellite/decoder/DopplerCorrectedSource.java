@@ -74,7 +74,7 @@ public class DopplerCorrectedSource implements FloatInput {
 
 		long maxOffset = Math.max(Math.abs(transmitter.getFrequency() - startFrequency), Math.abs(transmitter.getFrequency() - endFrequency));
 
-		int decimation = req.getSampleRate() / transmitter.getOutputSampleRate();
+		int decimation = Util.convertDecimationFromSampleRate(req.getSampleRate());
 		if (snrAnalysis) {
 			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) next.getContext().getSampleRate(), new DopplerValueSource(next.getContext().getSampleRate(), transmitter.getFrequency(), 1000L, req.getStartTimeMillis()) {
 

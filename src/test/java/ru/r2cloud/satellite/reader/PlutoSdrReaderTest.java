@@ -3,6 +3,7 @@ package ru.r2cloud.satellite.reader;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -16,6 +17,7 @@ import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.satellite.ProcessFactoryMock;
 import ru.r2cloud.satellite.ProcessWrapperMock;
 
@@ -35,7 +37,10 @@ public class PlutoSdrReaderTest {
 		ObservationRequest req = new ObservationRequest();
 		req.setSatelliteId(satelliteId);
 
-		PlutoSdrReader o = new PlutoSdrReader(config, new DeviceConfiguration(), factory, req);
+		Transmitter transmitter = new Transmitter();
+		transmitter.setBaudRates(Collections.singletonList(9600));
+
+		PlutoSdrReader o = new PlutoSdrReader(config, new DeviceConfiguration(), factory, req, transmitter);
 		IQData iqData = o.start();
 		o.complete();
 		assertNull(iqData.getDataFile());
@@ -49,7 +54,10 @@ public class PlutoSdrReaderTest {
 		ObservationRequest req = new ObservationRequest();
 		req.setSatelliteId(satelliteId);
 
-		PlutoSdrReader o = new PlutoSdrReader(config, new DeviceConfiguration(), factory, req);
+		Transmitter transmitter = new Transmitter();
+		transmitter.setBaudRates(Collections.singletonList(9600));
+
+		PlutoSdrReader o = new PlutoSdrReader(config, new DeviceConfiguration(), factory, req, transmitter);
 		IQData iqData = o.start();
 		o.complete();
 		assertNotNull(iqData.getDataFile());

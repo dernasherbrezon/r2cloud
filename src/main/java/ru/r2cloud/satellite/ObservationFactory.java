@@ -69,7 +69,7 @@ public class ObservationFactory {
 		result.setEndTimeMillis(endMillis);
 		result.setId(String.valueOf(result.getStartTimeMillis()) + "-" + transmitter.getId());
 		result.setFrequency(transmitter.getFrequency());
-		result.setCenterBandFrequency(transmitter.getFrequencyBand().getCenter());
+		result.setCenterBandFrequency(transmitter.getFrequencyBand());
 		return result;
 	}
 

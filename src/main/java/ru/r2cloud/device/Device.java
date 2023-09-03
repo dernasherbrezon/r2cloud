@@ -4,10 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -17,8 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.Lifecycle;
-import ru.r2cloud.model.BandFrequency;
-import ru.r2cloud.model.BandFrequencyComparator;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.model.DeviceStatus;
@@ -107,9 +103,6 @@ public abstract class Device implements Lifecycle {
 	}
 
 	private void schedule(ObservationRequest req, Transmitter transmitter) {
-		// FIXME move sample rates from transmitter / observation request to observation
-		// sample rates depend on devices
-		req.setSampleRate(transmitter.getInputSampleRate());
 		if (deviceConfiguration.isCompencateDcOffset()) {
 			TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(transmitter.getTle().getRaw()[1], transmitter.getTle().getRaw()[2]));
 			long initialDopplerFrequency = predict.getDownlinkFreq(transmitter.getFrequency(), req.getStartTimeMillis(), predict.getPosition(), tlePropagator);
@@ -132,7 +125,7 @@ public abstract class Device implements Lifecycle {
 				// do not use lock for multiple concurrent observations
 				if (numberOfConcurrentObservations > 1) {
 					synchronized (sdrServerLock) {
-						while (currentBandFrequency != null && currentBandFrequency != transmitter.getFrequencyBand().getCenter()) {
+						while (currentBandFrequency != null && currentBandFrequency != transmitter.getFrequencyBand()) {
 							try {
 								sdrServerLock.wait();
 							} catch (InterruptedException e) {
@@ -145,7 +138,7 @@ public abstract class Device implements Lifecycle {
 							return;
 						}
 						if (currentBandFrequency == null) {
-							currentBandFrequency = transmitter.getFrequencyBand().getCenter();
+							currentBandFrequency = transmitter.getFrequencyBand();
 							LOG.info("starting observations on {} hz", currentBandFrequency);
 						}
 						numberOfObservationsOnCurrentBand++;
@@ -193,6 +186,7 @@ public abstract class Device implements Lifecycle {
 				observation.setEndTimeMillis(data.getActualEnd());
 				observation.setStatus(ObservationStatus.RECEIVED);
 				observation.setDataFormat(data.getDataFormat());
+				observation.setSampleRate(data.getInputSampleRate());
 
 				File dataFile = observationDao.update(observation, data.getDataFile());
 				if (dataFile == null) {
@@ -241,6 +235,7 @@ public abstract class Device implements Lifecycle {
 				LOG.info("[{}] no available satellites for this device", id);
 				return;
 			}
+			reCalculateFrequencyBands(scheduledTransmitters);
 			long current = clock.millis();
 			List<ObservationRequest> newSchedule = schedule.createInitialSchedule(scheduledTransmitters, current);
 			for (ObservationRequest cur : newSchedule) {
@@ -251,22 +246,12 @@ public abstract class Device implements Lifecycle {
 				}
 				schedule(cur, fullSatelliteInfo);
 			}
-			if (numberOfConcurrentObservations > 1) {
-				logBandsForSdrServer(scheduledTransmitters);
-			}
 		}
 	}
 
-	private void logBandsForSdrServer(List<Transmitter> allSatellites) {
-		LOG.info("[{}] active bands are:", id);
-		Set<BandFrequency> unique = new HashSet<>();
-		for (Transmitter cur : allSatellites) {
-			unique.add(cur.getFrequencyBand());
-		}
-		List<BandFrequency> sorted = new ArrayList<>(unique);
-		Collections.sort(sorted, BandFrequencyComparator.INSTANCE);
-		for (BandFrequency cur : sorted) {
-			LOG.info("  {} - {}", cur.getLower(), cur.getUpper());
+	protected void reCalculateFrequencyBands(List<Transmitter> scheduledTransmitters) {
+		for (Transmitter cur : scheduledTransmitters) {
+			cur.setFrequencyBand(cur.getFrequency());
 		}
 	}
 

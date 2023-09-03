@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 
 import org.slf4j.Logger;
@@ -43,6 +44,15 @@ public class SdrServerReader implements IQReader {
 		File rawFile = null;
 		Long startTimeMillis = null;
 		Long endTimeMillis = null;
+
+		Integer maxBaudRate = Collections.max(transmitter.getBaudRates());
+		if (maxBaudRate == null) {
+			return null;
+		}
+
+		int inputSampleRate = 48_000;
+		int outputSampleRate = 48_000;
+
 		try {
 			socket = new Socket(deviceConfiguration.getHost(), deviceConfiguration.getPort());
 			socket.setSoTimeout(deviceConfiguration.getTimeout());
@@ -51,8 +61,8 @@ public class SdrServerReader implements IQReader {
 			dos.writeByte(0x00); // protocol version
 			dos.writeByte(0x00); // type = TYPE_REQUEST
 			dos.writeInt((int) req.getFrequency()); // center freq
-			dos.writeInt(req.getSampleRate()); // bandwidth
-			dos.writeInt((int) transmitter.getFrequencyBand().getCenter()); // band frequency
+			dos.writeInt(inputSampleRate); // bandwidth
+			dos.writeInt((int) transmitter.getFrequencyBand()); // band frequency
 			dos.writeByte(0); // destination=REQUEST_DESTINATION_FILE
 			dos.flush();
 
@@ -93,6 +103,8 @@ public class SdrServerReader implements IQReader {
 		result.setActualEnd(endTimeMillis);
 		result.setDataFile(rawFile);
 		result.setDataFormat(DataFormat.COMPLEX_FLOAT);
+		result.setInputSampleRate(inputSampleRate);
+		result.setOutputSampleRate(outputSampleRate);
 		return result;
 	}
 

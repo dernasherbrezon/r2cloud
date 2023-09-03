@@ -47,6 +47,7 @@ public class SpyServerReader implements IQReader {
 		try (OutputStream os = new BufferedOutputStream(new FileOutputStream(rawFile))) {
 			client.start();
 			status = client.getStatus();
+			//FIXME calculte sample rates
 			client.setGain((long) deviceConfiguraiton.getGain());
 			client.setFrequency(req.getFrequency());
 			client.startStream(new OnDataCallback() {

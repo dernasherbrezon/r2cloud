@@ -5,6 +5,7 @@
 	"sampleRate": 240000,
 	"actualFrequency": 437444309,
 	"satellite": "41460",
+	"numberOfDecodedPackets": 0,
 	"tle": {
 	    "line1": "AAUSAT 4",
 		"line2": "1 41460U 16025E   22114.24237288  .00023891  00000+0  95344-3 0  9995",

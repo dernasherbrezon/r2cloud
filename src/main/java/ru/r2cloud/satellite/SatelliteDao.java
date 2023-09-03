@@ -24,15 +24,11 @@ import org.slf4j.LoggerFactory;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 
-import ru.r2cloud.model.BandFrequency;
-import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteComparator;
 import ru.r2cloud.model.SatelliteSource;
-import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.Transmitter;
-import ru.r2cloud.model.TransmitterComparator;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -160,61 +156,9 @@ public class SatelliteDao {
 		}
 
 		satellites.addAll(satelliteById.values());
-		List<Transmitter> allTransmitters = new ArrayList<>();
 		for (Satellite curSatellite : satellites) {
 			normalize(curSatellite);
-			allTransmitters.addAll(curSatellite.getTransmitters());
-			for (Transmitter curTransmitter : curSatellite.getTransmitters()) {
-				switch (curTransmitter.getFraming()) {
-				case APT:
-					curTransmitter.setInputSampleRate(60_000);
-					curTransmitter.setOutputSampleRate(11_025);
-					break;
-				case LRPT:
-					curTransmitter.setInputSampleRate(288_000);
-					curTransmitter.setOutputSampleRate(144_000);
-					break;
-				default:
-					// sdr-server supports very narrow bandwidths
-					int outputSampleRate = 48_000;
-					if (config.getSdrType().equals(SdrType.SDRSERVER)) {
-						curTransmitter.setInputSampleRate(outputSampleRate);
-						curTransmitter.setOutputSampleRate(outputSampleRate);
-					} else if (curTransmitter.getModulation() != null && curTransmitter.getModulation().equals(Modulation.LORA)) {
-						// not applicable
-						curTransmitter.setInputSampleRate(0);
-						curTransmitter.setOutputSampleRate(0);
-					} else {
-						// some rates better to sample at 50k
-						if (curTransmitter.getBaudRates() != null && curTransmitter.getBaudRates().size() > 0 && 50_000 % curTransmitter.getBaudRates().get(0) == 0) {
-							outputSampleRate = 50_000;
-						}
-						// 48k * 5 = 240k - minimum rate rtl-sdr supports
-						curTransmitter.setInputSampleRate(outputSampleRate * 5);
-						curTransmitter.setOutputSampleRate(outputSampleRate);
-					}
-					break;
-				}
-			}
 			satelliteByName.put(curSatellite.getName(), curSatellite);
-		}
-		long sdrServerBandwidth = config.getLong("satellites.sdrserver.bandwidth");
-		long bandwidthCrop = config.getLong("satellites.sdrserver.bandwidth.crop");
-		Collections.sort(allTransmitters, TransmitterComparator.INSTANCE);
-
-		// bands can be calculated only when all supported transmitters known
-		BandFrequency currentBand = null;
-		for (Transmitter cur : allTransmitters) {
-			long lowerSatelliteFrequency = cur.getFrequency() - cur.getInputSampleRate() / 2;
-			long upperSatelliteFrequency = cur.getFrequency() + cur.getInputSampleRate() / 2;
-			// first transmitter or upper frequency out of band
-			if (currentBand == null || (currentBand.getUpper() - bandwidthCrop) < upperSatelliteFrequency) {
-				currentBand = new BandFrequency();
-				currentBand.setLower(lowerSatelliteFrequency - bandwidthCrop);
-				currentBand.setUpper(currentBand.getLower() + sdrServerBandwidth);
-				currentBand.setCenter(currentBand.getLower() + (currentBand.getUpper() - currentBand.getLower()) / 2);
-			}
-			cur.setFrequencyBand(currentBand);
 		}
 		Collections.sort(satellites, SatelliteComparator.ID_COMPARATOR);
 		printStatsByPriorityAndSource();
@@ -235,6 +179,7 @@ public class SatelliteDao {
 			cur.setStart(satellite.getStart());
 			cur.setEnd(satellite.getEnd());
 			cur.setTle(satellite.getTle());
+			cur.setFrequencyBand(cur.getFrequency());
 		}
 	}
 

@@ -2,9 +2,18 @@ package ru.r2cloud.model;
 
 public class BandFrequency {
 
+	private Transmitter transmitter;
 	private long center;
 	private long lower;
 	private long upper;
+
+	public Transmitter getTransmitter() {
+		return transmitter;
+	}
+
+	public void setTransmitter(Transmitter transmitter) {
+		this.transmitter = transmitter;
+	}
 
 	public long getCenter() {
 		return center;

@@ -34,7 +34,7 @@ public class Observation {
 	// observation status
 	private String channelA;
 	private String channelB;
-	private Long numberOfDecodedPackets = 0L;
+	private Long numberOfDecodedPackets;
 
 	private String rawURL;
 	private File rawPath;
@@ -62,7 +62,6 @@ public class Observation {
 		transmitterId = req.getTransmitterId();
 		tle = req.getTle();
 		groundStation = req.getGroundStation();
-		sampleRate = req.getSampleRate();
 		frequency = req.getFrequency();
 	}
 
@@ -75,7 +74,6 @@ public class Observation {
 		result.setTransmitterId(transmitterId);
 		result.setTle(tle);
 		result.setGroundStation(groundStation);
-		result.setSampleRate(sampleRate);
 		result.setFrequency(frequency);
 		return result;
 	}
@@ -363,7 +361,10 @@ public class Observation {
 
 		result.setChannelA(meta.getString("channelA", null));
 		result.setChannelB(meta.getString("channelB", null));
-		result.setNumberOfDecodedPackets(meta.getLong("numberOfDecodedPackets", 0));
+		JsonValue numberOfDecodedPackets = meta.get("numberOfDecodedPackets");
+		if (numberOfDecodedPackets != null) {
+			result.setNumberOfDecodedPackets(numberOfDecodedPackets.asLong());
+		}
 		result.setRawURL(meta.getString("rawURL", null));
 		result.setaURL(meta.getString("aURL", null));
 		result.setSpectogramURL(meta.getString("spectogramURL", null));

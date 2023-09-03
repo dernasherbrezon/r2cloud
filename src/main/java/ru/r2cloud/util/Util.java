@@ -468,6 +468,19 @@ public final class Util {
 		}
 	}
 
+	public static int convertDecimationFromSampleRate(int sampleRate) {
+		int decimation;
+		// old meteor observations
+		if (sampleRate == 288_000 || sampleRate == 300_000) {
+			decimation = 2;
+		} else if (sampleRate / 48_000 == 5 || sampleRate / 50_000 == 5) {
+			decimation = 5;
+		} else {
+			decimation = 1;
+		}
+		return decimation;
+	}
+
 	public static byte[] hexStringToByteArray(String s) {
 		if (s == null) {
 			return null;

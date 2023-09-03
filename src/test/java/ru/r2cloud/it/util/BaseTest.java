@@ -105,8 +105,8 @@ public abstract class BaseTest {
 		r2loraServer.createContext("/status", new JsonHttpResponse("r2loratest/status.json", 200));
 		r2loraServer.start();
 
-		rtlSdrMock = TestUtil.setupScript(new File(System.getProperty("java.io.tmpdir") + File.separator + "rtl_sdr_mock.sh"));
-		rtlTestMock = TestUtil.setupScript(new File(System.getProperty("java.io.tmpdir") + File.separator + "rtl_test_mock.sh"));
+		rtlSdrMock = TestUtil.setupScript(new File(tempFolder.getRoot(), "rtl_sdr_mock.sh"));
+		rtlTestMock = TestUtil.setupScript(new File(tempFolder.getRoot(), "rtl_test_mock.sh"));
 
 		config = prepareConfiguration();
 		config.update();
