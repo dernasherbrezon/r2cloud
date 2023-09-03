@@ -33,7 +33,7 @@ public class SpyServerDevice extends Device {
 
 	@Override
 	public IQReader createReader(ObservationRequest req, Transmitter satellite, DeviceConfiguration deviceConfiguration) {
-		return new SpyServerReader(config, req, deviceConfiguration);
+		return new SpyServerReader(config, req, deviceConfiguration, satellite);
 	}
 
 	@Override

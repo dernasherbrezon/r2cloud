@@ -50,8 +50,10 @@ public class SdrServerReader implements IQReader {
 			return null;
 		}
 
-		int inputSampleRate = 48_000;
-		int outputSampleRate = 48_000;
+		int expectedSampleRate = Util.convertToReasonableSampleRate(transmitter.getBaudRates());
+		if (expectedSampleRate == 0) {
+			return null;
+		}
 
 		try {
 			socket = new Socket(deviceConfiguration.getHost(), deviceConfiguration.getPort());
@@ -61,7 +63,7 @@ public class SdrServerReader implements IQReader {
 			dos.writeByte(0x00); // protocol version
 			dos.writeByte(0x00); // type = TYPE_REQUEST
 			dos.writeInt((int) req.getFrequency()); // center freq
-			dos.writeInt(inputSampleRate); // bandwidth
+			dos.writeInt(expectedSampleRate); // bandwidth
 			dos.writeInt((int) transmitter.getFrequencyBand()); // band frequency
 			dos.writeByte(0); // destination=REQUEST_DESTINATION_FILE
 			dos.flush();
@@ -103,8 +105,8 @@ public class SdrServerReader implements IQReader {
 		result.setActualEnd(endTimeMillis);
 		result.setDataFile(rawFile);
 		result.setDataFormat(DataFormat.COMPLEX_FLOAT);
-		result.setInputSampleRate(inputSampleRate);
-		result.setOutputSampleRate(outputSampleRate);
+		result.setInputSampleRate(expectedSampleRate);
+		result.setOutputSampleRate(expectedSampleRate);
 		return result;
 	}
 

@@ -28,6 +28,7 @@ import java.security.cert.CertPathBuilderException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -479,6 +480,21 @@ public final class Util {
 			decimation = 1;
 		}
 		return decimation;
+	}
+
+	public static int convertToReasonableSampleRate(List<Integer> baudRates) {
+		Integer maxBaudRate = Collections.max(baudRates);
+		if (maxBaudRate == null) {
+			return 0;
+		}
+
+		int expectedSampleRate = maxBaudRate * 5;
+		// reasonable default for 9600/4800/2400/1200
+		if (expectedSampleRate < 48_000) {
+			expectedSampleRate = 48_000;
+		}
+
+		return expectedSampleRate;
 	}
 
 	public static byte[] hexStringToByteArray(String s) {

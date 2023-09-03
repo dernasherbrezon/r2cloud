@@ -157,6 +157,10 @@ public class SpyClient {
 			for (long i = deviceInfo.getMinimumIQDecimation(); i < deviceInfo.getDecimationStageCount(); i++) {
 				supportedSamplingRates.put(deviceInfo.getMaximumSampleRate() / (1 << i), i);
 			}
+
+			List<Long> supportedList = new ArrayList<>(supportedSamplingRates.keySet());
+			Collections.sort(supportedList);
+			status.setSupportedSampleRates(supportedList);
 		}
 	}
 

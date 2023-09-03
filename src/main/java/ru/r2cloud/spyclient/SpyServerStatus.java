@@ -1,5 +1,7 @@
 package ru.r2cloud.spyclient;
 
+import java.util.List;
+
 import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DeviceConnectionStatus;
 
@@ -10,6 +12,15 @@ public class SpyServerStatus {
 	private long minFrequency;
 	private long maxFrequency;
 	private DataFormat format;
+	private List<Long> supportedSampleRates;
+	
+	public List<Long> getSupportedSampleRates() {
+		return supportedSampleRates;
+	}
+	
+	public void setSupportedSampleRates(List<Long> supportedSampleRates) {
+		this.supportedSampleRates = supportedSampleRates;
+	}
 	
 	public DataFormat getFormat() {
 		return format;

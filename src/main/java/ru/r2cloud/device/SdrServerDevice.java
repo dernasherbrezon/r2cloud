@@ -30,6 +30,7 @@ import ru.r2cloud.sdr.SdrStatusProcess;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ThreadPoolFactory;
+import ru.r2cloud.util.Util;
 
 public class SdrServerDevice extends Device {
 
@@ -65,12 +66,11 @@ public class SdrServerDevice extends Device {
 
 		List<BandFrequency> bandwidths = new ArrayList<>();
 		for (Transmitter curTransmitter : scheduledTransmitters) {
-			Integer maxBaudRate = Collections.max(curTransmitter.getBaudRates());
-			if (maxBaudRate == null) {
+			int sampleRate = Util.convertToReasonableSampleRate(curTransmitter.getBaudRates());
+			if (sampleRate == 0) {
 				continue;
 			}
 
-			int sampleRate = 48_000;
 			BandFrequency cur = new BandFrequency();
 			cur.setCenter(curTransmitter.getFrequency());
 			cur.setLower(curTransmitter.getFrequency() - sampleRate / 2);

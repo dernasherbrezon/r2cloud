@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.spyclient.OnDataCallback;
 import ru.r2cloud.spyclient.SpyClient;
 import ru.r2cloud.spyclient.SpyServerStatus;
@@ -27,15 +28,17 @@ public class SpyServerReader implements IQReader {
 	private final Configuration config;
 	private final ObservationRequest req;
 	private final DeviceConfiguration deviceConfiguraiton;
+	private final Transmitter transmitter;
 
 	private SpyClient client;
 	private CountDownLatch latch = new CountDownLatch(1);
 	private Long startTimeMillis = null;
 
-	public SpyServerReader(Configuration config, ObservationRequest req, DeviceConfiguration deviceConfiguration) {
+	public SpyServerReader(Configuration config, ObservationRequest req, DeviceConfiguration deviceConfiguration, Transmitter transmitter) {
 		this.config = config;
 		this.req = req;
 		this.deviceConfiguraiton = deviceConfiguration;
+		this.transmitter = transmitter;
 	}
 
 	@Override
@@ -44,12 +47,29 @@ public class SpyServerReader implements IQReader {
 		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + "." + client.getStatus().getFormat().getExtension());
 		Long endTimeMillis = null;
 		SpyServerStatus status = null;
+		long sampleRate = 0;
 		try (OutputStream os = new BufferedOutputStream(new FileOutputStream(rawFile))) {
 			client.start();
 			status = client.getStatus();
-			//FIXME calculte sample rates
+
+			int expectedSampleRate = Util.convertToReasonableSampleRate(transmitter.getBaudRates());
+			if (expectedSampleRate == 0) {
+				return null;
+			}
+			for (long current : status.getSupportedSampleRates()) {
+				if (current > expectedSampleRate) {
+					sampleRate = current;
+					break;
+				}
+			}
+			if (sampleRate == 0) {
+				LOG.error("[{}] cannot find sample rate for: {}", req.getId(), expectedSampleRate);
+				return null;
+			}
+
 			client.setGain((long) deviceConfiguraiton.getGain());
 			client.setFrequency(req.getFrequency());
+			client.setSamplingRate(sampleRate);
 			client.startStream(new OnDataCallback() {
 
 				private byte[] buffer = new byte[4096];
@@ -106,6 +126,8 @@ public class SpyServerReader implements IQReader {
 		result.setActualEnd(endTimeMillis);
 		result.setDataFile(rawFile);
 		result.setDataFormat(status.getFormat());
+		result.setInputSampleRate((int) sampleRate);
+		result.setOutputSampleRate((int) sampleRate);
 		return result;
 	}
 
