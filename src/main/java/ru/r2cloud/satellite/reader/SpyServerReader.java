@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 
 import org.slf4j.Logger;
@@ -60,10 +61,15 @@ public class SpyServerReader implements IQReader {
 		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + "." + status.getFormat().getExtension());
 		long sampleRate = 0;
 		try (OutputStream os = new BufferedOutputStream(new FileOutputStream(rawFile))) {
-
-			int expectedSampleRate = Util.convertToReasonableSampleRate(transmitter.getBaudRates());
-			if (expectedSampleRate == 0) {
+			sampleRate = Util.convertToReasonableSampleRate(transmitter.getBaudRates());
+			Integer maxBaudRate = Collections.max(transmitter.getBaudRates());
+			if (maxBaudRate == null) {
 				return null;
+			}
+
+			int expectedSampleRate = maxBaudRate * 5;
+			if (expectedSampleRate < 48_000) {
+				expectedSampleRate = 48_000;
 			}
 			for (long current : status.getSupportedSampleRates()) {
 				if (current > expectedSampleRate) {
@@ -75,6 +81,8 @@ public class SpyServerReader implements IQReader {
 				LOG.error("[{}] cannot find sample rate for: {}", req.getId(), expectedSampleRate);
 				return null;
 			}
+
+			LOG.info("[{}] starting observation on {} with sample rate {} gain {}", req.getId(), req.getFrequency(), sampleRate, deviceConfiguraiton.getGain());
 
 			client.setGain((long) deviceConfiguraiton.getGain());
 			client.setFrequency(req.getFrequency());

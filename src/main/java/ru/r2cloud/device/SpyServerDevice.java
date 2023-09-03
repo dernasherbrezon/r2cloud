@@ -45,11 +45,12 @@ public class SpyServerDevice extends Device {
 		try {
 			client.start();
 			status = client.getStatus();
-			client.stop();
 		} catch (IOException e) {
 			status = new SpyServerStatus();
 			status.setStatus(DeviceConnectionStatus.FAILED);
 			status.setFailureMessage(e.getMessage());
+		} finally {
+			client.stop();
 		}
 		result.setStatus(status.getStatus());
 		if (status.getStatus().equals(DeviceConnectionStatus.FAILED)) {

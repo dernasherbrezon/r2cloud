@@ -261,7 +261,6 @@ public class Configuration {
 			if (oldPpm != null) {
 				config.setPpm(oldPpm);
 			}
-			config.setId("sdr-" + config.getRtlDeviceId());
 			boolean rotatorEnabled = getBoolean(prefix + "rotator.enabled");
 			String oldRotatorConfig = getProperty("rotator.enabled");
 			if (oldRotatorConfig != null) {
@@ -272,12 +271,15 @@ public class Configuration {
 			}
 			config.setSdrServerConfiguration(getSdrServerConfiguration(prefix));
 			if (config.getSdrServerConfiguration() != null) {
-				config.setName("SDR-SERVER - " + config.getSdrServerConfiguration().getHost() + ":" + config.getSdrServerConfiguration().getPort());
+				String hostport = config.getSdrServerConfiguration().getHost() + ":" + config.getSdrServerConfiguration().getPort();
+				config.setId("sdrserver-" + hostport);
+				config.setName("SDR-SERVER - " + hostport);
 				config.setHost(config.getSdrServerConfiguration().getHost());
 				config.setPort(config.getSdrServerConfiguration().getPort());
 				config.setTimeout(config.getSdrServerConfiguration().getTimeout());
 				config.setCompencateDcOffset(false);
 			} else {
+				config.setId("rtlsdr-" + config.getRtlDeviceId());
 				config.setName("RTL-SDR " + config.getRtlDeviceId());
 				config.setCompencateDcOffset(true);
 			}
