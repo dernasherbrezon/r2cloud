@@ -45,8 +45,7 @@ public class SpyServerReaderTest {
 	public void testSuccess() throws Exception {
 		mock.setDeviceInfo(createAirSpy());
 		mock.setSync(createValidSync());
-		byte[] data = createSample();
-		mock.setData(data, SpyClient.SPYSERVER_MSG_TYPE_INT16_IQ);
+		mock.setData(createSample(), SpyClient.SPYSERVER_MSG_TYPE_INT16_IQ);
 
 		ObservationRequest req = createValidRequest();
 		SpyServerReader reader = new SpyServerReader(config, req, deviceConfiguration, createValidTransmitter());
@@ -55,6 +54,7 @@ public class SpyServerReaderTest {
 			@Override
 			public void run() {
 				try {
+					// make sure all config parameters are sent/read
 					mock.waitForDataSent();
 				} catch (InterruptedException e) {
 					Thread.currentThread().interrupt();
