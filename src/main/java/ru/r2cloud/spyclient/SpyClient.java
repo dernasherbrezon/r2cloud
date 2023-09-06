@@ -1,16 +1,21 @@
 package ru.r2cloud.spyclient;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +27,8 @@ import ru.r2cloud.util.Util;
 public class SpyClient {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SpyClient.class);
-	private static final int SPYSERVER_CMD_HELLO = 0;
-	private static final int SPYSERVER_CMD_SET_SETTING = 2;
+	public static final int SPYSERVER_CMD_HELLO = 0;
+	public static final int SPYSERVER_CMD_SET_SETTING = 2;
 
 	private static final int SPYSERVER_STREAM_MODE_IQ_ONLY = 1;
 
@@ -32,11 +37,11 @@ public class SpyClient {
 	private static final int SPYSERVER_STREAM_FORMAT_INT16 = 2;
 	private static final int SPYSERVER_STREAM_FORMAT_FLOAT = 4;
 
-	private static final int SPYSERVER_MSG_TYPE_DEVICE_INFO = 0;
-	private static final int SPYSERVER_MSG_TYPE_CLIENT_SYNC = 1;
-	private static final int SPYSERVER_MSG_TYPE_UINT8_IQ = 100;
-	private static final int SPYSERVER_MSG_TYPE_INT16_IQ = 101;
-	private static final int SPYSERVER_MSG_TYPE_FLOAT_IQ = 103;
+	public static final int SPYSERVER_MSG_TYPE_DEVICE_INFO = 0;
+	public static final int SPYSERVER_MSG_TYPE_CLIENT_SYNC = 1;
+	public static final int SPYSERVER_MSG_TYPE_UINT8_IQ = 100;
+	public static final int SPYSERVER_MSG_TYPE_INT16_IQ = 101;
+	public static final int SPYSERVER_MSG_TYPE_FLOAT_IQ = 103;
 
 	private static final int SPYSERVER_PROTOCOL_VERSION = (((2) << 24) | ((0) << 16) | (1700));
 	private static final String CLIENT_ID = "r2cloud";
@@ -109,11 +114,26 @@ public class SpyClient {
 							LOG.info("unknown message received: {}", responseHeader.getMessageType());
 							inputStream.skipNBytes(responseHeader.getBodySize());
 						}
+					} catch (EOFException e) {
+						LOG.info("spyserver disconnected");
+						stop();
+						break;
 					} catch (IOException e) {
-						if (!socket.isClosed()) {
-							Util.logIOException(LOG, "unable to read response", e);
-							markStatusAsFailed(e);
+						if (socket != null) {
+							try {
+								if (!socket.isClosed() && inputStream.available() == 0) {
+									continue;
+								}
+								if (!socket.isClosed()) {
+									Util.logIOException(LOG, "unable to read response", e);
+									markStatusAsFailed(e);
+								}
+							} catch (IOException e1) {
+								Util.logIOException(LOG, "unable to read response", e);
+								markStatusAsFailed(e);
+							}
 						}
+						stop();
 						break;
 					}
 				}
@@ -239,6 +259,9 @@ public class SpyClient {
 	}
 
 	public void stop() {
+		if (socket == null) {
+			return;
+		}
 		LOG.info("stopping spyclient...");
 		if (socket != null) {
 			Util.closeQuietly(socket);
@@ -305,4 +328,75 @@ public class SpyClient {
 		os.write(0xFF & (v >> 24));
 	}
 
+	public static void main(String[] args) throws Exception {
+		String host = "rasp-bullseye.local";
+		int port = 5555;
+		SpyClient client = new SpyClient(host, port, 10000);
+		client.start();
+		client.setGain(20);
+		client.setFrequency(143990000);
+//		client.setSamplingRate(46875);
+		client.setSamplingRate(37500);
+		SpyServerStatus status = client.getStatus();
+		OutputStream fos = new BufferedOutputStream(new FileOutputStream(new File("/Users/dernasherbrezon/Downloads/spy." + status.getFormat().getExtension())));
+		CountDownLatch l = new CountDownLatch(1);
+
+		client.startStream(new OnDataCallback() {
+
+			long current = 0;
+			long times = 0;
+			long lastTime = System.currentTimeMillis();
+
+			@Override
+			public boolean onData(InputStream is, int len) {
+				int remaining = len;
+				l.countDown();
+				int samples = len / (status.getFormat().getBitsPerSample() / 8);
+				client.totalSamples += samples;
+				while (remaining > 0) {
+					try {
+						int toRead;
+						if (client.buffer.length > remaining) {
+							toRead = remaining;
+						} else {
+							toRead = client.buffer.length;
+						}
+						int actualRead = is.read(client.buffer, 0, toRead);
+						if (actualRead < 0) {
+							System.out.println("no more data");
+							break;
+						}
+						fos.write(client.buffer, 0, actualRead);
+						remaining -= actualRead;
+					} catch (IOException e) {
+						e.printStackTrace();
+						break;
+					}
+				}
+				long nextTime = System.currentTimeMillis();
+				current += samples;
+				times++;
+				if (nextTime - lastTime > 1000) {
+					System.out.println(new Date() + " rate is: " + current + " batch: " + samples + " times: " + times + " bytes: " + len);
+					current = 0;
+					times = 0;
+					lastTime = nextTime;
+				}
+				return true;
+			}
+		});
+		l.await();
+		Thread.sleep(5000);
+		System.out.println("trying to stop");
+		client.stopStream();
+		System.out.println("stopped");
+		System.out.println(client.totalSamples);
+		client.stop();
+
+		// 28257.6
+		// 23437.5
+	}
+
+	long totalSamples = 0;
+	private byte[] buffer = new byte[4096];
 }

@@ -113,7 +113,7 @@ public class SpyServerReader implements IQReader {
 							os.write(buffer, 0, actualRead);
 							remaining -= actualRead;
 						} catch (IOException e) {
-							e.printStackTrace();
+							Util.logIOException(LOG, "unable to read data", e);
 							return false;
 						}
 					}

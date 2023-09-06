@@ -2,6 +2,7 @@ package ru.r2cloud.spyclient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 public class SpyServerDeviceInfo implements CommandResponse {
 
@@ -128,6 +129,22 @@ public class SpyServerDeviceInfo implements CommandResponse {
 		resolution = SpyClient.readUnsignedInt(is);
 		minimumIQDecimation = SpyClient.readUnsignedInt(is);
 		forcedIQFormat = SpyClient.readUnsignedInt(is);
+	}
+
+	@Override
+	public void write(OutputStream os) throws IOException {
+		SpyClient.writeUnsignedInt(os, (int) deviceType);
+		SpyClient.writeUnsignedInt(os, (int) deviceSerial);
+		SpyClient.writeUnsignedInt(os, (int) maximumSampleRate);
+		SpyClient.writeUnsignedInt(os, (int) maximumBandwidth);
+		SpyClient.writeUnsignedInt(os, (int) decimationStageCount);
+		SpyClient.writeUnsignedInt(os, (int) gainStageCount);
+		SpyClient.writeUnsignedInt(os, (int) maximumGainIndex);
+		SpyClient.writeUnsignedInt(os, (int) minimumFrequency);
+		SpyClient.writeUnsignedInt(os, (int) maximumFrequency);
+		SpyClient.writeUnsignedInt(os, (int) resolution);
+		SpyClient.writeUnsignedInt(os, (int) minimumIQDecimation);
+		SpyClient.writeUnsignedInt(os, (int) forcedIQFormat);
 	}
 
 	@Override

@@ -16,4 +16,13 @@ public enum SpyServerParameter {
 		return code;
 	}
 
+	public static SpyServerParameter valueOfCode(int code) {
+		for (SpyServerParameter cur : values()) {
+			if (cur.code == code) {
+				return cur;
+			}
+		}
+		return null;
+	}
+
 }

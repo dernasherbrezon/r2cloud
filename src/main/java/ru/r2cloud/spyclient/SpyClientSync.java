@@ -2,6 +2,7 @@ package ru.r2cloud.spyclient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 public class SpyClientSync implements CommandResponse {
 
@@ -98,6 +99,19 @@ public class SpyClientSync implements CommandResponse {
 		maximumIQCenterFrequency = SpyClient.readUnsignedInt(is);
 		minimumFFTCenterFrequency = SpyClient.readUnsignedInt(is);
 		maximumFFTCenterFrequency = SpyClient.readUnsignedInt(is);
+	}
+
+	@Override
+	public void write(OutputStream os) throws IOException {
+		SpyClient.writeUnsignedInt(os, (int) canControl);
+		SpyClient.writeUnsignedInt(os, (int) gain);
+		SpyClient.writeUnsignedInt(os, (int) deviceCenterFrequency);
+		SpyClient.writeUnsignedInt(os, (int) iQCenterFrequency);
+		SpyClient.writeUnsignedInt(os, (int) fFTCenterFrequency);
+		SpyClient.writeUnsignedInt(os, (int) minimumIQCenterFrequency);
+		SpyClient.writeUnsignedInt(os, (int) maximumIQCenterFrequency);
+		SpyClient.writeUnsignedInt(os, (int) minimumFFTCenterFrequency);
+		SpyClient.writeUnsignedInt(os, (int) maximumFFTCenterFrequency);
 	}
 
 	@Override
