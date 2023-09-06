@@ -40,6 +40,15 @@
 				"model": "TEST",
 				"connection": "127.0.0.1:8004"
 			}
+		},
+		{
+			"status": "CONNECTED",
+			"connection": "SpyServer - 127.0.0.1:8008",
+			"minFrequency": 24000000,
+			"maxFrequency": 1700000000,
+			"rotator": {
+				"status": "DISABLED"
+			}
 		}
 	]
 }

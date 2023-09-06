@@ -39,6 +39,8 @@ import ru.r2cloud.RtlTestServer;
 import ru.r2cloud.SatnogsServerMock;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.SdrType;
+import ru.r2cloud.satellite.reader.SpyServerMock;
+import ru.r2cloud.satellite.reader.SpyServerReaderTest;
 import ru.r2cloud.util.Configuration;
 
 public abstract class BaseTest {
@@ -49,6 +51,7 @@ public abstract class BaseTest {
 	public static final int ROTCTRLD_PORT = 8004;
 	private static final int ROTCTRLD_PORT_LORA = 8006;
 	private static final int R2LORA_PORT = 8005;
+	private static final int SPYSERVER_MOCK = 8008;
 
 	private R2Cloud server;
 	private CelestrakServer celestrak;
@@ -58,6 +61,7 @@ public abstract class BaseTest {
 	private RotctrldMock rotctrlMock;
 	private RotctrldMock rotctrlMockForLora;
 	private SatnogsServerMock satnogs;
+	private SpyServerMock spyServerMock;
 	protected HttpServer r2loraServer;
 
 	protected RestClient client;
@@ -92,6 +96,11 @@ public abstract class BaseTest {
 		rtlTestServer = new RtlTestServer();
 		rtlTestServer.mockDefault();
 		rtlTestServer.start();
+
+		spyServerMock = new SpyServerMock("127.0.0.1", SPYSERVER_MOCK);
+		spyServerMock.setDeviceInfo(SpyServerReaderTest.createAirSpy());
+		spyServerMock.setSync(SpyServerReaderTest.createValidSync());
+		spyServerMock.start();
 
 		rotctrlMock = new RotctrldMock(ROTCTRLD_PORT);
 		rotctrlMock.setHandler(new CollectingRequestHandler("RPRT 0\n"));
@@ -179,6 +188,9 @@ public abstract class BaseTest {
 		}
 		if (rotctrlMock != null) {
 			rotctrlMock.stop();
+		}
+		if (spyServerMock != null) {
+			spyServerMock.stop();
 		}
 		if (rotctrlMockForLora != null) {
 			rotctrlMockForLora.stop();

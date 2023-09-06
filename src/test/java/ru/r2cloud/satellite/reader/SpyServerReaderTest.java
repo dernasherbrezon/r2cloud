@@ -77,7 +77,7 @@ public class SpyServerReaderTest {
 	public void start() throws Exception {
 		deviceConfiguration = new DeviceConfiguration();
 		deviceConfiguration.setHost("localhost");
-		deviceConfiguration.setPort(8007);
+		deviceConfiguration.setPort(8008);
 		deviceConfiguration.setTimeout(1000);
 		deviceConfiguration.setGain(10.0f);
 		mock = new SpyServerMock(deviceConfiguration.getHost(), deviceConfiguration.getPort());
@@ -96,13 +96,15 @@ public class SpyServerReaderTest {
 		return result;
 	}
 
-	private static SpyServerDeviceInfo createAirSpy() {
+	public static SpyServerDeviceInfo createAirSpy() {
 		SpyServerDeviceInfo result = new SpyServerDeviceInfo();
 		result.setDeviceType(1);
 		result.setMaximumSampleRate(6000000);
 		result.setMinimumIQDecimation(0);
 		result.setResolution(12);
 		result.setDecimationStageCount(12);
+		result.setMinimumFrequency(24_000_000L);
+		result.setMaximumFrequency(1_700_000_000L);
 		return result;
 	}
 
@@ -123,7 +125,7 @@ public class SpyServerReaderTest {
 		return result;
 	}
 
-	private static SpyClientSync createValidSync() {
+	public static SpyClientSync createValidSync() {
 		SpyClientSync result = new SpyClientSync();
 		result.setCanControl(1);
 		return result;
