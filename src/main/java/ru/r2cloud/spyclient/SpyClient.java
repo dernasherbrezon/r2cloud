@@ -1,21 +1,16 @@
 package ru.r2cloud.spyclient;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -328,75 +323,4 @@ public class SpyClient {
 		os.write(0xFF & (v >> 24));
 	}
 
-	public static void main(String[] args) throws Exception {
-		String host = "rasp-bullseye.local";
-		int port = 5555;
-		SpyClient client = new SpyClient(host, port, 10000);
-		client.start();
-		client.setGain(20);
-		client.setFrequency(143990000);
-//		client.setSamplingRate(46875);
-		client.setSamplingRate(37500);
-		SpyServerStatus status = client.getStatus();
-		OutputStream fos = new BufferedOutputStream(new FileOutputStream(new File("/Users/dernasherbrezon/Downloads/spy." + status.getFormat().getExtension())));
-		CountDownLatch l = new CountDownLatch(1);
-
-		client.startStream(new OnDataCallback() {
-
-			long current = 0;
-			long times = 0;
-			long lastTime = System.currentTimeMillis();
-
-			@Override
-			public boolean onData(InputStream is, int len) {
-				int remaining = len;
-				l.countDown();
-				int samples = len / (status.getFormat().getBitsPerSample() / 8);
-				client.totalSamples += samples;
-				while (remaining > 0) {
-					try {
-						int toRead;
-						if (client.buffer.length > remaining) {
-							toRead = remaining;
-						} else {
-							toRead = client.buffer.length;
-						}
-						int actualRead = is.read(client.buffer, 0, toRead);
-						if (actualRead < 0) {
-							System.out.println("no more data");
-							break;
-						}
-						fos.write(client.buffer, 0, actualRead);
-						remaining -= actualRead;
-					} catch (IOException e) {
-						e.printStackTrace();
-						break;
-					}
-				}
-				long nextTime = System.currentTimeMillis();
-				current += samples;
-				times++;
-				if (nextTime - lastTime > 1000) {
-					System.out.println(new Date() + " rate is: " + current + " batch: " + samples + " times: " + times + " bytes: " + len);
-					current = 0;
-					times = 0;
-					lastTime = nextTime;
-				}
-				return true;
-			}
-		});
-		l.await();
-		Thread.sleep(5000);
-		System.out.println("trying to stop");
-		client.stopStream();
-		System.out.println("stopped");
-		System.out.println(client.totalSamples);
-		client.stop();
-
-		// 28257.6
-		// 23437.5
-	}
-
-	long totalSamples = 0;
-	private byte[] buffer = new byte[4096];
 }

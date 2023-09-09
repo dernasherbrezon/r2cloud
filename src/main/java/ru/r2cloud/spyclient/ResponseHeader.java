@@ -73,7 +73,7 @@ public class ResponseHeader {
 
 	public void write(OutputStream os) throws IOException {
 		SpyClient.writeUnsignedInt(os, (int) protocolID);
-		long mtypeRaw = (flags << 16) + messageType;
+		long mtypeRaw = (flags << 16) + (long) messageType;
 		SpyClient.writeUnsignedInt(os, (int) mtypeRaw);
 		SpyClient.writeUnsignedInt(os, (int) streamType);
 		SpyClient.writeUnsignedInt(os, (int) sequenceNumber);
