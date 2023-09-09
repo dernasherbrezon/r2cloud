@@ -36,6 +36,10 @@ public class SpyServerReaderTest {
 
 	@Test
 	public void testDeviceNotConnected() throws Exception {
+		deviceConfiguration.setPort(8009);
+		mock = new SpyServerMock(deviceConfiguration.getHost(), deviceConfiguration.getPort());
+		mock.start();
+
 		SpyServerReader reader = new SpyServerReader(config, createValidRequest(), deviceConfiguration, null);
 		reader.complete();
 		assertNull(reader.start());
@@ -43,6 +47,10 @@ public class SpyServerReaderTest {
 
 	@Test
 	public void testSuccess() throws Exception {
+		deviceConfiguration.setPort(8008);
+		mock = new SpyServerMock(deviceConfiguration.getHost(), deviceConfiguration.getPort());
+		mock.start();
+
 		mock.setDeviceInfo(createAirSpy());
 		mock.setSync(createValidSync());
 		mock.setData(createSample(), SpyClient.SPYSERVER_MSG_TYPE_INT16_IQ);
@@ -77,11 +85,8 @@ public class SpyServerReaderTest {
 	public void start() throws Exception {
 		deviceConfiguration = new DeviceConfiguration();
 		deviceConfiguration.setHost("localhost");
-		deviceConfiguration.setPort(8009);
 		deviceConfiguration.setTimeout(1000);
 		deviceConfiguration.setGain(10.0f);
-		mock = new SpyServerMock(deviceConfiguration.getHost(), deviceConfiguration.getPort());
-		mock.start();
 
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
