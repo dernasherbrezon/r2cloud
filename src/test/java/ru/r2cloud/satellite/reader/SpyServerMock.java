@@ -89,7 +89,6 @@ public class SpyServerMock {
 										header.write(os);
 										deviceInfo.write(os);
 									} else {
-										client.close();
 										break;
 									}
 									if (sync != null) {
@@ -125,11 +124,13 @@ public class SpyServerMock {
 								break;
 							}
 						}
+						Util.closeQuietly(client);
 					} catch (IOException e) {
 						LOG.info("shutdown: {}", e.getMessage());
 						break;
 					}
 				}
+				LOG.info("stopped");
 			}
 		}, "spyserver-mock").start();
 	}
