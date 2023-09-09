@@ -204,8 +204,9 @@ public class R2Cloud {
 				cur.setMaximumFrequency(status.getMaxFrequency());
 				client.stop();
 			} catch (IOException e) {
-				Util.logIOException(LOG, "unable to init device", e);
-				continue;
+				Util.logIOException(LOG, "[" + cur.getId() + "] unable to init device frequencies. Use default: 24Mhz - 1700Mhz", e);
+				cur.setMinimumFrequency(24_000_000);
+				cur.setMaximumFrequency(1_700_000_000);
 			}
 			deviceManager.addDevice(new SpyServerDevice(cur.getId(), new SdrTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur)));
 		}

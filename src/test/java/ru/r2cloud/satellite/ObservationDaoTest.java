@@ -30,7 +30,6 @@ import ru.r2cloud.ObservationFullComparator;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationStatus;
-import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.Tle;
 
 public class ObservationDaoTest {
@@ -205,7 +204,6 @@ public class ObservationDaoTest {
 		result.setGroundStation(createGroundStation());
 		result.setGain("45.0");
 		result.setBiast(false);
-		result.setSdrType(SdrType.RTLSDR);
 		return result;
 	}
 

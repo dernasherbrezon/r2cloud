@@ -70,17 +70,20 @@ public class ObservationDaoCache implements IObservationDao {
 	// this will load into allObservations cache
 	// if observation somehow added onto disk directly
 	// shouldn't happen in real life, mostly used by tests
-	private Collection<? extends Observation> findAndIndex(List<ObservationCacheKey> missing) {
+	private Collection<? extends Observation> findAndIndex(List<ObservationCacheKey> dirty) {
 		List<Observation> result = new ArrayList<>();
-		for (ObservationCacheKey cur : missing) {
+		List<ObservationCacheKey> missing = new ArrayList<>();
+		for (ObservationCacheKey cur : dirty) {
 			Observation observation = impl.find(cur.getSatelliteId(), cur.getObservationId());
 			if (observation == null) {
+				missing.add(cur);
 				continue;
 			}
 			cacheById.put(observation.getId(), observation);
 			allObservations.add(cur);
 			result.add(observation);
 		}
+		allObservations.removeAll(missing);
 		return result;
 	}
 

@@ -1,7 +1,6 @@
 package ru.r2cloud.satellite.decoder;
 
 import java.io.File;
-import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
@@ -64,9 +63,8 @@ public class DecoderService implements Lifecycle {
 			return;
 		}
 		LOG.info("check for not processed observations");
-		List<Observation> all = dao.findAll();
 		String apiKey = config.getProperty("r2cloud.apiKey");
-		for (Observation cur : all) {
+		for (Observation cur : dao.findAll()) {
 			if (cur.getStatus().equals(ObservationStatus.RECEIVED)) {
 				LOG.info("resuming decoding: {}", cur.getId());
 				decode(cur.getSatelliteId(), cur.getId());
@@ -116,70 +114,61 @@ public class DecoderService implements Lifecycle {
 		});
 	}
 
-	private boolean decodeInternally(File rawFile, Observation request) {
-		Satellite satellite = satelliteDao.findById(request.getSatelliteId());
+	private boolean decodeInternally(File rawFile, Observation observation) {
+		Satellite satellite = satelliteDao.findById(observation.getSatelliteId());
 		if (satellite == null) {
-			LOG.error("[{}] satellite is missing. cannot decode: {}", request.getId(), request.getSatelliteId());
+			LOG.error("[{}] satellite is missing. cannot decode: {}", observation.getId(), observation.getSatelliteId());
 			return false;
 		}
-		Transmitter transmitter = null;
-		if (request.getTransmitterId() != null) {
-			transmitter = satellite.getById(request.getTransmitterId());
-		} else {
-			// support for legacy observations
-			// select first transmitter
-			if (satellite.getTransmitters().size() > 0) {
-				transmitter = satellite.getTransmitters().get(0);
-			}
-		}
+		Transmitter transmitter = satellite.getById(observation.getTransmitterId());
 		if (transmitter == null) {
-			LOG.error("[{}] cannot find transmitter for satellite {}", request.getId(), request.getSatelliteId());
+			LOG.error("[{}] cannot find transmitter for satellite {}", observation.getId(), observation.getSatelliteId());
 			return false;
 		}
 		Decoder decoder = decoders.findByTransmitter(transmitter);
 		if (decoder == null) {
-			LOG.error("[{}] unknown decoder for {} transmitter {}", request.getId(), request.getSatelliteId(), request.getTransmitterId());
+			LOG.error("[{}] unknown decoder for {} transmitter {}", observation.getId(), observation.getSatelliteId(), observation.getTransmitterId());
 			return false;
 		}
 		if (rawFile == null || !rawFile.getParentFile().exists()) {
-			LOG.info("[{}] observation no longer exist. This can be caused by slow decoding of other observations and too aggressive retention. Increase scheduler.data.retention.count or reduce number of scheduled satellites or use faster hardware", request.getId());
+			LOG.info("[{}] observation no longer exist. This can be caused by slow decoding of other observations and too aggressive retention. Increase scheduler.data.retention.count or reduce number of scheduled satellites or use faster hardware", observation.getId());
 			return false;
 		}
 		if (!rawFile.exists()) {
-			LOG.info("[{}] raw data for observation is missing. This can be caused by slow decoding of other observations and too aggressive retention. Increase scheduler.data.retention.raw.count or reduce number of scheduled satellites or use faster hardware", request.getId());
+			LOG.info("[{}] raw data for observation is missing. This can be caused by slow decoding of other observations and too aggressive retention. Increase scheduler.data.retention.raw.count or reduce number of scheduled satellites or use faster hardware", observation.getId());
 			return false;
 		}
-		LOG.info("[{}] decoding", request.getId());
-		DecoderResult result = decoder.decode(rawFile, request, transmitter);
-		LOG.info("[{}] decoded", request.getId());
+		LOG.info("[{}] decoding", observation.getId());
+		DecoderResult result = decoder.decode(rawFile, observation, transmitter);
+		LOG.info("[{}] decoded", observation.getId());
 
 		if (result.getDataPath() != null) {
-			result.setDataPath(dao.saveData(request.getSatelliteId(), request.getId(), result.getDataPath()));
+			result.setDataPath(dao.saveData(observation.getSatelliteId(), observation.getId(), result.getDataPath()));
 		}
 		if (result.getImagePath() != null) {
-			result.setImagePath(dao.saveImage(request.getSatelliteId(), request.getId(), result.getImagePath()));
+			result.setImagePath(dao.saveImage(observation.getSatelliteId(), observation.getId(), result.getImagePath()));
 		}
 
-		request.setRawPath(result.getRawPath());
-		request.setChannelA(result.getChannelA());
-		request.setChannelB(result.getChannelB());
-		request.setNumberOfDecodedPackets(result.getNumberOfDecodedPackets());
-		request.setImagePath(result.getImagePath());
-		request.setDataPath(result.getDataPath());
-		request.setStatus(ObservationStatus.DECODED);
+		observation.setRawPath(result.getRawPath());
+		observation.setChannelA(result.getChannelA());
+		observation.setChannelB(result.getChannelB());
+		observation.setNumberOfDecodedPackets(result.getNumberOfDecodedPackets());
+		observation.setImagePath(result.getImagePath());
+		observation.setDataPath(result.getDataPath());
+		observation.setStatus(ObservationStatus.DECODED);
 
-		dao.update(request);
-		r2cloudService.uploadObservation(request);
+		dao.update(observation);
+		r2cloudService.uploadObservation(observation);
 
-		if (request.getNumberOfDecodedPackets() != null) {
+		if (observation.getNumberOfDecodedPackets() != null) {
 			switch (transmitter.getFraming()) {
 			case APT:
 				break;
 			case LRPT:
-				lrpt.inc(request.getNumberOfDecodedPackets());
+				lrpt.inc(observation.getNumberOfDecodedPackets());
 				break;
 			default:
-				telemetry.inc(request.getNumberOfDecodedPackets());
+				telemetry.inc(observation.getNumberOfDecodedPackets());
 				break;
 			}
 		}

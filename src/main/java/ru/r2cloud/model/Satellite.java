@@ -113,6 +113,14 @@ public class Satellite {
 	}
 
 	public Transmitter getById(String id) {
+		if (id == null) {
+			// support for legacy observations
+			// select first transmitter
+			if (transmitters.size() > 0) {
+				return transmitters.get(0);
+			}
+			return null;
+		}
 		for (Transmitter cur : transmitters) {
 			if (cur.getId().equalsIgnoreCase(id)) {
 				return cur;
