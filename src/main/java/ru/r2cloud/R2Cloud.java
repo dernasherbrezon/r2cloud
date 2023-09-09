@@ -177,7 +177,9 @@ public class R2Cloud {
 			default:
 				throw new IllegalArgumentException("unsupported sdr type: " + props.getSdrType());
 			}
-
+		}
+		for (DeviceConfiguration cur : props.getPlutoSdrConfigurations()) {
+			deviceManager.addDevice(new PlutoSdrDevice(cur.getId(), new SdrTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, processFactory));
 		}
 		for (DeviceConfiguration cur : props.getLoraConfigurations()) {
 			R2loraClient client = new R2loraClient(cur.getHost(), cur.getPort(), cur.getUsername(), cur.getPassword(), cur.getTimeout());

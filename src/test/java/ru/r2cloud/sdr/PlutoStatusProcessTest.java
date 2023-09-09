@@ -36,6 +36,13 @@ public class PlutoStatusProcessTest {
 	}
 
 	@Test
+	public void testNoDevicesFound() {
+		rtlTestServer.mockTest("No IIO context found.");
+		SdrStatus result = status.getStatus();
+		assertEquals(DeviceConnectionStatus.FAILED, result.getStatus());
+	}
+	
+	@Test
 	public void testNoDevices() {
 		rtlTestServer.mockTest("Library version: 0.21 (git tag: 565bf68)\nCompiled with backends: xml ip usb\nNo IIO context found.");
 		SdrStatus result = status.getStatus();
@@ -58,7 +65,7 @@ public class PlutoStatusProcessTest {
 		config.setProperty("satellites.plutosdr.test.path", TestUtil.setupScript(new File(tempFolder.getRoot().getAbsoluteFile(), "iio_info_mock.sh")).getAbsolutePath());
 		config.update();
 
-		rtlTestServer = new RtlTestServer();
+		rtlTestServer = new RtlTestServer(8010);
 		rtlTestServer.start();
 
 		status = new PlutoStatusProcess(config, new ProcessFactory());

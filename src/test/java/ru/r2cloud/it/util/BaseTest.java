@@ -57,7 +57,9 @@ public abstract class BaseTest {
 	private CelestrakServer celestrak;
 	private File rtlSdrMock;
 	private File rtlTestMock;
+	private File plutoSdrTestMock;
 	private RtlTestServer rtlTestServer;
+	private RtlTestServer plutoTestServer;
 	private RotctrldMock rotctrlMock;
 	private RotctrldMock rotctrlMockForLora;
 	private SatnogsServerMock satnogs;
@@ -93,9 +95,14 @@ public abstract class BaseTest {
 		satnogs.setSatellitesMock("[]", 200);
 		satnogs.setTransmittersMock("[]", 200);
 
-		rtlTestServer = new RtlTestServer();
+		rtlTestServer = new RtlTestServer(8003);
 		rtlTestServer.mockDefault();
 		rtlTestServer.start();
+
+		plutoTestServer = new RtlTestServer(8010);
+		plutoTestServer.mockTest(
+				"Using auto-detected IIO context at URI \"usb:0.1.5\"\nIIO context created with usb backend.\nBackend description string: Linux (none) 4.19.0-119999-g6edc6cd #319 SMP PREEMPT Mon Jul 6 15:45:01 CEST 2020 armv7l\nIIO context has 15 attributes:\n	hw_model: Analog Devices PlutoSDR Rev.B (Z7010-AD9363A)\n	hw_model_variant: 0\n	hw_serial: 10447354119600050d003000d4311fd131\n");
+		plutoTestServer.start();
 
 		spyServerMock = new SpyServerMock("127.0.0.1", SPYSERVER_MOCK);
 		spyServerMock.setDeviceInfo(SpyServerReaderTest.createAirSpy());
@@ -116,6 +123,7 @@ public abstract class BaseTest {
 
 		rtlSdrMock = TestUtil.setupScript(new File(tempFolder.getRoot(), "rtl_sdr_mock.sh"));
 		rtlTestMock = TestUtil.setupScript(new File(tempFolder.getRoot(), "rtl_test_mock.sh"));
+		plutoSdrTestMock = TestUtil.setupScript(new File(tempFolder.getRoot(), "iio_info_mock.sh"));
 
 		config = prepareConfiguration();
 		config.update();
@@ -152,6 +160,7 @@ public abstract class BaseTest {
 		config.setProperty("locaiton.lon", "38.174");
 		config.setProperty("satellites.rtlsdr.path", rtlSdrMock.getAbsolutePath());
 		config.setProperty("satellites.rtlsdr.test.path", rtlTestMock.getAbsolutePath());
+		config.setProperty("satellites.plutosdr.test.path", plutoSdrTestMock.getAbsolutePath());
 		config.setProperty("satellites.sox.path", "sox");
 		config.setProperty("leosatdata.hostname", "http://localhost:8001");
 		config.setProperty("satnogs.hostname", satnogs.getUrl());
@@ -182,6 +191,9 @@ public abstract class BaseTest {
 		}
 		if (celestrak != null) {
 			celestrak.stop();
+		}
+		if (plutoTestServer != null) {
+			plutoTestServer.stop();
 		}
 		if (rtlTestServer != null) {
 			rtlTestServer.stop();

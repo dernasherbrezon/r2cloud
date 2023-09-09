@@ -63,7 +63,7 @@ public class SdrStatusDaoTest {
 		config.setProperty("satellites.sdr", "rtlsdr");
 		config.update();
 
-		rtlTestServer = new RtlTestServer();
+		rtlTestServer = new RtlTestServer(8003);
 		rtlTestServer.start();
 
 		dao = new RtlStatusProcess(config, new ProcessFactory(), expectedRtlDeviceId);

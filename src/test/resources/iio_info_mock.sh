@@ -6,7 +6,7 @@ do
 key="$1"
 case $key in
 	-a)
-	    curl -s http://localhost:8003/t
+	    curl -s http://localhost:8010/t
 		shift 
 		;;
 	*)

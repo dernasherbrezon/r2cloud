@@ -230,6 +230,27 @@ public class Configuration {
 		return SdrType.valueOf(getProperty("satellites.sdr").toUpperCase(Locale.UK));
 	}
 
+	public List<DeviceConfiguration> getPlutoSdrConfigurations() {
+		List<String> loraDevices = getProperties("plutosdr.devices");
+		if (loraDevices.isEmpty()) {
+			return Collections.emptyList();
+		}
+		int timeout = getInteger("plutosdr.timeout");
+		List<DeviceConfiguration> result = new ArrayList<>(loraDevices.size());
+		for (String cur : loraDevices) {
+			String prefix = "plutosdr.device." + cur + ".";
+			DeviceConfiguration config = new DeviceConfiguration();
+			config.setId("plutosdr");
+			config.setName("PlutoSDR");
+			config.setTimeout(timeout);
+			config.setGain(getDouble(prefix + "gain").floatValue());
+			config.setMinimumFrequency(getLong(prefix + "minFrequency"));
+			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
+			result.add(config);
+		}
+		return result;
+	}
+
 	public List<DeviceConfiguration> getSdrConfigurations() {
 		List<String> sdrDevices = getProperties("sdr.devices");
 		if (sdrDevices.isEmpty()) {

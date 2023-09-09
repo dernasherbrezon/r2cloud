@@ -10,8 +10,13 @@ import com.sun.net.httpserver.HttpServer;
 
 public class RtlTestServer {
 
+	private final int port;
 	private String test;
 	private HttpServer server;
+	
+	public RtlTestServer(int port) {
+		this.port = port;
+	}
 
 	public void mockTest(String test) {
 		this.test = test;
@@ -22,7 +27,7 @@ public class RtlTestServer {
 	}
 
 	public void start() throws IOException {
-		server = HttpServer.create(new InetSocketAddress("localhost", 8003), 0);
+		server = HttpServer.create(new InetSocketAddress("localhost", port), 0);
 		server.start();
 		server.createContext("/t", new HttpHandler() {
 
