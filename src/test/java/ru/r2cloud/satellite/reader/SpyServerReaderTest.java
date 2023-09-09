@@ -77,7 +77,7 @@ public class SpyServerReaderTest {
 	public void start() throws Exception {
 		deviceConfiguration = new DeviceConfiguration();
 		deviceConfiguration.setHost("localhost");
-		deviceConfiguration.setPort(8008);
+		deviceConfiguration.setPort(8009);
 		deviceConfiguration.setTimeout(1000);
 		deviceConfiguration.setGain(10.0f);
 		mock = new SpyServerMock(deviceConfiguration.getHost(), deviceConfiguration.getPort());
