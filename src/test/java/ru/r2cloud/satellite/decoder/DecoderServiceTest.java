@@ -2,6 +2,7 @@ package ru.r2cloud.satellite.decoder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -36,6 +37,27 @@ public class DecoderServiceTest {
 	private IObservationDao dao;
 	private SatelliteDao satelliteDao;
 	private Decoders decoders;
+	
+	@Test
+	public void testDeletedBeforeDecodingStarted() throws Exception {
+		Decoder decoder = mock(Decoder.class);
+		when(decoders.findByTransmitter(any())).thenReturn(decoder);
+
+		File wav = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
+		TestUtil.copy("data/aausat.raw.gz", wav);
+		Observation observation = TestUtil.loadObservation("data/aausat.raw.gz.json");
+		observation.setStatus(ObservationStatus.RECEIVED);
+		observation.setGain("0.0");
+		dao.insert(observation);
+		wav = dao.update(observation, wav);
+		
+		assertTrue(wav.delete());
+		
+		service.decode(observation.getSatelliteId(), observation.getId());
+
+		observation = dao.find(observation.getSatelliteId(), observation.getId());
+		assertEquals(ObservationStatus.FAILED, observation.getStatus());
+	}
 
 	@Test
 	public void testScheduleTwice() throws Exception {

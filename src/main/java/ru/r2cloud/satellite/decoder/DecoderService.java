@@ -69,13 +69,7 @@ public class DecoderService implements Lifecycle {
 		for (Observation cur : all) {
 			if (cur.getStatus().equals(ObservationStatus.RECEIVED)) {
 				LOG.info("resuming decoding: {}", cur.getId());
-				if (cur.getRawPath() == null) {
-					LOG.info("raw file doesn't exist: {}", cur.getId());
-					cur.setStatus(ObservationStatus.FAILED);
-					dao.update(cur);
-				} else {
-					decode(cur.getSatelliteId(), cur.getId());
-				}
+				decode(cur.getSatelliteId(), cur.getId());
 			}
 			if (apiKey != null && cur.getStatus().equals(ObservationStatus.DECODED)) {
 				LOG.info("resume uploading: {}", cur.getId());
@@ -112,17 +106,21 @@ public class DecoderService implements Lifecycle {
 					return;
 				}
 				if (observation.getStatus().equals(ObservationStatus.RECEIVED)) {
-					decodeInternally(observation.getRawPath(), observation);
+					boolean decoded = decodeInternally(observation.getRawPath(), observation);
+					if (!decoded) {
+						observation.setStatus(ObservationStatus.FAILED);
+						dao.update(observation);
+					}
 				}
 			}
 		});
 	}
 
-	private void decodeInternally(File rawFile, Observation request) {
+	private boolean decodeInternally(File rawFile, Observation request) {
 		Satellite satellite = satelliteDao.findById(request.getSatelliteId());
 		if (satellite == null) {
 			LOG.error("[{}] satellite is missing. cannot decode: {}", request.getId(), request.getSatelliteId());
-			return;
+			return false;
 		}
 		Transmitter transmitter = null;
 		if (request.getTransmitterId() != null) {
@@ -136,20 +134,20 @@ public class DecoderService implements Lifecycle {
 		}
 		if (transmitter == null) {
 			LOG.error("[{}] cannot find transmitter for satellite {}", request.getId(), request.getSatelliteId());
-			return;
+			return false;
 		}
 		Decoder decoder = decoders.findByTransmitter(transmitter);
 		if (decoder == null) {
 			LOG.error("[{}] unknown decoder for {} transmitter {}", request.getId(), request.getSatelliteId(), request.getTransmitterId());
-			return;
+			return false;
 		}
-		if (!rawFile.getParentFile().exists()) {
+		if (rawFile == null || !rawFile.getParentFile().exists()) {
 			LOG.info("[{}] observation no longer exist. This can be caused by slow decoding of other observations and too aggressive retention. Increase scheduler.data.retention.count or reduce number of scheduled satellites or use faster hardware", request.getId());
-			return;
+			return false;
 		}
 		if (!rawFile.exists()) {
 			LOG.info("[{}] raw data for observation is missing. This can be caused by slow decoding of other observations and too aggressive retention. Increase scheduler.data.retention.raw.count or reduce number of scheduled satellites or use faster hardware", request.getId());
-			return;
+			return false;
 		}
 		LOG.info("[{}] decoding", request.getId());
 		DecoderResult result = decoder.decode(rawFile, request, transmitter);
@@ -162,34 +160,31 @@ public class DecoderService implements Lifecycle {
 			result.setImagePath(dao.saveImage(request.getSatelliteId(), request.getId(), result.getImagePath()));
 		}
 
-		Observation observation = dao.find(request.getSatelliteId(), request.getId());
-		if (observation == null) {
-			LOG.info("[{}] observation was deleted before any data saved", request.getId());
-			return;
-		}
-		observation.setRawPath(result.getRawPath());
-		observation.setChannelA(result.getChannelA());
-		observation.setChannelB(result.getChannelB());
-		observation.setNumberOfDecodedPackets(result.getNumberOfDecodedPackets());
-		observation.setImagePath(result.getImagePath());
-		observation.setDataPath(result.getDataPath());
-		observation.setStatus(ObservationStatus.DECODED);
+		request.setRawPath(result.getRawPath());
+		request.setChannelA(result.getChannelA());
+		request.setChannelB(result.getChannelB());
+		request.setNumberOfDecodedPackets(result.getNumberOfDecodedPackets());
+		request.setImagePath(result.getImagePath());
+		request.setDataPath(result.getDataPath());
+		request.setStatus(ObservationStatus.DECODED);
 
-		dao.update(observation);
-		r2cloudService.uploadObservation(observation);
+		dao.update(request);
+		r2cloudService.uploadObservation(request);
 
-		if (observation.getNumberOfDecodedPackets() != null) {
+		if (request.getNumberOfDecodedPackets() != null) {
 			switch (transmitter.getFraming()) {
 			case APT:
 				break;
 			case LRPT:
-				lrpt.inc(observation.getNumberOfDecodedPackets());
+				lrpt.inc(request.getNumberOfDecodedPackets());
 				break;
 			default:
-				telemetry.inc(observation.getNumberOfDecodedPackets());
+				telemetry.inc(request.getNumberOfDecodedPackets());
 				break;
 			}
 		}
+
+		return true;
 	}
 
 	@Override
