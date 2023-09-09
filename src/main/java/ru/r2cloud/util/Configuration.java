@@ -246,6 +246,7 @@ public class Configuration {
 			config.setGain(getDouble(prefix + "gain").floatValue());
 			config.setMinimumFrequency(getLong(prefix + "minFrequency"));
 			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
+			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			result.add(config);
 		}
 		return result;
