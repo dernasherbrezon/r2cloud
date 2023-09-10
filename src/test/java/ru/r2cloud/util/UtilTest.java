@@ -128,6 +128,11 @@ public class UtilTest {
 		assertEquals("{\"f1\":1,\"f10\":\"E2\",\"f11\":[1.1,2.2,3.3],\"f17\":\"010203\",\"f2\":2,\"f3\":3,\"f4\":4,\"f5\":5.1,\"f6\":6.1,\"f7\":\"f7\",\"f8\":[\"1\",\"2\",\"3\"],\"f9\":{\"f9\":[\"1\",\"2\",\"3\"]}}", Util.convertObject(new SampleClass()).toString());
 	}
 
+	@Test
+	public void testRates() {
+		assertEquals(0, Util.convertToReasonableSampleRate(null));
+	}
+
 	private File setupTempFile(byte[] data, String extension) throws IOException, FileNotFoundException {
 		File file = new File(tempFolder.getRoot(), UUID.randomUUID().toString() + extension);
 		try (FileOutputStream fos = new FileOutputStream(file)) {

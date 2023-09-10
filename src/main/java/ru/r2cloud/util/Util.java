@@ -483,6 +483,9 @@ public final class Util {
 	}
 
 	public static int convertToReasonableSampleRate(List<Integer> baudRates) {
+		if (baudRates == null) {
+			return 0;
+		}
 		Integer maxBaudRate = Collections.max(baudRates);
 		if (maxBaudRate == null) {
 			return 0;

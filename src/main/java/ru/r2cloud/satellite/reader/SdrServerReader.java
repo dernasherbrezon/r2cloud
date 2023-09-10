@@ -45,6 +45,10 @@ public class SdrServerReader implements IQReader {
 		Long startTimeMillis = null;
 		Long endTimeMillis = null;
 
+		if (transmitter.getBaudRates() == null) {
+			return null;
+		}
+
 		Integer maxBaudRate = Collections.max(transmitter.getBaudRates());
 		if (maxBaudRate == null) {
 			return null;
