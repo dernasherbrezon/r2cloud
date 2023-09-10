@@ -123,7 +123,7 @@ public class LoraAtClientTest {
 		LoraFrame frame = response.getFrames().get(0);
 		assertArrayEquals(new byte[] { (byte) 0xCA, (byte) 0xFE }, frame.getData());
 		assertEquals(13, frame.getFrequencyError());
-		assertEquals(-11, frame.getRssi());
+		assertEquals(-137, frame.getRssi());
 		assertEquals(3.2, frame.getSnr(), 0.0001f);
 		assertEquals(1605980902, frame.getTimestamp());
 	}
