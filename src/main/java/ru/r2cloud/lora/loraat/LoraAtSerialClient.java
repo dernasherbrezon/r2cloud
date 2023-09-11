@@ -139,7 +139,7 @@ public class LoraAtSerialClient implements LoraAtClient {
 				curFrame.setData(Util.hexStringToByteArray(parts[0]));
 				curFrame.setRssi((short) Float.parseFloat(parts[1]));
 				curFrame.setSnr(Float.parseFloat(parts[2]));
-				curFrame.setFrequencyError(Long.parseLong(parts[3]));
+				curFrame.setFrequencyError((long) Float.parseFloat(parts[3]));
 				curFrame.setTimestamp(Long.parseLong(parts[4]));
 				frames.add(curFrame);
 			}
