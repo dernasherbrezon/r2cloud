@@ -192,7 +192,11 @@ public class LoraAtSerialClient implements LoraAtClient {
 			StringBuilder errorMessage = new StringBuilder();
 			while ((curLine = reader.readLine()) != null) {
 				curLine = curLine.trim();
-				LOG.info("response: {}", curLine);
+				if (curLine.contains("[E]")) {
+					LOG.error("response: {}", curLine);
+				} else {
+					LOG.info("response: {}", curLine);
+				}
 				// skip logging
 				if (curLine.charAt(0) == '[') {
 					continue;
