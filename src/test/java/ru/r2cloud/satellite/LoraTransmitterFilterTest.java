@@ -8,6 +8,7 @@ import org.junit.Test;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Transmitter;
+import ru.r2cloud.model.TransmitterStatus;
 
 public class LoraTransmitterFilterTest {
 
@@ -31,6 +32,7 @@ public class LoraTransmitterFilterTest {
 		result.setFrequency(433_000_000);
 		result.setModulation(Modulation.LORA);
 		result.setEnabled(true);
+		result.setStatus(TransmitterStatus.ENABLED);
 		return result;
 	}
 	
