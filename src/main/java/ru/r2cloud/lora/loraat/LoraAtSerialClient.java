@@ -149,6 +149,7 @@ public class LoraAtSerialClient implements LoraAtClient {
 	}
 
 	private List<String> sendRequest(String request) throws LoraAtException {
+		LOG.info("request: {}", request);
 		SerialPortInterface port;
 		try {
 			port = serial.getCommPort(portDescriptor);
@@ -192,6 +193,10 @@ public class LoraAtSerialClient implements LoraAtClient {
 			StringBuilder errorMessage = new StringBuilder();
 			while ((curLine = reader.readLine()) != null) {
 				curLine = curLine.trim();
+				// discard corrupted serial communication
+				if (curLine.length() == 0) {
+					continue;
+				}
 				if (curLine.contains("[E]")) {
 					LOG.error("response: {}", curLine);
 				} else {
