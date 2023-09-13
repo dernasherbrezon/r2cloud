@@ -85,7 +85,7 @@ public class ObservationTest extends RegisteredTest {
 	private static void assertObservation(JsonObject observation) {
 		assertObservation(METEOR_ID, observation);
 		assertEquals(288000, observation.getInt("sampleRate", 0));
-		assertEquals(137900000, observation.getInt("actualFrequency", 0));
+		assertEquals(137908065, observation.getInt("actualFrequency", 0));
 	}
 
 	private static void assertObservation(String satelliteId, JsonObject observation) {

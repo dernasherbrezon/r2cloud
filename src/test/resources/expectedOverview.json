@@ -30,25 +30,25 @@
 			}
 		},
 		{
+			"status": "CONNECTED",
+			"model": "Realtek, RTL2838UHIDIR, SN: 00000001",
+			"connection": "RTL-SDR 0",
+			"minFrequency": 100000000,
+			"maxFrequency": 1700000000,
+			"rotator": {
+				"status": "DISABLED"
+			}
+		},
+		{
 			"status": "FAILED",
 			"failureMessage": "unable to find device",
-			"connection": "SDR-SERVER - 127.0.0.1:8004",
+			"connection": "RTL-SDR 1",
 			"minFrequency": 100000000,
 			"maxFrequency": 1700000000,
 			"rotator": {
 				"status": "CONNECTED",
 				"model": "TEST",
 				"connection": "127.0.0.1:8004"
-			}
-		},
-		{
-			"status": "CONNECTED",
-			"model": "Realtek, RTL2838UHIDIR, SN: 00000001",
-			"connection": "SDR-SERVER - 127.0.0.1:8090",
-			"minFrequency": 100000000,
-			"maxFrequency": 1700000000,
-			"rotator": {
-				"status": "DISABLED"
 			}
 		},
 		{

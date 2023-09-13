@@ -1,5 +1,7 @@
 package ru.r2cloud.model;
 
+// use separate device types instead
+@Deprecated
 public enum SdrType {
 
 	RTLSDR, PLUTOSDR, SDRSERVER,

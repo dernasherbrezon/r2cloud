@@ -38,7 +38,6 @@ import ru.r2cloud.RotctrldMock;
 import ru.r2cloud.RtlTestServer;
 import ru.r2cloud.SatnogsServerMock;
 import ru.r2cloud.TestUtil;
-import ru.r2cloud.model.SdrType;
 import ru.r2cloud.satellite.reader.SpyServerMock;
 import ru.r2cloud.satellite.reader.SpyServerReaderTest;
 import ru.r2cloud.util.Configuration;
@@ -146,7 +145,6 @@ public abstract class BaseTest {
 		try (InputStream is = BaseTest.class.getClassLoader().getResourceAsStream("config-dev.properties")) {
 			config = new Configuration(is, userSettingsLocation.getAbsolutePath(), "config-common-test.properties", FileSystems.getDefault());
 		}
-		config.setProperty("satellites.sdr", SdrType.RTLSDR.name().toLowerCase());
 		config.setProperty("tle.urls", celestrak.getUrlsAsProperty());
 		config.setProperty("tle.cacheFileLocation", new File(tempFolder.getRoot(), "tle.txt").getAbsolutePath());
 		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-test.json");

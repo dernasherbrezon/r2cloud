@@ -45,17 +45,17 @@ public class SharedRotatorTest extends RegisteredTest {
 	protected Configuration prepareConfiguration() throws IOException {
 		Configuration result = super.prepareConfiguration();
 		result.setProperty("satellites.meta.location", "./src/test/resources/satellites-test-schedule.json");
-		result.setProperty("sdr.device.0.rotator.enabled", true);
-		result.setProperty("sdr.device.0.rotctrld.hostname", "127.0.0.1");
-		result.setProperty("sdr.device.0.rotctrld.port", BaseTest.ROTCTRLD_PORT);
-		result.setProperty("sdr.device.0.minFrequency", 433000000);
-		result.setProperty("sdr.device.0.maxFrequency", 480000000);
+		result.setProperty("rtlsdr.device.0.rotator.enabled", true);
+		result.setProperty("rtlsdr.device.0.rotctrld.hostname", "127.0.0.1");
+		result.setProperty("rtlsdr.device.0.rotctrld.port", BaseTest.ROTCTRLD_PORT);
+		result.setProperty("rtlsdr.device.0.minFrequency", 433000000);
+		result.setProperty("rtlsdr.device.0.maxFrequency", 480000000);
 
-		result.setProperty("sdr.device.1.rotator.enabled", true);
-		result.setProperty("sdr.device.1.rotctrld.hostname", "127.0.0.1");
-		result.setProperty("sdr.device.1.rotctrld.port", BaseTest.ROTCTRLD_PORT);
-		result.setProperty("sdr.device.1.minFrequency", 433000000);
-		result.setProperty("sdr.device.1.maxFrequency", 480000000);
+		result.setProperty("rtlsdr.device.1.rotator.enabled", true);
+		result.setProperty("rtlsdr.device.1.rotctrld.hostname", "127.0.0.1");
+		result.setProperty("rtlsdr.device.1.rotctrld.port", BaseTest.ROTCTRLD_PORT);
+		result.setProperty("rtlsdr.device.1.minFrequency", 433000000);
+		result.setProperty("rtlsdr.device.1.maxFrequency", 480000000);
 
 		result.remove("r2lora.devices");
 		result.remove("loraat.devices");
