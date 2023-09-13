@@ -149,7 +149,7 @@ public class LoraAtSerialClient implements LoraAtClient {
 	}
 
 	private List<String> sendRequest(String request) throws LoraAtException {
-		LOG.info("request: {}", request);
+		LOG.info("request: {}", request.trim());
 		SerialPortInterface port;
 		try {
 			port = serial.getCommPort(portDescriptor);
