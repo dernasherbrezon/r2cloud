@@ -1,14 +1,11 @@
 package ru.r2cloud.util;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ru.r2cloud.model.DeviceConfiguration;
-import ru.r2cloud.model.SdrType;
 
 public class MigrateConfiguration {
 
@@ -20,45 +17,62 @@ public class MigrateConfiguration {
 	}
 
 	public void migrate() {
-		SdrType type = config.getSdrType();
+		String type = config.getProperty("satellites.sdr");
 		if (type != null) {
-			migrateSdrSettings(type);
+			migrateSdrSettings(type.toUpperCase(Locale.UK));
 			config.remove("satellites.sdr");
+		}
+		List<String> loraDevices = config.getProperties("r2lora.devices");
+		if (!loraDevices.isEmpty()) {
+			for (String cur : loraDevices) {
+				String oldProp = "r2lora.device." + cur + ".hostport";
+				String hostport = config.getProperty(oldProp);
+				if (hostport != null) {
+					int index = hostport.indexOf(':');
+					if (index > 0) {
+						config.setProperty("r2lora.device." + cur + ".host", hostport.substring(0, index));
+						config.setProperty("r2lora.device." + cur + ".port", Integer.parseInt(hostport.substring(index + 1)));
+						LOG.info("migrating: {} -> {} {}", oldProp, "r2lora.device." + cur + ".host", "r2lora.device." + cur + ".port");
+					} else {
+						continue;
+					}
+					config.remove(oldProp);
+				}
+			}
 		}
 		config.update();
 	}
 
-	private void migrateSdrSettings(SdrType type) {
+	private void migrateSdrSettings(String type) {
 		List<String> sdrDevices = config.getProperties("sdr.devices");
 		if (sdrDevices.isEmpty()) {
 			sdrDevices = Collections.singletonList("0");
 		}
-		List<DeviceConfiguration> result = new ArrayList<>(sdrDevices.size());
 		for (String cur : sdrDevices) {
 			String prefix = "sdr.device." + cur + ".";
 			String newPrefix = null;
-			if (type.equals(SdrType.RTLSDR)) {
+			if (type.equals("RTLSDR")) {
 				newPrefix = "rtlsdr.device." + cur + ".";
-			} else if (type.equals(SdrType.PLUTOSDR)) {
+			} else if (type.equals("PLUTOSDR")) {
 				newPrefix = "plutosdr.device." + cur + ".";
-			} else if (type.equals(SdrType.SDRSERVER)) {
+			} else if (type.equals("SDRSERVER")) {
 				newPrefix = "sdrserver.device." + cur + ".";
 			} else {
 				continue;
 			}
 			migrate(newPrefix + "minFrequency", prefix + "minFrequency");
 			migrate(newPrefix + "maxFrequency", prefix + "maxFrequency");
-			if (type.equals(SdrType.RTLSDR)) {
+			if (type.equals("RTLSDR")) {
 				migrate(newPrefix + "index", prefix + "rtlsdr.index", "satellites.rtlsdr.device.index");
 				migrate(newPrefix + "biast", prefix + "rtlsdr.biast", "satellites.rtlsdr.biast");
 				migrate(newPrefix + "ppm", prefix + "ppm", "ppm.current");
 			}
-			if (!type.equals(SdrType.SDRSERVER)) {
+			if (!type.equals("SDRSERVER")) {
 				migrate(newPrefix + "gain", prefix + "rtlsdr.gain", "satellites.rtlsdr.gain");
 			}
 			migrate(newPrefix + "rotator.enabled", prefix + "rotator.enabled", "rotator.enabled");
 			migrateRotatorConfiguration(prefix, newPrefix);
-			if (type.equals(SdrType.SDRSERVER)) {
+			if (type.equals("SDRSERVER")) {
 				migrate(newPrefix + "host", prefix + "sdrserver.host", "satellites.sdrserver.host");
 				migrate(newPrefix + "port", prefix + "sdrserver.port", "satellites.sdrserver.port");
 				migrate("sdrserver.timeout", prefix + "sdrserver.timeout", "satellites.sdrserver.timeout");

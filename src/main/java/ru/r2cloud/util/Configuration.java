@@ -31,7 +31,6 @@ import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.RotatorConfiguration;
 import ru.r2cloud.model.SdrServerConfiguration;
-import ru.r2cloud.model.SdrType;
 
 public class Configuration {
 
@@ -55,16 +54,13 @@ public class Configuration {
 
 	public Configuration(InputStream systemSettingsLocation, String userSettingsLocation, String commonSettingsLocation, FileSystem fs) throws IOException {
 		userSettings = new Properties() {
-	        private static final long serialVersionUID = 1L;
+			private static final long serialVersionUID = 1L;
 
-			@Override public synchronized Set<Map.Entry<Object, Object>> entrySet() {
-	            return Collections.synchronizedSet(
-	                    super.entrySet()
-	                    .stream()
-	                    .sorted(Comparator.comparing(e -> e.getKey().toString()))
-	                    .collect(Collectors.toCollection(LinkedHashSet::new)));
-	        }
-	    };
+			@Override
+			public synchronized Set<Map.Entry<Object, Object>> entrySet() {
+				return Collections.synchronizedSet(super.entrySet().stream().sorted(Comparator.comparing(e -> e.getKey().toString())).collect(Collectors.toCollection(LinkedHashSet::new)));
+			}
+		};
 		systemSettings.load(systemSettingsLocation);
 		try (InputStream is = Configuration.class.getClassLoader().getResourceAsStream(commonSettingsLocation)) {
 			Properties commonProps = new Properties();
@@ -245,23 +241,7 @@ public class Configuration {
 		return result;
 	}
 
-	public SdrType getSdrType() {
-		String propResult = getProperty("satellites.sdr");
-		if (propResult == null) {
-			return null;
-		}
-		return SdrType.valueOf(propResult.toUpperCase(Locale.UK));
-	}
-
 	public List<DeviceConfiguration> getPlutoSdrConfigurations() {
-		SdrType type = getSdrType();
-		if (type != null) {
-			if (type.equals(SdrType.PLUTOSDR)) {
-				return getLegacySdrConfigurations();
-			} else {
-				return Collections.emptyList();
-			}
-		}
 		List<String> loraDevices = getProperties("plutosdr.devices");
 		if (loraDevices.isEmpty()) {
 			return Collections.emptyList();
@@ -283,119 +263,7 @@ public class Configuration {
 		return result;
 	}
 
-	private List<DeviceConfiguration> getLegacySdrConfigurations() {
-		List<String> sdrDevices = getProperties("sdr.devices");
-		if (sdrDevices.isEmpty()) {
-			sdrDevices = Collections.singletonList("0");
-		}
-		List<DeviceConfiguration> result = new ArrayList<>(sdrDevices.size());
-		for (String cur : sdrDevices) {
-			DeviceConfiguration config = new DeviceConfiguration();
-			String prefix = "sdr.device." + cur + ".";
-			Long minFrequency = getLong(prefix + "minFrequency");
-			if (minFrequency == null) {
-				minFrequency = 100000000L;
-			}
-			config.setMinimumFrequency(minFrequency);
-			Long maxFrequency = getLong(prefix + "maxFrequency");
-			if (maxFrequency == null) {
-				maxFrequency = 1700000000L;
-			}
-			config.setMaximumFrequency(maxFrequency);
-			Integer rtlIndex = getInteger(prefix + "rtlsdr.index");
-			if (rtlIndex == null) {
-				rtlIndex = 0;
-			}
-			config.setRtlDeviceId(rtlIndex);
-			Integer oldDeviceIdProperty = getInteger("satellites.rtlsdr.device.index");
-			if (oldDeviceIdProperty != null) {
-				config.setRtlDeviceId(oldDeviceIdProperty);
-			}
-			Double rtlGain = getDouble(prefix + "rtlsdr.gain");
-			if (rtlGain == null) {
-				rtlGain = 45.0;
-			}
-			config.setGain(rtlGain.floatValue());
-			Double oldGain = getDouble("satellites.rtlsdr.gain");
-			if (oldGain != null) {
-				config.setGain(oldGain.floatValue());
-			}
-			config.setBiast(getBoolean(prefix + "rtlsdr.biast"));
-			String oldBiast = getProperty("satellites.rtlsdr.biast");
-			if (oldBiast != null) {
-				config.setBiast(Boolean.valueOf(oldBiast));
-			}
-			Integer ppm = getInteger(prefix + "ppm");
-			if (ppm == null) {
-				ppm = 0;
-			}
-			config.setPpm(ppm);
-			Integer oldPpm = getInteger("ppm.current");
-			if (oldPpm != null) {
-				config.setPpm(oldPpm);
-			}
-			boolean rotatorEnabled = getBoolean(prefix + "rotator.enabled");
-			String oldRotatorConfig = getProperty("rotator.enabled");
-			if (oldRotatorConfig != null) {
-				rotatorEnabled = Boolean.valueOf(oldRotatorConfig);
-			}
-			if (rotatorEnabled) {
-				config.setRotatorConfiguration(getRotatorConfiguration(prefix));
-			}
-			SdrType type = getSdrType();
-			if (type != null && type.equals(SdrType.SDRSERVER)) {
-				String host = getProperty(prefix + "sdrserver.host");
-				if (host == null) {
-					host = getProperty("satellites.sdrserver.host");
-				}
-				if (host == null) {
-					host = "127.0.0.1";
-				}
-				config.setHost(host);
-				Integer port = getInteger(prefix + "sdrserver.port");
-				if (port == null) {
-					port = getInteger("satellites.sdrserver.port");
-				}
-				if (port == null) {
-					port = 8090;
-				}
-				config.setPort(port);
-				Integer timeout = getInteger(prefix + "sdrserver.timeout");
-				if (timeout == null) {
-					timeout = getInteger("satellites.sdrserver.timeout");
-				}
-				if (timeout == null) {
-					timeout = 10000;
-				}
-				config.setTimeout(timeout);
-				config.setSdrServerConfiguration(getLegacySdrServerConfiguration(prefix));
-				String hostport = config.getHost() + ":" + config.getPort();
-				config.setId("sdrserver-" + hostport);
-				config.setName("SDR-SERVER - " + hostport);
-				config.setCompencateDcOffset(false);
-			} else if (type != null && type.equals(SdrType.PLUTOSDR)) {
-				config.setId("plutosdr");
-				config.setName("PlutoSDR");
-				config.setCompencateDcOffset(true);
-			} else {
-				config.setId("rtlsdr-" + config.getRtlDeviceId());
-				config.setName("RTL-SDR " + config.getRtlDeviceId());
-				config.setCompencateDcOffset(true);
-			}
-			result.add(config);
-		}
-		return result;
-	}
-
 	public List<DeviceConfiguration> getSdrServerConfigurations() {
-		SdrType type = getSdrType();
-		if (type != null) {
-			if (type.equals(SdrType.SDRSERVER)) {
-				return getLegacySdrConfigurations();
-			} else {
-				return Collections.emptyList();
-			}
-		}
 		List<String> deviceIndices = getProperties("sdrserver.devices");
 		if (deviceIndices.isEmpty()) {
 			return Collections.emptyList();
@@ -422,14 +290,6 @@ public class Configuration {
 	}
 
 	public List<DeviceConfiguration> getRtlSdrConfigurations() {
-		SdrType type = getSdrType();
-		if (type != null) {
-			if (type.equals(SdrType.RTLSDR)) {
-				return getLegacySdrConfigurations();
-			} else {
-				return Collections.emptyList();
-			}
-		}
 		List<String> sdrDevices = getProperties("rtlsdr.devices");
 		if (sdrDevices.isEmpty()) {
 			return Collections.emptyList();
@@ -467,23 +327,8 @@ public class Configuration {
 				gain = 0;
 			}
 			DeviceConfiguration config = new DeviceConfiguration();
-			String hostport = getProperty("r2lora.device." + cur + ".hostport");
-			String host;
-			int port;
-			if (hostport != null) {
-				int index = hostport.indexOf(':');
-				if (index > 0) {
-					host = hostport.substring(0, index);
-					port = Integer.parseInt(hostport.substring(index + 1));
-				} else {
-					continue;
-				}
-			} else {
-				host = getProperty("r2lora.device." + cur + ".host");
-				port = getInteger("r2lora.device." + cur + ".port");
-			}
-			config.setHost(host);
-			config.setPort(port);
+			config.setHost(getProperty("r2lora.device." + cur + ".host"));
+			config.setPort(getInteger("r2lora.device." + cur + ".port"));
 			config.setUsername(getProperty("r2lora.device." + cur + ".username"));
 			config.setPassword(getProperty("r2lora.device." + cur + ".password"));
 			config.setTimeout(timeout);
@@ -581,24 +426,6 @@ public class Configuration {
 			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
 			config.setCompencateDcOffset(false);
 			result.add(config);
-		}
-		return result;
-	}
-
-	private SdrServerConfiguration getLegacySdrServerConfiguration(String prefix) {
-		SdrServerConfiguration result = new SdrServerConfiguration();
-		result.setBasepath(getProperty(prefix + "sdrserver.basepath"));
-		if (result.getBasepath() == null) {
-			result.setBasepath("/tmp");
-		}
-		result.setUseGzip(getBoolean(prefix + "sdrserver.usegzip"));
-		String oldBasePath = getProperty("satellites.sdrserver.basepath");
-		if (oldBasePath != null) {
-			result.setBasepath(oldBasePath);
-		}
-		String oldGzip = getProperty("satellites.sdrserver.usegzip");
-		if (oldGzip != null) {
-			result.setUseGzip(Boolean.valueOf(oldGzip));
 		}
 		return result;
 	}
