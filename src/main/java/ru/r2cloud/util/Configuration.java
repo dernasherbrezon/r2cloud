@@ -236,8 +236,12 @@ public class Configuration {
 
 	public List<DeviceConfiguration> getPlutoSdrConfigurations() {
 		SdrType type = getSdrType();
-		if (type != null && type.equals(SdrType.PLUTOSDR)) {
-			return getLegacySdrConfigurations();
+		if (type != null) {
+			if (type.equals(SdrType.PLUTOSDR)) {
+				return getLegacySdrConfigurations();
+			} else {
+				return Collections.emptyList();
+			}
 		}
 		List<String> loraDevices = getProperties("plutosdr.devices");
 		if (loraDevices.isEmpty()) {
@@ -263,20 +267,36 @@ public class Configuration {
 	private List<DeviceConfiguration> getLegacySdrConfigurations() {
 		List<String> sdrDevices = getProperties("sdr.devices");
 		if (sdrDevices.isEmpty()) {
-			return Collections.emptyList();
+			sdrDevices = Collections.singletonList("0");
 		}
 		List<DeviceConfiguration> result = new ArrayList<>(sdrDevices.size());
 		for (String cur : sdrDevices) {
 			DeviceConfiguration config = new DeviceConfiguration();
 			String prefix = "sdr.device." + cur + ".";
-			config.setMinimumFrequency(getLong(prefix + "minFrequency"));
-			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
-			config.setRtlDeviceId(getInteger(prefix + "rtlsdr.index"));
+			Long minFrequency = getLong(prefix + "minFrequency");
+			if (minFrequency == null) {
+				minFrequency = 100000000L;
+			}
+			config.setMinimumFrequency(minFrequency);
+			Long maxFrequency = getLong(prefix + "maxFrequency");
+			if (maxFrequency == null) {
+				maxFrequency = 1700000000L;
+			}
+			config.setMaximumFrequency(maxFrequency);
+			Integer rtlIndex = getInteger(prefix + "rtlsdr.index");
+			if (rtlIndex == null) {
+				rtlIndex = 0;
+			}
+			config.setRtlDeviceId(rtlIndex);
 			Integer oldDeviceIdProperty = getInteger("satellites.rtlsdr.device.index");
 			if (oldDeviceIdProperty != null) {
 				config.setRtlDeviceId(oldDeviceIdProperty);
 			}
-			config.setGain(getDouble(prefix + "rtlsdr.gain").floatValue());
+			Double rtlGain = getDouble(prefix + "rtlsdr.gain");
+			if (rtlGain == null) {
+				rtlGain = 45.0;
+			}
+			config.setGain(rtlGain.floatValue());
 			Double oldGain = getDouble("satellites.rtlsdr.gain");
 			if (oldGain != null) {
 				config.setGain(oldGain.floatValue());
@@ -286,7 +306,11 @@ public class Configuration {
 			if (oldBiast != null) {
 				config.setBiast(Boolean.valueOf(oldBiast));
 			}
-			config.setPpm(getInteger(prefix + "ppm"));
+			Integer ppm = getInteger(prefix + "ppm");
+			if (ppm == null) {
+				ppm = 0;
+			}
+			config.setPpm(ppm);
 			Integer oldPpm = getInteger("ppm.current");
 			if (oldPpm != null) {
 				config.setPpm(oldPpm);
@@ -346,8 +370,12 @@ public class Configuration {
 
 	public List<DeviceConfiguration> getSdrServerConfigurations() {
 		SdrType type = getSdrType();
-		if (type != null && type.equals(SdrType.SDRSERVER)) {
-			return getLegacySdrConfigurations();
+		if (type != null) {
+			if (type.equals(SdrType.SDRSERVER)) {
+				return getLegacySdrConfigurations();
+			} else {
+				return Collections.emptyList();
+			}
 		}
 		List<String> deviceIndices = getProperties("sdrserver.devices");
 		if (deviceIndices.isEmpty()) {
@@ -376,8 +404,12 @@ public class Configuration {
 
 	public List<DeviceConfiguration> getRtlSdrConfigurations() {
 		SdrType type = getSdrType();
-		if (type != null && type.equals(SdrType.RTLSDR)) {
-			return getLegacySdrConfigurations();
+		if (type != null) {
+			if (type.equals(SdrType.RTLSDR)) {
+				return getLegacySdrConfigurations();
+			} else {
+				return Collections.emptyList();
+			}
 		}
 		List<String> sdrDevices = getProperties("rtlsdr.devices");
 		if (sdrDevices.isEmpty()) {
