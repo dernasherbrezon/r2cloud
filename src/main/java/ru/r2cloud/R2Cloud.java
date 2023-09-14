@@ -59,6 +59,7 @@ import ru.r2cloud.tle.TleDao;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.DefaultClock;
+import ru.r2cloud.util.MigrateConfiguration;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ShutdownLoggingManager;
 import ru.r2cloud.util.SignedURL;
@@ -123,10 +124,13 @@ public class R2Cloud {
 	private final Decoders decoders;
 	private final SignedURL signed;
 	private final DeviceManager deviceManager;
+	private final MigrateConfiguration migrateConfiguration;
 
 	private GattServer gattServer;
 
 	public R2Cloud(Configuration props, Clock clock) {
+		migrateConfiguration = new MigrateConfiguration(props);
+		migrateConfiguration.migrate();
 		threadFactory = new ThreadPoolFactoryImpl(props.getThreadPoolShutdownMillis());
 		processFactory = new ProcessFactory();
 

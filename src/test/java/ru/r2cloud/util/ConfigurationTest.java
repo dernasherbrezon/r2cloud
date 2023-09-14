@@ -95,6 +95,14 @@ public class ConfigurationTest {
 	public void testLoad() {
 		assertEquals(Integer.valueOf(8), config.getInteger("scheduler.elevation.min"));
 	}
+	
+	@Test
+	public void testNoUpdateIfNothingChanged() throws Exception {
+		fs.mock(config.getTempDirectoryPath(), new FailingByteChannelCallback(3));
+		Path userParentPath = fs.getPath(TestConfiguration.getUserSettingsLocation(tempFolder)).getParent();
+		fs.mock(userParentPath, new FailingByteChannelCallback(3));
+		config.update();
+	}
 
 	@Test
 	public void testCorruptedAfterFailedWrite() throws Exception {

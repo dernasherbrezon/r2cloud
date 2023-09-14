@@ -11,13 +11,16 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +39,7 @@ public class Configuration {
 
 	public static final String LORA_AT_DEVICE_PREFIX = "loraat-";
 
-	private final Properties userSettings = new Properties();
+	private final Properties userSettings;
 	private final Path userSettingsLocation;
 	private final FileSystem fs;
 	private static final Set<PosixFilePermission> MODE600 = new HashSet<>();
@@ -51,6 +54,17 @@ public class Configuration {
 	}
 
 	public Configuration(InputStream systemSettingsLocation, String userSettingsLocation, String commonSettingsLocation, FileSystem fs) throws IOException {
+		userSettings = new Properties() {
+	        private static final long serialVersionUID = 1L;
+
+			@Override public synchronized Set<Map.Entry<Object, Object>> entrySet() {
+	            return Collections.synchronizedSet(
+	                    super.entrySet()
+	                    .stream()
+	                    .sorted(Comparator.comparing(e -> e.getKey().toString()))
+	                    .collect(Collectors.toCollection(LinkedHashSet::new)));
+	        }
+	    };
 		systemSettings.load(systemSettingsLocation);
 		try (InputStream is = Configuration.class.getClassLoader().getResourceAsStream(commonSettingsLocation)) {
 			Properties commonProps = new Properties();
@@ -106,6 +120,11 @@ public class Configuration {
 	}
 
 	public void update() {
+		synchronized (changedProperties) {
+			if (changedProperties.isEmpty()) {
+				return;
+			}
+		}
 		Path tempPath = userSettingsLocation.getParent().resolve("user.properties.tmp");
 		try (BufferedWriter fos = Files.newBufferedWriter(tempPath)) {
 			userSettings.store(fos, "updated");
@@ -226,7 +245,7 @@ public class Configuration {
 		return result;
 	}
 
-	private SdrType getSdrType() {
+	public SdrType getSdrType() {
 		String propResult = getProperty("satellites.sdr");
 		if (propResult == null) {
 			return null;
