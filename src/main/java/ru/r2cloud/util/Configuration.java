@@ -275,6 +275,8 @@ public class Configuration {
 			String prefix = "sdrserver.device." + cur + ".";
 			config.setHost(getProperty(prefix + "host"));
 			config.setPort(getInteger(prefix + "port"));
+			config.setMinimumFrequency(getLong(prefix + "minFrequency"));
+			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
 			config.setTimeout(timeout);
 			config.setId("sdrserver-" + config.getHost() + ":" + config.getPort());
 			config.setName("SDR-SERVER - " + config.getHost() + ":" + config.getPort());
