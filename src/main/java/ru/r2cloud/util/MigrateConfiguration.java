@@ -47,6 +47,17 @@ public class MigrateConfiguration {
 		List<String> sdrDevices = config.getProperties("sdr.devices");
 		if (sdrDevices.isEmpty()) {
 			sdrDevices = Collections.singletonList("0");
+			// used to be set by default in system settings
+			config.setProperty("sdr.devices", "0");
+		}
+		if (type.equals("RTLSDR")) {
+			migrate("rtlsdr.devices", "sdr.devices");
+		} else if (type.equals("SDRSERVER")) {
+			migrate("sdrserver.devices", "sdr.devices");
+			config.setProperty("rtlsdr.devices", "");
+		} else if (type.equals("PLUTOSDR")) {
+			migrate("plutosdr.devices", "sdr.devices");
+			config.setProperty("rtlsdr.devices", "");
 		}
 		for (String cur : sdrDevices) {
 			String prefix = "sdr.device." + cur + ".";
