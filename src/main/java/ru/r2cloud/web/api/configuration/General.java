@@ -39,17 +39,17 @@ public class General extends AbstractHttpController {
 		entity.add("autoUpdate", autoUpdate.isEnabled());
 		entity.add("elevationMin", config.getDouble("scheduler.elevation.min"));
 		entity.add("elevationGuaranteed", config.getDouble("scheduler.elevation.guaranteed"));
-		entity.add("rotationEnabled", config.getBoolean("sdr.device.0.rotator.enabled"));
-		entity.add("rotctrldHostname", config.getProperty("rotator.rotctrld.hostname"));
-		entity.add("rotctrldPort", config.getInteger("sdr.device.0.rotctrld.port"));
-		entity.add("rotatorTolerance", config.getDouble("sdr.device.0.rotator.tolerance"));
-		entity.add("rotatorCycle", config.getInteger("sdr.device.0.rotator.cycleMillis"));
-		Integer currentPpm = config.getInteger("sdr.device.0.ppm");
+		entity.add("rotationEnabled", config.getBoolean("rtlsdr.device.0.rotator.enabled"));
+		entity.add("rotctrldHostname", config.getProperty("rtlsdr.device.0.rotctrld.hostname"));
+		entity.add("rotctrldPort", config.getInteger("rtlsdr.device.0.rotctrld.port"));
+		entity.add("rotatorTolerance", config.getDouble("rtlsdr.device.0.rotator.tolerance"));
+		entity.add("rotatorCycle", config.getInteger("rtlsdr.device.0.rotator.cycleMillis"));
+		Integer currentPpm = config.getInteger("rtlsdr.device.0.ppm");
 		if (currentPpm != null) {
 			entity.add("ppm", currentPpm);
 		}
-		entity.add("gain", config.getDouble("sdr.device.0.rtlsdr.gain"));
-		entity.add("biast", config.getBoolean("sdr.device.0.rtlsdr.biast"));
+		entity.add("gain", config.getDouble("rtlsdr.device.0.gain"));
+		entity.add("biast", config.getBoolean("rtlsdr.device.0.biast"));
 		entity.add("presentationMode", config.getBoolean("presentationMode"));
 		result.setData(entity.toString());
 		return result;
@@ -136,27 +136,27 @@ public class General extends AbstractHttpController {
 			return new BadRequest(errors);
 		}
 		autoUpdate.setEnabled(WebServer.getBoolean(request, "autoUpdate"));
-		config.setProperty("sdr.device.0.rtlsdr.gain", gain);
-		config.setProperty("sdr.device.0.rtlsdr.biast", biast);
-		config.setProperty("sdr.device.0.rotator.enabled", rotationEnabled);
+		config.setProperty("rtlsdr.device.0.gain", gain);
+		config.setProperty("rtlsdr.device.0.biast", biast);
+		config.setProperty("rtlsdr.device.0.rotator.enabled", rotationEnabled);
 		config.setProperty("locaiton.lat", lat);
 		config.setProperty("locaiton.lon", lon);
 		config.setProperty("scheduler.elevation.min", String.valueOf(elevationMin));
 		config.setProperty("scheduler.elevation.guaranteed", String.valueOf(elevationGuaranteed));
 		if (rotctrldHostname != null) {
-			config.setProperty("rotator.rotctrld.hostname", rotctrldHostname);
+			config.setProperty("rtlsdr.device.0.rotctrld.hostname", rotctrldHostname);
 		}
 		if (rotctrldPort != null) {
-			config.setProperty("sdr.device.0.rotctrld.port", rotctrldPort);
+			config.setProperty("rtlsdr.device.0.rotctrld.port", rotctrldPort);
 		}
 		if (rotatorTolerance != null) {
-			config.setProperty("sdr.device.0.rotator.tolerance", rotatorTolerance);
+			config.setProperty("rtlsdr.device.0.rotator.tolerance", rotatorTolerance);
 		}
 		if (rotatorCycleMillis != null) {
-			config.setProperty("sdr.device.0.rotator.cycleMillis", rotatorCycleMillis);
+			config.setProperty("rtlsdr.device.0.rotator.cycleMillis", rotatorCycleMillis);
 		}
 		if (ppm != null) {
-			config.setProperty("sdr.device.0.ppm", ppm);
+			config.setProperty("rtlsdr.device.0.ppm", ppm);
 		}
 		config.setProperty("presentationMode", presentationMode);
 		config.update();
