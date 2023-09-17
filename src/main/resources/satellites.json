@@ -1,5 +1,24 @@
 [
 	{
+		"id": "R2CLOUD305",
+		"name": "CENTAURI-4 (TYVAK-0211)",
+		"noradId": "48898",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 400179857,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD304",
 		"name": "CUBESX-HSE 3 (RS42S)",
 		"noradId": "57178",
@@ -462,7 +481,7 @@
 		"id": "R2CLOUD282",
 		"name": "UmKA-1",
 		"noradId": "57172",
-		"enabled": false,
+		"enabled": true,
 		"start": 1687865640000,
 		"transmitters": [
 			{
@@ -479,7 +498,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "USP",
-				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"beaconClass": "ru.r2cloud.jradio.sputnix.SputnixBeacon",
 				"frequency": 437625000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -561,7 +580,7 @@
 				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
 				"frequency": 436900000,
 				"bandwidth": 125000,
-				"status": "ENABLED",
+				"status": "WEAK",
 				"loraBandwidth": 125000,
 				"loraSpreadFactor": 11,
 				"loraSyncword": 18,
@@ -1434,7 +1453,7 @@
 				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
 				"frequency": 437400000,
 				"bandwidth": 125000,
-				"status": "ENABLED",
+				"status": "DISABLED",
 				"loraBandwidth": 125000,
 				"loraSpreadFactor": 9,
 				"loraSyncword": 18,
@@ -2211,12 +2230,12 @@
 		"id": "R2CLOUD175",
 		"name": "CUBESX-HSE-2 (RS21S)",
 		"noradId": "53383",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "USP",
-				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"beaconClass": "ru.r2cloud.jradio.sputnix.SputnixBeacon",
 				"frequency": 435570000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -2232,12 +2251,12 @@
 		"id": "R2CLOUD174",
 		"name": "KUZBASS-300 (RS34S SXC*)",
 		"noradId": "53375",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "USP",
-				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"beaconClass": "ru.r2cloud.jradio.sputnix.SputnixBeacon",
 				"frequency": 437700000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -2253,12 +2272,12 @@
 		"id": "R2CLOUD173",
 		"name": "ISOI (RS19S SXC3-219)",
 		"noradId": "53381",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "USP",
-				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"beaconClass": "ru.r2cloud.jradio.sputnix.SputnixBeacon",
 				"frequency": 437650000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -2274,12 +2293,12 @@
 		"id": "R2CLOUD172",
 		"name": "MIET-AIS (RS28S SXC3-2*)",
 		"noradId": "53377",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "USP",
-				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"beaconClass": "ru.r2cloud.jradio.sputnix.SputnixBeacon",
 				"frequency": 437900000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -2316,12 +2335,12 @@
 		"id": "R2CLOUD170",
 		"name": "SIREN (RS30S SXC3-217)",
 		"noradId": "53384",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "USP",
-				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"beaconClass": "ru.r2cloud.jradio.sputnix.SputnixBeacon",
 				"frequency": 437750000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -2358,12 +2377,12 @@
 		"id": "R2CLOUD168",
 		"name": "VIZARD (RS33S SXC3-215)",
 		"noradId": "53386",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "USP",
-				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"beaconClass": "ru.r2cloud.jradio.sputnix.SputnixBeacon",
 				"frequency": 437800000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -2379,12 +2398,12 @@
 		"id": "R2CLOUD167",
 		"name": "CYCLOPS (RS29S SXC3-21*)",
 		"noradId": "53373",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "USP",
-				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"beaconClass": "ru.r2cloud.jradio.sputnix.SputnixBeacon",
 				"frequency": 436050000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -2400,12 +2419,12 @@
 		"id": "R2CLOUD166",
 		"name": "MONITOR-1 (RS32S SXC3-*)",
 		"noradId": "53374",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "USP",
-				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"beaconClass": "ru.r2cloud.jradio.sputnix.SputnixBeacon",
 				"frequency": 437550000,
 				"bandwidth": 10000,
 				"baudRates": [
@@ -3104,12 +3123,12 @@
 		"id": "R2CLOUD125",
 		"name": "CUBESX-SIRIUS-HSE",
 		"noradId": "47951",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "USP",
-				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"beaconClass": "ru.r2cloud.jradio.sputnix.SputnixBeacon",
 				"frequency": 437050000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -3123,12 +3142,12 @@
 		"id": "R2CLOUD124",
 		"name": "CUBESX-HSE",
 		"noradId": "47952",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "USP",
-				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"beaconClass": "ru.r2cloud.jradio.sputnix.SputnixBeacon",
 				"frequency": 435650000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -3144,12 +3163,12 @@
 		"id": "R2CLOUD123",
 		"name": "ORBICRAFT-ZORKY",
 		"noradId": "47960",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "USP",
-				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"beaconClass": "ru.r2cloud.jradio.sputnix.SputnixBeacon",
 				"frequency": 437850000,
 				"bandwidth": 20000,
 				"baudRates": [
