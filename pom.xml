@@ -88,7 +88,7 @@
 		<dependency>
 			<groupId>ru.r2cloud</groupId>
 			<artifactId>jradio</artifactId>
-			<version>1.93</version>
+			<version>1.94</version>
 		</dependency>
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
