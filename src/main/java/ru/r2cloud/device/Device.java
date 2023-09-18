@@ -18,6 +18,7 @@ import ru.r2cloud.Lifecycle;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.model.DeviceStatus;
+import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
@@ -103,7 +104,7 @@ public abstract class Device implements Lifecycle {
 	}
 
 	private void schedule(ObservationRequest req, Transmitter transmitter) {
-		if (deviceConfiguration.isCompencateDcOffset()) {
+		if (deviceConfiguration.isCompencateDcOffset() && !transmitter.getFraming().equals(Framing.APT)) {
 			TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(transmitter.getTle().getRaw()[1], transmitter.getTle().getRaw()[2]));
 			long initialDopplerFrequency = predict.getDownlinkFreq(transmitter.getFrequency(), req.getStartTimeMillis(), predict.getPosition(), tlePropagator);
 			req.setFrequency(initialDopplerFrequency + DC_OFFSET);
