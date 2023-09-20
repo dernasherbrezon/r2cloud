@@ -12,6 +12,15 @@ import com.sun.net.httpserver.HttpServer;
 public class MockServer {
 
 	private HttpServer server;
+	private final int port;
+
+	public MockServer() {
+		this.port = 8000;
+	}
+
+	public MockServer(int port) {
+		this.port = port;
+	}
 
 	public void mockResponse(String url, String data) {
 		server.createContext(url, new HttpHandler() {
@@ -31,7 +40,7 @@ public class MockServer {
 	}
 
 	public void start() throws IOException {
-		server = HttpServer.create(new InetSocketAddress("localhost", 8000), 0);
+		server = HttpServer.create(new InetSocketAddress("localhost", port), 0);
 		server.start();
 	}
 

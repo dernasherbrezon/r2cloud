@@ -36,7 +36,9 @@ import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteSource;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.model.Transmitter;
+import ru.r2cloud.satellite.PriorityService;
 import ru.r2cloud.satellite.SatelliteDao;
+import ru.r2cloud.util.DefaultClock;
 import ru.r2cloud.util.ThreadPoolFactory;
 
 public class HousekeepingTest {
@@ -51,6 +53,7 @@ public class HousekeepingTest {
 	private CelestrakClient celestrak;
 	private LeoSatDataClient leosatdata;
 	private TleDao tleDao;
+	private PriorityService priorityService;
 	private Map<String, Tle> tleData;
 	private Housekeeping dao;
 
@@ -58,7 +61,7 @@ public class HousekeepingTest {
 	public void testReloadTleForNewSatellites() throws Exception {
 		config.setProperty("r2cloud.apiKey", UUID.randomUUID().toString());
 		config.setProperty("r2cloud.newLaunches", true);
-		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null);
+		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null, priorityService);
 
 		String id = "R2CLOUD001";
 		List<Satellite> newLaunches = Collections.singletonList(createNewLaunch(id));
@@ -74,7 +77,7 @@ public class HousekeepingTest {
 		// this will force load from the disk
 		// TLE is not saved onto disk
 		satelliteDao = new SatelliteDao(config);
-		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null);
+		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null, priorityService);
 		// this will setup tle cache
 		dao.run();
 
@@ -89,14 +92,14 @@ public class HousekeepingTest {
 		Satellite sat = satelliteDao.findById(satelliteId);
 		assertNull(sat.getTle());
 
-		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null);
+		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null, priorityService);
 		dao.run();
 		assertNotNull(sat.getTle());
 	}
 
 	@Test
 	public void testSuccess() throws Exception {
-		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null);
+		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null, priorityService);
 		reloader.start();
 
 		verify(executor).scheduleAtFixedRate(any(), anyLong(), anyLong(), any());
@@ -104,7 +107,7 @@ public class HousekeepingTest {
 
 	@Test
 	public void testLifecycle() {
-		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null);
+		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null, priorityService);
 		reloader.start();
 		reloader.start();
 		verify(executor, times(1)).scheduleAtFixedRate(any(), anyLong(), anyLong(), any());
@@ -138,6 +141,8 @@ public class HousekeepingTest {
 		celestrak = mock(CelestrakClient.class);
 		when(celestrak.downloadTle()).thenReturn(tleData);
 		tleDao = new TleDao(config);
+		
+		priorityService = new PriorityService(config, new DefaultClock());
 
 		threadPool = mock(ThreadPoolFactory.class);
 		executor = mock(ScheduledExecutorService.class);

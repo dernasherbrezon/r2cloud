@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Transmitter;
+import ru.r2cloud.model.TransmitterComparator;
 
 public class Schedule {
 
@@ -88,7 +89,22 @@ public class Schedule {
 
 		List<ObservationRequest> result = new ArrayList<>();
 		result.addAll(scheduleSatellites(findByPriority(allSatellites, Priority.HIGH), passesBySatellite, Priority.HIGH));
-		result.addAll(scheduleSatellites(findByPriority(allSatellites, Priority.NORMAL), passesBySatellite, Priority.NORMAL));
+		List<Transmitter> normal = new ArrayList<>();
+		List<Transmitter> explicitPriority = new ArrayList<>();
+		for (Transmitter cur : allSatellites) {
+			if (!cur.getPriority().equals(Priority.NORMAL)) {
+				continue;
+			}
+			if (cur.getPriorityIndex() == 0) {
+				normal.add(cur);
+			} else {
+				explicitPriority.add(cur);
+			}
+		}
+		// sort by priority index
+		Collections.sort(explicitPriority, TransmitterComparator.INSTANCE);
+		result.addAll(scheduleSatellites(explicitPriority, passesBySatellite, Priority.NORMAL));
+		result.addAll(scheduleSatellites(normal, passesBySatellite, Priority.NORMAL));
 
 		index(result);
 		Collections.sort(result, ObservationRequestComparator.INSTANCE);

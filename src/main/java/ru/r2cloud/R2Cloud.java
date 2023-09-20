@@ -45,6 +45,7 @@ import ru.r2cloud.satellite.LoraTransmitterFilter;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.ObservationDaoCache;
 import ru.r2cloud.satellite.ObservationFactory;
+import ru.r2cloud.satellite.PriorityService;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.Schedule;
 import ru.r2cloud.satellite.SdrTransmitterFilter;
@@ -125,6 +126,7 @@ public class R2Cloud {
 	private final SignedURL signed;
 	private final DeviceManager deviceManager;
 	private final MigrateConfiguration migrateConfiguration;
+	private final PriorityService priorityService;
 
 	private GattServer gattServer;
 
@@ -155,7 +157,8 @@ public class R2Cloud {
 		signed = new SignedURL(props, clock);
 		decoders = new Decoders(predict, props, processFactory);
 		decoderService = new DecoderService(props, decoders, resultDao, leoSatDataService, threadFactory, metrics, satelliteDao);
-		houseKeeping = new Housekeeping(props, satelliteDao, threadFactory, new CelestrakClient(props), tleDao, satnogsClient, leoSatDataClient, decoderService);
+		priorityService = new PriorityService(props, clock);
+		houseKeeping = new Housekeeping(props, satelliteDao, threadFactory, new CelestrakClient(props), tleDao, satnogsClient, leoSatDataClient, decoderService, priorityService);
 
 		observationFactory = new ObservationFactory(predict);
 

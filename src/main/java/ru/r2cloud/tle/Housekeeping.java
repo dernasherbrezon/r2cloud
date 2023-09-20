@@ -10,6 +10,7 @@ import ru.r2cloud.cloud.NotModifiedException;
 import ru.r2cloud.cloud.SatnogsClient;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Tle;
+import ru.r2cloud.satellite.PriorityService;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.util.Configuration;
@@ -27,10 +28,11 @@ public class Housekeeping {
 	private final SatnogsClient satnogs;
 	private final TleDao tleDao;
 	private final DecoderService decoder;
+	private final PriorityService priorityService;
 
 	private ScheduledExecutorService executor = null;
 
-	public Housekeeping(Configuration config, SatelliteDao dao, ThreadPoolFactory threadFactory, CelestrakClient celestrak, TleDao tleDao, SatnogsClient satnogs, LeoSatDataClient leosatdata, DecoderService decoder) {
+	public Housekeeping(Configuration config, SatelliteDao dao, ThreadPoolFactory threadFactory, CelestrakClient celestrak, TleDao tleDao, SatnogsClient satnogs, LeoSatDataClient leosatdata, DecoderService decoder, PriorityService priorityService) {
 		this.config = config;
 		this.threadFactory = threadFactory;
 		this.dao = dao;
@@ -39,6 +41,7 @@ public class Housekeeping {
 		this.satnogs = satnogs;
 		this.leosatdata = leosatdata;
 		this.decoder = decoder;
+		this.priorityService = priorityService;
 	}
 
 	public synchronized void start() {
@@ -59,7 +62,11 @@ public class Housekeeping {
 	}
 
 	public void run() {
-		reloadSatellites();
+		boolean reloadSatellites = reloadSatellites();
+		boolean reloadSatellitesPriority = reloadPriority();
+		if (reloadSatellites || reloadSatellitesPriority) {
+			dao.reindex();
+		}
 		reloadTle();
 		// decoder is null in tests only
 		if (decoder != null) {
@@ -67,7 +74,23 @@ public class Housekeeping {
 		}
 	}
 
-	private void reloadSatellites() {
+	private boolean reloadPriority() {
+		priorityService.reload();
+		boolean result = false;
+		for (Satellite cur : dao.findAll()) {
+			Integer priority = priorityService.find(cur.getId());
+			if (priority == null) {
+				continue;
+			}
+			if (cur.getPriorityIndex() != priority) {
+				result = true;
+			}
+			cur.setPriorityIndex(priority);
+		}
+		return result;
+	}
+
+	private boolean reloadSatellites() {
 		long currentTime = System.currentTimeMillis();
 
 		boolean atLeastOneReloaded = false;
@@ -108,9 +131,7 @@ public class Housekeeping {
 
 		}
 
-		if (atLeastOneReloaded) {
-			dao.reindex();
-		}
+		return atLeastOneReloaded;
 	}
 
 	private void reloadTle() {

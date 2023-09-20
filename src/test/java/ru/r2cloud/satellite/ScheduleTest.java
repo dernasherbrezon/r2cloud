@@ -30,6 +30,7 @@ import ru.r2cloud.CelestrakServer;
 import ru.r2cloud.FixedClock;
 import ru.r2cloud.JsonHttpResponse;
 import ru.r2cloud.LeoSatDataServerMock;
+import ru.r2cloud.MockServer;
 import ru.r2cloud.SatnogsServerMock;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
@@ -40,7 +41,6 @@ import ru.r2cloud.device.SdrServerDevice;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
-import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.tle.CelestrakClient;
@@ -60,8 +60,18 @@ public class ScheduleTest {
 	private TestConfiguration config;
 	private SatelliteDao satelliteDao;
 	private Housekeeping houseKeeping;
+	private MockServer mockServer;
 	private long current;
 	private ObservationFactory factory;
+
+	@Test
+	public void testExplicitSchedule() throws Exception {
+		mockServer.mockResponse("/priorities", "43908\n43814\n");
+		houseKeeping.run();
+		List<ObservationRequest> expected = readExpected("expected/scheduleExplicit.txt");
+		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
+		assertObservations(expected, actual);
+	}
 
 	@Test
 	public void testScheduleForNewLaunches() throws Exception {
@@ -181,10 +191,13 @@ public class ScheduleTest {
 		satnogs.setSatellitesMock("[]", 200);
 		satnogs.setTransmittersMock("[]", 200);
 		satnogs.start();
+
+		mockServer = new MockServer(8011);
+		mockServer.start();
+
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("locaiton.lat", "51.49");
 		config.setProperty("locaiton.lon", "0.01");
-		config.setProperty("satellites.sdr", SdrType.RTLSDR.name().toLowerCase());
 		config.setProperty("r2cloud.newLaunches", true);
 		config.setProperty("r2cloud.apiKey", UUID.randomUUID().toString());
 		config.setProperty("leosatdata.hostname", server.getUrl());
@@ -199,11 +212,15 @@ public class ScheduleTest {
 		config.setProperty("satellites.leosatdata.location", new File(tempFolder.getRoot(), "leosatdata.json").getAbsolutePath());
 		config.setProperty("satellites.leosatdata.new.location", new File(tempFolder.getRoot(), "leosatdata.new.json").getAbsolutePath());
 		config.setProperty("scheduler.orekit.path", "./src/test/resources/data/orekit-data");
+		config.setProperty("satellites.priority.location", new File(tempFolder.getRoot(), "priorities.txt").getAbsolutePath());
+		config.setProperty("satellites.priority.url", mockServer.getUrl() + "/priorities");
+
 		LeoSatDataClient r2cloudClient = new LeoSatDataClient(config, new FixedClock(current));
 		SatnogsClient satnogsClient = new SatnogsClient(config, new FixedClock(current));
 		satelliteDao = new SatelliteDao(config);
 		TleDao tleDao = new TleDao(config);
-		houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config), tleDao, satnogsClient, r2cloudClient, null);
+		PriorityService priorityService = new PriorityService(config, new FixedClock(current));
+		houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config), tleDao, satnogsClient, r2cloudClient, null, priorityService);
 		PredictOreKit predict = new PredictOreKit(config);
 		factory = new ObservationFactory(predict);
 		schedule = new Schedule(new SequentialTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
@@ -220,6 +237,9 @@ public class ScheduleTest {
 		}
 		if (satnogs != null) {
 			satnogs.stop();
+		}
+		if (mockServer != null) {
+			mockServer.stop();
 		}
 		if (houseKeeping != null) {
 			houseKeeping.stop();

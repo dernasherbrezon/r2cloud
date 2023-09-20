@@ -47,6 +47,7 @@ public class Transmitter {
 	private boolean enabled;
 	private String satelliteId;
 	private Priority priority;
+	private int priorityIndex;
 	private Date start;
 	private Date end;
 	private Tle tle;
@@ -62,6 +63,7 @@ public class Transmitter {
 		this.start = copy.start;
 		this.end = copy.end;
 		this.priority = copy.priority;
+		this.priorityIndex = copy.priorityIndex;
 		this.modulation = copy.modulation;
 		this.framing = copy.framing;
 		this.beaconClass = copy.beaconClass;
@@ -88,6 +90,14 @@ public class Transmitter {
 		if (copy.updated != null) {
 			this.updated = new Date(copy.updated.getTime());
 		}
+	}
+	
+	public int getPriorityIndex() {
+		return priorityIndex;
+	}
+	
+	public void setPriorityIndex(int priorityIndex) {
+		this.priorityIndex = priorityIndex;
 	}
 	
 	public long getFrequencyBand() {

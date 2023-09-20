@@ -175,6 +175,7 @@ public class SatelliteDao {
 			cur.setId(satellite.getId() + "-" + i);
 			cur.setEnabled(satellite.isEnabled());
 			cur.setPriority(satellite.getPriority());
+			cur.setPriorityIndex(satellite.getPriorityIndex());
 			cur.setSatelliteId(satellite.getId());
 			cur.setStart(satellite.getStart());
 			cur.setEnd(satellite.getEnd());

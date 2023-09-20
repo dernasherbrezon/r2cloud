@@ -16,12 +16,21 @@ public class Satellite {
 	private boolean enabled;
 	private Tle tle;
 	private Priority priority;
+	private int priorityIndex;
 	// active period
 	// used for new launches when noradid not yet defined
 	private Date start;
 	private Date end;
 	private List<Transmitter> transmitters;
 	private SatelliteSource source;
+	
+	public int getPriorityIndex() {
+		return priorityIndex;
+	}
+	
+	public void setPriorityIndex(int priorityIndex) {
+		this.priorityIndex = priorityIndex;
+	}
 
 	public SatelliteSource getSource() {
 		return source;
