@@ -143,7 +143,7 @@ public class SpyServerReader implements IQReader {
 		result.setActualEnd(endTimeMillis);
 		result.setDataFile(rawFile);
 		result.setDataFormat(status.getFormat());
-		result.setInputSampleRate((int) sampleRate);
+		result.setSampleRate((int) sampleRate);
 		return result;
 	}
 

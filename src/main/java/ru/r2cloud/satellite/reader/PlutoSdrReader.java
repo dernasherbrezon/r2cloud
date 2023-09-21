@@ -78,7 +78,7 @@ public class PlutoSdrReader implements IQReader {
 		result.setActualStart(startTimeMillis);
 		result.setActualEnd(endTimeMillis);
 		result.setDataFormat(DataFormat.COMPLEX_SIGNED_SHORT);
-		result.setInputSampleRate(inputSampleRate);
+		result.setSampleRate(inputSampleRate);
 		if (rawFile.exists()) {
 			result.setDataFile(rawFile);
 		}

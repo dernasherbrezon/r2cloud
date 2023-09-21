@@ -23,7 +23,7 @@ public class Observation {
 
 	private DataFormat dataFormat;
 	private SdrType sdrType;
-	private int sampleRate;
+	private long sampleRate;
 	private long frequency;
 	private String gain;
 	private boolean biast;
@@ -272,11 +272,11 @@ public class Observation {
 		this.transmitterId = transmitterId;
 	}
 
-	public int getSampleRate() {
+	public long getSampleRate() {
 		return sampleRate;
 	}
 
-	public void setSampleRate(int sampleRate) {
+	public void setSampleRate(long sampleRate) {
 		this.sampleRate = sampleRate;
 	}
 
@@ -350,7 +350,7 @@ public class Observation {
 		if (legacyInputRate != 0) {
 			result.setSampleRate(legacyInputRate);
 		} else {
-			result.setSampleRate(meta.getInt("sampleRate", -1));
+			result.setSampleRate(meta.getLong("sampleRate", -1));
 		}
 		result.setFrequency(meta.getLong("actualFrequency", -1));
 		result.setGain(meta.getString("gain", null));

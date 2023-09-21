@@ -187,7 +187,7 @@ public abstract class Device implements Lifecycle {
 				observation.setEndTimeMillis(data.getActualEnd());
 				observation.setStatus(ObservationStatus.RECEIVED);
 				observation.setDataFormat(data.getDataFormat());
-				observation.setSampleRate(data.getInputSampleRate());
+				observation.setSampleRate(data.getSampleRate());
 
 				File dataFile = observationDao.update(observation, data.getDataFile());
 				if (dataFile == null) {

@@ -8,14 +8,14 @@ public class IQData {
 	private File dataFile;
 	private long actualStart;
 	private long actualEnd;
-	private int inputSampleRate;
+	private long sampleRate;
 	
-	public int getInputSampleRate() {
-		return inputSampleRate;
+	public long getSampleRate() {
+		return sampleRate;
 	}
 	
-	public void setInputSampleRate(int inputSampleRate) {
-		this.inputSampleRate = inputSampleRate;
+	public void setSampleRate(long sampleRate) {
+		this.sampleRate = sampleRate;
 	}
 	
 	public DataFormat getDataFormat() {

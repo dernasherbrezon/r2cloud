@@ -99,7 +99,7 @@ public class RtlFmReader implements IQReader {
 		result.setActualEnd(endTimeMillis);
 		result.setDataFormat(DataFormat.UNKNOWN);
 		// .wav file sampled at 11k after sox transformation
-		result.setInputSampleRate(outputSampleRate);
+		result.setSampleRate(outputSampleRate);
 
 		return result;
 	}

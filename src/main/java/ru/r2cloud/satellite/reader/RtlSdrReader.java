@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +14,7 @@ import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.SampleRateMapping;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
@@ -21,7 +24,18 @@ import ru.r2cloud.util.Util;
 public class RtlSdrReader implements IQReader {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RtlSdrReader.class);
-	
+	private static final Set<Long> SUPPORTED_SAMPLE_RATES = new HashSet<>();
+	private static final long DEFAULT_SAMPLE_RATE = 240_000L;
+
+	static {
+		// in reality rtlsdr supports more than this
+		// but in practice these are the lowest required
+		// to have integer decimation for a number of standard baud rates
+		SUPPORTED_SAMPLE_RATES.add(230_400L);
+		SUPPORTED_SAMPLE_RATES.add(240_000L);
+		SUPPORTED_SAMPLE_RATES.add(288_000L);
+		SUPPORTED_SAMPLE_RATES.add(300_000L);
+	}
 
 	private ProcessWrapper rtlSdr = null;
 
@@ -53,18 +67,18 @@ public class RtlSdrReader implements IQReader {
 			return null;
 		}
 
-		int inputSampleRate;
-		if (maxBaudRate == 72_000) {
-			inputSampleRate = 288_000;
-		} else if (50_000 % maxBaudRate == 0) {
-			inputSampleRate = 50_000 * 5;
+		SampleRateMapping mapping = Util.getSampleRateByBaud(maxBaudRate);
+		long sampleRate;
+		if (mapping != null && SUPPORTED_SAMPLE_RATES.contains(mapping.getDeviceOutput())) {
+			sampleRate = mapping.getDeviceOutput();
 		} else {
-			inputSampleRate = 48_000 * 5;
+			LOG.warn("[{}] using non-integer decimation factor for unsupported baud rate: {}", maxBaudRate);
+			sampleRate = DEFAULT_SAMPLE_RATE;
 		}
 
 		try {
 			startTimeMillis = System.currentTimeMillis();
-			rtlSdr = factory.create(config.getProperty("satellites.rtlsdrwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + inputSampleRate + " -g " + deviceConfiguration.getGain() + " -p "
+			rtlSdr = factory.create(config.getProperty("satellites.rtlsdrwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + sampleRate + " -g " + deviceConfiguration.getGain() + " -p "
 					+ deviceConfiguration.getPpm() + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
 			int responseCode = rtlSdr.waitFor();
 			// rtl_sdr should be killed by the reaper process
@@ -85,7 +99,7 @@ public class RtlSdrReader implements IQReader {
 		result.setActualStart(startTimeMillis);
 		result.setActualEnd(endTimeMillis);
 		result.setDataFormat(DataFormat.COMPLEX_UNSIGNED_BYTE);
-		result.setInputSampleRate(inputSampleRate);
+		result.setSampleRate(sampleRate);
 		if (rawFile.exists()) {
 			result.setDataFile(rawFile);
 		}
