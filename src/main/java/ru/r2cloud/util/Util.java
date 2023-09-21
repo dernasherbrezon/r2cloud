@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,10 +49,31 @@ import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
+import ru.r2cloud.model.SampleRateMapping;
+
 public final class Util {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Util.class);
 	private static final Pattern COMMA = Pattern.compile(",");
+	private static final Map<Integer, SampleRateMapping> MAPPING = new HashMap<>();
+	
+	static {
+		index(240_000, 48_000,    400,    200);
+		index(240_000, 48_000,  2_000,    500);
+		index(240_000, 48_000,  6_000,  1_200);
+		index(240_000, 48_000, 12_000,  2_400);
+		index(240_000, 48_000, 24_000,  4_800);
+		index(240_000, 48_000, 48_000,  9_600);
+		index(288_000, 57_600, 57_600, 19_200);
+		index(230_400,115_200,115_200, 38_400);
+
+		index(288_000,144_000,144_000, 72_000);
+		
+		index(240_000, 10_000,  5_000,  1_250);
+		index(240_000, 15_000,  7_500,  2_500);
+		index(240_000, 40_000, 20_000,  5_000);
+		index(300_000, 37_500, 37_500, 12_500);
+	}
 
 	public static void rotateImage(File result) {
 		try {
@@ -525,6 +547,10 @@ public final class Util {
 		return data;
 	}
 
+	private static void index(long deviceOutput, long demodulatorInput, long symbolSyncInput, int baudRate) {
+		MAPPING.put(baudRate, new SampleRateMapping(deviceOutput, demodulatorInput, symbolSyncInput, baudRate));
+	}
+	
 	private Util() {
 		// do nothing
 	}

@@ -50,17 +50,12 @@ public class PlutoSdrReader implements IQReader {
 		}
 
 		int inputSampleRate;
-		int outputSampleRate;
-
 		if (maxBaudRate == 72_000) {
 			inputSampleRate = 288_000;
-			outputSampleRate = 144_000;
 		} else if (50_000 % maxBaudRate == 0) {
-			outputSampleRate = 50_000;
-			inputSampleRate = outputSampleRate * 5;
+			inputSampleRate = 50_000 * 5;
 		} else {
-			outputSampleRate = 48_000;
-			inputSampleRate = outputSampleRate * 5;
+			inputSampleRate = 48_000 * 5;
 		}
 
 		try {
@@ -84,7 +79,6 @@ public class PlutoSdrReader implements IQReader {
 		result.setActualEnd(endTimeMillis);
 		result.setDataFormat(DataFormat.COMPLEX_SIGNED_SHORT);
 		result.setInputSampleRate(inputSampleRate);
-		result.setOutputSampleRate(outputSampleRate);
 		if (rawFile.exists()) {
 			result.setDataFile(rawFile);
 		}

@@ -75,7 +75,6 @@ public class SpyServerReaderTest {
 		assertNotNull(result);
 		assertEquals(DataFormat.COMPLEX_SIGNED_SHORT, result.getDataFormat());
 		assertEquals(93750, result.getInputSampleRate());
-		assertEquals(93750, result.getOutputSampleRate());
 		assertNotNull(result.getDataFile());
 		assertEquals(req.getFrequency(), mock.getParameter(SpyServerParameter.SPYSERVER_SETTING_IQ_FREQUENCY).longValue());
 		assertEquals((long) deviceConfiguration.getGain(), mock.getParameter(SpyServerParameter.SPYSERVER_SETTING_GAIN).longValue());

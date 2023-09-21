@@ -110,7 +110,6 @@ public class SdrServerReader implements IQReader {
 		result.setDataFile(rawFile);
 		result.setDataFormat(DataFormat.COMPLEX_FLOAT);
 		result.setInputSampleRate(expectedSampleRate);
-		result.setOutputSampleRate(expectedSampleRate);
 		return result;
 	}
 
