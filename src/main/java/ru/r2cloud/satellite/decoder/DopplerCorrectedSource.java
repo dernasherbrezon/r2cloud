@@ -31,11 +31,11 @@ public class DopplerCorrectedSource implements FloatInput {
 
 	private final FloatInput input;
 
-	public DopplerCorrectedSource(PredictOreKit predict, File rawIq, Observation req, Transmitter transmitter) throws IOException {
-		this(predict, rawIq, req, transmitter, false);
+	public DopplerCorrectedSource(PredictOreKit predict, File rawIq, Observation req, Transmitter transmitter, int baudRate) throws IOException {
+		this(predict, rawIq, req, transmitter, baudRate, false);
 	}
 
-	public DopplerCorrectedSource(PredictOreKit predict, File rawIq, Observation req, Transmitter transmitter, boolean snrAnalysis) throws IOException {
+	public DopplerCorrectedSource(PredictOreKit predict, File rawIq, Observation req, Transmitter transmitter, int baudRate, boolean snrAnalysis) throws IOException {
 		Long totalBytes = Util.readTotalBytes(rawIq.toPath());
 		if (totalBytes == null) {
 			throw new IllegalArgumentException("unable to read total samples");
@@ -74,7 +74,7 @@ public class DopplerCorrectedSource implements FloatInput {
 
 		long maxOffset = Math.max(Math.abs(transmitter.getFrequency() - startFrequency), Math.abs(transmitter.getFrequency() - endFrequency));
 
-		int decimation = Util.convertDecimationFromSampleRate(req.getSampleRate());
+		int decimation = (int) (req.getSampleRate() / Util.getDemodulatorInput(baudRate, req.getSampleRate()));
 		if (snrAnalysis) {
 			SigSource source2 = new SigSource(Waveform.COMPLEX, (long) next.getContext().getSampleRate(), new DopplerValueSource(next.getContext().getSampleRate(), transmitter.getFrequency(), 1000L, req.getStartTimeMillis()) {
 

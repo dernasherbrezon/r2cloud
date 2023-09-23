@@ -45,13 +45,13 @@ public class FoxDecoder<T extends Beacon> extends FoxSlowDecoder<T> {
 		List<BeaconSource<? extends Beacon>> result = new ArrayList<>();
 		switch (baudRate) {
 		case 200: {
-			DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req, transmitter);
+			DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req, transmitter, baudRate);
 			FskDemodulator byteInput = new FskDemodulator(source, 200, 1500.0f, 120, 200.0f);
 			result.add(createBeaconSource(byteInput, req));
 			break;
 		}
 		case 9600: {
-			DopplerCorrectedSource source2 = new DopplerCorrectedSource(predict, rawIq, req, transmitter);
+			DopplerCorrectedSource source2 = new DopplerCorrectedSource(predict, rawIq, req, transmitter, baudRate);
 			GmskDemodulator gmsk = new GmskDemodulator(source2, 9600, transmitter.getBandwidth(), 0.175f * 3);
 			SoftToHard s2h = new SoftToHard(gmsk);
 			Set<String> codes = new HashSet<>();

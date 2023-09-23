@@ -139,7 +139,7 @@ public class SdrModemClient implements ByteInput {
 		b.setDemodDestination(demod_destination.SOCKET);
 		b.setDemodType(modem_type.GMSK);
 		b.setDemodBaudRate(baudRate);
-		b.setDemodDecimation(Util.convertDecimation(baudRate));
+		b.setDemodDecimation((int) (req.getSampleRate() / Util.getSymbolSyncInput(baudRate, req.getSampleRate())));
 		b.setFskSettings(fskDemodSettings.build());
 		b.setDoppler(dopplerSettings.build());
 

@@ -1,6 +1,7 @@
 package ru.r2cloud.sdrmodem;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedInputStream;
@@ -13,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.BindException;
 import java.net.Socket;
+import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Before;
@@ -63,6 +65,8 @@ public class SdrModemClientTest {
 		Satellite satellite = dao.findById("51074");
 		Transmitter transmitter = satellite.getById("51074-0");
 		Observation req = TestUtil.loadObservation("data/delfipq.raw.gz.json");
+		Integer maxBaudRate = Collections.max(transmitter.getBaudRates());
+		assertNotNull(maxBaudRate);
 
 		final SdrMessage actual = new SdrMessage();
 		modem.setHandler(new SdrModemHandler() {
@@ -78,8 +82,9 @@ public class SdrModemClientTest {
 				actual.setMessage(payload);
 
 				RxRequest rx = RxRequest.parseFrom(new ByteArrayInputStream(payload));
-				FloatInput next = new DopplerCorrectedSource(predict, new File(rx.getFileSettings().getFilename()), req, transmitter);
-				ByteInput input = new FskDemodulator(next, rx.getDemodBaudRate(), transmitter.getDeviation(), Util.convertDecimation(rx.getDemodBaudRate()), transmitter.getTransitionWidth(), true);
+				FloatInput next = new DopplerCorrectedSource(predict, new File(rx.getFileSettings().getFilename()), req, transmitter, maxBaudRate);
+				int decimation = (int) (next.getContext().getSampleRate() / Util.getSymbolSyncInput(rx.getDemodBaudRate(), (long) next.getContext().getSampleRate()));
+				ByteInput input = new FskDemodulator(next, rx.getDemodBaudRate(), transmitter.getDeviation(), decimation, transmitter.getTransitionWidth(), true);
 
 				DataOutputStream out = new DataOutputStream(client.getOutputStream());
 				out.writeByte(0);

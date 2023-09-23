@@ -17,7 +17,6 @@ import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.SampleRateMapping;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.sdrserver.ResponseStatus;
 import ru.r2cloud.sdrserver.SdrServerResponse;
@@ -55,19 +54,8 @@ public class SdrServerReader implements IQReader {
 			return null;
 		}
 
-		SampleRateMapping mapping = Util.getSmallestDividableSampleRate(maxBaudRate, deviceConfiguration.getSdrServerConfiguration().getBandwidth());
-		long sampleRate;
-		if (mapping != null) {
-			sampleRate = mapping.getDeviceOutput();
-		} else {
-			int rate = (int) (deviceConfiguration.getSdrServerConfiguration().getBandwidth() / maxBaudRate * 3);
-			// sample rate guaranteed to be integer dividable from the sdr server bandwidth
-			sampleRate = deviceConfiguration.getSdrServerConfiguration().getBandwidth() / rate;
-			if (sampleRate % maxBaudRate != 0) {
-				LOG.warn("[{}] using non-integer decimation factor for unsupported baud rate: {} and bandwidth: {}", maxBaudRate, deviceConfiguration.getSdrServerConfiguration().getBandwidth());
-			}
-		}
-
+		long sampleRate = Util.getSmallestDividableSampleRate(maxBaudRate, deviceConfiguration.getSdrServerConfiguration().getBandwidth());
+		
 		try {
 			socket = new Socket(deviceConfiguration.getHost(), deviceConfiguration.getPort());
 			socket.setSoTimeout(deviceConfiguration.getTimeout());

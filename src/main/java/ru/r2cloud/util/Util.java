@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
@@ -98,6 +97,21 @@ public final class Util {
 		index(192_000, 192_000, 192_000, 38_400);
 		index(160_000, 160_000, 160_000, 72_000); // fractional
 		index( 38_400,  38_400,  38_400, 12_500); // fractional
+		
+		// spy-server AirSpy
+		index( 46_875,  46_875,   1_875,    200); // fractional
+		index( 46_875,  46_875,   1_875,    500); // fractional
+		index( 46_875,  46_875,   9_375,  1_200); // fractional
+		index( 46_875,  46_875,   9_375,  2_400); // fractional
+		index( 46_875,  46_875,  46_875,  4_800); // fractional
+		index( 46_875,  46_875,  46_875,  9_600); // fractional
+		index( 93_750,  46_875,  46_875, 19_200); // fractional
+		index(187_500, 187_500, 187_500, 38_400); // fractional
+		index(187_500, 187_500, 187_500, 72_000); // fractional
+		index( 46_875,  46_875,   9_375,  1_250); // fractional
+		index( 46_875,  46_875,   9_375,  2_500); // fractional
+		index( 46_875,  46_875,  46_875,  5_000); // fractional
+		index( 46_875,  46_875,  46_875, 12_500); // fractional
 	}
 	// @formatter:on
 
@@ -495,59 +509,6 @@ public final class Util {
 		return null;
 	}
 
-	// good decimation factors for 48k and 50k sample rates and pre-defined baud
-	// rate
-	public static int convertDecimation(int baudRate) {
-		switch (baudRate) {
-		case 200:
-			return 120;
-		case 500:
-			return 24;
-		case 1200:
-		case 1250:
-			return 8;
-		case 2400:
-		case 2500:
-			return 4;
-		case 4800:
-		case 5000:
-			return 2;
-		default:
-			return 1;
-		}
-	}
-
-	public static int convertDecimationFromSampleRate(long sampleRate) {
-		int decimation;
-		// old meteor observations
-		if (sampleRate == 288_000 || sampleRate == 300_000) {
-			decimation = 2;
-		} else if (sampleRate / 48_000 == 5 || sampleRate / 50_000 == 5) {
-			decimation = 5;
-		} else {
-			decimation = 1;
-		}
-		return decimation;
-	}
-
-	public static int convertToReasonableSampleRate(List<Integer> baudRates) {
-		if (baudRates == null) {
-			return 0;
-		}
-		Integer maxBaudRate = Collections.max(baudRates);
-		if (maxBaudRate == null) {
-			return 0;
-		}
-
-		int expectedSampleRate = maxBaudRate * 5;
-		// reasonable default for 9600/4800/2400/1200
-		if (expectedSampleRate < 48_000) {
-			expectedSampleRate = 48_000;
-		}
-
-		return expectedSampleRate;
-	}
-
 	public static byte[] hexStringToByteArray(String s) {
 		if (s == null) {
 			return null;
@@ -580,7 +541,36 @@ public final class Util {
 		}
 	}
 
-	public static SampleRateMapping getSmallestGoodDeviceSampleRate(int baudRate, Set<Long> supportedSamplesRates) {
+	public static long getDemodulatorInput(int baudRate, long deviceOutput) {
+		SampleRateMapping mapping = MAPPING.get(new SampleRateKey(deviceOutput, baudRate));
+		if (mapping != null) {
+			return mapping.getDemodulatorInput();
+		}
+		long resultSampleRate = findClosest(deviceOutput, baudRate * 3);
+		if (resultSampleRate % baudRate != 0) {
+			LOG.warn("using non-integer decimation factor for unsupported baud rate: {} and bandwidth: {}", baudRate, deviceOutput);
+		}
+		return resultSampleRate;
+	}
+
+	public static long getSymbolSyncInput(int baudRate, long demodulatorInput) {
+		for (SampleRateMapping cur : MAPPING.values()) {
+			if (cur.getBaudRate() != baudRate) {
+				continue;
+			}
+			if (cur.getDemodulatorInput() != demodulatorInput) {
+				continue;
+			}
+			return cur.getSymbolSyncInput();
+		}
+		long resultSampleRate = findClosest(demodulatorInput, baudRate * 3);
+		if (resultSampleRate % baudRate != 0) {
+			LOG.warn("using non-integer decimation factor for unsupported baud rate: {} and bandwidth: {}", baudRate, demodulatorInput);
+		}
+		return resultSampleRate;
+	}
+
+	public static Long getSmallestGoodDeviceSampleRate(int baudRate, List<Long> supportedSamplesRates) {
 		// choose the lowest possible
 		SampleRateMapping result = null;
 		// assume supported sample rates is not big
@@ -597,10 +587,23 @@ public final class Util {
 				result = cur;
 			}
 		}
-		return result;
+		if (result != null) {
+			return result.getDeviceOutput();
+		}
+		Collections.sort(supportedSamplesRates);
+		int expectedSampleRate = baudRate * 3;
+		if (expectedSampleRate < 48_000) {
+			expectedSampleRate = 48_000;
+		}
+		for (long current : supportedSamplesRates) {
+			if (current > expectedSampleRate) {
+				return current;
+			}
+		}
+		return null;
 	}
 
-	public static SampleRateMapping getSmallestDividableSampleRate(int baudRate, long sampleRate) {
+	public static long getSmallestDividableSampleRate(int baudRate, long sampleRate) {
 		SampleRateMapping result = null;
 		for (Entry<SampleRateKey, SampleRateMapping> cur : MAPPING.entrySet()) {
 			if (cur.getKey().getBaudRate() != baudRate) {
@@ -615,6 +618,36 @@ public final class Util {
 			}
 			if (cur.getValue().getDeviceOutput() < result.getDeviceOutput()) {
 				result = cur.getValue();
+			}
+		}
+		if (result != null) {
+			return result.getDeviceOutput();
+		}
+		// sample rate guaranteed to be integer dividable from the sdr server bandwidth
+		long resultSampleRate = findClosest(sampleRate, baudRate * 3);
+		if (resultSampleRate % baudRate != 0) {
+			LOG.warn("using non-integer decimation factor for unsupported baud rate: {} and bandwidth: {}", baudRate, sampleRate);
+		}
+		return resultSampleRate;
+	}
+
+	private static long findClosest(long fromSampleRate, long toSampleRate) {
+		int[] primeNumbers = new int[] { 11, 7, 5, 3, 2 };
+		long result = fromSampleRate;
+		long current = fromSampleRate;
+		while (current >= toSampleRate) {
+			result = current;
+			for (int i = 0; i < primeNumbers.length; i++) {
+				long next = current / primeNumbers[i];
+				long remainder = current % primeNumbers[i];
+				if (remainder == 0 && next > toSampleRate) {
+					result = current;
+					current = next;
+				}
+			}
+			// no dividers found
+			if (result == current) {
+				break;
 			}
 		}
 		return result;

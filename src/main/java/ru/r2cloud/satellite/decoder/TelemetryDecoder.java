@@ -80,8 +80,8 @@ public abstract class TelemetryDecoder implements Decoder {
 						Util.closeQuietly(currentInput);
 					}
 					if (calculateSnr && !beacons.isEmpty()) {
-						try (FloatInput next = new DopplerCorrectedSource(predict, rawIq, req, transmitter, true)) {
-							SnrCalculator.enrichSnr(next, beacons, transmitter.getBandwidth(), Util.convertDecimationFromSampleRate(req.getSampleRate()));
+						try (FloatInput next = new DopplerCorrectedSource(predict, rawIq, req, transmitter, baudRate, true)) {
+							SnrCalculator.enrichSnr(next, beacons, transmitter.getBandwidth(), 1);
 						}
 					}
 					for (Beacon cur : beacons) {
@@ -107,7 +107,7 @@ public abstract class TelemetryDecoder implements Decoder {
 		List<BeaconSource<? extends Beacon>> result = new ArrayList<>(transmitter.getBaudRates().size());
 		switch (type) {
 		case JRADIO:
-			ByteInput demodulator = createDemodulator(new DopplerCorrectedSource(predict, rawIq, req, transmitter), transmitter, baudRate);
+			ByteInput demodulator = createDemodulator(new DopplerCorrectedSource(predict, rawIq, req, transmitter, baudRate), transmitter, baudRate);
 			result.add(createBeaconSource(demodulator, req));
 			break;
 		case SDRMODEM:
@@ -125,13 +125,14 @@ public abstract class TelemetryDecoder implements Decoder {
 	}
 
 	private static ByteInput createDemodulator(FloatInput source, Transmitter transmitter, int baudRate) {
+		int decimation = (int) (source.getContext().getSampleRate() / Util.getSymbolSyncInput(baudRate, (long) source.getContext().getSampleRate()));
 		switch (transmitter.getModulation()) {
 		case GFSK:
-			return new FskDemodulator(source, baudRate, transmitter.getDeviation(), Util.convertDecimation(baudRate), transmitter.getTransitionWidth(), true);
+			return new FskDemodulator(source, baudRate, transmitter.getDeviation(), decimation, transmitter.getTransitionWidth(), true);
 		case AFSK:
-			return new AfskDemodulator(source, baudRate, transmitter.getDeviation(), transmitter.getAfCarrier(), Util.convertDecimation(baudRate));
+			return new AfskDemodulator(source, baudRate, transmitter.getDeviation(), transmitter.getAfCarrier(), decimation);
 		case BPSK:
-			return new BpskDemodulator(source, baudRate, Util.convertDecimation(baudRate), transmitter.getBpskCenterFrequency(), transmitter.isBpskDifferential());
+			return new BpskDemodulator(source, baudRate, decimation, transmitter.getBpskCenterFrequency(), transmitter.isBpskDifferential());
 		default:
 			throw new RuntimeException("unknown jradio modulator: " + transmitter.getModulation());
 		}

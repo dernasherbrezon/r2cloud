@@ -41,7 +41,7 @@ public class LRPTDecoder implements Decoder {
 
 	@Override
 	public DecoderResult decode(final File rawIq, final Observation req, final Transmitter transmitter) {
-		int symbolRate = transmitter.getBaudRates().get(0);
+		int baudRate = transmitter.getBaudRates().get(0);
 		MeteorM lrpt = null;
 		DecoderResult result = new DecoderResult();
 		result.setRawPath(rawIq);
@@ -49,9 +49,9 @@ public class LRPTDecoder implements Decoder {
 		long numberOfDecodedPackets = 0;
 		File binFile = new File(config.getTempDirectory(), "lrpt-" + req.getId() + ".bin");
 		try {
-			DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req, transmitter);
+			DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req, transmitter, baudRate);
 			Constellation constel = new Constellation(new float[] { -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f }, new int[] { 0, 1, 3, 2 }, 4, 1);
-			QpskDemodulator qpskDemod = new QpskDemodulator(source, symbolRate, constel);
+			QpskDemodulator qpskDemod = new QpskDemodulator(source, baudRate, constel);
 			lrpt = new MeteorMN2(qpskDemod);
 			try (OutputStream fos = new BufferedOutputStream(new FileOutputStream(binFile))) {
 				while (lrpt.hasNext()) {

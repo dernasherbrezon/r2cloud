@@ -3,7 +3,7 @@
 	"start": 1554483451541,
 	"end": 0,
 	"sampleRate": 150000,
-	"inputSampleRate": 300000,
+	"inputSampleRate": 288000,
 	"frequency": 137900000,
 	"actualFrequency": 137898800,
 	"decoder": "LRPT",

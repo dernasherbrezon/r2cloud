@@ -42,8 +42,9 @@ public class Smog1Decoder extends TelemetryDecoder {
 		if (type.equals(DemodulatorType.SDRMODEM)) {
 			return new SdrModemClient(config, rawIq, req, transmitter, baudRate);
 		}
-		DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req, transmitter);
-		return new FskDemodulator(source, baudRate, 5000.0f, Util.convertDecimation(baudRate), 2000, true);
+		DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req, transmitter, baudRate);
+		int decimation = (int) (source.getContext().getSampleRate() / Util.getSymbolSyncInput(baudRate, (long) source.getContext().getSampleRate()));
+		return new FskDemodulator(source, baudRate, 5000.0f, decimation, 2000, true);
 	}
 
 	@Override

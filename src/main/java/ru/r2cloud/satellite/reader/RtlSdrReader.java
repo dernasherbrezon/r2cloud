@@ -3,9 +3,9 @@ package ru.r2cloud.satellite.reader;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,6 @@ import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
-import ru.r2cloud.model.SampleRateMapping;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
@@ -24,8 +23,7 @@ import ru.r2cloud.util.Util;
 public class RtlSdrReader implements IQReader {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RtlSdrReader.class);
-	private static final Set<Long> SUPPORTED_SAMPLE_RATES = new HashSet<>();
-	private static final long DEFAULT_SAMPLE_RATE = 240_000L;
+	private static final List<Long> SUPPORTED_SAMPLE_RATES = new ArrayList<>();
 
 	static {
 		// in reality rtlsdr supports more than this
@@ -67,15 +65,11 @@ public class RtlSdrReader implements IQReader {
 			return null;
 		}
 
-		SampleRateMapping mapping = Util.getSmallestGoodDeviceSampleRate(maxBaudRate, SUPPORTED_SAMPLE_RATES);
-		long sampleRate;
-		if (mapping != null) {
-			sampleRate = mapping.getDeviceOutput();
-		} else {
-			LOG.warn("[{}] using non-integer decimation factor for unsupported baud rate: {}", maxBaudRate);
-			sampleRate = DEFAULT_SAMPLE_RATE;
+		Long sampleRate = Util.getSmallestGoodDeviceSampleRate(maxBaudRate, SUPPORTED_SAMPLE_RATES);
+		if (sampleRate == null) {
+			LOG.error("[{}] cannot find sample rate for: {}", req.getId(), maxBaudRate);
+			return null;
 		}
-
 		try {
 			startTimeMillis = System.currentTimeMillis();
 			rtlSdr = factory.create(config.getProperty("satellites.rtlsdrwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + sampleRate + " -g " + deviceConfiguration.getGain() + " -p "

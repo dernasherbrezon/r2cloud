@@ -45,6 +45,10 @@ public class SpyServerReader implements IQReader {
 
 	@Override
 	public IQData start() throws InterruptedException {
+		Integer maxBaudRate = Collections.max(transmitter.getBaudRates());
+		if (maxBaudRate == null) {
+			return null;
+		}
 		client = new SpyClient(deviceConfiguraiton.getHost(), deviceConfiguraiton.getPort(), deviceConfiguraiton.getTimeout());
 		Long endTimeMillis = null;
 		try {
@@ -59,26 +63,11 @@ public class SpyServerReader implements IQReader {
 			return null;
 		}
 		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + "." + status.getFormat().getExtension());
-		long sampleRate = 0;
+		Long sampleRate = null;
 		try (OutputStream os = new BufferedOutputStream(new FileOutputStream(rawFile))) {
-			sampleRate = Util.convertToReasonableSampleRate(transmitter.getBaudRates());
-			Integer maxBaudRate = Collections.max(transmitter.getBaudRates());
-			if (maxBaudRate == null) {
-				return null;
-			}
-
-			int expectedSampleRate = maxBaudRate * 5;
-			if (expectedSampleRate < 48_000) {
-				expectedSampleRate = 48_000;
-			}
-			for (long current : status.getSupportedSampleRates()) {
-				if (current > expectedSampleRate) {
-					sampleRate = current;
-					break;
-				}
-			}
-			if (sampleRate == 0) {
-				LOG.error("[{}] cannot find sample rate for: {}", req.getId(), expectedSampleRate);
+			sampleRate = Util.getSmallestGoodDeviceSampleRate(maxBaudRate, status.getSupportedSampleRates());
+			if (sampleRate == null) {
+				LOG.error("[{}] cannot find sample rate for: {}", req.getId(), maxBaudRate);
 				return null;
 			}
 
@@ -143,7 +132,7 @@ public class SpyServerReader implements IQReader {
 		result.setActualEnd(endTimeMillis);
 		result.setDataFile(rawFile);
 		result.setDataFormat(status.getFormat());
-		result.setSampleRate((int) sampleRate);
+		result.setSampleRate(sampleRate);
 		return result;
 	}
 
