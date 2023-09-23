@@ -49,18 +49,18 @@ public class PlutoSdrReader implements IQReader {
 			return null;
 		}
 
-		int inputSampleRate;
+		int sampleRate;
 		if (maxBaudRate == 72_000) {
-			inputSampleRate = 288_000;
+			sampleRate = 288_000;
 		} else if (50_000 % maxBaudRate == 0) {
-			inputSampleRate = 50_000 * 5;
+			sampleRate = 50_000 * 5;
 		} else {
-			inputSampleRate = 48_000 * 5;
+			sampleRate = 48_000 * 5;
 		}
 
 		try {
 			startTimeMillis = System.currentTimeMillis();
-			plutoSdrCli = factory.create(config.getProperty("satellites.plutosdr.wrapper.path") + " -cli " + config.getProperty("satellites.plutosdr.path") + " -f " + req.getFrequency() + " -s " + inputSampleRate + " -g " + deviceConfiguration.getGain() + " -o " + rawFile.getAbsolutePath(),
+			plutoSdrCli = factory.create(config.getProperty("satellites.plutosdr.wrapper.path") + " -cli " + config.getProperty("satellites.plutosdr.path") + " -f " + req.getFrequency() + " -s " + sampleRate + " -g " + deviceConfiguration.getGain() + " -o " + rawFile.getAbsolutePath(),
 					Redirect.INHERIT, false);
 			int responseCode = plutoSdrCli.waitFor();
 			if (responseCode != 143) {
@@ -78,7 +78,7 @@ public class PlutoSdrReader implements IQReader {
 		result.setActualStart(startTimeMillis);
 		result.setActualEnd(endTimeMillis);
 		result.setDataFormat(DataFormat.COMPLEX_SIGNED_SHORT);
-		result.setSampleRate(inputSampleRate);
+		result.setSampleRate(sampleRate);
 		if (rawFile.exists()) {
 			result.setDataFile(rawFile);
 		}

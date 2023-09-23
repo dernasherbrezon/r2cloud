@@ -28,7 +28,6 @@ import ru.r2cloud.satellite.reader.IQReader;
 import ru.r2cloud.satellite.reader.SdrServerReader;
 import ru.r2cloud.sdr.SdrStatusProcess;
 import ru.r2cloud.util.Clock;
-import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ThreadPoolFactory;
 import ru.r2cloud.util.Util;
 
@@ -36,12 +35,10 @@ public class SdrServerDevice extends Device {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SdrServerDevice.class);
 	private final SdrStatusProcess statusProcess;
-	private final Configuration config;
 
 	public SdrServerDevice(String id, TransmitterFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, DeviceConfiguration deviceConfiguration, IObservationDao observationDao, DecoderService decoderService,
-			PredictOreKit predict, Schedule schedule, Configuration config) {
+			PredictOreKit predict, Schedule schedule) {
 		super(id, filter, numberOfConcurrentObservations, observationFactory, threadpoolFactory, clock, deviceConfiguration, observationDao, decoderService, predict, schedule);
-		this.config = config;
 		this.statusProcess = new SdrStatusProcess() {
 
 			@Override
@@ -61,8 +58,8 @@ public class SdrServerDevice extends Device {
 
 	@Override
 	public void reCalculateFrequencyBands(List<Transmitter> scheduledTransmitters) {
-		long sdrServerBandwidth = config.getLong("satellites.sdrserver.bandwidth");
-		long bandwidthCrop = config.getLong("satellites.sdrserver.bandwidth.crop");
+		long sdrServerBandwidth = getDeviceConfiguration().getSdrServerConfiguration().getBandwidth();
+		long bandwidthCrop = getDeviceConfiguration().getSdrServerConfiguration().getBandwidthCrop();
 
 		List<BandFrequency> bandwidths = new ArrayList<>();
 		for (Transmitter curTransmitter : scheduledTransmitters) {

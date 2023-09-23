@@ -67,9 +67,9 @@ public class RtlSdrReader implements IQReader {
 			return null;
 		}
 
-		SampleRateMapping mapping = Util.getSampleRateByBaud(maxBaudRate);
+		SampleRateMapping mapping = Util.getSmallestGoodDeviceSampleRate(maxBaudRate, SUPPORTED_SAMPLE_RATES);
 		long sampleRate;
-		if (mapping != null && SUPPORTED_SAMPLE_RATES.contains(mapping.getDeviceOutput())) {
+		if (mapping != null) {
 			sampleRate = mapping.getDeviceOutput();
 		} else {
 			LOG.warn("[{}] using non-integer decimation factor for unsupported baud rate: {}", maxBaudRate);

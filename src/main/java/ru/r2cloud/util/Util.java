@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
@@ -49,31 +50,56 @@ import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
+import ru.r2cloud.model.SampleRateKey;
 import ru.r2cloud.model.SampleRateMapping;
 
 public final class Util {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Util.class);
 	private static final Pattern COMMA = Pattern.compile(",");
-	private static final Map<Integer, SampleRateMapping> MAPPING = new HashMap<>();
+	private static final Map<SampleRateKey, SampleRateMapping> MAPPING = new HashMap<>();
 
+	// @formatter:off
 	static {
-		index(240_000, 48_000, 400, 200);
-		index(240_000, 48_000, 2_000, 500);
-		index(240_000, 48_000, 6_000, 1_200);
-		index(240_000, 48_000, 12_000, 2_400);
-		index(240_000, 48_000, 24_000, 4_800);
-		index(240_000, 48_000, 48_000, 9_600);
-		index(288_000, 57_600, 57_600, 19_200);
+		// rtl-sdr
+		index(240_000,  48_000,     400,    200);
+		index(240_000,  48_000,   2_000,    500);
+		index(240_000,  48_000,   6_000,  1_200);
+		index(240_000,  48_000,  12_000,  2_400);
+		index(240_000,  48_000,  24_000,  4_800);
+		index(240_000,  48_000,  48_000,  9_600);
+		index(288_000,  57_600,  57_600, 19_200);
 		index(230_400, 115_200, 115_200, 38_400);
-
 		index(288_000, 144_000, 144_000, 72_000);
+		index(240_000,  10_000,   5_000,  1_250);
+		index(240_000,  15_000,   7_500,  2_500);
+		index(240_000,  40_000,  20_000,  5_000);
+		index(300_000,  37_500,  37_500, 12_500);
 
-		index(240_000, 10_000, 5_000, 1_250);
-		index(240_000, 15_000, 7_500, 2_500);
-		index(240_000, 40_000, 20_000, 5_000);
-		index(300_000, 37_500, 37_500, 12_500);
+		// sdr-server
+		// base rate 1200000 / 2400000
+		index( 48_000,  48_000,     400,    200);
+		index( 48_000,  48_000,   2_000,    500);
+		index( 48_000,  48_000,   6_000,  1_200);
+		index( 48_000,  48_000,  12_000,  2_400);
+		index( 48_000,  48_000,  24_000,  4_800);
+		index( 48_000,  48_000,  48_000,  9_600);
+		index( 60_000,  60_000,  60_000, 19_200); // fractional
+		index(120_000, 120_000, 120_000, 38_400); // fractional, also for 1440000
+		index(150_000, 150_000, 150_000, 72_000); // fractional
+		index( 10_000,  10_000,   5_000,  1_250);
+		index( 15_000,  15_000,   7_500,  2_500);
+		index( 40_000,  40_000,  20_000,  5_000);
+		index( 37_500,  37_500,  37_500, 12_500);
+		// base rate 1440000
+		index( 40_000,  40_000,  40_000, 12_500); // fractional
+		// base rate 960000
+		index( 38_400,  38_400,  38_400, 19_200);
+		index(192_000, 192_000, 192_000, 38_400);
+		index(160_000, 160_000, 160_000, 72_000); // fractional
+		index( 38_400,  38_400,  38_400, 12_500); // fractional
 	}
+	// @formatter:on
 
 	public static void rotateImage(File result) {
 		try {
@@ -548,11 +574,50 @@ public final class Util {
 	}
 
 	private static void index(long deviceOutput, long demodulatorInput, long symbolSyncInput, int baudRate) {
-		MAPPING.put(baudRate, new SampleRateMapping(deviceOutput, demodulatorInput, symbolSyncInput, baudRate));
+		SampleRateMapping old = MAPPING.put(new SampleRateKey(deviceOutput, baudRate), new SampleRateMapping(deviceOutput, demodulatorInput, symbolSyncInput, baudRate));
+		if (old != null) {
+			LOG.error("duplicate sample rate mapping for: {}-{} ", deviceOutput, baudRate);
+		}
 	}
 
-	public static SampleRateMapping getSampleRateByBaud(int baudRate) {
-		return MAPPING.get(baudRate);
+	public static SampleRateMapping getSmallestGoodDeviceSampleRate(int baudRate, Set<Long> supportedSamplesRates) {
+		// choose the lowest possible
+		SampleRateMapping result = null;
+		// assume supported sample rates is not big
+		for (Long deviceOutput : supportedSamplesRates) {
+			SampleRateMapping cur = MAPPING.get(new SampleRateKey(deviceOutput, baudRate));
+			if (cur == null) {
+				continue;
+			}
+			if (result == null) {
+				result = cur;
+				continue;
+			}
+			if (cur.getDeviceOutput() < result.getDeviceOutput()) {
+				result = cur;
+			}
+		}
+		return result;
+	}
+
+	public static SampleRateMapping getSmallestDividableSampleRate(int baudRate, long sampleRate) {
+		SampleRateMapping result = null;
+		for (Entry<SampleRateKey, SampleRateMapping> cur : MAPPING.entrySet()) {
+			if (cur.getKey().getBaudRate() != baudRate) {
+				continue;
+			}
+			if (sampleRate % cur.getKey().getDeviceOutput() != 0) {
+				continue;
+			}
+			if (result == null) {
+				result = cur.getValue();
+				continue;
+			}
+			if (cur.getValue().getDeviceOutput() < result.getDeviceOutput()) {
+				result = cur.getValue();
+			}
+		}
+		return result;
 	}
 
 	private Util() {

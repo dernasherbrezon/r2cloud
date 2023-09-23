@@ -283,6 +283,8 @@ public class Configuration {
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix + "."));
 			SdrServerConfiguration sdrConfig = new SdrServerConfiguration();
 			sdrConfig.setBasepath(getProperty(prefix + "basepath"));
+			sdrConfig.setBandwidth(getLong("satellites.sdrserver.bandwidth"));
+			sdrConfig.setBandwidthCrop(getLong("satellites.sdrserver.bandwidth.crop"));
 			sdrConfig.setUseGzip(getBoolean(prefix + "usegzip"));
 			config.setSdrServerConfiguration(sdrConfig);
 			config.setCompencateDcOffset(false);

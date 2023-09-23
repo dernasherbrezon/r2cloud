@@ -2,6 +2,7 @@ package ru.r2cloud.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -17,7 +18,9 @@ import java.nio.channels.UnresolvedAddressException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletionException;
 import java.util.zip.GZIPOutputStream;
@@ -33,6 +36,7 @@ import com.aerse.mockfs.MockFileSystem;
 
 import ru.r2cloud.SampleClass;
 import ru.r2cloud.TestUtil;
+import ru.r2cloud.model.SampleRateMapping;
 
 public class UtilTest {
 
@@ -131,6 +135,33 @@ public class UtilTest {
 	@Test
 	public void testRates() {
 		assertEquals(0, Util.convertToReasonableSampleRate(null));
+	}
+
+	@Test
+	public void testGoodSampleRateRtlSdr() {
+		Set<Long> supportedSampleRates = new HashSet<>();
+		supportedSampleRates.add(300_000L);
+		supportedSampleRates.add(150_000L);
+		SampleRateMapping mapping = Util.getSmallestGoodDeviceSampleRate(12_500, supportedSampleRates);
+		assertNotNull(mapping);
+		assertEquals(300_000L, mapping.getDeviceOutput());
+	}
+
+	@Test
+	public void testGoodSampleRateSdrServer() {
+		Set<Long> supportedSampleRates = new HashSet<>();
+		supportedSampleRates.add(120_000L);
+		supportedSampleRates.add(48_000L);
+		SampleRateMapping mapping = Util.getSmallestGoodDeviceSampleRate(38_400, supportedSampleRates);
+		assertNotNull(mapping);
+		assertEquals(120_000L, mapping.getDeviceOutput());
+	}
+
+	@Test
+	public void testMinDividableSampleRate() {
+		SampleRateMapping mapping = Util.getSmallestDividableSampleRate(5_000, 240_000L);
+		assertNotNull(mapping);
+		assertEquals(40_000L, mapping.getDeviceOutput());
 	}
 
 	private File setupTempFile(byte[] data, String extension) throws IOException, FileNotFoundException {

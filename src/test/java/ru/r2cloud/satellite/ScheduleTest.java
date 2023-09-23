@@ -41,6 +41,7 @@ import ru.r2cloud.device.SdrServerDevice;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SdrServerConfiguration;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.tle.CelestrakClient;
@@ -267,7 +268,7 @@ public class ScheduleTest {
 		assertEquals(expectedSeconds, actualSeconds);
 	}
 
-	private List<Transmitter> extractSatellites(List<ObservationRequest> req, SatelliteDao dao) throws Exception {
+	private static List<Transmitter> extractSatellites(List<ObservationRequest> req, SatelliteDao dao) throws Exception {
 		Set<String> ids = new HashSet<>();
 		for (ObservationRequest cur : req) {
 			ids.add(cur.getSatelliteId());
@@ -282,7 +283,12 @@ public class ScheduleTest {
 			}
 			result.addAll(curSatellite.getTransmitters());
 		}
-		SdrServerDevice device = new SdrServerDevice(null, null, 0, null, null, null, new DeviceConfiguration(), null, null, null, null, config);
+		SdrServerConfiguration sdrServerConfiguration = new SdrServerConfiguration();
+		sdrServerConfiguration.setBandwidth(2016000);
+		sdrServerConfiguration.setBandwidthCrop(48000);
+		DeviceConfiguration deviceConfiguration = new DeviceConfiguration();
+		deviceConfiguration.setSdrServerConfiguration(sdrServerConfiguration);
+		SdrServerDevice device = new SdrServerDevice(null, null, 0, null, null, null, deviceConfiguration, null, null, null, null);
 		device.reCalculateFrequencyBands(result);
 		return result;
 	}
