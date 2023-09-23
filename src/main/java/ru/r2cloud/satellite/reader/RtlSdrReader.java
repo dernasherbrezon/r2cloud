@@ -23,20 +23,10 @@ import ru.r2cloud.util.Util;
 public class RtlSdrReader implements IQReader {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RtlSdrReader.class);
-	private static final List<Long> SUPPORTED_SAMPLE_RATES = new ArrayList<>();
-
-	static {
-		// in reality rtlsdr supports more than this
-		// but in practice these are the lowest required
-		// to have integer decimation for a number of standard baud rates
-		SUPPORTED_SAMPLE_RATES.add(230_400L);
-		SUPPORTED_SAMPLE_RATES.add(240_000L);
-		SUPPORTED_SAMPLE_RATES.add(288_000L);
-		SUPPORTED_SAMPLE_RATES.add(300_000L);
-	}
 
 	private ProcessWrapper rtlSdr = null;
 
+	private final List<Long> supportedSampleRates = new ArrayList<>();
 	private final DeviceConfiguration deviceConfiguration;
 	private final Configuration config;
 	private final ProcessFactory factory;
@@ -49,6 +39,25 @@ public class RtlSdrReader implements IQReader {
 		this.factory = factory;
 		this.req = req;
 		this.transmitter = transmitter;
+		for (int i = 1;; i++) {
+			long rate = 28_800_000 / i;
+			if (rate <= 225000) {
+				break;
+			}
+			// in practice rtl-sdr can't archive more than 2.4MSPS
+			if (rate > 2_400_000) {
+				continue;
+			}
+			if (((rate > 300000) && (rate <= 900000))) {
+				continue;
+			}
+			long remainder = 28_800_000 % i;
+			// accept only integer rates
+			if (remainder != 0) {
+				continue;
+			}
+			supportedSampleRates.add(rate);
+		}
 	}
 
 	@Override
@@ -65,7 +74,7 @@ public class RtlSdrReader implements IQReader {
 			return null;
 		}
 
-		Long sampleRate = Util.getSmallestGoodDeviceSampleRate(maxBaudRate, SUPPORTED_SAMPLE_RATES);
+		Long sampleRate = Util.getSmallestGoodDeviceSampleRate(maxBaudRate, supportedSampleRates);
 		if (sampleRate == null) {
 			LOG.error("[{}] cannot find sample rate for: {}", req.getId(), maxBaudRate);
 			return null;
