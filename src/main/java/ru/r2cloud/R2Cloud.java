@@ -48,6 +48,7 @@ import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.PriorityService;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.Schedule;
+import ru.r2cloud.satellite.SdrServerTransmitterFilter;
 import ru.r2cloud.satellite.SdrTransmitterFilter;
 import ru.r2cloud.satellite.SequentialTimetable;
 import ru.r2cloud.satellite.decoder.DecoderService;
@@ -172,10 +173,10 @@ public class R2Cloud {
 			if (cur.getRotatorConfiguration() == null) {
 				numberOfConcurrentObservations = 5;
 			}
-			deviceManager.addDevice(new SdrServerDevice(cur.getId(), new SdrTransmitterFilter(cur), numberOfConcurrentObservations, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur)));
+			deviceManager.addDevice(new SdrServerDevice(cur.getId(), new SdrServerTransmitterFilter(cur), numberOfConcurrentObservations, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur)));
 		}
 		for (DeviceConfiguration cur : props.getPlutoSdrConfigurations()) {
-			deviceManager.addDevice(new PlutoSdrDevice(cur.getId(), new SdrTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, processFactory));
+			deviceManager.addDevice(new PlutoSdrDevice(cur.getId(), new SdrServerTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, processFactory));
 		}
 		for (DeviceConfiguration cur : props.getLoraConfigurations()) {
 			R2loraClient client = new R2loraClient(cur.getHost(), cur.getPort(), cur.getUsername(), cur.getPassword(), cur.getTimeout());
@@ -206,7 +207,7 @@ public class R2Cloud {
 				cur.setMinimumFrequency(24_000_000);
 				cur.setMaximumFrequency(1_700_000_000);
 			}
-			deviceManager.addDevice(new SpyServerDevice(cur.getId(), new SdrTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur)));
+			deviceManager.addDevice(new SpyServerDevice(cur.getId(), new SdrServerTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur)));
 		}
 
 		// setup web server

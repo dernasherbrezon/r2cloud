@@ -58,6 +58,10 @@ public final class Util {
 	private static final Pattern COMMA = Pattern.compile(",");
 	private static final Map<SampleRateKey, SampleRateMapping> MAPPING = new HashMap<>();
 
+	// Samples rates for different devices and most commonly used baud rates
+	// They take into consideration ~10khz margin for doppler shift
+	// Some sample rates cannot be integer decimated to the required baud
+	// In that case fractional part is moved closer to symbol synchronization
 	// @formatter:off
 	static {
 		// rtl-sdr
