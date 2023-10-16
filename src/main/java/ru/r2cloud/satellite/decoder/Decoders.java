@@ -77,6 +77,8 @@ public class Decoders {
 		index("56993", "56993-0", new Mrc100Decoder(predict, props, Mrc100Beacon.class));
 		index("56211", "56211-1", new InspireSat7SpinoDecoder(predict, props));
 		index("57167", "57167-0", new StratosatTk1Decoder(predict, props));
+		index("55104", "55104-0", new Sharjahsat1Decoder(predict, props));
+		index("56212", "56212-0", new RoseyDecoder(predict, props));
 	}
 
 	public Decoder findByTransmitter(Transmitter transmitter) {
