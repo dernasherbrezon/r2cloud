@@ -87,6 +87,16 @@ public abstract class TelemetryDecoder implements Decoder {
 					for (Beacon cur : beacons) {
 						aos.write(cur);
 					}
+					// decode only one image per observation
+					if (result.getImagePath() == null) {
+						BufferedImage image = decodeImage(beacons);
+						if (image != null) {
+							File imageFile = saveImage("image-" + req.getId() + ".jpg", image);
+							if (imageFile != null) {
+								result.setImagePath(imageFile);
+							}
+						}
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -138,7 +148,12 @@ public abstract class TelemetryDecoder implements Decoder {
 		}
 	}
 
-	protected File saveImage(String path, BufferedImage image) {
+	@SuppressWarnings("unused")
+	protected BufferedImage decodeImage(List<? extends Beacon> beacons) {
+		return null;
+	}
+
+	private File saveImage(String path, BufferedImage image) {
 		if (image == null) {
 			return null;
 		}
