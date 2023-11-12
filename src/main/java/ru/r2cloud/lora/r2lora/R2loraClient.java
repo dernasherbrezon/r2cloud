@@ -178,7 +178,7 @@ public class R2loraClient {
 		LoraFrame result = new LoraFrame();
 		result.setData(Util.hexStringToByteArray(obj.getString("data", null)));
 		result.setFrequencyError((long) obj.getFloat("frequencyError", 0));
-		result.setRssi((short) obj.getInt("rssi", 0));
+		result.setRssi((short) obj.getFloat("rssi", 0));
 		result.setSnr(obj.getFloat("snr", 0));
 		result.setTimestamp(obj.getLong("timestamp", 0));
 		return result;
