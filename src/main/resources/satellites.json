@@ -4553,40 +4553,6 @@
 		]
 	},
 	{
-		"id": "R2CLOUD35",
-		"name": "DELFI-C3 (DO-64)",
-		"noradId": "32789",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "BPSK",
-				"framing": "CUSTOM",
-				"beaconClass": "ru.r2cloud.jradio.delfic3.DelfiC3Beacon",
-				"frequency": 145870000,
-				"bandwidth": 5000,
-				"baudRates": [
-					1200
-				],
-				"bpskCenterFrequency": -2000,
-				"bpskDifferential": true,
-				"status": "ENABLED"
-			},
-			{
-				"modulation": "BPSK",
-				"framing": "CUSTOM",
-				"beaconClass": "ru.r2cloud.jradio.delfic3.DelfiC3Beacon",
-				"frequency": 145930000,
-				"bandwidth": 5000,
-				"baudRates": [
-					1200
-				],
-				"bpskCenterFrequency": -2000,
-				"bpskDifferential": true,
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
 		"id": "R2CLOUD33",
 		"name": "ITASAT 1",
 		"noradId": "43786",
