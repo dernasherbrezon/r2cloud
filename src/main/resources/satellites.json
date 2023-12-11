@@ -1,5 +1,174 @@
 [
 	{
+		"id": "R2CLOUD357",
+		"name": "Hayasat",
+		"noradId": "99032",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437020000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD356",
+		"name": "ENSO (ROBUSTA 1E)",
+		"noradId": "58470",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 436500000,
+				"bandwidth": 20000,
+				"baudRates": [
+					2400
+				],
+				"assistedHeader": "AAABAQAAAAEAAAABAAEBAAABAQABAAABAAABAAEAAAEAAAAAAQEAAQAAAAAAAAEAAAAAAAABAQEAAAEBAAAAAQAAAAABAQABAAABAQABAQAAAAEBAAAAAQAAAQAAAQABAAEBAAAAAAEBAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD355",
+		"name": "ION SCV Daring Diego",
+		"noradId": "58469",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 401415000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD353",
+		"name": "TIANQI-24",
+		"noradId": "57795",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 400450000,
+				"bandwidth": 500000,
+				"status": "ENABLED",
+				"loraBandwidth": 500000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD352",
+		"name": "TIANQI-23",
+		"noradId": "57794",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 400450000,
+				"bandwidth": 500000,
+				"status": "ENABLED",
+				"loraBandwidth": 500000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD351",
+		"name": "TIANQI-22",
+		"noradId": "57793",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 400450000,
+				"bandwidth": 500000,
+				"status": "ENABLED",
+				"loraBandwidth": 500000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD350",
+		"name": "TIANQI-21",
+		"noradId": "57792",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 400450000,
+				"bandwidth": 500000,
+				"status": "ENABLED",
+				"loraBandwidth": 500000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD349",
+		"name": "KSM1-D",
+		"noradId": "46907",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 401090000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD336",
 		"name": "SITRO-AIS 9 (SHCHUKIN)",
 		"noradId": "57201",
@@ -896,6 +1065,26 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD280",
+		"name": "METEOR-M2 3",
+		"noradId": "57166",
+		"enabled": false,
+		"start": 1687865640000,
+		"transmitters": [
+			{
+				"modulation": "QPSK",
+				"framing": "LRPT",
+				"beaconClass": "ru.r2cloud.jradio.lrpt.Vcdu",
+				"frequency": 137900000,
+				"bandwidth": 144000,
+				"baudRates": [
+					72000
 				],
 				"status": "ENABLED"
 			}
@@ -2798,25 +2987,6 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					1200
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD164",
-		"name": "CTIM",
-		"noradId": "52950",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ctim.CtimBeacon",
-				"frequency": 437250000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
 				],
 				"status": "ENABLED"
 			}
