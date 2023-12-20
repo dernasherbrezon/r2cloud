@@ -2,8 +2,8 @@ package ru.r2cloud.lora;
 
 public class LoraObservationRequest {
 
-	private float frequency;
-	private float bw;
+	private long frequency;
+	private long bw;
 	private int sf;
 	private int cr;
 	private int syncword;
@@ -38,22 +38,22 @@ public class LoraObservationRequest {
 		this.useExplicitHeader = useExplicitHeader;
 	}
 
-	public float getFrequency() {
+	public long getFrequency() {
 		return frequency;
 	}
-
-	public void setFrequency(float frequency) {
+	
+	public void setFrequency(long frequency) {
 		this.frequency = frequency;
 	}
 
-	public float getBw() {
+	public long getBw() {
 		return bw;
 	}
-
-	public void setBw(float bw) {
+	
+	public void setBw(long bw) {
 		this.bw = bw;
 	}
-
+	
 	public int getSf() {
 		return sf;
 	}

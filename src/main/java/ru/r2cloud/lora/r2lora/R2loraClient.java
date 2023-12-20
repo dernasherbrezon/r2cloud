@@ -226,8 +226,8 @@ public class R2loraClient {
 
 	private static String toJson(LoraObservationRequest req) {
 		JsonObject json = new JsonObject();
-		json.add("freq", req.getFrequency());
-		json.add("bw", req.getBw());
+		json.add("freq", req.getFrequency() / 1_000_000.0f);
+		json.add("bw", req.getBw() / 1000.0f);
 		json.add("sf", req.getSf());
 		json.add("cr", req.getCr());
 		json.add("syncWord", req.getSyncword());

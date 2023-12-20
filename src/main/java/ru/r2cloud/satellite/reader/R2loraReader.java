@@ -46,9 +46,9 @@ public class R2loraReader implements IQReader {
 	@Override
 	public IQData start() throws InterruptedException {
 		LoraObservationRequest loraRequest = new LoraObservationRequest();
-		loraRequest.setBw((float) transmitter.getLoraBandwidth() / 1000);
+		loraRequest.setBw(transmitter.getLoraBandwidth());
 		loraRequest.setCr(transmitter.getLoraCodingRate());
-		loraRequest.setFrequency((float) req.getFrequency() / 1_000_000);
+		loraRequest.setFrequency(req.getFrequency());
 		loraRequest.setGain((int) deviceConfiguration.getGain());
 		loraRequest.setLdro(transmitter.getLoraLdro());
 		loraRequest.setPreambleLength(transmitter.getLoraPreambleLength());

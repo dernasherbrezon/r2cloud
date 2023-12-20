@@ -1,0 +1,3 @@
+I (123553) internal logging message here
+CAFE,-137,3.2,9655,1605980902
+OK

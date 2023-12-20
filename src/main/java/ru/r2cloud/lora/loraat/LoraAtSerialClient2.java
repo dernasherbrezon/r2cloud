@@ -90,7 +90,7 @@ public class LoraAtSerialClient2 implements LoraAtClient {
 		LoraResponse result = new LoraResponse();
 		String useCrc = loraRequest.isUseCrc() ? "1" : "0";
 		String useExplicitHeader = loraRequest.isUseExplicitHeader() ? "1" : "0";
-		String request = "AT+LORARX=" + (loraRequest.getFrequency() * 1E6) + "," + (loraRequest.getBw() * 1000) + "," + loraRequest.getSf() + "," + loraRequest.getCr() + "," + loraRequest.getSyncword() + "," + loraRequest.getPreambleLength() + "," + loraRequest.getGain() + ","
+		String request = "AT+LORARX=" + loraRequest.getFrequency() + "," + loraRequest.getBw() + "," + loraRequest.getSf() + "," + loraRequest.getCr() + "," + loraRequest.getSyncword() + "," + loraRequest.getPreambleLength() + "," + loraRequest.getGain() + ","
 				+ loraRequest.getLdro() + "," + useCrc + "," + useExplicitHeader + "," + loraRequest.getBeaconSizeBytes() + "\r\n";
 		try {
 			sendRequest(request);

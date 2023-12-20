@@ -24,11 +24,11 @@ import ru.r2cloud.lora.ModulationConfig;
 import ru.r2cloud.lora.ResponseStatus;
 import ru.r2cloud.model.DeviceConnectionStatus;
 
-public class LoraAtSerialClientTest {
+public class LoraAtSerialClient2Test {
 
 	@Test
 	public void testFailedToGetStatus() {
-		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialInterface() {
+		LoraAtClient client = new LoraAtSerialClient2(UUID.randomUUID().toString(), 0, new SerialInterface() {
 
 			@Override
 			public SerialPortInterface getCommPort(String portDescriptor) throws SerialPortInvalidPortException {
@@ -43,7 +43,7 @@ public class LoraAtSerialClientTest {
 	public void testCannotBeOpened() {
 		ByteArrayInputStream bais = new ByteArrayInputStream(new byte[0]);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(false, bais, baos), new SteppingClock(1649679986400L, 1000));
+		LoraAtClient client = new LoraAtSerialClient2(UUID.randomUUID().toString(), 0, new SerialMock(false, bais, baos), new SteppingClock(1649679986400L, 1000));
 		LoraStatus status = client.getStatus();
 		assertEquals(DeviceConnectionStatus.FAILED, status.getDeviceStatus());
 	}
@@ -51,7 +51,7 @@ public class LoraAtSerialClientTest {
 	@Test
 	public void testCantWriteToPort() {
 		ByteArrayInputStream bais = new ByteArrayInputStream(new byte[0]);
-		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, bais, new OutputStream() {
+		LoraAtClient client = new LoraAtSerialClient2(UUID.randomUUID().toString(), 0, new SerialMock(true, bais, new OutputStream() {
 
 			@Override
 			public void write(int b) throws IOException {
@@ -69,7 +69,7 @@ public class LoraAtSerialClientTest {
 
 	@Test
 	public void testCantReadFromPort() {
-		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, new InputStream() {
+		LoraAtClient client = new LoraAtSerialClient2(UUID.randomUUID().toString(), 0, new SerialMock(true, new InputStream() {
 
 			@Override
 			public int read() throws IOException {
@@ -83,30 +83,30 @@ public class LoraAtSerialClientTest {
 	@Test
 	public void testStatusError() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtSerialClientTest.class.getClassLoader().getResourceAsStream("loraat/failure.txt"), baos), new SteppingClock(1649679986400L, 1000));
+		LoraAtClient client = new LoraAtSerialClient2(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtSerialClient2Test.class.getClassLoader().getResourceAsStream("loraat2/failure.txt"), baos), new SteppingClock(1649679986400L, 1000));
 		LoraStatus status = client.getStatus();
 		assertEquals(DeviceConnectionStatus.FAILED, status.getDeviceStatus());
-		assertEquals("AT+CHIP?\r\n", new String(baos.toByteArray(), StandardCharsets.ISO_8859_1));
+		assertEquals("AT+GMR\r\n", new String(baos.toByteArray(), StandardCharsets.ISO_8859_1));
 	}
 
 	@Test
 	public void testStatusSuccess() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtSerialClientTest.class.getClassLoader().getResourceAsStream("loraat/successStatus.txt"), baos), new SteppingClock(1649679986400L, 1000));
+		LoraAtClient client = new LoraAtSerialClient2(UUID.randomUUID().toString(), 0, new SerialMock(true, new MultiStreamInputStream("loraat2/successGmr.txt", "loraat2/successMin.txt", "loraat2/successMax.txt"), baos), new SteppingClock(1649679986400L, 1000));
 		LoraStatus status = client.getStatus();
 		assertEquals(DeviceConnectionStatus.CONNECTED, status.getDeviceStatus());
 		assertEquals("IDLE", status.getStatus());
 		assertEquals(1, status.getConfigs().size());
 		ModulationConfig config = status.getConfigs().get(0);
-		assertEquals("lora", config.getName());
-		assertEquals(863, config.getMinFrequency(), 0.0f);
-		assertEquals(928, config.getMaxFrequency(), 0.0f);
+		assertEquals("2.0", config.getName());
+		assertEquals(863000000, config.getMinFrequency(), 0.0f);
+		assertEquals(928000000, config.getMaxFrequency(), 0.0f);
 	}
 
 	@Test
 	public void testFailToStop() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtSerialClientTest.class.getClassLoader().getResourceAsStream("loraat/failure.txt"), baos), new SteppingClock(1649679986400L, 1000));
+		LoraAtClient client = new LoraAtSerialClient2(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtSerialClient2Test.class.getClassLoader().getResourceAsStream("loraat2/failure.txt"), baos), new SteppingClock(1649679986400L, 1000));
 		LoraResponse response = client.stopObservation();
 		assertEquals(ResponseStatus.FAILURE, response.getStatus());
 		assertEquals("controlled failure", response.getFailureMessage());
@@ -116,7 +116,7 @@ public class LoraAtSerialClientTest {
 	@Test
 	public void testSuccessStop() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtSerialClientTest.class.getClassLoader().getResourceAsStream("loraat/successStop.txt"), baos), new SteppingClock(1649679986400L, 1000));
+		LoraAtClient client = new LoraAtSerialClient2(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtSerialClient2Test.class.getClassLoader().getResourceAsStream("loraat2/successStop.txt"), baos), new SteppingClock(1649679986400L, 1000));
 		LoraResponse response = client.stopObservation();
 		assertEquals(ResponseStatus.SUCCESS, response.getStatus());
 		assertEquals(1, response.getFrames().size());
@@ -131,7 +131,7 @@ public class LoraAtSerialClientTest {
 	@Test
 	public void testFailToSetTime() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtSerialClientTest.class.getClassLoader().getResourceAsStream("loraat/failure.txt"), baos), new SteppingClock(1649679986400L, 1000));
+		LoraAtClient client = new LoraAtSerialClient2(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtSerialClient2Test.class.getClassLoader().getResourceAsStream("loraat2/failure.txt"), baos), new SteppingClock(1649679986400L, 1000));
 		LoraResponse response = client.startObservation(createRequest());
 		assertEquals(ResponseStatus.FAILURE, response.getStatus());
 		assertEquals("controlled failure", response.getFailureMessage());
@@ -141,29 +141,29 @@ public class LoraAtSerialClientTest {
 	@Test
 	public void testFailToStart() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, new MultiStreamInputStream("loraat/success.txt", "loraat/failure.txt"), baos), new SteppingClock(1649679986400L, 1000));
+		LoraAtClient client = new LoraAtSerialClient2(UUID.randomUUID().toString(), 0, new SerialMock(true, new MultiStreamInputStream("loraat2/success.txt", "loraat2/failure.txt"), baos), new SteppingClock(1649679986400L, 1000));
 		LoraResponse response = client.startObservation(createRequest());
 		assertEquals(ResponseStatus.FAILURE, response.getStatus());
 		assertEquals("controlled failure", response.getFailureMessage());
-		assertEquals("AT+TIME=1649679986\r\nAT+LORARX=433.125,500.0,9,7,18,10,8,0,0\r\n", new String(baos.toByteArray(), StandardCharsets.ISO_8859_1));
+		assertEquals("AT+TIME=1649679986\r\nAT+LORARX=433125000,500000,9,7,18,8,0,0,1,1,255\r\n", new String(baos.toByteArray(), StandardCharsets.ISO_8859_1));
 	}
 
 	@Test
 	public void testRetryAfterFailure() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, new MultiStreamInputStream("loraat/success.txt", "loraat/failureAlreadyReceiving.txt", "loraat/successStop.txt", "loraat/success.txt"), baos), new SteppingClock(1649679986400L, 1000));
+		LoraAtClient client = new LoraAtSerialClient2(UUID.randomUUID().toString(), 0, new SerialMock(true, new MultiStreamInputStream("loraat2/success.txt", "loraat2/failureAlreadyReceiving.txt", "loraat2/successStop.txt", "loraat2/success.txt"), baos), new SteppingClock(1649679986400L, 1000));
 		LoraResponse response = client.startObservation(createRequest());
 		assertEquals(ResponseStatus.SUCCESS, response.getStatus());
-		assertEquals("AT+TIME=1649679986\r\nAT+LORARX=433.125,500.0,9,7,18,10,8,0,0\r\nAT+STOPRX\r\nAT+LORARX=433.125,500.0,9,7,18,10,8,0,0\r\n", new String(baos.toByteArray(), StandardCharsets.ISO_8859_1));
+		assertEquals("AT+TIME=1649679986\r\nAT+LORARX=433125000,500000,9,7,18,8,0,0,1,1,255\r\nAT+STOPRX\r\nAT+LORARX=433125000,500000,9,7,18,8,0,0,1,1,255\r\n", new String(baos.toByteArray(), StandardCharsets.ISO_8859_1));
 	}
 
 	@Test
 	public void testSuccessRx() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, new MultiStreamInputStream("loraat/success.txt", "loraat/success.txt"), baos), new SteppingClock(1649679986400L, 1000));
+		LoraAtClient client = new LoraAtSerialClient2(UUID.randomUUID().toString(), 0, new SerialMock(true, new MultiStreamInputStream("loraat2/success.txt", "loraat2/success.txt"), baos), new SteppingClock(1649679986400L, 1000));
 		LoraResponse response = client.startObservation(createRequest());
 		assertEquals(ResponseStatus.SUCCESS, response.getStatus());
-		assertEquals("AT+TIME=1649679986\r\nAT+LORARX=433.125,500.0,9,7,18,10,8,0,0\r\n", new String(baos.toByteArray(), StandardCharsets.ISO_8859_1));
+		assertEquals("AT+TIME=1649679986\r\nAT+LORARX=433125000,500000,9,7,18,8,0,0,1,1,255\r\n", new String(baos.toByteArray(), StandardCharsets.ISO_8859_1));
 	}
 
 	private static LoraObservationRequest createRequest() {
@@ -176,6 +176,9 @@ public class LoraAtSerialClientTest {
 		req.setPreambleLength(8);
 		req.setSf(9);
 		req.setSyncword(18);
+		req.setUseCrc(true);
+		req.setBeaconSizeBytes(255);
+		req.setUseExplicitHeader(true);
 		return req;
 	}
 }

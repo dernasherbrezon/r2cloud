@@ -118,9 +118,9 @@ public class R2loraClientTest {
 
 	private static LoraObservationRequest createRequest() {
 		LoraObservationRequest req = new LoraObservationRequest();
-		req.setBw(500.0f);
+		req.setBw(500000);
 		req.setCr(7);
-		req.setFrequency(433.125f);
+		req.setFrequency(433125000);
 		req.setGain(0);
 		req.setLdro(0);
 		req.setPreambleLength(8);

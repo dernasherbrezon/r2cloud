@@ -102,7 +102,8 @@ public class LoraAtSerialClient implements LoraAtClient {
 
 	private LoraResponse startObservationImpl(LoraObservationRequest loraRequest) {
 		LoraResponse result = new LoraResponse();
-		String request = "AT+LORARX=" + loraRequest.getFrequency() + "," + loraRequest.getBw() + "," + loraRequest.getSf() + "," + loraRequest.getCr() + "," + loraRequest.getSyncword() + ",10," + loraRequest.getPreambleLength() + "," + loraRequest.getGain() + "," + loraRequest.getLdro() + "\r\n";
+		String request = "AT+LORARX=" + (loraRequest.getFrequency() / 1_000_000.0f) + "," + (loraRequest.getBw() / 1000.0f) + "," + loraRequest.getSf() + "," + loraRequest.getCr() + "," + loraRequest.getSyncword() + ",10," + loraRequest.getPreambleLength() + "," + loraRequest.getGain() + ","
+				+ loraRequest.getLdro() + "\r\n";
 		try {
 			sendRequest(request);
 		} catch (LoraAtException e) {
