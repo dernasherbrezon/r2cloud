@@ -10,6 +10,33 @@ public class LoraObservationRequest {
 	private int preambleLength;
 	private int gain;
 	private int ldro;
+	private boolean useCrc;
+	private boolean useExplicitHeader;
+	private int beaconSizeBytes;
+	
+	public int getBeaconSizeBytes() {
+		return beaconSizeBytes;
+	}
+	
+	public void setBeaconSizeBytes(int beaconSizeBytes) {
+		this.beaconSizeBytes = beaconSizeBytes;
+	}
+
+	public boolean isUseCrc() {
+		return useCrc;
+	}
+
+	public void setUseCrc(boolean useCrc) {
+		this.useCrc = useCrc;
+	}
+
+	public boolean isUseExplicitHeader() {
+		return useExplicitHeader;
+	}
+
+	public void setUseExplicitHeader(boolean useExplicitHeader) {
+		this.useExplicitHeader = useExplicitHeader;
+	}
 
 	public float getFrequency() {
 		return frequency;

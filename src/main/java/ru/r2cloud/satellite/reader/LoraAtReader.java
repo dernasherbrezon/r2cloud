@@ -54,6 +54,9 @@ public class LoraAtReader implements IQReader {
 		loraRequest.setPreambleLength(transmitter.getLoraPreambleLength());
 		loraRequest.setSf(transmitter.getLoraSpreadFactor());
 		loraRequest.setSyncword(transmitter.getLoraSyncword());
+		loraRequest.setBeaconSizeBytes(transmitter.getBeaconSizeBytes());
+		loraRequest.setUseCrc(transmitter.isLoraCrc());
+		loraRequest.setUseExplicitHeader(transmitter.isLoraExplicitHeader());
 		LOG.info("[{}] starting lora observation for {} on {}Mhz", req.getId(), transmitter, loraRequest.getFrequency());
 		LoraResponse response = client.startObservation(loraRequest);
 		if (!response.getStatus().equals(ResponseStatus.SUCCESS)) {

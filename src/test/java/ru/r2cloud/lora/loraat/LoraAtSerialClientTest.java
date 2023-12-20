@@ -24,7 +24,7 @@ import ru.r2cloud.lora.ModulationConfig;
 import ru.r2cloud.lora.ResponseStatus;
 import ru.r2cloud.model.DeviceConnectionStatus;
 
-public class LoraAtClientTest {
+public class LoraAtSerialClientTest {
 
 	@Test
 	public void testFailedToGetStatus() {
@@ -83,7 +83,7 @@ public class LoraAtClientTest {
 	@Test
 	public void testStatusError() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtClientTest.class.getClassLoader().getResourceAsStream("loraat/failure.txt"), baos), new SteppingClock(1649679986400L, 1000));
+		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtSerialClientTest.class.getClassLoader().getResourceAsStream("loraat/failure.txt"), baos), new SteppingClock(1649679986400L, 1000));
 		LoraStatus status = client.getStatus();
 		assertEquals(DeviceConnectionStatus.FAILED, status.getDeviceStatus());
 		assertEquals("AT+CHIP?\r\n", new String(baos.toByteArray(), StandardCharsets.ISO_8859_1));
@@ -92,7 +92,7 @@ public class LoraAtClientTest {
 	@Test
 	public void testStatusSuccess() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtClientTest.class.getClassLoader().getResourceAsStream("loraat/successStatus.txt"), baos), new SteppingClock(1649679986400L, 1000));
+		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtSerialClientTest.class.getClassLoader().getResourceAsStream("loraat/successStatus.txt"), baos), new SteppingClock(1649679986400L, 1000));
 		LoraStatus status = client.getStatus();
 		assertEquals(DeviceConnectionStatus.CONNECTED, status.getDeviceStatus());
 		assertEquals("IDLE", status.getStatus());
@@ -106,7 +106,7 @@ public class LoraAtClientTest {
 	@Test
 	public void testFailToStop() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtClientTest.class.getClassLoader().getResourceAsStream("loraat/failure.txt"), baos), new SteppingClock(1649679986400L, 1000));
+		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtSerialClientTest.class.getClassLoader().getResourceAsStream("loraat/failure.txt"), baos), new SteppingClock(1649679986400L, 1000));
 		LoraResponse response = client.stopObservation();
 		assertEquals(ResponseStatus.FAILURE, response.getStatus());
 		assertEquals("controlled failure", response.getFailureMessage());
@@ -116,7 +116,7 @@ public class LoraAtClientTest {
 	@Test
 	public void testSuccessStop() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtClientTest.class.getClassLoader().getResourceAsStream("loraat/successStop.txt"), baos), new SteppingClock(1649679986400L, 1000));
+		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtSerialClientTest.class.getClassLoader().getResourceAsStream("loraat/successStop.txt"), baos), new SteppingClock(1649679986400L, 1000));
 		LoraResponse response = client.stopObservation();
 		assertEquals(ResponseStatus.SUCCESS, response.getStatus());
 		assertEquals(1, response.getFrames().size());
@@ -131,7 +131,7 @@ public class LoraAtClientTest {
 	@Test
 	public void testFailToSetTime() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtClientTest.class.getClassLoader().getResourceAsStream("loraat/failure.txt"), baos), new SteppingClock(1649679986400L, 1000));
+		LoraAtClient client = new LoraAtSerialClient(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtSerialClientTest.class.getClassLoader().getResourceAsStream("loraat/failure.txt"), baos), new SteppingClock(1649679986400L, 1000));
 		LoraResponse response = client.startObservation(createRequest());
 		assertEquals(ResponseStatus.FAILURE, response.getStatus());
 		assertEquals("controlled failure", response.getFailureMessage());
