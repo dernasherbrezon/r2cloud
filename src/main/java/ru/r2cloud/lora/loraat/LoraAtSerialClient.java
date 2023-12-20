@@ -42,6 +42,21 @@ public class LoraAtSerialClient implements LoraAtClient {
 		this.serial = serial;
 		this.clock = clock;
 	}
+	
+	@Override
+	public boolean isSupported() {
+		List<String> response;
+		try {
+			response = sendRequest("AT+GMR\r\n");
+		} catch (LoraAtException e) {
+			LOG.info(e.getMessage());
+			return false;
+		}
+		if( response.isEmpty() || response.size() != 1 ) {
+			return false;
+		}
+		return response.get(0).equalsIgnoreCase("1.0");
+	}
 
 	@Override
 	public LoraStatus getStatus() {

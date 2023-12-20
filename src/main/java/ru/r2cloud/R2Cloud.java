@@ -34,6 +34,7 @@ import ru.r2cloud.lora.LoraStatus;
 import ru.r2cloud.lora.loraat.JSerial;
 import ru.r2cloud.lora.loraat.LoraAtClient;
 import ru.r2cloud.lora.loraat.LoraAtSerialClient;
+import ru.r2cloud.lora.loraat.LoraAtSerialClient2;
 import ru.r2cloud.lora.loraat.gatt.GattServer;
 import ru.r2cloud.lora.r2lora.R2loraClient;
 import ru.r2cloud.metrics.Metrics;
@@ -184,7 +185,18 @@ public class R2Cloud {
 			deviceManager.addDevice(new LoraDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), client));
 		}
 		for (DeviceConfiguration cur : props.getLoraAtConfigurations()) {
-			LoraAtClient client = new LoraAtSerialClient(cur.getHost(), cur.getTimeout(), new JSerial(), clock);
+			LoraAtClient client = new LoraAtSerialClient2(cur.getHost(), cur.getTimeout(), new JSerial(), clock);
+			if (!client.isSupported()) {
+				client = new LoraAtSerialClient(cur.getHost(), cur.getTimeout(), new JSerial(), clock);
+				if (!client.isSupported()) {
+					LOG.info("[{}] protocol is not supported. skipping", cur.getId());
+					continue;
+				} else {
+					LOG.info("[{}] protocol version 1 is supported", cur.getId());
+				}
+			} else {
+				LOG.info("[{}] protocol version 2 is supported", cur.getId());
+			}
 			populateFrequencies(client.getStatus(), cur);
 			deviceManager.addDevice(new LoraAtDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), client));
 		}

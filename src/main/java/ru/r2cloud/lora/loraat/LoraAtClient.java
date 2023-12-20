@@ -11,5 +11,7 @@ public interface LoraAtClient {
 	LoraResponse startObservation(LoraObservationRequest loraRequest);
 
 	LoraResponse stopObservation();
+	
+	boolean isSupported();
 
 }

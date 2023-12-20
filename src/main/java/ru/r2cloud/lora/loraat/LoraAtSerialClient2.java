@@ -44,6 +44,21 @@ public class LoraAtSerialClient2 implements LoraAtClient {
 	}
 
 	@Override
+	public boolean isSupported() {
+		String version;
+		try {
+			version = readParameter("AT+GMR\r\n");
+		} catch (LoraAtException e) {
+			LOG.info(e.getMessage());
+			return false;
+		}
+		if (version == null) {
+			return false;
+		}
+		return version.equalsIgnoreCase("2.0");
+	}
+
+	@Override
 	public LoraStatus getStatus() {
 		LoraStatus result = new LoraStatus();
 		try {
@@ -90,8 +105,8 @@ public class LoraAtSerialClient2 implements LoraAtClient {
 		LoraResponse result = new LoraResponse();
 		String useCrc = loraRequest.isUseCrc() ? "1" : "0";
 		String useExplicitHeader = loraRequest.isUseExplicitHeader() ? "1" : "0";
-		String request = "AT+LORARX=" + loraRequest.getFrequency() + "," + loraRequest.getBw() + "," + loraRequest.getSf() + "," + loraRequest.getCr() + "," + loraRequest.getSyncword() + "," + loraRequest.getPreambleLength() + "," + loraRequest.getGain() + ","
-				+ loraRequest.getLdro() + "," + useCrc + "," + useExplicitHeader + "," + loraRequest.getBeaconSizeBytes() + "\r\n";
+		String request = "AT+LORARX=" + loraRequest.getFrequency() + "," + loraRequest.getBw() + "," + loraRequest.getSf() + "," + loraRequest.getCr() + "," + loraRequest.getSyncword() + "," + loraRequest.getPreambleLength() + "," + loraRequest.getGain() + "," + loraRequest.getLdro() + "," + useCrc
+				+ "," + useExplicitHeader + "," + loraRequest.getBeaconSizeBytes() + "\r\n";
 		try {
 			sendRequest(request);
 		} catch (LoraAtException e) {
