@@ -63,7 +63,7 @@ public class LoraAtSerialClient2 implements LoraAtClient {
 		LoraStatus result = new LoraStatus();
 		try {
 			ModulationConfig loraConfig = new ModulationConfig();
-			loraConfig.setName(readParameter("AT+GMR\r\n"));
+			loraConfig.setName(readParameter("AT+GMR"));
 			loraConfig.setMinFrequency(Float.parseFloat(readParameter("AT+MINFREQ?")));
 			loraConfig.setMaxFrequency(Float.parseFloat(readParameter("AT+MAXFREQ?")));
 			List<ModulationConfig> configs = new ArrayList<>();
@@ -72,7 +72,7 @@ public class LoraAtSerialClient2 implements LoraAtClient {
 			result.setDeviceStatus(DeviceConnectionStatus.CONNECTED);
 			result.setConfigs(configs);
 		} catch (LoraAtException e1) {
-			LOG.info(e1.getMessage());
+			LOG.error(e1.getMessage());
 			result.setDeviceStatus(DeviceConnectionStatus.FAILED);
 			return result;
 		}
@@ -83,7 +83,7 @@ public class LoraAtSerialClient2 implements LoraAtClient {
 	public LoraResponse startObservation(LoraObservationRequest loraRequest) {
 		// make sure lora internal clock is OK
 		try {
-			sendRequest("AT+TIME=" + (clock.millis() / 1000) + "\r\n");
+			sendRequest("AT+TIME=" + (clock.millis() / 1000));
 		} catch (LoraAtException e) {
 			return new LoraResponse(e.getMessage());
 		}
@@ -106,7 +106,7 @@ public class LoraAtSerialClient2 implements LoraAtClient {
 		String useCrc = loraRequest.isUseCrc() ? "1" : "0";
 		String useExplicitHeader = loraRequest.isUseExplicitHeader() ? "1" : "0";
 		String request = "AT+LORARX=" + loraRequest.getFrequency() + "," + loraRequest.getBw() + "," + loraRequest.getSf() + "," + loraRequest.getCr() + "," + loraRequest.getSyncword() + "," + loraRequest.getPreambleLength() + "," + loraRequest.getGain() + "," + loraRequest.getLdro() + "," + useCrc
-				+ "," + useExplicitHeader + "," + loraRequest.getBeaconSizeBytes() + "\r\n";
+				+ "," + useExplicitHeader + "," + loraRequest.getBeaconSizeBytes();
 		try {
 			sendRequest(request);
 		} catch (LoraAtException e) {
@@ -125,7 +125,7 @@ public class LoraAtSerialClient2 implements LoraAtClient {
 	public LoraResponse stopObservation() {
 		List<String> response;
 		try {
-			response = sendRequest("AT+STOPRX\r\n");
+			response = sendRequest("AT+STOPRX");
 		} catch (LoraAtException e) {
 			return new LoraResponse(e.getMessage());
 		}
@@ -184,7 +184,7 @@ public class LoraAtSerialClient2 implements LoraAtClient {
 			throw new LoraAtException("can't open port: " + portDescriptor);
 		}
 		try {
-			port.getOutputStream().write(request.getBytes(StandardCharsets.ISO_8859_1));
+			port.getOutputStream().write((request + "\r\n").getBytes(StandardCharsets.ISO_8859_1));
 		} catch (IOException e) {
 			if (!port.closePort()) {
 				LOG.info("can't close the port");
