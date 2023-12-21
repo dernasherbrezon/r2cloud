@@ -42,7 +42,7 @@ public class LoraAtSerialClient implements LoraAtClient {
 		this.serial = serial;
 		this.clock = clock;
 	}
-	
+
 	@Override
 	public boolean isSupported() {
 		List<String> response;
@@ -52,7 +52,7 @@ public class LoraAtSerialClient implements LoraAtClient {
 			LOG.info(e.getMessage());
 			return false;
 		}
-		if( response.isEmpty() || response.size() != 1 ) {
+		if (response.isEmpty() || response.size() != 1) {
 			return false;
 		}
 		return response.get(0).equalsIgnoreCase("1.0");
@@ -85,8 +85,8 @@ public class LoraAtSerialClient implements LoraAtClient {
 			}
 			ModulationConfig loraConfig = new ModulationConfig();
 			loraConfig.setName(parts[0].toLowerCase());
-			loraConfig.setMinFrequency(Float.parseFloat(parts[1]));
-			loraConfig.setMaxFrequency(Float.parseFloat(parts[2]));
+			loraConfig.setMinFrequency((long) (Float.parseFloat(parts[1]) * 1_000_000));
+			loraConfig.setMaxFrequency((long) (Float.parseFloat(parts[2]) * 1_000_000));
 			configs.add(loraConfig);
 		}
 		result.setConfigs(configs);

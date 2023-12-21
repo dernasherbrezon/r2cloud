@@ -99,8 +99,8 @@ public class LoraAtSerialClientTest {
 		assertEquals(1, status.getConfigs().size());
 		ModulationConfig config = status.getConfigs().get(0);
 		assertEquals("lora", config.getName());
-		assertEquals(863, config.getMinFrequency(), 0.0f);
-		assertEquals(928, config.getMaxFrequency(), 0.0f);
+		assertEquals(863000000, config.getMinFrequency());
+		assertEquals(928000000, config.getMaxFrequency());
 	}
 
 	@Test

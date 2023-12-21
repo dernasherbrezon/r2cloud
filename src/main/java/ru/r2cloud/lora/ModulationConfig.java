@@ -3,8 +3,8 @@ package ru.r2cloud.lora;
 public class ModulationConfig {
 
 	private String name;
-	private float minFrequency;
-	private float maxFrequency;
+	private long minFrequency;
+	private long maxFrequency;
 
 	public String getName() {
 		return name;
@@ -14,19 +14,19 @@ public class ModulationConfig {
 		this.name = name;
 	}
 
-	public float getMinFrequency() {
+	public long getMinFrequency() {
 		return minFrequency;
 	}
-
-	public void setMinFrequency(float minFrequency) {
+	
+	public void setMinFrequency(long minFrequency) {
 		this.minFrequency = minFrequency;
 	}
-
-	public float getMaxFrequency() {
+	
+	public long getMaxFrequency() {
 		return maxFrequency;
 	}
-
-	public void setMaxFrequency(float maxFrequency) {
+	
+	public void setMaxFrequency(long maxFrequency) {
 		this.maxFrequency = maxFrequency;
 	}
 

@@ -219,8 +219,8 @@ public class R2loraClient {
 		JsonObject modulationObj = value.asObject();
 		ModulationConfig result = new ModulationConfig();
 		result.setName(name);
-		result.setMaxFrequency(modulationObj.getFloat("maxFreq", 0));
-		result.setMinFrequency(modulationObj.getFloat("minFreq", 0));
+		result.setMaxFrequency((long) (modulationObj.getFloat("maxFreq", 0) * 1_000_000));
+		result.setMinFrequency((long) (modulationObj.getFloat("minFreq", 0) * 1_000_000));
 		return result;
 	}
 

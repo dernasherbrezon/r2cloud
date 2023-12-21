@@ -41,8 +41,8 @@ public class R2loraClientTest {
 		assertEquals(1, status.getConfigs().size());
 		ModulationConfig loraConfig = status.getConfigs().get(0);
 		assertEquals("lora", loraConfig.getName());
-		assertEquals(144.0, loraConfig.getMinFrequency(), 0.0001f);
-		assertEquals(500.1, loraConfig.getMaxFrequency(), 0.0001f);
+		assertEquals(144000000, loraConfig.getMinFrequency());
+		assertEquals(500100000, loraConfig.getMaxFrequency());
 	}
 
 	@Test

@@ -355,8 +355,8 @@ public class R2Cloud {
 			if (!cur.getName().equalsIgnoreCase("lora")) {
 				continue;
 			}
-			config.setMinimumFrequency((long) (cur.getMinFrequency() * 1_000_000));
-			config.setMaximumFrequency((long) (cur.getMaxFrequency() * 1_000_000));
+			config.setMinimumFrequency(cur.getMinFrequency());
+			config.setMaximumFrequency(cur.getMaxFrequency());
 			return;
 		}
 	}

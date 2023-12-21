@@ -99,8 +99,8 @@ public class LoraAtSerialClient2Test {
 		assertEquals(1, status.getConfigs().size());
 		ModulationConfig config = status.getConfigs().get(0);
 		assertEquals("2.0", config.getName());
-		assertEquals(863000000, config.getMinFrequency(), 0.0f);
-		assertEquals(928000000, config.getMaxFrequency(), 0.0f);
+		assertEquals(863000000, config.getMinFrequency());
+		assertEquals(928000000, config.getMaxFrequency());
 		assertEquals("AT+GMR\r\nAT+MINFREQ?\r\nAT+MAXFREQ?\r\n", new String(baos.toByteArray(), StandardCharsets.ISO_8859_1));
 	}
 

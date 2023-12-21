@@ -64,8 +64,8 @@ public class LoraAtSerialClient2 implements LoraAtClient {
 		try {
 			ModulationConfig loraConfig = new ModulationConfig();
 			loraConfig.setName(readParameter("AT+GMR"));
-			loraConfig.setMinFrequency(Float.parseFloat(readParameter("AT+MINFREQ?")));
-			loraConfig.setMaxFrequency(Float.parseFloat(readParameter("AT+MAXFREQ?")));
+			loraConfig.setMinFrequency(Long.parseLong(readParameter("AT+MINFREQ?")));
+			loraConfig.setMaxFrequency(Long.parseLong(readParameter("AT+MAXFREQ?")));
 			List<ModulationConfig> configs = new ArrayList<>();
 			configs.add(loraConfig);
 			result.setStatus("IDLE");
