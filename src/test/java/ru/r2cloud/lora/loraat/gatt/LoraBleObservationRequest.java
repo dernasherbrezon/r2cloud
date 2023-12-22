@@ -5,8 +5,8 @@ public class LoraBleObservationRequest {
 	private long startTimeMillis;
 	private long endTimeMillis;
 	private long currentTime;
-	private float frequency;
-	private float loraBandwidth;
+	private long frequency;
+	private long loraBandwidth;
 	private int loraSpreadFactor;
 	private int loraCodingRate;
 	private int loraSyncword;
@@ -42,22 +42,22 @@ public class LoraBleObservationRequest {
 		this.currentTime = currentTime;
 	}
 
-	public float getFrequency() {
+	public long getFrequency() {
 		return frequency;
 	}
-
-	public void setFrequency(float frequency) {
+	
+	public void setFrequency(long frequency) {
 		this.frequency = frequency;
 	}
-
-	public float getLoraBandwidth() {
+	
+	public long getLoraBandwidth() {
 		return loraBandwidth;
 	}
-
-	public void setLoraBandwidth(float loraBandwidth) {
+	
+	public void setLoraBandwidth(long loraBandwidth) {
 		this.loraBandwidth = loraBandwidth;
 	}
-
+	
 	public int getLoraSpreadFactor() {
 		return loraSpreadFactor;
 	}

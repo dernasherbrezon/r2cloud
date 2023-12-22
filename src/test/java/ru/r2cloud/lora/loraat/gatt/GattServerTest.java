@@ -120,7 +120,7 @@ public class GattServerTest {
 
 		byte[] empty = readValue(app.getSource(), application, GattServer.SCHEDULE_CHARACTERISTIC_UUID);
 		assertEquals(0, empty.length);
-		
+
 		LoraFrame frame = createFrame();
 		writeValue(app.getSource(), application, serialize(frame), GattServer.SCHEDULE_CHARACTERISTIC_UUID);
 		assertTrue(device.getFrames().isEmpty());
@@ -221,8 +221,8 @@ public class GattServerTest {
 		assertEquals(startTime, actual.getStartTimeMillis());
 		assertEquals(endTime, actual.getEndTimeMillis());
 		assertEquals(time, actual.getCurrentTime());
-		assertEquals(transmitter.getFrequency() / 1_000_000.0f, actual.getFrequency(), 0.0f);
-		assertEquals(transmitter.getLoraBandwidth() / 1_000.0f, actual.getLoraBandwidth(), 0.0f);
+		assertEquals(transmitter.getFrequency(), actual.getFrequency());
+		assertEquals(transmitter.getLoraBandwidth(), actual.getLoraBandwidth());
 		assertEquals(transmitter.getLoraSpreadFactor(), actual.getLoraSpreadFactor());
 		assertEquals(transmitter.getLoraCodingRate(), actual.getLoraCodingRate());
 		assertEquals(transmitter.getLoraSyncword(), actual.getLoraSyncword());
@@ -242,8 +242,8 @@ public class GattServerTest {
 		result.setStartTimeMillis(dis.readLong());
 		result.setEndTimeMillis(dis.readLong());
 		result.setCurrentTime(dis.readLong());
-		result.setFrequency(dis.readFloat());
-		result.setLoraBandwidth(dis.readFloat());
+		result.setFrequency(dis.readLong());
+		result.setLoraBandwidth(dis.readInt());
 		result.setLoraSpreadFactor(dis.readUnsignedByte());
 		result.setLoraCodingRate(dis.readUnsignedByte());
 		result.setLoraSyncword(dis.readUnsignedByte());
@@ -254,6 +254,8 @@ public class GattServerTest {
 		result.setLoraCrc(dis.readUnsignedByte());
 		result.setLoraExplicitHeader(dis.readUnsignedByte());
 		result.setBeaconSizeBytes(dis.readUnsignedByte());
+		dis.skipBytes(2); // ocp
+		dis.skipBytes(1); // tx pin
 		return result;
 	}
 
