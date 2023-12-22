@@ -69,8 +69,8 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 			dos.writeLong(req.getStartTimeMillis());
 			dos.writeLong(req.getEndTimeMillis());
 			dos.writeLong(currentTime);
-			dos.writeFloat((float) req.getFrequency() / 1_000_000);
-			dos.writeFloat((float) transmitter.getLoraBandwidth() / 1000);
+			dos.writeLong(req.getFrequency());
+			dos.writeInt((int) transmitter.getLoraBandwidth());
 			dos.writeByte(transmitter.getLoraSpreadFactor());
 			dos.writeByte(transmitter.getLoraCodingRate());
 			dos.writeByte(transmitter.getLoraSyncword());
@@ -90,6 +90,8 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 			}
 			// lora packet size cannot be more than 255 bytes
 			dos.writeByte(transmitter.getBeaconSizeBytes());
+			dos.writeShort(240); // over current protection. not used for RX
+			dos.writeByte(0); // pin for TX. not used in RX 
 		} catch (IOException e) {
 			LOG.error("[{}] can't serialize output", bluetoothAddress, e);
 			return new byte[0];
