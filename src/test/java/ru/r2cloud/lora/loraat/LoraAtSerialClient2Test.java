@@ -86,22 +86,22 @@ public class LoraAtSerialClient2Test {
 		LoraAtClient client = new LoraAtSerialClient2(UUID.randomUUID().toString(), 0, new SerialMock(true, LoraAtSerialClient2Test.class.getClassLoader().getResourceAsStream("loraat2/failure.txt"), baos), new SteppingClock(1649679986400L, 1000));
 		LoraStatus status = client.getStatus();
 		assertEquals(DeviceConnectionStatus.FAILED, status.getDeviceStatus());
-		assertEquals("AT+GMR\r\n", new String(baos.toByteArray(), StandardCharsets.ISO_8859_1));
+		assertEquals("AT+MINFREQ?\r\n", new String(baos.toByteArray(), StandardCharsets.ISO_8859_1));
 	}
 
 	@Test
 	public void testStatusSuccess() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		LoraAtClient client = new LoraAtSerialClient2(UUID.randomUUID().toString(), 0, new SerialMock(true, new MultiStreamInputStream("loraat2/successGmr.txt", "loraat2/successMin.txt", "loraat2/successMax.txt"), baos), new SteppingClock(1649679986400L, 1000));
+		LoraAtClient client = new LoraAtSerialClient2(UUID.randomUUID().toString(), 0, new SerialMock(true, new MultiStreamInputStream("loraat2/successMin.txt", "loraat2/successMax.txt"), baos), new SteppingClock(1649679986400L, 1000));
 		LoraStatus status = client.getStatus();
 		assertEquals(DeviceConnectionStatus.CONNECTED, status.getDeviceStatus());
 		assertEquals("IDLE", status.getStatus());
 		assertEquals(1, status.getConfigs().size());
 		ModulationConfig config = status.getConfigs().get(0);
-		assertEquals("2.0", config.getName());
+		assertEquals("lora", config.getName());
 		assertEquals(863000000, config.getMinFrequency());
 		assertEquals(928000000, config.getMaxFrequency());
-		assertEquals("AT+GMR\r\nAT+MINFREQ?\r\nAT+MAXFREQ?\r\n", new String(baos.toByteArray(), StandardCharsets.ISO_8859_1));
+		assertEquals("AT+MINFREQ?\r\nAT+MAXFREQ?\r\n", new String(baos.toByteArray(), StandardCharsets.ISO_8859_1));
 	}
 
 	@Test
