@@ -63,7 +63,7 @@ public class LoraAtSerialClient2 implements LoraAtClient {
 		LoraStatus result = new LoraStatus();
 		try {
 			ModulationConfig loraConfig = new ModulationConfig();
-			loraConfig.setName(readParameter("AT+GMR"));
+			loraConfig.setName("lora");
 			loraConfig.setMinFrequency(Long.parseLong(readParameter("AT+MINFREQ?")));
 			loraConfig.setMaxFrequency(Long.parseLong(readParameter("AT+MAXFREQ?")));
 			List<ModulationConfig> configs = new ArrayList<>();
@@ -183,6 +183,8 @@ public class LoraAtSerialClient2 implements LoraAtClient {
 		if (!port.openPort()) {
 			throw new LoraAtException("can't open port: " + portDescriptor);
 		}
+		//TODO send \r\n before any command
+		//TODO discard everything 
 		try {
 			port.getOutputStream().write((request + "\r\n").getBytes(StandardCharsets.ISO_8859_1));
 		} catch (IOException e) {
@@ -213,15 +215,15 @@ public class LoraAtSerialClient2 implements LoraAtClient {
 				if (curLine.length() == 0) {
 					continue;
 				}
-				if (curLine.startsWith("E ")) {
+				if (curLine.startsWith("E ") || curLine.startsWith("[0;32mE")) {
 					LOG.error("response: {}", curLine);
-				} else if (curLine.startsWith("W ")) {
+				} else if (curLine.startsWith("W ") || curLine.startsWith("[0;32mW")) {
 					LOG.warn("response: {}", curLine);
 				} else {
 					LOG.info("response: {}", curLine);
 				}
 				// skip logging
-				if (curLine.startsWith("I ") || curLine.startsWith("W ") || curLine.startsWith("E ")) {
+				if (curLine.startsWith("I ") || curLine.startsWith("W ") || curLine.startsWith("E ") || curLine.contains("[") || curLine.contains("(")) {
 					continue;
 				}
 				if (curLine.equalsIgnoreCase("ERROR")) {
