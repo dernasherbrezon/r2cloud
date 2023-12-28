@@ -126,9 +126,9 @@ public class LoraAtSerialClient2Test {
 		assertEquals(9655, frame.getFrequencyError());
 		assertEquals(-137, frame.getRssi());
 		assertEquals(3.2, frame.getSnr(), 0.0001f);
-		assertEquals(1605980902, frame.getTimestamp());
+		assertEquals(1703760413119L, frame.getTimestamp());
 	}
-
+	
 	@Test
 	public void testFailToSetTime() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
