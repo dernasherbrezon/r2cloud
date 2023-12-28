@@ -25,6 +25,7 @@ import ru.r2cloud.util.Util;
 public class ScheduleCharacteristic extends BleCharacteristic {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ScheduleCharacteristic.class);
+	private static final int PROTOCOL_VERSION = 2;
 	private final DeviceManager manager;
 	private final Clock clock;
 
@@ -66,6 +67,7 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 		}
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try (DataOutputStream dos = new DataOutputStream(baos)) {
+			dos.writeByte(PROTOCOL_VERSION);
 			dos.writeLong(req.getStartTimeMillis());
 			dos.writeLong(req.getEndTimeMillis());
 			dos.writeLong(currentTime);
@@ -91,7 +93,7 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 			// lora packet size cannot be more than 255 bytes
 			dos.writeByte(transmitter.getBeaconSizeBytes());
 			dos.writeShort(240); // over current protection. not used for RX
-			dos.writeByte(0); // pin for TX. not used in RX 
+			dos.writeByte(0); // pin for TX. not used in RX
 		} catch (IOException e) {
 			LOG.error("[{}] can't serialize output", bluetoothAddress, e);
 			return new byte[0];
@@ -108,6 +110,11 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 		ByteArrayInputStream bais = new ByteArrayInputStream(value);
 		try (DataInputStream dis = new DataInputStream(bais)) {
 			LoraFrame frame = new LoraFrame();
+			int protocolVersion = dis.readUnsignedByte();
+			if (protocolVersion != PROTOCOL_VERSION) {
+				LOG.error("[{}] invalid protocol version {}, expected {}", bluetoothAddress, protocolVersion, PROTOCOL_VERSION);
+				return;
+			}
 			frame.setFrequencyError(dis.readInt());
 			frame.setRssi(dis.readShort());
 			frame.setSnr(dis.readFloat());

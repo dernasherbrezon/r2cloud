@@ -77,7 +77,7 @@ public class GattServer implements Lifecycle {
 			ScheduleCharacteristic schedule = new ScheduleCharacteristic(LORA_SCHEDULE_PATH, new String[] { "read", "write" }, SCHEDULE_CHARACTERISTIC_UUID, LORA_SERVICE_PATH, scheduleDesc, manager, clock);
 
 			BleDescriptor statusDesc = new BleDescriptor(LORA_STATUS_PATH + "/desc0", new String[] { "read" }, "5604f205-0c14-4926-9d7d-21dbab315f2f", LORA_STATUS_PATH, "Status of all connected LoRa modules");
-			DeviceStatus status = new DeviceStatus(LORA_STATUS_PATH, new String[] { "write" }, STATUS_CHARACTERISTIC_UUID, LORA_SERVICE_PATH, statusDesc, manager);
+			StatusCharacteristic status = new StatusCharacteristic(LORA_STATUS_PATH, new String[] { "write" }, STATUS_CHARACTERISTIC_UUID, LORA_SERVICE_PATH, statusDesc, manager);
 			List<BleCharacteristic> characteristics = new ArrayList<>();
 			characteristics.add(schedule);
 			characteristics.add(status);

@@ -76,7 +76,7 @@ public class LoraAtBleReader implements IQReader {
 	}
 
 	private String toLoraAtFriendlyString() {
-		return String.format("%f,%f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", transmitter.getFrequency() / 1000000.0f, transmitter.getLoraBandwidth() / 1000.0f, transmitter.getLoraSpreadFactor(), transmitter.getLoraCodingRate(), transmitter.getLoraSyncword(), 10, transmitter.getLoraPreambleLength(),
+		return String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", transmitter.getFrequency(), transmitter.getLoraBandwidth(), transmitter.getLoraSpreadFactor(), transmitter.getLoraCodingRate(), transmitter.getLoraSyncword(), transmitter.getLoraPreambleLength(),
 				(int) deviceConfiguration.getGain(), transmitter.getLoraLdro(), transmitter.isLoraCrc() ? 1 : 0, transmitter.isLoraExplicitHeader() ? 1 : 0, transmitter.getBeaconSizeBytes());
 	}
 

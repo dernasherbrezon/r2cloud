@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.lora.LoraFrame;
+import ru.r2cloud.lora.loraat.gatt.LoraAtDeviceStatus;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.model.DeviceStatus;
@@ -59,14 +60,11 @@ public class LoraAtBleDevice extends Device {
 		return result;
 	}
 
-	public void setStatus(int batteryLevel, int signalLevel) {
-		LOG.info("[{}] battery level: {} signal: {}", id, batteryLevel, signalLevel);
-		if (batteryLevel == 255) {
-			this.batteryLevel = null;
-		} else {
-			this.batteryLevel = batteryLevel;
-		}
-		this.signalLevel = signalLevel;
+	//TODO update rrd graphs
+	public void updateStatus(LoraAtDeviceStatus status) {
+		LOG.info("[{}] signal: {}", id, status.getBluetoothRssi());
+		this.batteryLevel = null;
+		this.signalLevel = status.getBluetoothRssi();
 	}
 
 	public void addFrame(LoraFrame frame) {
