@@ -83,7 +83,7 @@ public class LoraAtSerialClient2 implements LoraAtClient {
 	public LoraResponse startObservation(LoraObservationRequest loraRequest) {
 		// make sure lora internal clock is OK
 		try {
-			sendRequest("AT+TIME=" + (clock.millis() / 1000));
+			sendRequest("AT+TIME=" + clock.millis());
 		} catch (LoraAtException e) {
 			return new LoraResponse(e.getMessage());
 		}
