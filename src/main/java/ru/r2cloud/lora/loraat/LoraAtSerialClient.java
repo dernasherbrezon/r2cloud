@@ -156,7 +156,7 @@ public class LoraAtSerialClient implements LoraAtClient {
 				curFrame.setRssi((short) Float.parseFloat(parts[1]));
 				curFrame.setSnr(Float.parseFloat(parts[2]));
 				curFrame.setFrequencyError((long) Float.parseFloat(parts[3]));
-				curFrame.setTimestamp(Long.parseLong(parts[4]));
+				curFrame.setTimestamp(Long.parseLong(parts[4]) * 1000);
 				frames.add(curFrame);
 			}
 			result.setFrames(frames);

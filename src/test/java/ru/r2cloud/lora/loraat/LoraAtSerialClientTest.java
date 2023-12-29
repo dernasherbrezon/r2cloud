@@ -125,7 +125,7 @@ public class LoraAtSerialClientTest {
 		assertEquals(9655, frame.getFrequencyError());
 		assertEquals(-137, frame.getRssi());
 		assertEquals(3.2, frame.getSnr(), 0.0001f);
-		assertEquals(1605980902, frame.getTimestamp());
+		assertEquals(1605980902000L, frame.getTimestamp());
 	}
 
 	@Test
