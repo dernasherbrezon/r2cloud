@@ -62,6 +62,8 @@ public class GattServerTest {
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
+	private static final int PROTOCOL_VERSION = 2;
+
 	private TestConfiguration config;
 	private BluezServer bluezServer;
 	private GattServer gattServer;
@@ -78,7 +80,16 @@ public class GattServerTest {
 		ObjectManager application = bluezServer.getRemoteObject(app.getSource(), app.getObjectPath(), ObjectManager.class);
 
 		byte bluetoothSignalLevel = -34;
-		writeValue(app.getSource(), application, new byte[] { (byte) 255, bluetoothSignalLevel }, GattServer.STATUS_CHARACTERISTIC_UUID);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(baos);
+		dos.writeByte(PROTOCOL_VERSION);
+		dos.writeByte(bluetoothSignalLevel);
+		dos.writeByte(-10); // temperature
+		dos.writeShort(3300); // voltage mV
+		dos.writeShort(120); // current mA
+		dos.writeShort(5000); // battery voltage mV
+		dos.writeShort(120); // battery current mA
+		writeValue(app.getSource(), application, baos.toByteArray(), GattServer.STATUS_CHARACTERISTIC_UUID);
 		DeviceStatus status = device.getStatus();
 		assertNull(status.getBatteryLevel());
 		assertNotNull(status.getSignalLevel());
@@ -208,6 +219,7 @@ public class GattServerTest {
 	private static byte[] serialize(LoraFrame frame) throws Exception {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
+		dos.writeByte(PROTOCOL_VERSION);
 		dos.writeInt((int) frame.getFrequencyError());
 		dos.writeShort(frame.getRssi());
 		dos.writeFloat(frame.getSnr());
@@ -239,6 +251,7 @@ public class GattServerTest {
 	private static LoraBleObservationRequest deserialize(byte[] readValue) throws IOException {
 		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(readValue));
 		LoraBleObservationRequest result = new LoraBleObservationRequest();
+		assertEquals(PROTOCOL_VERSION, dis.readUnsignedByte());
 		result.setStartTimeMillis(dis.readLong());
 		result.setEndTimeMillis(dis.readLong());
 		result.setCurrentTime(dis.readLong());
