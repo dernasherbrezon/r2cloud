@@ -62,7 +62,7 @@ public class LoraAtBleDevice extends Device {
 
 	//TODO update rrd graphs
 	public void updateStatus(LoraAtDeviceStatus status) {
-		LOG.info("[{}] signal: {}", id, status.getBluetoothRssi());
+		LOG.info("[{}] status: {}", id, status.toString());
 		this.batteryLevel = null;
 		this.signalLevel = status.getBluetoothRssi();
 	}

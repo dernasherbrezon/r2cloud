@@ -57,4 +57,9 @@ public class LoraAtDeviceStatus {
 		this.batteryCurrent = batteryCurrent;
 	}
 
+	@Override
+	public String toString() {
+		return "bluetoothRssi=" + bluetoothRssi + ", sx127xRawTemperature=" + sx127xRawTemperature + ", solarVoltage=" + solarVoltage + ", solarCurrent=" + solarCurrent + ", batteryVoltage=" + batteryVoltage + ", batteryCurrent=" + batteryCurrent;
+	}
+
 }
