@@ -21,11 +21,29 @@ public class DeviceConfiguration {
 	private boolean compencateDcOffset;
 	private int ppm;
 	private SdrServerConfiguration sdrServerConfiguration;
-	
+	private double maximumBatteryVoltage;
+	private double minimumBatteryVoltage;
+
+	public double getMaximumBatteryVoltage() {
+		return maximumBatteryVoltage;
+	}
+
+	public void setMaximumBatteryVoltage(double maximumBatteryVoltage) {
+		this.maximumBatteryVoltage = maximumBatteryVoltage;
+	}
+
+	public double getMinimumBatteryVoltage() {
+		return minimumBatteryVoltage;
+	}
+
+	public void setMinimumBatteryVoltage(double minimumBatteryVoltage) {
+		this.minimumBatteryVoltage = minimumBatteryVoltage;
+	}
+
 	public void setCompencateDcOffset(boolean compencateDcOffset) {
 		this.compencateDcOffset = compencateDcOffset;
 	}
-	
+
 	public boolean isCompencateDcOffset() {
 		return compencateDcOffset;
 	}

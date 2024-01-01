@@ -426,9 +426,26 @@ public class Configuration {
 			config.setName("LoRa - " + address);
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			config.setGain(gain);
-			config.setMinimumFrequency(getLong(prefix + "minFrequency"));
-			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
+			Long minFrequency = getLong(prefix + "minFrequency");
+			Long maxFrequency = getLong(prefix + "maxFrequency");
+			if (minFrequency == null || maxFrequency == null) {
+				LOG.error("min/max frequencies must be specified for {}", prefix);
+				continue;
+			}
+			config.setMinimumFrequency(minFrequency);
+			config.setMaximumFrequency(maxFrequency);
 			config.setCompencateDcOffset(false);
+			Double maxBatteryVoltage = getDouble(prefix + "maxVoltage");
+			if (maxBatteryVoltage == null) {
+				// assume li-ion
+				maxBatteryVoltage = 4.2;
+			}
+			Double minBatteryVoltage = getDouble(prefix + "minVoltage");
+			if (minBatteryVoltage == null) {
+				minBatteryVoltage = 3.0;
+			}
+			config.setMaximumBatteryVoltage(maxBatteryVoltage);
+			config.setMinimumBatteryVoltage(minBatteryVoltage);
 			result.add(config);
 		}
 		return result;

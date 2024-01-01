@@ -53,17 +53,22 @@ public class LoraAtBleDevice extends Device {
 			result.setStatus(DeviceConnectionStatus.CONNECTED);
 		} else {
 			result.setStatus(DeviceConnectionStatus.FAILED);
+			result.setFailureMessage("Not connected yet");
 		}
 		result.setBatteryLevel(batteryLevel);
 		result.setSignalLevel(signalLevel);
-		result.setFailureMessage("Not connected yet");
 		return result;
 	}
 
-	//TODO update rrd graphs
 	public void updateStatus(LoraAtDeviceStatus status) {
 		LOG.info("[{}] status: {}", id, status.toString());
-		this.batteryLevel = null;
+		if (status.getBatteryVoltage() != 0) {
+			double total = getDeviceConfiguration().getMaximumBatteryVoltage() - getDeviceConfiguration().getMinimumBatteryVoltage();
+			// status battery voltage in mV
+			this.batteryLevel = (int) (((status.getBatteryVoltage() / 1000.0 - getDeviceConfiguration().getMinimumBatteryVoltage()) / total) * 100);
+		} else {
+			this.batteryLevel = null;
+		}
 		this.signalLevel = status.getBluetoothRssi();
 	}
 
