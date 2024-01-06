@@ -57,7 +57,7 @@ public class SharedRotatorTest extends RegisteredTest {
 		result.setProperty("rtlsdr.device.1.minFrequency", 433000000);
 		result.setProperty("rtlsdr.device.1.maxFrequency", 480000000);
 
-		result.remove("r2lora.devices");
+		result.remove("loraatwifi.devices");
 		result.remove("loraat.devices");
 
 		return result;

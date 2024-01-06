@@ -24,6 +24,7 @@ import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
 
+@Deprecated
 public class R2loraReader implements IQReader {
 
 	private static final Logger LOG = LoggerFactory.getLogger(R2loraReader.class);

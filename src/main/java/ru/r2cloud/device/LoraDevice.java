@@ -19,6 +19,7 @@ import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ThreadPoolFactory;
 
+@Deprecated
 public class LoraDevice extends Device {
 
 	private final R2loraClient client;

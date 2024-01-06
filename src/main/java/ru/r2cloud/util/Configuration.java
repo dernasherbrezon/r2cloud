@@ -317,6 +317,7 @@ public class Configuration {
 		return result;
 	}
 
+	@Deprecated
 	public List<DeviceConfiguration> getLoraConfigurations() {
 		List<String> loraDevices = getProperties("r2lora.devices");
 		if (loraDevices.isEmpty()) {
@@ -340,6 +341,45 @@ public class Configuration {
 			config.setName("LoRa - " + config.getHost() + ":" + config.getPort());
 			config.setRotatorConfiguration(getRotatorConfiguration("r2lora.device." + cur + "."));
 			config.setGain(gain);
+			config.setCompencateDcOffset(false);
+			result.add(config);
+		}
+		return result;
+	}
+
+	public List<DeviceConfiguration> getLoraAtWifiConfigurations() {
+		List<String> loraDevices = getProperties("loraatwifi.devices");
+		if (loraDevices.isEmpty()) {
+			return Collections.emptyList();
+		}
+		Integer timeout = getInteger("loraatwifi.timeout");
+		List<DeviceConfiguration> result = new ArrayList<>(loraDevices.size());
+		for (String cur : loraDevices) {
+			String prefix = "loraatwifi.device." + cur + ".";
+			DeviceConfiguration config = new DeviceConfiguration();
+			config.setHost(getProperty(prefix + "host"));
+			config.setPort(getInteger(prefix + "port"));
+			config.setUsername(getProperty(prefix + "username"));
+			config.setPassword(getProperty(prefix + "password"));
+			config.setTimeout(timeout);
+			String hostport = config.getHost() + ":" + config.getPort();
+			config.setId(LORA_AT_DEVICE_PREFIX + hostport);
+			config.setName("LoRa - " + hostport);
+			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
+			Integer gain = getInteger(prefix + "gain");
+			if (gain == null) {
+				// by default should be auto
+				gain = 0;
+			}
+			config.setGain(gain);
+			Long minFrequency = getLong(prefix + "minFrequency");
+			if (minFrequency != null) {
+				config.setMinimumFrequency(minFrequency);
+			}
+			Long maxFrequency = getLong(prefix + "maxFrequency");
+			if (maxFrequency != null) {
+				config.setMaximumFrequency(maxFrequency);
+			}
 			config.setCompencateDcOffset(false);
 			result.add(config);
 		}

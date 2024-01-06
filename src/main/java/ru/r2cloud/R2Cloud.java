@@ -35,6 +35,7 @@ import ru.r2cloud.lora.loraat.JSerial;
 import ru.r2cloud.lora.loraat.LoraAtClient;
 import ru.r2cloud.lora.loraat.LoraAtSerialClient;
 import ru.r2cloud.lora.loraat.LoraAtSerialClient2;
+import ru.r2cloud.lora.loraat.LoraAtWifiClient;
 import ru.r2cloud.lora.loraat.gatt.GattServer;
 import ru.r2cloud.lora.r2lora.R2loraClient;
 import ru.r2cloud.metrics.Metrics;
@@ -205,6 +206,11 @@ public class R2Cloud {
 				gattServer = new GattServer(deviceManager, AddressBuilder.getSystemConnection(), clock);
 			}
 			deviceManager.addDevice(new LoraAtBleDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props));
+		}
+		for (DeviceConfiguration cur : props.getLoraAtWifiConfigurations()) {
+			LoraAtWifiClient client = new LoraAtWifiClient(cur.getHost(), cur.getPort(), cur.getUsername(), cur.getPassword(), cur.getTimeout());
+			populateFrequencies(client.getStatus(), cur);
+			deviceManager.addDevice(new LoraAtDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), client));
 		}
 		for (DeviceConfiguration cur : props.getSpyServerConfigurations()) {
 			SpyClient client = new SpyClient(cur.getHost(), cur.getPort(), cur.getTimeout());

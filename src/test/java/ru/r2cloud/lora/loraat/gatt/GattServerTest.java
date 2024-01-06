@@ -91,7 +91,7 @@ public class GattServerTest {
 		dos.writeShort(120); // battery current mA
 		writeValue(app.getSource(), application, baos.toByteArray(), GattServer.STATUS_CHARACTERISTIC_UUID);
 		DeviceStatus status = device.getStatus();
-		assertNull(status.getBatteryLevel());
+		assertEquals(166, status.getBatteryLevel().intValue());
 		assertNotNull(status.getSignalLevel());
 		assertEquals(bluetoothSignalLevel, status.getSignalLevel().intValue());
 

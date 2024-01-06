@@ -1,0 +1,13 @@
+{
+	"freq": 433125000,
+	"bw": 500000,
+	"sf": 9,
+	"cr": 7,
+	"syncWord": 18,
+	"preambleLength": 8,
+	"ldo": 0,
+	"gain": 0,
+	"useCrc": 1,
+	"useExplicitHeader": 1,
+	"length": 255
+}

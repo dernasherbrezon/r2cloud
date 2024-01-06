@@ -63,7 +63,7 @@ public abstract class BaseTest {
 	private RotctrldMock rotctrlMockForLora;
 	private SatnogsServerMock satnogs;
 	private SpyServerMock spyServerMock;
-	protected HttpServer r2loraServer;
+	protected HttpServer loraAtWifiServer;
 
 	protected RestClient client;
 
@@ -116,9 +116,9 @@ public abstract class BaseTest {
 		rotctrlMockForLora.setHandler(new CollectingRequestHandler("RPRT 0\n"));
 		rotctrlMockForLora.start();
 
-		r2loraServer = HttpServer.create(new InetSocketAddress("127.0.0.1", R2LORA_PORT), 0);
-		r2loraServer.createContext("/status", new JsonHttpResponse("r2loratest/status.json", 200));
-		r2loraServer.start();
+		loraAtWifiServer = HttpServer.create(new InetSocketAddress("127.0.0.1", R2LORA_PORT), 0);
+		loraAtWifiServer.createContext("/api/v2/status", new JsonHttpResponse("loraatwifitest/status.json", 200));
+		loraAtWifiServer.start();
 
 		rtlSdrMock = TestUtil.setupScript(new File(tempFolder.getRoot(), "rtl_sdr_mock.sh"));
 		rtlTestMock = TestUtil.setupScript(new File(tempFolder.getRoot(), "rtl_test_mock.sh"));
@@ -202,8 +202,8 @@ public abstract class BaseTest {
 		if (rotctrlMockForLora != null) {
 			rotctrlMockForLora.stop();
 		}
-		if (r2loraServer != null) {
-			r2loraServer.stop(0);
+		if (loraAtWifiServer != null) {
+			loraAtWifiServer.stop(0);
 		}
 		if (satnogs != null) {
 			satnogs.stop();
