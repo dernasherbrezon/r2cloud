@@ -30,6 +30,7 @@ import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
 
+@Deprecated
 public class R2loraReaderTest {
 
 	@Rule

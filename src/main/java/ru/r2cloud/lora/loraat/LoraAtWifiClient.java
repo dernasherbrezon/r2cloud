@@ -48,7 +48,7 @@ public class LoraAtWifiClient implements LoraAtClient {
 	public LoraAtWifiClient(String host, int port, String username, String password, int timeout) {
 		this.hostname = "http://" + host + ":" + port;
 		this.basicAuth = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.ISO_8859_1));
-		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMillis(timeout)).build();
+		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_1_1).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMillis(timeout)).build();
 	}
 
 	@Override

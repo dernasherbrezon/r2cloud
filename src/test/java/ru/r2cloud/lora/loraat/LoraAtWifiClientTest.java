@@ -66,12 +66,12 @@ public class LoraAtWifiClientTest {
 		response = client.stopObservation();
 		assertEquals(ResponseStatus.SUCCESS, response.getStatus());
 		assertEquals(1, response.getFrames().size());
-		LoraFrame r2loraFrame = response.getFrames().get(0);
-		assertArrayEquals(new byte[] { (byte) 0xca, (byte) 0xfe }, r2loraFrame.getData());
-		assertEquals(-121, r2loraFrame.getRssi());
-		assertEquals(-5.75, r2loraFrame.getSnr(), 0.00001f);
-		assertEquals(-729, r2loraFrame.getFrequencyError());
-		assertEquals(1641987504, r2loraFrame.getTimestamp());
+		LoraFrame frame = response.getFrames().get(0);
+		assertArrayEquals(new byte[] { (byte) 0xca, (byte) 0xfe }, frame.getData());
+		assertEquals(-121, frame.getRssi());
+		assertEquals(-5.75, frame.getSnr(), 0.00001f);
+		assertEquals(-729, frame.getFrequencyError());
+		assertEquals(1641987504, frame.getTimestamp());
 	}
 
 	@Test

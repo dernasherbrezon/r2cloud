@@ -49,7 +49,7 @@ public abstract class BaseTest {
 	private static final Logger LOG = LoggerFactory.getLogger(BaseTest.class);
 	public static final int ROTCTRLD_PORT = 8004;
 	private static final int ROTCTRLD_PORT_LORA = 8006;
-	private static final int R2LORA_PORT = 8005;
+	private static final int LORA_AT_WIFI_PORT = 8005;
 	private static final int SPYSERVER_MOCK = 8008;
 
 	private R2Cloud server;
@@ -116,7 +116,7 @@ public abstract class BaseTest {
 		rotctrlMockForLora.setHandler(new CollectingRequestHandler("RPRT 0\n"));
 		rotctrlMockForLora.start();
 
-		loraAtWifiServer = HttpServer.create(new InetSocketAddress("127.0.0.1", R2LORA_PORT), 0);
+		loraAtWifiServer = HttpServer.create(new InetSocketAddress("127.0.0.1", LORA_AT_WIFI_PORT), 0);
 		loraAtWifiServer.createContext("/api/v2/status", new JsonHttpResponse("loraatwifitest/status.json", 200));
 		loraAtWifiServer.start();
 
