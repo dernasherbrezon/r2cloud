@@ -69,6 +69,9 @@ public class ObservationTest extends RegisteredTest {
 		JsonHttpResponse spectogramHandler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
 		server.setSpectogramMock(1L, spectogramHandler);
 
+		loraAtWifiServer.createContext("/api/v2/lora/rx/start", new JsonHttpResponse("loraatwifitest/success.json", 200));
+		loraAtWifiServer.createContext("/api/v2/rx/stop", new JsonHttpResponse("loraatwifitest/successStop.json", 200));
+
 		// start observation
 		String satelliteId = "46494";
 		List<String> observationIds = client.scheduleStart(satelliteId);
