@@ -79,6 +79,7 @@ public class Decoders {
 		index("57167", "57167-0", new StratosatTk1Decoder(predict, props));
 		index("55104", "55104-0", new Sharjahsat1Decoder(predict, props));
 		index("56212", "56212-0", new RoseyDecoder(predict, props));
+		index("53384", "53384-0", new SputnixDecoder(predict, props));
 	}
 
 	public Decoder findByTransmitter(Transmitter transmitter) {
