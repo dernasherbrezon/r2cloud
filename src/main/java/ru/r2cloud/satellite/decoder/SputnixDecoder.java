@@ -20,7 +20,11 @@ public class SputnixDecoder extends UspDecoder {
 		@SuppressWarnings("unchecked")
 		SputnixPictureDecoder decoder = new SputnixPictureDecoder((List<SputnixBeacon>) beacons);
 		while (decoder.hasNext()) {
-			return decoder.next();
+			BufferedImage result = decoder.next();
+			if (result == null) {
+				continue;
+			}
+			return result;
 		}
 		return null;
 	}

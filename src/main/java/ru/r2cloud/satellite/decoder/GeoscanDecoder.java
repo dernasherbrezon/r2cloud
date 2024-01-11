@@ -24,7 +24,11 @@ public class GeoscanDecoder extends TelemetryDecoder {
 		@SuppressWarnings("unchecked")
 		GeoscanPictureDecoder decoder = new GeoscanPictureDecoder((List<GeoscanBeacon>) beacons);
 		while (decoder.hasNext()) {
-			return decoder.next();
+			BufferedImage result = decoder.next();
+			if (result == null) {
+				continue;
+			}
+			return result;
 		}
 		return null;
 	}

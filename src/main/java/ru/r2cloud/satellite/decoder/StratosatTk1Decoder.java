@@ -18,13 +18,17 @@ public class StratosatTk1Decoder extends TelemetryDecoder {
 	public StratosatTk1Decoder(PredictOreKit predict, Configuration config) {
 		super(predict, config);
 	}
-	
+
 	@Override
 	protected BufferedImage decodeImage(List<? extends Beacon> beacons) {
 		@SuppressWarnings("unchecked")
 		StratosatTk1PictureDecoder decoder = new StratosatTk1PictureDecoder((List<StratosatTk1Beacon>) beacons);
 		while (decoder.hasNext()) {
-			return decoder.next();
+			BufferedImage result = decoder.next();
+			if (result == null) {
+				continue;
+			}
+			return result;
 		}
 		return null;
 	}
