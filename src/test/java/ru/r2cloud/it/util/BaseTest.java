@@ -80,7 +80,7 @@ public abstract class BaseTest {
 
 	@Before
 	public void start() throws Exception {
-		LogManager.getLogManager().reset();
+//		LogManager.getLogManager().reset();
 		tempDirectory = new File(tempFolder.getRoot(), "tmp");
 		if (!tempDirectory.mkdirs()) {
 			throw new RuntimeException("unable to create temp dir: " + tempDirectory.getAbsolutePath());
