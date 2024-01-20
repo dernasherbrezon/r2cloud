@@ -125,6 +125,8 @@ public class Decoders {
 			return new TUBiX20Decoder(predict, props, transmitter.getBeaconClass());
 		} else if (transmitter.getFraming().equals(Framing.MOBITEX)) {
 			return new MobitexDecoder(predict, props, transmitter.getBeaconClass());
+		} else if (transmitter.getFraming().equals(Framing.CCSDS)) {
+			return new CcsdsDecoder(predict, props, transmitter.getBeaconClass());
 		} else if (transmitter.getFraming().equals(Framing.CC11XX)) {
 			return new Cc11xxDecoder(predict, props, transmitter.getBeaconClass(), transmitter.getBeaconSizeBytes());
 		} else {
