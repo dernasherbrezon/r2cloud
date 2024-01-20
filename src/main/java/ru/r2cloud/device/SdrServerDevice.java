@@ -63,6 +63,9 @@ public class SdrServerDevice extends Device {
 
 		List<BandFrequency> bandwidths = new ArrayList<>();
 		for (Transmitter curTransmitter : scheduledTransmitters) {
+			if (curTransmitter.getBaudRates().isEmpty()) {
+				continue;
+			}
 			Integer maxBaudRate = Collections.max(curTransmitter.getBaudRates());
 			if (maxBaudRate == null) {
 				continue;
@@ -96,7 +99,9 @@ public class SdrServerDevice extends Device {
 			}
 			currentBandTransmitters.add(cur.getTransmitter());
 		}
-		transmittersPerBand.put(currentBand, currentBandTransmitters);
+		if (currentBand != null) {
+			transmittersPerBand.put(currentBand, currentBandTransmitters);
+		}
 		LOG.info("[{}] active bands are:", id);
 		for (Entry<BandFrequency, List<Transmitter>> cur : transmittersPerBand.entrySet()) {
 			LOG.info("  {} - {}", cur.getKey().getLower(), cur.getKey().getUpper());

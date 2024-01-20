@@ -2,6 +2,7 @@ package ru.r2cloud.model;
 
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -91,19 +92,19 @@ public class Transmitter {
 			this.updated = new Date(copy.updated.getTime());
 		}
 	}
-	
+
 	public int getPriorityIndex() {
 		return priorityIndex;
 	}
-	
+
 	public void setPriorityIndex(int priorityIndex) {
 		this.priorityIndex = priorityIndex;
 	}
-	
+
 	public long getFrequencyBand() {
 		return frequencyBand;
 	}
-	
+
 	public void setFrequencyBand(long frequencyBand) {
 		this.frequencyBand = frequencyBand;
 	}
@@ -369,6 +370,8 @@ public class Transmitter {
 				bauds.add(baudRatesArray.get(i).asInt());
 			}
 			result.setBaudRates(bauds);
+		} else {
+			result.setBaudRates(Collections.emptyList());
 		}
 		JsonValue modulation = asObject.get("modulation");
 		if (modulation != null) {
