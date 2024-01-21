@@ -65,7 +65,10 @@ public class CelestrakClient {
 							break;
 						}
 						String noradId = line2.substring(2, 2 + 5).trim();
-						result.put(noradId, new Tle(new String[] { curLine.trim(), line1, line2 }));
+						Tle value = new Tle(new String[] { curLine.trim(), line1, line2 });
+						value.setLastUpdateTime(System.currentTimeMillis());
+						value.setSource(obj.getHost());
+						result.put(noradId, value);
 					}
 				}
 			}

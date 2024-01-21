@@ -69,7 +69,7 @@ public class TleDaoTest {
 	public void start() throws Exception {
 		fs = new MockFileSystem(FileSystems.getDefault());
 		config = new TestConfiguration(tempFolder, fs);
-		fileLocation = new File(tempFolder.getRoot(), "tle.txt").getAbsolutePath();
+		fileLocation = new File(tempFolder.getRoot(), "tle.json").getAbsolutePath();
 		config.setProperty("tle.cacheFileLocation", fileLocation);
 		dao = new TleDao(config);
 	}

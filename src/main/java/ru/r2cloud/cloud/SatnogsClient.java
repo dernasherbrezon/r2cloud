@@ -160,6 +160,7 @@ public class SatnogsClient {
 		// if satellite is new launch, then there is no other source for tle
 		// readTle is called only for new launches
 		result.setLastUpdateTime(clock.millis());
+		result.setSource(hostname);
 		return result;
 	}
 

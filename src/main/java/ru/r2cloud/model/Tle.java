@@ -8,6 +8,7 @@ public class Tle {
 
 	private final String[] raw;
 	private long lastUpdateTime;
+	private String source;
 
 	public Tle(String[] tle) {
 		this.raw = tle;
@@ -16,13 +17,21 @@ public class Tle {
 	public String[] getRaw() {
 		return raw;
 	}
-	
+
 	public void setLastUpdateTime(long lastUpdateTime) {
 		this.lastUpdateTime = lastUpdateTime;
 	}
-	
+
 	public long getLastUpdateTime() {
 		return lastUpdateTime;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
 	}
 
 	@Override
@@ -56,6 +65,10 @@ public class Tle {
 		if (raw.length > 2) {
 			json.add("line3", raw[2]);
 		}
+		json.add("updated", lastUpdateTime);
+		if (source != null) {
+			json.add("source", source);
+		}
 		return json;
 	}
 
@@ -64,7 +77,10 @@ public class Tle {
 		raw[0] = json.getString("line1", null);
 		raw[1] = json.getString("line2", null);
 		raw[2] = json.getString("line3", null);
-		return new Tle(raw);
+		Tle result = new Tle(raw);
+		result.setLastUpdateTime(json.getLong("updated", 0));
+		result.setSource(json.getString("source", null));
+		return result;
 	}
 
 }

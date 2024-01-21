@@ -13,6 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
@@ -63,7 +66,7 @@ public class TleDao {
 		cacheByName.clear();
 		putAll(tleById);
 	}
-	
+
 	public void putAll(Map<String, Tle> tleById) {
 		cache.putAll(tleById);
 		for (Tle cur : tleById.values()) {
@@ -82,17 +85,14 @@ public class TleDao {
 	}
 
 	private static void saveTle(Path file, Map<String, Tle> tle) {
+		JsonArray output = new JsonArray();
+		for (Tle cur : tle.values()) {
+			output.add(cur.toJson());
+		}
 		// ensure temp and output are on the same filestore
-		Path tempOutput = file.getParent().resolve("tle.txt.tmp");
+		Path tempOutput = file.getParent().resolve("tle.json.tmp");
 		try (BufferedWriter w = Files.newBufferedWriter(tempOutput)) {
-			for (Tle cur : tle.values()) {
-				w.append(cur.getRaw()[0]);
-				w.newLine();
-				w.append(cur.getRaw()[1]);
-				w.newLine();
-				w.append(cur.getRaw()[2]);
-				w.newLine();
-			}
+			output.writeTo(w);
 		} catch (IOException e) {
 			Util.logIOException(LOG, "unable to save tle: " + file.toAbsolutePath(), e);
 			return;
@@ -110,23 +110,20 @@ public class TleDao {
 		if (!Files.exists(file)) {
 			return result;
 		}
+		JsonArray output = null;
 		try (BufferedReader in = Files.newBufferedReader(file)) {
-			// only first line matters
-			String curLine = null;
-			while ((curLine = in.readLine()) != null) {
-				String line1 = in.readLine();
-				if (line1 == null) {
-					break;
-				}
-				String line2 = in.readLine();
-				if (line2 == null) {
-					break;
-				}
-				String noradId = line2.substring(2, 2 + 5).trim();
-				result.put(noradId, new Tle(new String[] { curLine.trim(), line1, line2 }));
-			}
+			output = Json.parse(in).asArray();
 		} catch (IOException e) {
 			Util.logIOException(LOG, "unable to load tle from cache: " + file.toAbsolutePath(), e);
+			return result;
+		}
+		for (int i = 0; i < output.size(); i++) {
+			Tle cur = Tle.fromJson(output.get(i).asObject());
+			if (cur == null) {
+				continue;
+			}
+			String noradId = cur.getRaw()[cur.getRaw().length - 1].substring(2, 2 + 5).trim();
+			result.put(noradId, cur);
 		}
 		return result;
 	}
