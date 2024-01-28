@@ -38,6 +38,8 @@ public class Observation {
 
 	private String rawURL;
 	private File rawPath;
+	private String sigmfDataURL;
+	private String sigmfMetaURL;
 
 	private String aURL;
 	private File imagePath;
@@ -76,6 +78,22 @@ public class Observation {
 		result.setGroundStation(groundStation);
 		result.setFrequency(frequency);
 		return result;
+	}
+
+	public String getSigmfDataURL() {
+		return sigmfDataURL;
+	}
+
+	public void setSigmfDataURL(String sigmfDataURL) {
+		this.sigmfDataURL = sigmfDataURL;
+	}
+
+	public String getSigmfMetaURL() {
+		return sigmfMetaURL;
+	}
+
+	public void setSigmfMetaURL(String sigmfMetaURL) {
+		this.sigmfMetaURL = sigmfMetaURL;
 	}
 
 	public DataFormat getDataFormat() {
@@ -422,6 +440,8 @@ public class Observation {
 		addNullable("aURL", getaURL(), signed, json);
 		addNullable("spectogramURL", getSpectogramURL(), signed, json);
 		addNullable("data", getDataURL(), signed, json);
+		addNullable("sigmfDataURL", getSigmfDataURL(), signed, json);
+		addNullable("sigmfMetaURL", getSigmfMetaURL(), signed, json);
 		ObservationStatus statusToSave = getStatus();
 		if (statusToSave == null) {
 			// this would avoid double upload/decode of old observations

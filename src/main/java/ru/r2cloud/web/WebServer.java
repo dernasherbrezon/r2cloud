@@ -92,13 +92,18 @@ public class WebServer extends NanoHTTPD {
 			model = new ModelAndView();
 			model.setStatus(Response.Status.INTERNAL_ERROR);
 		}
-		Response result = jsonRenderer.render(model);
-		if (model.getStatus() != null) {
-			result.setStatus(model.getStatus());
-		}
-		if (model.getHeaders() != null) {
-			for (Entry<String, String> cur : model.getHeaders().entrySet()) {
-				result.addHeader(cur.getKey(), cur.getValue());
+		Response result;
+		if (model.getRaw() != null) {
+			result = model.getRaw();
+		} else {
+			result = jsonRenderer.render(model);
+			if (model.getStatus() != null) {
+				result.setStatus(model.getStatus());
+			}
+			if (model.getHeaders() != null) {
+				for (Entry<String, String> cur : model.getHeaders().entrySet()) {
+					result.addHeader(cur.getKey(), cur.getValue());
+				}
 			}
 		}
 		setupCorsHeaders(result);

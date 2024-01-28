@@ -27,7 +27,13 @@ public class SignedURL {
 			return null;
 		}
 		long timestamp = clock.millis();
-		return path + "?hash=" + URLEncoder.encode(computeMD5(path + timestamp + config.getProperty(PASSWORD_PROPERTY_NAME)), StandardCharsets.UTF_8) + "&timestamp=" + timestamp;
+		String concatChar;
+		if (path.contains("?")) {
+			concatChar = "&";
+		} else {
+			concatChar = "?";
+		}
+		return path + concatChar + "hash=" + URLEncoder.encode(computeMD5(path + timestamp + config.getProperty(PASSWORD_PROPERTY_NAME)), StandardCharsets.UTF_8) + "&timestamp=" + timestamp;
 	}
 
 	public boolean validate(String path, Map<String, List<String>> parameters) {

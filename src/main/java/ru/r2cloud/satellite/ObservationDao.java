@@ -165,6 +165,8 @@ public class ObservationDao implements IObservationDao {
 		if (Files.exists(rawPath)) {
 			full.setRawPath(rawPath.toFile());
 			full.setRawURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + rawPath.getFileName());
+			full.setSigmfDataURL("/api/v1/static/observation/sigmf/data?satelliteId=" + satelliteId + "&id=" + full.getId());
+			full.setSigmfMetaURL("/api/v1/static/observation/sigmf/meta?satelliteId=" + satelliteId + "&id=" + full.getId());
 		}
 		Path spectogram = curDirectory.resolve(SPECTOGRAM_FILENAME);
 		if (Files.exists(spectogram)) {
