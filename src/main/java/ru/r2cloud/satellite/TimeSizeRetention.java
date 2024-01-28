@@ -39,6 +39,9 @@ public class TimeSizeRetention {
 					}
 					try (DirectoryStream<Path> observationDirs = Files.newDirectoryStream(dataRoot)) {
 						for (Path curObservation : observationDirs) {
+							if (!Files.isDirectory(curObservation)) {
+								continue;
+							}
 							indexAndCleanup(curObservation);
 						}
 					}
