@@ -18,6 +18,7 @@ import ru.r2cloud.jradio.BeaconOutputStream;
 import ru.r2cloud.jradio.BeaconSource;
 import ru.r2cloud.jradio.ByteInput;
 import ru.r2cloud.jradio.FloatInput;
+import ru.r2cloud.jradio.RxMetadata;
 import ru.r2cloud.jradio.demod.AfskDemodulator;
 import ru.r2cloud.jradio.demod.BpskDemodulator;
 import ru.r2cloud.jradio.demod.FskDemodulator;
@@ -73,6 +74,9 @@ public abstract class TelemetryDecoder implements Decoder {
 						while (currentInput.hasNext()) {
 							Beacon next = currentInput.next();
 							next.setBeginMillis(req.getStartTimeMillis() + (long) ((next.getBeginSample() * 1000) / sampleRate));
+							RxMetadata meta = new RxMetadata();
+							meta.setBaud(baudRate);
+							next.setRxMeta(meta);
 							beacons.add(next);
 							numberOfDecodedPackets++;
 						}

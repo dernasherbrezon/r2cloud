@@ -87,7 +87,7 @@ public class ObservationSigMfData extends AbstractHttpController {
 				// convert to seconds
 				response.addHeader("Cache-Control", "private, max-age=" + ((int) (config.getLong("server.static.signed.validMillis") / 1000)));
 			}
-			response.addHeader("Content-Disposition", "attachment; filename=r2cloud-" + satelliteId + "-" + id + ".sigmf-meta");
+			response.addHeader("Content-Disposition", "attachment; filename=r2cloud-" + id + ".sigmf-data");
 			response.addHeader("Last-Modified", dateFormat.format(new Date(entity.getRawPath().lastModified())));
 			result.setRaw(response);
 		} catch (IOException e) {
