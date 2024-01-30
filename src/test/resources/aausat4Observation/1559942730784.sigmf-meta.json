@@ -1,0 +1,28 @@
+{
+	"global": {
+		"core:author": "r2cloud",
+		"core:description": "Automatic recording from satellite AAUSAT 4 (41460)",
+		"core:version": "1.0.0",
+		"core:recorder": "r2cloud",
+		"core:sample_rate": 240000,
+		"core:license": "https://creativecommons.org/licenses/by/4.0/",
+		"core:geolocation": {
+			"type": "Point",
+			"coordinates": [
+				47.57,
+				53.72,
+				0
+			]
+		},
+		"core:datatype": "cu8"
+	},
+	"captures": [
+		{
+			"core:datetime": "2019-06-07T21:25:30.839",
+			"core:frequency": 437444309,
+			"core:sample_start": 0
+		}
+	],
+	"annotations": [
+	]
+}

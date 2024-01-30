@@ -20,8 +20,11 @@ public class ObservationLoadTest extends RegisteredTest {
 		File basepath = new File(config.getProperty("satellites.basepath.location") + File.separator + "41460" + File.separator + "data" + File.separator + "1559942730784");
 		TestUtil.copy("aausat4Observation/1559942730784.json", new File(basepath, "meta.json"));
 		TestUtil.copy("aausat4Observation/data.bin", new File(basepath, "data.bin"));
+		TestUtil.copy("data/aausat.raw.gz", new File(basepath, "output.raw.gz"));
 		JsonObject observation = client.getObservation("41460", "1559942730784");
 		TestUtil.assertJson("aausat4Observation/expected.json", observation);
+		JsonObject sigmf = client.getSigMf(observation.getString("sigmfMetaURL", null));
+		TestUtil.assertJson("aausat4Observation/1559942730784.sigmf-meta.json", sigmf);
 	}
 
 	@Test

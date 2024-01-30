@@ -585,6 +585,26 @@ public class RestClient {
 		return (JsonObject) Json.parse(response.body());
 	}
 
+	public JsonObject getSigMf(String url) {
+		if (url == null) {
+			return null;
+		}
+		HttpRequest request = createAuthRequest(url).GET().build();
+		HttpResponse<String> response;
+		try {
+			response = httpclient.send(request, BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				throw new RuntimeException("invalid status code: " + response.statusCode());
+			}
+			return (JsonObject) Json.parse(response.body());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
+
 	public JsonObject getObservationPresentation(String satelliteId, String observationId) {
 		HttpResponse<String> response = getObservationResponse("/api/v1/observation/load", satelliteId, observationId);
 		if (response.statusCode() == 404) {

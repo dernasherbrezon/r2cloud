@@ -6,8 +6,14 @@
 	"actualFrequency": 437444309,
 	"satellite": "41460",
 	"numberOfDecodedPackets": 0,
+	"sdrType": "RTLSDR",
+	"dataFormat": "COMPLEX_UNSIGNED_BYTE",
+	"groundStation": {
+		"lat": 53.72,
+		"lon": 47.57
+	},
 	"tle": {
-	    "line1": "AAUSAT 4",
+		"line1": "AAUSAT 4",
 		"line2": "1 41460U 16025E   22114.24237288  .00023891  00000+0  95344-3 0  9995",
 		"line3": "2 41460  98.1778 281.1813 0131168  71.2285 290.3188 15.17490244329716"
 	}
