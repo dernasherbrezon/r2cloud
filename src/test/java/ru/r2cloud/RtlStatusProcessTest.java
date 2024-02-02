@@ -16,7 +16,7 @@ import ru.r2cloud.model.SdrStatus;
 import ru.r2cloud.sdr.RtlStatusProcess;
 import ru.r2cloud.util.ProcessFactory;
 
-public class SdrStatusDaoTest {
+public class RtlStatusProcessTest {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -66,7 +66,7 @@ public class SdrStatusDaoTest {
 		rtlTestServer = new RtlTestServer(8003);
 		rtlTestServer.start();
 
-		dao = new RtlStatusProcess(config, new ProcessFactory(), expectedRtlDeviceId);
+		dao = new RtlStatusProcess(config, new ProcessFactory(), expectedRtlDeviceId, new Object());
 	}
 
 	@After

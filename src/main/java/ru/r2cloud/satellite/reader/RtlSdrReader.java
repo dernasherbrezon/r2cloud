@@ -32,13 +32,15 @@ public class RtlSdrReader implements IQReader {
 	private final ProcessFactory factory;
 	private final ObservationRequest req;
 	private final Transmitter transmitter;
+	private final Object lock;
 
-	public RtlSdrReader(Configuration config, DeviceConfiguration deviceConfiguration, ProcessFactory factory, ObservationRequest req, Transmitter transmitter) {
+	public RtlSdrReader(Configuration config, DeviceConfiguration deviceConfiguration, ProcessFactory factory, ObservationRequest req, Transmitter transmitter, Object lock) {
 		this.config = config;
 		this.deviceConfiguration = deviceConfiguration;
 		this.factory = factory;
 		this.req = req;
 		this.transmitter = transmitter;
+		this.lock = lock;
 		for (int i = 1;; i++) {
 			long rate = 28_800_000 / i;
 			if (rate <= 225000) {
@@ -62,6 +64,12 @@ public class RtlSdrReader implements IQReader {
 
 	@Override
 	public IQData start() throws InterruptedException {
+		synchronized (lock) {
+			return startInternally();
+		}
+	}
+
+	private IQData startInternally() throws InterruptedException {
 		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw.gz");
 		Long startTimeMillis = null;
 		Long endTimeMillis = null;

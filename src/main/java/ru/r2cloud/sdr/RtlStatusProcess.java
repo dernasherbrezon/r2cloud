@@ -24,16 +24,27 @@ public class RtlStatusProcess implements SdrStatusProcess {
 	private final Configuration config;
 	private final ProcessFactory factory;
 	private final int expectedRtlDeviceId;
+	private final Object lock;
 
-	public RtlStatusProcess(Configuration config, ProcessFactory factory, int expectedRtlDeviceId) {
+	public RtlStatusProcess(Configuration config, ProcessFactory factory, int expectedRtlDeviceId, Object lock) {
 		this.config = config;
 		this.factory = factory;
 		this.expectedRtlDeviceId = expectedRtlDeviceId;
+		this.lock = lock;
 	}
 
 	@Override
 	public SdrStatus getStatus() {
 		SdrStatus result = null;
+		// won't help much for systems with multiple rtlsdr sticks
+		// rtl_test will lock each device despite "-d" argument
+		synchronized (lock) {
+			result = getStatusInternally(result);
+		}
+		return result;
+	}
+
+	private SdrStatus getStatusInternally(SdrStatus result) {
 		try {
 			BufferedReader r = null;
 			ProcessWrapper process = factory.create(config.getProperty("satellites.rtlsdr.test.path") + " -t", false, false);
@@ -72,7 +83,7 @@ public class RtlStatusProcess implements SdrStatusProcess {
 		}
 		return result;
 	}
-	
+
 	private static Integer parse(String value) {
 		try {
 			return Integer.parseInt(value);

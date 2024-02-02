@@ -26,21 +26,22 @@ public class RtlSdrDevice extends Device {
 	private final Configuration config;
 	private final ProcessFactory processFactory;
 	private final RtlStatusProcess statusDao;
+	private final Object lock = new Object();
 
 	public RtlSdrDevice(String id, TransmitterFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, DeviceConfiguration deviceConfiguration, IObservationDao observationDao, DecoderService decoderService,
 			PredictOreKit predict, Schedule schedule, Configuration config, ProcessFactory processFactory) {
 		super(id, filter, numberOfConcurrentObservations, observationFactory, threadpoolFactory, clock, deviceConfiguration, observationDao, decoderService, predict, schedule);
 		this.config = config;
 		this.processFactory = processFactory;
-		this.statusDao = new RtlStatusProcess(config, processFactory, deviceConfiguration.getRtlDeviceId());
+		this.statusDao = new RtlStatusProcess(config, processFactory, deviceConfiguration.getRtlDeviceId(), lock);
 	}
 
 	@Override
 	public IQReader createReader(ObservationRequest req, Transmitter transmitter, DeviceConfiguration deviceConfiguration) {
 		if (transmitter.getFraming() == Framing.APT) {
-			return new RtlFmReader(config, deviceConfiguration, processFactory, req);
+			return new RtlFmReader(config, deviceConfiguration, processFactory, req, lock);
 		} else {
-			return new RtlSdrReader(config, deviceConfiguration, processFactory, req, transmitter);
+			return new RtlSdrReader(config, deviceConfiguration, processFactory, req, transmitter, lock);
 		}
 	}
 

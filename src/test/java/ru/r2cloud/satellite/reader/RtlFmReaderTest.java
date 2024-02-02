@@ -52,7 +52,7 @@ public class RtlFmReaderTest {
 		ObservationRequest req = new ObservationRequest();
 		req.setSatelliteId(satelliteId);
 
-		RtlFmReader o = new RtlFmReader(config, new DeviceConfiguration(), factory, req);
+		RtlFmReader o = new RtlFmReader(config, new DeviceConfiguration(), factory, req, new Object());
 		IQData iqData = o.start();
 		o.complete();
 		assertNull(iqData.getDataFile());
@@ -70,7 +70,7 @@ public class RtlFmReaderTest {
 
 		ObservationRequest req = new ObservationRequest();
 
-		RtlFmReader o = new RtlFmReader(config, new DeviceConfiguration(), factory, req);
+		RtlFmReader o = new RtlFmReader(config, new DeviceConfiguration(), factory, req, new Object());
 		o.start();
 		o.complete();
 		assertEquals(data, new String(baos.toByteArray(), StandardCharsets.UTF_8));

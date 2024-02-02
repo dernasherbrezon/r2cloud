@@ -27,16 +27,24 @@ public class RtlFmReader implements IQReader {
 	private final ObservationRequest req;
 	private final Configuration config;
 	private final ProcessFactory factory;
+	private final Object lock;
 
-	public RtlFmReader(Configuration config, DeviceConfiguration deviceConfiguration, ProcessFactory factory, ObservationRequest req) {
+	public RtlFmReader(Configuration config, DeviceConfiguration deviceConfiguration, ProcessFactory factory, ObservationRequest req, Object lock) {
 		this.config = config;
 		this.deviceConfiguration = deviceConfiguration;
 		this.factory = factory;
 		this.req = req;
+		this.lock = lock;
 	}
 
 	@Override
 	public IQData start() throws InterruptedException {
+		synchronized (lock) {
+			return startInternally();
+		}
+	}
+
+	private IQData startInternally() throws InterruptedException {
 		File wavPath = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".wav");
 		ProcessWrapper sox = null;
 		Long startTimeMillis = null;

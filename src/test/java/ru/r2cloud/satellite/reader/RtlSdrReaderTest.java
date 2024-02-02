@@ -44,7 +44,7 @@ public class RtlSdrReaderTest {
 		Transmitter transmitter = new Transmitter();
 		transmitter.setBaudRates(Collections.singletonList(9600));
 		
-		RtlSdrReader o = new RtlSdrReader(config, deviceConfiguration, factory, req, transmitter);
+		RtlSdrReader o = new RtlSdrReader(config, deviceConfiguration, factory, req, transmitter, new Object());
 		IQData iqData = o.start();
 		o.complete();
 		assertNotNull(iqData.getDataFile());
@@ -64,7 +64,7 @@ public class RtlSdrReaderTest {
 		Transmitter transmitter = new Transmitter();
 		transmitter.setBaudRates(Collections.singletonList(9600));
 
-		RtlSdrReader o = new RtlSdrReader(config, deviceConfiguration, factory, req, transmitter);
+		RtlSdrReader o = new RtlSdrReader(config, deviceConfiguration, factory, req, transmitter, new Object());
 		IQData iqData = o.start();
 		o.complete();
 		assertNull(iqData);
@@ -81,7 +81,7 @@ public class RtlSdrReaderTest {
 		Transmitter transmitter = new Transmitter();
 		transmitter.setBaudRates(Collections.singletonList(9600));
 
-		RtlSdrReader o = new RtlSdrReader(config, new DeviceConfiguration(), factory, req, transmitter);
+		RtlSdrReader o = new RtlSdrReader(config, new DeviceConfiguration(), factory, req, transmitter, new Object());
 		IQData iqData = o.start();
 		o.complete();
 		assertNull(iqData.getDataFile());
@@ -98,7 +98,7 @@ public class RtlSdrReaderTest {
 		Transmitter transmitter = new Transmitter();
 		transmitter.setBaudRates(Collections.singletonList(9600));
 
-		RtlSdrReader o = new RtlSdrReader(config, new DeviceConfiguration(), factory, req, transmitter);
+		RtlSdrReader o = new RtlSdrReader(config, new DeviceConfiguration(), factory, req, transmitter, new Object());
 		IQData iqData = o.start();
 		o.complete();
 		assertNotNull(iqData.getDataFile());
