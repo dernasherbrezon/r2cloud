@@ -1,5 +1,87 @@
 [
 	{
+		"id": "R2CLOUD369",
+		"name": "BEESAT-2",
+		"noradId": "39136",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "TUBIX20",
+				"beaconClass": "ru.r2cloud.jradio.tubix20.TUBiX20Beacon",
+				"frequency": 435948500,
+				"bandwidth": 20000,
+				"baudRates": [
+					4800
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD368",
+		"name": "JILIN-1 GAOFEN 2F",
+		"noradId": "49338",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 400450000,
+				"bandwidth": 500000,
+				"status": "ENABLED",
+				"loraBandwidth": 500000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD367",
+		"name": "NanoFF A",
+		"noradId": "58810",
+		"enabled": false,
+		"start": 1705337160000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "TUBIX20",
+				"beaconClass": "ru.r2cloud.jradio.tubix20.TUBiX20Beacon",
+				"frequency": 435950000,
+				"bandwidth": 20000,
+				"baudRates": [
+					4800
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD366",
+		"name": "NanoFF B",
+		"noradId": "58755",
+		"enabled": false,
+		"start": 1704863700000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "TUBIX20",
+				"beaconClass": "ru.r2cloud.jradio.tubix20.TUBiX20Beacon",
+				"frequency": 435950000,
+				"bandwidth": 20000,
+				"baudRates": [
+					4800
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD365",
 		"name": "RANDEV",
 		"noradId": "52898",
@@ -866,7 +948,7 @@
 	},
 	{
 		"id": "R2CLOUD311",
-		"name": "STC-1.2",
+		"name": "CSTP 1.2 (STC 1.2)",
 		"noradId": "57186",
 		"enabled": false,
 		"transmitters": [
@@ -889,7 +971,7 @@
 	},
 	{
 		"id": "R2CLOUD310",
-		"name": "STC-1.1",
+		"name": "CSTP 1.1 (STC 1.1)",
 		"noradId": "57202",
 		"enabled": false,
 		"transmitters": [
@@ -1601,7 +1683,7 @@
 	},
 	{
 		"id": "R2CLOUD271",
-		"name": "2022-090A",
+		"name": "TECMS",
 		"noradId": "53346",
 		"enabled": false,
 		"transmitters": [
@@ -1876,7 +1958,7 @@
 	},
 	{
 		"id": "R2CLOUD245",
-		"name": "2023-072G",
+		"name": "SNIPE 1",
 		"noradId": "56749",
 		"enabled": false,
 		"transmitters": [
@@ -1909,31 +1991,6 @@
 					9600
 				],
 				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD242",
-		"name": "2023-054AN",
-		"noradId": "56214",
-		"enabled": false,
-		"start": 1681541220000,
-		"transmitters": [
-			{
-				"modulation": "LORA",
-				"framing": "LORA",
-				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
-				"frequency": 437400000,
-				"bandwidth": 125000,
-				"status": "ENABLED",
-				"loraBandwidth": 125000,
-				"loraSpreadFactor": 7,
-				"loraSyncword": 18,
-				"loraPreambleLength": 8,
-				"loraLdro": 0,
-				"loraExplicitHeader": true,
-				"loraCodingRate": 8,
-				"loraCrc": true
 			}
 		]
 	},
@@ -2487,7 +2544,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "AX100",
-				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"beaconClass": "ru.r2cloud.jradio.suchai2.Suchai2Beacon",
 				"frequency": 437240000,
 				"bandwidth": 15000,
 				"baudRates": [
@@ -3222,12 +3279,12 @@
 		"id": "R2CLOUD147",
 		"name": "SUCHAI-3",
 		"noradId": "52191",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "AX100",
-				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"beaconClass": "ru.r2cloud.jradio.suchai2.Suchai2Beacon",
 				"frequency": 437250000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -3246,7 +3303,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "AX100",
-				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"beaconClass": "ru.r2cloud.jradio.suchai2.Suchai2Beacon",
 				"beaconSizeBytes": 512,
 				"frequency": 437230000,
 				"bandwidth": 20000,
