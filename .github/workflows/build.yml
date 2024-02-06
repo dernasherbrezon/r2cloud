@@ -76,5 +76,6 @@ jobs:
         java -jar ~/.m2/repository/apt-cli-1.6.jar --url s3://r2cloud --component main --codename stretch --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
         java -jar ~/.m2/repository/apt-cli-1.6.jar --url s3://r2cloud --component main --codename buster --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
         java -jar ~/.m2/repository/apt-cli-1.6.jar --url s3://r2cloud --component main --codename bullseye --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
+        java -jar ~/.m2/repository/apt-cli-1.6.jar --url s3://r2cloud --component main --codename bookworm --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
         java -jar ~/.m2/repository/apt-cli-1.6.jar --url s3://r2cloud --component main --codename bionic --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
         java -jar ~/.m2/repository/apt-cli-1.6.jar --url s3://r2cloud --component main --codename focal --gpg-keyname F2DCBFDCA5A70917   save --patterns ./*.deb
