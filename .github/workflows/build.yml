@@ -71,11 +71,11 @@ jobs:
       if: github.ref == 'refs/heads/master'
       run: |
         cd ./target/
-        [[ -f ~/.m2/repository/apt-cli-1.6.jar ]] || wget --no-clobber --quiet -O ~/.m2/repository/apt-cli-1.6.jar https://github.com/dernasherbrezon/apt-cli/releases/download/apt-cli-1.6/apt-cli.jar
-        java -jar ~/.m2/repository/apt-cli-1.6.jar --url s3://r2cloud --component main --codename r2cloud --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
-        java -jar ~/.m2/repository/apt-cli-1.6.jar --url s3://r2cloud --component main --codename stretch --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
-        java -jar ~/.m2/repository/apt-cli-1.6.jar --url s3://r2cloud --component main --codename buster --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
-        java -jar ~/.m2/repository/apt-cli-1.6.jar --url s3://r2cloud --component main --codename bullseye --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
-        java -jar ~/.m2/repository/apt-cli-1.6.jar --url s3://r2cloud --component main --codename bookworm --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
-        java -jar ~/.m2/repository/apt-cli-1.6.jar --url s3://r2cloud --component main --codename bionic --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
-        java -jar ~/.m2/repository/apt-cli-1.6.jar --url s3://r2cloud --component main --codename focal --gpg-keyname F2DCBFDCA5A70917   save --patterns ./*.deb
+        [[ -f ~/.m2/repository/apt-cli-1.7.jar ]] || wget --no-clobber --quiet -O ~/.m2/repository/apt-cli-1.7.jar https://github.com/dernasherbrezon/apt-cli/releases/download/apt-cli-1.7/apt-cli.jar
+        java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename r2cloud --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
+        java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename stretch --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
+        java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename buster --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
+        java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename bullseye --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
+        java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename bookworm --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
+        java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename bionic --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
+        java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename focal --gpg-keyname F2DCBFDCA5A70917   save --patterns ./*.deb
