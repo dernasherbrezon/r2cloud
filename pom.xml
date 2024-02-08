@@ -314,7 +314,6 @@
 						<rtl-sdr>>=0.6.4</rtl-sdr>
 						<!-- required for stdbuf to force stderr flushing -->
 						<coreutils>>=8.26</coreutils>
-						<wxtoimg>>=2.11.2</wxtoimg>
 						<!-- required by wxtoimg -->
 						<libxft2>>=2.3.2</libxft2>
 						<sox>>=14.4.1</sox>
