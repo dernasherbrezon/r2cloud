@@ -634,44 +634,8 @@ public class RestClient {
 		return result.toString();
 	}
 
-	public JsonObject getDdnsConfiguration() {
-		return getData("/api/v1/admin/config/ddns");
-	}
-
 	public JsonObject getPresentationModeData() {
 		return getData("/api/v1/presentationMode");
-	}
-
-	public void saveDdnsConfiguration(String type, String username, String password, String domain) {
-		HttpResponse<String> response = saveDdnsConfigurationResponse(type, username, password, domain);
-		if (response.statusCode() != 200) {
-			throw new RuntimeException("invalid status code: " + response.statusCode());
-		}
-	}
-
-	public HttpResponse<String> saveDdnsConfigurationResponse(String type, String username, String password, String domain) {
-		JsonObject json = Json.object();
-		if (type != null) {
-			json.add("type", type);
-		}
-		if (username != null) {
-			json.add("username", username);
-		}
-		if (password != null) {
-			json.add("password", password);
-		}
-		if (domain != null) {
-			json.add("domain", domain);
-		}
-		HttpRequest request = createJsonPost("/api/v1/admin/config/ddns", json).build();
-		try {
-			return httpclient.send(request, BodyHandlers.ofString());
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new RuntimeException("unable to send request");
-		}
 	}
 
 }

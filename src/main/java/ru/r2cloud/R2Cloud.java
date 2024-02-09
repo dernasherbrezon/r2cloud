@@ -20,7 +20,6 @@ import pl.edu.icm.jlargearrays.ConcurrencyUtils;
 import ru.r2cloud.cloud.LeoSatDataClient;
 import ru.r2cloud.cloud.LeoSatDataService;
 import ru.r2cloud.cloud.SatnogsClient;
-import ru.r2cloud.ddns.DDNSClient;
 import ru.r2cloud.device.Device;
 import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.device.LoraAtBleDevice;
@@ -78,7 +77,6 @@ import ru.r2cloud.web.api.Health;
 import ru.r2cloud.web.api.PresentationMode;
 import ru.r2cloud.web.api.TLE;
 import ru.r2cloud.web.api.configuration.Configured;
-import ru.r2cloud.web.api.configuration.DDNS;
 import ru.r2cloud.web.api.configuration.General;
 import ru.r2cloud.web.api.configuration.Integrations;
 import ru.r2cloud.web.api.observation.ObservationList;
@@ -113,7 +111,6 @@ public class R2Cloud {
 	private final Authenticator auth;
 	private final Metrics metrics;
 	private final AutoUpdate autoUpdate;
-	private final DDNSClient ddnsClient;
 	private final SatelliteDao satelliteDao;
 	private final TleDao tleDao;
 	private final Housekeeping houseKeeping;
@@ -156,7 +153,6 @@ public class R2Cloud {
 		predict = new PredictOreKit(props);
 		auth = new Authenticator(props);
 		autoUpdate = new AutoUpdate(props);
-		ddnsClient = new DDNSClient(props);
 		satelliteDao = new SatelliteDao(props);
 		tleDao = new TleDao(props);
 		signed = new SignedURL(props, clock);
@@ -239,7 +235,6 @@ public class R2Cloud {
 		index(new MetricsController(signed, metrics));
 		index(new Overview(deviceManager));
 		index(new General(props, autoUpdate));
-		index(new DDNS(props, ddnsClient));
 		index(new TLE(satelliteDao, tleDao));
 		index(new Integrations(props));
 		index(new ObservationSpectrogram(resultDao, spectogramService, signed));
@@ -258,7 +253,6 @@ public class R2Cloud {
 	}
 
 	public void start() {
-		ddnsClient.start();
 		decoderService.start();
 		houseKeeping.start();
 		// device manager should start after tle (it uses TLE to schedule
@@ -283,7 +277,6 @@ public class R2Cloud {
 		deviceManager.stop();
 		houseKeeping.stop();
 		decoderService.stop();
-		ddnsClient.stop();
 	}
 
 	public static void main(String[] args) {

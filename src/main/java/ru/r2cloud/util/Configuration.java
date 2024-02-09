@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.r2cloud.ddns.DDNSType;
 import ru.r2cloud.model.DemodulatorType;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.Modulation;
@@ -556,14 +555,6 @@ public class Configuration {
 			str.append(urls.get(i));
 		}
 		setProperty(name, str.toString());
-	}
-
-	public DDNSType getDdnsType(String name) {
-		String str = getProperty(name);
-		if (str == null || str.trim().length() == 0) {
-			return null;
-		}
-		return DDNSType.valueOf(str);
 	}
 
 	public void remove(String name) {
