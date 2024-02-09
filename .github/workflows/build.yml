@@ -79,3 +79,4 @@ jobs:
         java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename bookworm --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
         java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename bionic --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
         java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename focal --gpg-keyname F2DCBFDCA5A70917   save --patterns ./*.deb
+        java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename jammy --gpg-keyname F2DCBFDCA5A70917   save --patterns ./*.deb
