@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.model.AntennaConfiguration;
+import ru.r2cloud.model.AntennaType;
 import ru.r2cloud.model.DemodulatorType;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.Modulation;
@@ -257,6 +259,7 @@ public class Configuration {
 			config.setMinimumFrequency(getLong(prefix + "minFrequency"));
 			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
+			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
 			result.add(config);
 		}
 		return result;
@@ -280,6 +283,7 @@ public class Configuration {
 			config.setId("sdrserver-" + config.getHost() + ":" + config.getPort());
 			config.setName("SDR-SERVER - " + config.getHost() + ":" + config.getPort());
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix + "."));
+			config.setAntennaConfiguration(getAntennaConfiguration(prefix + "."));
 			SdrServerConfiguration sdrConfig = new SdrServerConfiguration();
 			sdrConfig.setBasepath(getProperty(prefix + "basepath"));
 			sdrConfig.setBandwidth(getLong("satellites.sdrserver.bandwidth"));
@@ -308,6 +312,7 @@ public class Configuration {
 			config.setBiast(getBoolean(prefix + "biast"));
 			config.setPpm(getInteger(prefix + "ppm"));
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
+			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
 			config.setId("rtlsdr-" + config.getRtlDeviceId());
 			config.setName("RTL-SDR " + config.getRtlDeviceId());
 			config.setCompencateDcOffset(true);
@@ -339,6 +344,7 @@ public class Configuration {
 			config.setId("lora-" + config.getHost() + ":" + config.getPort());
 			config.setName("LoRa - " + config.getHost() + ":" + config.getPort());
 			config.setRotatorConfiguration(getRotatorConfiguration("r2lora.device." + cur + "."));
+			config.setAntennaConfiguration(getAntennaConfiguration("r2lora.device." + cur + "."));
 			config.setGain(gain);
 			config.setCompencateDcOffset(false);
 			result.add(config);
@@ -365,6 +371,7 @@ public class Configuration {
 			config.setId(LORA_AT_DEVICE_PREFIX + hostport);
 			config.setName("LoRa - " + hostport);
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
+			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
 			Integer gain = getInteger(prefix + "gain");
 			if (gain == null) {
 				// by default should be auto
@@ -400,6 +407,7 @@ public class Configuration {
 			config.setId("spyserver-" + config.getHost() + ":" + config.getPort());
 			config.setName("SpyServer - " + config.getHost() + ":" + config.getPort());
 			config.setRotatorConfiguration(getRotatorConfiguration("spyserver.device." + cur + "."));
+			config.setAntennaConfiguration(getAntennaConfiguration("spyserver.device." + cur + "."));
 			Integer gain = getInteger("spyserver.device." + cur + ".gain");
 			if (gain == null) {
 				// by default should be auto
@@ -432,6 +440,7 @@ public class Configuration {
 			config.setId("loraat-" + config.getHost());
 			config.setName("LoRa - " + config.getHost());
 			config.setRotatorConfiguration(getRotatorConfiguration("loraat.device." + cur + "."));
+			config.setAntennaConfiguration(getAntennaConfiguration("loraat.device." + cur + "."));
 			config.setGain(gain);
 			config.setCompencateDcOffset(false);
 			result.add(config);
@@ -464,6 +473,7 @@ public class Configuration {
 			config.setId(LORA_AT_DEVICE_PREFIX + config.getHost());
 			config.setName("LoRa - " + address);
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
+			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
 			config.setGain(gain);
 			Long minFrequency = getLong(prefix + "minFrequency");
 			Long maxFrequency = getLong(prefix + "maxFrequency");
@@ -487,6 +497,39 @@ public class Configuration {
 			config.setMinimumBatteryVoltage(minBatteryVoltage);
 			result.add(config);
 		}
+		return result;
+	}
+
+	private AntennaConfiguration getAntennaConfiguration(String prefix) {
+		AntennaConfiguration result = new AntennaConfiguration();
+		Double minElevation = getDouble(prefix + "antenna.minElevation");
+		if (minElevation == null) {
+			// old property
+			minElevation = getDouble("scheduler.elevation.min");
+		}
+		result.setMinElevation(minElevation);
+		Double guaranteedElevation = getDouble(prefix + "antenna.guaranteedElevation");
+		if (guaranteedElevation == null) {
+			guaranteedElevation = getDouble("scheduler.elevation.guaranteed");
+		}
+		result.setGuaranteedElevation(guaranteedElevation);
+		String type = getProperty(prefix + "antenna.type");
+		if (type != null) {
+			result.setType(AntennaType.valueOf(type));
+		} else {
+			result.setType(AntennaType.OMNIDIRECTIONAL);
+		}
+		Double azimuth = getDouble(prefix + "antenna.azimuth");
+		if (azimuth == null) {
+			// default - North
+			azimuth = 0.0;
+		}
+		result.setAzimuth(azimuth);
+		Double elevation = getDouble(prefix + "antenna.elevation");
+		if (elevation == null) {
+			elevation = 0.0;
+		}
+		result.setElevation(elevation);
 		return result;
 	}
 

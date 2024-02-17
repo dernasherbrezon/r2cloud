@@ -14,6 +14,7 @@ public class DeviceConfiguration {
 	private String password;
 
 	private RotatorConfiguration rotatorConfiguration;
+	private AntennaConfiguration antennaConfiguration;
 
 	private float gain;
 	private int rtlDeviceId;
@@ -23,6 +24,14 @@ public class DeviceConfiguration {
 	private SdrServerConfiguration sdrServerConfiguration;
 	private double maximumBatteryVoltage;
 	private double minimumBatteryVoltage;
+	
+	public AntennaConfiguration getAntennaConfiguration() {
+		return antennaConfiguration;
+	}
+	
+	public void setAntennaConfiguration(AntennaConfiguration antennaConfiguration) {
+		this.antennaConfiguration = antennaConfiguration;
+	}
 
 	public double getMaximumBatteryVoltage() {
 		return maximumBatteryVoltage;
