@@ -172,6 +172,22 @@ public class UtilTest {
 		assertEquals(7_000L, Util.getSmallestDividableSampleRate(1600, 21_000L));
 	}
 
+	@Test
+	public void testConvertAzimuthToDegress() {
+		assertEquals(90, Util.convertAzimuthToDegress(0), 0.0);
+		assertEquals(80, Util.convertAzimuthToDegress(10), 0.0);
+		assertEquals(10, Util.convertAzimuthToDegress(80), 0.0);
+		assertEquals(0, Util.convertAzimuthToDegress(90), 0.0);
+		assertEquals(350, Util.convertAzimuthToDegress(100), 0.0);
+		assertEquals(280, Util.convertAzimuthToDegress(170), 0.0);
+		assertEquals(270, Util.convertAzimuthToDegress(180), 0.0);
+		assertEquals(260, Util.convertAzimuthToDegress(190), 0.0);
+		assertEquals(190, Util.convertAzimuthToDegress(260), 0.0);
+		assertEquals(180, Util.convertAzimuthToDegress(270), 0.0);
+		assertEquals(170, Util.convertAzimuthToDegress(280), 0.0);
+		assertEquals(100, Util.convertAzimuthToDegress(350), 0.0);
+	}
+
 	private File setupTempFile(byte[] data, String extension) throws IOException, FileNotFoundException {
 		File file = new File(tempFolder.getRoot(), UUID.randomUUID().toString() + extension);
 		try (FileOutputStream fos = new FileOutputStream(file)) {

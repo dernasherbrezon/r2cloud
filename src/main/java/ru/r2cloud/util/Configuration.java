@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.hipparchus.util.FastMath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -524,12 +525,20 @@ public class Configuration {
 			// default - North
 			azimuth = 0.0;
 		}
-		result.setAzimuth(azimuth);
+		// orekit expects azimuth in counter clock wise degrees
+		result.setAzimuth(FastMath.toRadians(Util.convertAzimuthToDegress(azimuth)));
 		Double elevation = getDouble(prefix + "antenna.elevation");
 		if (elevation == null) {
 			elevation = 0.0;
+		} else {
+			elevation = FastMath.toRadians(elevation);
 		}
 		result.setElevation(elevation);
+		Double beamwidth = getDouble(prefix + "antenna.beamwidth");
+		if (beamwidth == null) {
+			beamwidth = 45.0;
+		}
+		result.setBeamwidth(FastMath.toRadians(beamwidth));
 		return result;
 	}
 

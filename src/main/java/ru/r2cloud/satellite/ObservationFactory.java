@@ -9,6 +9,7 @@ import org.orekit.propagation.analytical.tle.TLEPropagator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.model.AntennaConfiguration;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.SatPass;
 import ru.r2cloud.model.Tle;
@@ -26,13 +27,13 @@ public class ObservationFactory {
 		this.predict = predict;
 	}
 
-	public List<ObservationRequest> createSchedule(Date date, Transmitter transmitter) {
+	public List<ObservationRequest> createSchedule(AntennaConfiguration antenna, Date date, Transmitter transmitter) {
 		if (transmitter.getTle() == null) {
 			LOG.error("no tle for: {}", transmitter.getSatelliteId());
 			return Collections.emptyList();
 		}
 		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(transmitter.getTle().getRaw()[1], transmitter.getTle().getRaw()[2]));
-		List<SatPass> batch = predict.calculateSchedule(date, tlePropagator);
+		List<SatPass> batch = predict.calculateSchedule(antenna, date, tlePropagator);
 		if (batch == null || batch.isEmpty()) {
 			return Collections.emptyList();
 		}

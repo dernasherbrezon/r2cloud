@@ -11,6 +11,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.model.AntennaConfiguration;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Transmitter;
@@ -77,10 +78,10 @@ public class Schedule {
 		observationsById.clear();
 	}
 
-	public synchronized List<ObservationRequest> createInitialSchedule(List<Transmitter> allSatellites, long current) {
+	public synchronized List<ObservationRequest> createInitialSchedule(AntennaConfiguration antenna, List<Transmitter> allSatellites, long current) {
 		Map<String, List<ObservationRequest>> passesBySatellite = new HashMap<>();
 		for (Transmitter cur : allSatellites) {
-			List<ObservationRequest> passes = factory.createSchedule(new Date(current), cur);
+			List<ObservationRequest> passes = factory.createSchedule(antenna, new Date(current), cur);
 			if (passes.isEmpty()) {
 				continue;
 			}
@@ -190,12 +191,12 @@ public class Schedule {
 
 	// even if this satellite will be scheduled well forward the rest of satellites
 	// whole schedule will be cleared on next re-schedule
-	public synchronized List<ObservationRequest> addToSchedule(Transmitter transmitter, long current) {
+	public synchronized List<ObservationRequest> addToSchedule(AntennaConfiguration antenna, Transmitter transmitter, long current) {
 		List<ObservationRequest> previous = observationsByTransmitterId.get(transmitter.getId());
 		if (previous != null && !previous.isEmpty()) {
 			return previous;
 		}
-		List<ObservationRequest> allPasses = factory.createSchedule(new Date(current), transmitter);
+		List<ObservationRequest> allPasses = factory.createSchedule(antenna, new Date(current), transmitter);
 		List<ObservationRequest> batch = new ArrayList<>();
 		for (ObservationRequest cur : allPasses) {
 			TimeSlot slot = new TimeSlot();

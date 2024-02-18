@@ -9,6 +9,15 @@ public class AntennaConfiguration {
 	// fixed directional
 	private double azimuth;
 	private double elevation;
+	private double beamwidth;
+	
+	public double getBeamwidth() {
+		return beamwidth;
+	}
+	
+	public void setBeamwidth(double beamwidth) {
+		this.beamwidth = beamwidth;
+	}
 
 	public AntennaType getType() {
 		return type;

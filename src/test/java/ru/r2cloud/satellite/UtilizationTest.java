@@ -16,6 +16,8 @@ import ru.r2cloud.CelestrakServer;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.device.Device;
 import ru.r2cloud.it.util.BaseTest;
+import ru.r2cloud.model.AntennaConfiguration;
+import ru.r2cloud.model.AntennaType;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
@@ -90,9 +92,14 @@ public class UtilizationTest {
 
 		long start = sdf.parse("2020-09-27 11:13:00").getTime();
 		long end = sdf.parse("2020-09-29 11:13:00").getTime(); // +2 days
+		
+		AntennaConfiguration antenna = new AntennaConfiguration();
+		antenna.setType(AntennaType.OMNIDIRECTIONAL);
+		antenna.setMinElevation(8);
+		antenna.setGuaranteedElevation(20);
 
 		Schedule schedule = new Schedule(new SequentialTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
-		List<ObservationRequest> happened = schedule.createInitialSchedule(satellites, start);
+		List<ObservationRequest> happened = schedule.createInitialSchedule(antenna, satellites, start);
 
 		long total = end - start;
 		long utilized = 0;

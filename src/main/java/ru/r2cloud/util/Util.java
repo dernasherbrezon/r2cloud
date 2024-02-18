@@ -635,6 +635,14 @@ public final class Util {
 		return resultSampleRate;
 	}
 
+	public static double convertAzimuthToDegress(double azimuth) {
+		double result = 450 - azimuth;
+		if (result >= 360) {
+			return result - 360;
+		}
+		return result;
+	}
+
 	private static long findClosest(long fromSampleRate, long toSampleRate) {
 		int[] primeNumbers = new int[] { 11, 7, 5, 3, 2 };
 		long result = fromSampleRate;

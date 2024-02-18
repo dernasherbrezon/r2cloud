@@ -38,6 +38,8 @@ import ru.r2cloud.cloud.LeoSatDataClient;
 import ru.r2cloud.cloud.SatnogsClient;
 import ru.r2cloud.device.Device;
 import ru.r2cloud.device.SdrServerDevice;
+import ru.r2cloud.model.AntennaConfiguration;
+import ru.r2cloud.model.AntennaType;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
@@ -64,13 +66,14 @@ public class ScheduleTest {
 	private MockServer mockServer;
 	private long current;
 	private ObservationFactory factory;
+	private AntennaConfiguration antenna;
 
 	@Test
 	public void testExplicitSchedule() throws Exception {
 		mockServer.mockResponse("/priorities", "43908\n43814\n");
 		houseKeeping.run();
 		List<ObservationRequest> expected = readExpected("expected/scheduleExplicit.txt");
-		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
+		List<ObservationRequest> actual = schedule.createInitialSchedule(antenna, extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
 	}
 
@@ -84,7 +87,7 @@ public class ScheduleTest {
 		houseKeeping.run();
 		current = getTime("2022-09-30 22:17:01.000");
 		List<ObservationRequest> expected = readExpected("expected/scheduleNewLaunches.txt");
-		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
+		List<ObservationRequest> actual = schedule.createInitialSchedule(antenna, extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
 	}
 
@@ -93,7 +96,7 @@ public class ScheduleTest {
 		houseKeeping.run();
 		schedule = new Schedule(new SequentialTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
 		List<ObservationRequest> expected = readExpected("expected/schedule.txt");
-		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
+		List<ObservationRequest> actual = schedule.createInitialSchedule(antenna, extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
 	}
 
@@ -102,7 +105,7 @@ public class ScheduleTest {
 		houseKeeping.run();
 		schedule = new Schedule(new OverlappedTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
 		List<ObservationRequest> expected = readExpected("expected/scheduleOverlapedTimetable.txt");
-		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
+		List<ObservationRequest> actual = schedule.createInitialSchedule(antenna, extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
 	}
 
@@ -121,7 +124,7 @@ public class ScheduleTest {
 	public void testBasicOperations() throws Exception {
 		houseKeeping.run();
 		List<ObservationRequest> expected = readExpected("expected/schedule.txt");
-		List<ObservationRequest> actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
+		List<ObservationRequest> actual = schedule.createInitialSchedule(antenna, extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
 
 		ObservationRequest first = schedule.findFirstByTransmitterId("40378-0", getTime("2020-10-01 11:38:34.491"));
@@ -140,12 +143,12 @@ public class ScheduleTest {
 		List<ObservationRequest> sublist = schedule.findObservations(getTime("2020-10-01 10:55:40.000"), getTime("2020-10-01 13:04:14.000"));
 		assertObservations(readExpected("expected/scheduleSublist.txt"), sublist);
 
-		List<ObservationRequest> noaa18 = schedule.addToSchedule(satelliteDao.findByName("NOAA 18").getTransmitters().get(0), current);
+		List<ObservationRequest> noaa18 = schedule.addToSchedule(antenna, satelliteDao.findByName("NOAA 18").getTransmitters().get(0), current);
 		List<ObservationRequest> extended = new ArrayList<>(actual);
 		extended.addAll(noaa18);
 		assertObservations(readExpected("expected/scheduleWithNoaa18.txt"), extended);
 		// test satellite already scheduled
-		List<ObservationRequest> doubleAdded = schedule.addToSchedule(satelliteDao.findByName("NOAA 18").getTransmitters().get(0), current);
+		List<ObservationRequest> doubleAdded = schedule.addToSchedule(antenna, satelliteDao.findByName("NOAA 18").getTransmitters().get(0), current);
 		assertObservations(noaa18, doubleAdded);
 
 		// cancel all newly added
@@ -159,7 +162,7 @@ public class ScheduleTest {
 
 		schedule.cancelAll();
 		assertTrue(differentTasks.isCancelled());
-		actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), current);
+		actual = schedule.createInitialSchedule(antenna, extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
 
 		first = schedule.findFirstByTransmitterId("40378-0", getTime("2020-10-01 11:38:34.491"));
@@ -173,7 +176,7 @@ public class ScheduleTest {
 
 		schedule.cancelAll();
 		long partialStart = getTime("2020-09-30 23:00:46.872");
-		actual = schedule.createInitialSchedule(extractSatellites(expected, satelliteDao), partialStart);
+		actual = schedule.createInitialSchedule(antenna, extractSatellites(expected, satelliteDao), partialStart);
 		assertEquals(partialStart, actual.get(0).getStartTimeMillis());
 	}
 
@@ -195,6 +198,11 @@ public class ScheduleTest {
 
 		mockServer = new MockServer(8011);
 		mockServer.start();
+		
+		antenna = new AntennaConfiguration();
+		antenna.setType(AntennaType.OMNIDIRECTIONAL);
+		antenna.setMinElevation(8);
+		antenna.setGuaranteedElevation(20);
 
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("locaiton.lat", "51.49");
@@ -204,8 +212,6 @@ public class ScheduleTest {
 		config.setProperty("leosatdata.hostname", server.getUrl());
 		config.setProperty("satnogs.satellites", true);
 		config.setProperty("satnogs.hostname", satnogs.getUrl());
-		config.setProperty("scheduler.elevation.min", 8);
-		config.setProperty("scheduler.elevation.guaranteed", 20);
 		config.setList("tle.urls", celestrak.getUrls());
 		config.setProperty("tle.cacheFileLocation", new File(tempFolder.getRoot(), "tle.txt").getAbsolutePath());
 		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-test.json");

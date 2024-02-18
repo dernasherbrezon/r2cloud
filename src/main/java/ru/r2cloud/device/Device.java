@@ -238,7 +238,7 @@ public abstract class Device implements Lifecycle {
 			}
 			reCalculateFrequencyBands(scheduledTransmitters);
 			long current = clock.millis();
-			List<ObservationRequest> newSchedule = schedule.createInitialSchedule(scheduledTransmitters, current);
+			List<ObservationRequest> newSchedule = schedule.createInitialSchedule(deviceConfiguration.getAntennaConfiguration(), scheduledTransmitters, current);
 			for (ObservationRequest cur : newSchedule) {
 				Transmitter fullSatelliteInfo = findById(cur.getTransmitterId());
 				if (fullSatelliteInfo == null) {
@@ -327,7 +327,7 @@ public abstract class Device implements Lifecycle {
 		}
 		List<ObservationRequest> batch = schedule.getByTransmitterId(transmitter.getId());
 		if (batch.isEmpty()) {
-			batch = schedule.addToSchedule(transmitter, clock.millis());
+			batch = schedule.addToSchedule(deviceConfiguration.getAntennaConfiguration(), transmitter, clock.millis());
 			if (batch.isEmpty()) {
 				return null;
 			}
