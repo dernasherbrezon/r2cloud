@@ -1,5 +1,7 @@
 package ru.r2cloud.model;
 
+import com.eclipsesource.json.JsonObject;
+
 public class RotatorConfiguration {
 
 	private String id;
@@ -55,6 +57,15 @@ public class RotatorConfiguration {
 
 	public void setCycleMillis(int cycleMillis) {
 		this.cycleMillis = cycleMillis;
+	}
+
+	public JsonObject toJson() {
+		JsonObject json = new JsonObject();
+		json.add("rotctrldHostname", hostname);
+		json.add("rotctrldPort", port);
+		json.add("rotatorTolerance", tolerance);
+		json.add("rotatorCycle", cycleMillis);
+		return json;
 	}
 
 }

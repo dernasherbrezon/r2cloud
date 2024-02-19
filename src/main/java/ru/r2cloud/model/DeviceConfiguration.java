@@ -1,9 +1,12 @@
 package ru.r2cloud.model;
 
+import com.eclipsesource.json.JsonObject;
+
 public class DeviceConfiguration {
 
 	private String id;
 	private String name;
+	private DeviceType deviceType;
 	private long minimumFrequency;
 	private long maximumFrequency;
 
@@ -24,11 +27,19 @@ public class DeviceConfiguration {
 	private SdrServerConfiguration sdrServerConfiguration;
 	private double maximumBatteryVoltage;
 	private double minimumBatteryVoltage;
-	
+
+	public DeviceType getDeviceType() {
+		return deviceType;
+	}
+
+	public void setDeviceType(DeviceType deviceType) {
+		this.deviceType = deviceType;
+	}
+
 	public AntennaConfiguration getAntennaConfiguration() {
 		return antennaConfiguration;
 	}
-	
+
 	public void setAntennaConfiguration(AntennaConfiguration antennaConfiguration) {
 		this.antennaConfiguration = antennaConfiguration;
 	}
@@ -175,5 +186,51 @@ public class DeviceConfiguration {
 
 	public void setGain(float gain) {
 		this.gain = gain;
+	}
+
+	public JsonObject toJson() {
+		JsonObject json = new JsonObject();
+		json.add("id", id);
+		json.add("name", name);
+		json.add("deviceType", deviceType.name());
+		if (minimumFrequency != 0) {
+			json.add("minimumFrequency", minimumFrequency / 1000000);
+		}
+		if (maximumFrequency != 0) {
+			json.add("maximumFrequency", maximumFrequency / 1000000);
+		}
+		if (host != null) {
+			json.add("host", host);
+		}
+		if (port != 0) {
+			json.add("port", port);
+		}
+		if (username != null) {
+			json.add("username", username);
+		}
+		json.add("gain", gain);
+		json.add("rtlDeviceId", rtlDeviceId);
+		json.add("biast", biast);
+		json.add("ppm", ppm);
+		json.add("ppmType", "MANUAL");
+		if (maximumBatteryVoltage != 0) {
+			json.add("maximumBatteryVoltage", maximumBatteryVoltage);
+		}
+		if (minimumBatteryVoltage != 0) {
+			json.add("minimumBatteryVoltage", minimumBatteryVoltage);
+		}
+		if (sdrServerConfiguration != null) {
+			json.add("bandwidth", sdrServerConfiguration.getBandwidth());
+			json.add("bandwidthCrop", sdrServerConfiguration.getBandwidthCrop());
+			json.add("basepath", sdrServerConfiguration.getBasepath());
+			json.add("usegzip", sdrServerConfiguration.isUseGzip());
+		}
+		if (rotatorConfiguration != null) {
+			json.add("rotator", rotatorConfiguration.toJson());
+		}
+		if (antennaConfiguration != null) {
+			json.add("antenna", antennaConfiguration.toJson());
+		}
+		return json;
 	}
 }

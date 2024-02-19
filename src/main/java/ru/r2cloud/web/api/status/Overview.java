@@ -31,6 +31,7 @@ public class Overview extends AbstractHttpController {
 		JsonArray devices = new JsonArray();
 		for (DeviceStatus cur : deviceManager.getStatus()) {
 			JsonObject curObj = Json.object();
+			curObj.add("id", cur.getConfig().getId());
 			curObj.add("status", cur.getStatus().name());
 			if (cur.getFailureMessage() != null) {
 				curObj.add("failureMessage", cur.getFailureMessage());

@@ -1,5 +1,7 @@
 package ru.r2cloud.model;
 
+import com.eclipsesource.json.JsonObject;
+
 public class AntennaConfiguration {
 
 	private AntennaType type;
@@ -10,11 +12,11 @@ public class AntennaConfiguration {
 	private double azimuth;
 	private double elevation;
 	private double beamwidth;
-	
+
 	public double getBeamwidth() {
 		return beamwidth;
 	}
-	
+
 	public void setBeamwidth(double beamwidth) {
 		this.beamwidth = beamwidth;
 	}
@@ -57,6 +59,17 @@ public class AntennaConfiguration {
 
 	public void setElevation(double elevation) {
 		this.elevation = elevation;
+	}
+
+	public JsonObject toJson() {
+		JsonObject json = new JsonObject();
+		json.add("antennaType", type.name());
+		json.add("azimuth", azimuth);
+		json.add("elevation", elevation);
+		json.add("beamwidth", beamwidth);
+		json.add("minElevation", minElevation);
+		json.add("guaranteedElevation", guaranteedElevation);
+		return json;
 	}
 
 }

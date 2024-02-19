@@ -30,6 +30,7 @@ import ru.r2cloud.model.AntennaConfiguration;
 import ru.r2cloud.model.AntennaType;
 import ru.r2cloud.model.DemodulatorType;
 import ru.r2cloud.model.DeviceConfiguration;
+import ru.r2cloud.model.DeviceType;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.RotatorConfiguration;
 import ru.r2cloud.model.SdrServerConfiguration;
@@ -261,6 +262,7 @@ public class Configuration {
 			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
+			config.setDeviceType(DeviceType.PLUTOSDR);
 			result.add(config);
 		}
 		return result;
@@ -292,6 +294,7 @@ public class Configuration {
 			sdrConfig.setUseGzip(getBoolean(prefix + "usegzip"));
 			config.setSdrServerConfiguration(sdrConfig);
 			config.setCompencateDcOffset(false);
+			config.setDeviceType(DeviceType.SDRSERVER);
 			result.add(config);
 		}
 		return result;
@@ -316,6 +319,7 @@ public class Configuration {
 			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
 			config.setId("rtlsdr-" + config.getRtlDeviceId());
 			config.setName("RTL-SDR " + config.getRtlDeviceId());
+			config.setDeviceType(DeviceType.RTLSDR);
 			config.setCompencateDcOffset(true);
 			result.add(config);
 		}
@@ -346,6 +350,7 @@ public class Configuration {
 			config.setName("LoRa - " + config.getHost() + ":" + config.getPort());
 			config.setRotatorConfiguration(getRotatorConfiguration("r2lora.device." + cur + "."));
 			config.setAntennaConfiguration(getAntennaConfiguration("r2lora.device." + cur + "."));
+			config.setDeviceType(DeviceType.LORAATWIFI);
 			config.setGain(gain);
 			config.setCompencateDcOffset(false);
 			result.add(config);
@@ -388,6 +393,7 @@ public class Configuration {
 				config.setMaximumFrequency(maxFrequency);
 			}
 			config.setCompencateDcOffset(false);
+			config.setDeviceType(DeviceType.LORAATWIFI);
 			result.add(config);
 		}
 		return result;
@@ -416,6 +422,7 @@ public class Configuration {
 			}
 			config.setGain(gain);
 			config.setCompencateDcOffset(false);
+			config.setDeviceType(DeviceType.SPYSERVER);
 			result.add(config);
 		}
 		return result;
@@ -444,6 +451,7 @@ public class Configuration {
 			config.setAntennaConfiguration(getAntennaConfiguration("loraat.device." + cur + "."));
 			config.setGain(gain);
 			config.setCompencateDcOffset(false);
+			config.setDeviceType(DeviceType.LORAAT);
 			result.add(config);
 		}
 		return result;
@@ -496,6 +504,7 @@ public class Configuration {
 			}
 			config.setMaximumBatteryVoltage(maxBatteryVoltage);
 			config.setMinimumBatteryVoltage(minBatteryVoltage);
+			config.setDeviceType(DeviceType.LORAATBLE);
 			result.add(config);
 		}
 		return result;

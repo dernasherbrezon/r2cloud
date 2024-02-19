@@ -79,6 +79,7 @@ import ru.r2cloud.web.api.TLE;
 import ru.r2cloud.web.api.configuration.Configured;
 import ru.r2cloud.web.api.configuration.General;
 import ru.r2cloud.web.api.configuration.Integrations;
+import ru.r2cloud.web.api.device.ConfigurationLoad;
 import ru.r2cloud.web.api.observation.ObservationList;
 import ru.r2cloud.web.api.observation.ObservationLoad;
 import ru.r2cloud.web.api.observation.ObservationLoadPresentation;
@@ -249,6 +250,7 @@ public class R2Cloud {
 		index(new ScheduleFull(deviceManager));
 		index(new ObservationSigMfData(props, resultDao, signed));
 		index(new ObservationSigMfMeta(props, resultDao, signed, satelliteDao, predict));
+		index(new ConfigurationLoad(deviceManager));
 		webServer = new WebServer(props, controllers, auth, signed);
 	}
 
