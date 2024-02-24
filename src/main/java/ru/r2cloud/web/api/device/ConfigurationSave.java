@@ -8,15 +8,19 @@ import org.slf4j.LoggerFactory;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
+import ru.r2cloud.device.Device;
+import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.model.AntennaConfiguration;
 import ru.r2cloud.model.AntennaType;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceType;
 import ru.r2cloud.model.RotatorConfiguration;
+import ru.r2cloud.model.SdrServerConfiguration;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
 import ru.r2cloud.web.ModelAndView;
+import ru.r2cloud.web.Success;
 import ru.r2cloud.web.ValidationResult;
 import ru.r2cloud.web.WebServer;
 import ru.r2cloud.web.api.Messages;
@@ -24,17 +28,19 @@ import ru.r2cloud.web.api.Messages;
 public class ConfigurationSave extends AbstractHttpController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ConfigurationSave.class);
-	private final Configuration config;
+	private final Configuration props;
+	private final DeviceManager manager;
 
-	public ConfigurationSave(Configuration config) {
-		this.config = config;
+	public ConfigurationSave(Configuration config, DeviceManager manager) {
+		this.props = config;
+		this.manager = manager;
 	}
 
 	@Override
 	public ModelAndView doPost(JsonObject request) {
 		ValidationResult errors = new ValidationResult();
 		DeviceType deviceType = readDeviceType(request, errors);
-		// fail fast fist to reduce complexity of the code below.
+		// fail fast first to reduce complexity of the code below.
 		// no need to check if device type is not null
 		if (deviceType == null) {
 			LOG.info("unable to save: {}", errors);
@@ -42,6 +48,10 @@ public class ConfigurationSave extends AbstractHttpController {
 		}
 		DeviceConfiguration config = new DeviceConfiguration();
 		config.setId(request.getString("id", null));
+		Device device = manager.findDeviceById(config.getId());
+		if (config.getId() != null && device == null) {
+			errors.setGeneral("Unknown device id");
+		}
 		config.setMinimumFrequency((long) (readPositiveFloat(request, "minimumFrequency", errors) * 1000_000));
 		config.setMaximumFrequency((long) (readPositiveFloat(request, "maximumFrequency", errors) * 1000_000));
 		switch (deviceType) {
@@ -56,6 +66,65 @@ public class ConfigurationSave extends AbstractHttpController {
 			}
 			config.setBiast(WebServer.getBoolean(request, "biast"));
 			config.setPpm((int) readOptionalLong(request, "ppm", 0, errors));
+			break;
+		}
+		case LORAAT: {
+			// this is not a hostname, but rather device location
+			config.setHost(WebServer.getString(request, "host"));
+			if (config.getHost() == null) {
+				errors.put("host", Messages.CANNOT_BE_EMPTY);
+			}
+			config.setGain(readLong(request, "gain", errors));
+			if (config.getGain() > 6) {
+				errors.put("gain", "Cannot be more than 6");
+			}
+			break;
+		}
+		case LORAATBLE: {
+			// this is not a hostname, but rather ble address
+			config.setHost(WebServer.getString(request, "host"));
+			if (config.getHost() == null) {
+				errors.put("host", Messages.CANNOT_BE_EMPTY);
+			}
+			config.setGain(readLong(request, "gain", errors));
+			if (config.getGain() > 6) {
+				errors.put("gain", "Cannot be more than 6");
+			}
+			config.setMinimumBatteryVoltage(readPositiveFloat(request, "minimumBatteryVoltage", errors));
+			config.setMaximumBatteryVoltage(readPositiveFloat(request, "maximumBatteryVoltage", errors));
+			break;
+		}
+		case LORAATWIFI: {
+			config.setHost(readHost(request, "host", errors));
+			config.setPort((int) readLong(request, "port", errors));
+			config.setGain(readLong(request, "gain", errors));
+			if (config.getGain() > 6) {
+				errors.put("gain", "Cannot be more than 6");
+			}
+			config.setUsername(WebServer.getString(request, "username"));
+			if (config.getUsername() == null) {
+				errors.put("username", Messages.CANNOT_BE_EMPTY);
+			}
+			config.setPassword(WebServer.getString(request, "password"));
+			if (config.getPassword() == null) {
+				errors.put("password", Messages.CANNOT_BE_EMPTY);
+			}
+			break;
+		}
+		case PLUTOSDR: {
+			config.setGain(readLong(request, "gain", errors));
+			break;
+		}
+		case SDRSERVER: {
+			config.setHost(readHost(request, "host", errors));
+			config.setPort((int) readLong(request, "port", errors));
+			config.setSdrServerConfiguration(readSdrServerConfiguration(request, errors));
+			break;
+		}
+		case SPYSERVER: {
+			config.setHost(readHost(request, "host", errors));
+			config.setPort((int) readLong(request, "port", errors));
+			config.setGain(readPositiveFloat(request, "gain", errors));
 			break;
 		}
 		default:
@@ -83,22 +152,59 @@ public class ConfigurationSave extends AbstractHttpController {
 			LOG.info("unable to save: {}", errors);
 			return new BadRequest(errors);
 		}
-		// TODO Auto-generated method stub
-		return super.doPost(request);
+
+		switch (deviceType) {
+		case RTLSDR: {
+			props.saveRtlSdrConfiguration(config);
+			break;
+		}
+		case LORAAT: {
+			props.saveLoraAtConfiguration(config);
+			break;
+		}
+		case LORAATBLE: {
+			props.saveLoraAtBleConfiguration(config);
+			break;
+		}
+		case LORAATWIFI: {
+			props.saveLoraAtWifiConfiguration(config);
+			break;
+		}
+		case PLUTOSDR: {
+			props.savePlutoSdrConfiguration(config);
+			break;
+		}
+		case SDRSERVER: {
+			props.saveSdrServerConfiguration(config);
+			break;
+		}
+		case SPYSERVER: {
+			props.saveSpyServerConfiguration(config);
+			break;
+		}
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + deviceType);
+		}
+		props.update();
+		// FIXME better forward to restart page
+		return new Success();
+	}
+
+	private static SdrServerConfiguration readSdrServerConfiguration(JsonObject request, ValidationResult errors) {
+		SdrServerConfiguration result = new SdrServerConfiguration();
+		result.setBandwidth((long) (readPositiveFloat(request, "bandwidth", errors) * 1000_000));
+		result.setBandwidthCrop(readLong(request, "bandwidthCrop", errors));
+		result.setBasepath(WebServer.getString(request, "basepath"));
+		if (result.getBasepath() == null) {
+			errors.put("basepath", Messages.CANNOT_BE_EMPTY);
+		}
+		result.setUseGzip(WebServer.getBoolean(request, "usegzip"));
+		return result;
 	}
 
 	private static RotatorConfiguration readRotatorConfiguration(JsonObject request, ValidationResult errors) {
 		RotatorConfiguration result = new RotatorConfiguration();
-		result.setHostname(WebServer.getString(request, "rotctrldHostname"));
-		if (result.getHostname() == null) {
-			errors.put("rotctrldHostname", Messages.CANNOT_BE_EMPTY);
-		} else {
-			try {
-				InetAddress.getByName(result.getHostname());
-			} catch (Exception e) {
-				errors.put("rotctrldHostname", "invalid hostname");
-			}
-		}
+		result.setHostname(readHost(request, "rotctrldHostname", errors));
 		result.setPort((int) readLong(request, "rotctrldPort", errors));
 		result.setTolerance(readPositiveFloat(request, "rotatorTolerance", errors));
 		if (result.getTolerance() > 360.0f) {
@@ -125,6 +231,9 @@ public class ConfigurationSave extends AbstractHttpController {
 			result.setGuaranteedElevation(readPositiveFloat(request, "guaranteedElevation", errors));
 			if (result.getGuaranteedElevation() > 90.0) {
 				errors.put("guaranteedElevation", "cannot be more than 90 degrees");
+			}
+			if (result.getMinElevation() > result.getGuaranteedElevation()) {
+				errors.put("minElevation", "Cannot be more than guaranteed elevation");
 			}
 			break;
 		}
@@ -189,6 +298,22 @@ public class ConfigurationSave extends AbstractHttpController {
 			return 0;
 		}
 		return value.asLong();
+	}
+
+	private static String readHost(JsonObject request, String name, ValidationResult errors) {
+		String result = WebServer.getString(request, name);
+		if (result == null) {
+			errors.put(name, Messages.CANNOT_BE_EMPTY);
+			return null;
+		} else {
+			try {
+				InetAddress.getByName(result);
+				return result;
+			} catch (Exception e) {
+				errors.put(name, "invalid hostname");
+				return null;
+			}
+		}
 	}
 
 	private static long readOptionalLong(JsonObject request, String name, long defaultValue, ValidationResult errors) {

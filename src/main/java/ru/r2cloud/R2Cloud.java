@@ -252,7 +252,7 @@ public class R2Cloud {
 		index(new ObservationSigMfData(props, resultDao, signed));
 		index(new ObservationSigMfMeta(props, resultDao, signed, satelliteDao, predict));
 		index(new ConfigurationLoad(deviceManager));
-		index(new ConfigurationSave(props));
+		index(new ConfigurationSave(props, deviceManager));
 		webServer = new WebServer(props, controllers, auth, signed);
 	}
 

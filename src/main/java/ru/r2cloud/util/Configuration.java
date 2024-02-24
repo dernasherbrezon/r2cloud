@@ -254,7 +254,7 @@ public class Configuration {
 		for (String cur : loraDevices) {
 			String prefix = "plutosdr.device." + cur + ".";
 			DeviceConfiguration config = new DeviceConfiguration();
-			config.setId("plutosdr");
+			config.setId("plutosdr." + cur);
 			config.setName("PlutoSDR");
 			config.setTimeout(timeout);
 			config.setGain(getDouble(prefix + "gain").floatValue());
@@ -269,6 +269,10 @@ public class Configuration {
 			result.add(config);
 		}
 		return result;
+	}
+
+	public void savePlutoSdrConfiguration(DeviceConfiguration config) {
+		// FIXME
 	}
 
 	public List<DeviceConfiguration> getSdrServerConfigurations() {
@@ -286,7 +290,7 @@ public class Configuration {
 			config.setMinimumFrequency(getLong(prefix + "minFrequency"));
 			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
 			config.setTimeout(timeout);
-			config.setId("sdrserver-" + config.getHost() + ":" + config.getPort());
+			config.setId("sdrserver." + cur);
 			config.setName("SDR-SERVER - " + config.getHost() + ":" + config.getPort());
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix + "."));
 			config.setAntennaConfiguration(getAntennaConfiguration(prefix + "."));
@@ -304,6 +308,10 @@ public class Configuration {
 			result.add(config);
 		}
 		return result;
+	}
+
+	public void saveSdrServerConfiguration(DeviceConfiguration config) {
+		// FIXME
 	}
 
 	public List<DeviceConfiguration> getRtlSdrConfigurations() {
@@ -326,13 +334,17 @@ public class Configuration {
 			if (config.getRotatorConfiguration() != null) {
 				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
 			}
-			config.setId("rtlsdr-" + config.getRtlDeviceId());
+			config.setId("rtlsdr." + cur);
 			config.setName("RTL-SDR " + config.getRtlDeviceId());
 			config.setDeviceType(DeviceType.RTLSDR);
 			config.setCompencateDcOffset(true);
 			result.add(config);
 		}
 		return result;
+	}
+
+	public void saveRtlSdrConfiguration(DeviceConfiguration config) {
+		// FIXME
 	}
 
 	@Deprecated
@@ -386,7 +398,7 @@ public class Configuration {
 			config.setPassword(getProperty(prefix + "password"));
 			config.setTimeout(timeout);
 			String hostport = config.getHost() + ":" + config.getPort();
-			config.setId(LORA_AT_DEVICE_PREFIX + hostport);
+			config.setId("loraatwifi." + cur);
 			config.setName("LoRa - " + hostport);
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
@@ -414,6 +426,10 @@ public class Configuration {
 		return result;
 	}
 
+	public void saveLoraAtWifiConfiguration(DeviceConfiguration config) {
+		// FIXME
+	}
+
 	public List<DeviceConfiguration> getSpyServerConfigurations() {
 		List<String> deviceIndices = getProperties("spyserver.devices");
 		if (deviceIndices.isEmpty()) {
@@ -426,7 +442,7 @@ public class Configuration {
 			config.setHost(getProperty("spyserver.device." + cur + ".host"));
 			config.setPort(getInteger("spyserver.device." + cur + ".port"));
 			config.setTimeout(timeout);
-			config.setId("spyserver-" + config.getHost() + ":" + config.getPort());
+			config.setId("spyserver." + cur);
 			config.setName("SpyServer - " + config.getHost() + ":" + config.getPort());
 			config.setRotatorConfiguration(getRotatorConfiguration("spyserver.device." + cur + "."));
 			config.setAntennaConfiguration(getAntennaConfiguration("spyserver.device." + cur + "."));
@@ -446,6 +462,10 @@ public class Configuration {
 		return result;
 	}
 
+	public void saveSpyServerConfiguration(DeviceConfiguration config) {
+		// FIXME
+	}
+
 	public List<DeviceConfiguration> getLoraAtConfigurations() {
 		List<String> loraDevices = getProperties("loraat.devices");
 		if (loraDevices.isEmpty()) {
@@ -463,7 +483,7 @@ public class Configuration {
 			// Yes save port into "host" to be backward compatible
 			config.setHost(getProperty("loraat.device." + cur + ".port"));
 			config.setTimeout(timeout);
-			config.setId("loraat-" + config.getHost());
+			config.setId("loraat." + cur);
 			config.setName("LoRa - " + config.getHost());
 			config.setRotatorConfiguration(getRotatorConfiguration("loraat.device." + cur + "."));
 			config.setAntennaConfiguration(getAntennaConfiguration("loraat.device." + cur + "."));
@@ -476,6 +496,10 @@ public class Configuration {
 			result.add(config);
 		}
 		return result;
+	}
+
+	public void saveLoraAtConfiguration(DeviceConfiguration config) {
+		// FIXME
 	}
 
 	public List<DeviceConfiguration> getLoraAtBleConfigurations() {
@@ -500,7 +524,7 @@ public class Configuration {
 			}
 			config.setHost(address.toLowerCase(Locale.UK));
 			config.setTimeout(timeout);
-			config.setId(LORA_AT_DEVICE_PREFIX + config.getHost());
+			config.setId("loraatble." + cur);
 			config.setName("LoRa - " + address);
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
@@ -532,6 +556,10 @@ public class Configuration {
 			result.add(config);
 		}
 		return result;
+	}
+
+	public void saveLoraAtBleConfiguration(DeviceConfiguration config) {
+		// FIXME
 	}
 
 	private AntennaConfiguration getAntennaConfiguration(String prefix) {
