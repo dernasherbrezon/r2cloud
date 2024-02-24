@@ -212,7 +212,6 @@ public class DeviceConfiguration {
 		json.add("rtlDeviceId", rtlDeviceId);
 		json.add("biast", biast);
 		json.add("ppm", ppm);
-		json.add("ppmType", "MANUAL");
 		if (maximumBatteryVoltage != 0) {
 			json.add("maximumBatteryVoltage", maximumBatteryVoltage);
 		}

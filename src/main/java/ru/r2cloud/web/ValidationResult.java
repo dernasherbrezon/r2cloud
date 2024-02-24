@@ -23,6 +23,12 @@ public class ValidationResult extends HashMap<String, String> {
 		this.general = general;
 	}
 
+	public void appendWithPrefix(String prefix, ValidationResult errors) {
+		for (Entry<String, String> cur : errors.entrySet()) {
+			this.put(prefix + cur.getKey(), cur.getValue());
+		}
+	}
+
 	@Override
 	public boolean isEmpty() {
 		if (general != null) {
