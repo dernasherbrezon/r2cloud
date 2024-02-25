@@ -75,10 +75,12 @@ import ru.r2cloud.web.WebServer;
 import ru.r2cloud.web.api.AccessToken;
 import ru.r2cloud.web.api.Health;
 import ru.r2cloud.web.api.PresentationMode;
+import ru.r2cloud.web.api.Restart;
 import ru.r2cloud.web.api.TLE;
 import ru.r2cloud.web.api.configuration.Configured;
 import ru.r2cloud.web.api.configuration.General;
 import ru.r2cloud.web.api.configuration.Integrations;
+import ru.r2cloud.web.api.device.DeviceConfigDelete;
 import ru.r2cloud.web.api.device.DeviceConfigList;
 import ru.r2cloud.web.api.device.DeviceConfigLoad;
 import ru.r2cloud.web.api.device.DeviceConfigSave;
@@ -255,6 +257,8 @@ public class R2Cloud {
 		index(new DeviceConfigLoad(deviceManager));
 		index(new DeviceConfigSave(props, deviceManager));
 		index(new DeviceConfigList(deviceManager));
+		index(new DeviceConfigDelete());
+		index(new Restart());
 		webServer = new WebServer(props, controllers, auth, signed);
 	}
 
@@ -285,34 +289,32 @@ public class R2Cloud {
 		decoderService.stop();
 	}
 
+	private static R2Cloud app;
+	private static String configProperties;
+	private static Thread hook;
+
 	public static void main(String[] args) {
 		if (args.length == 0) {
 			LOG.info("invalid arguments. expected: config.properties");
 			return;
 		}
+		configProperties = args[0];
 		version = readVersion();
-		R2Cloud app;
 		String userPropertiesFilename = System.getProperty("user.home") + File.separator + ".r2cloud";
-		try (InputStream is = new FileInputStream(args[0])) {
+		try (InputStream is = new FileInputStream(configProperties)) {
 			Configuration props = new Configuration(is, userPropertiesFilename, FileSystems.getDefault());
 			app = new R2Cloud(props, new DefaultClock());
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e);
 		}
-		Runtime.getRuntime().addShutdownHook(new Thread() {
+		hook = new Thread() {
 			@Override
 			public void run() {
-				try {
-					LOG.info("stopping");
-					app.stop();
-				} catch (Exception e) {
-					LOG.error("unable to gracefully shutdown", e);
-				} finally {
-					LOG.info("=========== stopped =============");
-					ShutdownLoggingManager.resetFinally();
-				}
+				grafullyShutdown();
+				ShutdownLoggingManager.resetFinally();
 			}
-		});
+		};
+		Runtime.getRuntime().addShutdownHook(hook);
 		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 
 			@Override
@@ -326,6 +328,36 @@ public class R2Cloud {
 			LOG.error("unable to start", e);
 			// this will execute ShutdownHook and graceful shutdown
 			System.exit(1);
+		}
+	}
+
+	public static void restart() {
+		Thread restartThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				if (hook != null) {
+					Runtime.getRuntime().removeShutdownHook(hook);
+				}
+				grafullyShutdown();
+				main(new String[] { configProperties });
+			}
+		}, "restart-thread");
+		restartThread.setDaemon(false);
+		restartThread.start();
+	}
+
+	private static void grafullyShutdown() {
+		if (app == null) {
+			return;
+		}
+		try {
+			LOG.info("stopping");
+			app.stop();
+		} catch (Exception e) {
+			LOG.error("unable to gracefully shutdown", e);
+		} finally {
+			LOG.info("=========== stopped =============");
+			app = null;
 		}
 	}
 
