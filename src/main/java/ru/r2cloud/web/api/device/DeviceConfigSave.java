@@ -25,13 +25,13 @@ import ru.r2cloud.web.ValidationResult;
 import ru.r2cloud.web.WebServer;
 import ru.r2cloud.web.api.Messages;
 
-public class ConfigurationSave extends AbstractHttpController {
+public class DeviceConfigSave extends AbstractHttpController {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ConfigurationSave.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DeviceConfigSave.class);
 	private final Configuration props;
 	private final DeviceManager manager;
 
-	public ConfigurationSave(Configuration config, DeviceManager manager) {
+	public DeviceConfigSave(Configuration config, DeviceManager manager) {
 		this.props = config;
 		this.manager = manager;
 	}
@@ -186,7 +186,6 @@ public class ConfigurationSave extends AbstractHttpController {
 			throw new IllegalArgumentException("Unexpected value: " + deviceType);
 		}
 		props.update();
-		// FIXME better forward to restart page
 		return new Success();
 	}
 

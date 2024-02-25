@@ -10,11 +10,11 @@ import ru.r2cloud.web.ModelAndView;
 import ru.r2cloud.web.NotFound;
 import ru.r2cloud.web.WebServer;
 
-public class ConfigurationLoad extends AbstractHttpController {
+public class DeviceConfigLoad extends AbstractHttpController {
 
 	private final DeviceManager deviceManager;
 
-	public ConfigurationLoad(DeviceManager deviceManager) {
+	public DeviceConfigLoad(DeviceManager deviceManager) {
 		this.deviceManager = deviceManager;
 	}
 

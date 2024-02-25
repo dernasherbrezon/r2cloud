@@ -91,6 +91,10 @@ public class Configuration {
 		return setProperty(key, String.valueOf(value));
 	}
 
+	public String setProperty(String key, Float value) {
+		return setProperty(key, String.valueOf(value));
+	}
+
 	public String setProperty(String key, Long value) {
 		return setProperty(key, String.valueOf(value));
 	}
@@ -272,7 +276,13 @@ public class Configuration {
 	}
 
 	public void savePlutoSdrConfiguration(DeviceConfiguration config) {
-		// FIXME
+		int index = indexConfig(config, "plutosdr.devices");
+		String prefix = "plutosdr.device." + index + ".";
+		setProperty(prefix + "gain", config.getGain());
+		setProperty(prefix + "minFrequency", config.getMinimumFrequency());
+		setProperty(prefix + "maxFrequency", config.getMaximumFrequency());
+		setAntennaConfiguration(prefix, config.getAntennaConfiguration());
+		setRotatorConfiguration(prefix, config.getRotatorConfiguration());
 	}
 
 	public List<DeviceConfiguration> getSdrServerConfigurations() {
@@ -292,15 +302,23 @@ public class Configuration {
 			config.setTimeout(timeout);
 			config.setId("sdrserver." + cur);
 			config.setName("SDR-SERVER - " + config.getHost() + ":" + config.getPort());
-			config.setRotatorConfiguration(getRotatorConfiguration(prefix + "."));
-			config.setAntennaConfiguration(getAntennaConfiguration(prefix + "."));
+			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
+			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
 			if (config.getRotatorConfiguration() != null) {
 				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
 			}
 			SdrServerConfiguration sdrConfig = new SdrServerConfiguration();
 			sdrConfig.setBasepath(getProperty(prefix + "basepath"));
-			sdrConfig.setBandwidth(getLong("satellites.sdrserver.bandwidth"));
-			sdrConfig.setBandwidthCrop(getLong("satellites.sdrserver.bandwidth.crop"));
+			Long bandwidth = getLong(prefix + "bandwidth");
+			if (bandwidth == null) {
+				bandwidth = getLong("satellites.sdrserver.bandwidth");
+			}
+			sdrConfig.setBandwidth(bandwidth);
+			Long crop = getLong(prefix + "bandwidthCrop");
+			if (crop == null) {
+				crop = getLong("satellites.sdrserver.bandwidth.crop");
+			}
+			sdrConfig.setBandwidthCrop(crop);
 			sdrConfig.setUseGzip(getBoolean(prefix + "usegzip"));
 			config.setSdrServerConfiguration(sdrConfig);
 			config.setCompencateDcOffset(false);
@@ -311,7 +329,18 @@ public class Configuration {
 	}
 
 	public void saveSdrServerConfiguration(DeviceConfiguration config) {
-		// FIXME
+		int index = indexConfig(config, "sdrserver.devices");
+		String prefix = "sdrserver.device." + index + ".";
+		setProperty(prefix + "host", config.getHost());
+		setProperty(prefix + "port", config.getPort());
+		setProperty(prefix + "basepath", config.getSdrServerConfiguration().getBasepath());
+		setProperty(prefix + "bandwidth", config.getSdrServerConfiguration().getBandwidth());
+		setProperty(prefix + "bandwidthCrop", config.getSdrServerConfiguration().getBandwidthCrop());
+		setProperty(prefix + "usegzip", config.getSdrServerConfiguration().isUseGzip());
+		setProperty(prefix + "minFrequency", config.getMinimumFrequency());
+		setProperty(prefix + "maxFrequency", config.getMaximumFrequency());
+		setAntennaConfiguration(prefix, config.getAntennaConfiguration());
+		setRotatorConfiguration(prefix, config.getRotatorConfiguration());
 	}
 
 	public List<DeviceConfiguration> getRtlSdrConfigurations() {
@@ -344,7 +373,16 @@ public class Configuration {
 	}
 
 	public void saveRtlSdrConfiguration(DeviceConfiguration config) {
-		// FIXME
+		int index = indexConfig(config, "rtlsdr.devices");
+		String prefix = "rtlsdr.device." + index + ".";
+		setProperty(prefix + "minFrequency", config.getMinimumFrequency());
+		setProperty(prefix + "maxFrequency", config.getMaximumFrequency());
+		setProperty(prefix + "index", config.getRtlDeviceId());
+		setProperty(prefix + "gain", config.getGain());
+		setProperty(prefix + "biast", config.isBiast());
+		setProperty(prefix + "ppm", config.getPpm());
+		setAntennaConfiguration(prefix, config.getAntennaConfiguration());
+		setRotatorConfiguration(prefix, config.getRotatorConfiguration());
 	}
 
 	@Deprecated
@@ -427,7 +465,17 @@ public class Configuration {
 	}
 
 	public void saveLoraAtWifiConfiguration(DeviceConfiguration config) {
-		// FIXME
+		int index = indexConfig(config, "loraatwifi.devices");
+		String prefix = "loraatwifi.device." + index + ".";
+		setProperty(prefix + "minFrequency", config.getMinimumFrequency());
+		setProperty(prefix + "maxFrequency", config.getMaximumFrequency());
+		setProperty(prefix + "host", config.getHost());
+		setProperty(prefix + "port", config.getPort());
+		setProperty(prefix + "username", config.getUsername());
+		setProperty(prefix + "password", config.getPassword());
+		setProperty(prefix + "gain", config.getGain());
+		setAntennaConfiguration(prefix, config.getAntennaConfiguration());
+		setRotatorConfiguration(prefix, config.getRotatorConfiguration());
 	}
 
 	public List<DeviceConfiguration> getSpyServerConfigurations() {
@@ -463,7 +511,13 @@ public class Configuration {
 	}
 
 	public void saveSpyServerConfiguration(DeviceConfiguration config) {
-		// FIXME
+		int index = indexConfig(config, "spyserver.devices");
+		String prefix = "spyserver.device." + index + ".";
+		setProperty(prefix + "host", config.getHost());
+		setProperty(prefix + "port", config.getPort());
+		setProperty(prefix + "gain", config.getGain());
+		setAntennaConfiguration(prefix, config.getAntennaConfiguration());
+		setRotatorConfiguration(prefix, config.getRotatorConfiguration());
 	}
 
 	public List<DeviceConfiguration> getLoraAtConfigurations() {
@@ -499,7 +553,12 @@ public class Configuration {
 	}
 
 	public void saveLoraAtConfiguration(DeviceConfiguration config) {
-		// FIXME
+		int index = indexConfig(config, "loraat.devices");
+		String prefix = "loraat.device." + index + ".";
+		setProperty(prefix + "port", config.getHost());
+		setProperty(prefix + "gain", config.getGain());
+		setAntennaConfiguration(prefix, config.getAntennaConfiguration());
+		setRotatorConfiguration(prefix, config.getRotatorConfiguration());
 	}
 
 	public List<DeviceConfiguration> getLoraAtBleConfigurations() {
@@ -559,7 +618,16 @@ public class Configuration {
 	}
 
 	public void saveLoraAtBleConfiguration(DeviceConfiguration config) {
-		// FIXME
+		int index = indexConfig(config, "loraatble.devices");
+		String prefix = "loraatble.device." + index + ".";
+		setProperty(prefix + "minFrequency", config.getMinimumFrequency());
+		setProperty(prefix + "maxFrequency", config.getMaximumFrequency());
+		setProperty(prefix + "btaddress", config.getHost());
+		setProperty(prefix + "gain", config.getGain());
+		setProperty(prefix + "maxVoltage", config.getMaximumBatteryVoltage());
+		setProperty(prefix + "minVoltage", config.getMinimumBatteryVoltage());
+		setAntennaConfiguration(prefix, config.getAntennaConfiguration());
+		setRotatorConfiguration(prefix, config.getRotatorConfiguration());
 	}
 
 	private AntennaConfiguration getAntennaConfiguration(String prefix) {
@@ -601,6 +669,18 @@ public class Configuration {
 		}
 		result.setBeamwidth(FastMath.toRadians(beamwidth));
 		return result;
+	}
+
+	private void setAntennaConfiguration(String prefix, AntennaConfiguration config) {
+		if (config == null) {
+			return;
+		}
+		setProperty(prefix + "antenna.minElevation", config.getMinElevation());
+		setProperty(prefix + "antenna.guaranteedElevation", config.getGuaranteedElevation());
+		setProperty(prefix + "antenna.type", config.getType().name());
+		setProperty(prefix + "antenna.azimuth", config.getAzimuth());
+		setProperty(prefix + "antenna.elevation", config.getElevation());
+		setProperty(prefix + "antenna.beamwidth", config.getBeamwidth());
 	}
 
 	private RotatorConfiguration getRotatorConfiguration(String prefix) {
@@ -651,12 +731,33 @@ public class Configuration {
 		return result;
 	}
 
+	private void setRotatorConfiguration(String prefix, RotatorConfiguration config) {
+		if (config == null) {
+			setProperty(prefix + "rotator.enabled", false);
+			return;
+		}
+		setProperty(prefix + "rotctrld.hostname", config.getHostname());
+		setProperty(prefix + "rotctrld.port", config.getPort());
+		setProperty(prefix + "rotator.tolerance", config.getTolerance());
+		setProperty(prefix + "rotator.cycleMillis", config.getCycleMillis());
+	}
+
 	public List<String> getProperties(String name) {
 		String rawValue = getProperty(name);
 		if (rawValue == null) {
 			return Collections.emptyList();
 		}
 		return Util.splitComma(rawValue);
+	}
+
+	public List<Integer> getIntegerProperties(String name) {
+		List<String> valueStr = getProperties(name);
+		List<Integer> result = new ArrayList<>(valueStr.size());
+		for (String cur : valueStr) {
+			result.add(Integer.valueOf(cur));
+		}
+		Collections.sort(result);
+		return result;
 	}
 
 	public void setList(String name, List<String> urls) {
@@ -668,6 +769,34 @@ public class Configuration {
 			str.append(urls.get(i));
 		}
 		setProperty(name, str.toString());
+	}
+
+	private int indexConfig(DeviceConfiguration config, String rootPropName) {
+		if (config.getId() != null) {
+			// format is: loraat.0
+			int index = config.getId().lastIndexOf('.');
+			if (index == -1) {
+				throw new IllegalArgumentException("invalid id format: " + config.getId());
+			}
+			return Integer.valueOf(config.getId().substring(index + 1));
+		}
+		List<Integer> indexes = getIntegerProperties(rootPropName);
+		int result;
+		if (indexes.isEmpty()) {
+			result = 0;
+		} else {
+			result = indexes.get(indexes.size() - 1) + 1;
+		}
+		indexes.add(result);
+		StringBuilder str = new StringBuilder();
+		for (int i = 0; i < indexes.size(); i++) {
+			if (i != 0) {
+				str.append(",");
+			}
+			str.append(indexes.get(i));
+		}
+		setProperty(rootPropName, str.toString());
+		return result;
 	}
 
 	public void remove(String name) {

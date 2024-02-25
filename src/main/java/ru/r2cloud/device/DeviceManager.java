@@ -197,7 +197,7 @@ public class DeviceManager implements Lifecycle, ConfigListener {
 		Collections.sort(result, DeviceStatusComparator.INSTANCE);
 		return result;
 	}
-
+	
 	public Device findDeviceById(String id) {
 		if (id == null) {
 			return null;
