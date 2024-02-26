@@ -257,7 +257,7 @@ public class R2Cloud {
 		index(new DeviceConfigLoad(deviceManager));
 		index(new DeviceConfigSave(props, deviceManager));
 		index(new DeviceConfigList(deviceManager));
-		index(new DeviceConfigDelete());
+		index(new DeviceConfigDelete(props, deviceManager));
 		index(new Restart());
 		webServer = new WebServer(props, controllers, auth, signed);
 	}

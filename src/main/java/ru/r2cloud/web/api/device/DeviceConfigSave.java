@@ -47,6 +47,7 @@ public class DeviceConfigSave extends AbstractHttpController {
 			return new BadRequest(errors);
 		}
 		DeviceConfiguration config = new DeviceConfiguration();
+		config.setDeviceType(deviceType);
 		config.setId(request.getString("id", null));
 		Device device = manager.findDeviceById(config.getId());
 		if (config.getId() != null && device == null) {

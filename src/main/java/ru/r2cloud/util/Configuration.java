@@ -17,6 +17,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -120,6 +121,22 @@ public class Configuration {
 			changedProperties.add(key);
 		}
 		return (String) userSettings.put(key, value);
+	}
+
+	private void removeByPrefix(String prefix) {
+		List<String> toRemove = new ArrayList<>();
+		for (Entry<Object, Object> cur : userSettings.entrySet()) {
+			String key = (String) cur.getKey();
+			if (key.startsWith(prefix)) {
+				toRemove.add(key);
+			}
+		}
+		synchronized (changedProperties) {
+			changedProperties.addAll(toRemove);
+		}
+		for (String cur : toRemove) {
+			userSettings.remove(cur);
+		}
 	}
 
 	public void update() {
@@ -249,16 +266,17 @@ public class Configuration {
 	}
 
 	public List<DeviceConfiguration> getPlutoSdrConfigurations() {
-		List<String> loraDevices = getProperties("plutosdr.devices");
+		DeviceType deviceType = DeviceType.PLUTOSDR;
+		List<String> loraDevices = getProperties(deviceType.name().toLowerCase(Locale.UK) + ".devices");
 		if (loraDevices.isEmpty()) {
 			return Collections.emptyList();
 		}
 		int timeout = getInteger("plutosdr.timeout");
 		List<DeviceConfiguration> result = new ArrayList<>(loraDevices.size());
 		for (String cur : loraDevices) {
-			String prefix = "plutosdr.device." + cur + ".";
+			String prefix = deviceType.name().toLowerCase(Locale.UK) + ".device." + cur + ".";
 			DeviceConfiguration config = new DeviceConfiguration();
-			config.setId("plutosdr." + cur);
+			config.setId(deviceType.name().toLowerCase(Locale.UK) + "." + cur);
 			config.setName("PlutoSDR");
 			config.setTimeout(timeout);
 			config.setGain(getDouble(prefix + "gain").floatValue());
@@ -269,15 +287,14 @@ public class Configuration {
 			if (config.getRotatorConfiguration() != null) {
 				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
 			}
-			config.setDeviceType(DeviceType.PLUTOSDR);
+			config.setDeviceType(deviceType);
 			result.add(config);
 		}
 		return result;
 	}
 
 	public void savePlutoSdrConfiguration(DeviceConfiguration config) {
-		int index = indexConfig(config, "plutosdr.devices");
-		String prefix = "plutosdr.device." + index + ".";
+		String prefix = indexConfig(config);
 		setProperty(prefix + "gain", config.getGain());
 		setProperty(prefix + "minFrequency", config.getMinimumFrequency());
 		setProperty(prefix + "maxFrequency", config.getMaximumFrequency());
@@ -286,7 +303,8 @@ public class Configuration {
 	}
 
 	public List<DeviceConfiguration> getSdrServerConfigurations() {
-		List<String> deviceIndices = getProperties("sdrserver.devices");
+		DeviceType deviceType = DeviceType.SDRSERVER;
+		List<String> deviceIndices = getProperties(deviceType.name().toLowerCase(Locale.UK) + ".devices");
 		if (deviceIndices.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -294,7 +312,7 @@ public class Configuration {
 		List<DeviceConfiguration> result = new ArrayList<>(deviceIndices.size());
 		for (String cur : deviceIndices) {
 			DeviceConfiguration config = new DeviceConfiguration();
-			String prefix = "sdrserver.device." + cur + ".";
+			String prefix = deviceType.name().toLowerCase(Locale.UK) + ".device." + cur + ".";
 			config.setHost(getProperty(prefix + "host"));
 			config.setPort(getInteger(prefix + "port"));
 			config.setMinimumFrequency(getLong(prefix + "minFrequency"));
@@ -322,15 +340,14 @@ public class Configuration {
 			sdrConfig.setUseGzip(getBoolean(prefix + "usegzip"));
 			config.setSdrServerConfiguration(sdrConfig);
 			config.setCompencateDcOffset(false);
-			config.setDeviceType(DeviceType.SDRSERVER);
+			config.setDeviceType(deviceType);
 			result.add(config);
 		}
 		return result;
 	}
 
 	public void saveSdrServerConfiguration(DeviceConfiguration config) {
-		int index = indexConfig(config, "sdrserver.devices");
-		String prefix = "sdrserver.device." + index + ".";
+		String prefix = indexConfig(config);
 		setProperty(prefix + "host", config.getHost());
 		setProperty(prefix + "port", config.getPort());
 		setProperty(prefix + "basepath", config.getSdrServerConfiguration().getBasepath());
@@ -344,14 +361,15 @@ public class Configuration {
 	}
 
 	public List<DeviceConfiguration> getRtlSdrConfigurations() {
-		List<String> sdrDevices = getProperties("rtlsdr.devices");
+		DeviceType deviceType = DeviceType.RTLSDR;
+		List<String> sdrDevices = getProperties(deviceType.name().toLowerCase(Locale.UK) + ".devices");
 		if (sdrDevices.isEmpty()) {
 			return Collections.emptyList();
 		}
 		List<DeviceConfiguration> result = new ArrayList<>(sdrDevices.size());
 		for (String cur : sdrDevices) {
 			DeviceConfiguration config = new DeviceConfiguration();
-			String prefix = "rtlsdr.device." + cur + ".";
+			String prefix = deviceType.name().toLowerCase(Locale.UK) + ".device." + cur + ".";
 			config.setMinimumFrequency(getLong(prefix + "minFrequency"));
 			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
 			config.setRtlDeviceId(getInteger(prefix + "index"));
@@ -373,8 +391,7 @@ public class Configuration {
 	}
 
 	public void saveRtlSdrConfiguration(DeviceConfiguration config) {
-		int index = indexConfig(config, "rtlsdr.devices");
-		String prefix = "rtlsdr.device." + index + ".";
+		String prefix = indexConfig(config);
 		setProperty(prefix + "minFrequency", config.getMinimumFrequency());
 		setProperty(prefix + "maxFrequency", config.getMaximumFrequency());
 		setProperty(prefix + "index", config.getRtlDeviceId());
@@ -421,14 +438,15 @@ public class Configuration {
 	}
 
 	public List<DeviceConfiguration> getLoraAtWifiConfigurations() {
-		List<String> loraDevices = getProperties("loraatwifi.devices");
+		DeviceType deviceType = DeviceType.LORAATWIFI;
+		List<String> loraDevices = getProperties(deviceType.name().toLowerCase(Locale.UK) + ".devices");
 		if (loraDevices.isEmpty()) {
 			return Collections.emptyList();
 		}
 		Integer timeout = getInteger("loraatwifi.timeout");
 		List<DeviceConfiguration> result = new ArrayList<>(loraDevices.size());
 		for (String cur : loraDevices) {
-			String prefix = "loraatwifi.device." + cur + ".";
+			String prefix = deviceType.name().toLowerCase(Locale.UK) + ".device." + cur + ".";
 			DeviceConfiguration config = new DeviceConfiguration();
 			config.setHost(getProperty(prefix + "host"));
 			config.setPort(getInteger(prefix + "port"));
@@ -458,15 +476,14 @@ public class Configuration {
 				config.setMaximumFrequency(maxFrequency);
 			}
 			config.setCompencateDcOffset(false);
-			config.setDeviceType(DeviceType.LORAATWIFI);
+			config.setDeviceType(deviceType);
 			result.add(config);
 		}
 		return result;
 	}
 
 	public void saveLoraAtWifiConfiguration(DeviceConfiguration config) {
-		int index = indexConfig(config, "loraatwifi.devices");
-		String prefix = "loraatwifi.device." + index + ".";
+		String prefix = indexConfig(config);
 		setProperty(prefix + "minFrequency", config.getMinimumFrequency());
 		setProperty(prefix + "maxFrequency", config.getMaximumFrequency());
 		setProperty(prefix + "host", config.getHost());
@@ -479,40 +496,41 @@ public class Configuration {
 	}
 
 	public List<DeviceConfiguration> getSpyServerConfigurations() {
-		List<String> deviceIndices = getProperties("spyserver.devices");
+		DeviceType deviceType = DeviceType.SPYSERVER;
+		List<String> deviceIndices = getProperties(deviceType.name().toLowerCase(Locale.UK) + ".devices");
 		if (deviceIndices.isEmpty()) {
 			return Collections.emptyList();
 		}
 		int timeout = getInteger("spyserver.timeout");
 		List<DeviceConfiguration> result = new ArrayList<>(deviceIndices.size());
 		for (String cur : deviceIndices) {
+			String prefix = deviceType.name().toLowerCase(Locale.UK) + ".device." + cur + ".";
 			DeviceConfiguration config = new DeviceConfiguration();
-			config.setHost(getProperty("spyserver.device." + cur + ".host"));
-			config.setPort(getInteger("spyserver.device." + cur + ".port"));
+			config.setHost(getProperty(prefix + "host"));
+			config.setPort(getInteger(prefix + "port"));
 			config.setTimeout(timeout);
-			config.setId("spyserver." + cur);
+			config.setId(deviceType.name().toLowerCase(Locale.UK) + "." + cur);
 			config.setName("SpyServer - " + config.getHost() + ":" + config.getPort());
-			config.setRotatorConfiguration(getRotatorConfiguration("spyserver.device." + cur + "."));
-			config.setAntennaConfiguration(getAntennaConfiguration("spyserver.device." + cur + "."));
+			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
+			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
 			if (config.getRotatorConfiguration() != null) {
 				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
 			}
-			Integer gain = getInteger("spyserver.device." + cur + ".gain");
+			Integer gain = getInteger(prefix + "gain");
 			if (gain == null) {
 				// by default should be auto
 				gain = 0;
 			}
 			config.setGain(gain);
 			config.setCompencateDcOffset(false);
-			config.setDeviceType(DeviceType.SPYSERVER);
+			config.setDeviceType(deviceType);
 			result.add(config);
 		}
 		return result;
 	}
 
 	public void saveSpyServerConfiguration(DeviceConfiguration config) {
-		int index = indexConfig(config, "spyserver.devices");
-		String prefix = "spyserver.device." + index + ".";
+		String prefix = indexConfig(config);
 		setProperty(prefix + "host", config.getHost());
 		setProperty(prefix + "port", config.getPort());
 		setProperty(prefix + "gain", config.getGain());
@@ -521,55 +539,80 @@ public class Configuration {
 	}
 
 	public List<DeviceConfiguration> getLoraAtConfigurations() {
-		List<String> loraDevices = getProperties("loraat.devices");
+		DeviceType deviceType = DeviceType.LORAAT;
+		List<String> loraDevices = getProperties(deviceType.name().toLowerCase(Locale.UK) + ".devices");
 		if (loraDevices.isEmpty()) {
 			return Collections.emptyList();
 		}
 		int timeout = getInteger("loraat.timeout");
 		List<DeviceConfiguration> result = new ArrayList<>(loraDevices.size());
 		for (String cur : loraDevices) {
-			Integer gain = getInteger("loraat.device." + cur + ".gain");
+			String prefix = deviceType.name().toLowerCase(Locale.UK) + ".device." + cur + ".";
+			Integer gain = getInteger(prefix + "gain");
 			if (gain == null) {
 				// by default should be auto
 				gain = 0;
 			}
 			DeviceConfiguration config = new DeviceConfiguration();
 			// Yes save port into "host" to be backward compatible
-			config.setHost(getProperty("loraat.device." + cur + ".port"));
+			config.setHost(getProperty(prefix + "port"));
 			config.setTimeout(timeout);
 			config.setId("loraat." + cur);
 			config.setName("LoRa - " + config.getHost());
-			config.setRotatorConfiguration(getRotatorConfiguration("loraat.device." + cur + "."));
-			config.setAntennaConfiguration(getAntennaConfiguration("loraat.device." + cur + "."));
+			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
+			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
 			if (config.getRotatorConfiguration() != null) {
 				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
 			}
 			config.setGain(gain);
 			config.setCompencateDcOffset(false);
-			config.setDeviceType(DeviceType.LORAAT);
+			config.setDeviceType(deviceType);
 			result.add(config);
 		}
 		return result;
 	}
 
 	public void saveLoraAtConfiguration(DeviceConfiguration config) {
-		int index = indexConfig(config, "loraat.devices");
-		String prefix = "loraat.device." + index + ".";
+		String prefix = indexConfig(config);
 		setProperty(prefix + "port", config.getHost());
 		setProperty(prefix + "gain", config.getGain());
 		setAntennaConfiguration(prefix, config.getAntennaConfiguration());
 		setRotatorConfiguration(prefix, config.getRotatorConfiguration());
 	}
 
+	public void removeDeviceConfiguration(DeviceConfiguration config) {
+		int index = config.getId().lastIndexOf('.');
+		if (index == -1) {
+			throw new IllegalArgumentException("invalid id format: " + config.getId());
+		}
+		int deviceIndex = Integer.valueOf(config.getId().substring(index + 1));
+		String rootPropName = config.getDeviceType().name().toLowerCase(Locale.UK) + ".devices";
+		List<Integer> indexes = getIntegerProperties(rootPropName);
+		if (!indexes.remove(Integer.valueOf(deviceIndex))) {
+			return;
+		}
+		StringBuilder newIndexes = new StringBuilder();
+		for (int i = 0; i < indexes.size(); i++) {
+			if (i != 0) {
+				newIndexes.append(',');
+			}
+			newIndexes.append(indexes.get(i));
+		}
+		setProperty(rootPropName, newIndexes.toString());
+		String prefix = config.getDeviceType().name().toLowerCase(Locale.UK) + ".device." + deviceIndex + ".";
+		removeByPrefix(prefix);
+	}
+
 	public List<DeviceConfiguration> getLoraAtBleConfigurations() {
-		List<String> loraDevices = getProperties("loraatble.devices");
+		DeviceType deviceType = DeviceType.LORAATBLE;
+		List<String> loraDevices = getProperties(deviceType.name().toLowerCase(Locale.UK) + ".devices");
 		if (loraDevices.isEmpty()) {
 			return Collections.emptyList();
 		}
 		int timeout = getInteger("loraatble.timeout");
 		List<DeviceConfiguration> result = new ArrayList<>(loraDevices.size());
 		for (String cur : loraDevices) {
-			String prefix = "loraatble.device." + cur + ".";
+			String prefix = deviceType.name().toLowerCase(Locale.UK) + ".device." + cur + ".";
 			Integer gain = getInteger(prefix + "gain");
 			if (gain == null) {
 				// by default should be auto
@@ -611,15 +654,14 @@ public class Configuration {
 			}
 			config.setMaximumBatteryVoltage(maxBatteryVoltage);
 			config.setMinimumBatteryVoltage(minBatteryVoltage);
-			config.setDeviceType(DeviceType.LORAATBLE);
+			config.setDeviceType(deviceType);
 			result.add(config);
 		}
 		return result;
 	}
 
 	public void saveLoraAtBleConfiguration(DeviceConfiguration config) {
-		int index = indexConfig(config, "loraatble.devices");
-		String prefix = "loraatble.device." + index + ".";
+		String prefix = indexConfig(config);
 		setProperty(prefix + "minFrequency", config.getMinimumFrequency());
 		setProperty(prefix + "maxFrequency", config.getMaximumFrequency());
 		setProperty(prefix + "btaddress", config.getHost());
@@ -771,32 +813,34 @@ public class Configuration {
 		setProperty(name, str.toString());
 	}
 
-	private int indexConfig(DeviceConfiguration config, String rootPropName) {
+	private String indexConfig(DeviceConfiguration config) {
+		String rootPropName = config.getDeviceType().name().toLowerCase(Locale.UK) + ".devices";
+		int result;
 		if (config.getId() != null) {
 			// format is: loraat.0
 			int index = config.getId().lastIndexOf('.');
 			if (index == -1) {
 				throw new IllegalArgumentException("invalid id format: " + config.getId());
 			}
-			return Integer.valueOf(config.getId().substring(index + 1));
-		}
-		List<Integer> indexes = getIntegerProperties(rootPropName);
-		int result;
-		if (indexes.isEmpty()) {
-			result = 0;
+			result = Integer.valueOf(config.getId().substring(index + 1));
 		} else {
-			result = indexes.get(indexes.size() - 1) + 1;
-		}
-		indexes.add(result);
-		StringBuilder str = new StringBuilder();
-		for (int i = 0; i < indexes.size(); i++) {
-			if (i != 0) {
-				str.append(",");
+			List<Integer> indexes = getIntegerProperties(rootPropName);
+			if (indexes.isEmpty()) {
+				result = 0;
+			} else {
+				result = indexes.get(indexes.size() - 1) + 1;
 			}
-			str.append(indexes.get(i));
+			indexes.add(result);
+			StringBuilder str = new StringBuilder();
+			for (int i = 0; i < indexes.size(); i++) {
+				if (i != 0) {
+					str.append(",");
+				}
+				str.append(indexes.get(i));
+			}
+			setProperty(rootPropName, str.toString());
 		}
-		setProperty(rootPropName, str.toString());
-		return result;
+		return config.getDeviceType().name().toLowerCase(Locale.UK) + ".device." + result + ".";
 	}
 
 	public void remove(String name) {
