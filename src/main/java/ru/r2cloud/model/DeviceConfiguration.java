@@ -194,10 +194,10 @@ public class DeviceConfiguration {
 		json.add("name", name);
 		json.add("deviceType", deviceType.name());
 		if (minimumFrequency != 0) {
-			json.add("minimumFrequency", minimumFrequency / 1000000);
+			json.add("minimumFrequency", minimumFrequency / 1000000.0);
 		}
 		if (maximumFrequency != 0) {
-			json.add("maximumFrequency", maximumFrequency / 1000000);
+			json.add("maximumFrequency", maximumFrequency / 1000000.0);
 		}
 		if (host != null) {
 			json.add("host", host);
@@ -219,7 +219,7 @@ public class DeviceConfiguration {
 			json.add("minimumBatteryVoltage", minimumBatteryVoltage);
 		}
 		if (sdrServerConfiguration != null) {
-			json.add("bandwidth", sdrServerConfiguration.getBandwidth());
+			json.add("bandwidth", sdrServerConfiguration.getBandwidth() / 1000000.0);
 			json.add("bandwidthCrop", sdrServerConfiguration.getBandwidthCrop());
 			json.add("basepath", sdrServerConfiguration.getBasepath());
 			json.add("usegzip", sdrServerConfiguration.isUseGzip());

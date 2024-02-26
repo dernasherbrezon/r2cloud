@@ -193,8 +193,9 @@ public class R2Cloud {
 			if (!client.isSupported()) {
 				client = new LoraAtSerialClient(cur.getHost(), cur.getTimeout(), new JSerial(), clock);
 				if (!client.isSupported()) {
-					LOG.info("[{}] protocol is not supported. skipping", cur.getId());
-					continue;
+					LOG.info("[{}] protocol is not supported. assume v2", cur.getId());
+					// assume v2. maybe device is not connected
+					client = new LoraAtSerialClient2(cur.getHost(), cur.getTimeout(), new JSerial(), clock);
 				} else {
 					LOG.info("[{}] protocol version 1 is supported", cur.getId());
 				}

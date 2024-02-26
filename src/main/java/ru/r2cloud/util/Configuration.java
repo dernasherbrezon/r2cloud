@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import org.hipparchus.util.FastMath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -461,12 +460,12 @@ public class Configuration {
 			if (config.getRotatorConfiguration() != null) {
 				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
 			}
-			Integer gain = getInteger(prefix + "gain");
+			Double gain = getDouble(prefix + "gain");
 			if (gain == null) {
 				// by default should be auto
-				gain = 0;
+				gain = 0.0;
 			}
-			config.setGain(gain);
+			config.setGain(gain.intValue());
 			Long minFrequency = getLong(prefix + "minFrequency");
 			if (minFrequency != null) {
 				config.setMinimumFrequency(minFrequency);
@@ -516,12 +515,12 @@ public class Configuration {
 			if (config.getRotatorConfiguration() != null) {
 				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
 			}
-			Integer gain = getInteger(prefix + "gain");
+			Double gain = getDouble(prefix + "gain");
 			if (gain == null) {
 				// by default should be auto
-				gain = 0;
+				gain = 0.0;
 			}
-			config.setGain(gain);
+			config.setGain(gain.floatValue());
 			config.setCompencateDcOffset(false);
 			config.setDeviceType(deviceType);
 			result.add(config);
@@ -548,10 +547,10 @@ public class Configuration {
 		List<DeviceConfiguration> result = new ArrayList<>(loraDevices.size());
 		for (String cur : loraDevices) {
 			String prefix = deviceType.name().toLowerCase(Locale.UK) + ".device." + cur + ".";
-			Integer gain = getInteger(prefix + "gain");
+			Double gain = getDouble(prefix + "gain");
 			if (gain == null) {
 				// by default should be auto
-				gain = 0;
+				gain = 0.0;
 			}
 			DeviceConfiguration config = new DeviceConfiguration();
 			// Yes save port into "host" to be backward compatible
@@ -564,7 +563,7 @@ public class Configuration {
 			if (config.getRotatorConfiguration() != null) {
 				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
 			}
-			config.setGain(gain);
+			config.setGain(gain.intValue());
 			config.setCompencateDcOffset(false);
 			config.setDeviceType(deviceType);
 			result.add(config);
@@ -613,10 +612,10 @@ public class Configuration {
 		List<DeviceConfiguration> result = new ArrayList<>(loraDevices.size());
 		for (String cur : loraDevices) {
 			String prefix = deviceType.name().toLowerCase(Locale.UK) + ".device." + cur + ".";
-			Integer gain = getInteger(prefix + "gain");
+			Double gain = getDouble(prefix + "gain");
 			if (gain == null) {
 				// by default should be auto
-				gain = 0;
+				gain = 0.0;
 			}
 			DeviceConfiguration config = new DeviceConfiguration();
 			String address = getProperty(prefix + "btaddress");
@@ -633,7 +632,7 @@ public class Configuration {
 			if (config.getRotatorConfiguration() != null) {
 				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
 			}
-			config.setGain(gain);
+			config.setGain(gain.intValue());
 			Long minFrequency = getLong(prefix + "minFrequency");
 			Long maxFrequency = getLong(prefix + "maxFrequency");
 			if (minFrequency == null || maxFrequency == null) {
@@ -696,20 +695,17 @@ public class Configuration {
 			// default - North
 			azimuth = 0.0;
 		}
-		// orekit expects azimuth in counter clock wise degrees
-		result.setAzimuth(FastMath.toRadians(Util.convertAzimuthToDegress(azimuth)));
+		result.setAzimuth(azimuth);
 		Double elevation = getDouble(prefix + "antenna.elevation");
 		if (elevation == null) {
 			elevation = 0.0;
-		} else {
-			elevation = FastMath.toRadians(elevation);
 		}
 		result.setElevation(elevation);
 		Double beamwidth = getDouble(prefix + "antenna.beamwidth");
 		if (beamwidth == null) {
 			beamwidth = 45.0;
 		}
-		result.setBeamwidth(FastMath.toRadians(beamwidth));
+		result.setBeamwidth(beamwidth);
 		return result;
 	}
 

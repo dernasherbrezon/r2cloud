@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.hipparchus.util.FastMath;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,7 +19,6 @@ import ru.r2cloud.model.AntennaConfiguration;
 import ru.r2cloud.model.AntennaType;
 import ru.r2cloud.model.SatPass;
 import ru.r2cloud.predict.PredictOreKit;
-import ru.r2cloud.util.Util;
 
 public class PredictOreKitTest {
 
@@ -65,9 +63,9 @@ public class PredictOreKitTest {
 	public void testFixedDirectionalAntenna() throws Exception {
 		AntennaConfiguration antenna = new AntennaConfiguration();
 		antenna.setType(AntennaType.FIXED_DIRECTIONAL);
-		antenna.setAzimuth(FastMath.toRadians(Util.convertAzimuthToDegress(270)));
+		antenna.setAzimuth(270);
 		antenna.setElevation(0.0);
-		antenna.setBeamwidth(FastMath.toRadians(45));
+		antenna.setBeamwidth(45);
 		TLEPropagator propagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE("1 43881U 18111F   24042.67399199  .00015427  00000+0  10192-2 0  9994", "2 43881  97.6384 310.9432 0012514 108.3312 251.9278 15.07433805280400"));
 		assertPosition("11:29:31", "11:33:11", predict.calculateNext(antenna, getDate("12-02-2024 11:20:00"), propagator));
 		assertPosition("11:30:00", "11:33:11", predict.calculateNext(antenna, getDate("12-02-2024 11:30:00"), propagator));

@@ -53,15 +53,18 @@ public class DeviceConfigSave extends AbstractHttpController {
 		if (config.getId() != null && device == null) {
 			errors.setGeneral("Unknown device id");
 		}
-		config.setMinimumFrequency((long) (readPositiveFloat(request, "minimumFrequency", errors) * 1000_000));
-		config.setMaximumFrequency((long) (readPositiveFloat(request, "maximumFrequency", errors) * 1000_000));
+		config.setMinimumFrequency((long) (readPositiveDouble(request, "minimumFrequency", errors) * 1000_000));
+		config.setMaximumFrequency((long) (readPositiveDouble(request, "maximumFrequency", errors) * 1000_000));
+		if (config.getMinimumFrequency() > config.getMaximumFrequency()) {
+			errors.put("minimumFrequency", "Cannot be more than maximum frequency");
+		}
 		switch (deviceType) {
 		case RTLSDR: {
 			config.setRtlDeviceId((int) readOptionalLong(request, "rtlDeviceId", 0, errors));
 			if (config.getRtlDeviceId() < 0) {
 				errors.put("rtlDeviceId", Messages.CANNOT_BE_NEGATIVE);
 			}
-			config.setGain(readPositiveFloat(request, "gain", errors));
+			config.setGain((float) readPositiveDouble(request, "gain", errors));
 			if (config.getGain() > 49.6f) {
 				errors.put("gain", "Cannot be more than 49.6");
 			}
@@ -91,8 +94,11 @@ public class DeviceConfigSave extends AbstractHttpController {
 			if (config.getGain() > 6) {
 				errors.put("gain", "Cannot be more than 6");
 			}
-			config.setMinimumBatteryVoltage(readPositiveFloat(request, "minimumBatteryVoltage", errors));
-			config.setMaximumBatteryVoltage(readPositiveFloat(request, "maximumBatteryVoltage", errors));
+			config.setMinimumBatteryVoltage(readOptionalPositiveDouble(request, "minimumBatteryVoltage", 3.0, errors));
+			config.setMaximumBatteryVoltage(readOptionalPositiveDouble(request, "maximumBatteryVoltage", 4.2, errors));
+			if (config.getMinimumBatteryVoltage() > config.getMaximumBatteryVoltage()) {
+				errors.put("minimumBatteryVoltage", "Cannot be more than maximum voltage");
+			}
 			break;
 		}
 		case LORAATWIFI: {
@@ -113,7 +119,7 @@ public class DeviceConfigSave extends AbstractHttpController {
 			break;
 		}
 		case PLUTOSDR: {
-			config.setGain(readLong(request, "gain", errors));
+			config.setGain((float) readPositiveDouble(request, "gain", errors));
 			break;
 		}
 		case SDRSERVER: {
@@ -125,7 +131,7 @@ public class DeviceConfigSave extends AbstractHttpController {
 		case SPYSERVER: {
 			config.setHost(readHost(request, "host", errors));
 			config.setPort((int) readLong(request, "port", errors));
-			config.setGain(readPositiveFloat(request, "gain", errors));
+			config.setGain((float) readPositiveDouble(request, "gain", errors));
 			break;
 		}
 		default:
@@ -192,7 +198,7 @@ public class DeviceConfigSave extends AbstractHttpController {
 
 	private static SdrServerConfiguration readSdrServerConfiguration(JsonObject request, ValidationResult errors) {
 		SdrServerConfiguration result = new SdrServerConfiguration();
-		result.setBandwidth((long) (readPositiveFloat(request, "bandwidth", errors) * 1000_000));
+		result.setBandwidth((long) (readPositiveDouble(request, "bandwidth", errors) * 1000_000));
 		result.setBandwidthCrop(readLong(request, "bandwidthCrop", errors));
 		result.setBasepath(WebServer.getString(request, "basepath"));
 		if (result.getBasepath() == null) {
@@ -206,7 +212,7 @@ public class DeviceConfigSave extends AbstractHttpController {
 		RotatorConfiguration result = new RotatorConfiguration();
 		result.setHostname(readHost(request, "rotctrldHostname", errors));
 		result.setPort((int) readLong(request, "rotctrldPort", errors));
-		result.setTolerance(readPositiveFloat(request, "rotatorTolerance", errors));
+		result.setTolerance(readPositiveDouble(request, "rotatorTolerance", errors));
 		if (result.getTolerance() > 360.0f) {
 			errors.put("rotatorTolerance", "cannot be more than 360 degrees");
 		}
@@ -224,11 +230,11 @@ public class DeviceConfigSave extends AbstractHttpController {
 		switch (antennaType) {
 		case OMNIDIRECTIONAL:
 		case DIRECTIONAL: {
-			result.setMinElevation(readPositiveFloat(request, "minElevation", errors));
+			result.setMinElevation(readPositiveDouble(request, "minElevation", errors));
 			if (result.getMinElevation() > 90.0) {
 				errors.put("minElevation", "cannot be more than 90 degrees");
 			}
-			result.setGuaranteedElevation(readPositiveFloat(request, "guaranteedElevation", errors));
+			result.setGuaranteedElevation(readPositiveDouble(request, "guaranteedElevation", errors));
 			if (result.getGuaranteedElevation() > 90.0) {
 				errors.put("guaranteedElevation", "cannot be more than 90 degrees");
 			}
@@ -238,15 +244,15 @@ public class DeviceConfigSave extends AbstractHttpController {
 			break;
 		}
 		case FIXED_DIRECTIONAL: {
-			result.setAzimuth(readPositiveFloat(request, "azimuth", errors));
+			result.setAzimuth(readPositiveDouble(request, "azimuth", errors));
 			if (result.getAzimuth() > 360.0f) {
 				errors.put("azimuth", "cannot be more than 360 degrees");
 			}
-			result.setElevation(readPositiveFloat(request, "elevation", errors));
+			result.setElevation(readPositiveDouble(request, "elevation", errors));
 			if (result.getElevation() > 90.0) {
 				errors.put("elevation", "cannot be more than 90 degrees");
 			}
-			result.setBeamwidth(readPositiveFloat(request, "beamwidth", errors));
+			result.setBeamwidth(readPositiveDouble(request, "beamwidth", errors));
 			if (result.getBeamwidth() > 360.0f) {
 				errors.put("beamwidth", "cannot be more than 360 degrees");
 			}
@@ -328,20 +334,37 @@ public class DeviceConfigSave extends AbstractHttpController {
 		return value.asLong();
 	}
 
-	private static float readPositiveFloat(JsonObject requrst, String name, ValidationResult errors) {
+	private static double readOptionalPositiveDouble(JsonObject requrst, String name, double defaultValue, ValidationResult errors) {
 		JsonValue value = requrst.get(name);
 		if (value == null) {
-			errors.put(name, Messages.CANNOT_BE_EMPTY);
-			return 0.0f;
+			return defaultValue;
 		}
 		if (!value.isNumber()) {
 			errors.put(name, "invalid value");
-			return 0.0f;
+			return 0.0;
 		}
-		float result = value.asFloat();
-		if (result < 0.0f) {
+		double result = value.asDouble();
+		if (result < 0.0) {
 			errors.put(name, Messages.CANNOT_BE_NEGATIVE);
-			return 0.0f;
+			return 0.0;
+		}
+		return result;
+	}
+
+	private static double readPositiveDouble(JsonObject requrst, String name, ValidationResult errors) {
+		JsonValue value = requrst.get(name);
+		if (value == null) {
+			errors.put(name, Messages.CANNOT_BE_EMPTY);
+			return 0.0;
+		}
+		if (!value.isNumber()) {
+			errors.put(name, "invalid value");
+			return 0.0;
+		}
+		double result = value.asDouble();
+		if (result < 0.0) {
+			errors.put(name, Messages.CANNOT_BE_NEGATIVE);
+			return 0.0;
 		}
 		return result;
 	}

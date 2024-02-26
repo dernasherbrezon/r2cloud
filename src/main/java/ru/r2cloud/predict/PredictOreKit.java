@@ -48,6 +48,7 @@ import ru.r2cloud.model.AntennaConfiguration;
 import ru.r2cloud.model.SatPass;
 import ru.r2cloud.rotctrld.Position;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 
 public class PredictOreKit {
 
@@ -132,7 +133,11 @@ public class PredictOreKit {
 	}
 
 	private static List<SatPass> calculateFixedDirectional(AntennaConfiguration antenna, AbsoluteDate initialDate, TopocentricFrame baseStationFrame, TLEPropagator tlePropagator, @SuppressWarnings("rawtypes") EventHandler handler) {
-		FieldOfView fov = new CircularFieldOfView(new Vector3D(antenna.getAzimuth(), antenna.getElevation()), antenna.getBeamwidth(), FastMath.toRadians(0));
+		// orekit expects azimuth in counter clock wise degrees
+		double azimuthRadians = FastMath.toRadians(Util.convertAzimuthToDegress(antenna.getAzimuth()));
+		double elevationRadians = FastMath.toRadians(antenna.getElevation());
+		double beamwidthRadians = FastMath.toRadians(antenna.getBeamwidth());
+		FieldOfView fov = new CircularFieldOfView(new Vector3D(azimuthRadians, elevationRadians), beamwidthRadians, FastMath.toRadians(0));
 		GroundFieldOfViewDetector fovDetector = new GroundFieldOfViewDetector(baseStationFrame, fov);
 		ElevationDetector minimumDetector = new ElevationDetector(baseStationFrame).withConstantElevation(0.0);
 		@SuppressWarnings("unchecked")
