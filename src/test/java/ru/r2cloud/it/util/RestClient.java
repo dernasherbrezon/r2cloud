@@ -297,32 +297,6 @@ public class RestClient {
 			json.add("lng", config.getLng());
 		}
 		json.add("autoUpdate", config.isAutoUpdate());
-		if (config.getPpm() != null) {
-			json.add("ppm", config.getPpm());
-		}
-		if (config.getElevationMin() != null) {
-			json.add("elevationMin", config.getElevationMin());
-		}
-		if (config.getElevationGuaranteed() != null) {
-			json.add("elevationGuaranteed", config.getElevationGuaranteed());
-		}
-		json.add("rotationEnabled", config.isRotationEnabled());
-		if (config.getRotctrldHostname() != null) {
-			json.add("rotctrldHostname", config.getRotctrldHostname());
-		}
-		if (config.getRotctrldPort() != null) {
-			json.add("rotctrldPort", config.getRotctrldPort());
-		}
-		if (config.getRotatorTolerance() != null) {
-			json.add("rotatorTolerance", config.getRotatorTolerance());
-		}
-		if (config.getRotatorCycle() != null) {
-			json.add("rotatorCycle", config.getRotatorCycle());
-		}
-		if (config.getGain() != null) {
-			json.add("gain", config.getGain());
-		}
-		json.add("biast", config.isBiast());
 		json.add("presentationMode", config.isPresentationMode());
 		HttpRequest request = createJsonPost("/api/v1/admin/config/general", json).build();
 		try {
