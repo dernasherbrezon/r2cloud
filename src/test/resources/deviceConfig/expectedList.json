@@ -1,0 +1,34 @@
+[
+	{
+		"id": "loraatwifi.0",
+		"name": "LoRa - 127.0.0.1:8005",
+		"status": "CONNECTED"
+	},
+	{
+		"id": "loraatwifi.1",
+		"name": "LoRa - 255.255.255.255:80",
+		"status": "FAILED",
+		"failureMessage": "CONNECTION_FAILURE"
+	},
+	{
+		"id": "plutosdr.0",
+		"name": "PlutoSDR",
+		"status": "CONNECTED"
+	},
+	{
+		"id": "rtlsdr.0",
+		"name": "RTL-SDR 0",
+		"status": "CONNECTED"
+	},
+	{
+		"id": "rtlsdr.1",
+		"name": "RTL-SDR 1",
+		"status": "FAILED",
+		"failureMessage": "unable to find device"
+	},
+	{
+		"id": "spyserver.0",
+		"name": "SpyServer - 127.0.0.1:8008",
+		"status": "CONNECTED"
+	}
+]

@@ -80,6 +80,7 @@ public abstract class BaseTest {
 
 	@Before
 	public void start() throws Exception {
+		//FIXME uncomment
 //		LogManager.getLogManager().reset();
 		tempDirectory = new File(tempFolder.getRoot(), "tmp");
 		if (!tempDirectory.mkdirs()) {

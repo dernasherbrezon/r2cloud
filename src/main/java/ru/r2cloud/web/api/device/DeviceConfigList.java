@@ -25,7 +25,9 @@ public class DeviceConfigList extends AbstractHttpController {
 			curConfig.add("id", cur.getConfig().getId());
 			curConfig.add("name", cur.getConfig().getName());
 			curConfig.add("status", cur.getStatus().name());
-			curConfig.add("failureMessage", cur.getFailureMessage());
+			if (cur.getFailureMessage() != null) {
+				curConfig.add("failureMessage", cur.getFailureMessage());
+			}
 			result.add(curConfig);
 		}
 		ModelAndView model = new ModelAndView();

@@ -281,6 +281,14 @@ public class RestClient {
 		return getData("/api/v1/admin/status/overview");
 	}
 
+	public JsonArray getDeviceConfigList() {
+		return getDataArray("/api/v1/admin/device/config/list");
+	}
+
+	public JsonObject getDeviceConfigLoad(String id) {
+		return getData("/api/v1/admin/device/config/load?id=" + URLEncoder.encode(id, StandardCharsets.UTF_8));
+	}
+
 	public void setGeneralConfiguration(GeneralConfiguration config) {
 		HttpResponse<String> response = setGeneralConfigurationWithResponse(config);
 		if (response.statusCode() != 200) {

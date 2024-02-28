@@ -1,0 +1,19 @@
+{
+	"id": "rtlsdr.0",
+	"name": "RTL-SDR 0",
+	"deviceType": "RTLSDR",
+	"minimumFrequency": 100000000,
+	"maximumFrequency": 1700000000,
+	"gain": 45,
+	"rtlDeviceId": 0,
+	"biast": false,
+	"ppm": 0,
+	"antenna": {
+		"antennaType": "OMNIDIRECTIONAL",
+		"azimuth": 0,
+		"elevation": 0,
+		"beamwidth": 45,
+		"minElevation": 8,
+		"guaranteedElevation": 20
+	}
+}

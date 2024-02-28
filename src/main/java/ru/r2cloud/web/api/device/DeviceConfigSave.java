@@ -53,8 +53,8 @@ public class DeviceConfigSave extends AbstractHttpController {
 		if (config.getId() != null && device == null) {
 			errors.setGeneral("Unknown device id");
 		}
-		config.setMinimumFrequency((long) (readPositiveDouble(request, "minimumFrequency", errors) * 1000_000));
-		config.setMaximumFrequency((long) (readPositiveDouble(request, "maximumFrequency", errors) * 1000_000));
+		config.setMinimumFrequency((long) (readPositiveDouble(request, "minimumFrequency", errors)));
+		config.setMaximumFrequency((long) (readPositiveDouble(request, "maximumFrequency", errors)));
 		if (config.getMinimumFrequency() > config.getMaximumFrequency()) {
 			errors.put("minimumFrequency", "Cannot be more than maximum frequency");
 		}
@@ -198,7 +198,7 @@ public class DeviceConfigSave extends AbstractHttpController {
 
 	private static SdrServerConfiguration readSdrServerConfiguration(JsonObject request, ValidationResult errors) {
 		SdrServerConfiguration result = new SdrServerConfiguration();
-		result.setBandwidth((long) (readPositiveDouble(request, "bandwidth", errors) * 1000_000));
+		result.setBandwidth((long) (readPositiveDouble(request, "bandwidth", errors)));
 		result.setBandwidthCrop(readLong(request, "bandwidthCrop", errors));
 		result.setBasepath(WebServer.getString(request, "basepath"));
 		if (result.getBasepath() == null) {
