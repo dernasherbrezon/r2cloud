@@ -39,8 +39,6 @@ public class Configuration {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Configuration.class);
 
-	public static final String LORA_AT_DEVICE_PREFIX = "loraat-";
-
 	private final Properties userSettings;
 	private final Path userSettingsLocation;
 	private final FileSystem fs;
@@ -317,7 +315,7 @@ public class Configuration {
 			config.setMinimumFrequency(getLong(prefix + "minFrequency"));
 			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
 			config.setTimeout(timeout);
-			config.setId("sdrserver." + cur);
+			config.setId(deviceType.name().toLowerCase(Locale.UK) + "." + cur);
 			config.setName("SDR-SERVER - " + config.getHost() + ":" + config.getPort());
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
@@ -380,7 +378,7 @@ public class Configuration {
 			if (config.getRotatorConfiguration() != null) {
 				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
 			}
-			config.setId("rtlsdr." + cur);
+			config.setId(deviceType.name().toLowerCase(Locale.UK) + "." + cur);
 			config.setName("RTL-SDR " + config.getRtlDeviceId());
 			config.setDeviceType(DeviceType.RTLSDR);
 			config.setCompencateDcOffset(true);
@@ -453,7 +451,7 @@ public class Configuration {
 			config.setPassword(getProperty(prefix + "password"));
 			config.setTimeout(timeout);
 			String hostport = config.getHost() + ":" + config.getPort();
-			config.setId("loraatwifi." + cur);
+			config.setId(deviceType.name().toLowerCase(Locale.UK) + "." + cur);
 			config.setName("LoRa - " + hostport);
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
@@ -556,7 +554,7 @@ public class Configuration {
 			// Yes save port into "host" to be backward compatible
 			config.setHost(getProperty(prefix + "port"));
 			config.setTimeout(timeout);
-			config.setId("loraat." + cur);
+			config.setId(deviceType.name().toLowerCase(Locale.UK) + "." + cur);
 			config.setName("LoRa - " + config.getHost());
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
@@ -625,7 +623,7 @@ public class Configuration {
 			}
 			config.setHost(address.toLowerCase(Locale.UK));
 			config.setTimeout(timeout);
-			config.setId("loraatble." + cur);
+			config.setId(deviceType.name().toLowerCase(Locale.UK) + "." + cur);
 			config.setName("LoRa - " + address);
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
@@ -835,6 +833,8 @@ public class Configuration {
 				str.append(indexes.get(i));
 			}
 			setProperty(rootPropName, str.toString());
+
+			config.setId(config.getDeviceType().name().toLowerCase(Locale.UK) + "." + result);
 		}
 		return config.getDeviceType().name().toLowerCase(Locale.UK) + ".device." + result + ".";
 	}

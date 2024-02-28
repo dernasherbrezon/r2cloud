@@ -288,7 +288,19 @@ public class RestClient {
 	public JsonObject getDeviceConfigLoad(String id) {
 		return getData("/api/v1/admin/device/config/load?id=" + URLEncoder.encode(id, StandardCharsets.UTF_8));
 	}
-
+	
+	public HttpResponse<String> saveDeviceConfig(JsonObject device) {
+		HttpRequest request = createJsonPost("/api/v1/admin/device/config/save", device).build();
+		try {
+			return httpclient.send(request, BodyHandlers.ofString());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
+	
 	public void setGeneralConfiguration(GeneralConfiguration config) {
 		HttpResponse<String> response = setGeneralConfigurationWithResponse(config);
 		if (response.statusCode() != 200) {

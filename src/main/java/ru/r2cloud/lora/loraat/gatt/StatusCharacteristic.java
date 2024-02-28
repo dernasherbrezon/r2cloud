@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.device.Device;
 import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.device.LoraAtBleDevice;
-import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
 public class StatusCharacteristic extends BleCharacteristic {
@@ -63,7 +62,7 @@ public class StatusCharacteristic extends BleCharacteristic {
 	}
 
 	private LoraAtBleDevice getLoraDevice(String bluetoothAddress) {
-		Device device = manager.findDeviceById(Configuration.LORA_AT_DEVICE_PREFIX + bluetoothAddress);
+		Device device = manager.findDeviceByHost(bluetoothAddress);
 		if (device == null) {
 			LOG.info("[{}] ble device is not configured", bluetoothAddress);
 			return null;

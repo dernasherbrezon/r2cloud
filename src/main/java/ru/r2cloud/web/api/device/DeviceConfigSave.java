@@ -20,7 +20,6 @@ import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
 import ru.r2cloud.web.ModelAndView;
-import ru.r2cloud.web.Success;
 import ru.r2cloud.web.ValidationResult;
 import ru.r2cloud.web.WebServer;
 import ru.r2cloud.web.api.Messages;
@@ -53,8 +52,8 @@ public class DeviceConfigSave extends AbstractHttpController {
 		if (config.getId() != null && device == null) {
 			errors.setGeneral("Unknown device id");
 		}
-		config.setMinimumFrequency((long) (readPositiveDouble(request, "minimumFrequency", errors)));
-		config.setMaximumFrequency((long) (readPositiveDouble(request, "maximumFrequency", errors)));
+		config.setMinimumFrequency(readLong(request, "minimumFrequency", errors));
+		config.setMaximumFrequency(readLong(request, "maximumFrequency", errors));
 		if (config.getMinimumFrequency() > config.getMaximumFrequency()) {
 			errors.put("minimumFrequency", "Cannot be more than maximum frequency");
 		}
@@ -193,12 +192,17 @@ public class DeviceConfigSave extends AbstractHttpController {
 			throw new IllegalArgumentException("Unexpected value: " + deviceType);
 		}
 		props.update();
-		return new Success();
+
+		JsonObject json = new JsonObject();
+		json.add("id", config.getId());
+		ModelAndView result = new ModelAndView();
+		result.setData(json.toString());
+		return result;
 	}
 
 	private static SdrServerConfiguration readSdrServerConfiguration(JsonObject request, ValidationResult errors) {
 		SdrServerConfiguration result = new SdrServerConfiguration();
-		result.setBandwidth((long) (readPositiveDouble(request, "bandwidth", errors)));
+		result.setBandwidth(readLong(request, "bandwidth", errors));
 		result.setBandwidthCrop(readLong(request, "bandwidthCrop", errors));
 		result.setBasepath(WebServer.getString(request, "basepath"));
 		if (result.getBasepath() == null) {

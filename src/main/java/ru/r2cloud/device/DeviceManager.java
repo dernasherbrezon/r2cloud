@@ -197,13 +197,28 @@ public class DeviceManager implements Lifecycle, ConfigListener {
 		Collections.sort(result, DeviceStatusComparator.INSTANCE);
 		return result;
 	}
-	
+
 	public Device findDeviceById(String id) {
 		if (id == null) {
 			return null;
 		}
 		for (Device cur : devices) {
 			if (cur.getId().equals(id)) {
+				return cur;
+			}
+		}
+		return null;
+	}
+
+	public Device findDeviceByHost(String host) {
+		if (host == null) {
+			return null;
+		}
+		for (Device cur : devices) {
+			if (cur.getDeviceConfiguration().getHost() == null) {
+				continue;
+			}
+			if (cur.getDeviceConfiguration().getHost().equals(host)) {
 				return cur;
 			}
 		}

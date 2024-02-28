@@ -190,9 +190,13 @@ public class DeviceConfiguration {
 
 	public JsonObject toJson() {
 		JsonObject json = new JsonObject();
-		json.add("id", id);
+		if (id != null) {
+			json.add("id", id);
+		}
 		json.add("name", name);
-		json.add("deviceType", deviceType.name());
+		if (deviceType != null) {
+			json.add("deviceType", deviceType.name());
+		}
 		if (minimumFrequency != 0) {
 			json.add("minimumFrequency", minimumFrequency);
 		}
@@ -221,7 +225,9 @@ public class DeviceConfiguration {
 		if (sdrServerConfiguration != null) {
 			json.add("bandwidth", sdrServerConfiguration.getBandwidth());
 			json.add("bandwidthCrop", sdrServerConfiguration.getBandwidthCrop());
-			json.add("basepath", sdrServerConfiguration.getBasepath());
+			if (sdrServerConfiguration.getBasepath() != null) {
+				json.add("basepath", sdrServerConfiguration.getBasepath());
+			}
 			json.add("usegzip", sdrServerConfiguration.isUseGzip());
 		}
 		if (rotatorConfiguration != null) {

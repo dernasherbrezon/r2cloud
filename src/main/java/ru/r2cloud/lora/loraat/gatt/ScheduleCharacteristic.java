@@ -19,7 +19,6 @@ import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.satellite.ObservationRequestComparator;
 import ru.r2cloud.util.Clock;
-import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
 public class ScheduleCharacteristic extends BleCharacteristic {
@@ -136,7 +135,7 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 	}
 
 	private LoraAtBleDevice getLoraDevice(String bluetoothAddress) {
-		Device device = manager.findDeviceById(Configuration.LORA_AT_DEVICE_PREFIX + bluetoothAddress);
+		Device device = manager.findDeviceByHost(bluetoothAddress);
 		if (device == null) {
 			LOG.info("[{}] ble device is not configured", bluetoothAddress);
 			return null;
