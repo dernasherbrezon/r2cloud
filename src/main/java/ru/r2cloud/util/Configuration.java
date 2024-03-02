@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -45,7 +44,6 @@ public class Configuration {
 	private static final Set<PosixFilePermission> MODE600 = new HashSet<>();
 
 	private final Properties systemSettings = new Properties();
-	private final Map<String, List<ConfigListener>> listeners = new ConcurrentHashMap<>();
 	private final Set<String> changedProperties = new HashSet<>();
 
 	static {
@@ -159,25 +157,6 @@ public class Configuration {
 			Files.move(tempPath, userSettingsLocation, StandardCopyOption.ATOMIC_MOVE);
 		} catch (IOException e) {
 			throw new IllegalArgumentException(e);
-		}
-		Set<ConfigListener> toNotify = new HashSet<>();
-		synchronized (changedProperties) {
-			for (String cur : changedProperties) {
-				List<ConfigListener> curListener = listeners.get(cur);
-				if (curListener == null) {
-					continue;
-				}
-				toNotify.addAll(curListener);
-			}
-			changedProperties.clear();
-		}
-
-		for (ConfigListener cur : toNotify) {
-			try {
-				cur.onConfigUpdated();
-			} catch (Exception e) {
-				LOG.error("unable to notify listener: {}", cur, e);
-			}
 		}
 	}
 
@@ -844,17 +823,6 @@ public class Configuration {
 			changedProperties.add(name);
 		}
 		userSettings.remove(name);
-	}
-
-	public void subscribe(ConfigListener listener, String... names) {
-		for (String cur : names) {
-			List<ConfigListener> previous = this.listeners.get(cur);
-			if (previous == null) {
-				previous = new ArrayList<>();
-				this.listeners.put(cur, previous);
-			}
-			previous.add(listener);
-		}
 	}
 
 	public File getTempDirectory() {

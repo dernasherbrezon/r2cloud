@@ -20,14 +20,13 @@ import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.ObservationRequestComparator;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.Clock;
-import ru.r2cloud.util.ConfigListener;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
 import ru.r2cloud.util.SafeRunnable;
 import ru.r2cloud.util.ThreadPoolFactory;
 import ru.r2cloud.util.Util;
 
-public class DeviceManager implements Lifecycle, ConfigListener {
+public class DeviceManager implements Lifecycle {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DeviceManager.class);
 
@@ -45,8 +44,6 @@ public class DeviceManager implements Lifecycle, ConfigListener {
 		this.config = config;
 		this.threadpoolFactory = threadpoolFactory;
 		this.clock = clock;
-		this.config.subscribe(this, "locaiton.lat");
-		this.config.subscribe(this, "locaiton.lon");
 	}
 
 	public void addDevice(Device device) {
@@ -174,18 +171,6 @@ public class DeviceManager implements Lifecycle, ConfigListener {
 		Util.shutdown(rescheduleThread, config.getThreadPoolShutdownMillis());
 		for (int i = 0; i < devices.size(); i++) {
 			devices.get(i).stop();
-		}
-	}
-
-	@Override
-	public void onConfigUpdated() {
-		if (config.getProperty("locaiton.lat") != null && config.getProperty("locaiton.lon") != null) {
-			LOG.info("base station location changed. reschedule");
-			stop();
-			start();
-		} else {
-			LOG.info("missing location. cancelling all observations");
-			stop();
 		}
 	}
 
