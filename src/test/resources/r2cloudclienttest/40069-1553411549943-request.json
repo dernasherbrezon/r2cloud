@@ -1,0 +1,45 @@
+{
+	"id": "1559973224691-40069-0",
+	"satellite": "40069",
+	"transmitterId": "40069-0",
+	"tle": {
+		"line1": "METEOR-M 2",
+		"line2": "1 40069U 14037A   18286.52491495 -.00000023  00000-0  92613-5 0  9990",
+		"line3": "2 40069  98.5901 334.4030 0004544 256.4188 103.6490 14.20654800221188",
+		"updated": 1559942730784,
+		"source": "localhost"
+	},
+	"groundStation": {
+		"lat": 56.189,
+		"lon": 38.174
+	},
+	"dataFormat": "COMPLEX_UNSIGNED_BYTE",
+	"sampleRate": 288000,
+	"actualFrequency": 137908065,
+	"numberOfDecodedPackets": 0,
+	"device": {
+		"id": "rtlsdr.1",
+		"name": "RTL-SDR 1",
+		"deviceType": "RTLSDR",
+		"minimumFrequency": 100000000,
+		"maximumFrequency": 1700000000,
+		"gain": 45,
+		"rtlDeviceId": 1,
+		"biast": false,
+		"ppm": 0,
+		"rotator": {
+			"rotctrldHostname": "127.0.0.1",
+			"rotctrldPort": 8004,
+			"rotatorTolerance": 5,
+			"rotatorCycle": 1000
+		},
+		"antenna": {
+			"antennaType": "DIRECTIONAL",
+			"azimuth": 0,
+			"elevation": 0,
+			"beamwidth": 45,
+			"minElevation": 8,
+			"guaranteedElevation": 20
+		}
+	}
+}

@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
@@ -87,6 +88,11 @@ public class ObservationSigMfMeta extends AbstractHttpController {
 			LOG.info("satellite not found: {} id: {}", satelliteId, id);
 			return new NotFound();
 		}
+		Transmitter transmitter = satellite.getById(entity.getTransmitterId());
+		if (transmitter == null) {
+			LOG.info("transmitted not found: {} id: {}", entity.getTransmitterId(), id);
+			return new NotFound();
+		}
 
 		ModelAndView result = new ModelAndView();
 		SimpleDateFormat dateFormat = createParser();
@@ -95,7 +101,7 @@ public class ObservationSigMfMeta extends AbstractHttpController {
 		if (ifModifiedSince != null && ifModifiedSince >= entity.getRawPath().lastModified() / 1000) {
 			response = NanoHTTPD.newFixedLengthResponse(fi.iki.elonen.NanoHTTPD.Response.Status.NOT_MODIFIED, "application/octet-stream", null);
 		} else {
-			response = NanoHTTPD.newFixedLengthResponse(Status.OK, MimeType.JSON.getType(), convertToSigMfMeta(entity, satellite).toString());
+			response = NanoHTTPD.newFixedLengthResponse(Status.OK, MimeType.JSON.getType(), convertToSigMfMeta(entity, satellite, transmitter).toString());
 			// convert to seconds
 			response.addHeader("Cache-Control", "private, max-age=" + ((int) (config.getLong("server.static.signed.validMillis") / 1000)));
 		}
@@ -106,7 +112,7 @@ public class ObservationSigMfMeta extends AbstractHttpController {
 
 	}
 
-	private JsonObject convertToSigMfMeta(Observation observation, Satellite satellite) {
+	private JsonObject convertToSigMfMeta(Observation observation, Satellite satellite, Transmitter transmitter) {
 		JsonObject global = new JsonObject();
 		global.add("core:author", "r2cloud");
 		global.add("core:description", "Automatic recording from satellite " + satellite.getName() + " (" + satellite.getId() + ")");
@@ -140,6 +146,30 @@ public class ObservationSigMfMeta extends AbstractHttpController {
 		default:
 			// what would happen if datatype is unknown?
 			break;
+		}
+
+		JsonObject r2cloudSatellite = new JsonObject();
+		r2cloudSatellite.set("noradId", satellite.getId());
+		r2cloudSatellite.set("name", satellite.getName());
+		JsonObject r2cloudTle = observation.getTle().toJson();
+		r2cloudSatellite.set("tle", r2cloudTle);
+		global.set("r2cloud:satellite", r2cloudSatellite);
+		JsonObject transmitterJson = transmitter.toJson();
+		transmitterJson.remove("status");
+		global.set("r2cloud:signal", transmitterJson);
+		if (observation.getDevice() != null) {
+			JsonObject deviceConfiguration = observation.getDevice().toJson();
+			deviceConfiguration.remove("username");
+			deviceConfiguration.remove("password");
+			deviceConfiguration.remove("host");
+			deviceConfiguration.remove("port");
+			JsonValue rotator = deviceConfiguration.get("rotator");
+			if (rotator != null) {
+				JsonObject rotatorObj = rotator.asObject();
+				rotatorObj.remove("rotctrldHostname");
+				rotatorObj.remove("rotctrldPort");
+			}
+			global.set("r2cloud:device", deviceConfiguration);
 		}
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");

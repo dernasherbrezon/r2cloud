@@ -77,6 +77,10 @@ public class SpectogramService {
 			LOG.error("corrupted raw file: {}", req.getRawPath().getAbsolutePath());
 			return null;
 		}
+		if (req.getDataFormat() == null) {
+			LOG.error("data format is missing");
+			return null;
+		}
 		FloatInput source = null;
 		try {
 			InputStream is = new BufferedInputStream(new FileInputStream(req.getRawPath()));

@@ -164,7 +164,7 @@ public class R2Cloud {
 		decoders = new Decoders(predict, props, processFactory);
 		decoderService = new DecoderService(props, decoders, resultDao, leoSatDataService, threadFactory, metrics, satelliteDao);
 		priorityService = new PriorityService(props, clock);
-		houseKeeping = new Housekeeping(props, satelliteDao, threadFactory, new CelestrakClient(props), tleDao, satnogsClient, leoSatDataClient, decoderService, priorityService);
+		houseKeeping = new Housekeeping(props, satelliteDao, threadFactory, new CelestrakClient(props, clock), tleDao, satnogsClient, leoSatDataClient, decoderService, priorityService);
 
 		observationFactory = new ObservationFactory(predict);
 

@@ -1,0 +1,39 @@
+{
+	"id": "1559949406124-46494-0",
+	"satellite": "46494",
+	"transmitterId": "46494-0",
+	"tle": {
+		"line1": "NORBI",
+		"line2": "1 46494U 20068J   22099.92133883  .00004000  00000+0  28978-3 0  9992",
+		"line3": "2 46494  97.7199  41.3905 0017958 151.0787 209.1441 15.04425920 83893",
+		"updated": 1559942730784,
+		"source": "localhost"
+	},
+	"groundStation": {
+		"lat": 56.189,
+		"lon": 38.174
+	},
+	"sampleRate": 0,
+	"actualFrequency": 436703000,
+	"device": {
+		"id": "loraatwifi.0",
+		"name": "LoRa - 127.0.0.1:8005",
+		"deviceType": "LORAATWIFI",
+		"minimumFrequency": 144000000,
+		"maximumFrequency": 500100000,
+		"host": "127.0.0.1",
+		"port": 8005,
+		"gain": 0,
+		"rtlDeviceId": 0,
+		"biast": false,
+		"ppm": 0,
+		"antenna": {
+			"antennaType": "OMNIDIRECTIONAL",
+			"azimuth": 0,
+			"elevation": 0,
+			"beamwidth": 45,
+			"minElevation": 8,
+			"guaranteedElevation": 20
+		}
+	}
+}

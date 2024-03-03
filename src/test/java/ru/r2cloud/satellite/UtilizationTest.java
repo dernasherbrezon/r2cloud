@@ -51,7 +51,7 @@ public class UtilizationTest {
 		SatelliteDao satelliteDao = new SatelliteDao(config);
 		TleDao tleDao = new TleDao(config);
 		PriorityService priorityService = new PriorityService(config, new DefaultClock());
-		Housekeeping houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config), tleDao, null, null, null, priorityService);
+		Housekeeping houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config, new DefaultClock()), tleDao, null, null, null, priorityService);
 		houseKeeping.start();
 		ObservationFactory factory = new ObservationFactory(predict);
 

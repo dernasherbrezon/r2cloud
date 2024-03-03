@@ -117,11 +117,7 @@ public abstract class Device implements Lifecycle {
 			public void safeRun() {
 				IQData data;
 				Observation observation = new Observation(req);
-				observation.setGain(String.valueOf(deviceConfiguration.getGain()));
-				// write some device-specific parameters
-				observation.setBiast(deviceConfiguration.isBiast());
-				observation.setRtlDeviceId(deviceConfiguration.getRtlDeviceId());
-				observation.setPpm(deviceConfiguration.getPpm());
+				observation.setDevice(deviceConfiguration);
 				observation.setStatus(ObservationStatus.RECEIVING_DATA);
 				// do not use lock for multiple concurrent observations
 				if (numberOfConcurrentObservations > 1) {

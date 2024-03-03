@@ -5,8 +5,7 @@
 	"sampleRate": 240000,
 	"actualFrequency": 437444309,
 	"satellite": "41460",
-	"numberOfDecodedPackets": 0,
-	"sdrType": "RTLSDR",
+	"numberOfDecodedPackets": 1,
 	"dataFormat": "COMPLEX_UNSIGNED_BYTE",
 	"groundStation": {
 		"lat": 53.72,

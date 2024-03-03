@@ -68,4 +68,13 @@ public class RotatorConfiguration {
 		return json;
 	}
 
+	public static RotatorConfiguration fromJson(JsonObject meta) {
+		RotatorConfiguration result = new RotatorConfiguration();
+		result.setHostname(meta.getString("rotctrldHostname", null));
+		result.setPort(meta.getInt("rotctrldPort", 0));
+		result.setTolerance(meta.getDouble("rotatorTolerance", 0));
+		result.setCycleMillis(meta.getInt("rotatorCycle", 0));
+		return result;
+	}
+
 }

@@ -14,7 +14,28 @@
 				0
 			]
 		},
-		"core:datatype": "cu8"
+		"core:datatype": "cu8",
+		"r2cloud:satellite": {
+			"noradId": "41460",
+			"name": "AAUSAT 4",
+			"tle": {
+				"line1": "AAUSAT 4",
+				"line2": "1 41460U 16025E   22114.24237288  .00023891  00000+0  95344-3 0  9995",
+				"line3": "2 41460  98.1778 281.1813 0131168  71.2285 290.3188 15.17490244329716",
+				"updated": 0
+			}
+		},
+		"r2cloud:signal": {
+			"modulation": "GFSK",
+			"framing": "CUSTOM",
+			"beaconClass": "ru.r2cloud.jradio.aausat4.Aausat4Beacon",
+			"frequency": 437424000,
+			"bandwidth": 7000,
+			"baudRates": [
+				2400
+			],
+			"deviation": 2500
+		}
 	},
 	"captures": [
 		{

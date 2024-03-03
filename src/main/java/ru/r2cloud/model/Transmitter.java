@@ -529,8 +529,10 @@ public class Transmitter {
 		if (loraLdro != 0) {
 			result.add("loraLdro", loraLdro);
 		}
-		result.add("loraExplicitHeader", loraExplicitHeader);
-		result.add("loraCrc", loraCrc);
+		if (modulation != null && modulation.equals(Modulation.LORA)) {
+			result.add("loraExplicitHeader", loraExplicitHeader);
+			result.add("loraCrc", loraCrc);
+		}
 		if (deviation != 5000) {
 			result.add("deviation", deviation);
 		}

@@ -5,5 +5,6 @@
 	"sampleRate": 288000,
 	"actualFrequency": 137900000,
 	"satellite": "40069",
-	"numberOfDecodedPackets": 0
+	"numberOfDecodedPackets": 0,
+	"dataFormat" : "COMPLEX_UNSIGNED_BYTE"
 }

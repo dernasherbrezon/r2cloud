@@ -1,6 +1,7 @@
 package ru.r2cloud.model;
 
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 public class DeviceConfiguration {
 
@@ -193,7 +194,9 @@ public class DeviceConfiguration {
 		if (id != null) {
 			json.add("id", id);
 		}
-		json.add("name", name);
+		if (name != null) {
+			json.add("name", name);
+		}
 		if (deviceType != null) {
 			json.add("deviceType", deviceType.name());
 		}
@@ -237,5 +240,41 @@ public class DeviceConfiguration {
 			json.add("antenna", antennaConfiguration.toJson());
 		}
 		return json;
+	}
+
+	public static DeviceConfiguration fromJson(JsonObject meta) {
+		DeviceConfiguration result = new DeviceConfiguration();
+		result.setId(meta.getString("id", null));
+		result.setName(meta.getString("name", null));
+		result.setDeviceType(DeviceType.valueOf(meta.getString("deviceType", "RTLSDR")));
+		result.setMinimumFrequency(meta.getLong("minimumFrequency", 0));
+		result.setMaximumFrequency(meta.getLong("maximumFrequency", 0));
+		result.setHost(meta.getString("host", null));
+		result.setPort(meta.getInt("port", 0));
+		result.setUsername(meta.getString("username", null));
+		result.setGain(meta.getFloat("gain", 0));
+		result.setRtlDeviceId(meta.getInt("rtlDeviceId", 0));
+		result.setBiast(meta.getBoolean("biast", false));
+		result.setPpm(meta.getInt("ppm", 0));
+		result.setMaximumBatteryVoltage(meta.getDouble("maximumBatteryVoltage", 0));
+		result.setMinimumBatteryVoltage(meta.getDouble("minimumBatteryVoltage", 0));
+		JsonValue bandwidth = meta.get("bandwidth");
+		if (bandwidth != null) {
+			SdrServerConfiguration sdrConfig = new SdrServerConfiguration();
+			sdrConfig.setBandwidth(bandwidth.asLong());
+			sdrConfig.setBandwidthCrop(meta.getLong("bandwidthCrop", 0));
+			sdrConfig.setBasepath(meta.getString("basepath", null));
+			sdrConfig.setUseGzip(meta.getBoolean("usegzip", false));
+			result.setSdrServerConfiguration(sdrConfig);
+		}
+		JsonValue rotator = meta.get("rotator");
+		if (rotator != null) {
+			result.setRotatorConfiguration(RotatorConfiguration.fromJson(rotator.asObject()));
+		}
+		JsonValue antenna = meta.get("antenna");
+		if (antenna != null) {
+			result.setAntennaConfiguration(AntennaConfiguration.fromJson(antenna.asObject()));
+		}
+		return result;
 	}
 }

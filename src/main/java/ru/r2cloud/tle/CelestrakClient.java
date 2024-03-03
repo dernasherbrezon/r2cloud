@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.R2Cloud;
 import ru.r2cloud.model.Tle;
+import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -21,9 +22,11 @@ public class CelestrakClient {
 	private static final Logger LOG = LoggerFactory.getLogger(CelestrakClient.class);
 
 	private final List<String> urls;
+	private final Clock clock;
 	private final int timeout;
 
-	public CelestrakClient(Configuration props) {
+	public CelestrakClient(Configuration props, Clock clock) {
+		this.clock = clock;
 		this.urls = props.getProperties("tle.urls");
 		this.timeout = props.getInteger("tle.timeout");
 	}
@@ -66,7 +69,7 @@ public class CelestrakClient {
 						}
 						String noradId = line2.substring(2, 2 + 5).trim();
 						Tle value = new Tle(new String[] { curLine.trim(), line1, line2 });
-						value.setLastUpdateTime(System.currentTimeMillis());
+						value.setLastUpdateTime(clock.millis());
 						value.setSource(obj.getHost());
 						result.put(noradId, value);
 					}

@@ -22,14 +22,9 @@ public class Observation {
 	private GeodeticPoint groundStation;
 
 	private DataFormat dataFormat;
-	private SdrType sdrType;
 	private long sampleRate;
 	private long frequency;
-	private String gain;
-	private boolean biast;
-	private long centerBandFrequency;
-	private int rtlDeviceId;
-	private int ppm;
+	private DeviceConfiguration device;
 
 	// observation status
 	private String channelA;
@@ -80,6 +75,14 @@ public class Observation {
 		return result;
 	}
 
+	public DeviceConfiguration getDevice() {
+		return device;
+	}
+
+	public void setDevice(DeviceConfiguration device) {
+		this.device = device;
+	}
+
 	public String getSigmfDataURL() {
 		return sigmfDataURL;
 	}
@@ -102,32 +105,6 @@ public class Observation {
 
 	public void setDataFormat(DataFormat dataFormat) {
 		this.dataFormat = dataFormat;
-	}
-
-	public long getCenterBandFrequency() {
-		return centerBandFrequency;
-	}
-
-	public void setCenterBandFrequency(long centerBandFrequency) {
-		this.centerBandFrequency = centerBandFrequency;
-	}
-
-	@Deprecated
-	public SdrType getSdrType() {
-		return sdrType;
-	}
-
-	@Deprecated
-	public void setSdrType(SdrType sdrType) {
-		this.sdrType = sdrType;
-	}
-
-	public boolean isBiast() {
-		return biast;
-	}
-
-	public void setBiast(boolean biast) {
-		this.biast = biast;
 	}
 
 	public ObservationStatus getStatus() {
@@ -298,30 +275,6 @@ public class Observation {
 		this.sampleRate = sampleRate;
 	}
 
-	public String getGain() {
-		return gain;
-	}
-
-	public void setGain(String gain) {
-		this.gain = gain;
-	}
-
-	public int getRtlDeviceId() {
-		return rtlDeviceId;
-	}
-
-	public void setRtlDeviceId(int rtlDeviceId) {
-		this.rtlDeviceId = rtlDeviceId;
-	}
-
-	public int getPpm() {
-		return ppm;
-	}
-
-	public void setPpm(int ppm) {
-		this.ppm = ppm;
-	}
-
 	public static Observation fromJson(JsonObject meta) {
 		Observation result = new Observation();
 		result.setId(meta.getString("id", null));
@@ -337,31 +290,8 @@ public class Observation {
 		if (groundStation != null && groundStation.isObject()) {
 			result.setGroundStation(groundStationFromJson(groundStation.asObject()));
 		}
-		String sdrTypeStr = meta.getString("sdrType", null);
-		SdrType sdrType;
-		if (sdrTypeStr != null) {
-			sdrType = SdrType.valueOf(sdrTypeStr);
-		} else {
-			sdrType = SdrType.RTLSDR;
-		}
-		result.setSdrType(sdrType);
 		String dataFormatStr = meta.getString("dataFormat", null);
-		if (dataFormatStr == null) {
-			// backward compatible
-			switch (sdrType) {
-			case PLUTOSDR:
-				result.setDataFormat(DataFormat.COMPLEX_SIGNED_SHORT);
-				break;
-			case RTLSDR:
-				result.setDataFormat(DataFormat.COMPLEX_UNSIGNED_BYTE);
-				break;
-			case SDRSERVER:
-				result.setDataFormat(DataFormat.COMPLEX_FLOAT);
-				break;
-			default:
-				result.setDataFormat(DataFormat.UNKNOWN);
-			}
-		} else {
+		if (dataFormatStr != null) {
 			result.setDataFormat(DataFormat.valueOf(dataFormatStr));
 		}
 		int legacyInputRate = meta.getInt("inputSampleRate", 0);
@@ -371,12 +301,6 @@ public class Observation {
 			result.setSampleRate(meta.getLong("sampleRate", -1));
 		}
 		result.setFrequency(meta.getLong("actualFrequency", -1));
-		result.setGain(meta.getString("gain", null));
-		result.setBiast(meta.getBoolean("biast", false));
-		result.setCenterBandFrequency(meta.getLong("centerBandFrequency", 0));
-		result.setRtlDeviceId(meta.getInt("rtlDeviceId", 0));
-		result.setPpm(meta.getInt("ppm", 0));
-
 		result.setChannelA(meta.getString("channelA", null));
 		result.setChannelB(meta.getString("channelB", null));
 		JsonValue numberOfDecodedPackets = meta.get("numberOfDecodedPackets");
@@ -389,13 +313,13 @@ public class Observation {
 		result.setDataURL(meta.getString("data", null));
 		String statusStr = meta.getString("status", null);
 		if (statusStr != null) {
-			ObservationStatus status = ObservationStatus.valueOf(statusStr);
-			if (status.equals(ObservationStatus.NEW)) {
-				status = ObservationStatus.RECEIVED;
-			}
-			result.setStatus(status);
+			result.setStatus(ObservationStatus.valueOf(statusStr));
 		} else {
 			result.setStatus(ObservationStatus.UPLOADED);
+		}
+		JsonValue deviceConfig = meta.get("device");
+		if (deviceConfig != null) {
+			result.setDevice(DeviceConfiguration.fromJson(deviceConfig.asObject()));
 		}
 		return result;
 	}
@@ -413,19 +337,11 @@ public class Observation {
 		if (getGroundStation() != null) {
 			json.add("groundStation", toJson(getGroundStation()));
 		}
-		if (sdrType != null) {
-			json.add("sdrType", sdrType.name());
-		}
 		if (dataFormat != null) {
 			json.add("dataFormat", dataFormat.name());
 		}
 		json.add("sampleRate", getSampleRate());
 		json.add("actualFrequency", getFrequency());
-		json.add("gain", getGain());
-		json.add("biast", isBiast());
-		json.add("centerBandFrequency", centerBandFrequency);
-		json.add("rtlDeviceId", getRtlDeviceId());
-		json.add("ppm", getPpm());
 
 		if (getChannelA() != null) {
 			json.add("channelA", getChannelA());
@@ -448,7 +364,9 @@ public class Observation {
 			statusToSave = ObservationStatus.UPLOADED;
 		}
 		json.add("status", statusToSave.name());
-
+		if (device != null) {
+			json.add("device", device.toJson());
+		}
 		return json;
 	}
 

@@ -15,6 +15,7 @@ import ru.r2cloud.CelestrakServer;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.Tle;
+import ru.r2cloud.util.DefaultClock;
 
 public class CelestrakClientTest {
 
@@ -31,7 +32,7 @@ public class CelestrakClientTest {
 		server.mockResponse(expectedBody);
 		
 		// one slash is important here
-		CelestrakClient client = new CelestrakClient(config);
+		CelestrakClient client = new CelestrakClient(config, new DefaultClock());
 		Map<String, Tle> actual = client.downloadTle();
 		assertEquals(expected.size(), actual.size());
 		assertEquals(expected, actual);
@@ -39,7 +40,7 @@ public class CelestrakClientTest {
 
 	@Test
 	public void testFailure() {
-		CelestrakClient client = new CelestrakClient(config);
+		CelestrakClient client = new CelestrakClient(config, new DefaultClock());
 		assertEquals(0, client.downloadTle().size());
 	}
 

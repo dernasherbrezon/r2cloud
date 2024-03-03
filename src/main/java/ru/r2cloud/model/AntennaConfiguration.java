@@ -72,4 +72,15 @@ public class AntennaConfiguration {
 		return json;
 	}
 
+	public static AntennaConfiguration fromJson(JsonObject meta) {
+		AntennaConfiguration result = new AntennaConfiguration();
+		result.setType(AntennaType.valueOf(meta.getString("antennaType", "OMNIDIRECTIONAL")));
+		result.setAzimuth(meta.getDouble("azimuth", 0));
+		result.setElevation(meta.getDouble("elevation", 0));
+		result.setBeamwidth(meta.getDouble("beamwidth", 0));
+		result.setMinElevation(meta.getDouble("minElevation", 0));
+		result.setGuaranteedElevation(meta.getDouble("guaranteedElevation", 0));
+		return result;
+	}
+
 }

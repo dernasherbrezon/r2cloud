@@ -25,9 +25,10 @@ import ru.r2cloud.LeoSatDataServerMock;
 import ru.r2cloud.MultiHttpResponse;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
+import ru.r2cloud.model.DeviceConfiguration;
+import ru.r2cloud.model.DeviceType;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Satellite;
-import ru.r2cloud.model.SdrType;
 import ru.r2cloud.model.TransmitterStatus;
 import ru.r2cloud.util.DefaultClock;
 
@@ -57,13 +58,12 @@ public class LeoSatDataClientTest {
 		server.setObservationMock(new JsonHttpResponse("r2cloudclienttest/auth-failure-response.json", 403));
 		assertNull(client.saveMeta(createRequest()));
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testInvalidRequestFailure() {
 		server.setObservationMock(new JsonHttpResponse("r2cloudclienttest/auth-failure-response.json", 400));
 		client.saveMeta(createRequest());
 	}
-
 
 	@Test
 	public void testMalformedJsonInResponse() {
@@ -139,7 +139,7 @@ public class LeoSatDataClientTest {
 		assertEquals(1, result.size());
 		assertEquals("53379", result.get(0).getId());
 	}
-	
+
 	@Test(expected = NotModifiedException.class)
 	public void testLoadSatellitesWithError() throws Exception {
 		config.setProperty("leosatdata.hostname", "http://255.255.255.0");
@@ -148,7 +148,7 @@ public class LeoSatDataClientTest {
 		client = new LeoSatDataClient(config, new DefaultClock());
 		client.loadSatellites(0);
 	}
-	
+
 	@Test(expected = NotModifiedException.class)
 	public void testNoUpdateSatellites() throws Exception {
 		server.setSatelliteMock(new JsonHttpResponse("r2cloudclienttest/satellite.json", 304));
@@ -185,7 +185,7 @@ public class LeoSatDataClientTest {
 		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunch.json", 304));
 		client.loadNewLaunches(0);
 	}
-	
+
 	@Test(expected = NotModifiedException.class)
 	public void tesLoadNewLaunchWithError() throws Exception {
 		config.setProperty("leosatdata.hostname", "http://255.255.255.0");
@@ -209,7 +209,7 @@ public class LeoSatDataClientTest {
 		List<Satellite> result = client.loadNewLaunches(0);
 		assertEquals(0, result.size());
 	}
-	
+
 	@Test
 	public void testInvalidSatellite() throws Exception {
 		server.setSatelliteMock(new JsonHttpResponse("r2cloudclienttest/malformed3-response.json", 200));
@@ -285,9 +285,11 @@ public class LeoSatDataClientTest {
 		result.setaURL("1");
 		result.setDataURL("1");
 		result.setSpectogramURL("1");
-		result.setBiast(true);
-		result.setSdrType(SdrType.RTLSDR);
-		result.setGain("12.2");
+		DeviceConfiguration device = new DeviceConfiguration();
+		device.setGain(12.2f);
+		device.setBiast(true);
+		device.setDeviceType(DeviceType.RTLSDR);
+		result.setDevice(device);
 		return result;
 	}
 

@@ -2,7 +2,6 @@ package ru.r2cloud.it;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -15,7 +14,6 @@ import org.junit.Test;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.ParseException;
 
 import ru.r2cloud.JsonHttpResponse;
 import ru.r2cloud.LeoSatDataServerMock;
@@ -24,8 +22,6 @@ import ru.r2cloud.TestUtil;
 import ru.r2cloud.it.util.RegisteredTest;
 
 public class ObservationTest extends RegisteredTest {
-
-	private final static String METEOR_ID = "40069";
 
 	private RtlSdrDataServer rtlSdrMock;
 	private LeoSatDataServerMock server;
@@ -39,20 +35,16 @@ public class ObservationTest extends RegisteredTest {
 		server.setSpectogramMock(1L, spectogramHandler);
 
 		// start observation
-		List<String> observationIds = client.scheduleStart(METEOR_ID);
+		String satelliteId = "40069";
+		List<String> observationIds = client.scheduleStart(satelliteId);
 		assertEquals(1, observationIds.size());
 		// get observation and assert
-		assertObservation(awaitObservation(METEOR_ID, observationIds.get(0), true));
+		assertObservation("r2cloudclienttest/40069-1553411549943-request.json", awaitObservation(satelliteId, observationIds.get(0), true));
 
 		// wait for r2cloud meta upload and assert
 		metaHandler.awaitRequest();
-		JsonObject actual = null;
-		try {
-			actual = (JsonObject) Json.parse(metaHandler.getRequest());
-		} catch (ParseException e) {
-			fail("unable to parse request: " + metaHandler.getRequest() + " content-type: " + metaHandler.getRequestContentType() + " " + e.getMessage());
-		}
-		assertObservation(actual);
+		assertNotNull(metaHandler.getRequest());
+		assertObservation("r2cloudclienttest/40069-1553411549943-request.json", Json.parse(metaHandler.getRequest()).asObject());
 
 		// wait for spectogram upload and assert
 		spectogramHandler.awaitRequest();
@@ -63,7 +55,6 @@ public class ObservationTest extends RegisteredTest {
 
 	@Test
 	public void testTwoTransmittors() throws Exception {
-		rtlSdrMock.mockResponse("/data/40069-1553411549943.raw.gz");
 		JsonHttpResponse metaHandler = new JsonHttpResponse("r2cloudclienttest/save-meta-response.json", 200);
 		server.setObservationMock(metaHandler);
 		JsonHttpResponse spectogramHandler = new JsonHttpResponse("r2cloudclienttest/empty-response.json", 200);
@@ -78,19 +69,19 @@ public class ObservationTest extends RegisteredTest {
 		assertEquals(2, observationIds.size());
 
 		// get observation and assert
-		assertObservation(satelliteId, awaitObservation(satelliteId, observationIds.get(0), false));
-		assertObservation(satelliteId, awaitObservation(satelliteId, observationIds.get(1), false));
+		assertObservation("r2cloudclienttest/46494-0.json", awaitObservation(satelliteId, observationIds.get(0), false));
+		assertObservation("r2cloudclienttest/46494-1.json", awaitObservation(satelliteId, observationIds.get(1), false));
 	}
 
-	private static void assertObservation(JsonObject observation) {
-		assertObservation(METEOR_ID, observation);
-		assertEquals(288000, observation.getInt("sampleRate", 0));
-		assertEquals(137908065, observation.getInt("actualFrequency", 0));
-	}
-
-	private static void assertObservation(String satelliteId, JsonObject observation) {
+	private static void assertObservation(String classPathResource, JsonObject observation) {
 		assertNotNull(observation);
-		assertEquals(satelliteId, observation.getString("satellite", null));
+		observation.remove("start");
+		observation.remove("end");
+		observation.remove("rawURL");
+		observation.remove("sigmfDataURL");
+		observation.remove("sigmfMetaURL");
+		observation.remove("status");
+		TestUtil.assertJson(classPathResource, observation);
 	}
 
 	static void assertSpectogram(String expectedFilename, byte[] actualBytes) throws IOException {

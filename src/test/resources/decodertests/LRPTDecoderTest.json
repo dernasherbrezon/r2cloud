@@ -6,7 +6,7 @@
 	"inputSampleRate": 288000,
 	"frequency": 137900000,
 	"actualFrequency": 137898800,
-	"decoder": "LRPT",
+	"dataFormat": "COMPLEX_UNSIGNED_BYTE",
 	"satellite": "40069",
 	"bandwidth": 140000,
 	"tle": {

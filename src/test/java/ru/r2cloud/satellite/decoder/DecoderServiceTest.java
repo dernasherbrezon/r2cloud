@@ -47,7 +47,6 @@ public class DecoderServiceTest {
 		TestUtil.copy("data/aausat.raw.gz", wav);
 		Observation observation = TestUtil.loadObservation("data/aausat.raw.gz.json");
 		observation.setStatus(ObservationStatus.RECEIVED);
-		observation.setGain("0.0");
 		dao.insert(observation);
 		wav = dao.update(observation, wav);
 		
@@ -65,7 +64,6 @@ public class DecoderServiceTest {
 		TestUtil.copy("data/aausat.raw.gz", wav);
 		Observation observation = TestUtil.loadObservation("data/aausat.raw.gz.json");
 		observation.setStatus(ObservationStatus.RECEIVED);
-		observation.setGain("0.0");
 		dao.insert(observation);
 		dao.update(observation, wav);
 

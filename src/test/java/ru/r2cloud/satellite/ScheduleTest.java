@@ -222,12 +222,13 @@ public class ScheduleTest {
 		config.setProperty("satellites.priority.location", new File(tempFolder.getRoot(), "priorities.txt").getAbsolutePath());
 		config.setProperty("satellites.priority.url", mockServer.getUrl() + "/priorities");
 
-		LeoSatDataClient r2cloudClient = new LeoSatDataClient(config, new FixedClock(current));
-		SatnogsClient satnogsClient = new SatnogsClient(config, new FixedClock(current));
+		FixedClock clock = new FixedClock(current);
+		LeoSatDataClient r2cloudClient = new LeoSatDataClient(config, clock);
+		SatnogsClient satnogsClient = new SatnogsClient(config, clock);
 		satelliteDao = new SatelliteDao(config);
 		TleDao tleDao = new TleDao(config);
-		PriorityService priorityService = new PriorityService(config, new FixedClock(current));
-		houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config), tleDao, satnogsClient, r2cloudClient, null, priorityService);
+		PriorityService priorityService = new PriorityService(config, clock);
+		houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config, clock), tleDao, satnogsClient, r2cloudClient, null, priorityService);
 		PredictOreKit predict = new PredictOreKit(config);
 		factory = new ObservationFactory(predict);
 		schedule = new Schedule(new SequentialTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
