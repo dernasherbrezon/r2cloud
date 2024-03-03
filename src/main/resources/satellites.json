@@ -2951,7 +2951,7 @@
 	},
 	{
 		"id": "R2CLOUD174",
-		"name": "KUZBASS-300 (RS34S SXC*)",
+		"name": "KUZBASS-300 (RS34S)",
 		"noradId": "53375",
 		"enabled": true,
 		"transmitters": [
@@ -2972,7 +2972,7 @@
 	},
 	{
 		"id": "R2CLOUD173",
-		"name": "ISOI (RS19S SXC3-219)",
+		"name": "ISOI (RS19S)",
 		"noradId": "53381",
 		"enabled": true,
 		"transmitters": [
@@ -2993,7 +2993,7 @@
 	},
 	{
 		"id": "R2CLOUD172",
-		"name": "MIET-AIS (RS28S SXC3-2*)",
+		"name": "MIET-AIS (RS28S)",
 		"noradId": "53377",
 		"enabled": true,
 		"transmitters": [
@@ -3014,7 +3014,7 @@
 	},
 	{
 		"id": "R2CLOUD171",
-		"name": "RESHUCUBE (RS8S SXC3-2*)",
+		"name": "RESHUCUBE (RS8S)",
 		"noradId": "53382",
 		"enabled": false,
 		"transmitters": [
@@ -3035,7 +3035,7 @@
 	},
 	{
 		"id": "R2CLOUD170",
-		"name": "SIREN (RS30S SXC3-217)",
+		"name": "SIREN (RS30S)",
 		"noradId": "53384",
 		"enabled": true,
 		"transmitters": [
@@ -3056,7 +3056,7 @@
 	},
 	{
 		"id": "R2CLOUD169",
-		"name": "UTMN (RS23S SXC3-216)",
+		"name": "UTMN (RS23S)",
 		"noradId": "53376",
 		"enabled": false,
 		"transmitters": [
@@ -3077,7 +3077,7 @@
 	},
 	{
 		"id": "R2CLOUD167",
-		"name": "CYCLOPS (RS29S SXC3-21*)",
+		"name": "CYCLOPS (RS29S)",
 		"noradId": "53373",
 		"enabled": true,
 		"transmitters": [
@@ -3098,7 +3098,7 @@
 	},
 	{
 		"id": "R2CLOUD166",
-		"name": "MONITOR-1 (RS32S SXC3-*)",
+		"name": "MONITOR-1 (RS32S)",
 		"noradId": "53374",
 		"enabled": true,
 		"transmitters": [
@@ -4202,7 +4202,7 @@
 		"id": "R2CLOUD75",
 		"name": "TIGRISAT",
 		"noradId": "40043",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
@@ -4213,7 +4213,7 @@
 				"baudRates": [
 					9600
 				],
-				"status": "WEAK"
+				"status": "ENABLED"
 			}
 		]
 	},
@@ -4304,25 +4304,6 @@
 				"framing": "AX25G3RUH",
 				"beaconClass": "ru.r2cloud.jradio.csim.CsimBeacon",
 				"frequency": 437250000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD54",
-		"name": "GRIFEX",
-		"noradId": "40379",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.grifex.GrifexBeacon",
-				"frequency": 437479000,
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
