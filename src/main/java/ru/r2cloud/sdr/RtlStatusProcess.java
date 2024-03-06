@@ -3,6 +3,8 @@ package ru.r2cloud.sdr;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,27 +26,39 @@ public class RtlStatusProcess implements SdrStatusProcess {
 	private final Configuration config;
 	private final ProcessFactory factory;
 	private final int expectedRtlDeviceId;
-	private final Object lock;
+	private final ReentrantLock lock;
+	private SdrStatus previousStatus;
 
-	public RtlStatusProcess(Configuration config, ProcessFactory factory, int expectedRtlDeviceId, Object lock) {
+	public RtlStatusProcess(Configuration config, ProcessFactory factory, int expectedRtlDeviceId, ReentrantLock lock) {
 		this.config = config;
 		this.factory = factory;
 		this.expectedRtlDeviceId = expectedRtlDeviceId;
 		this.lock = lock;
+		this.previousStatus = getStatus();
 	}
 
 	@Override
 	public SdrStatus getStatus() {
-		SdrStatus result = null;
 		// won't help much for systems with multiple rtlsdr sticks
 		// rtl_test will lock each device despite "-d" argument
-		synchronized (lock) {
-			result = getStatusInternally(result);
+		try {
+			if (lock.tryLock(1000, TimeUnit.MILLISECONDS)) {
+				try {
+					previousStatus = getStatusInternally();
+					return previousStatus;
+				} finally {
+					lock.unlock();
+				}
+			}
+			LOG.info("can't get status within specified timeout. returning previous status");
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		}
-		return result;
+		return previousStatus;
 	}
 
-	private SdrStatus getStatusInternally(SdrStatus result) {
+	private SdrStatus getStatusInternally() {
+		SdrStatus result = null;
 		try {
 			BufferedReader r = null;
 			ProcessWrapper process = factory.create(config.getProperty("satellites.rtlsdr.test.path") + " -t", false, false);

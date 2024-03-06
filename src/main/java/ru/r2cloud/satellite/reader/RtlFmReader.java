@@ -3,6 +3,7 @@ package ru.r2cloud.satellite.reader;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +28,9 @@ public class RtlFmReader implements IQReader {
 	private final ObservationRequest req;
 	private final Configuration config;
 	private final ProcessFactory factory;
-	private final Object lock;
+	private final ReentrantLock lock;
 
-	public RtlFmReader(Configuration config, DeviceConfiguration deviceConfiguration, ProcessFactory factory, ObservationRequest req, Object lock) {
+	public RtlFmReader(Configuration config, DeviceConfiguration deviceConfiguration, ProcessFactory factory, ObservationRequest req, ReentrantLock lock) {
 		this.config = config;
 		this.deviceConfiguration = deviceConfiguration;
 		this.factory = factory;
@@ -39,8 +40,11 @@ public class RtlFmReader implements IQReader {
 
 	@Override
 	public IQData start() throws InterruptedException {
-		synchronized (lock) {
+		lock.lock();
+		try {
 			return startInternally();
+		} finally {
+			lock.unlock();
 		}
 	}
 

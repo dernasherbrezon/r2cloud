@@ -1,5 +1,7 @@
 package ru.r2cloud.device;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceStatus;
 import ru.r2cloud.model.Framing;
@@ -26,7 +28,7 @@ public class RtlSdrDevice extends Device {
 	private final Configuration config;
 	private final ProcessFactory processFactory;
 	private final RtlStatusProcess statusDao;
-	private final Object lock = new Object();
+	private final ReentrantLock lock = new ReentrantLock();
 
 	public RtlSdrDevice(String id, TransmitterFilter filter, int numberOfConcurrentObservations, ObservationFactory observationFactory, ThreadPoolFactory threadpoolFactory, Clock clock, DeviceConfiguration deviceConfiguration, IObservationDao observationDao, DecoderService decoderService,
 			PredictOreKit predict, Schedule schedule, Configuration config, ProcessFactory processFactory) {

@@ -308,7 +308,7 @@
 					<arch>all</arch>
 					<section>embedded</section>
 					<osDependencies>
-						<r2cloud-ui>>=1513613469</r2cloud-ui>
+						<r2cloud-ui>>=20240303125106</r2cloud-ui>
 						<r2cloud-jdk>>=17.0.5-1</r2cloud-jdk>
 						<nginx-light>>=1.10.3</nginx-light>
 						<rtl-sdr>>=0.6.4</rtl-sdr>

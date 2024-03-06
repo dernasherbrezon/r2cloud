@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.util.UUID;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.junit.After;
 import org.junit.Before;
@@ -66,7 +67,7 @@ public class RtlStatusProcessTest {
 		rtlTestServer = new RtlTestServer(8003);
 		rtlTestServer.start();
 
-		dao = new RtlStatusProcess(config, new ProcessFactory(), expectedRtlDeviceId, new Object());
+		dao = new RtlStatusProcess(config, new ProcessFactory(), expectedRtlDeviceId, new ReentrantLock());
 	}
 
 	@After

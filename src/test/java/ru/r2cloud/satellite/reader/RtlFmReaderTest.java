@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -52,7 +53,7 @@ public class RtlFmReaderTest {
 		ObservationRequest req = new ObservationRequest();
 		req.setSatelliteId(satelliteId);
 
-		RtlFmReader o = new RtlFmReader(config, new DeviceConfiguration(), factory, req, new Object());
+		RtlFmReader o = new RtlFmReader(config, new DeviceConfiguration(), factory, req, new ReentrantLock());
 		IQData iqData = o.start();
 		o.complete();
 		assertNull(iqData.getDataFile());
@@ -70,7 +71,7 @@ public class RtlFmReaderTest {
 
 		ObservationRequest req = new ObservationRequest();
 
-		RtlFmReader o = new RtlFmReader(config, new DeviceConfiguration(), factory, req, new Object());
+		RtlFmReader o = new RtlFmReader(config, new DeviceConfiguration(), factory, req, new ReentrantLock());
 		o.start();
 		o.complete();
 		assertEquals(data, new String(baos.toByteArray(), StandardCharsets.UTF_8));

@@ -6,6 +6,7 @@ import java.lang.ProcessBuilder.Redirect;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +33,9 @@ public class RtlSdrReader implements IQReader {
 	private final ProcessFactory factory;
 	private final ObservationRequest req;
 	private final Transmitter transmitter;
-	private final Object lock;
+	private final ReentrantLock lock;
 
-	public RtlSdrReader(Configuration config, DeviceConfiguration deviceConfiguration, ProcessFactory factory, ObservationRequest req, Transmitter transmitter, Object lock) {
+	public RtlSdrReader(Configuration config, DeviceConfiguration deviceConfiguration, ProcessFactory factory, ObservationRequest req, Transmitter transmitter, ReentrantLock lock) {
 		this.config = config;
 		this.deviceConfiguration = deviceConfiguration;
 		this.factory = factory;
@@ -64,8 +65,11 @@ public class RtlSdrReader implements IQReader {
 
 	@Override
 	public IQData start() throws InterruptedException {
-		synchronized (lock) {
+		lock.lock();
+		try {
 			return startInternally();
+		} finally {
+			lock.unlock();
 		}
 	}
 

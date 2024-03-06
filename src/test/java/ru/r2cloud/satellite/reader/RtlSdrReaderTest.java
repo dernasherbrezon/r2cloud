@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,7 +45,7 @@ public class RtlSdrReaderTest {
 		Transmitter transmitter = new Transmitter();
 		transmitter.setBaudRates(Collections.singletonList(9600));
 		
-		RtlSdrReader o = new RtlSdrReader(config, deviceConfiguration, factory, req, transmitter, new Object());
+		RtlSdrReader o = new RtlSdrReader(config, deviceConfiguration, factory, req, transmitter, new ReentrantLock());
 		IQData iqData = o.start();
 		o.complete();
 		assertNotNull(iqData.getDataFile());
@@ -64,7 +65,7 @@ public class RtlSdrReaderTest {
 		Transmitter transmitter = new Transmitter();
 		transmitter.setBaudRates(Collections.singletonList(9600));
 
-		RtlSdrReader o = new RtlSdrReader(config, deviceConfiguration, factory, req, transmitter, new Object());
+		RtlSdrReader o = new RtlSdrReader(config, deviceConfiguration, factory, req, transmitter, new ReentrantLock());
 		IQData iqData = o.start();
 		o.complete();
 		assertNull(iqData);
@@ -81,7 +82,7 @@ public class RtlSdrReaderTest {
 		Transmitter transmitter = new Transmitter();
 		transmitter.setBaudRates(Collections.singletonList(9600));
 
-		RtlSdrReader o = new RtlSdrReader(config, new DeviceConfiguration(), factory, req, transmitter, new Object());
+		RtlSdrReader o = new RtlSdrReader(config, new DeviceConfiguration(), factory, req, transmitter, new ReentrantLock());
 		IQData iqData = o.start();
 		o.complete();
 		assertNull(iqData.getDataFile());
@@ -98,7 +99,7 @@ public class RtlSdrReaderTest {
 		Transmitter transmitter = new Transmitter();
 		transmitter.setBaudRates(Collections.singletonList(9600));
 
-		RtlSdrReader o = new RtlSdrReader(config, new DeviceConfiguration(), factory, req, transmitter, new Object());
+		RtlSdrReader o = new RtlSdrReader(config, new DeviceConfiguration(), factory, req, transmitter, new ReentrantLock());
 		IQData iqData = o.start();
 		o.complete();
 		assertNotNull(iqData.getDataFile());
