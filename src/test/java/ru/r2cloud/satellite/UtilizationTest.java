@@ -5,14 +5,15 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.FileSystems;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.logging.LogManager;
 
 import ru.r2cloud.CelestrakServer;
+import ru.r2cloud.FixedClock;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.device.Device;
 import ru.r2cloud.it.util.BaseTest;
@@ -26,12 +27,16 @@ import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.tle.Housekeeping;
 import ru.r2cloud.tle.TleDao;
 import ru.r2cloud.util.Configuration;
-import ru.r2cloud.util.DefaultClock;
 import ru.r2cloud.util.ThreadPoolFactoryImpl;
 
 public class UtilizationTest {
 
 	public static void main(String[] args) throws Exception {
+		LogManager.getLogManager().reset();
+		File tleCache = new File(System.getProperty("java.io.tmpdir") + File.separator + "tle.json");
+		if (tleCache.exists()) {
+			tleCache.delete();
+		}
 		Configuration config;
 		File userSettingsLocation = new File("target/.r2cloud-" + UUID.randomUUID().toString());
 		try (InputStream is = BaseTest.class.getClassLoader().getResourceAsStream("config-dev.properties")) {
@@ -39,9 +44,16 @@ public class UtilizationTest {
 		}
 		config.setProperty("locaiton.lat", "56.189");
 		config.setProperty("locaiton.lon", "38.174");
+		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-test.json");
+		config.setProperty("tle.cacheFileLocation", tleCache.getAbsolutePath()); // disble cache
 		// test overlapped observations
 //		config.setProperty("satellites.sdr", SdrType.SDRSERVER.name().toLowerCase());
 //		config.setProperty("rotator.enabled", false);
+
+		SimpleDateFormat sdf = createFormatter();
+		long current = sdf.parse("2022-07-19 18:47:32").getTime();
+		long start = sdf.parse("2022-07-19 18:47:32").getTime();
+		long end = sdf.parse("2022-07-21 18:47:32").getTime(); // +2 days
 
 		CelestrakServer celestrak = new CelestrakServer();
 		celestrak.start();
@@ -50,8 +62,8 @@ public class UtilizationTest {
 		PredictOreKit predict = new PredictOreKit(config);
 		SatelliteDao satelliteDao = new SatelliteDao(config);
 		TleDao tleDao = new TleDao(config);
-		PriorityService priorityService = new PriorityService(config, new DefaultClock());
-		Housekeeping houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config, new DefaultClock()), tleDao, null, null, null, priorityService);
+		PriorityService priorityService = new PriorityService(config, new FixedClock(current));
+		Housekeeping houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config, new FixedClock(current)), tleDao, null, null, null, priorityService);
 		houseKeeping.start();
 		ObservationFactory factory = new ObservationFactory(predict);
 
@@ -60,14 +72,14 @@ public class UtilizationTest {
 		System.out.println("partial default: ");
 		enabledByDefault = getDefaultEnabled(satelliteDao);
 		while (!enabledByDefault.isEmpty()) {
-			float utilization = calculatePartialUtilization(factory, enabledByDefault);
+			float utilization = calculatePartialUtilization(factory, enabledByDefault, start, end);
 			System.out.println(enabledByDefault.size() + " " + utilization);
 			enabledByDefault.remove(0);
 		}
 		System.out.println("partial 70cm: ");
 		List<Transmitter> cm = loadFromFile(satelliteDao, "70cm-satellites.txt");
 		while (!cm.isEmpty()) {
-			float utilization = calculatePartialUtilization(factory, cm);
+			float utilization = calculatePartialUtilization(factory, cm, start, end);
 			System.out.println(cm.size() + " " + utilization);
 			cm.remove(0);
 		}
@@ -86,13 +98,7 @@ public class UtilizationTest {
 		return result;
 	}
 
-	private static float calculatePartialUtilization(ObservationFactory factory, List<Transmitter> satellites) throws ParseException {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-		long start = sdf.parse("2020-09-27 11:13:00").getTime();
-		long end = sdf.parse("2020-09-29 11:13:00").getTime(); // +2 days
-		
+	private static float calculatePartialUtilization(ObservationFactory factory, List<Transmitter> satellites, long start, long end) {
 		AntennaConfiguration antenna = new AntennaConfiguration();
 		antenna.setType(AntennaType.OMNIDIRECTIONAL);
 		antenna.setMinElevation(8);
@@ -107,6 +113,12 @@ public class UtilizationTest {
 			utilized += (cur.getEndTimeMillis() - cur.getStartTimeMillis());
 		}
 		return (utilized / (float) total);
+	}
+
+	private static SimpleDateFormat createFormatter() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		return sdf;
 	}
 
 	private static List<Transmitter> getDefaultEnabled(SatelliteDao dao) {
