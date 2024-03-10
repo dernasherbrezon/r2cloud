@@ -1,4 +1,4 @@
-package ru.r2cloud.satellite;
+package ru.r2cloud.simulation;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -23,6 +23,11 @@ import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
+import ru.r2cloud.satellite.ObservationFactory;
+import ru.r2cloud.satellite.PriorityService;
+import ru.r2cloud.satellite.SatelliteDao;
+import ru.r2cloud.satellite.Schedule;
+import ru.r2cloud.satellite.SequentialTimetable;
 import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.tle.Housekeeping;
 import ru.r2cloud.tle.TleDao;
