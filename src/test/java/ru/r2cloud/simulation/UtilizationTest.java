@@ -56,9 +56,9 @@ public class UtilizationTest {
 //		config.setProperty("rotator.enabled", false);
 
 		SimpleDateFormat sdf = createFormatter();
-		long current = sdf.parse("2022-07-19 18:47:32").getTime();
-		long start = sdf.parse("2022-07-19 18:47:32").getTime();
-		long end = sdf.parse("2022-07-21 18:47:32").getTime(); // +2 days
+		long current = sdf.parse("2020-09-27 18:47:32").getTime();
+		long start = sdf.parse("2020-09-27 18:47:32").getTime();
+		long end = sdf.parse("2020-09-29 18:47:32").getTime(); // +2 days
 
 		CelestrakServer celestrak = new CelestrakServer();
 		celestrak.start();
@@ -129,10 +129,6 @@ public class UtilizationTest {
 	private static List<Transmitter> getDefaultEnabled(SatelliteDao dao) {
 		List<Transmitter> result = new ArrayList<>();
 		for (Satellite cur : dao.findEnabled()) {
-			// this satellite can't be visible on the tested ground station
-			if (cur.getId().equals("44365") || cur.getId().equals("44832")) {
-				continue;
-			}
 			result.addAll(cur.getTransmitters());
 		}
 		return result;

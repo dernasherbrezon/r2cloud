@@ -1,14 +1,18 @@
 package ru.r2cloud.simulation;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.FileSystems;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -37,9 +41,11 @@ public class FixedDirectionalAntennaTest {
 
 		AntennaConfiguration antenna = new AntennaConfiguration();
 		antenna.setType(AntennaType.FIXED_DIRECTIONAL);
-		antenna.setAzimuth(34);
-		antenna.setElevation(55.0);
+		antenna.setAzimuth(270);
+		antenna.setElevation(30.0);
 		antenna.setBeamwidth(45);
+		// capture 4 minutes min
+		long minimumObservationMillis = 4 * 60 * 1000;
 		Configuration config;
 		File userSettingsLocation = new File("target/.r2cloud-" + UUID.randomUUID().toString());
 		try (InputStream is = BaseTest.class.getClassLoader().getResourceAsStream("config-dev.properties")) {
@@ -57,23 +63,26 @@ public class FixedDirectionalAntennaTest {
 		PredictOreKit predict = new PredictOreKit(config);
 
 		SimpleDateFormat sdf = createFormatter();
-		long current = sdf.parse("2022-07-19 18:47:32").getTime();
+		long current = sdf.parse("2020-09-27 18:47:32").getTime();
 
 		CelestrakClient client = new CelestrakClient(config, new FixedClock(current));
 
 		Map<String, Tle> tles = client.downloadTle();
+		Set<String> supported = loadLeoSatellites("70cm-satellites.txt");
 
 		int maxOutput = 50;
 		int currentOutput = 0;
 
 		JsonArray ds = new JsonArray();
 		for (Tle cur : tles.values()) {
+			if (!supported.contains(cur.getRaw()[0])) {
+				continue;
+			}
 			TLEPropagator propagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(cur.getRaw()[1], cur.getRaw()[2]));
 			List<SatPass> schedule = predict.calculateSchedule(antenna, new Date(current), propagator);
 			for (SatPass curPass : schedule) {
-				// capture 4 minutes min
 				long length = curPass.getEndMillis() - curPass.getStartMillis();
-				if (length < 4 * 60 * 1000) {
+				if (length < minimumObservationMillis) {
 					continue;
 				}
 				ds.add(output(curPass, predict, propagator, currentOutput));
@@ -123,6 +132,17 @@ public class FixedDirectionalAntennaTest {
 		ds.add("borderColor", generateColor(Integer.hashCode((int) (index + pass.getStartMillis()))));
 		ds.add("borderWidth", 1);
 		return ds;
+	}
+
+	private static Set<String> loadLeoSatellites(String file) throws Exception {
+		Set<String> result = new HashSet<>();
+		try (BufferedReader r = new BufferedReader(new InputStreamReader(FixedDirectionalAntennaTest.class.getClassLoader().getResourceAsStream(file)))) {
+			String curLine = null;
+			while ((curLine = r.readLine()) != null) {
+				result.add(curLine.trim());
+			}
+		}
+		return result;
 	}
 
 	private static String generateColor(int hash) {
