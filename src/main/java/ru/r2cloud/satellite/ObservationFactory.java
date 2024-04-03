@@ -20,6 +20,7 @@ public class ObservationFactory {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationFactory.class);
 	private static final long MAX_OBSERVATION_MILLIS = 15 * 60 * 1000;
+	private static final long MIN_OBSERVATION_MILLIS = 4 * 60 * 1000;
 
 	private final PredictOreKit predict;
 
@@ -54,6 +55,9 @@ public class ObservationFactory {
 			while (endMillis - startMillis > MAX_OBSERVATION_MILLIS) {
 				result.add(convert(transmitter, transmitter.getTle(), startMillis, startMillis + MAX_OBSERVATION_MILLIS));
 				startMillis += MAX_OBSERVATION_MILLIS;
+			}
+			if (endMillis - startMillis < MIN_OBSERVATION_MILLIS) {
+				continue;
 			}
 			result.add(convert(transmitter, transmitter.getTle(), startMillis, endMillis));
 		}

@@ -84,6 +84,7 @@ import ru.r2cloud.web.api.device.DeviceConfigDelete;
 import ru.r2cloud.web.api.device.DeviceConfigList;
 import ru.r2cloud.web.api.device.DeviceConfigLoad;
 import ru.r2cloud.web.api.device.DeviceConfigSave;
+import ru.r2cloud.web.api.device.DeviceSchedule;
 import ru.r2cloud.web.api.observation.ObservationList;
 import ru.r2cloud.web.api.observation.ObservationLoad;
 import ru.r2cloud.web.api.observation.ObservationLoadPresentation;
@@ -260,6 +261,7 @@ public class R2Cloud {
 		index(new DeviceConfigList(deviceManager));
 		index(new DeviceConfigDelete(props, deviceManager));
 		index(new Restart());
+		index(new DeviceSchedule(deviceManager, satelliteDao));
 		webServer = new WebServer(props, controllers, auth, signed);
 	}
 
