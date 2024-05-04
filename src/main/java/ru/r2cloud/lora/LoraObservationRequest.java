@@ -1,5 +1,9 @@
 package ru.r2cloud.lora;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 public class LoraObservationRequest {
 
 	private long frequency;
@@ -13,11 +17,11 @@ public class LoraObservationRequest {
 	private boolean useCrc;
 	private boolean useExplicitHeader;
 	private int beaconSizeBytes;
-	
+
 	public int getBeaconSizeBytes() {
 		return beaconSizeBytes;
 	}
-	
+
 	public void setBeaconSizeBytes(int beaconSizeBytes) {
 		this.beaconSizeBytes = beaconSizeBytes;
 	}
@@ -41,7 +45,7 @@ public class LoraObservationRequest {
 	public long getFrequency() {
 		return frequency;
 	}
-	
+
 	public void setFrequency(long frequency) {
 		this.frequency = frequency;
 	}
@@ -49,11 +53,11 @@ public class LoraObservationRequest {
 	public long getBw() {
 		return bw;
 	}
-	
+
 	public void setBw(long bw) {
 		this.bw = bw;
 	}
-	
+
 	public int getSf() {
 		return sf;
 	}
@@ -100,6 +104,40 @@ public class LoraObservationRequest {
 
 	public void setLdro(int ldro) {
 		this.ldro = ldro;
+	}
+
+	public byte[] toByteArray() throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try (DataOutputStream dos = new DataOutputStream(baos)) {
+			dos.writeByte(LoraFrame.PROTOCOL_VERSION);
+			dos.writeLong(0);
+			dos.writeLong(0);
+			dos.writeLong(0);
+			dos.writeLong(frequency);
+			dos.writeInt((int) bw);
+			dos.writeByte(sf);
+			dos.writeByte(cr);
+			dos.writeByte(syncword);
+			dos.writeByte(10); // power
+			dos.writeShort(preambleLength);
+			dos.writeByte((int) gain);
+			dos.writeByte(ldro);
+			if (useCrc) {
+				dos.writeByte(1);
+			} else {
+				dos.writeByte(0);
+			}
+			if (useExplicitHeader) {
+				dos.writeByte(1);
+			} else {
+				dos.writeByte(0);
+			}
+			// lora packet size cannot be more than 255 bytes
+			dos.writeByte(beaconSizeBytes);
+			dos.writeShort(240); // over current protection. not used for RX
+			dos.writeByte(0); // pin for TX. not used in RX
+		}
+		return baos.toByteArray();
 	}
 
 }

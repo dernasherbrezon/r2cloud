@@ -579,6 +579,52 @@ public class Configuration {
 		removeByPrefix(prefix);
 	}
 
+	public List<DeviceConfiguration> getLoraAtBlecConfigurations() {
+		DeviceType deviceType = DeviceType.LORAATBLEC;
+		List<String> loraDevices = getProperties(deviceType.name().toLowerCase(Locale.UK) + ".devices");
+		if (loraDevices.isEmpty()) {
+			return Collections.emptyList();
+		}
+		int timeout = getInteger("loraatblec.timeout");
+		List<DeviceConfiguration> result = new ArrayList<>(loraDevices.size());
+		for (String cur : loraDevices) {
+			String prefix = deviceType.name().toLowerCase(Locale.UK) + ".device." + cur + ".";
+			Double gain = getDouble(prefix + "gain");
+			if (gain == null) {
+				// by default should be auto
+				gain = 0.0;
+			}
+			DeviceConfiguration config = new DeviceConfiguration();
+			String address = getProperty(prefix + "btaddress");
+			if (address == null) {
+				LOG.error("btaddress is missing for {}", prefix);
+				continue;
+			}
+			config.setHost(address.toLowerCase(Locale.UK));
+			config.setTimeout(timeout);
+			config.setId(deviceType.name().toLowerCase(Locale.UK) + "." + cur);
+			config.setName("LoRa - " + address);
+			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
+			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
+			if (config.getRotatorConfiguration() != null) {
+				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
+			}
+			config.setGain(gain.intValue());
+			Long minFrequency = getLong(prefix + "minFrequency");
+			Long maxFrequency = getLong(prefix + "maxFrequency");
+			if (minFrequency == null || maxFrequency == null) {
+				LOG.error("min/max frequencies must be specified for {}", prefix);
+				continue;
+			}
+			config.setMinimumFrequency(minFrequency);
+			config.setMaximumFrequency(maxFrequency);
+			config.setCompencateDcOffset(false);
+			config.setDeviceType(deviceType);
+			result.add(config);
+		}
+		return result;
+	}
+
 	public List<DeviceConfiguration> getLoraAtBleConfigurations() {
 		DeviceType deviceType = DeviceType.LORAATBLE;
 		List<String> loraDevices = getProperties(deviceType.name().toLowerCase(Locale.UK) + ".devices");

@@ -23,6 +23,7 @@ import ru.r2cloud.cloud.SatnogsClient;
 import ru.r2cloud.device.Device;
 import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.device.LoraAtBleDevice;
+import ru.r2cloud.device.LoraAtBlecDevice;
 import ru.r2cloud.device.LoraAtDevice;
 import ru.r2cloud.device.LoraDevice;
 import ru.r2cloud.device.PlutoSdrDevice;
@@ -35,6 +36,7 @@ import ru.r2cloud.lora.loraat.LoraAtClient;
 import ru.r2cloud.lora.loraat.LoraAtSerialClient;
 import ru.r2cloud.lora.loraat.LoraAtSerialClient2;
 import ru.r2cloud.lora.loraat.LoraAtWifiClient;
+import ru.r2cloud.lora.loraat.gatt.GattClient;
 import ru.r2cloud.lora.loraat.gatt.GattServer;
 import ru.r2cloud.lora.r2lora.R2loraClient;
 import ru.r2cloud.metrics.Metrics;
@@ -137,6 +139,7 @@ public class R2Cloud {
 	private final PriorityService priorityService;
 
 	private GattServer gattServer;
+	private GattClient gattClient;
 
 	public R2Cloud(Configuration props, Clock clock) {
 		migrateConfiguration = new MigrateConfiguration(props);
@@ -212,6 +215,18 @@ public class R2Cloud {
 			}
 			deviceManager.addDevice(new LoraAtBleDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props));
 		}
+		List<String> blecDevices = new ArrayList<>();
+		for (DeviceConfiguration cur : props.getLoraAtBlecConfigurations()) {
+			blecDevices.add(cur.getHost());
+			deviceManager.addDevice(new LoraAtBlecDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, gattClient));
+		}
+		if (!blecDevices.isEmpty()) {
+			String bus = System.getenv(AddressBuilder.DBUS_SYSTEM_BUS_ADDRESS);
+			if (bus == null) {
+				bus = AddressBuilder.DEFAULT_SYSTEM_BUS_ADDRESS;
+			}
+			gattClient = new GattClient(blecDevices, bus, clock);
+		}
 		for (DeviceConfiguration cur : props.getLoraAtWifiConfigurations()) {
 			LoraAtWifiClient client = new LoraAtWifiClient(cur.getHost(), cur.getPort(), cur.getUsername(), cur.getPassword(), cur.getTimeout());
 			populateFrequencies(client.getStatus(), cur);
@@ -274,6 +289,9 @@ public class R2Cloud {
 		if (gattServer != null) {
 			gattServer.start();
 		}
+		if (gattClient != null) {
+			gattClient.start();
+		}
 		metrics.start();
 		webServer.start();
 		LOG.info("=================================");
@@ -284,6 +302,9 @@ public class R2Cloud {
 	public void stop() {
 		webServer.stop();
 		metrics.stop();
+		if (gattClient != null) {
+			gattClient.stop();
+		}
 		if (gattServer != null) {
 			gattServer.stop();
 		}

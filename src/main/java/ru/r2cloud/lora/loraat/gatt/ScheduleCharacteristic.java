@@ -1,8 +1,6 @@
 package ru.r2cloud.lora.loraat.gatt;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collections;
@@ -106,28 +104,12 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 		if (device == null) {
 			return;
 		}
-		ByteArrayInputStream bais = new ByteArrayInputStream(value);
-		try (DataInputStream dis = new DataInputStream(bais)) {
-			LoraFrame frame = new LoraFrame();
-			int protocolVersion = dis.readUnsignedByte();
-			if (protocolVersion != PROTOCOL_VERSION) {
-				LOG.error("[{}] invalid protocol version {}, expected {}", bluetoothAddress, protocolVersion, PROTOCOL_VERSION);
-				return;
+		try {
+			LoraFrame frame = LoraFrame.read(value);
+			if (frame != null) {
+				LOG.info("[{}] received frame: {}", bluetoothAddress, frame);
+				device.addFrame(frame);
 			}
-			frame.setFrequencyError(dis.readInt());
-			frame.setRssi(dis.readShort());
-			frame.setSnr(dis.readFloat());
-			frame.setTimestamp(dis.readLong());
-			int dataLength = dis.readUnsignedByte();
-			// max lora packet is 255 bytes
-			if (dataLength > 255) {
-				return;
-			}
-			byte[] data = new byte[dataLength];
-			dis.readFully(data);
-			frame.setData(data);
-			LOG.info("[{}] received frame: {}", bluetoothAddress, frame);
-			device.addFrame(frame);
 		} catch (IOException e) {
 			Util.logIOException(LOG, false, "[" + bluetoothAddress + "] can't read input", e);
 			return;
