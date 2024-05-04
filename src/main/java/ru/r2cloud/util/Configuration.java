@@ -694,6 +694,16 @@ public class Configuration {
 		setRotatorConfiguration(prefix, config.getRotatorConfiguration());
 	}
 
+	public void saveLoraAtBlecConfiguration(DeviceConfiguration config) {
+		String prefix = indexConfig(config);
+		setProperty(prefix + "minFrequency", config.getMinimumFrequency());
+		setProperty(prefix + "maxFrequency", config.getMaximumFrequency());
+		setProperty(prefix + "btaddress", config.getHost());
+		setProperty(prefix + "gain", config.getGain());
+		setAntennaConfiguration(prefix, config.getAntennaConfiguration());
+		setRotatorConfiguration(prefix, config.getRotatorConfiguration());
+	}
+	
 	private AntennaConfiguration getAntennaConfiguration(String prefix) {
 		AntennaConfiguration result = new AntennaConfiguration();
 		Double minElevation = getDouble(prefix + "antenna.minElevation");
@@ -745,10 +755,6 @@ public class Configuration {
 	}
 
 	private RotatorConfiguration getRotatorConfiguration(String prefix) {
-		boolean enabled = getBoolean(prefix + "rotator.enabled");
-		if (!enabled) {
-			return null;
-		}
 		String hostname = getProperty(prefix + "rotctrld.hostname");
 		if (hostname == null) {
 			return null;
@@ -759,11 +765,7 @@ public class Configuration {
 		}
 		Integer timeout = getInteger(prefix + "rotctrld.timeout");
 		if (timeout == null) {
-			// old property
-			timeout = getInteger("rotator.rotctrld.timeout");
-		}
-		if (timeout == null) {
-			return null;
+			timeout = 10000;
 		}
 		Double tolerance = getDouble(prefix + "rotator.tolerance");
 		if (tolerance == null) {

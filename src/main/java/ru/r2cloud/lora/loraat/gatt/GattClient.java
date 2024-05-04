@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bluez.GattCharacteristic1;
@@ -34,10 +35,10 @@ public class GattClient implements Lifecycle {
 	private static final Logger LOG = LoggerFactory.getLogger(GattClient.class);
 	private static final String LORA_SERVICE_UUID = "5ff92dc2-6c02-27af-4846-8747b8b1cfe6";
 	private static final String LORA_START_RX_UUID = "bb2053d7-4ea9-de9f-1d40-db01f59d50ab";
+	private static final String LORA_STOP_RX_UUID = "892b0a03-ab8e-83a4-6841-a977a2dd4036";
 	private static final String LORA_FRAME_UUID = "3c37ae1b-427f-e6a8-d643-634d36afca72";
 
-	// TODO maybe set?
-	private final List<String> configuredDevices;
+	private final Set<String> configuredDevices;
 	private final String address;
 	private final Clock clock;
 	private final Map<String, BluetoothDevice> connectedDevices = new ConcurrentHashMap<>();
@@ -45,7 +46,7 @@ public class GattClient implements Lifecycle {
 
 	private DeviceManager deviceManager;
 
-	public GattClient(List<String> configuredDevices, String address, Clock clock) {
+	public GattClient(Set<String> configuredDevices, String address, Clock clock) {
 		this.configuredDevices = configuredDevices;
 		this.address = address;
 		this.clock = clock;
@@ -63,7 +64,7 @@ public class GattClient implements Lifecycle {
 					if (!propertiesChanged.getInterfaceName().equals(GattCharacteristic1.class.getName())) {
 						return;
 					}
-					// Check if it is for this device
+					// Check if notification from the registered device
 					String bluetoothAddress = null;
 					for (String cur : configuredDevices) {
 						if (propertiesChanged.getPath().contains(cur)) {
@@ -72,13 +73,13 @@ public class GattClient implements Lifecycle {
 						}
 					}
 					if (bluetoothAddress == null) {
-						// not for registered devices
+						// not for any registered device
 						return;
 					}
 
 					Variant<?> rawValue = propertiesChanged.getPropertiesChanged().get("Value");
 					if (rawValue == null || rawValue.getValue() == null) {
-						// something else changed
+						// something else has changed
 						return;
 					}
 
@@ -87,12 +88,6 @@ public class GattClient implements Lifecycle {
 						if (frame == null) {
 							return;
 						}
-						// BLE Gatt Server will send message as soon it was received
-						// assuming latency between lora-at and r2cloud is small, it is safe to override
-						// with r2cloud's timestamp
-						// otherwise we need a protocol similar to LoraAt or LoraAtBle where r2cloud
-						// sets current time on the microcontroller
-						frame.setTimestamp(clock.millis());
 						LOG.info("[{}] received frame: {}", bluetoothAddress, frame);
 						synchronized (receivedFrames) {
 							List<LoraFrame> frames = receivedFrames.get(bluetoothAddress);
@@ -179,7 +174,7 @@ public class GattClient implements Lifecycle {
 				return new LoraResponse("unable to subscribe for updates: " + e.getMessage());
 			}
 			try {
-				startRx.writeValue(loraRequest.toByteArray(), null);
+				startRx.writeValue(loraRequest.toByteArray(clock.millis()), null);
 			} catch (Exception e) {
 				try {
 					frame.stopNotify();
@@ -207,19 +202,11 @@ public class GattClient implements Lifecycle {
 			BluetoothGattCharacteristic frame = null;
 			BluetoothGattCharacteristic stopRx = null;
 			for (BluetoothGattCharacteristic ch : service.getGattCharacteristics()) {
-				if (ch.getUuid().equalsIgnoreCase(LORA_START_RX_UUID)) {
+				if (ch.getUuid().equalsIgnoreCase(LORA_STOP_RX_UUID)) {
 					stopRx = ch;
 				}
 				if (ch.getUuid().equalsIgnoreCase(LORA_FRAME_UUID)) {
 					frame = ch;
-				}
-			}
-			if (frame != null) {
-				try {
-					frame.stopNotify();
-					LOG.info("[{}] unsubscribed from frame notifications", bluetoothAddress);
-				} catch (BluezFailedException e) {
-					LOG.error("unable to stop notifications", e);
 				}
 			}
 			if (stopRx != null) {
@@ -228,6 +215,14 @@ public class GattClient implements Lifecycle {
 					LOG.info("[{}] lora rx stopped", bluetoothAddress);
 				} catch (Exception e) {
 					LOG.error("unable to stop lora rx", e);
+				}
+			}
+			if (frame != null) {
+				try {
+					frame.stopNotify();
+					LOG.info("[{}] unsubscribed from frame notifications", bluetoothAddress);
+				} catch (BluezFailedException e) {
+					LOG.error("unable to stop notifications", e);
 				}
 			}
 			synchronized (receivedFrames) {

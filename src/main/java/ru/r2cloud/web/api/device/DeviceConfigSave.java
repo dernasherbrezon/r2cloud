@@ -83,6 +83,18 @@ public class DeviceConfigSave extends AbstractHttpController {
 			}
 			break;
 		}
+		case LORAATBLEC: {
+			// this is not a hostname, but rather ble address
+			config.setHost(WebServer.getString(request, "host"));
+			if (config.getHost() == null) {
+				errors.put("host", Messages.CANNOT_BE_EMPTY);
+			}
+			config.setGain(readLong(request, "gain", errors));
+			if (config.getGain() > 6) {
+				errors.put("gain", "Cannot be more than 6");
+			}
+			break;
+		}
 		case LORAATBLE: {
 			// this is not a hostname, but rather ble address
 			config.setHost(WebServer.getString(request, "host"));
@@ -170,6 +182,10 @@ public class DeviceConfigSave extends AbstractHttpController {
 		}
 		case LORAATBLE: {
 			props.saveLoraAtBleConfiguration(config);
+			break;
+		}
+		case LORAATBLEC: {
+			props.saveLoraAtBlecConfiguration(config);
 			break;
 		}
 		case LORAATWIFI: {

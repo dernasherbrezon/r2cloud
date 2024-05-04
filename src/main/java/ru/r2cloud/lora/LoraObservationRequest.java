@@ -106,13 +106,13 @@ public class LoraObservationRequest {
 		this.ldro = ldro;
 	}
 
-	public byte[] toByteArray() throws IOException {
+	public byte[] toByteArray(long currentTimeMillis) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try (DataOutputStream dos = new DataOutputStream(baos)) {
 			dos.writeByte(LoraFrame.PROTOCOL_VERSION);
 			dos.writeLong(0);
 			dos.writeLong(0);
-			dos.writeLong(0);
+			dos.writeLong(currentTimeMillis);
 			dos.writeLong(frequency);
 			dos.writeInt((int) bw);
 			dos.writeByte(sf);

@@ -8,9 +8,11 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.freedesktop.dbus.utils.AddressBuilder;
 import org.slf4j.Logger;
@@ -215,7 +217,7 @@ public class R2Cloud {
 			}
 			deviceManager.addDevice(new LoraAtBleDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props));
 		}
-		List<String> blecDevices = new ArrayList<>();
+		Set<String> blecDevices = new HashSet<>();
 		for (DeviceConfiguration cur : props.getLoraAtBlecConfigurations()) {
 			blecDevices.add(cur.getHost());
 			deviceManager.addDevice(new LoraAtBlecDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, gattClient));
