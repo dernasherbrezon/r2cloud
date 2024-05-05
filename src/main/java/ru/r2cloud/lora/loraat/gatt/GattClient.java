@@ -3,6 +3,7 @@ package ru.r2cloud.lora.loraat.gatt;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +39,7 @@ public class GattClient implements Lifecycle {
 	private static final String LORA_STOP_RX_UUID = "892b0a03-ab8e-83a4-6841-a977a2dd4036";
 	private static final String LORA_FRAME_UUID = "3c37ae1b-427f-e6a8-d643-634d36afca72";
 
-	private final Set<String> configuredDevices;
+	private final Set<String> configuredDevices = new HashSet<>();
 	private final String address;
 	private final Clock clock;
 	private final Map<String, BluetoothDevice> connectedDevices = new ConcurrentHashMap<>();
@@ -46,8 +47,7 @@ public class GattClient implements Lifecycle {
 
 	private DeviceManager deviceManager;
 
-	public GattClient(Set<String> configuredDevices, String address, Clock clock) {
-		this.configuredDevices = configuredDevices;
+	public GattClient(String address, Clock clock) {
 		this.address = address;
 		this.clock = clock;
 	}
@@ -251,6 +251,10 @@ public class GattClient implements Lifecycle {
 			return DeviceConnectionStatus.CONNECTED;
 		}
 		return DeviceConnectionStatus.FAILED;
+	}
+
+	public void addDevice(String bluetoothAddress) {
+		this.configuredDevices.add(bluetoothAddress);
 	}
 
 }

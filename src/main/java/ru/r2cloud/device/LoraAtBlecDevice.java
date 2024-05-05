@@ -27,6 +27,7 @@ public class LoraAtBlecDevice extends Device {
 		super(id, filter, numberOfConcurrentObservations, observationFactory, threadpoolFactory, clock, deviceConfiguration, observationDao, decoderService, predict, schedule);
 		this.config = config;
 		this.gattClient = gattClient;
+		this.gattClient.addDevice(deviceConfiguration.getHost());
 	}
 
 	@Override
