@@ -103,7 +103,9 @@ public class GattClient implements Lifecycle {
 					}
 				}
 			};
-			deviceManager.registerPropertyHandler(frameUpdate);
+			// Can be deviceManager.registerPropertyHandler(frameUpdate);
+			// but bluez-dbus is old and not compatible with new dbus-java-core
+			deviceManager.getDbusConnection().addSigHandler(frameUpdate.getImplementationClass(), frameUpdate);
 
 			Map<String, BluetoothDevice> available = new HashMap<>();
 			for (BluetoothDevice cur : deviceManager.getDevices(true)) {
