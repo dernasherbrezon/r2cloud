@@ -796,7 +796,6 @@ public class Configuration {
 
 	private void setRotatorConfiguration(String prefix, RotatorConfiguration config) {
 		if (config == null) {
-			setProperty(prefix + "rotator.enabled", false);
 			return;
 		}
 		setProperty(prefix + "rotctrld.hostname", config.getHostname());

@@ -224,7 +224,7 @@ public class GattServerTest {
 		dos.writeShort(frame.getRssi());
 		dos.writeFloat(frame.getSnr());
 		dos.writeLong(frame.getTimestamp());
-		dos.writeByte(frame.getData().length);
+		dos.writeShort(frame.getData().length);
 		dos.write(frame.getData());
 		return baos.toByteArray();
 	}

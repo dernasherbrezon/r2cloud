@@ -53,7 +53,6 @@ public class UtilizationTest {
 		config.setProperty("tle.cacheFileLocation", tleCache.getAbsolutePath()); // disble cache
 		// test overlapped observations
 //		config.setProperty("satellites.sdr", SdrType.SDRSERVER.name().toLowerCase());
-//		config.setProperty("rotator.enabled", false);
 
 		SimpleDateFormat sdf = createFormatter();
 		long current = sdf.parse("2020-09-27 18:47:32").getTime();
