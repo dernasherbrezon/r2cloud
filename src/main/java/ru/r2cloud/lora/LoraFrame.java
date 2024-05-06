@@ -1,7 +1,9 @@
 package ru.r2cloud.lora;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class LoraFrame {
@@ -76,6 +78,20 @@ public class LoraFrame {
 			result.setData(data);
 		}
 		return result;
+	}
+
+	public byte[] write() throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try (DataOutputStream dos = new DataOutputStream(baos)) {
+			dos.writeByte(PROTOCOL_VERSION);
+			dos.writeInt((int) frequencyError);
+			dos.writeShort(rssi);
+			dos.writeFloat(snr);
+			dos.writeLong(timestamp);
+			dos.writeShort(data.length);
+			dos.write(data);
+		}
+		return baos.toByteArray();
 	}
 
 	@Override

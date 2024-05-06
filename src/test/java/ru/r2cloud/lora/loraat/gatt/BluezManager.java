@@ -23,7 +23,7 @@ public class BluezManager implements GattManager1, LEAdvertisingManager1, Proper
 
 	@Override
 	public String getObjectPath() {
-		return "/org/bluez/hci0";
+		return "/org/bluez/manager";
 	}
 
 	@Override

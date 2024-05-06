@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,10 +35,10 @@ import ru.r2cloud.util.Util;
 public class GattClient implements Lifecycle {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GattClient.class);
-	private static final String LORA_SERVICE_UUID = "5ff92dc2-6c02-27af-4846-8747b8b1cfe6";
-	private static final String LORA_START_RX_UUID = "bb2053d7-4ea9-de9f-1d40-db01f59d50ab";
-	private static final String LORA_STOP_RX_UUID = "892b0a03-ab8e-83a4-6841-a977a2dd4036";
-	private static final String LORA_FRAME_UUID = "3c37ae1b-427f-e6a8-d643-634d36afca72";
+	public static final String LORA_SERVICE_UUID = "5ff92dc2-6c02-27af-4846-8747b8b1cfe6";
+	public static final String LORA_START_RX_UUID = "bb2053d7-4ea9-de9f-1d40-db01f59d50ab";
+	public static final String LORA_STOP_RX_UUID = "892b0a03-ab8e-83a4-6841-a977a2dd4036";
+	public static final String LORA_FRAME_UUID = "3c37ae1b-427f-e6a8-d643-634d36afca72";
 
 	private final Set<String> configuredDevices = new HashSet<>();
 	private final String address;
@@ -57,6 +58,7 @@ public class GattClient implements Lifecycle {
 		try {
 			deviceManager = DeviceManager.createInstance(address);
 			LOG.info("dbus connected");
+			deviceManager.scanForBluetoothAdapters();
 
 			AbstractPropertiesChangedHandler frameUpdate = new AbstractPropertiesChangedHandler() {
 				@Override
@@ -67,7 +69,7 @@ public class GattClient implements Lifecycle {
 					// Check if notification from the registered device
 					String bluetoothAddress = null;
 					for (String cur : configuredDevices) {
-						if (propertiesChanged.getPath().contains(cur)) {
+						if (propertiesChanged.getPath().contains(cur.replace(':', '_'))) {
 							bluetoothAddress = cur;
 							break;
 						}
@@ -109,7 +111,7 @@ public class GattClient implements Lifecycle {
 
 			Map<String, BluetoothDevice> available = new HashMap<>();
 			for (BluetoothDevice cur : deviceManager.getDevices(true)) {
-				available.put(cur.getAddress(), cur);
+				available.put(cur.getAddress().toLowerCase(Locale.UK), cur);
 			}
 			for (String cur : configuredDevices) {
 				if (!available.containsKey(cur)) {
@@ -255,6 +257,13 @@ public class GattClient implements Lifecycle {
 
 	public void addDevice(String bluetoothAddress) {
 		this.configuredDevices.add(bluetoothAddress);
+	}
+
+	// used for testing
+	Map<String, List<LoraFrame>> getReceivedFrames() {
+		synchronized (receivedFrames) {
+			return new HashMap<>(receivedFrames);
+		}
 	}
 
 }

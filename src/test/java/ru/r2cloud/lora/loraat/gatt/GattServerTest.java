@@ -162,6 +162,7 @@ public class GattServerTest {
 		String unixFile = "/tmp/system_dbus_r2cloud_test_" + Math.abs(new Random().nextInt());
 		bluezServer = new BluezServer(unixFile);
 		bluezServer.start();
+		bluezServer.registerBluezManager(new BluezManager());
 		gattServer = new GattServer(manager, BusAddress.of("unix:path=" + unixFile), clock);
 		gattServer.start();
 	}
