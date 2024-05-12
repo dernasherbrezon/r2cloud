@@ -140,7 +140,7 @@ public class DecoderService implements Lifecycle {
 		}
 		LOG.info("[{}] decoding", observation.getId());
 		DecoderResult result = decoder.decode(rawFile, observation, transmitter);
-		LOG.info("[{}] decoded", observation.getId());
+		LOG.info("[{}] decoded packets {}", observation.getId(), result.getNumberOfDecodedPackets());
 
 		if (result.getDataPath() != null) {
 			result.setDataPath(dao.saveData(observation.getSatelliteId(), observation.getId(), result.getDataPath()));
