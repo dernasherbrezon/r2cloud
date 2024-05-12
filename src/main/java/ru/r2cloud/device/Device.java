@@ -300,7 +300,7 @@ public abstract class Device implements Lifecycle {
 	}
 
 	public boolean completeImmediately(String observationId) {
-		ScheduledObservation previous = schedule.cancel(observationId);
+		ScheduledObservation previous = schedule.getById(observationId);
 		if (previous == null) {
 			return false;
 		}

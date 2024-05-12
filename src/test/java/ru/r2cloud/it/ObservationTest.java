@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.JsonHttpResponse;
 import ru.r2cloud.LeoSatDataServerMock;
@@ -39,12 +38,12 @@ public class ObservationTest extends RegisteredTest {
 		List<String> observationIds = client.scheduleStart(satelliteId);
 		assertEquals(1, observationIds.size());
 		// get observation and assert
-		assertObservation("r2cloudclienttest/40069-1553411549943-request.json", awaitObservation(satelliteId, observationIds.get(0), true));
+		TestUtil.assertObservation("r2cloudclienttest/40069-1553411549943-request.json", client.awaitObservation(satelliteId, observationIds.get(0), true));
 
 		// wait for r2cloud meta upload and assert
 		metaHandler.awaitRequest();
 		assertNotNull(metaHandler.getRequest());
-		assertObservation("r2cloudclienttest/40069-1553411549943-request.json", Json.parse(metaHandler.getRequest()).asObject());
+		TestUtil.assertObservation("r2cloudclienttest/40069-1553411549943-request.json", Json.parse(metaHandler.getRequest()).asObject());
 
 		// wait for spectogram upload and assert
 		spectogramHandler.awaitRequest();
@@ -69,19 +68,8 @@ public class ObservationTest extends RegisteredTest {
 		assertEquals(2, observationIds.size());
 
 		// get observation and assert
-		assertObservation("r2cloudclienttest/46494-0.json", awaitObservation(satelliteId, observationIds.get(0), false));
-		assertObservation("r2cloudclienttest/46494-1.json", awaitObservation(satelliteId, observationIds.get(1), false));
-	}
-
-	private static void assertObservation(String classPathResource, JsonObject observation) {
-		assertNotNull(observation);
-		observation.remove("start");
-		observation.remove("end");
-		observation.remove("rawURL");
-		observation.remove("sigmfDataURL");
-		observation.remove("sigmfMetaURL");
-		observation.remove("status");
-		TestUtil.assertJson(classPathResource, observation);
+		TestUtil.assertObservation("r2cloudclienttest/46494-0.json", client.awaitObservation(satelliteId, observationIds.get(0), false));
+		TestUtil.assertObservation("r2cloudclienttest/46494-1.json", client.awaitObservation(satelliteId, observationIds.get(1), false));
 	}
 
 	static void assertSpectogram(String expectedFilename, byte[] actualBytes) throws IOException {
@@ -113,23 +101,4 @@ public class ObservationTest extends RegisteredTest {
 		super.stop();
 	}
 
-	private JsonObject awaitObservation(String satelliteId, String observationId, boolean waitForDecodedPackets) {
-		// experimental. 20 seconds to process LRPT
-		int maxRetries = 40;
-		int curRetry = 0;
-		while (!Thread.currentThread().isInterrupted() && curRetry < maxRetries) {
-			JsonObject observation = client.getObservation(satelliteId, observationId);
-			if (observation != null && (!waitForDecodedPackets || observation.get("numberOfDecodedPackets") != null)) {
-				return observation;
-			}
-			try {
-				Thread.sleep(1000);
-				curRetry++;
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-				break;
-			}
-		}
-		return null;
-	}
 }

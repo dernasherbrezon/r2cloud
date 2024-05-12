@@ -65,6 +65,13 @@ public class Schedule {
 		return previous;
 	}
 
+	public synchronized ScheduledObservation getById(String observationId) {
+		if (observationId == null) {
+			return null;
+		}
+		return tasksById.get(observationId);
+	}
+
 	public synchronized void cancelAll() {
 		for (ObservationRequest cur : observationsById.values()) {
 			removeFromIndex(cur);

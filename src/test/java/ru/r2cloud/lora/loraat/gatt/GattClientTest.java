@@ -3,17 +3,8 @@ package ru.r2cloud.lora.loraat.gatt;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
 
-import org.bluez.GattCharacteristic1;
-import org.freedesktop.dbus.interfaces.Properties.PropertiesChanged;
-import org.freedesktop.dbus.types.Variant;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,14 +24,10 @@ public class GattClientTest {
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private BluezServer bluezServer;
-	private String unixFile;
 	private GattClient client;
+	private MockGattServer mockServer;
 
-	private MockBleCharacteristic startRx;
-	private MockBleCharacteristic stopRx;
-	private MockBleCharacteristic frame;
 	private String remoteBluetoothAddress = "7b:7a:24:3c:ed:50";
-	private String frameObjectPath;
 
 	@Test
 	public void testGetStatus() {
@@ -71,11 +58,9 @@ public class GattClientTest {
 		frame.setSnr(-2.34f);
 		frame.setTimestamp(1707737548000L);
 
-		Map<String, Variant<?>> propsChanged = new HashMap<>();
-		propsChanged.put("Value", new Variant<>(frame.write()));
-		bluezServer.sendMessage(new PropertiesChanged(frameObjectPath.toUpperCase(Locale.UK), GattCharacteristic1.class.getName(), propsChanged, Collections.emptyList()));
+		mockServer.sendLoraFrame(frame);
 
-		waitForTheFrame();
+		waitForTheFrame(client);
 
 		response = client.stopObservation(remoteBluetoothAddress);
 		assertEquals(ResponseStatus.SUCCESS, response.getStatus());
@@ -85,24 +70,12 @@ public class GattClientTest {
 
 	@Before
 	public void start() throws Exception {
-		String adapterPath = "/org/bluez/hci0";
-		String devicePath = adapterPath + "/dev_" + remoteBluetoothAddress.replace(':', '_');
-		String servicePrefix = devicePath + "/service001";
-		startRx = new MockBleCharacteristic(servicePrefix + "/char001", new String[] { "encrypted-write" }, GattClient.LORA_START_RX_UUID, servicePrefix, null, null);
-		stopRx = new MockBleCharacteristic(servicePrefix + "/char002", new String[] { "encrypted-write" }, GattClient.LORA_STOP_RX_UUID, servicePrefix, null, null);
-		frameObjectPath = servicePrefix + "/char003";
-		frame = new MockBleCharacteristic(frameObjectPath, new String[] { "read" }, GattClient.LORA_FRAME_UUID, servicePrefix, null, null);
-
-		List<BleCharacteristic> chars = new ArrayList<>();
-		chars.add(startRx);
-		chars.add(stopRx);
-		chars.add(frame);
-
-		unixFile = "/tmp/system_dbus_r2cloud_test_" + Math.abs(new Random().nextInt());
+		String unixFile = "/tmp/system_dbus_r2cloud_test_" + Math.abs(new Random().nextInt());
 		bluezServer = new BluezServer(unixFile);
 		bluezServer.start();
-		bluezServer.registerBluetoothAdapter(new BluezAdapter(adapterPath, "d8:3a:dd:53:89:ec"));
-		bluezServer.registerBluetoothDevice(new BluezDevice(devicePath, remoteBluetoothAddress, new BleService(servicePrefix, GattClient.LORA_SERVICE_UUID, true, chars)));
+
+		mockServer = new MockGattServer(remoteBluetoothAddress, bluezServer);
+		mockServer.start();
 
 		client = new GattClient("unix:path=" + unixFile, new DefaultClock(), 10000);
 		client.addDevice(remoteBluetoothAddress);
@@ -127,7 +100,7 @@ public class GattClientTest {
 		assertEquals(expected.getTimestamp(), actual.getTimestamp());
 	}
 
-	private void waitForTheFrame() {
+	public static void waitForTheFrame(GattClient client) {
 		long currentWait = 0;
 		long totalWait = 10_000;
 		long waitPeriod = 100;
@@ -144,6 +117,7 @@ public class GattClientTest {
 			}
 			currentWait += System.currentTimeMillis() - started;
 		}
+		throw new RuntimeException("timeout waiting for the frame");
 	}
 
 }

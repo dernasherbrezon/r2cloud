@@ -193,6 +193,18 @@ public class TestUtil {
 		}
 	}
 
+	public static void assertObservation(String classPathResource, JsonObject actual) {
+		assertNotNull(actual);
+		actual.remove("start");
+		actual.remove("end");
+		actual.remove("rawURL");
+		actual.remove("sigmfDataURL");
+		actual.remove("sigmfMetaURL");
+		actual.remove("status");
+		actual.remove("data");
+		TestUtil.assertJson(classPathResource, actual);
+	}
+
 	private TestUtil() {
 		// do nothing
 	}

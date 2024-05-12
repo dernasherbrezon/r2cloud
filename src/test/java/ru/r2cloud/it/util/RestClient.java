@@ -288,7 +288,7 @@ public class RestClient {
 	public JsonObject getDeviceConfigLoad(String id) {
 		return getData("/api/v1/admin/device/config/load?id=" + URLEncoder.encode(id, StandardCharsets.UTF_8));
 	}
-	
+
 	public HttpResponse<String> saveDeviceConfig(JsonObject device) {
 		HttpRequest request = createJsonPost("/api/v1/admin/device/config/save", device).build();
 		try {
@@ -300,7 +300,7 @@ public class RestClient {
 			throw new RuntimeException("unable to send request");
 		}
 	}
-	
+
 	public void setGeneralConfiguration(GeneralConfiguration config) {
 		HttpResponse<String> response = setGeneralConfigurationWithResponse(config);
 		if (response.statusCode() != 200) {
@@ -577,6 +577,26 @@ public class RestClient {
 			throw new RuntimeException("invalid status code: " + response.statusCode());
 		}
 		return (JsonObject) Json.parse(response.body());
+	}
+
+	public JsonObject awaitObservation(String satelliteId, String observationId, boolean waitForDecodedPackets) {
+		// experimental. 20 seconds to process LRPT
+		int maxRetries = 40;
+		int curRetry = 0;
+		while (!Thread.currentThread().isInterrupted() && curRetry < maxRetries) {
+			JsonObject observation = getObservation(satelliteId, observationId);
+			if (observation != null && (!waitForDecodedPackets || observation.get("numberOfDecodedPackets") != null)) {
+				return observation;
+			}
+			try {
+				Thread.sleep(1000);
+				curRetry++;
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				break;
+			}
+		}
+		return null;
 	}
 
 	public JsonObject getSigMf(String url) {

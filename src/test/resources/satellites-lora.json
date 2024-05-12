@@ -1,0 +1,25 @@
+[
+	{
+		"id": "R2CLOUD380",
+		"name": "ONDOSAT-OWL-1",
+		"noradId": "59114",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 435000000,
+				"bandwidth": 250000,
+				"status": "ENABLED",
+				"loraBandwidth": 250000,
+				"loraSpreadFactor": 10,
+				"loraSyncword": 18,
+				"loraPreambleLength": 64,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	}
+]

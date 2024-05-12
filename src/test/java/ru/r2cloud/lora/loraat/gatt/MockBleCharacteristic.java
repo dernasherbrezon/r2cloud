@@ -1,5 +1,8 @@
 package ru.r2cloud.lora.loraat.gatt;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import org.bluez.exceptions.BluezFailedException;
 import org.bluez.exceptions.BluezInProgressException;
 import org.bluez.exceptions.BluezNotPermittedException;
@@ -9,6 +12,7 @@ public class MockBleCharacteristic extends BleCharacteristic {
 
 	private byte[] value;
 	private boolean notificationsEnabled;
+	private final CountDownLatch latch = new CountDownLatch(1);
 
 	public MockBleCharacteristic(String objectPath, String[] flags, String uuid, String servicePath, BleDescriptor descriptor, byte[] value) {
 		super(objectPath, flags, uuid, servicePath, descriptor);
@@ -23,6 +27,7 @@ public class MockBleCharacteristic extends BleCharacteristic {
 	@Override
 	public void write(byte[] value, String bluetoothAddress) {
 		this.value = value;
+		latch.countDown();
 	}
 
 	@Override
@@ -34,9 +39,17 @@ public class MockBleCharacteristic extends BleCharacteristic {
 	public void StopNotify() throws BluezFailedException {
 		notificationsEnabled = false;
 	}
-	
+
 	public boolean isNotificationsEnabled() {
 		return notificationsEnabled;
+	}
+
+	public void awaitWritingData() {
+		try {
+			latch.await(10000, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
 	}
 
 }

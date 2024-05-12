@@ -15,6 +15,7 @@ import java.net.InetSocketAddress;
 import java.net.http.HttpResponse;
 import java.nio.file.FileSystems;
 import java.util.Properties;
+import java.util.Random;
 import java.util.UUID;
 import java.util.logging.LogManager;
 
@@ -52,7 +53,7 @@ public abstract class BaseTest {
 	private static final int LORA_AT_WIFI_PORT = 8005;
 	private static final int SPYSERVER_MOCK = 8008;
 
-	private R2Cloud server;
+	protected R2Cloud server;
 	private CelestrakServer celestrak;
 	private File rtlSdrMock;
 	private File rtlTestMock;
@@ -64,6 +65,7 @@ public abstract class BaseTest {
 	private SatnogsServerMock satnogs;
 	private SpyServerMock spyServerMock;
 	protected HttpServer loraAtWifiServer;
+	protected String unixFile = "/tmp/system_dbus_r2cloud_test_" + Math.abs(new Random().nextInt());
 
 	protected RestClient client;
 
@@ -165,6 +167,7 @@ public abstract class BaseTest {
 		config.setProperty("auto.update.basepath.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "auto-udpate");
 		config.setProperty("satellites.basepath.location", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "satellites");
 		config.setProperty("satellites.wxtoimg.license.path", tempFolder.getRoot().getAbsolutePath() + File.separator + "data" + File.separator + "wxtoimg" + File.separator + ".wxtoimglic");
+		System.setProperty("DBUS_SYSTEM_BUS_ADDRESS", "unix:path=" + unixFile);
 		File setupKeyword = new File(tempFolder.getRoot(), "r2cloud.txt");
 		try (Writer w = new FileWriter(setupKeyword)) {
 			w.append("ittests");

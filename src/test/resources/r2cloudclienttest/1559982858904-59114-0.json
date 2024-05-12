@@ -1,0 +1,51 @@
+{
+	"id": "1559982858904-59114-0",
+	"satellite": "59114",
+	"transmitterId": "59114-0",
+	"tle": {
+		"line1": "2024-043S",
+		"line2": "1 59114U 17036V   22114.09726310  .00014064  00000+0  52305-3 0  9992",
+		"line3": "2 59114  97.2058 157.8198 0011701 152.8519 207.3335 15.27554982268713",
+		"updated": 1559942730784,
+		"source": "localhost"
+	},
+	"groundStation": {
+		"lat": 56.189,
+		"lon": 38.174
+	},
+	"dataFormat": "UNKNOWN",
+	"sampleRate": 0,
+	"actualFrequency": 435000000,
+	"numberOfDecodedPackets": 1,
+	"device": {
+		"id": "loraatblec.0",
+		"name": "LoRa - 7b:7a:24:3c:ed:50",
+		"deviceType": "LORAATBLEC",
+		"minimumFrequency": 433000000,
+		"maximumFrequency": 480000000,
+		"host": "7b:7a:24:3c:ed:50",
+		"gain": 0,
+		"rtlDeviceId": 0,
+		"biast": false,
+		"ppm": 0,
+		"antenna": {
+			"antennaType": "OMNIDIRECTIONAL",
+			"azimuth": 0,
+			"elevation": 0,
+			"beamwidth": 45,
+			"minElevation": 8,
+			"guaranteedElevation": 20
+		}
+	},
+	"dataEntity": [
+		{
+			"time": 1707737548000,
+			"body": {
+				"payload": "FF00"
+			},
+			"frequencyError": 1234,
+			"rssi": -23,
+			"snr": -2.34
+		}
+	]
+}

@@ -150,6 +150,9 @@ public class DecoderService implements Lifecycle {
 		}
 
 		observation.setRawPath(result.getRawPath());
+		if (observation.getRawPath() == null) {
+			observation.setRawURL(null);
+		}
 		observation.setChannelA(result.getChannelA());
 		observation.setChannelB(result.getChannelB());
 		observation.setNumberOfDecodedPackets(result.getNumberOfDecodedPackets());

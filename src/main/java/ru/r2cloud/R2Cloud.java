@@ -139,7 +139,8 @@ public class R2Cloud {
 	private final PriorityService priorityService;
 
 	private GattServer gattServer;
-	private GattClient gattClient;
+	// used in tests for synchronization
+	public GattClient gattClient;
 
 	public R2Cloud(Configuration props, Clock clock) {
 		migrateConfiguration = new MigrateConfiguration(props);
@@ -218,6 +219,9 @@ public class R2Cloud {
 		for (DeviceConfiguration cur : props.getLoraAtBlecConfigurations()) {
 			if (gattClient == null) {
 				String bus = System.getenv(AddressBuilder.DBUS_SYSTEM_BUS_ADDRESS);
+				if (bus == null) {
+					bus = System.getProperty(AddressBuilder.DBUS_SYSTEM_BUS_ADDRESS);
+				}
 				if (bus == null) {
 					bus = AddressBuilder.DEFAULT_SYSTEM_BUS_ADDRESS;
 				}
