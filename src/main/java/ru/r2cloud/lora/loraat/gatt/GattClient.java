@@ -14,6 +14,7 @@ import org.bluez.GattCharacteristic1;
 import org.bluez.exceptions.BluezFailedException;
 import org.freedesktop.dbus.handlers.AbstractPropertiesChangedHandler;
 import org.freedesktop.dbus.interfaces.Properties;
+import org.freedesktop.dbus.messages.MethodCall;
 import org.freedesktop.dbus.types.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +49,10 @@ public class GattClient implements Lifecycle {
 
 	private DeviceManager deviceManager;
 
-	public GattClient(String address, Clock clock) {
+	public GattClient(String address, Clock clock, long timeout) {
 		this.address = address;
 		this.clock = clock;
+		MethodCall.setDefaultTimeout(timeout);
 	}
 
 	@Override
@@ -66,10 +68,11 @@ public class GattClient implements Lifecycle {
 					if (!propertiesChanged.getInterfaceName().equals(GattCharacteristic1.class.getName())) {
 						return;
 					}
+					String lowerCasePath = propertiesChanged.getPath().toLowerCase(Locale.UK);
 					// Check if notification from the registered device
 					String bluetoothAddress = null;
 					for (String cur : configuredDevices) {
-						if (propertiesChanged.getPath().contains(cur.replace(':', '_'))) {
+						if (lowerCasePath.contains(cur.replace(':', '_'))) {
 							bluetoothAddress = cur;
 							break;
 						}
@@ -141,11 +144,12 @@ public class GattClient implements Lifecycle {
 			return new LoraResponse("bluetooth is not paired or unknown");
 		}
 		if (!cur.isConnected()) {
+			LOG.info("[{}] connecting..", bluetoothAddress);
 			boolean connected = false;
 			try {
 				connected = cur.connect();
 			} catch (Exception e) {
-				LOG.error("unable to connect to bluetooth: {}", bluetoothAddress, e);
+				return new LoraResponse("unable to connect: " + e.getMessage());
 			}
 			if (!connected) {
 				return new LoraResponse("unable to connect");
@@ -170,6 +174,12 @@ public class GattClient implements Lifecycle {
 			}
 			if (frame == null) {
 				return new LoraResponse("can't find frame characteristic");
+			}
+			synchronized (receivedFrames) {
+				List<LoraFrame> previouslyReceived = receivedFrames.remove(bluetoothAddress);
+				if (previouslyReceived != null && !previouslyReceived.isEmpty()) {
+					LOG.info("[{}] previously received frames {}", bluetoothAddress, previouslyReceived.size());
+				}
 			}
 			try {
 				frame.startNotify();
@@ -198,6 +208,18 @@ public class GattClient implements Lifecycle {
 		BluetoothDevice cur = connectedDevices.get(bluetoothAddress);
 		if (cur == null) {
 			return new LoraResponse("bluetooth is not paired or unknown");
+		}
+		if (!cur.isConnected()) {
+			LOG.info("[{}] connecting..", bluetoothAddress);
+			boolean connected = false;
+			try {
+				connected = cur.connect();
+			} catch (Exception e) {
+				return new LoraResponse("unable to connect: " + e.getMessage());
+			}
+			if (!connected) {
+				return new LoraResponse("unable to connect");
+			}
 		}
 		for (BluetoothGattService service : cur.getGattServices()) {
 			if (!service.getUuid().equalsIgnoreCase(LORA_SERVICE_UUID)) {
@@ -251,6 +273,14 @@ public class GattClient implements Lifecycle {
 		}
 		if (cur.isConnected()) {
 			return DeviceConnectionStatus.CONNECTED;
+		}
+		LOG.info("[{}] connecting..", bluetoothAddress);
+		try {
+			if (cur.connect()) {
+				return DeviceConnectionStatus.CONNECTED;
+			}
+		} catch (Exception e) {
+			LOG.info("[{}] unable to connect: {}", bluetoothAddress, e.getMessage());
 		}
 		return DeviceConnectionStatus.FAILED;
 	}

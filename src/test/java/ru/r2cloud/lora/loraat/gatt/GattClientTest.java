@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
@@ -72,7 +73,7 @@ public class GattClientTest {
 
 		Map<String, Variant<?>> propsChanged = new HashMap<>();
 		propsChanged.put("Value", new Variant<>(frame.write()));
-		bluezServer.sendMessage(new PropertiesChanged(frameObjectPath, GattCharacteristic1.class.getName(), propsChanged, Collections.emptyList()));
+		bluezServer.sendMessage(new PropertiesChanged(frameObjectPath.toUpperCase(Locale.UK), GattCharacteristic1.class.getName(), propsChanged, Collections.emptyList()));
 
 		waitForTheFrame();
 
@@ -103,7 +104,7 @@ public class GattClientTest {
 		bluezServer.registerBluetoothAdapter(new BluezAdapter(adapterPath, "d8:3a:dd:53:89:ec"));
 		bluezServer.registerBluetoothDevice(new BluezDevice(devicePath, remoteBluetoothAddress, new BleService(servicePrefix, GattClient.LORA_SERVICE_UUID, true, chars)));
 
-		client = new GattClient("unix:path=" + unixFile, new DefaultClock());
+		client = new GattClient("unix:path=" + unixFile, new DefaultClock(), 10000);
 		client.addDevice(remoteBluetoothAddress);
 		client.start();
 	}

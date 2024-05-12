@@ -221,7 +221,7 @@ public class R2Cloud {
 				if (bus == null) {
 					bus = AddressBuilder.DEFAULT_SYSTEM_BUS_ADDRESS;
 				}
-				gattClient = new GattClient(bus, clock);
+				gattClient = new GattClient(bus, clock, cur.getTimeout());
 			}
 			deviceManager.addDevice(new LoraAtBlecDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, gattClient));
 		}
