@@ -120,7 +120,7 @@ public class LoraObservationRequest {
 			dos.writeByte(syncword);
 			dos.writeByte(10); // power
 			dos.writeShort(preambleLength);
-			dos.writeByte((int) gain);
+			dos.writeByte(gain);
 			dos.writeByte(ldro);
 			if (useCrc) {
 				dos.writeByte(1);
