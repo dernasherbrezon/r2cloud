@@ -1,5 +1,26 @@
 [
 	{
+		"id": "R2CLOUD382",
+		"name": "GAGARINEC",
+		"noradId": "59480",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 436000000,
+				"bandwidth": 20000,
+				"baudRates": [
+					2400,
+					4800,
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD381",
 		"name": "ONDOSAT-OWL-2",
 		"noradId": "59117",
@@ -82,6 +103,54 @@
 				],
 				"assistedHeader": "AAEBAAAAAAEAAQAAAAEAAQAAAAAAAAEAAAAAAAAAAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQEAAAABAAAAAQAAAAAAAQABAAAAAAABAQAAAQEAAAEAAQAAAQEBAAABAAAAAAEBAAEBAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD377",
+		"name": "PY4-3",
+		"noradId": "59145",
+		"enabled": true,
+		"start": 1709586240000,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 915600000,
+				"bandwidth": 62500,
+				"status": "ENABLED",
+				"loraBandwidth": 62500,
+				"loraSpreadFactor": 7,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 4,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD376",
+		"name": "PY4-1",
+		"noradId": "59138",
+		"enabled": true,
+		"start": 1709586240000,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 915600000,
+				"bandwidth": 62500,
+				"status": "ENABLED",
+				"loraBandwidth": 62500,
+				"loraSpreadFactor": 7,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 4,
+				"loraCrc": true
 			}
 		]
 	},
@@ -532,6 +601,222 @@
 					9600
 				],
 				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD348",
+		"name": "PICO-1A-9",
+		"noradId": "58690",
+		"enabled": true,
+		"start": 1699728540000,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 454300000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD347",
+		"name": "PICO-1A-8",
+		"noradId": "58564",
+		"enabled": true,
+		"start": 1699728540000,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 454300000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD346",
+		"name": "PICO-1A-7",
+		"noradId": "58563",
+		"enabled": true,
+		"start": 1699728540000,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 454300000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD345",
+		"name": "PICO-1A-6",
+		"noradId": "58345",
+		"enabled": true,
+		"start": 1699728540000,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 454300000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD344",
+		"name": "PICO-1A-5",
+		"noradId": "58344",
+		"enabled": true,
+		"start": 1699728540000,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 454300000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD343",
+		"name": "PICO-1A-4",
+		"noradId": "58343",
+		"enabled": true,
+		"start": 1699728540000,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 454300000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD342",
+		"name": "PICO-1A-3",
+		"noradId": "58330",
+		"enabled": true,
+		"start": 1699728540000,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 454300000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD341",
+		"name": "PICO-1A-2",
+		"noradId": "58287",
+		"enabled": true,
+		"start": 1699728540000,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 454300000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD340",
+		"name": "PICO-1A-1",
+		"noradId": "58326",
+		"enabled": true,
+		"start": 1699728540000,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 454300000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
 			}
 		]
 	},
@@ -2409,25 +2694,6 @@
 		]
 	},
 	{
-		"id": "R2CLOUD224",
-		"name": "TTU101",
-		"noradId": "44401",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 435450000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
 		"id": "R2CLOUD223",
 		"name": "NETSAT-2",
 		"noradId": "46507",
@@ -2438,25 +2704,6 @@
 				"framing": "AX25G3RUH",
 				"beaconClass": "ru.r2cloud.jradio.netsat.NetSatBeacon",
 				"frequency": 435600000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD220",
-		"name": "BDSAT",
-		"noradId": "52175",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.bdsat.BdSat2Beacon",
-				"frequency": 436025000,
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
@@ -3123,48 +3370,6 @@
 		]
 	},
 	{
-		"id": "R2CLOUD167",
-		"name": "CYCLOPS (RS29S)",
-		"noradId": "53373",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "USP",
-				"beaconClass": "ru.r2cloud.jradio.sputnix.SputnixBeacon",
-				"frequency": 436050000,
-				"bandwidth": 20000,
-				"baudRates": [
-					4800,
-					2400,
-					9600
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD166",
-		"name": "MONITOR-1 (RS32S)",
-		"noradId": "53374",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "USP",
-				"beaconClass": "ru.r2cloud.jradio.sputnix.SputnixBeacon",
-				"frequency": 437550000,
-				"bandwidth": 10000,
-				"baudRates": [
-					2400,
-					4800,
-					9600
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
 		"id": "R2CLOUD165",
 		"name": "RS26S (KAI-1)",
 		"noradId": "53378",
@@ -3396,28 +3601,6 @@
 				],
 				"assistedHeader": "AAABAAAAAAEAAAEBAQAAAQAAAAAAAQEAAAEBAAAAAAEAAQEAAQAAAQABAAEAAQABAAAAAAABAQEAAAEAAAAAAQAAAQEBAAABAAAAAAABAQAAAQAAAQAAAQABAQEBAAABAAAAAQABAAEBAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD144",
-		"name": "FEES",
-		"noradId": "48082",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "LORA",
-				"framing": "LORA",
-				"beaconClass": "ru.r2cloud.jradio.fees.FeesBeacon",
-				"frequency": 437200000,
-				"bandwidth": 125000,
-				"status": "ENABLED",
-				"loraBandwidth": 125000,
-				"loraSpreadFactor": 9,
-				"loraSyncword": 18,
-				"loraPreambleLength": 8,
-				"loraLdro": 0,
-				"loraCodingRate": 5
 			}
 		]
 	},
@@ -4304,25 +4487,6 @@
 		]
 	},
 	{
-		"id": "R2CLOUD56",
-		"name": "CUBEBEL-1 (BSUSAT-1)",
-		"noradId": "43666",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.bsusat1.Bsusat1Beacon",
-				"frequency": 436990000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
 		"id": "R2CLOUD55",
 		"name": "CSIM-FD",
 		"noradId": "43793",
@@ -4610,27 +4774,6 @@
 				"bandwidth": 20000,
 				"baudRates": [
 					4800
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD26",
-		"name": "AISTECHSAT-3",
-		"noradId": "44103",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX100",
-				"beaconClass": "ru.r2cloud.jradio.aistechsat3.Aistechsat3Beacon",
-				"beaconSizeBytes": 255,
-				"frequency": 436730000,
-				"bandwidth": 10000,
-				"baudRates": [
-					4800,
-					9600
 				],
 				"status": "ENABLED"
 			}
