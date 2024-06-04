@@ -63,6 +63,7 @@ public class SpyServerMock {
 
 	public void start() throws IOException {
 		socket = new ServerSocket();
+		socket.setReuseAddress(true);
 		socket.bind(new InetSocketAddress(host, port));
 		new Thread(new Runnable() {
 
