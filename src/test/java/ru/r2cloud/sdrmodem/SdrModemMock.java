@@ -1,7 +1,7 @@
 package ru.r2cloud.sdrmodem;
 
 import java.io.IOException;
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -27,7 +27,9 @@ public class SdrModemMock {
 	}
 
 	public void start() throws IOException {
-		socket = new ServerSocket(port, 50, InetAddress.getByName("127.0.0.1"));
+		socket = new ServerSocket();
+		socket.setReuseAddress(true);
+		socket.bind(new InetSocketAddress("127.0.0.1", port));
 		thread = new Thread(new Runnable() {
 
 			@Override
