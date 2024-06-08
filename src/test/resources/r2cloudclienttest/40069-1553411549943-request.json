@@ -27,14 +27,8 @@
 		"rtlDeviceId": 1,
 		"biast": false,
 		"ppm": 0,
-		"rotator": {
-			"rotctrldHostname": "127.0.0.1",
-			"rotctrldPort": 8004,
-			"rotatorTolerance": 5,
-			"rotatorCycle": 1000
-		},
 		"antenna": {
-			"antennaType": "DIRECTIONAL",
+			"antennaType": "OMNIDIRECTIONAL",
 			"azimuth": 0,
 			"elevation": 0,
 			"beamwidth": 45,

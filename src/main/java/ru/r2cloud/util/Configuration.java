@@ -260,9 +260,6 @@ public class Configuration {
 			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
-			if (config.getRotatorConfiguration() != null) {
-				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
-			}
 			config.setDeviceType(deviceType);
 			result.add(config);
 		}
@@ -298,9 +295,6 @@ public class Configuration {
 			config.setName("SDR-SERVER - " + config.getHost() + ":" + config.getPort());
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
-			if (config.getRotatorConfiguration() != null) {
-				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
-			}
 			SdrServerConfiguration sdrConfig = new SdrServerConfiguration();
 			sdrConfig.setBasepath(getProperty(prefix + "basepath"));
 			Long bandwidth = getLong(prefix + "bandwidth");
@@ -354,9 +348,6 @@ public class Configuration {
 			config.setPpm(getInteger(prefix + "ppm"));
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
-			if (config.getRotatorConfiguration() != null) {
-				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
-			}
 			config.setId(deviceType.name().toLowerCase(Locale.UK) + "." + cur);
 			config.setName("RTL-SDR " + config.getRtlDeviceId());
 			config.setDeviceType(DeviceType.RTLSDR);
@@ -402,9 +393,6 @@ public class Configuration {
 			config.setName("LoRa - " + config.getHost() + ":" + config.getPort());
 			config.setRotatorConfiguration(getRotatorConfiguration("r2lora.device." + cur + "."));
 			config.setAntennaConfiguration(getAntennaConfiguration("r2lora.device." + cur + "."));
-			if (config.getRotatorConfiguration() != null) {
-				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
-			}
 			config.setDeviceType(DeviceType.LORAATWIFI);
 			config.setGain(gain);
 			config.setCompencateDcOffset(false);
@@ -434,9 +422,6 @@ public class Configuration {
 			config.setName("LoRa - " + hostport);
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
-			if (config.getRotatorConfiguration() != null) {
-				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
-			}
 			Double gain = getDouble(prefix + "gain");
 			if (gain == null) {
 				// by default should be auto
@@ -489,9 +474,6 @@ public class Configuration {
 			config.setName("SpyServer - " + config.getHost() + ":" + config.getPort());
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
-			if (config.getRotatorConfiguration() != null) {
-				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
-			}
 			Double gain = getDouble(prefix + "gain");
 			if (gain == null) {
 				// by default should be auto
@@ -537,9 +519,6 @@ public class Configuration {
 			config.setName("LoRa - " + config.getHost());
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
-			if (config.getRotatorConfiguration() != null) {
-				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
-			}
 			config.setGain(gain.intValue());
 			config.setCompencateDcOffset(false);
 			config.setDeviceType(deviceType);
@@ -606,9 +585,6 @@ public class Configuration {
 			config.setName("LoRa - " + address);
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
-			if (config.getRotatorConfiguration() != null) {
-				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
-			}
 			config.setGain(gain.intValue());
 			Long minFrequency = getLong(prefix + "minFrequency");
 			Long maxFrequency = getLong(prefix + "maxFrequency");
@@ -652,9 +628,6 @@ public class Configuration {
 			config.setName("LoRa - " + address);
 			config.setRotatorConfiguration(getRotatorConfiguration(prefix));
 			config.setAntennaConfiguration(getAntennaConfiguration(prefix));
-			if (config.getRotatorConfiguration() != null) {
-				config.getAntennaConfiguration().setType(AntennaType.DIRECTIONAL);
-			}
 			config.setGain(gain.intValue());
 			Long minFrequency = getLong(prefix + "minFrequency");
 			Long maxFrequency = getLong(prefix + "maxFrequency");
