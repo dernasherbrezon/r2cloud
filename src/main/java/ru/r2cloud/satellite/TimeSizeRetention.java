@@ -21,11 +21,14 @@ public class TimeSizeRetention {
 	private static final Logger LOG = LoggerFactory.getLogger(TimeSizeRetention.class);
 
 	private final Map<String, PathStats> statsByPath = new HashMap<>();
+	private final Map<String, PathStats> rawIqStats = new HashMap<>();
 	private final long maxSize;
+	private final int maxCountRawData;
 	private long allObservationsSize = 0;
 
-	public TimeSizeRetention(long maxSize, Path basedir) {
+	public TimeSizeRetention(long maxSize, int maxCountRawData, Path basedir) {
 		this.maxSize = maxSize;
+		this.maxCountRawData = maxCountRawData;
 		if (Files.exists(basedir)) {
 			try (DirectoryStream<Path> ds = Files.newDirectoryStream(basedir)) {
 				for (Path curSatellite : ds) {
@@ -55,11 +58,15 @@ public class TimeSizeRetention {
 	public void indexAndCleanup(Path curObservation) {
 		long minTime = Long.MAX_VALUE;
 		long totalSize = 0;
+		boolean withRawIq = false;
 		try (DirectoryStream<Path> dir = Files.newDirectoryStream(curObservation)) {
 			for (Path file : dir) {
 				FileTime time = Files.getLastModifiedTime(file);
 				minTime = Math.min(minTime, time.toMillis());
 				totalSize += Files.size(file);
+				if (isRawIq(file)) {
+					withRawIq = true;
+				}
 			}
 		} catch (IOException e) {
 			LOG.error("unable to index observation: {}", curObservation, e);
@@ -76,9 +83,38 @@ public class TimeSizeRetention {
 				allObservationsSize -= oldStats.getSize();
 			}
 			statsByPath.put(key, newStats);
+			if (withRawIq) {
+				rawIqStats.put(key, newStats);
+			}
 			allObservationsSize += newStats.getSize();
+			while (rawIqStats.size() > maxCountRawData) {
+				String minKey = findMin(rawIqStats);
+				if (minKey == null) {
+					LOG.info("no observation with minimum time found"); // this is weird because at least one was just added
+					break;
+				}
+				PathStats min = rawIqStats.remove(minKey);
+				if (min == null) {
+					LOG.info("no observation with minimum time found"); // this is weird because at least one was just added
+					break;
+				}
+				LOG.info("deleting IQ data from observation: {} last update time: {}", min.getPath(), new Date(min.getLastUpdateTime()));
+				try (DirectoryStream<Path> dir = Files.newDirectoryStream(min.getPath())) {
+					for (Path file : dir) {
+						if (isRawIq(file)) {
+							long filesize = Files.size(file);
+							Files.delete(file);
+							allObservationsSize -= filesize;
+							// normally single raw IQ per observation
+							break;
+						}
+					}
+				} catch (IOException e) {
+					LOG.error("unable to delete raw IQ file from: {}", curObservation, e);
+				}
+			}
 			while (allObservationsSize > maxSize) {
-				String minKey = findMin();
+				String minKey = findMin(statsByPath);
 				if (minKey == null) {
 					LOG.info("no observation with minimum time found"); // this is weird because at least one was just added
 					break;
@@ -97,10 +133,15 @@ public class TimeSizeRetention {
 
 	}
 
-	private String findMin() {
+	private static boolean isRawIq(Path file) {
+		String filename = file.toString();
+		return filename.contains(ObservationDao.OUTPUT_RAW_FILENAME) || filename.contains(ObservationDao.OUTPUT_RAW_FILENAME_GZIPPED) || filename.contains(ObservationDao.OUTPUT_WAV_FILENAME);
+	}
+
+	private static String findMin(Map<String, PathStats> stats) {
 		PathStats min = null;
 		String minKey = null;
-		for (Entry<String, PathStats> cur : statsByPath.entrySet()) {
+		for (Entry<String, PathStats> cur : stats.entrySet()) {
 			if (min == null || cur.getValue().getLastUpdateTime() < min.getLastUpdateTime()) {
 				min = cur.getValue();
 				minKey = cur.getKey();

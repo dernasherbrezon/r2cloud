@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
-import ru.r2cloud.FilenameComparator;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationComparator;
 import ru.r2cloud.util.Configuration;
@@ -34,33 +33,22 @@ public class ObservationDao implements IObservationDao {
 	private static final String DATA_FILENAME = "data.bin";
 	private static final String IMAGE_FILENAME = "a.jpg";
 	private static final String META_FILENAME = "meta.json";
-	private static final String OUTPUT_WAV_FILENAME = "output.wav";
-	private static final String OUTPUT_RAW_FILENAME_GZIPPED = "output.raw.gz";
-	private static final String OUTPUT_RAW_FILENAME = "output.raw";
+	public static final String OUTPUT_WAV_FILENAME = "output.wav";
+	public static final String OUTPUT_RAW_FILENAME_GZIPPED = "output.raw.gz";
+	public static final String OUTPUT_RAW_FILENAME = "output.raw";
 
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationDao.class);
 	private static final Map<String, List<Observation>> IN_FLIGHT_OBSERVATIONS = new HashMap<>();
 
 	private final Path basepath;
-	private final int maxCount;
-	private final int maxCountRawData;
 	private final TimeSizeRetention retention;
 
 	public ObservationDao(Configuration config) {
 		this.basepath = config.getSatellitesBasePath();
-		this.maxCount = config.getInteger("scheduler.data.retention.count");
-		this.maxCountRawData = config.getInteger("scheduler.data.retention.raw.count");
-		if (maxCountRawData > maxCount) {
-			LOG.error("scheduler.data.retention.raw.count: {} is more than scheduler.data.retention.count: {}. did you mean the opposite?", maxCountRawData, maxCount);
-		}
+		int maxCountRawData = config.getInteger("scheduler.data.retention.raw.count");
 		Long maxRetentionSize = config.getLong("scheduler.data.retention.maxSizeBytes");
-		if (maxRetentionSize != null) {
-			LOG.info("retention: keep last {}Mb of observations", (maxRetentionSize / 1024 / 1024));
-			retention = new TimeSizeRetention(maxRetentionSize, basepath);
-		} else {
-			LOG.info("retention: keep last {} observations per satellite and last {} raw data", maxCount, maxCountRawData);
-			retention = null;
-		}
+		LOG.info("retention: keep last {}Mb of observations and {} of raw IQ data", (maxRetentionSize / 1024 / 1024), maxCountRawData);
+		retention = new TimeSizeRetention(maxRetentionSize, maxCountRawData, basepath);
 	}
 
 	@Override
@@ -264,9 +252,6 @@ public class ObservationDao implements IObservationDao {
 	public File update(Observation observation, File rawFile) {
 		synchronized (IN_FLIGHT_OBSERVATIONS) {
 			cancel(observation);
-			if (retention == null) {
-				cleanupPreviousObservations(observation);
-			}
 
 			Path observationBasePath = getObservationBasepath(observation);
 			if (!Util.initDirectory(observationBasePath)) {
@@ -278,31 +263,6 @@ public class ObservationDao implements IObservationDao {
 			}
 		}
 		return insertRawFile(observation, rawFile);
-	}
-
-	private void cleanupPreviousObservations(Observation observation) {
-		try {
-			Path satelliteBasePath = basepath.resolve(observation.getSatelliteId()).resolve("data");
-			if (Files.exists(satelliteBasePath)) {
-				List<Path> dataDirs = Util.toList(Files.newDirectoryStream(satelliteBasePath));
-				Collections.sort(dataDirs, FilenameComparator.INSTANCE_ASC);
-				// the new observation will be added after the cleanup
-				// see below
-				int currentPlusNew = dataDirs.size() + 1;
-				if (currentPlusNew > maxCountRawData) {
-					for (int i = 0; i < (currentPlusNew - maxCountRawData); i++) {
-						Util.deleteQuietly(resolveRawPath(dataDirs.get(i)));
-					}
-				}
-				if (currentPlusNew > maxCount) {
-					for (int i = 0; i < (currentPlusNew - maxCount); i++) {
-						Util.deleteDirectory(dataDirs.get(i));
-					}
-				}
-			}
-		} catch (IOException e) {
-			LOG.error("unable to cleanup old observations", e);
-		}
 	}
 
 	private File insertRawFile(Observation observation, File rawFile) {
