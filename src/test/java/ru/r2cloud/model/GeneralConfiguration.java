@@ -6,6 +6,24 @@ public class GeneralConfiguration {
 	private Double lng;
 	private boolean autoUpdate;
 	private boolean presentationMode;
+	private Integer retentionRawCount;
+	private Long retentionMaxSizeBytes;
+	
+	public Long getRetentionMaxSizeBytes() {
+		return retentionMaxSizeBytes;
+	}
+	
+	public void setRetentionMaxSizeBytes(Long retentionMaxSizeBytes) {
+		this.retentionMaxSizeBytes = retentionMaxSizeBytes;
+	}
+	
+	public Integer getRetentionRawCount() {
+		return retentionRawCount;
+	}
+	
+	public void setRetentionRawCount(Integer retentionRawCount) {
+		this.retentionRawCount = retentionRawCount;
+	}
 
 	public Double getLat() {
 		return lat;

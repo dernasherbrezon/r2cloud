@@ -318,6 +318,12 @@ public class RestClient {
 		}
 		json.add("autoUpdate", config.isAutoUpdate());
 		json.add("presentationMode", config.isPresentationMode());
+		if (config.getRetentionRawCount() != null) {
+			json.add("retentionRawCount", config.getRetentionRawCount());
+		}
+		if (config.getRetentionMaxSizeBytes() != null) {
+			json.add("retentionMaxSizeBytes", config.getRetentionMaxSizeBytes());
+		}
 		HttpRequest request = createJsonPost("/api/v1/admin/config/general", json).build();
 		try {
 			return httpclient.send(request, BodyHandlers.ofString());

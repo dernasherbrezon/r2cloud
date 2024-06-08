@@ -22,6 +22,8 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		assertEquals(config.getLng(), configuration.getDouble("lng", 0.0), 0.0);
 		assertEquals(config.isAutoUpdate(), configuration.getBoolean("autoUpdate", !config.isAutoUpdate()));
 		assertEquals(config.isPresentationMode(), configuration.getBoolean("presentationMode", false));
+		assertEquals(config.getRetentionRawCount().intValue(), configuration.getInt("retentionRawCount", 0));
+		assertEquals(config.getRetentionMaxSizeBytes().longValue(), configuration.getLong("retentionMaxSizeBytes", 0));
 
 		JsonObject configured = client.getConfigured();
 		assertEquals(config.isPresentationMode(), configured.getBoolean("presentationMode", false));
@@ -51,6 +53,8 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		config.setLng(23.4);
 		config.setAutoUpdate(true);
 		config.setPresentationMode(true);
+		config.setRetentionRawCount(10);
+		config.setRetentionMaxSizeBytes(1073741824L);
 		return config;
 	}
 }
