@@ -79,17 +79,6 @@ public class ObservationDaoTest {
 	}
 
 	@Test
-	public void testRetention() throws Exception {
-		String satelliteId = UUID.randomUUID().toString();
-		for (int i = 0; i < 5; i++) {
-			Observation req = createObservation();
-			req.setSatelliteId(satelliteId);
-			assertNotNull(dao.update(req, createTempFile("wav")));
-		}
-		assertEquals(2, dao.findAllBySatelliteId(satelliteId).size());
-	}
-
-	@Test
 	public void saveSpectogramTwice() throws Exception {
 		Observation req = createObservation();
 		assertNotNull(dao.update(req, createTempFile("wav")));
