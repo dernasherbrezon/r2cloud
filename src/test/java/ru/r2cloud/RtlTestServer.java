@@ -23,7 +23,7 @@ public class RtlTestServer {
 	}
 
 	public void mockDefault() {
-		mockTest("  0:  Realtek, RTL2838UHIDIR, SN: 00000001\n");
+		mockTest("  0:  Realtek, RTL2838UHIDIR, SN: 00000100\n");
 	}
 
 	public void start() throws IOException {

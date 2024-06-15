@@ -31,7 +31,7 @@
 		},
 		{
 			"status": "CONNECTED",
-			"model": "Realtek, RTL2838UHIDIR, SN: 00000001",
+			"model": "Realtek, RTL2838UHIDIR, SN: 00000100",
 			"connection": "RTL-SDR 0",
 			"minFrequency": 100000000,
 			"maxFrequency": 1700000000,
