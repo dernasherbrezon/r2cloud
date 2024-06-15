@@ -48,10 +48,19 @@ public class RtlStatusProcessTest {
 		assertEquals(DeviceConnectionStatus.CONNECTED, result.getStatus());
 		assertEquals("Realtek, RTL2838UHIDIR, SN: 00000001", result.getModel());
 	}
+	
+	@Test
+	public void testSerialNumber() {
+		rtlTestServer.mockTest("  0:  Realtek, RTL2838UHIDIR, SN: 00000400\n");
+		RtlStatusProcess dao = new RtlStatusProcess(config, new ProcessFactory(), 400, new ReentrantLock());
+		SdrStatus result = dao.getStatus();
+		assertEquals(DeviceConnectionStatus.CONNECTED, result.getStatus());
+		assertEquals("Realtek, RTL2838UHIDIR, SN: 00000400", result.getModel());
+	}
 
 	@Test
 	public void testAssertMultipleDongles() {
-		rtlTestServer.mockTest("  1:  Realtek, RTL2838UHIDIR, SN: 00000002\n  0:  Realtek, RTL2838UHIDIR, SN: 00000001\n");
+		rtlTestServer.mockTest("  1:  Realtek, RTL2838UHIDIR, SN: 00000001\n  0:  Realtek, RTL2838UHIDIR, SN: 00000001\n");
 		SdrStatus result = dao.getStatus();
 		assertEquals(DeviceConnectionStatus.CONNECTED, result.getStatus());
 		assertEquals("Realtek, RTL2838UHIDIR, SN: 00000001", result.getModel());

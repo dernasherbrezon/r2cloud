@@ -75,7 +75,10 @@ public class RtlStatusProcess implements SdrStatusProcess {
 					if (m.find()) {
 						Integer actualDeviceId = parse(m.group(1));
 						if (actualDeviceId == null || actualDeviceId != expectedRtlDeviceId) {
-							continue;
+							actualDeviceId = parse(m.group(4));
+							if (actualDeviceId == null || actualDeviceId != expectedRtlDeviceId) {
+								continue;
+							}
 						}
 						result = new SdrStatus();
 						result.setStatus(DeviceConnectionStatus.CONNECTED);
