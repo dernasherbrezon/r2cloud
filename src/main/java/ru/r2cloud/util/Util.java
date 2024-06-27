@@ -550,7 +550,7 @@ public final class Util {
 		if (mapping != null) {
 			return mapping.getDemodulatorInput();
 		}
-		long resultSampleRate = findClosest(deviceOutput, baudRate * 3);
+		long resultSampleRate = findClosest(deviceOutput, baudRate);
 		if (resultSampleRate % baudRate != 0) {
 			LOG.warn("using non-integer decimation factor for unsupported baud rate: {} and bandwidth: {}", baudRate, deviceOutput);
 		}
@@ -567,7 +567,7 @@ public final class Util {
 			}
 			return cur.getSymbolSyncInput();
 		}
-		long resultSampleRate = findClosest(demodulatorInput, baudRate * 3);
+		long resultSampleRate = findClosest(demodulatorInput, baudRate);
 		if (resultSampleRate % baudRate != 0) {
 			LOG.warn("using non-integer decimation factor for unsupported baud rate: {} and bandwidth: {}", baudRate, demodulatorInput);
 		}
@@ -628,7 +628,7 @@ public final class Util {
 			return result.getDeviceOutput();
 		}
 		// sample rate guaranteed to be integer dividable from the sdr server bandwidth
-		long resultSampleRate = findClosest(sampleRate, baudRate * 3);
+		long resultSampleRate = findClosest(sampleRate, baudRate);
 		if (resultSampleRate % baudRate != 0) {
 			LOG.warn("using non-integer decimation factor for unsupported baud rate: {} and bandwidth: {}", baudRate, sampleRate);
 		}
@@ -643,7 +643,12 @@ public final class Util {
 		return result;
 	}
 
-	private static long findClosest(long fromSampleRate, long toSampleRate) {
+	private static long findClosest(long fromSampleRate, long baudRate) {
+		long carsonCutoff = 5000 + baudRate / 2;
+		long toSampleRate = baudRate * 3;
+		if (toSampleRate < carsonCutoff) {
+			toSampleRate = carsonCutoff;
+		}
 		int[] primeNumbers = new int[] { 11, 7, 5, 3, 2 };
 		long result = fromSampleRate;
 		long current = fromSampleRate;

@@ -164,6 +164,7 @@ public class UtilTest {
 	public void testDemodulatorInput() {
 		assertEquals(46_875, Util.getDemodulatorInput(2_400, 46_875));
 		assertEquals(9_375, Util.getDemodulatorInput(2_600, 46_875));
+		assertEquals(10_000, Util.getDemodulatorInput(1200, 2000000));
 	}
 
 	@Test
