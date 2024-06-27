@@ -67,10 +67,10 @@ public class Decoders {
 		index("51439", "51439-0", new GaspacsDecoder(predict, props));
 		index("53385", "53385-0", new GeoscanDecoder(predict, props));
 		index("53108", "53108-0", new CcsdsDecoder(predict, props, TransferFrame.class));
-		index("53807", "53807-0", new BlueWalker3Decoder(predict, props, RawBeacon.class));
-		index("51509", "51509-0", new BlueWalker3Decoder(predict, props, RawBeacon.class));
-		index("56180", "56180-0", new BlueWalker3Decoder(predict, props, RawBeacon.class));
-		index("59588", "59588-0", new BlueWalker3Decoder(predict, props, RawBeacon.class));
+		index("53807", "53807-0", new Cc11xxDecoder(predict, props, RawBeacon.class, "10010011000010110101000111011110", 512));
+		index("51509", "51509-0", new Cc11xxDecoder(predict, props, RawBeacon.class, "10010011000010110101000111011110", 512));
+		index("56180", "56180-0", new Cc11xxDecoder(predict, props, RawBeacon.class, "10010011000010110101000111011110", 512));
+		index("59588", "59588-0", new Cc11xxDecoder(predict, props, RawBeacon.class, "10010011000010110101000111011110", 512));
 		index("56993", "56993-0", new Mrc100Decoder(predict, props, Mrc100Beacon.class));
 		index("56211", "56211-1", new InspireSat7SpinoDecoder(predict, props));
 		index("57167", "57167-0", new StratosatTk1Decoder(predict, props));
@@ -113,7 +113,11 @@ public class Decoders {
 		} else if (transmitter.getFraming().equals(Framing.AX25)) {
 			return new Ax25Decoder(predict, props, transmitter.getBeaconClass(), transmitter.getAssistedHeader());
 		} else if (transmitter.getFraming().equals(Framing.AX100)) {
-			return new Ax100Decoder(predict, props, transmitter.getBeaconClass());
+			String syncword = "10010011000010110101000111011110";
+			if (transmitter.getSyncword() != null) {
+				syncword = transmitter.getSyncword();
+			}
+			return new Ax100Decoder(predict, props, transmitter.getBeaconClass(), syncword);
 		} else if (transmitter.getFraming().equals(Framing.U482C)) {
 			String syncword = "11000011101010100110011001010101";
 			if (transmitter.getSyncword() != null) {
