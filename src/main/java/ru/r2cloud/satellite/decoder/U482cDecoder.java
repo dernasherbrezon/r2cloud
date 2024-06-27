@@ -11,15 +11,17 @@ import ru.r2cloud.util.Configuration;
 public class U482cDecoder extends TelemetryDecoder {
 
 	private final Class<? extends Beacon> clazz;
+	private final String syncword;
 
-	public U482cDecoder(PredictOreKit predict, Configuration config, Class<? extends Beacon> clazz) {
+	public U482cDecoder(PredictOreKit predict, Configuration config, Class<? extends Beacon> clazz, String syncword) {
 		super(predict, config);
 		this.clazz = clazz;
+		this.syncword = syncword;
 	}
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, Observation req) {
-		return new Ax100BeaconSource<>(demodulator, 512, "11000011101010100110011001010101", clazz, false, true, true);
+		return new Ax100BeaconSource<>(demodulator, 512, syncword, clazz, false, true, true);
 	}
 
 	@Override

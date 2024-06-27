@@ -9,11 +9,9 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.jradio.RawBeacon;
 import ru.r2cloud.jradio.ax25.Ax25Beacon;
 import ru.r2cloud.jradio.ccsds.TransferFrame;
-import ru.r2cloud.jradio.csp.CspBeacon;
 import ru.r2cloud.jradio.fox.Fox1BBeacon;
 import ru.r2cloud.jradio.fox.Fox1CBeacon;
 import ru.r2cloud.jradio.fox.Fox1DBeacon;
-import ru.r2cloud.jradio.gomx1.Gomx1Beacon;
 import ru.r2cloud.jradio.mrc100.Mrc100Beacon;
 import ru.r2cloud.jradio.usp.UspBeacon;
 import ru.r2cloud.model.DecoderKey;
@@ -37,7 +35,6 @@ public class Decoders {
 		this.props = props;
 		this.processFactory = processFactory;
 		index("32789", "32789-0", new DelfiC3Decoder(predict, props));
-		index("39430", "39430-0", new U482cDecoder(predict, props, Gomx1Beacon.class));
 		index("39444", "39444-0", new Ao73Decoder(predict, props));
 		index("41460", "41460-0", new Aausat4Decoder(predict, props));
 		index("42017", "42017-0", new Nayif1Decoder(predict, props));
@@ -61,7 +58,6 @@ public class Decoders {
 		index("43855", "43855-0", new ChompttDecoder(predict, props));
 		index("41789", "41789-0", new Alsat1nDecoder(predict, props));
 		index("46495", "46495-0", new SalsatDecoder(predict, props));
-		index("42790", "42790-0", new U482cDecoder(predict, props, CspBeacon.class));
 		index("49017", "49017-0", new ItSpinsDecoder(predict, props, Ax25Beacon.class));
 		index("47960", "47960-0", new UspDecoder(predict, props, UspBeacon.class));
 		index("47952", "47952-0", new UspDecoder(predict, props, UspBeacon.class));
@@ -119,7 +115,11 @@ public class Decoders {
 		} else if (transmitter.getFraming().equals(Framing.AX100)) {
 			return new Ax100Decoder(predict, props, transmitter.getBeaconClass());
 		} else if (transmitter.getFraming().equals(Framing.U482C)) {
-			return new U482cDecoder(predict, props, transmitter.getBeaconClass());
+			String syncword = "11000011101010100110011001010101";
+			if (transmitter.getSyncword() != null) {
+				syncword = transmitter.getSyncword();
+			}
+			return new U482cDecoder(predict, props, transmitter.getBeaconClass(), syncword);
 		} else if (transmitter.getFraming().equals(Framing.USP)) {
 			return new UspDecoder(predict, props, transmitter.getBeaconClass());
 		} else if (transmitter.getFraming().equals(Framing.TUBIX20)) {
@@ -129,7 +129,12 @@ public class Decoders {
 		} else if (transmitter.getFraming().equals(Framing.CCSDS)) {
 			return new CcsdsDecoder(predict, props, transmitter.getBeaconClass());
 		} else if (transmitter.getFraming().equals(Framing.CC11XX)) {
-			return new Cc11xxDecoder(predict, props, transmitter.getBeaconClass(), transmitter.getBeaconSizeBytes());
+			// default
+			String syncword = "11010011100100011101001110010001";
+			if (transmitter.getSyncword() != null) {
+				syncword = transmitter.getSyncword();
+			}
+			return new Cc11xxDecoder(predict, props, transmitter.getBeaconClass(), syncword, transmitter.getBeaconSizeBytes());
 		} else {
 			LOG.error("unsupported combination of modulation and framing: {} - {}", transmitter.getModulation(), transmitter.getFraming());
 			return null;

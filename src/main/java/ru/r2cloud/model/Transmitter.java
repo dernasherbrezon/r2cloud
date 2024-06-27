@@ -30,6 +30,7 @@ public class Transmitter {
 	private long deviation;
 	private long afCarrier;
 	private double transitionWidth;
+	private String syncword;
 
 	private long loraBandwidth;
 	private int loraSpreadFactor;
@@ -88,9 +89,18 @@ public class Transmitter {
 		this.loraExplicitHeader = copy.loraExplicitHeader;
 		this.loraCrc = copy.loraCrc;
 		this.tle = copy.tle;
+		this.syncword = copy.syncword;
 		if (copy.updated != null) {
 			this.updated = new Date(copy.updated.getTime());
 		}
+	}
+
+	public String getSyncword() {
+		return syncword;
+	}
+
+	public void setSyncword(String syncword) {
+		this.syncword = syncword;
 	}
 
 	public int getPriorityIndex() {
@@ -399,6 +409,7 @@ public class Transmitter {
 				return null;
 			}
 		}
+		result.setSyncword(asObject.getString("syncword", null));
 		JsonValue beaconSizeBytes = asObject.get("beaconSizeBytes");
 		if (beaconSizeBytes != null) {
 			result.setBeaconSizeBytes(beaconSizeBytes.asInt());
@@ -510,6 +521,9 @@ public class Transmitter {
 		}
 		if (status != null) {
 			result.add("status", status.name());
+		}
+		if (syncword != null) {
+			result.add("syncword", syncword);
 		}
 		if (loraBandwidth != 0) {
 			result.add("loraBandwidth", loraBandwidth);

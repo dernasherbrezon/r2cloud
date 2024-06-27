@@ -4907,7 +4907,7 @@
 		"transmitters": [
 			{
 				"modulation": "AFSK",
-				"framing": "CUSTOM",
+				"framing": "U482C",
 				"beaconClass": "ru.r2cloud.jradio.gomx1.Gomx1Beacon",
 				"frequency": 437250000,
 				"bandwidth": 15000,
