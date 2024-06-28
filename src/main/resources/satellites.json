@@ -1,5 +1,67 @@
 [
 	{
+		"id": "R2CLOUD385",
+		"name": "MONITOR-2 (RS39S)",
+		"noradId": "57184",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "AFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 435815000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"deviation": 600,
+				"afCarrier": 1700,
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD384",
+		"name": "SATURN",
+		"noradId": "57174",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "AFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 435790000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"deviation": 600,
+				"afCarrier": 1700,
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD383",
+		"name": "ACS3",
+		"noradId": "59588",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CC11XX",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 401500000,
+				"bandwidth": 10000,
+				"baudRates": [
+					2400
+				],
+				"status": "ENABLED",
+				"syncword": "10010011000010110101000111011110"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD382",
 		"name": "GAGARINEC",
 		"noradId": "59480",
@@ -2265,6 +2327,8 @@
 				"frequency": 436915000,
 				"bandwidth": 20000,
 				"baudRates": [
+					1200,
+					2400,
 					9600
 				],
 				"status": "ENABLED"
@@ -2279,14 +2343,15 @@
 		"transmitters": [
 			{
 				"modulation": "GFSK",
-				"framing": "CUSTOM",
+				"framing": "CC11XX",
 				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
 				"frequency": 401100000,
 				"bandwidth": 10000,
 				"baudRates": [
 					2400
 				],
-				"status": "ENABLED"
+				"status": "ENABLED",
+				"syncword": "10010011000010110101000111011110"
 			}
 		]
 	},
@@ -2857,7 +2922,7 @@
 		"transmitters": [
 			{
 				"modulation": "GFSK",
-				"framing": "CUSTOM",
+				"framing": "CC11XX",
 				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
 				"frequency": 437500000,
 				"bandwidth": 20000,
@@ -2865,7 +2930,8 @@
 					2400,
 					9600
 				],
-				"status": "ENABLED"
+				"status": "ENABLED",
+				"syncword": "10010011000010110101000111011110"
 			}
 		]
 	},
@@ -3828,7 +3894,7 @@
 	{
 		"id": "R2CLOUD122",
 		"name": "MCUBED-2",
-		"noradId": "39469",
+		"noradId": "39472",
 		"enabled": true,
 		"transmitters": [
 			{
@@ -4910,7 +4976,7 @@
 				"framing": "U482C",
 				"beaconClass": "ru.r2cloud.jradio.gomx1.Gomx1Beacon",
 				"frequency": 437250000,
-				"bandwidth": 15000,
+				"bandwidth": 20000,
 				"baudRates": [
 					4800
 				],

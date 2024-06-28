@@ -6,7 +6,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.r2cloud.jradio.RawBeacon;
 import ru.r2cloud.jradio.ax25.Ax25Beacon;
 import ru.r2cloud.jradio.ccsds.TransferFrame;
 import ru.r2cloud.jradio.fox.Fox1BBeacon;
@@ -67,10 +66,6 @@ public class Decoders {
 		index("51439", "51439-0", new GaspacsDecoder(predict, props));
 		index("53385", "53385-0", new GeoscanDecoder(predict, props));
 		index("53108", "53108-0", new CcsdsDecoder(predict, props, TransferFrame.class));
-		index("53807", "53807-0", new Cc11xxDecoder(predict, props, RawBeacon.class, "10010011000010110101000111011110", 512));
-		index("51509", "51509-0", new Cc11xxDecoder(predict, props, RawBeacon.class, "10010011000010110101000111011110", 512));
-		index("56180", "56180-0", new Cc11xxDecoder(predict, props, RawBeacon.class, "10010011000010110101000111011110", 512));
-		index("59588", "59588-0", new Cc11xxDecoder(predict, props, RawBeacon.class, "10010011000010110101000111011110", 512));
 		index("56993", "56993-0", new Mrc100Decoder(predict, props, Mrc100Beacon.class));
 		index("56211", "56211-1", new InspireSat7SpinoDecoder(predict, props));
 		index("57167", "57167-0", new StratosatTk1Decoder(predict, props));
