@@ -2,6 +2,7 @@ package ru.r2cloud.satellite;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -77,6 +78,30 @@ public class PredictOreKitTest {
 		assertPosition("00:29:32", "00:31:55", schedule.get(3));
 	}
 
+	@Test
+	public void testStaleTle() throws Exception {
+		config.setProperty("locaiton.lat", "51.82");
+		config.setProperty("locaiton.lon", "-0.05");
+		antenna.setMinElevation(2);
+		antenna.setGuaranteedElevation(10);
+		List<SatPass> result = predict.calculateSchedule(antenna, getDate("21-07-2024 14:07:37"), createPropagatorForStaleTle());
+		assertTrue(result.isEmpty());
+		assertNull(predict.calculateNext(antenna, getDate("21-07-2024 20:06:37"), createPropagatorForStaleTle()));
+	}
+
+	// it looks like Orekit has some state,
+	// calling new propagator with different dates
+	// cause different exceptions
+	@Test
+	public void testStaleTle2() throws Exception {
+		config.setProperty("locaiton.lat", "51.82");
+		config.setProperty("locaiton.lon", "-0.05");
+		antenna.setMinElevation(2);
+		antenna.setGuaranteedElevation(10);
+		predict.calculateSchedule(antenna, getDate("21-07-2024 00:06:37"), createPropagatorForStaleTle());
+		assertNull(predict.calculateNext(antenna, getDate("21-07-2024 20:06:37"), createPropagatorForStaleTle()));
+	}
+
 	private static Date getDate(String str) throws Exception {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
@@ -105,4 +130,7 @@ public class PredictOreKitTest {
 		noaa15 = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE("1 25338U 98030A   17271.51297398  .00000037  00000-0  34305-4 0  9992", "2 25338  98.7817 282.6269 0009465 266.6019  93.4077 14.25818111  7720"));
 	}
 
+	private static TLEPropagator createPropagatorForStaleTle() {
+		return TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE("1 53377U 22096H   24154.02726409  .00833254  34873-3  13426-2 0  9991", "2 53377  97.3798  75.4551 0009283 160.8570 199.3061 16.03510163102082"));
+	}
 }

@@ -10,7 +10,7 @@ import org.orekit.time.AbsoluteDate;
 public class MaxElevationHandler implements EventHandler<ElevationExtremumDetector> {
 
 	private AbsoluteDate date;
-	private double maxElevation;
+	private final double maxElevation;
 
 	public MaxElevationHandler(double maxElevation) {
 		this.maxElevation = maxElevation;

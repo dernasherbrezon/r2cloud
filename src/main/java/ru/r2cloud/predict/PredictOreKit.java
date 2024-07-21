@@ -145,7 +145,12 @@ public class PredictOreKit {
 		EventsLogger logger = new EventsLogger();
 		tlePropagator.clearEventsDetectors();
 		tlePropagator.addEventDetector(logger.monitorDetector(detector));
-		tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, PREDICT_INTERVAL_SECONDS));
+		try {
+			tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, PREDICT_INTERVAL_SECONDS));
+		} catch (Exception e) {
+			LOG.error("unable to calculate schedule for {} date: {}", tlePropagator.getTLE().getSatelliteNumber(), initialDate, e);
+			return Collections.emptyList();
+		}
 		return convert(initialDate, logger.getLoggedEvents());
 	}
 
@@ -180,12 +185,13 @@ public class PredictOreKit {
 		long initialMillis = initialDate.toDate(TimeScalesFactory.getUTC()).getTime();
 		for (AbsoluteDate curMax : max) {
 			SatPass cur = findStartEnd(tlePropagator, baseStationFrame, curMax, antenna);
-			if (cur != null) {
-				if (cur.getStartMillis() < initialMillis) {
-					cur.setStart(initialDate);
-				}
-				result.add(cur);
+			if (cur == null) {
+				continue;
 			}
+			if (cur.getStartMillis() < initialMillis) {
+				cur.setStart(initialDate);
+			}
+			result.add(cur);
 		}
 		return result;
 	}
@@ -195,7 +201,12 @@ public class PredictOreKit {
 		ElevationExtremumDetector maxDetector = new ElevationExtremumDetector(600, 1, baseStationFrame).withMaxIter(48 * 60).withHandler(maxElevationHandler);
 		tlePropagator.clearEventsDetectors();
 		tlePropagator.addEventDetector(new EventSlopeFilter<EventDetector>(maxDetector, FilterType.TRIGGER_ONLY_DECREASING_EVENTS));
-		tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, PREDICT_INTERVAL_SECONDS));
+		try {
+			tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, PREDICT_INTERVAL_SECONDS));
+		} catch (Exception e) {
+			LOG.error("unable to calculate next observation. Most likely TLE is stale", e);
+			return null;
+		}
 		if (maxElevationHandler.getDate() == null) {
 			return null;
 		}
@@ -210,7 +221,12 @@ public class PredictOreKit {
 		tlePropagator.addEventDetector(boundsDetector);
 		// 60 mins before and 60 mins later
 		AbsoluteDate startDate = maxElevationTime.shiftedBy(-60 * 60.0);
-		tlePropagator.propagate(startDate, maxElevationTime.shiftedBy(60 * 60.0));
+		try {
+			tlePropagator.propagate(startDate, maxElevationTime.shiftedBy(60 * 60.0));
+		} catch (Exception e) {
+			LOG.error("unable to calculate start/end times. Most likely TLE is stale", e);
+			return null;
+		}
 
 		if (minElevationHandler.getStart() == null || minElevationHandler.getEnd() == null) {
 			return null;
