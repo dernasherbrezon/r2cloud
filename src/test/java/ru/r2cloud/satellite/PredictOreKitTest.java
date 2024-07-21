@@ -1,7 +1,7 @@
 package ru.r2cloud.satellite;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.text.SimpleDateFormat;
@@ -34,7 +34,9 @@ public class PredictOreKitTest {
 	@Test
 	public void testMeoOrbit() throws Exception {
 		TLEPropagator astroBio = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE("1 84002U          22194.52504630  .00000000  00000-0  00000-0 0    00", "2 84002  70.1600  50.0000 0000815  30.0000 147.0000  6.38669028    02"));
-		assertPosition("16:00:57", "16:45:56", predict.calculateNext(antenna, getDate("29-09-2022 14:54:00"), astroBio));
+		List<SatPass> result = predict.calculateSchedule(antenna, getDate("29-09-2022 14:54:00"), astroBio);
+		assertFalse(result.isEmpty());
+		assertPosition("16:00:57", "16:45:56", result.get(0));
 	}
 
 	@Test
@@ -49,15 +51,19 @@ public class PredictOreKitTest {
 	public void testPredictWithoutBaseStationCoordinates() throws Exception {
 		config.remove("locaiton.lat");
 		config.remove("locaiton.lon");
-
-		assertNull(predict.calculateNext(antenna, getDate("29-09-2017 14:54:00"), noaa15));
+		List<SatPass> result = predict.calculateSchedule(antenna, getDate("29-09-2017 14:54:00"), noaa15);
+		assertTrue(result.isEmpty());
 	}
 
 	// expected pass times taken from wxtoimg
 	@Test
 	public void testSameAsWxToImg() throws Exception {
-		assertPosition("18:05:57", "18:17:12", predict.calculateNext(antenna, getDate("29-09-2017 14:54:00"), noaa15));
-		assertPosition("19:46:56", "19:56:34", predict.calculateNext(antenna, getDate("29-09-2017 19:00:00"), noaa15));
+		List<SatPass> result = predict.calculateSchedule(antenna, getDate("29-09-2017 14:54:00"), noaa15);
+		assertFalse(result.isEmpty());
+		assertPosition("18:05:57", "18:17:12", result.get(0));
+		result = predict.calculateSchedule(antenna, getDate("29-09-2017 19:00:00"), noaa15);
+		assertFalse(result.isEmpty());
+		assertPosition("19:46:56", "19:56:34", result.get(0));
 	}
 
 	@Test
@@ -68,8 +74,6 @@ public class PredictOreKitTest {
 		antenna.setElevation(0.0);
 		antenna.setBeamwidth(45);
 		TLEPropagator propagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE("1 43881U 18111F   24042.67399199  .00015427  00000+0  10192-2 0  9994", "2 43881  97.6384 310.9432 0012514 108.3312 251.9278 15.07433805280400"));
-		assertPosition("11:29:31", "11:33:11", predict.calculateNext(antenna, getDate("12-02-2024 11:20:00"), propagator));
-		assertPosition("11:30:00", "11:33:11", predict.calculateNext(antenna, getDate("12-02-2024 11:30:00"), propagator));
 		List<SatPass> schedule = predict.calculateSchedule(antenna, getDate("12-02-2024 11:20:00"), propagator);
 		assertEquals(4, schedule.size());
 		assertPosition("11:29:31", "11:33:11", schedule.get(0));
@@ -86,20 +90,6 @@ public class PredictOreKitTest {
 		antenna.setGuaranteedElevation(10);
 		List<SatPass> result = predict.calculateSchedule(antenna, getDate("21-07-2024 14:07:37"), createPropagatorForStaleTle());
 		assertTrue(result.isEmpty());
-		assertNull(predict.calculateNext(antenna, getDate("21-07-2024 20:06:37"), createPropagatorForStaleTle()));
-	}
-
-	// it looks like Orekit has some state,
-	// calling new propagator with different dates
-	// cause different exceptions
-	@Test
-	public void testStaleTle2() throws Exception {
-		config.setProperty("locaiton.lat", "51.82");
-		config.setProperty("locaiton.lon", "-0.05");
-		antenna.setMinElevation(2);
-		antenna.setGuaranteedElevation(10);
-		predict.calculateSchedule(antenna, getDate("21-07-2024 00:06:37"), createPropagatorForStaleTle());
-		assertNull(predict.calculateNext(antenna, getDate("21-07-2024 20:06:37"), createPropagatorForStaleTle()));
 	}
 
 	private static Date getDate(String str) throws Exception {

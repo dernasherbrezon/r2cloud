@@ -35,7 +35,6 @@ import org.orekit.propagation.events.FilterType;
 import org.orekit.propagation.events.GroundFieldOfViewDetector;
 import org.orekit.propagation.events.handlers.ContinueOnEvent;
 import org.orekit.propagation.events.handlers.EventHandler;
-import org.orekit.propagation.events.handlers.StopOnDecreasing;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
@@ -115,23 +114,6 @@ public class PredictOreKit {
 		}
 	}
 
-	public SatPass calculateNext(AntennaConfiguration antenna, Date current, TLEPropagator tlePropagator) {
-		TopocentricFrame baseStationFrame = getPosition();
-		if (baseStationFrame == null) {
-			return null;
-		}
-		AbsoluteDate initialDate = new AbsoluteDate(current, TimeScalesFactory.getUTC());
-		switch (antenna.getType()) {
-		case OMNIDIRECTIONAL:
-		case DIRECTIONAL:
-			return calculateNextOmnidirectional(antenna, initialDate, baseStationFrame, tlePropagator);
-		case FIXED_DIRECTIONAL:
-			return calculateNextFixedDirectional(antenna, initialDate, baseStationFrame, tlePropagator);
-		default:
-			throw new IllegalArgumentException("Unexpected value: " + antenna.getType());
-		}
-	}
-
 	private static List<SatPass> calculateFixedDirectional(AntennaConfiguration antenna, AbsoluteDate initialDate, TopocentricFrame baseStationFrame, TLEPropagator tlePropagator, @SuppressWarnings("rawtypes") EventHandler handler) {
 		// orekit expects azimuth in counter clock wise degrees
 		double azimuthRadians = FastMath.toRadians(Util.convertAzimuthToDegress(antenna.getAzimuth()));
@@ -152,14 +134,6 @@ public class PredictOreKit {
 			return Collections.emptyList();
 		}
 		return convert(initialDate, logger.getLoggedEvents());
-	}
-
-	private static SatPass calculateNextFixedDirectional(AntennaConfiguration antenna, AbsoluteDate initialDate, TopocentricFrame baseStationFrame, TLEPropagator tlePropagator) {
-		List<SatPass> result = calculateFixedDirectional(antenna, initialDate, baseStationFrame, tlePropagator, new StopOnDecreasing<>());
-		if (result.isEmpty()) {
-			return null;
-		}
-		return result.get(0);
 	}
 
 	private static List<SatPass> calculateOmnidirectional(AntennaConfiguration antenna, AbsoluteDate initialDate, TopocentricFrame baseStationFrame, TLEPropagator tlePropagator) {
@@ -194,24 +168,6 @@ public class PredictOreKit {
 			result.add(cur);
 		}
 		return result;
-	}
-
-	private static SatPass calculateNextOmnidirectional(AntennaConfiguration antenna, AbsoluteDate initialDate, TopocentricFrame baseStationFrame, TLEPropagator tlePropagator) {
-		MaxElevationHandler maxElevationHandler = new MaxElevationHandler(antenna.getGuaranteedElevation());
-		ElevationExtremumDetector maxDetector = new ElevationExtremumDetector(600, 1, baseStationFrame).withMaxIter(48 * 60).withHandler(maxElevationHandler);
-		tlePropagator.clearEventsDetectors();
-		tlePropagator.addEventDetector(new EventSlopeFilter<EventDetector>(maxDetector, FilterType.TRIGGER_ONLY_DECREASING_EVENTS));
-		try {
-			tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, PREDICT_INTERVAL_SECONDS));
-		} catch (Exception e) {
-			LOG.error("unable to calculate next observation. Most likely TLE is stale", e);
-			return null;
-		}
-		if (maxElevationHandler.getDate() == null) {
-			return null;
-		}
-
-		return findStartEnd(tlePropagator, baseStationFrame, maxElevationHandler.getDate(), antenna);
 	}
 
 	private static SatPass findStartEnd(TLEPropagator tlePropagator, TopocentricFrame baseStationFrame, AbsoluteDate maxElevationTime, AntennaConfiguration antenna) {

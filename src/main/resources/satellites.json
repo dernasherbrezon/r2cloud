@@ -1,5 +1,44 @@
 [
 	{
+		"id": "R2CLOUD388",
+		"name": "GALASSIA-2",
+		"noradId": "57486",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 436400000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD387",
+		"name": "SCOOB-II",
+		"noradId": "57484",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437500000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"assistedHeader": "AAEAAAEAAAEAAQEAAAEAAQABAAEBAAEAAAEAAAABAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQAAAAEAAAAAAQABAQAAAAABAAAAAQABAAEAAAAAAAABAAAAAAAAAAEAAAAAAAAAAQABAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD385",
 		"name": "MONITOR-2 (RS39S)",
 		"noradId": "57184",
@@ -2606,44 +2645,6 @@
 		]
 	},
 	{
-		"id": "R2CLOUD234",
-		"name": "DIAMOND GREEN",
-		"noradId": "42785",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX100",
-				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
-				"frequency": 401150000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD233",
-		"name": "DIAMOND BLUE",
-		"noradId": "42786",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX100",
-				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
-				"frequency": 401150000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
 		"id": "R2CLOUD232",
 		"name": "PTD-3 (TYVAK-0125)",
 		"noradId": "52734",
@@ -3303,27 +3304,6 @@
 				"baudRates": [
 					2400,
 					4800,
-					9600
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD172",
-		"name": "MIET-AIS (RS28S)",
-		"noradId": "53377",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "USP",
-				"beaconClass": "ru.r2cloud.jradio.sputnix.SputnixBeacon",
-				"frequency": 437900000,
-				"bandwidth": 20000,
-				"baudRates": [
-					4800,
-					2400,
 					9600
 				],
 				"status": "ENABLED"
@@ -4277,7 +4257,7 @@
 				"baudRates": [
 					1200
 				],
-				"deviation": -600,
+				"deviation": -300,
 				"afCarrier": 1500,
 				"status": "ENABLED"
 			}
