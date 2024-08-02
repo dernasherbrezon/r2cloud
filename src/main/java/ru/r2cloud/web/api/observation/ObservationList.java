@@ -30,6 +30,7 @@ public class ObservationList extends AbstractHttpController {
 		List<Observation> observations = resultDao.findAll();
 		Collections.sort(observations, ObservationFullComparator.INSTANCE);
 		JsonArray satellites = new JsonArray();
+		long currentTime = System.currentTimeMillis();
 		for (Observation cur : observations) {
 			JsonObject curObservation = new JsonObject();
 			curObservation.add("id", cur.getId());
@@ -42,6 +43,9 @@ public class ObservationList extends AbstractHttpController {
 			}
 			curObservation.add("start", cur.getStartTimeMillis());
 			curObservation.add("end", cur.getEndTimeMillis());
+			// properly calculate remaining time on the client side
+			// client side (browser) and server can have different time
+			curObservation.add("currentTime", currentTime);
 			curObservation.add("status", cur.getStatus().name());
 			if (cur.getNumberOfDecodedPackets() != null) {
 				curObservation.add("numberOfDecodedPackets", cur.getNumberOfDecodedPackets());
