@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.WriterConfig;
 
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.util.Configuration;
@@ -92,7 +93,7 @@ public class TleDao {
 		// ensure temp and output are on the same filestore
 		Path tempOutput = file.getParent().resolve("tle.json.tmp");
 		try (BufferedWriter w = Files.newBufferedWriter(tempOutput)) {
-			output.writeTo(w);
+			output.writeTo(w, WriterConfig.PRETTY_PRINT);
 		} catch (IOException e) {
 			Util.logIOException(LOG, "unable to save tle: " + file.toAbsolutePath(), e);
 			return;

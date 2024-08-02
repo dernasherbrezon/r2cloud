@@ -1,9 +1,13 @@
 package ru.r2cloud.tle;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.cloud.LeoSatDataClient;
 import ru.r2cloud.cloud.NotModifiedException;
@@ -19,6 +23,8 @@ import ru.r2cloud.util.ThreadPoolFactory;
 import ru.r2cloud.util.Util;
 
 public class Housekeeping {
+
+	private static final Logger LOG = LoggerFactory.getLogger(Housekeeping.class);
 
 	private final ThreadPoolFactory threadFactory;
 	private final SatelliteDao dao;
@@ -136,13 +142,15 @@ public class Housekeeping {
 
 	private void reloadTle() {
 		long periodMillis = config.getLong("housekeeping.tle.periodMillis");
-		// do not store on disk ever growing tle list
-		// store only supported satellites
-		Map<String, Tle> updated = new HashMap<>();
 		boolean reloadTle = (System.currentTimeMillis() - tleDao.getLastUpdateTime() > periodMillis);
 		if (reloadTle) {
 			tleDao.putAll(celestrak.downloadTle());
+		} else {
+			LOG.info("Skip TLE update. Last update was {}. Next update: {}", new Date(tleDao.getLastUpdateTime()), new Date(tleDao.getLastUpdateTime() + periodMillis));
 		}
+		// do not store on disk ever growing tle list
+		// store only supported satellites
+		Map<String, Tle> updated = new HashMap<>();
 		for (Satellite cur : dao.findAll()) {
 			Tle curTle;
 			if (cur.getTle() != null) {
