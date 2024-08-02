@@ -2,6 +2,7 @@
 	"id": "1559942730784",
 	"start": 1559942730839,
 	"end": 1559942731040,
+	"satelliteName": "AAUSAT 4",
 	"satellite": "41460",
 	"transmitterId": "41460-0",
 	"tle": {

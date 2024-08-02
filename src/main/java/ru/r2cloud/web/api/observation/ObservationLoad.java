@@ -64,9 +64,15 @@ public class ObservationLoad extends AbstractHttpController {
 			LOG.info("not found: {} id: {}", satelliteId, id);
 			return new NotFound();
 		}
+		Satellite satellite = satelliteDao.findById(entity.getSatelliteId());
+		if (satellite == null) {
+			LOG.info("satellite not found: {}", entity.getSatelliteId());
+			return new NotFound();
+		}
 		JsonObject json = entity.toJson(signed);
+		json.add("satelliteName", satellite.getName());
 		if (entity.getDataPath() != null) {
-			JsonArray beacons = convertBeacons(entity);
+			JsonArray beacons = convertBeacons(satellite, entity);
 			if (beacons != null) {
 				json.add("dataEntity", beacons);
 			}
@@ -76,11 +82,7 @@ public class ObservationLoad extends AbstractHttpController {
 		return result;
 	}
 
-	private JsonArray convertBeacons(Observation entity) {
-		Satellite satellite = satelliteDao.findById(entity.getSatelliteId());
-		if (satellite == null) {
-			return null;
-		}
+	private static JsonArray convertBeacons(Satellite satellite, Observation entity) {
 		Transmitter transmitter = satellite.getById(entity.getTransmitterId());
 		if (transmitter == null) {
 			return null;
