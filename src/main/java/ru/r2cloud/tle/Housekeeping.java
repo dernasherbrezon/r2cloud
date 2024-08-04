@@ -152,16 +152,23 @@ public class Housekeeping {
 		// store only supported satellites
 		Map<String, Tle> updated = new HashMap<>();
 		for (Satellite cur : dao.findAll()) {
-			Tle curTle;
-			if (cur.getTle() != null) {
-				curTle = cur.getTle();
-			} else {
-				curTle = tleDao.find(cur.getId(), cur.getName());
+			Tle oldTle = cur.getTle();
+			Tle newTle = tleDao.find(cur.getId(), cur.getName());
+			if (oldTle == null && newTle == null) {
+				continue;
 			}
-			cur.setTle(curTle);
-			if (curTle != null) {
-				updated.put(cur.getId(), cur.getTle());
+			if (oldTle == null && newTle != null) {
+				cur.setTle(newTle);
 			}
+			if (oldTle != null && newTle == null) {
+				cur.setTle(oldTle);
+			}
+			if (oldTle != null && newTle != null) {
+				// always update to new one
+				// even if it is the same
+				cur.setTle(newTle);
+			}
+			updated.put(cur.getId(), cur.getTle());
 		}
 		if (reloadTle) {
 			tleDao.saveTle(updated);

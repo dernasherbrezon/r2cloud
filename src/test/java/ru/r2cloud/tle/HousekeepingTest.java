@@ -1,5 +1,6 @@
 package ru.r2cloud.tle;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -98,6 +99,30 @@ public class HousekeepingTest {
 	}
 
 	@Test
+	public void testTleUpdate() throws Exception {
+		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null, priorityService);
+		reloader.run();
+		Satellite meteor = satelliteDao.findById("40069");
+		assertNotNull(meteor);
+		assertNotNull(meteor.getTle());
+		assertEquals(meteor.getTle().getRaw()[1], "1 40069U 14037A   18286.52491495 -.00000023  00000-0  92613-5 0  9990");
+		assertEquals(meteor.getTle().getRaw()[2], "2 40069  98.5901 334.4030 0004544 256.4188 103.6490 14.20654800221188");
+
+		config.setProperty("housekeeping.tle.periodMillis", "-10000");
+
+		Tle newTle = new Tle(new String[] { "METEOR M-2", "1 40069U 14037A   24217.61569736  .00000303  00000-0  15898-3 0  9993", "2 40069  98.4390 209.6955 0005046 206.9570 153.1346 14.21009510522504" });
+		tleData.put("40069", newTle);
+
+		reloader.run();
+
+		meteor = satelliteDao.findById("40069");
+		assertNotNull(meteor);
+		assertNotNull(meteor.getTle());
+		assertEquals(meteor.getTle().getRaw()[1], newTle.getRaw()[1]);
+		assertEquals(meteor.getTle().getRaw()[2], newTle.getRaw()[2]);
+	}
+
+	@Test
 	public void testSuccess() throws Exception {
 		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null, priorityService);
 		reloader.start();
@@ -133,7 +158,7 @@ public class HousekeepingTest {
 		config.setProperty("tle.cacheFileLocation", new File(tempFolder.getRoot(), "tle.json").getAbsolutePath());
 		config.setProperty("satellites.leosatdata.location", new File(tempFolder.getRoot(), "leosatdata.json").getAbsolutePath());
 		config.setProperty("satellites.leosatdata.new.location", new File(tempFolder.getRoot(), "leosatdata.new.json").getAbsolutePath());
-		config.setProperty("satellites.satnogs.location",  new File(tempFolder.getRoot(), "satnogs.json").getAbsolutePath());
+		config.setProperty("satellites.satnogs.location", new File(tempFolder.getRoot(), "satnogs.json").getAbsolutePath());
 		config.update();
 
 		satelliteDao = new SatelliteDao(config);
@@ -141,7 +166,7 @@ public class HousekeepingTest {
 		celestrak = mock(CelestrakClient.class);
 		when(celestrak.downloadTle()).thenReturn(tleData);
 		tleDao = new TleDao(config);
-		
+
 		priorityService = new PriorityService(config, new DefaultClock());
 
 		threadPool = mock(ThreadPoolFactory.class);
