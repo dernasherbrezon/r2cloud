@@ -102,6 +102,7 @@ import ru.r2cloud.web.api.setup.Restore;
 import ru.r2cloud.web.api.setup.Setup;
 import ru.r2cloud.web.api.status.MetricsController;
 import ru.r2cloud.web.api.status.Overview;
+import ru.r2cloud.web.api.status.PrometheusMetrics;
 
 public class R2Cloud {
 
@@ -279,6 +280,7 @@ public class R2Cloud {
 		index(new DeviceConfigDelete(props, deviceManager));
 		index(new Restart());
 		index(new DeviceSchedule(deviceManager, satelliteDao));
+		index(new PrometheusMetrics(metrics));
 		webServer = new WebServer(props, controllers, auth, signed);
 	}
 
