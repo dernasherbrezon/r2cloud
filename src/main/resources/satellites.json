@@ -1,5 +1,46 @@
 [
 	{
+		"id": "R2CLOUD391",
+		"name": "GRBBETA",
+		"noradId": "60237",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 436785000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD390",
+		"name": "CATSAT",
+		"noradId": "60246",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 437185000,
+				"bandwidth": 80000,
+				"baudRates": [
+					2400,
+					4800,
+					9600,
+					38400
+				],
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD388",
 		"name": "GALASSIA-2",
 		"noradId": "57486",
@@ -538,7 +579,7 @@
 		"id": "R2CLOUD356",
 		"name": "ENSO (ROBUSTA 1E)",
 		"noradId": "58470",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
@@ -547,7 +588,8 @@
 				"frequency": 436500000,
 				"bandwidth": 20000,
 				"baudRates": [
-					2400
+					2400,
+					9600
 				],
 				"assistedHeader": "AAABAQAAAAEAAAABAAEBAAABAQABAAABAAABAAEAAAEAAAAAAQEAAQAAAAAAAAEAAAAAAAABAQEAAAEBAAAAAQAAAAABAQABAAABAQABAQAAAAEBAAAAAQAAAQAAAQABAAEBAAAAAAEBAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
@@ -1534,12 +1576,12 @@
 		"id": "R2CLOUD306",
 		"name": "Norby-2",
 		"noradId": "57179",
-		"enabled": false,
+		"enabled": true,
 		"transmitters": [
 			{
 				"modulation": "LORA",
 				"framing": "LORA",
-				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconClass": "ru.r2cloud.jradio.norbi.NorbiBeacon",
 				"frequency": 436500000,
 				"bandwidth": 250000,
 				"status": "ENABLED",
@@ -2994,25 +3036,6 @@
 		]
 	},
 	{
-		"id": "R2CLOUD198",
-		"name": "JAISAT-1",
-		"noradId": "44419",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "MOBITEX",
-				"beaconClass": "ru.r2cloud.jradio.dstar1.Dstar1Beacon",
-				"frequency": 435700000,
-				"bandwidth": 20000,
-				"baudRates": [
-					4800
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
 		"id": "R2CLOUD197",
 		"name": "GOMX-4B",
 		"noradId": "43196",
@@ -3290,27 +3313,6 @@
 		]
 	},
 	{
-		"id": "R2CLOUD173",
-		"name": "ISOI (RS19S)",
-		"noradId": "53381",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "USP",
-				"beaconClass": "ru.r2cloud.jradio.sputnix.SputnixBeacon",
-				"frequency": 437650000,
-				"bandwidth": 20000,
-				"baudRates": [
-					2400,
-					4800,
-					9600
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
 		"id": "R2CLOUD171",
 		"name": "RESHUCUBE (RS8S)",
 		"noradId": "53382",
@@ -3321,27 +3323,6 @@
 				"framing": "USP",
 				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
 				"frequency": 435380000,
-				"bandwidth": 20000,
-				"baudRates": [
-					2400,
-					4800,
-					9600
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD170",
-		"name": "SIREN (RS30S)",
-		"noradId": "53384",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "CUSTOM",
-				"beaconClass": "ru.r2cloud.jradio.sputnix.SputnixBeacon",
-				"frequency": 437750000,
 				"bandwidth": 20000,
 				"baudRates": [
 					2400,
@@ -4663,25 +4644,6 @@
 				"assistedHeader": "AAAAAAABAAEAAQAAAQEAAQAAAQAAAQEAAAEAAAAAAAEAAQABAAAAAQABAQAAAAABAAAAAAAAAAAAAAAAAAEAAQABAAABAQABAAAAAAABAQAAAQABAAAAAQABAAABAAABAAEAAAAAAAEAAAAAAAAAAAEBAAAAAAAAAAAAAAEBAQE=",
 				"bpskCenterFrequency": 0,
 				"bpskDifferential": false,
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
-		"id": "R2CLOUD31",
-		"name": "OPS-SAT",
-		"noradId": "44878",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "CUSTOM",
-				"beaconClass": "ru.r2cloud.jradio.opssat.OpsSatBeacon",
-				"frequency": 437200000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
 				"status": "ENABLED"
 			}
 		]
