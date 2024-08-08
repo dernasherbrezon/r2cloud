@@ -157,20 +157,20 @@ public class UtilTest {
 	public void testMinDividableSampleRate() {
 		assertEquals(40_000L, Util.getSmallestDividableSampleRate(5_000, 240_000L));
 		assertEquals(16_000L, Util.getSmallestDividableSampleRate(5_100, 240_000L));
-		assertEquals(7_000L, Util.getSmallestDividableSampleRate(1600, 21_000L));
+		assertEquals(21_000L, Util.getSmallestDividableSampleRate(1600, 21_000L));
 	}
 
 	@Test
 	public void testDemodulatorInput() {
 		assertEquals(46_875, Util.getDemodulatorInput(2_400, 46_875));
-		assertEquals(9_375, Util.getDemodulatorInput(2_600, 46_875));
-		assertEquals(10_000, Util.getDemodulatorInput(1200, 2000000));
+		assertEquals(15_625, Util.getDemodulatorInput(2_600, 46_875));
+		assertEquals(20_000, Util.getDemodulatorInput(1200, 2000000));
 	}
 
 	@Test
 	public void testSymbolSyncInput() {
 		assertEquals(9_375L, Util.getSymbolSyncInput(1250, 46_875));
-		assertEquals(7_000L, Util.getSmallestDividableSampleRate(1600, 21_000L));
+		assertEquals(21_000L, Util.getSmallestDividableSampleRate(1600, 21_000L));
 	}
 
 	@Test

@@ -646,8 +646,8 @@ public final class Util {
 	private static long findClosest(long fromSampleRate, long baudRate) {
 		long carsonCutoff = 5000 + baudRate / 2;
 		long toSampleRate = baudRate * 3;
-		if (toSampleRate < carsonCutoff) {
-			toSampleRate = carsonCutoff;
+		if (toSampleRate < carsonCutoff * 2) {
+			toSampleRate = carsonCutoff * 2;
 		}
 		int[] primeNumbers = new int[] { 11, 7, 5, 3, 2 };
 		long result = fromSampleRate;
