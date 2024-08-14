@@ -14,6 +14,7 @@ import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationStatus;
+import ru.r2cloud.model.Page;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.satellite.IObservationDao;
@@ -64,7 +65,7 @@ public class DecoderService implements Lifecycle {
 		}
 		LOG.info("check for not processed observations");
 		String apiKey = config.getProperty("r2cloud.apiKey");
-		for (Observation cur : dao.findAll()) {
+		for (Observation cur : dao.findAll(new Page())) {
 			if (cur.getStatus().equals(ObservationStatus.RECEIVED)) {
 				LOG.info("resuming decoding: {}", cur.getId());
 				decode(cur.getSatelliteId(), cur.getId());

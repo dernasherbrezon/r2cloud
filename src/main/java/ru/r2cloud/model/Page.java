@@ -1,0 +1,46 @@
+package ru.r2cloud.model;
+
+public class Page {
+
+	private String cursor;
+	private Integer limit;
+	private String satelliteId;
+
+	public Page() {
+		// do nothing
+	}
+
+	public Page(Integer limit) {
+		this.limit = limit;
+	}
+
+	public Page(Integer limit, String cursor) {
+		this.limit = limit;
+		this.cursor = cursor;
+	}
+
+	public String getCursor() {
+		return cursor;
+	}
+
+	public void setCursor(String cursor) {
+		this.cursor = cursor;
+	}
+
+	public Integer getLimit() {
+		return limit;
+	}
+
+	public void setLimit(Integer limit) {
+		this.limit = limit;
+	}
+
+	public String getSatelliteId() {
+		return satelliteId;
+	}
+
+	public void setSatelliteId(String satelliteId) {
+		this.satelliteId = satelliteId;
+	}
+
+}

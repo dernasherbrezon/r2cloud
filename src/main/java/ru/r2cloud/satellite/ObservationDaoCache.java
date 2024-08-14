@@ -2,102 +2,100 @@ package ru.r2cloud.satellite;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 import ru.r2cloud.model.Observation;
-import ru.r2cloud.model.ObservationCacheKey;
+import ru.r2cloud.model.ObservationIdComparator;
+import ru.r2cloud.model.Page;
 
 public class ObservationDaoCache implements IObservationDao {
 
 	private final IObservationDao impl;
-	private final Map<String, Observation> cacheById = new HashMap<>();
-	private final Set<ObservationCacheKey> allObservations = new HashSet<>();
+	private final TreeMap<String, Observation> byId = new TreeMap<>(ObservationIdComparator.INSTANCE);
+	private final Map<String, TreeMap<String, Observation>> bySatelliteId = new HashMap<>();
 
 	public ObservationDaoCache(IObservationDao impl) {
 		this.impl = impl;
-		synchronized (cacheById) {
-			for (Observation cur : impl.findAll()) {
-				cacheById.put(cur.getId(), cur);
-				allObservations.add(new ObservationCacheKey(cur.getSatelliteId(), cur.getId()));
+		synchronized (byId) {
+			for (Observation cur : impl.findAll(new Page())) {
+				byId.put(cur.getId(), cur);
 			}
 		}
 	}
 
 	@Override
-	public List<Observation> findAll() {
-		synchronized (cacheById) {
-			List<Observation> result = new ArrayList<>(allObservations.size());
-			List<ObservationCacheKey> missing = new ArrayList<>();
-			for (ObservationCacheKey id : allObservations) {
-				Observation cur = cacheById.get(id.getObservationId());
-				if (cur == null) {
-					missing.add(id);
-				} else {
-					result.add(cur);
-				}
+	public List<Observation> findAll(Page page) {
+		synchronized (byId) {
+			TreeMap<String, Observation> indexToUse;
+			if (page.getSatelliteId() != null) {
+				indexToUse = bySatelliteId.get(page.getSatelliteId());
+			} else {
+				indexToUse = byId;
 			}
-			result.addAll(findAndIndex(missing));
-			return result;
-		}
-	}
 
-	@Override
-	public List<Observation> findAllBySatelliteId(String satelliteId) {
-		synchronized (cacheById) {
+			NavigableMap<String, Observation> offsetIndex;
+			if (page.getCursor() != null) {
+				offsetIndex = indexToUse.tailMap(page.getCursor(), false);
+			} else {
+				offsetIndex = indexToUse;
+			}
+
+			if (page.getLimit() == null) {
+				return new ArrayList<>(offsetIndex.values());
+			}
+
+			int index = 0;
 			List<Observation> result = new ArrayList<>();
-			List<ObservationCacheKey> missing = new ArrayList<>();
-			for (ObservationCacheKey id : allObservations) {
-				if (!id.getSatelliteId().equals(satelliteId)) {
-					continue;
-				}
-				Observation cur = cacheById.get(id.getObservationId());
-				if (cur == null) {
-					missing.add(id);
-				} else {
-					result.add(cur);
+			for (Observation cur : offsetIndex.values()) {
+				result.add(cur);
+				index++;
+				if (index >= page.getLimit()) {
+					break;
 				}
 			}
-			result.addAll(findAndIndex(missing));
 			return result;
 		}
 	}
 
-	// this will load into allObservations cache
-	// if observation somehow added onto disk directly
-	// shouldn't happen in real life, mostly used by tests
-	private Collection<? extends Observation> findAndIndex(List<ObservationCacheKey> dirty) {
-		List<Observation> result = new ArrayList<>();
-		List<ObservationCacheKey> missing = new ArrayList<>();
-		for (ObservationCacheKey cur : dirty) {
-			Observation observation = impl.find(cur.getSatelliteId(), cur.getObservationId());
-			if (observation == null) {
-				missing.add(cur);
-				continue;
-			}
-			cacheById.put(observation.getId(), observation);
-			allObservations.add(cur);
-			result.add(observation);
+	private void index(Observation observation) {
+		if (observation == null) {
+			return;
 		}
-		allObservations.removeAll(missing);
-		return result;
+		byId.put(observation.getId(), observation);
+		TreeMap<String, Observation> curSatellite = bySatelliteId.get(observation.getSatelliteId());
+		if (curSatellite == null) {
+			curSatellite = new TreeMap<>(ObservationIdComparator.INSTANCE);
+			bySatelliteId.put(observation.getSatelliteId(), curSatellite);
+		}
+		curSatellite.put(observation.getId(), observation);
+	}
+
+	private void removeFromIndex(Observation observation) {
+		byId.remove(observation.getId());
+		TreeMap<String, Observation> curSatellite = bySatelliteId.get(observation.getSatelliteId());
+		if (curSatellite == null) {
+			return;
+		}
+		curSatellite.remove(observation.getId());
+		if (curSatellite.isEmpty()) {
+			bySatelliteId.remove(observation.getSatelliteId());
+		}
 	}
 
 	@Override
 	public Observation find(String satelliteId, String observationId) {
-		synchronized (cacheById) {
-			Observation result = cacheById.get(observationId);
-			if (result == null) {
-				result = impl.find(satelliteId, observationId);
-				if (result != null) {
-					cacheById.put(observationId, result);
-					// ensure indexes in allObservations
-					allObservations.add(new ObservationCacheKey(satelliteId, observationId));
-				}
+		synchronized (byId) {
+			Observation result = byId.get(observationId);
+			if (result != null) {
+				return result;
+			}
+			result = impl.find(satelliteId, observationId);
+			if (result != null) {
+				index(result);
 			}
 			return result;
 		}
@@ -105,61 +103,77 @@ public class ObservationDaoCache implements IObservationDao {
 
 	@Override
 	public File saveImage(String satelliteId, String observationId, File a) {
-		synchronized (cacheById) {
-			cacheById.remove(observationId);
+		File result = impl.saveImage(satelliteId, observationId, a);
+		// if updated, then update internal cache
+		if (result != null) {
+			synchronized (byId) {
+				index(impl.find(satelliteId, observationId));
+			}
 		}
-		return impl.saveImage(satelliteId, observationId, a);
+		return result;
 	}
 
 	@Override
 	public File saveData(String satelliteId, String observationId, File a) {
-		synchronized (cacheById) {
-			cacheById.remove(observationId);
+		File result = impl.saveData(satelliteId, observationId, a);
+		if (result != null) {
+			synchronized (byId) {
+				index(impl.find(satelliteId, observationId));
+			}
 		}
-		return impl.saveData(satelliteId, observationId, a);
+		return result;
 	}
 
 	@Override
 	public File saveSpectogram(String satelliteId, String observationId, File a) {
-		synchronized (cacheById) {
-			cacheById.remove(observationId);
+		File result = impl.saveSpectogram(satelliteId, observationId, a);
+		if (result != null) {
+			synchronized (byId) {
+				index(impl.find(satelliteId, observationId));
+			}
 		}
-		return impl.saveSpectogram(satelliteId, observationId, a);
+		return result;
 	}
 
 	@Override
 	public void insert(Observation observation) {
 		impl.insert(observation);
-		synchronized (cacheById) {
-			allObservations.add(new ObservationCacheKey(observation.getSatelliteId(), observation.getId()));
+		synchronized (byId) {
+			index(observation);
 		}
 	}
 
 	@Override
 	public void cancel(Observation observation) {
 		impl.cancel(observation);
-		synchronized (cacheById) {
-			cacheById.remove(observation.getId());
-			allObservations.remove(new ObservationCacheKey(observation.getSatelliteId(), observation.getId()));
+		synchronized (byId) {
+			removeFromIndex(observation);
 		}
 	}
 
 	@Override
 	public File update(Observation observation, File rawFile) {
-		synchronized (cacheById) {
-			cacheById.remove(observation.getId());
-			// update also insert new observation
-			allObservations.add(new ObservationCacheKey(observation.getSatelliteId(), observation.getId()));
+		File result = impl.update(observation, rawFile);
+		if (result != null) {
+			synchronized (byId) {
+				index(impl.find(observation.getSatelliteId(), observation.getId()));
+			}
 		}
-		return impl.update(observation, rawFile);
+		return result;
 	}
 
 	@Override
-	public boolean update(Observation cur) {
-		synchronized (cacheById) {
-			cacheById.remove(cur.getId());
+	public boolean update(Observation observation) {
+		boolean result = impl.update(observation);
+		synchronized (byId) {
+			Observation actual = impl.find(observation.getSatelliteId(), observation.getId());
+			if (actual == null) {
+				removeFromIndex(observation);
+			} else {
+				index(actual);
+			}
 		}
-		return impl.update(cur);
+		return result;
 	}
 
 }

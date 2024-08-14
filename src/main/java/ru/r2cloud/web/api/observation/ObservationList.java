@@ -9,6 +9,7 @@ import com.eclipsesource.json.JsonObject;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.ObservationFullComparator;
 import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.Page;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.satellite.SatelliteDao;
@@ -27,7 +28,7 @@ public class ObservationList extends AbstractHttpController {
 
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
-		List<Observation> observations = resultDao.findAll();
+		List<Observation> observations = resultDao.findAll(new Page());
 		Collections.sort(observations, ObservationFullComparator.INSTANCE);
 		JsonArray satellites = new JsonArray();
 		long currentTime = System.currentTimeMillis();

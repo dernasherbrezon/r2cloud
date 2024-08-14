@@ -33,6 +33,7 @@ import ru.r2cloud.model.AntennaType;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationStatus;
+import ru.r2cloud.model.Page;
 import ru.r2cloud.model.RotatorConfiguration;
 import ru.r2cloud.model.SdrServerConfiguration;
 import ru.r2cloud.model.Tle;
@@ -73,9 +74,23 @@ public class ObservationDaoTest {
 	public void testFindAll() throws Exception {
 		int expectedObservations = 5;
 		for (int i = 0; i < expectedObservations; i++) {
-			assertNotNull(dao.update(createObservation(), createTempFile("wav")));
+			assertNotNull(dao.update(createObservation(String.valueOf(i)), createTempFile("wav")));
 		}
-		assertEquals(expectedObservations, dao.findAll().size());
+		assertEquals(expectedObservations, dao.findAll(new Page()).size());
+		List<Observation> actual = dao.findAll(new Page(2));
+		assertEquals(2, actual.size());
+		assertEquals("4", actual.get(0).getId());
+		assertEquals("3", actual.get(1).getId());
+
+		actual = dao.findAll(new Page(null, "3"));
+		assertEquals(3, actual.size());
+		assertEquals("2", actual.get(0).getId());
+		assertEquals("1", actual.get(1).getId());
+		assertEquals("0", actual.get(2).getId());
+
+		actual = dao.findAll(new Page(1, "3"));
+		assertEquals(1, actual.size());
+		assertEquals("2", actual.get(0).getId());
 	}
 
 	@Test
@@ -110,7 +125,9 @@ public class ObservationDaoTest {
 		Observation actual = dao.find(req.getSatelliteId(), req.getId());
 		assertNotNull(actual);
 		assertEquals(ObservationStatus.RECEIVING_DATA, actual.getStatus());
-		List<Observation> observations = dao.findAllBySatelliteId(req.getSatelliteId());
+		Page page = new Page();
+		page.setSatelliteId(req.getSatelliteId());
+		List<Observation> observations = dao.findAll(page);
 		assertEquals(1, observations.size());
 
 		dao.cancel(req);
@@ -124,14 +141,14 @@ public class ObservationDaoTest {
 		req2.setStartTimeMillis(2);
 		assertNotNull(dao.update(req2, createTempFile("wav")));
 
-		List<Observation> all = dao.findAll();
+		List<Observation> all = dao.findAll(new Page());
 		assertEquals(2, all.size());
 		Collections.sort(all, ObservationFullComparator.INSTANCE);
 		// test desc sorting
 		assertEquals(2, all.get(0).getStartTimeMillis());
 		assertEquals(1, all.get(1).getStartTimeMillis());
 
-		all = dao.findAllBySatelliteId(req.getSatelliteId());
+		all = dao.findAll(page);
 		assertEquals(2, all.size());
 		Collections.sort(all, ObservationFullComparator.INSTANCE);
 		// test desc sorting
@@ -182,15 +199,21 @@ public class ObservationDaoTest {
 		assertEquals(1, actual.getNumberOfDecodedPackets().longValue());
 		assertEquals(ObservationStatus.DECODED, actual.getStatus());
 
-		List<Observation> all = dao.findAllBySatelliteId(req.getSatelliteId());
+		Page page = new Page();
+		page.setSatelliteId(req.getSatelliteId());
+		List<Observation> all = dao.findAll(page);
 		assertEquals(1, all.size());
 	}
 
 	private static Observation createObservation() {
+		return createObservation(UUID.randomUUID().toString());
+	}
+
+	private static Observation createObservation(String id) {
 		Observation result = new Observation();
 		result.setFrequency(1L);
 		result.setEndTimeMillis(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5));
-		result.setId(UUID.randomUUID().toString());
+		result.setId(id);
 		result.setSampleRate(1);
 		result.setTle(create());
 		result.setFrequency(2);
@@ -271,5 +294,6 @@ public class ObservationDaoTest {
 		config.update();
 
 		dao = new ObservationDaoCache(new ObservationDao(config));
+//		dao = new ObservationDao(config);
 	}
 }

@@ -23,6 +23,7 @@ import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationComparator;
+import ru.r2cloud.model.Page;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
 
@@ -52,24 +53,45 @@ public class ObservationDao implements IObservationDao {
 	}
 
 	@Override
-	public List<Observation> findAll() {
+	public List<Observation> findAll(Page page) {
 		if (!Files.exists(basepath)) {
 			return Collections.emptyList();
 		}
-		try (DirectoryStream<Path> ds = Files.newDirectoryStream(basepath)) {
-			List<Observation> result = new ArrayList<>();
-			for (Path curSatellite : ds) {
-				result.addAll(findAllBySatelliteId(curSatellite.getFileName().toString()));
+		List<Observation> result;
+		if (page.getSatelliteId() != null) {
+			result = findAllBySatelliteId(page.getSatelliteId());
+		} else {
+			try (DirectoryStream<Path> ds = Files.newDirectoryStream(basepath)) {
+				result = new ArrayList<>();
+				for (Path curSatellite : ds) {
+					result.addAll(findAllBySatelliteId(curSatellite.getFileName().toString()));
+				}
+			} catch (IOException e) {
+				LOG.error("unable to find all", e);
+				return Collections.emptyList();
 			}
-			return result;
-		} catch (IOException e) {
-			LOG.error("unable to find all", e);
-			return Collections.emptyList();
 		}
+		Collections.sort(result, ObservationComparator.INSTANCE);
+		if (page.getLimit() == null && page.getCursor() == null) {
+			return result;
+		}
+		List<Observation> sublist = new ArrayList<>();
+		boolean foundStart = (page.getCursor() == null);
+		for (int i = 0; i < result.size(); i++) {
+			// linear search for cursor
+			if (!foundStart && page.getCursor() != null) {
+				foundStart = result.get(i).getId().equals(page.getCursor());
+				continue;
+			}
+			if (page.getLimit() != null && sublist.size() >= page.getLimit()) {
+				break;
+			}
+			sublist.add(result.get(i));
+		}
+		return sublist;
 	}
 
-	@Override
-	public List<Observation> findAllBySatelliteId(String satelliteId) {
+	private List<Observation> findAllBySatelliteId(String satelliteId) {
 		List<Observation> result = new ArrayList<>();
 		result.addAll(loadFromDisk(satelliteId));
 		synchronized (IN_FLIGHT_OBSERVATIONS) {
@@ -78,7 +100,6 @@ public class ObservationDao implements IObservationDao {
 				result.addAll(inFlight);
 			}
 		}
-		Collections.sort(result, ObservationComparator.INSTANCE);
 		return result;
 	}
 

@@ -4,12 +4,11 @@ import java.io.File;
 import java.util.List;
 
 import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.Page;
 
 public interface IObservationDao {
 
-	List<Observation> findAll();
-
-	List<Observation> findAllBySatelliteId(String satelliteId);
+	List<Observation> findAll(Page page);
 
 	Observation find(String satelliteId, String observationId);
 

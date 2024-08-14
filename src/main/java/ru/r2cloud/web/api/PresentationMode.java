@@ -1,7 +1,5 @@
 package ru.r2cloud.web.api;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.eclipsesource.json.JsonArray;
@@ -9,10 +7,10 @@ import com.eclipsesource.json.JsonObject;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import fi.iki.elonen.NanoHTTPD.Response;
-import ru.r2cloud.ObservationFullComparator;
 import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Page;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.satellite.SatelliteDao;
@@ -60,13 +58,10 @@ public class PresentationMode extends AbstractHttpController {
 			curRequest.add("hasData", false);
 			jsonObservations.add(curRequest);
 		}
-		List<Observation> observations = new ArrayList<>();
-		List<Satellite> all = dao.findAll();
-		for (Satellite cur : all) {
-			observations.addAll(resultDao.findAllBySatelliteId(cur.getId()));
-		}
-		Collections.sort(observations, ObservationFullComparator.INSTANCE);
-		for (int i = 0; i < 5 && i < observations.size(); i++) {
+		Page page = new Page();
+		page.setLimit(5);
+		List<Observation> observations = resultDao.findAll(page);
+		for (int i = 0; i < observations.size(); i++) {
 			Observation cur = observations.get(i);
 			Satellite curSatellite = dao.findById(cur.getSatelliteId());
 			if (curSatellite == null || cur.getTle() == null) {
