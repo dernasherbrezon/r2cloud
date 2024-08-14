@@ -14,9 +14,7 @@ import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
-import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.satellite.IObservationDao;
-import ru.r2cloud.satellite.ObservationRequestComparator;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.web.AbstractHttpController;
@@ -45,21 +43,8 @@ public class PresentationMode extends AbstractHttpController {
 			result.setData("{}");
 			return result;
 		}
-		List<Satellite> all = dao.findAll();
-		List<Observation> observations = new ArrayList<>();
-		List<ObservationRequest> requests = new ArrayList<>();
-		for (Satellite cur : all) {
-			observations.addAll(resultDao.findAllBySatelliteId(cur.getId()));
-			for (Transmitter curTransmitter : cur.getTransmitters()) {
-				ObservationRequest nextObservation = deviceManager.findFirstByTransmitter(curTransmitter);
-				if (nextObservation == null) {
-					continue;
-				}
-				requests.add(nextObservation);
-			}
-		}
-		Collections.sort(requests, ObservationRequestComparator.INSTANCE);
 		JsonArray jsonObservations = new JsonArray();
+		List<ObservationRequest> requests = deviceManager.findScheduledObservations();
 		for (int i = 0; i < 5 && i < requests.size(); i++) {
 			ObservationRequest cur = requests.get(i);
 			Satellite curSatellite = dao.findById(cur.getSatelliteId());
@@ -75,7 +60,11 @@ public class PresentationMode extends AbstractHttpController {
 			curRequest.add("hasData", false);
 			jsonObservations.add(curRequest);
 		}
-
+		List<Observation> observations = new ArrayList<>();
+		List<Satellite> all = dao.findAll();
+		for (Satellite cur : all) {
+			observations.addAll(resultDao.findAllBySatelliteId(cur.getId()));
+		}
 		Collections.sort(observations, ObservationFullComparator.INSTANCE);
 		for (int i = 0; i < 5 && i < observations.size(); i++) {
 			Observation cur = observations.get(i);

@@ -1,14 +1,12 @@
 package ru.r2cloud.it;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.net.http.HttpResponse;
 
 import org.junit.Test;
 
-import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.TestUtil;
@@ -31,12 +29,8 @@ public class PresentationModeTest extends BaseTest {
 		// force cache reload
 		client.getObservationPresentation("41460", "1559942730784");
 		
-		JsonObject data = client.getPresentationModeData();
-		JsonArray observations = data.get("observations").asArray();
-		assertNotNull(observations);
-		assertEquals(6, observations.size());
-		JsonObject baseStation = data.get("basestation").asObject();
-		assertNotNull(baseStation);
+		JsonObject obj = client.getPresentationModeData();
+		TestUtil.assertJson("presentationMode.json", obj);
 	}
 
 }
