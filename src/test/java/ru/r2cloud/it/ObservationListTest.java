@@ -33,6 +33,11 @@ public class ObservationListTest extends RegisteredTest {
 		page.setCursor("1560007694942");
 		satellites = client.getObservationList(page);
 		assertObservation("observationListIT/expectedCursor.json", satellites);
+		
+		page = new Page();
+		page.setSatelliteId("40069");
+		satellites = client.getObservationList(page);
+		assertObservation("observationListIT/expected.json", satellites);
 	}
 
 	private static void assertObservation(String expected, JsonArray satellites) throws IOException {

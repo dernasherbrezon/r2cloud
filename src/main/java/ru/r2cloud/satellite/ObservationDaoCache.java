@@ -23,7 +23,7 @@ public class ObservationDaoCache implements IObservationDao {
 		this.impl = impl;
 		synchronized (byId) {
 			for (Observation cur : impl.findAll(new Page())) {
-				byId.put(cur.getId(), cur);
+				index(cur);
 			}
 		}
 	}
