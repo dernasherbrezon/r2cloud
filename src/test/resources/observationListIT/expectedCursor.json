@@ -1,0 +1,11 @@
+[
+	{
+		"id": "1559504588627",
+		"satelliteId": "40069",
+		"name": "METEOR-M 2",
+		"start": 1559504588637,
+		"end":1559504588824,
+		"status": "RECEIVED",
+		"hasData": false
+	}
+]

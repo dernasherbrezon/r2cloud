@@ -15,6 +15,7 @@ import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
+import ru.r2cloud.web.WebServer;
 
 public class ObservationList extends AbstractHttpController {
 
@@ -28,7 +29,11 @@ public class ObservationList extends AbstractHttpController {
 
 	@Override
 	public ModelAndView doGet(IHTTPSession session) {
-		List<Observation> observations = resultDao.findAll(new Page());
+		Page page = new Page();
+		page.setCursor(WebServer.getParameter(session, "cursor"));
+		page.setLimit(WebServer.getInteger(session, "limit"));
+		page.setSatelliteId(WebServer.getParameter(session, "satelliteId"));
+		List<Observation> observations = resultDao.findAll(page);
 		Collections.sort(observations, ObservationFullComparator.INSTANCE);
 		JsonArray satellites = new JsonArray();
 		long currentTime = System.currentTimeMillis();

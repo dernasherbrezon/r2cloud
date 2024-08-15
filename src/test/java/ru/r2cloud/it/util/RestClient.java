@@ -30,6 +30,7 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.model.GeneralConfiguration;
+import ru.r2cloud.model.Page;
 
 public class RestClient {
 
@@ -532,8 +533,20 @@ public class RestClient {
 		return getObservationResponse("/api/v1/admin/observation/load", satelliteId, observationId);
 	}
 
-	public JsonArray getObservationList() {
-		HttpRequest request = createAuthRequest("/api/v1/admin/observation/list").GET().build();
+	public JsonArray getObservationList(Page page) {
+		String limit = "";
+		if (page.getLimit() != null) {
+			limit = page.getLimit().toString();
+		}
+		String cursor = "";
+		if (page.getCursor() != null) {
+			cursor = page.getCursor();
+		}
+		String satelliteId = "";
+		if (page.getSatelliteId() != null) {
+			satelliteId = page.getSatelliteId();
+		}
+		HttpRequest request = createAuthRequest("/api/v1/admin/observation/list?limit=" + limit + "&cursor=" + cursor + "&satelliteId=" + satelliteId).GET().build();
 		HttpResponse<String> response;
 		try {
 			response = httpclient.send(request, BodyHandlers.ofString());

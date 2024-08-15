@@ -13,6 +13,7 @@ import com.eclipsesource.json.JsonArray;
 
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.it.util.RegisteredTest;
+import ru.r2cloud.model.Page;
 
 public class ObservationListTest extends RegisteredTest {
 
@@ -20,8 +21,18 @@ public class ObservationListTest extends RegisteredTest {
 	public void testList() throws IOException {
 		copyObservation("1559504588627");
 		copyObservation("1560007694942");
-		JsonArray satellites = client.getObservationList();
+		JsonArray satellites = client.getObservationList(new Page());
 		assertObservation("observationListIT/expected.json", satellites);
+
+		Page page = new Page();
+		page.setLimit(1);
+		satellites = client.getObservationList(page);
+		assertObservation("observationListIT/expectedLimit.json", satellites);
+		
+		page = new Page();
+		page.setCursor("1560007694942");
+		satellites = client.getObservationList(page);
+		assertObservation("observationListIT/expectedCursor.json", satellites);
 	}
 
 	private static void assertObservation(String expected, JsonArray satellites) throws IOException {

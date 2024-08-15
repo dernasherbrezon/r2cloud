@@ -24,7 +24,7 @@ public class Page {
 	}
 
 	public void setCursor(String cursor) {
-		if (cursor.trim().length() == 0) {
+		if (cursor != null && cursor.trim().length() == 0) {
 			this.cursor = null;
 		} else {
 			this.cursor = cursor;
@@ -44,7 +44,7 @@ public class Page {
 	}
 
 	public void setSatelliteId(String satelliteId) {
-		if (satelliteId.trim().length() == 0) {
+		if (satelliteId != null && satelliteId.trim().length() == 0) {
 			this.satelliteId = null;
 		} else {
 			this.satelliteId = satelliteId;
