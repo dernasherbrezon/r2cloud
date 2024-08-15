@@ -2,6 +2,7 @@ package ru.r2cloud.satellite;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,9 @@ public class ObservationDaoCache implements IObservationDao {
 			TreeMap<String, Observation> indexToUse;
 			if (page.getSatelliteId() != null) {
 				indexToUse = bySatelliteId.get(page.getSatelliteId());
+				if (indexToUse == null) {
+					return Collections.emptyList();
+				}
 			} else {
 				indexToUse = byId;
 			}

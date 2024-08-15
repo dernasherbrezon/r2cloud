@@ -94,6 +94,46 @@ public class ObservationDaoTest {
 	}
 
 	@Test
+	public void testFindAllEdgeCases() throws Exception {
+		List<Observation> actual = dao.findAll(new Page());
+		assertTrue(actual.isEmpty());
+
+		int expectedObservations = 5;
+		for (int i = 0; i < expectedObservations; i++) {
+			assertNotNull(dao.update(createObservation(String.valueOf(i)), createTempFile("wav")));
+		}
+
+		Page page = new Page();
+		page.setSatelliteId(UUID.randomUUID().toString());
+		actual = dao.findAll(page);
+		assertTrue(actual.isEmpty());
+
+		// past limit
+		page = new Page();
+		page.setLimit(10);
+		actual = dao.findAll(page);
+		assertEquals(expectedObservations, actual.size());
+
+		// past last
+		page = new Page();
+		page.setCursor("0");
+		actual = dao.findAll(page);
+		assertTrue(actual.isEmpty());
+
+		// trim to null
+		page = new Page();
+		page.setCursor("");
+		actual = dao.findAll(page);
+		assertEquals(expectedObservations, actual.size());
+
+		page = new Page();
+		page.setSatelliteId("");
+		actual = dao.findAll(page);
+		assertEquals(expectedObservations, actual.size());
+
+	}
+
+	@Test
 	public void saveSpectogramTwice() throws Exception {
 		Observation req = createObservation();
 		assertNotNull(dao.update(req, createTempFile("wav")));
@@ -294,6 +334,5 @@ public class ObservationDaoTest {
 		config.update();
 
 		dao = new ObservationDaoCache(new ObservationDao(config));
-//		dao = new ObservationDao(config);
 	}
 }

@@ -24,7 +24,11 @@ public class Page {
 	}
 
 	public void setCursor(String cursor) {
-		this.cursor = cursor;
+		if (cursor.trim().length() == 0) {
+			this.cursor = null;
+		} else {
+			this.cursor = cursor;
+		}
 	}
 
 	public Integer getLimit() {
@@ -40,7 +44,11 @@ public class Page {
 	}
 
 	public void setSatelliteId(String satelliteId) {
-		this.satelliteId = satelliteId;
+		if (satelliteId.trim().length() == 0) {
+			this.satelliteId = null;
+		} else {
+			this.satelliteId = satelliteId;
+		}
 	}
 
 }
