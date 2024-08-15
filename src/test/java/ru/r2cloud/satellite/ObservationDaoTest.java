@@ -306,7 +306,7 @@ public class ObservationDaoTest {
 		rotator.setTimeout(12000);
 		rotator.setTolerance(2.0);
 		result.setRotatorConfiguration(rotator);
-		result.setRtlDeviceId(1);
+		result.setRtlDeviceId("1");
 		SdrServerConfiguration sdrConfig = new SdrServerConfiguration();
 		sdrConfig.setBandwidth(1_440_000);
 		sdrConfig.setBandwidthCrop(48000);

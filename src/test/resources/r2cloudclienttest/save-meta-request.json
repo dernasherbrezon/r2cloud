@@ -16,7 +16,6 @@
 	"device": {
 		"deviceType": "RTLSDR",
 		"gain": 12.2,
-		"rtlDeviceId": 0,
 		"biast": true,
 		"ppm": 0
 	}

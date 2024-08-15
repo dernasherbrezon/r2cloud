@@ -22,7 +22,7 @@ public class RtlStatusProcessTest {
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
-	private int expectedRtlDeviceId = 0;
+	private String expectedRtlDeviceId = "0";
 	private TestConfiguration config;
 	private RtlStatusProcess dao;
 	private RtlTestServer rtlTestServer;
@@ -52,7 +52,7 @@ public class RtlStatusProcessTest {
 	@Test
 	public void testSerialNumber() {
 		rtlTestServer.mockTest("  0:  Realtek, RTL2838UHIDIR, SN: 00000400\n");
-		RtlStatusProcess dao = new RtlStatusProcess(config, new ProcessFactory(), 400, new ReentrantLock());
+		RtlStatusProcess dao = new RtlStatusProcess(config, new ProcessFactory(), "00000400", new ReentrantLock());
 		SdrStatus result = dao.getStatus();
 		assertEquals(DeviceConnectionStatus.CONNECTED, result.getStatus());
 		assertEquals("Realtek, RTL2838UHIDIR, SN: 00000400", result.getModel());

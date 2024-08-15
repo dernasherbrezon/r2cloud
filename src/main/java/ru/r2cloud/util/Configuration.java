@@ -342,7 +342,7 @@ public class Configuration {
 			String prefix = deviceType.name().toLowerCase(Locale.UK) + ".device." + cur + ".";
 			config.setMinimumFrequency(getLong(prefix + "minFrequency"));
 			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
-			config.setRtlDeviceId(getInteger(prefix + "index"));
+			config.setRtlDeviceId(getProperty(prefix + "index"));
 			config.setGain(getDouble(prefix + "gain").floatValue());
 			config.setBiast(getBoolean(prefix + "biast"));
 			config.setPpm(getInteger(prefix + "ppm"));

@@ -25,11 +25,11 @@ public class RtlStatusProcess implements SdrStatusProcess {
 
 	private final Configuration config;
 	private final ProcessFactory factory;
-	private final int expectedRtlDeviceId;
+	private final String expectedRtlDeviceId;
 	private final ReentrantLock lock;
 	private SdrStatus previousStatus;
 
-	public RtlStatusProcess(Configuration config, ProcessFactory factory, int expectedRtlDeviceId, ReentrantLock lock) {
+	public RtlStatusProcess(Configuration config, ProcessFactory factory, String expectedRtlDeviceId, ReentrantLock lock) {
 		this.config = config;
 		this.factory = factory;
 		this.expectedRtlDeviceId = expectedRtlDeviceId;
@@ -73,10 +73,10 @@ public class RtlStatusProcess implements SdrStatusProcess {
 				} else {
 					Matcher m = DEVICEPATTERN.matcher(curLine);
 					if (m.find()) {
-						Integer actualDeviceId = parse(m.group(1));
-						if (actualDeviceId == null || actualDeviceId != expectedRtlDeviceId) {
-							actualDeviceId = parse(m.group(4));
-							if (actualDeviceId == null || actualDeviceId != expectedRtlDeviceId) {
+						String actualDeviceId = m.group(1);
+						if (actualDeviceId == null || !actualDeviceId.equals(expectedRtlDeviceId)) {
+							actualDeviceId = m.group(4);
+							if (actualDeviceId == null || !actualDeviceId.equals(expectedRtlDeviceId)) {
 								continue;
 							}
 						}
@@ -99,14 +99,6 @@ public class RtlStatusProcess implements SdrStatusProcess {
 			result.setFailureMessage("unable to find device");
 		}
 		return result;
-	}
-
-	private static Integer parse(String value) {
-		try {
-			return Integer.parseInt(value);
-		} catch (NumberFormatException e) {
-			return null;
-		}
 	}
 
 }

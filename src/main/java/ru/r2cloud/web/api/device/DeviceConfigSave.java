@@ -59,10 +59,7 @@ public class DeviceConfigSave extends AbstractHttpController {
 		}
 		switch (deviceType) {
 		case RTLSDR: {
-			config.setRtlDeviceId((int) readOptionalLong(request, "rtlDeviceId", 0, errors));
-			if (config.getRtlDeviceId() < 0) {
-				errors.put("rtlDeviceId", Messages.CANNOT_BE_NEGATIVE);
-			}
+			config.setRtlDeviceId(request.getString("rtlDeviceId", "0"));
 			config.setGain((float) readPositiveDouble(request, "gain", errors));
 			if (config.getGain() > 49.6f) {
 				errors.put("gain", "Cannot be more than 49.6");

@@ -24,7 +24,6 @@
 		"host": "127.0.0.1",
 		"port": 8005,
 		"gain": 0,
-		"rtlDeviceId": 0,
 		"biast": false,
 		"ppm": 0,
 		"antenna": {

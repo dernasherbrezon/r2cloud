@@ -5,7 +5,7 @@
 	"minimumFrequency": 100000000,
 	"maximumFrequency": 1700000000,
 	"gain": 45,
-	"rtlDeviceId": 0,
+	"rtlDeviceId": "0",
 	"biast": false,
 	"ppm": 0,
 	"antenna": {

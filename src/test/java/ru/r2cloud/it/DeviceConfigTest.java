@@ -40,12 +40,6 @@ public class DeviceConfigTest extends RegisteredTest {
 		assertEquals("rtlsdr.2", json.getString("id", null));
 
 		device = createConfig();
-		device.setRtlDeviceId(-1);
-		response = client.saveDeviceConfig(device.toJson());
-		assertEquals(400, response.statusCode());
-		assertErrorInField("rtlDeviceId", response);
-
-		device = createConfig();
 		device.setGain(50.0f);
 		response = client.saveDeviceConfig(device.toJson());
 		assertEquals(400, response.statusCode());
@@ -304,7 +298,7 @@ public class DeviceConfigTest extends RegisteredTest {
 		result.setAntennaConfiguration(antennaConfig);
 		result.setGain(3f);
 		result.setPpm(3);
-		result.setRtlDeviceId(1);
+		result.setRtlDeviceId("1");
 		result.setMinimumFrequency(400_000_000L);
 		result.setMaximumFrequency(1_700_000_000L);
 		return result;

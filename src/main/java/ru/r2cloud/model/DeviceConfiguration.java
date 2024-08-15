@@ -21,7 +21,7 @@ public class DeviceConfiguration {
 	private AntennaConfiguration antennaConfiguration;
 
 	private float gain;
-	private int rtlDeviceId;
+	private String rtlDeviceId;
 	private boolean biast;
 	private boolean compencateDcOffset;
 	private int ppm;
@@ -117,11 +117,11 @@ public class DeviceConfiguration {
 		this.biast = biast;
 	}
 
-	public int getRtlDeviceId() {
+	public String getRtlDeviceId() {
 		return rtlDeviceId;
 	}
 
-	public void setRtlDeviceId(int rtlDeviceId) {
+	public void setRtlDeviceId(String rtlDeviceId) {
 		this.rtlDeviceId = rtlDeviceId;
 	}
 
@@ -253,7 +253,16 @@ public class DeviceConfiguration {
 		result.setPort(meta.getInt("port", 0));
 		result.setUsername(meta.getString("username", null));
 		result.setGain(meta.getFloat("gain", 0));
-		result.setRtlDeviceId(meta.getInt("rtlDeviceId", 0));
+		JsonValue rtlDeviceId = meta.get("rtlDeviceId");
+		if (rtlDeviceId == null) {
+			result.setRtlDeviceId("0");
+		} else {
+			if (rtlDeviceId.isNumber()) {
+				result.setRtlDeviceId(String.valueOf(rtlDeviceId.asInt()));
+			} else {
+				result.setRtlDeviceId(rtlDeviceId.asString());
+			}
+		}
 		result.setBiast(meta.getBoolean("biast", false));
 		result.setPpm(meta.getInt("ppm", 0));
 		result.setMaximumBatteryVoltage(meta.getDouble("maximumBatteryVoltage", 0));
