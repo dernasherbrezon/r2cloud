@@ -26,7 +26,7 @@ public class SpyServerMock {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SpyServerMock.class);
 	private final String host;
-	private final int port;
+	private int port = 8008;
 	private ServerSocket socket;
 	private SpyServerDeviceInfo deviceInfo;
 	private SpyClientSync sync;
@@ -35,9 +35,12 @@ public class SpyServerMock {
 	private CountDownLatch latch = new CountDownLatch(1);
 	private Map<SpyServerParameter, Long> params = new HashMap<>();
 
-	public SpyServerMock(String host, int port) {
+	public SpyServerMock(String host) {
 		this.host = host;
-		this.port = port;
+	}
+
+	public int getPort() {
+		return port;
 	}
 
 	public void setDeviceInfo(SpyServerDeviceInfo deviceInfo) {
@@ -64,7 +67,15 @@ public class SpyServerMock {
 	public void start() throws IOException {
 		socket = new ServerSocket();
 		socket.setReuseAddress(true);
-		socket.bind(new InetSocketAddress(host, port));
+		for (int i = 0; i < 10; i++) {
+			try {
+				socket.bind(new InetSocketAddress(host, port));
+				break;
+			} catch (IOException e) {
+				LOG.info("can't bind on: {} trying next. Error: {}", port, e.getMessage());
+				port++;
+			}
+		}
 		new Thread(new Runnable() {
 
 			@Override

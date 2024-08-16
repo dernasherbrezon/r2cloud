@@ -36,10 +36,10 @@ public class SpyServerReaderTest {
 
 	@Test
 	public void testDeviceNotConnected() throws Exception {
-		deviceConfiguration.setPort(8009);
-		mock = new SpyServerMock(deviceConfiguration.getHost(), deviceConfiguration.getPort());
+		mock = new SpyServerMock(deviceConfiguration.getHost());
 		mock.start();
 
+		deviceConfiguration.setPort(mock.getPort());
 		SpyServerReader reader = new SpyServerReader(config, createValidRequest(), deviceConfiguration, createValidTransmitter());
 		reader.complete();
 		assertNull(reader.start());
@@ -47,14 +47,14 @@ public class SpyServerReaderTest {
 
 	@Test
 	public void testSuccess() throws Exception {
-		deviceConfiguration.setPort(8008);
-		mock = new SpyServerMock(deviceConfiguration.getHost(), deviceConfiguration.getPort());
+		mock = new SpyServerMock(deviceConfiguration.getHost());
 		mock.start();
 
 		mock.setDeviceInfo(createAirSpy());
 		mock.setSync(createValidSync());
 		mock.setData(createSample(), SpyClient.SPYSERVER_MSG_TYPE_INT16_IQ);
 
+		deviceConfiguration.setPort(mock.getPort());
 		ObservationRequest req = createValidRequest();
 		SpyServerReader reader = new SpyServerReader(config, req, deviceConfiguration, createValidTransmitter());
 		new Thread(new Runnable() {

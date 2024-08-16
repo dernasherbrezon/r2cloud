@@ -51,7 +51,6 @@ public abstract class BaseTest {
 	public static final int ROTCTRLD_PORT = 8004;
 	private static final int ROTCTRLD_PORT_LORA = 8006;
 	private static final int LORA_AT_WIFI_PORT = 8005;
-	private static final int SPYSERVER_MOCK = 8008;
 
 	protected R2Cloud server;
 	private CelestrakServer celestrak;
@@ -105,7 +104,7 @@ public abstract class BaseTest {
 				"Using auto-detected IIO context at URI \"usb:0.1.5\"\nIIO context created with usb backend.\nBackend description string: Linux (none) 4.19.0-119999-g6edc6cd #319 SMP PREEMPT Mon Jul 6 15:45:01 CEST 2020 armv7l\nIIO context has 15 attributes:\n	hw_model: Analog Devices PlutoSDR Rev.B (Z7010-AD9363A)\n	hw_model_variant: 0\n	hw_serial: 10447354119600050d003000d4311fd131\n");
 		plutoTestServer.start();
 
-		spyServerMock = new SpyServerMock("127.0.0.1", SPYSERVER_MOCK);
+		spyServerMock = new SpyServerMock("127.0.0.1");
 		spyServerMock.setDeviceInfo(SpyServerReaderTest.createAirSpy());
 		spyServerMock.setSync(SpyServerReaderTest.createValidSync());
 		spyServerMock.start();
