@@ -254,7 +254,7 @@ public class DeviceConfiguration {
 		result.setUsername(meta.getString("username", null));
 		result.setGain(meta.getFloat("gain", 0));
 		JsonValue rtlDeviceId = meta.get("rtlDeviceId");
-		if (rtlDeviceId == null) {
+		if (rtlDeviceId == null || rtlDeviceId.isNull()) {
 			result.setRtlDeviceId("0");
 		} else {
 			if (rtlDeviceId.isNumber()) {
