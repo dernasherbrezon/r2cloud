@@ -137,7 +137,6 @@ public class PredictOreKit {
 	}
 
 	private static List<SatPass> calculateOmnidirectional(AntennaConfiguration antenna, AbsoluteDate initialDate, TopocentricFrame baseStationFrame, TLEPropagator tlePropagator) {
-		List<SatPass> result = new ArrayList<>();
 		List<AbsoluteDate> max = new ArrayList<>();
 		ElevationExtremumDetector maxDetector = new ElevationExtremumDetector(600, 1, baseStationFrame).withMaxIter(48 * 60).withHandler(new EventHandler<ElevationExtremumDetector>() {
 			@Override
@@ -157,6 +156,7 @@ public class PredictOreKit {
 			return Collections.emptyList();
 		}
 		long initialMillis = initialDate.toDate(TimeScalesFactory.getUTC()).getTime();
+		List<SatPass> result = new ArrayList<>();
 		for (AbsoluteDate curMax : max) {
 			SatPass cur = findStartEnd(tlePropagator, baseStationFrame, curMax, antenna);
 			if (cur == null) {
