@@ -30,6 +30,7 @@ import ru.r2cloud.model.AntennaType;
 import ru.r2cloud.model.DemodulatorType;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceType;
+import ru.r2cloud.model.IntegrationConfiguration;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.RotatorConfiguration;
 import ru.r2cloud.model.SdrServerConfiguration;
@@ -84,18 +85,30 @@ public class Configuration {
 	}
 
 	public String setProperty(String key, Double value) {
+		if (value == null) {
+			return null;
+		}
 		return setProperty(key, String.valueOf(value));
 	}
 
 	public String setProperty(String key, Float value) {
+		if (value == null) {
+			return null;
+		}
 		return setProperty(key, String.valueOf(value));
 	}
 
 	public String setProperty(String key, Long value) {
+		if (value == null) {
+			return null;
+		}
 		return setProperty(key, String.valueOf(value));
 	}
 
 	public String setProperty(String key, Integer value) {
+		if (value == null) {
+			return null;
+		}
 		return setProperty(key, String.valueOf(value));
 	}
 
@@ -112,6 +125,9 @@ public class Configuration {
 	}
 
 	public String setProperty(String key, String value) {
+		if (value == null) {
+			return null;
+		}
 		synchronized (changedProperties) {
 			changedProperties.add(key);
 		}
@@ -239,6 +255,40 @@ public class Configuration {
 			return null;
 		}
 		return result;
+	}
+
+	public IntegrationConfiguration getIntegrationConfiguration() {
+		IntegrationConfiguration result = new IntegrationConfiguration();
+		result.setApiKey(getProperty("r2cloud.apiKey"));
+		result.setSyncSpectogram(getBoolean("r2cloud.syncSpectogram"));
+		result.setNewLaunch(getBoolean("r2cloud.newLaunches"));
+		result.setSatnogs(getBoolean("satnogs.satellites"));
+		result.setInfluxdbHostname(getProperty("influxdb.hostname"));
+		result.setInfluxdbPort(getInteger("influxdb.port"));
+		result.setInfluxdbUsername(getProperty("influxdb.username"));
+		result.setInfluxdbPassword(getProperty("influxdb.password"));
+		result.setInfluxdbDatabase(getProperty("influxdb.database"));
+		return result;
+	}
+
+	public void saveIntegrationConfiguration(IntegrationConfiguration config) {
+		if (config.getApiKey() != null && config.getApiKey().length() > 0) {
+			setProperty("r2cloud.apiKey", config.getApiKey());
+		} else {
+			remove("r2cloud.apiKey");
+		}
+		setProperty("r2cloud.syncSpectogram", String.valueOf(config.isSyncSpectogram()));
+		setProperty("r2cloud.newLaunches", String.valueOf(config.isNewLaunch()));
+		setProperty("satnogs.satellites", String.valueOf(config.isSatnogs()));
+		if (config.getInfluxdbHostname() != null && config.getInfluxdbHostname().length() > 0) {
+			setProperty("influxdb.hostname", config.getInfluxdbHostname());
+		} else {
+			remove("influxdb.hostname");
+		}
+		setProperty("influxdb.port", config.getInfluxdbPort());
+		setProperty("influxdb.username", config.getInfluxdbUsername());
+		setProperty("influxdb.password", config.getInfluxdbPassword());
+		setProperty("influxdb.database", config.getInfluxdbDatabase());
 	}
 
 	public List<DeviceConfiguration> getPlutoSdrConfigurations() {
@@ -676,7 +726,7 @@ public class Configuration {
 		setAntennaConfiguration(prefix, config.getAntennaConfiguration());
 		setRotatorConfiguration(prefix, config.getRotatorConfiguration());
 	}
-	
+
 	private AntennaConfiguration getAntennaConfiguration(String prefix) {
 		AntennaConfiguration result = new AntennaConfiguration();
 		Double minElevation = getDouble(prefix + "antenna.minElevation");

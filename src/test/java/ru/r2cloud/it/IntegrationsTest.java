@@ -1,27 +1,32 @@
 package ru.r2cloud.it;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.UUID;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
+import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
+import ru.r2cloud.TestUtil;
 import ru.r2cloud.it.util.RegisteredTest;
+import ru.r2cloud.model.IntegrationConfiguration;
 
 public class IntegrationsTest extends RegisteredTest {
 
 	@Test
-	public void testSaveAndLoad() {
-		String apiKey = UUID.randomUUID().toString();
-		client.saveR2CloudConfiguration(apiKey, true, true, true);
-		JsonObject config = client.getR2CloudConfiguration();
-		assertEquals(apiKey, config.getString("apiKey", null));
-		assertTrue(config.getBoolean("syncSpectogram", false));
-		assertTrue(config.getBoolean("newLaunch", false));
-		assertTrue(config.getBoolean("satnogs", false));
+	public void testSaveAndLoad() throws Exception {
+		try (InputStreamReader is = new InputStreamReader(IntegrationsTest.class.getClassLoader().getResourceAsStream("integrationsTest/partialConfig.json"), StandardCharsets.UTF_8)) {
+			client.saveIntegrationConfiguration(IntegrationConfiguration.fromJson(Json.parse(is).asObject()));
+		}
+		JsonObject config = client.getIntegrationConfiguration();
+		TestUtil.assertJson("integrationsTest/partialConfig.json", config);
+
+		try (InputStreamReader is = new InputStreamReader(IntegrationsTest.class.getClassLoader().getResourceAsStream("integrationsTest/fullConfig.json"), StandardCharsets.UTF_8)) {
+			client.saveIntegrationConfiguration(IntegrationConfiguration.fromJson(Json.parse(is).asObject()));
+		}
+		config = client.getIntegrationConfiguration();
+		TestUtil.assertJson("integrationsTest/fullConfig.json", config);
 	}
 
 }

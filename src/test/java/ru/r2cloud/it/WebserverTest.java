@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.junit.Test;
 
 import ru.r2cloud.it.util.BaseTest;
+import ru.r2cloud.model.IntegrationConfiguration;
 
 public class WebserverTest extends BaseTest {
 
@@ -19,16 +20,21 @@ public class WebserverTest extends BaseTest {
 
 	@Test
 	public void testNonAuth() {
-		HttpResponse<String> response = client.saveR2CloudConfigurationWithResponse(UUID.randomUUID().toString(), true, true, false);
+		IntegrationConfiguration integrations = new IntegrationConfiguration();
+		integrations.setApiKey(UUID.randomUUID().toString());
+		integrations.setNewLaunch(true);
+		integrations.setSyncSpectogram(true);
+		integrations.setSatnogs(false);
+		HttpResponse<String> response = client.saveIntegrationConfigurationWithResponse(integrations);
 		assertEquals(401, response.statusCode());
 	}
-	
+
 	@Test
 	public void testInvalidPost() {
 		HttpResponse<String> response = client.postData("/api/v1/setup/setup", UUID.randomUUID().toString());
 		assertEquals(400, response.statusCode());
 	}
-	
+
 	@Test
 	public void testInvalidPostBody() {
 		HttpResponse<String> response = client.postData("/api/v1/setup/setup", "[{\"test\": 1 }]");

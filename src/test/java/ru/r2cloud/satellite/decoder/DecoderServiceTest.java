@@ -18,8 +18,8 @@ import org.junit.rules.TemporaryFolder;
 import ru.r2cloud.ExecuteNowThreadFactory;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
+import ru.r2cloud.cloud.InfluxDBClient;
 import ru.r2cloud.cloud.LeoSatDataService;
-import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationStatus;
@@ -96,7 +96,7 @@ public class DecoderServiceTest {
 		dao = new ObservationDao(config);
 		decoders = mock(Decoders.class);
 
-		service = new DecoderService(config, decoders, dao, new LeoSatDataService(config, dao, null, null), new ExecuteNowThreadFactory(true), new Metrics(config, new DefaultClock()), satelliteDao);
+		service = new DecoderService(config, decoders, dao, new LeoSatDataService(config, dao, null, null), new ExecuteNowThreadFactory(true), new InfluxDBClient(config, new DefaultClock()), satelliteDao);
 		service.start();
 	}
 

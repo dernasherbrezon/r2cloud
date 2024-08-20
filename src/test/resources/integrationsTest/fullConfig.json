@@ -1,0 +1,11 @@
+{
+	"apiKey": "test",
+	"syncSpectogram": false,
+	"newLaunch": true,
+	"satnogs": true,
+	"influxdbHostname": "http://localhost",
+	"influxdbPort": 1234,
+	"influxdbUsername": "root",
+	"influxdbPassword": "not a real password. used in tests",
+	"influxdbDatabase": "r2cloud"
+}

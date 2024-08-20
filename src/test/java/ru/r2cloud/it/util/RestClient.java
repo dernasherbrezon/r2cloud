@@ -1,6 +1,7 @@
 package ru.r2cloud.it.util;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -13,6 +14,9 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +24,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509ExtendedTrustManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +39,7 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.model.GeneralConfiguration;
+import ru.r2cloud.model.IntegrationConfiguration;
 import ru.r2cloud.model.Page;
 
 public class RestClient {
@@ -40,13 +50,57 @@ public class RestClient {
 	private final String baseUrl;
 	private String accessToken;
 
+	private static final TrustManager MOCK_TRUST_MANAGER = new X509ExtendedTrustManager() {
+		@Override
+		public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+			return new java.security.cert.X509Certificate[0];
+		}
+
+		@Override
+		public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+			// empty method
+		}
+
+		@Override
+		public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void checkClientTrusted(X509Certificate[] chain, String authType, Socket socket) throws CertificateException {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket) throws CertificateException {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void checkClientTrusted(X509Certificate[] chain, String authType, SSLEngine engine) throws CertificateException {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void checkServerTrusted(X509Certificate[] chain, String authType, SSLEngine engine) throws CertificateException {
+			// TODO Auto-generated method stub
+
+		}
+	};
+
 	public RestClient(String baseUrl) throws Exception {
 		if (baseUrl == null) {
 			this.baseUrl = "http://localhost:8097";
 		} else {
 			this.baseUrl = baseUrl;
 		}
-		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMinutes(1L)).build();
+		SSLContext sslContext = SSLContext.getInstance("SSL"); // OR TLS
+		sslContext.init(null, new TrustManager[] { MOCK_TRUST_MANAGER }, new SecureRandom());
+		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).sslContext(sslContext).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMinutes(1L)).build();
 	}
 
 	public boolean healthy() {
@@ -166,13 +220,9 @@ public class RestClient {
 		}
 	}
 
-	public HttpResponse<String> saveR2CloudConfigurationWithResponse(String apiKey, boolean syncSpectogram, boolean newLaunch, boolean satnogs) {
-		LOG.info("save r2cloud configuration");
-		JsonObject json = Json.object();
-		json.add("apiKey", apiKey);
-		json.add("syncSpectogram", syncSpectogram);
-		json.add("newLaunch", newLaunch);
-		json.add("satnogs", satnogs);
+	public HttpResponse<String> saveIntegrationConfigurationWithResponse(IntegrationConfiguration config) {
+		LOG.info("save integration configuration");
+		JsonObject json = config.toJson();
 		HttpRequest request = createJsonPost("/api/v1/admin/config/r2cloud", json).build();
 		try {
 			return httpclient.send(request, BodyHandlers.ofString());
@@ -196,20 +246,17 @@ public class RestClient {
 		}
 	}
 
-	public void saveR2CloudConfiguration(String apiKey, boolean syncSpectogram, boolean newLaunch, boolean satnogs) {
-		HttpResponse<String> response = saveR2CloudConfigurationWithResponse(apiKey, syncSpectogram, newLaunch, satnogs);
+	public void saveIntegrationConfiguration(IntegrationConfiguration config) {
+		HttpResponse<String> response = saveIntegrationConfigurationWithResponse(config);
 		if (response.statusCode() != 200) {
 			LOG.info("status code: {}", response.statusCode());
+			throw new RuntimeException("invalid status code: " + response.statusCode());
 		}
 	}
 
-	public JsonObject getR2CloudConfiguration() {
-		LOG.info("get r2cloud configuration");
+	public JsonObject getIntegrationConfiguration() {
+		LOG.info("get integration configuration");
 		return getData("/api/v1/admin/config/r2cloud");
-	}
-
-	public JsonArray getMetrics() {
-		return getDataArray("/api/v1/admin/status/metrics");
 	}
 
 	private HttpRequest.Builder createJsonPost(String path, JsonObject obj) {

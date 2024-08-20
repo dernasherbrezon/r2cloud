@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pl.edu.icm.jlargearrays.ConcurrencyUtils;
+import ru.r2cloud.cloud.InfluxDBClient;
 import ru.r2cloud.cloud.LeoSatDataClient;
 import ru.r2cloud.cloud.LeoSatDataService;
 import ru.r2cloud.cloud.SatnogsClient;
@@ -39,7 +40,6 @@ import ru.r2cloud.lora.loraat.LoraAtWifiClient;
 import ru.r2cloud.lora.loraat.gatt.GattClient;
 import ru.r2cloud.lora.loraat.gatt.GattServer;
 import ru.r2cloud.lora.r2lora.R2loraClient;
-import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.SharedSchedule;
 import ru.r2cloud.predict.PredictOreKit;
@@ -100,9 +100,7 @@ import ru.r2cloud.web.api.schedule.ScheduleSave;
 import ru.r2cloud.web.api.schedule.ScheduleStart;
 import ru.r2cloud.web.api.setup.Restore;
 import ru.r2cloud.web.api.setup.Setup;
-import ru.r2cloud.web.api.status.MetricsController;
 import ru.r2cloud.web.api.status.Overview;
-import ru.r2cloud.web.api.status.PrometheusMetrics;
 
 public class R2Cloud {
 
@@ -118,7 +116,7 @@ public class R2Cloud {
 	private final Map<String, HttpContoller> controllers = new HashMap<>();
 	private final WebServer webServer;
 	private final Authenticator auth;
-	private final Metrics metrics;
+	private final InfluxDBClient influxClient;
 	private final AutoUpdate autoUpdate;
 	private final SatelliteDao satelliteDao;
 	private final TleDao tleDao;
@@ -160,7 +158,7 @@ public class R2Cloud {
 		spectogramService = new SpectogramService(props);
 		resultDao = new ObservationDaoCache(new ObservationDao(props));
 		leoSatDataService = new LeoSatDataService(props, resultDao, leoSatDataClient, spectogramService);
-		metrics = new Metrics(props, clock);
+		influxClient = new InfluxDBClient(props, clock);
 		predict = new PredictOreKit(props);
 		auth = new Authenticator(props);
 		autoUpdate = new AutoUpdate(props);
@@ -168,7 +166,7 @@ public class R2Cloud {
 		tleDao = new TleDao(props);
 		signed = new SignedURL(props, clock);
 		decoders = new Decoders(predict, props, processFactory);
-		decoderService = new DecoderService(props, decoders, resultDao, leoSatDataService, threadFactory, metrics, satelliteDao);
+		decoderService = new DecoderService(props, decoders, resultDao, leoSatDataService, threadFactory, influxClient, satelliteDao);
 		priorityService = new PriorityService(props, clock);
 		houseKeeping = new Housekeeping(props, satelliteDao, threadFactory, new CelestrakClient(props, clock), tleDao, satnogsClient, leoSatDataClient, decoderService, priorityService);
 
@@ -257,7 +255,6 @@ public class R2Cloud {
 		index(new Setup(auth, props));
 		index(new Configured(auth, props));
 		index(new Restore(auth));
-		index(new MetricsController(signed, metrics));
 		index(new Overview(deviceManager));
 		index(new General(props, autoUpdate));
 		index(new TLE(satelliteDao, tleDao));
@@ -280,7 +277,6 @@ public class R2Cloud {
 		index(new DeviceConfigDelete(props, deviceManager));
 		index(new Restart());
 		index(new DeviceSchedule(deviceManager, satelliteDao));
-		index(new PrometheusMetrics(metrics));
 		webServer = new WebServer(props, controllers, auth, signed);
 	}
 
@@ -296,7 +292,6 @@ public class R2Cloud {
 		if (gattClient != null) {
 			gattClient.start();
 		}
-		metrics.start();
 		webServer.start();
 		LOG.info("=================================");
 		LOG.info("=========== started =============");
@@ -305,7 +300,6 @@ public class R2Cloud {
 
 	public void stop() {
 		webServer.stop();
-		metrics.stop();
 		if (gattClient != null) {
 			gattClient.stop();
 		}

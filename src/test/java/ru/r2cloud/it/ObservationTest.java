@@ -19,6 +19,7 @@ import ru.r2cloud.LeoSatDataServerMock;
 import ru.r2cloud.RtlSdrDataServer;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.it.util.RegisteredTest;
+import ru.r2cloud.model.IntegrationConfiguration;
 
 public class ObservationTest extends RegisteredTest {
 
@@ -82,7 +83,12 @@ public class ObservationTest extends RegisteredTest {
 	@Override
 	public void start() throws Exception {
 		super.start();
-		client.saveR2CloudConfiguration(UUID.randomUUID().toString(), true, true, false);
+		IntegrationConfiguration integrations = new IntegrationConfiguration();
+		integrations.setApiKey(UUID.randomUUID().toString());
+		integrations.setNewLaunch(true);
+		integrations.setSyncSpectogram(true);
+		integrations.setSatnogs(false);
+		client.saveIntegrationConfiguration(integrations);
 		rtlSdrMock = new RtlSdrDataServer();
 		rtlSdrMock.start();
 		server = new LeoSatDataServerMock();

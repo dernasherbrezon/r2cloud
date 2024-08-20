@@ -6,11 +6,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.Counter;
-
 import ru.r2cloud.Lifecycle;
+import ru.r2cloud.cloud.InfluxDBClient;
 import ru.r2cloud.cloud.LeoSatDataService;
-import ru.r2cloud.metrics.Metrics;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationStatus;
@@ -36,26 +34,21 @@ public class DecoderService implements Lifecycle {
 	private final LeoSatDataService r2cloudService;
 	private final ThreadPoolFactory threadpoolFactory;
 	private final Configuration config;
-	private final Metrics metrics;
 	private final SatelliteDao satelliteDao;
+	private final InfluxDBClient influxClient;
 
-	private Counter lrpt;
-	private Counter telemetry;
-
-	public DecoderService(Configuration config, Decoders decoders, IObservationDao dao, LeoSatDataService r2cloudService, ThreadPoolFactory threadpoolFactory, Metrics metrics, SatelliteDao satelliteDao) {
+	public DecoderService(Configuration config, Decoders decoders, IObservationDao dao, LeoSatDataService r2cloudService, ThreadPoolFactory threadpoolFactory, InfluxDBClient influxClient, SatelliteDao satelliteDao) {
 		this.config = config;
 		this.decoders = decoders;
 		this.dao = dao;
 		this.r2cloudService = r2cloudService;
 		this.threadpoolFactory = threadpoolFactory;
-		this.metrics = metrics;
+		this.influxClient = influxClient;
 		this.satelliteDao = satelliteDao;
 	}
 
 	@Override
 	public synchronized void start() {
-		lrpt = metrics.getRegistry().counter("lrpt");
-		telemetry = metrics.getRegistry().counter("telemetry");
 		decoderThread = threadpoolFactory.newScheduledThreadPool(1, new NamingThreadFactory("decoder"));
 	}
 
@@ -168,11 +161,8 @@ public class DecoderService implements Lifecycle {
 			switch (transmitter.getFraming()) {
 			case APT:
 				break;
-			case LRPT:
-				lrpt.inc(observation.getNumberOfDecodedPackets());
-				break;
 			default:
-				telemetry.inc(observation.getNumberOfDecodedPackets());
+				influxClient.send(observation, satellite);
 				break;
 			}
 		}
