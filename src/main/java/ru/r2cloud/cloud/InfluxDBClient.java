@@ -63,10 +63,13 @@ public class InfluxDBClient {
 		}
 		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(timeout).build();
 		this.basicAuth = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.ISO_8859_1));
-		try {
-			this.hostname = escape(InetAddress.getLocalHost().getHostName());
-		} catch (UnknownHostException e) {
-			throw new RuntimeException(e);
+		this.hostname = config.getProperty("local.hostname");
+		if (hostname == null) {
+			try {
+				this.hostname = escape(InetAddress.getLocalHost().getHostName());
+			} catch (UnknownHostException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 

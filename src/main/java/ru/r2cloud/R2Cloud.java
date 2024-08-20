@@ -60,6 +60,7 @@ import ru.r2cloud.spyclient.SpyClient;
 import ru.r2cloud.spyclient.SpyServerStatus;
 import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.tle.Housekeeping;
+import ru.r2cloud.tle.Metrics;
 import ru.r2cloud.tle.TleDao;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
@@ -116,6 +117,7 @@ public class R2Cloud {
 	private final Map<String, HttpContoller> controllers = new HashMap<>();
 	private final WebServer webServer;
 	private final Authenticator auth;
+	private final Metrics metrics;
 	private final InfluxDBClient influxClient;
 	private final AutoUpdate autoUpdate;
 	private final SatelliteDao satelliteDao;
@@ -159,6 +161,7 @@ public class R2Cloud {
 		resultDao = new ObservationDaoCache(new ObservationDao(props));
 		leoSatDataService = new LeoSatDataService(props, resultDao, leoSatDataClient, spectogramService);
 		influxClient = new InfluxDBClient(props, clock);
+		metrics = new Metrics(props, threadFactory, influxClient);
 		predict = new PredictOreKit(props);
 		auth = new Authenticator(props);
 		autoUpdate = new AutoUpdate(props);
@@ -281,6 +284,7 @@ public class R2Cloud {
 	}
 
 	public void start() {
+		metrics.start();
 		decoderService.start();
 		houseKeeping.start();
 		// device manager should start after tle (it uses TLE to schedule
@@ -309,6 +313,7 @@ public class R2Cloud {
 		deviceManager.stop();
 		houseKeeping.stop();
 		decoderService.stop();
+		metrics.stop();
 	}
 
 	private static R2Cloud app;
