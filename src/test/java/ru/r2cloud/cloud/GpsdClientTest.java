@@ -29,16 +29,16 @@ public class GpsdClientTest {
 	@Test
 	public void testSuccess() {
 		client.updateCoordinates();
-		assertCoordinates(null, null);
+		assertCoordinates(null, null, null);
 
 		config.setProperty("location.auto", true);
 		config.setProperty("location.gpsd.hostname", "255.255.255.255");
 		client.updateCoordinates();
-		assertCoordinates(null, null);
+		assertCoordinates(null, null, null);
 
 		config.setProperty("location.gpsd.hostname", server.getHostname());
 		client.updateCoordinates();
-		assertCoordinates(null, null);
+		assertCoordinates(null, null, null);
 
 		List<JsonObject> response = new ArrayList<>();
 		JsonObject version = createType("VERSION");
@@ -53,11 +53,12 @@ public class GpsdClientTest {
 		tpv.set("mode", 2);
 		tpv.set("lat", 0.123);
 		tpv.set("lon", 53.22);
+		tpv.set("altHAE", 86.1000);
 		response.add(tpv);
 		server.setResponse(response);
 		config.setProperty("location.gpsd.fixTimeout", 60000);
 		client.updateCoordinates();
-		assertCoordinates(0.123, 53.22);
+		assertCoordinates(0.123, 53.22, 86.1);
 	}
 
 	private static JsonObject createType(String clazz) {
@@ -66,7 +67,7 @@ public class GpsdClientTest {
 		return result;
 	}
 
-	private void assertCoordinates(Double lat, Double lon) {
+	private void assertCoordinates(Double lat, Double lon, Double alt) {
 		Double actualLat = config.getDouble("locaiton.lat");
 		if (lat == null) {
 			assertNull(actualLat);
@@ -78,6 +79,12 @@ public class GpsdClientTest {
 			assertNull(actualLon);
 		} else {
 			assertEquals(lon, actualLon, 0.00001f);
+		}
+		Double actualAlt = config.getDouble("locaiton.alt");
+		if (alt == null) {
+			assertNull(actualAlt);
+		} else {
+			assertEquals(alt, actualAlt, 0.00001f);
 		}
 	}
 
@@ -91,6 +98,7 @@ public class GpsdClientTest {
 		config.setProperty("location.gpsd.port", server.getPort());
 		config.remove("locaiton.lat");
 		config.remove("locaiton.lon");
+		config.remove("locaiton.alt");
 		client = new GpsdClient(config);
 	}
 

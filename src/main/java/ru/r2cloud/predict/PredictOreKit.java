@@ -201,7 +201,11 @@ public class PredictOreKit {
 		if (lat == null || lon == null) {
 			return null;
 		}
-		return getPosition(new GeodeticPoint(FastMath.toRadians(lat), FastMath.toRadians(lon), 0.0));
+		Double alt = config.getDouble("locaiton.alt");
+		if (alt == null) {
+			alt = 0.0;
+		}
+		return getPosition(new GeodeticPoint(FastMath.toRadians(lat), FastMath.toRadians(lon), alt));
 	}
 
 	public TopocentricFrame getPosition(GeodeticPoint point) {

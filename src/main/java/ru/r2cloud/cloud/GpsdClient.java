@@ -27,6 +27,7 @@ public class GpsdClient {
 	private boolean haveResult = false;
 	private Double lat;
 	private Double lon;
+	private Double alt;
 
 	public GpsdClient(Configuration config) {
 		this.config = config;
@@ -54,7 +55,7 @@ public class GpsdClient {
 				}
 			}
 			if (lat == null || lon == null) {
-				LOG.info("can't acquire GPS fix in time. using old position. latitude: {} longitude: {}", config.getDouble("locaiton.lat"), config.getDouble("locaiton.lon"));
+				LOG.info("can't acquire GPS fix in time. using old position. latitude: {} longitude: {} altitude: {}", config.getDouble("locaiton.lat"), config.getDouble("locaiton.lon"), config.getDouble("locaiton.alt"));
 				if (!haveResult) {
 					t.interrupt();
 				}
@@ -62,13 +63,15 @@ public class GpsdClient {
 				return;
 			}
 			haveResult = false;
-			LOG.info("acquired new position. latitude: {} longitude: {}", lat, lon);
+			LOG.info("acquired new position. latitude: {} longitude: {} altitude: {}", lat, lon, alt);
 			config.setProperty("locaiton.lat", lat);
 			config.setProperty("locaiton.lon", lon);
+			config.setProperty("locaiton.alt", alt);
 			config.update();
 			// nullify to potentially re-use GpsdClient
 			lat = null;
 			lon = null;
+			alt = null;
 		}
 	}
 
@@ -122,10 +125,15 @@ public class GpsdClient {
 					// have fix but not coordinates?
 					continue;
 				}
+				// PredictOreKit use WGS84 model
+				JsonValue alt = obj.get("altHAE");
 				synchronized (lock) {
 					haveResult = true;
 					this.lat = lat.asDouble();
 					this.lon = lon.asDouble();
+					if (alt != null) {
+						this.alt = alt.asDouble();
+					}
 					lock.notifyAll();
 				}
 				break;
@@ -136,6 +144,7 @@ public class GpsdClient {
 				haveResult = true;
 				lat = null;
 				lon = null;
+				alt = null;
 				lock.notifyAll();
 			}
 		} finally {
