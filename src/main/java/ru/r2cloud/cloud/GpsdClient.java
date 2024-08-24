@@ -93,7 +93,6 @@ public class GpsdClient {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.US_ASCII));
 			String curLine = null;
 			while (!Thread.currentThread().isInterrupted() && (curLine = reader.readLine()) != null) {
-				LOG.info("got {}", curLine);
 				JsonObject obj = Json.parse(curLine).asObject();
 				String clazz = obj.getString("class", null);
 				if (clazz == null) {

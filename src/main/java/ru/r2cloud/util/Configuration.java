@@ -306,12 +306,12 @@ public class Configuration {
 
 	public void saveGeneralConfiguration(GeneralConfiguration config) {
 		setProperty("location.auto", config.isLocationAuto());
-		if (!config.isLocationAuto()) {
-			setProperty("locaiton.lat", config.getLat());
-			setProperty("locaiton.lon", config.getLng());
-			if (config.getAlt() != null) {
-				setProperty("locaiton.alt", config.getAlt());
-			}
+		setProperty("locaiton.lat", config.getLat());
+		setProperty("locaiton.lon", config.getLng());
+		if (config.getAlt() != null) {
+			setProperty("locaiton.alt", config.getAlt());
+		} else {
+			remove("locaiton.alt");
 		}
 		setProperty("presentationMode", config.isPresentationMode());
 		if (config.getRetentionRawCount() != null) {
