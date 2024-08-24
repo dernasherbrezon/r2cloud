@@ -349,29 +349,15 @@ public class RestClient {
 		}
 	}
 
-	public void setGeneralConfiguration(GeneralConfiguration config) {
-		HttpResponse<String> response = setGeneralConfigurationWithResponse(config);
+	public void saveGeneralConfiguration(GeneralConfiguration config) {
+		HttpResponse<String> response = saveGeneralConfigurationWithResponse(config);
 		if (response.statusCode() != 200) {
 			throw new RuntimeException("invalid status code: " + response.statusCode());
 		}
 	}
 
-	public HttpResponse<String> setGeneralConfigurationWithResponse(GeneralConfiguration config) {
-		JsonObject json = Json.object();
-		if (config.getLat() != null) {
-			json.add("lat", config.getLat());
-		}
-		if (config.getLng() != null) {
-			json.add("lng", config.getLng());
-		}
-		json.add("autoUpdate", config.isAutoUpdate());
-		json.add("presentationMode", config.isPresentationMode());
-		if (config.getRetentionRawCount() != null) {
-			json.add("retentionRawCount", config.getRetentionRawCount());
-		}
-		if (config.getRetentionMaxSizeBytes() != null) {
-			json.add("retentionMaxSizeBytes", config.getRetentionMaxSizeBytes());
-		}
+	public HttpResponse<String> saveGeneralConfigurationWithResponse(GeneralConfiguration config) {
+		JsonObject json = config.toJson();
 		HttpRequest request = createJsonPost("/api/v1/admin/config/general", json).build();
 		try {
 			return httpclient.send(request, BodyHandlers.ofString());

@@ -16,14 +16,15 @@ public class GeneralConfigurationTest extends RegisteredTest {
 	@Test
 	public void testConfiguration() {
 		GeneralConfiguration config = createConfig();
-		client.setGeneralConfiguration(config);
-		JsonObject configuration = client.getGeneralConfiguration();
-		assertEquals(config.getLat(), configuration.getDouble("lat", 0.0), 0.0);
-		assertEquals(config.getLng(), configuration.getDouble("lng", 0.0), 0.0);
-		assertEquals(config.isAutoUpdate(), configuration.getBoolean("autoUpdate", !config.isAutoUpdate()));
-		assertEquals(config.isPresentationMode(), configuration.getBoolean("presentationMode", false));
-		assertEquals(config.getRetentionRawCount().intValue(), configuration.getInt("retentionRawCount", 0));
-		assertEquals(config.getRetentionMaxSizeBytes().longValue(), configuration.getLong("retentionMaxSizeBytes", 0));
+		client.saveGeneralConfiguration(config);
+		GeneralConfiguration actual = GeneralConfiguration.fromJson(client.getGeneralConfiguration());
+		assertEquals(config.getLat(), actual.getLat(), 0.0);
+		assertEquals(config.getLng(), actual.getLng(), 0.0);
+		assertEquals(config.getAlt(), actual.getAlt(), 0.0);
+		assertEquals(config.isAutoUpdate(), actual.isAutoUpdate());
+		assertEquals(config.isPresentationMode(), actual.isPresentationMode());
+		assertEquals(config.getRetentionRawCount().intValue(), actual.getRetentionRawCount().intValue());
+		assertEquals(config.getRetentionMaxSizeBytes().longValue(), actual.getRetentionMaxSizeBytes().longValue());
 
 		JsonObject configured = client.getConfigured();
 		assertEquals(config.isPresentationMode(), configured.getBoolean("presentationMode", false));
@@ -33,7 +34,7 @@ public class GeneralConfigurationTest extends RegisteredTest {
 	public void testInvalidLat() {
 		GeneralConfiguration config = createConfig();
 		config.setLat(null);
-		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
+		HttpResponse<String> response = client.saveGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("lat", response);
 	}
@@ -42,7 +43,7 @@ public class GeneralConfigurationTest extends RegisteredTest {
 	public void testInvalidLng() {
 		GeneralConfiguration config = createConfig();
 		config.setLng(null);
-		HttpResponse<String> response = client.setGeneralConfigurationWithResponse(config);
+		HttpResponse<String> response = client.saveGeneralConfigurationWithResponse(config);
 		assertEquals(400, response.statusCode());
 		assertErrorInField("lng", response);
 	}
@@ -51,6 +52,7 @@ public class GeneralConfigurationTest extends RegisteredTest {
 		GeneralConfiguration config = new GeneralConfiguration();
 		config.setLat(10.1);
 		config.setLng(23.4);
+		config.setAlt(45.4);
 		config.setAutoUpdate(true);
 		config.setPresentationMode(true);
 		config.setRetentionRawCount(10);

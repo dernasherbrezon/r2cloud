@@ -30,6 +30,7 @@ import ru.r2cloud.model.AntennaType;
 import ru.r2cloud.model.DemodulatorType;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceType;
+import ru.r2cloud.model.GeneralConfiguration;
 import ru.r2cloud.model.IntegrationConfiguration;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.RotatorConfiguration;
@@ -289,6 +290,36 @@ public class Configuration {
 		setProperty("influxdb.username", config.getInfluxdbUsername());
 		setProperty("influxdb.password", config.getInfluxdbPassword());
 		setProperty("influxdb.database", config.getInfluxdbDatabase());
+	}
+
+	public GeneralConfiguration getGeneralConfiguration() {
+		GeneralConfiguration result = new GeneralConfiguration();
+		result.setAlt(getDouble("locaiton.alt"));
+		result.setLat(getDouble("locaiton.lat"));
+		result.setLng(getDouble("locaiton.lon"));
+		result.setLocationAuto(getBoolean("location.auto"));
+		result.setPresentationMode(getBoolean("presentationMode"));
+		result.setRetentionMaxSizeBytes(getLong("scheduler.data.retention.maxSizeBytes"));
+		result.setRetentionRawCount(getInteger("scheduler.data.retention.raw.count"));
+		return result;
+	}
+
+	public void saveGeneralConfiguration(GeneralConfiguration config) {
+		setProperty("location.auto", config.isLocationAuto());
+		if (!config.isLocationAuto()) {
+			setProperty("locaiton.lat", config.getLat());
+			setProperty("locaiton.lon", config.getLng());
+			if (config.getAlt() != null) {
+				setProperty("locaiton.alt", config.getAlt());
+			}
+		}
+		setProperty("presentationMode", config.isPresentationMode());
+		if (config.getRetentionRawCount() != null) {
+			setProperty("scheduler.data.retention.raw.count", config.getRetentionRawCount());
+		}
+		if (config.getRetentionMaxSizeBytes() != null) {
+			setProperty("scheduler.data.retention.maxSizeBytes", config.getRetentionMaxSizeBytes());
+		}
 	}
 
 	public List<DeviceConfiguration> getPlutoSdrConfigurations() {
