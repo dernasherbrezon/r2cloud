@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.util.NamingThreadFactory;
 import ru.r2cloud.util.ThreadPoolFactoryImpl;
+import ru.r2cloud.util.Util;
 
 public class RotctrldMock {
 
@@ -84,13 +85,7 @@ public class RotctrldMock {
 	}
 
 	public void stop() {
-		if (socket != null) {
-			try {
-				socket.close();
-			} catch (IOException e) {
-				LOG.error("unable to close socket", e);
-			}
-		}
+		Util.closeQuietly(socket);
 		if (thread != null) {
 			thread.interrupt();
 		}

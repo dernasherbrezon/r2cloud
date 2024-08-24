@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pl.edu.icm.jlargearrays.ConcurrencyUtils;
+import ru.r2cloud.cloud.GpsdClient;
 import ru.r2cloud.cloud.InfluxDBClient;
 import ru.r2cloud.cloud.LeoSatDataClient;
 import ru.r2cloud.cloud.LeoSatDataService;
@@ -138,6 +139,7 @@ public class R2Cloud {
 	private final DeviceManager deviceManager;
 	private final MigrateConfiguration migrateConfiguration;
 	private final PriorityService priorityService;
+	private final GpsdClient gpsdClient;
 
 	private GattServer gattServer;
 	// used in tests for synchronization
@@ -154,6 +156,9 @@ public class R2Cloud {
 		if (numberOfThreads != null) {
 			ConcurrencyUtils.setNumberOfThreads(numberOfThreads);
 		}
+
+		gpsdClient = new GpsdClient(props);
+		gpsdClient.updateCoordinates();
 
 		leoSatDataClient = new LeoSatDataClient(props, clock);
 		satnogsClient = new SatnogsClient(props, clock);
