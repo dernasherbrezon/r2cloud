@@ -84,6 +84,10 @@ public class RotatorService implements Lifecycle {
 					throw new RuntimeException("observation stopped");
 				}
 				Position currentPosition = predict.getSatellitePosition(current, groundStation, tlePropagator);
+				if (currentPosition.getElevation() < 0.0) {
+					LOG.info("[{}] negative elevation requested. most likely stale or invalid tle. cancelling rotation", req.getId());
+					throw new RuntimeException("negative elevation");
+				}
 				if (previousPosition != null) {
 					double tolerance = config.getTolerance();
 					double azimuthDelta = Math.abs(currentPosition.getAzimuth() - previousPosition.getAzimuth());

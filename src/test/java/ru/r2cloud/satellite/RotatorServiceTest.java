@@ -59,6 +59,24 @@ public class RotatorServiceTest {
 	private CollectingRequestHandler requestHandler;
 
 	@Test
+	public void testStaleTle() throws Exception {
+		ObservationRequest req = createRequest();
+		req.getTle().getRaw()[1] = "1 53376U 22096G   24125.30500733  .01222779  97906-3  12443-2 0  9998";
+		req.getTle().getRaw()[2] = "2 53376  97.3733  46.7756 0008493 160.3534 199.8078 16.11052950 97692";
+		req.setStartTimeMillis(1725198038000L);
+		req.setEndTimeMillis(1725199038000L);
+		int times = (int) ((req.getEndTimeMillis() - req.getStartTimeMillis()) / 70000);
+		service = new RotatorService(createValidConfig(), predict, new ScheduleFixedTimesTheadPoolFactory(times), new SteppingClock(req.getStartTimeMillis(), 70000));
+		service.start();
+		try {
+			assertNotNull(service.schedule(req, 1725198028000L, null));
+		} catch (RuntimeException e) {
+			assertEquals("negative elevation", e.getMessage());
+		}
+		assertPositions("expected/rotctrld-requests-stale-tle.txt", requestHandler.getRequests());
+	}
+
+	@Test
 	public void testRotctrldDuringPeriodOfUnavailability() {
 		SequentialRequestHandler handler = new SequentialRequestHandler(new SimpleRequestHandler("test\n"), new SimpleRequestHandler("RPRT 0\n"), new SimpleRequestHandler("RPRT 1\n"), new SimpleRequestHandler("test\n"), new SimpleRequestHandler("RPRT 0\n"));
 		serverMock.setHandler(handler);
@@ -114,14 +132,18 @@ public class RotatorServiceTest {
 		service = new RotatorService(createValidConfig(), predict, new ScheduleFixedTimesTheadPoolFactory(times), new SteppingClock(req.getStartTimeMillis(), 1000));
 		service.start();
 		assertNotNull(service.schedule(req, req.getStartTimeMillis(), null));
-		try (BufferedReader r = new BufferedReader(new InputStreamReader(RotatorService.class.getClassLoader().getResourceAsStream("expected/rotctrld-requests.txt"), StandardCharsets.UTF_8))) {
+		assertPositions("expected/rotctrld-requests.txt", requestHandler.getRequests());
+	}
+
+	private static void assertPositions(String expectedFile, List<String> requests) throws Exception {
+		try (BufferedReader r = new BufferedReader(new InputStreamReader(RotatorServiceTest.class.getClassLoader().getResourceAsStream(expectedFile), StandardCharsets.UTF_8))) {
 			String curLine = null;
 			int i = 0;
 			while ((curLine = r.readLine()) != null) {
-				assertPosition(curLine, requestHandler.getRequests().get(i));
+				assertPosition(curLine, requests.get(i));
 				i++;
 			}
-			assertEquals(i, requestHandler.getRequests().size());
+			assertEquals(i, requests.size());
 		}
 	}
 
