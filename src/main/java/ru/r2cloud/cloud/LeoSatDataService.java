@@ -61,7 +61,7 @@ public class LeoSatDataService {
 		if (config.getBoolean("r2cloud.syncSpectogram")) {
 			uploadSpectogram(observation, id);
 		}
-		LOG.info("[{}] observation uploaded", observation.getId());
+		LOG.info("[{}] observation uploaded. remote id: {}", observation.getId(), id);
 	}
 
 	private void uploadSpectogram(Observation observation, Long id) {
