@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
 			<artifactId>protobuf-java</artifactId>
-			<version>3.19.6</version>
+			<version>3.25.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.orekit</groupId>
@@ -293,17 +293,17 @@
 					<arch>all</arch>
 					<section>embedded</section>
 					<osDependencies>
-						<r2cloud-ui>>=20240303125106</r2cloud-ui>
-						<r2cloud-jdk>>=17.0.5-1</r2cloud-jdk>
-						<nginx-light>>=1.10.3</nginx-light>
-						<rtl-sdr>>=0.6.4</rtl-sdr>
+						<r2cloud-ui>&gt;=20240303125106</r2cloud-ui>
+						<r2cloud-jdk>&gt;=17.0.5-1</r2cloud-jdk>
+						<nginx-light>&gt;=1.10.3</nginx-light>
+						<rtl-sdr>&gt;=0.6.4</rtl-sdr>
 						<!-- required for stdbuf to force stderr flushing -->
-						<coreutils>>=8.26</coreutils>
+						<coreutils>&gt;=8.26</coreutils>
 						<!-- required by wxtoimg -->
-						<libxft2>>=2.3.2</libxft2>
-						<sox>>=14.4.1</sox>
+						<libxft2>&gt;=2.3.2</libxft2>
+						<sox>&gt;=14.4.1</sox>
 						<!-- required by deps-maven-plugin -->
-						<wget />
+						<wget/>
 					</osDependencies>
 					<javaServiceWrapper>false</javaServiceWrapper>
 					<fileSets>
