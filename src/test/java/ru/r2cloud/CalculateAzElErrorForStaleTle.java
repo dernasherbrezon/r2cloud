@@ -67,11 +67,14 @@ public class CalculateAzElErrorForStaleTle {
 					// skip not interesting day
 					continue;
 				}
+				if (daysDiff == -1 && !theMostRecent.isEmpty()) {
+					continue;
+				}
 				System.out.println("processing TLE " + (-daysDiff) + " days ago: " + tleEpoch);
 				calculateForDays.remove(Integer.valueOf(daysDiff));
 				TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(tle);
 				List<Position> current = new ArrayList<>();
-				for (long curStart = reqStart; curStart < reqEnd; curStart += 1000) {
+				for (long curStart = reqStart; curStart < reqEnd; curStart += 10000) {
 					current.add(predict.getSatellitePosition(curStart, groundStation, tlePropagator));
 				}
 				if (daysDiff == -1 && theMostRecent.isEmpty()) {
@@ -99,7 +102,7 @@ public class CalculateAzElErrorForStaleTle {
 				if (j == 0) {
 					int i = 0;
 					for (Entry<Integer, List<Position>> cur : listOfCoordinates.entrySet()) {
-						String daysAgo = String.valueOf(Math.abs(cur.getKey()));
+						String daysAgo = String.valueOf(Math.abs(cur.getKey()) - 1);
 						if (i != 0) {
 							w.append(',');
 						}
@@ -113,7 +116,7 @@ public class CalculateAzElErrorForStaleTle {
 					if (i != 0) {
 						w.append(',');
 					}
-					w.append(String.valueOf(theMostRecent.get(j).getAzimuth() - cur.getValue().get(j).getAzimuth())).append(',').append(String.valueOf(theMostRecent.get(j).getElevation() - cur.getValue().get(j).getElevation()));
+					w.append(String.format("%.2f", theMostRecent.get(j).getAzimuth() - cur.getValue().get(j).getAzimuth())).append(',').append(String.format("%.2f", theMostRecent.get(j).getElevation() - cur.getValue().get(j).getElevation()));
 					i++;
 				}
 				w.append('\n');
