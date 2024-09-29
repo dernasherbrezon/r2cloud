@@ -1,2 +1,2 @@
 echo "removing libs..."
-rm ${config.installDir}/lib/*.jar
+rm -f ${config.installDir}/lib/*.jar
