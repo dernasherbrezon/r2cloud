@@ -46,9 +46,9 @@ Please check recommended [bill of materials](https://github.com/dernasherbrezon/
     - Login via SSH and create ```r2cloud.txt``` file in /boot directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
     - Execute the following commands:
 ```
-sudo apt-get install dirmngr lsb-release
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A5A70917
-sudo bash -c "echo 'deb http://apt.leosatdata.com $(lsb_release --codename --short) main' > /etc/apt/sources.list.d/r2cloud.list"
+sudo apt-get install curl lsb-release
+curl -fsSL https://leosatdata.com/r2cloud.gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/r2cloud.gpg
+sudo bash -c "echo 'deb [signed-by=/usr/share/keyrings/r2cloud.gpg] http://apt.leosatdata.com $(lsb_release --codename --short) main' > /etc/apt/sources.list.d/r2cloud.list"
 sudo apt-get update
 sudo apt-get install r2cloud
 ```
