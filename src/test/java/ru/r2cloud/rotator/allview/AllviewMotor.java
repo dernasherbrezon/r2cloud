@@ -41,7 +41,7 @@ public class AllviewMotor {
 		return ((input & 0x0000FF) << 16) | (input & 0x00FF00) | ((input & 0xFF0000) >> 16);
 	}
 
-	public static double convertAngle(String inputStr) {
+	private double convertAngle(String inputStr) {
 		int converted = convertInteger(inputStr);
 		boolean positive = true;
 		if (converted > 0x800000) {
@@ -50,7 +50,7 @@ public class AllviewMotor {
 			converted = 0x800000 - converted;
 			positive = false;
 		}
-		double ticks_per_angle = (double) 865050 / 360.0;
+		double ticks_per_angle = (double) cpr / 360.0;
 		double result = converted / ticks_per_angle;
 		if (!positive) {
 			return 360.0 - result;
@@ -91,7 +91,7 @@ public class AllviewMotor {
 		boolean changeDirectionToCcw = (degreePerSec < 0 && currentDegree > 0);
 		boolean changeDirectionNeeded = (changeDirectionToCw || changeDirectionToCcw);
 		double degreeAbs = Math.abs(degreePerSec);
-		int number = (int) ((getTimerInterruptFreq() * 360.0f) / degreeAbs / 865050.0f);
+		int number = (int) ((getTimerInterruptFreq() * 360.0f) / degreeAbs / cpr);
 		if (currentSpeed != 0 && currentSpeed == number && !changeDirectionNeeded) {
 			return;
 		}
@@ -138,7 +138,7 @@ public class AllviewMotor {
 				return true;
 			}
 			// only when required speed is actually changed
-			int number = (int) ((getTimerInterruptFreq() * 360.0f) / Math.abs(degree) / 865050.0f);
+			int number = (int) ((getTimerInterruptFreq() * 360.0f) / Math.abs(degree) / cpr);
 			if (currentSpeed != number) {
 				return true;
 			}

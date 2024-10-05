@@ -48,6 +48,13 @@ public class AllviewClient {
 			} catch (IOException e) {
 				currentAzimuth = previousPosition.getAzimuth();
 			}
+			// slightly overrun. do not go back. just skip the cycle
+			if (nextPosition.getAzimuth() > previousPosition.getAzimuth() && nextPosition.getAzimuth() < currentAzimuth) {
+				currentAzimuth = nextPosition.getAzimuth();
+			}
+			if (nextPosition.getAzimuth() < previousPosition.getAzimuth() && nextPosition.getAzimuth() > currentAzimuth) {
+				currentAzimuth = nextPosition.getAzimuth();
+			}
 		} else {
 			currentAzimuth = previousPosition.getAzimuth();
 		}
