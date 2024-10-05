@@ -5108,24 +5108,6 @@
 		]
 	},
 	{
-		"id": "R2CLOUD4",
-		"name": "METEOR-M 2",
-		"noradId": "40069",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "QPSK",
-				"framing": "LRPT",
-				"frequency": 137100000,
-				"bandwidth": 140000,
-				"baudRates": [
-					72000
-				],
-				"status": "ENABLED"
-			}
-		]
-	},
-	{
 		"id": "R2CLOUD3",
 		"name": "NOAA 19",
 		"noradId": "33591",
