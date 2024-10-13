@@ -1,6 +1,11 @@
 package ru.r2cloud.it.util;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -24,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
@@ -41,6 +48,7 @@ import com.eclipsesource.json.JsonValue;
 import ru.r2cloud.model.GeneralConfiguration;
 import ru.r2cloud.model.IntegrationConfiguration;
 import ru.r2cloud.model.Page;
+import ru.r2cloud.util.Util;
 
 public class RestClient {
 
@@ -651,7 +659,7 @@ public class RestClient {
 		return null;
 	}
 
-	public JsonObject getSigMf(String url) {
+	public JsonObject getSigMfMeta(String url) {
 		if (url == null) {
 			return null;
 		}
@@ -668,6 +676,27 @@ public class RestClient {
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new RuntimeException("unable to send request");
+		}
+	}
+
+	public void downloadSigMfData(String url, File actual) {
+		HttpRequest request = createAuthRequest(url).GET().build();
+		try (OutputStream os = new BufferedOutputStream(new FileOutputStream(actual))) {
+			HttpResponse<InputStream> response = httpclient.send(request, BodyHandlers.ofInputStream());
+			if (response.statusCode() != 200) {
+				throw new RuntimeException("invalid status code: " + response.statusCode());
+			}
+			Optional<String> val = response.headers().firstValue("content-encoding");
+			InputStream is = response.body();
+			if (val.isPresent() && val.get().equals("gzip")) {
+				is = new GZIPInputStream(is);
+			}
+			Util.copy(is, os);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("interrupted");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 

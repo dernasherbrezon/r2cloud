@@ -1,5 +1,6 @@
 package ru.r2cloud;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -21,13 +22,14 @@ import java.io.Writer;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import java.util.zip.GZIPInputStream;
 
 import javax.imageio.ImageIO;
 
-import com.eclipsesource.json.JsonArray;
 import org.junit.rules.TemporaryFolder;
 
 import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
@@ -207,6 +209,50 @@ public class TestUtil {
 
 	private TestUtil() {
 		// do nothing
+	}
+
+	public static void assertFile(File actual, File expected) {
+		InputStream actualIs = null;
+		InputStream expectedIs = null;
+		try {
+			actualIs = new BufferedInputStream(new FileInputStream(actual));
+			if (actual.getName().endsWith("gz")) {
+				actualIs = new GZIPInputStream(actualIs);
+			}
+			expectedIs = new BufferedInputStream(new FileInputStream(expected));
+			if (expected.getName().endsWith("gz")) {
+				expectedIs = new GZIPInputStream(expectedIs);
+			}
+			byte[] actualBuf = new byte[1024];
+			byte[] expectedBuf = new byte[1024];
+			while (!Thread.currentThread().isInterrupted()) {
+				int actualBytes = actualIs.read(actualBuf);
+				int expectedBytes;
+				if (actualBytes == -1) {
+					expectedBytes = expectedIs.read(expectedBuf);
+				} else {
+					expectedBytes = expectedIs.readNBytes(expectedBuf, 0, actualBytes);
+				}
+				assertEquals(expectedBytes, actualBytes);
+				if (actualBytes == -1) {
+					break;
+				}
+				assertArrayEquals(expectedBuf, actualBuf);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			Util.closeQuietly(actualIs);
+			Util.closeQuietly(expectedIs);
+		}
+
+//		try (InputStream actualIs = new FileInputStream(actual); InputStream expectedIs = new FileInputStream(expected)) {
+//			if (actual.getName().endsWith("gz")) {
+//				actualIs = new GZIPInputStream(actualIs);
+//			}
+//		} catch (IOException e) {
+//			throw new RuntimeException(e);
+//		}
 	}
 
 }
