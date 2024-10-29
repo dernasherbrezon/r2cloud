@@ -28,6 +28,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jdk.version>openjdk-17-jre-headless</jdk.version>
 	</properties>
 
 	<distributionManagement>
@@ -277,7 +278,7 @@
 			<plugin>
 				<groupId>com.aerse.maven</groupId>
 				<artifactId>deb-maven-plugin</artifactId>
-				<version>1.16</version>
+				<version>1.19</version>
 				<executions>
 					<execution>
 						<id>package</id>
@@ -292,19 +293,7 @@
 					<unixGroupId>pi</unixGroupId>
 					<arch>all</arch>
 					<section>embedded</section>
-					<osDependencies>
-						<r2cloud-ui>>=20240303125106</r2cloud-ui>
-						<r2cloud-jdk>>=17.0.5-1</r2cloud-jdk>
-						<nginx-light>>=1.10.3</nginx-light>
-						<rtl-sdr>>=0.6.4</rtl-sdr>
-						<!-- required for stdbuf to force stderr flushing -->
-						<coreutils>>=8.26</coreutils>
-						<!-- required by wxtoimg -->
-						<libxft2>>=2.3.2</libxft2>
-						<sox>>=14.4.1</sox>
-						<!-- required by deps-maven-plugin -->
-						<wget />
-					</osDependencies>
+					<depends>r2cloud-ui (>=20240303125106), ${jdk.version}, nginx-light(>=1.10.3), rtl-sdr(>=0.6.4), coreutils(>=8.26), libxft2(>=2.3.2), sox(>=14.4.1), wget</depends>
 					<javaServiceWrapper>false</javaServiceWrapper>
 					<fileSets>
 						<fileSet>

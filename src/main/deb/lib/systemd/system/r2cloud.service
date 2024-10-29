@@ -4,7 +4,7 @@ After=time-sync.target
 
 [Service]
 WorkingDirectory=/home/pi/r2cloud/
-ExecStart=/home/pi/r2cloud-jdk/bin/java -cp /home/pi/r2cloud/etc:/home/pi/r2cloud/lib/*:/usr/share/java/r2cloud/* -Djava.library.path=/usr/lib/jni -Djradio.metrics.enabled=true -Duser.timezone=UTC -Djava.util.logging.config.file=/home/pi/r2cloud/etc/logging-prod.properties ru.r2cloud.R2Cloud etc/config-prod.properties
+ExecStart=/usr/bin/java -cp /home/pi/r2cloud/etc:/home/pi/r2cloud/lib/*:/usr/share/java/r2cloud/* -Djava.library.path=/usr/lib/jni -Djradio.metrics.enabled=true -Duser.timezone=UTC -Djava.util.logging.config.file=/home/pi/r2cloud/etc/logging-prod.properties ru.r2cloud.R2Cloud etc/config-prod.properties
 SyslogIdentifier=r2cloud
 SuccessExitStatus=143
 Restart=always
