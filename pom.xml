@@ -293,7 +293,7 @@
 					<unixGroupId>pi</unixGroupId>
 					<arch>all</arch>
 					<section>embedded</section>
-					<depends>r2cloud-ui (>=20240303125106), ${jdk.version}, nginx-light(>=1.10.3), rtl-sdr(>=0.6.4), coreutils(>=8.26), libxft2(>=2.3.2), sox(>=14.4.1), wget</depends>
+					<depends>r2cloud-ui (>=20241102151628), ${jdk.version}, nginx-light(>=1.10.3), rtl-sdr(>=0.6.4), coreutils(>=8.26), libxft2(>=2.3.2), sox(>=14.4.1), wget</depends>
 					<javaServiceWrapper>false</javaServiceWrapper>
 					<fileSets>
 						<fileSet>
@@ -303,10 +303,6 @@
 						<fileSet>
 							<source>${basedir}/src/main/deb/lib</source>
 							<target>/lib</target>
-						</fileSet>
-						<fileSet>
-							<source>${basedir}/src/main/deb/html</source>
-							<target>html</target>
 						</fileSet>
 						<fileSet>
 							<source>${basedir}/src/main/resources/.wxtoimglic</source>
