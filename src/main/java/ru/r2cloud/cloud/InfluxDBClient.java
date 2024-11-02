@@ -94,6 +94,11 @@ public class InfluxDBClient {
 			frames = 0L;
 		}
 		metric.append(",numberOfDecodedPackets=").append(frames);
+		Long totalSize = obs.getTotalSize();
+		if (totalSize == null) {
+			totalSize = 0L;
+		}
+		metric.append(",totalSize=").append(totalSize);
 		metric.append(",duration=").append(obs.getEndTimeMillis() - obs.getStartTimeMillis());
 		metric.append(" ").append(obs.getStartTimeMillis()).append("000000"); // nanoseconds
 

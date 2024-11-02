@@ -56,6 +56,7 @@ public abstract class TelemetryDecoder implements Decoder {
 		}
 
 		long numberOfDecodedPackets = 0;
+		long totalSize = 0;
 		float sampleRate = req.getSampleRate();
 		File binFile = new File(config.getTempDirectory(), req.getId() + ".bin");
 		List<BeaconSource<? extends Beacon>> input = null;
@@ -79,6 +80,7 @@ public abstract class TelemetryDecoder implements Decoder {
 							next.setRxMeta(meta);
 							beacons.add(next);
 							numberOfDecodedPackets++;
+							totalSize += next.getRawData().length;
 						}
 					} finally {
 						Util.closeQuietly(currentInput);
@@ -108,6 +110,7 @@ public abstract class TelemetryDecoder implements Decoder {
 			return result;
 		}
 		result.setNumberOfDecodedPackets(numberOfDecodedPackets);
+		result.setTotalSize(totalSize);
 		if (numberOfDecodedPackets <= 0) {
 			Util.deleteQuietly(binFile);
 		} else {

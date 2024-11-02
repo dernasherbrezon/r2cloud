@@ -30,6 +30,7 @@ public class Observation {
 	private String channelA;
 	private String channelB;
 	private Long numberOfDecodedPackets;
+	private Long totalSize = 0L;
 
 	private String rawURL;
 	private File rawPath;
@@ -203,6 +204,14 @@ public class Observation {
 		this.channelB = channelB;
 	}
 
+	public Long getTotalSize() {
+		return totalSize;
+	}
+
+	public void setTotalSize(Long totalSize) {
+		this.totalSize = totalSize;
+	}
+
 	public Long getNumberOfDecodedPackets() {
 		return numberOfDecodedPackets;
 	}
@@ -307,6 +316,10 @@ public class Observation {
 		if (numberOfDecodedPackets != null) {
 			result.setNumberOfDecodedPackets(numberOfDecodedPackets.asLong());
 		}
+		JsonValue totalSize = meta.get("totalSize");
+		if (totalSize != null) {
+			result.setTotalSize(totalSize.asLong());
+		}
 		result.setRawURL(meta.getString("rawURL", null));
 		result.setaURL(meta.getString("aURL", null));
 		result.setSpectogramURL(meta.getString("spectogramURL", null));
@@ -351,6 +364,9 @@ public class Observation {
 		}
 		if (getNumberOfDecodedPackets() != null) {
 			json.add("numberOfDecodedPackets", getNumberOfDecodedPackets());
+		}
+		if (totalSize != null) {
+			json.add("totalSize", getTotalSize());
 		}
 		addNullable("rawURL", getRawURL(), signed, json);
 		addNullable("aURL", getaURL(), signed, json);
