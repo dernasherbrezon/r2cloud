@@ -1,5 +1,46 @@
 [
 	{
+		"id": "R2CLOUD432",
+		"name": "SAKURA",
+		"noradId": "60954",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "AFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 145825000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"deviation": 600,
+				"afCarrier": 1700,
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD431",
+		"name": "Changshagaoxin",
+		"noradId": "43665",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 401606000,
+				"bandwidth": 20000,
+				"baudRates": [
+					4800
+				],
+				"deviation": 5000,
+				"status": "ENABLED"
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD430",
 		"name": "PCSAT (NO-44)",
 		"noradId": "26931",
@@ -4680,7 +4721,7 @@
 				"baudRates": [
 					2400
 				],
-				"status": "ENABLED"
+				"status": "WEAK"
 			}
 		]
 	},

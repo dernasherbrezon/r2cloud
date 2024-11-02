@@ -11,6 +11,7 @@ import ru.r2cloud.jradio.ccsds.TransferFrame;
 import ru.r2cloud.jradio.fox.Fox1BBeacon;
 import ru.r2cloud.jradio.fox.Fox1CBeacon;
 import ru.r2cloud.jradio.fox.Fox1DBeacon;
+import ru.r2cloud.jradio.geoscan.GeoscanBeacon;
 import ru.r2cloud.jradio.mrc100.Mrc100Beacon;
 import ru.r2cloud.jradio.usp.UspBeacon;
 import ru.r2cloud.model.DecoderKey;
@@ -64,7 +65,6 @@ public class Decoders {
 		index("47963", "47963-0", new Diy1Decoder(predict, props));
 		index("47964", "47964-0", new Smog1Decoder(predict, props));
 		index("51439", "51439-0", new GaspacsDecoder(predict, props));
-		index("53385", "53385-0", new GeoscanDecoder(predict, props));
 		index("53108", "53108-0", new CcsdsDecoder(predict, props, TransferFrame.class));
 		index("56993", "56993-0", new Mrc100Decoder(predict, props, Mrc100Beacon.class));
 		index("56211", "56211-1", new InspireSat7SpinoDecoder(predict, props));
@@ -72,6 +72,11 @@ public class Decoders {
 		index("55104", "55104-0", new Sharjahsat1Decoder(predict, props));
 		index("56212", "56212-0", new RoseyDecoder(predict, props));
 		index("53384", "53384-0", new SputnixDecoder(predict, props));
+		index("R2CLOUD433", "R2CLOUD433-0", new GeoscanDecoder(predict, props, GeoscanBeacon.class, 74));
+		index("R2CLOUD434", "R2CLOUD434-0", new GeoscanDecoder(predict, props, GeoscanBeacon.class, 74));
+		index("R2CLOUD435", "R2CLOUD435-0", new GeoscanDecoder(predict, props, GeoscanBeacon.class, 74));
+		index("R2CLOUD438", "R2CLOUD438-0", new GeoscanDecoder(predict, props, GeoscanBeacon.class, 74));
+		index("R2CLOUD439", "R2CLOUD439-0", new GeoscanDecoder(predict, props, GeoscanBeacon.class, 74));
 	}
 
 	public Decoder findByTransmitter(Transmitter transmitter) {

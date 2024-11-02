@@ -15,8 +15,13 @@ import ru.r2cloud.util.Configuration;
 
 public class GeoscanDecoder extends TelemetryDecoder {
 
-	public GeoscanDecoder(PredictOreKit predict, Configuration config) {
+	private final Class<? extends Beacon> beacon;
+	private final int beaconSizeBytes;
+
+	public GeoscanDecoder(PredictOreKit predict, Configuration config, Class<? extends Beacon> beacon, int beaconSizeBytes) {
 		super(predict, config);
+		this.beacon = beacon;
+		this.beaconSizeBytes = beaconSizeBytes;
 	}
 
 	@Override
@@ -35,12 +40,12 @@ public class GeoscanDecoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput source, Observation req) {
-		return new Geoscan(source);
+		return new Geoscan<>(source, beacon, beaconSizeBytes);
 	}
 
 	@Override
 	public Class<? extends Beacon> getBeaconClass() {
-		return GeoscanBeacon.class;
+		return beacon;
 	}
 
 }
