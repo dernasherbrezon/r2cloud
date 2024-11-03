@@ -25,6 +25,9 @@ if [ $(getent group systemd-journal) ]; then
     usermod -a -G systemd-journal ${config.user}
 fi
 
+if [ -d /var/lib/nginx/proxy ]; then
+	chown -R www-data:www-data /var/lib/nginx/proxy
+fi
 
 chown -R ${config.user}:${config.group} ${config.installDir} /usr/share/java/r2cloud/*.jar
 chmod 640 ${config.installDir}/lib/*.jar /usr/share/java/r2cloud/*.jar
