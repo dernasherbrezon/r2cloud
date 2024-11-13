@@ -13,6 +13,7 @@ import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.satellite.ObservationRequestComparator;
 import ru.r2cloud.satellite.SatelliteDao;
+import ru.r2cloud.util.Clock;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
 import ru.r2cloud.web.NotFound;
@@ -22,10 +23,12 @@ public class DeviceSchedule extends AbstractHttpController {
 
 	private final DeviceManager deviceManager;
 	private final SatelliteDao satelliteDao;
+	private final Clock clock;
 
-	public DeviceSchedule(DeviceManager deviceManager, SatelliteDao satelliteDao) {
+	public DeviceSchedule(DeviceManager deviceManager, SatelliteDao satelliteDao, Clock clock) {
 		this.deviceManager = deviceManager;
 		this.satelliteDao = satelliteDao;
+		this.clock = clock;
 	}
 
 	@Override
@@ -38,7 +41,11 @@ public class DeviceSchedule extends AbstractHttpController {
 		JsonArray result = new JsonArray();
 		List<ObservationRequest> request = device.findScheduledObservations();
 		Collections.sort(request, ObservationRequestComparator.INSTANCE);
+		long currentTime = clock.millis();
 		for (ObservationRequest cur : request) {
+			if (cur.getEndTimeMillis() < currentTime) {
+				continue;
+			}
 			Satellite satellite = satelliteDao.findById(cur.getSatelliteId());
 			if (satellite == null) {
 				continue;

@@ -284,7 +284,7 @@ public class R2Cloud {
 		index(new DeviceConfigList(deviceManager));
 		index(new DeviceConfigDelete(props, deviceManager));
 		index(new Restart());
-		index(new DeviceSchedule(deviceManager, satelliteDao));
+		index(new DeviceSchedule(deviceManager, satelliteDao, clock));
 		webServer = new WebServer(props, controllers, auth, signed);
 	}
 
