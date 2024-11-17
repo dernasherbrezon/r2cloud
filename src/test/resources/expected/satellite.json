@@ -1,0 +1,25 @@
+{
+	"name": "NOAA 15",
+	"noradId": "25338",
+	"priority": "NORMAL",
+	"enabled": true,
+	"transmitters": [
+		{
+			"framing": "APT",
+			"frequency": 137620000,
+			"bandwidth": 34000,
+			"baudRates": [
+			],
+			"status": "ENABLED"
+		}
+	],
+	"lastUpdateTime": 1719525695573,
+	"tle": {
+		"line1": "eedfe24e-6fa6-4466-ac16-f6086d1a0333",
+		"line2": "1 25338U 98030A   17288.49529043  .00000057  00000-0  23836-4 0  9991",
+		"line3": "2 25338  98.7843 299.6383 0010164 216.8147 143.2938 14.25820166 10144",
+		"updated": 1559942730784,
+		"source": "localhost"
+	},
+	"source": "CONFIG"
+}

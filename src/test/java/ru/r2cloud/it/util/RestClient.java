@@ -411,6 +411,23 @@ public class RestClient {
 		}
 	}
 
+	public JsonObject getSatellite(String id) {
+		HttpRequest request = createAuthRequest("/api/v1/admin/satellite/load?id=" + id).GET().build();
+		try {
+			HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				LOG.info("response: {}", response.body());
+				throw new RuntimeException("invalid status code: " + response.statusCode());
+			}
+			return (JsonObject) Json.parse(response.body());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("unable to send request");
+		}
+	}
+
 	public HttpResponse<String> updateScheduleWithResponse(String id, boolean enabled) {
 		JsonObject entity = new JsonObject();
 		if (id != null) {

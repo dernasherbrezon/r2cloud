@@ -84,21 +84,22 @@ public class SatelliteDao {
 
 	private void loadFromDisk() {
 		satnogsLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty(SATNOGS_LOCATION));
-		satnogs.addAll(loadFromConfig(config.getPathFromProperty(SATNOGS_LOCATION), SatelliteSource.SATNOGS));
+		satnogs.addAll(loadFromConfig(config.getPathFromProperty(SATNOGS_LOCATION), SatelliteSource.SATNOGS, satnogsLastUpdateTime));
 
 		// default from config
 		String metaLocation = config.getProperty("satellites.meta.location");
 		if (metaLocation.startsWith("classpath:")) {
 			staticSatellites.addAll(loadFromClasspathConfig(metaLocation.substring(CLASSPATH_PREFIX.length()), SatelliteSource.CONFIG));
 		} else {
-			staticSatellites.addAll(loadFromConfig(config.getPathFromProperty("satellites.meta.location"), SatelliteSource.CONFIG));
+			long staticLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty("satellites.meta.location"));
+			staticSatellites.addAll(loadFromConfig(config.getPathFromProperty("satellites.meta.location"), SatelliteSource.CONFIG, staticLastUpdateTime));
 		}
 
 		leosatdataLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty(LEOSATDATA_LOCATION));
-		leosatdata.addAll(loadFromConfig(config.getPathFromProperty(LEOSATDATA_LOCATION), SatelliteSource.LEOSATDATA));
+		leosatdata.addAll(loadFromConfig(config.getPathFromProperty(LEOSATDATA_LOCATION), SatelliteSource.LEOSATDATA, leosatdataLastUpdateTime));
 
 		leosatdataNewLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty(LEOSATDATA_NEW_LOCATION));
-		leosatDataNewLaunches.addAll(loadFromConfig(config.getPathFromProperty(LEOSATDATA_NEW_LOCATION), SatelliteSource.LEOSATDATA));
+		leosatDataNewLaunches.addAll(loadFromConfig(config.getPathFromProperty(LEOSATDATA_NEW_LOCATION), SatelliteSource.LEOSATDATA, leosatdataNewLastUpdateTime));
 	}
 
 	public synchronized void reindex() {
@@ -237,7 +238,7 @@ public class SatelliteDao {
 		return result;
 	}
 
-	private static List<Satellite> loadFromConfig(Path metaLocation, SatelliteSource source) {
+	private static List<Satellite> loadFromConfig(Path metaLocation, SatelliteSource source, long lastUpdateTime) {
 		List<Satellite> result = new ArrayList<>();
 		if (!Files.exists(metaLocation)) {
 			return result;
@@ -255,6 +256,7 @@ public class SatelliteDao {
 				continue;
 			}
 			cur.setSource(source);
+			cur.setLastUpdateTime(lastUpdateTime);
 			result.add(cur);
 		}
 		return result;

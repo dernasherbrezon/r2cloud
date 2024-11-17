@@ -23,11 +23,20 @@ public class Satellite {
 	private Date end;
 	private List<Transmitter> transmitters;
 	private SatelliteSource source;
-	
+	private long lastUpdateTime;
+
+	public long getLastUpdateTime() {
+		return lastUpdateTime;
+	}
+
+	public void setLastUpdateTime(long lastUpdateTime) {
+		this.lastUpdateTime = lastUpdateTime;
+	}
+
 	public int getPriorityIndex() {
 		return priorityIndex;
 	}
-	
+
 	public void setPriorityIndex(int priorityIndex) {
 		this.priorityIndex = priorityIndex;
 	}
@@ -214,6 +223,9 @@ public class Satellite {
 			transmittersJson.add(cur.toJson());
 		}
 		result.add("transmitters", transmittersJson);
+		if (lastUpdateTime != 0) {
+			result.add("lastUpdateTime", lastUpdateTime);
+		}
 		return result;
 	}
 
