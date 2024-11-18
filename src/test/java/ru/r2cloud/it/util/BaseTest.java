@@ -14,9 +14,13 @@ import java.io.Writer;
 import java.net.InetSocketAddress;
 import java.net.http.HttpResponse;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.Properties;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.LogManager;
 
 import org.junit.After;
@@ -172,6 +176,8 @@ public abstract class BaseTest {
 			w.append("ittests");
 		}
 		config.setProperty("server.keyword.location", setupKeyword.getAbsolutePath());
+		Path p = config.getPathFromProperty("satellites.meta.location");
+		Files.setLastModifiedTime(p, FileTime.from(1719525695573L, TimeUnit.MILLISECONDS));
 		return config;
 	}
 
