@@ -203,6 +203,10 @@ public class Satellite {
 		if (transmitters.isEmpty()) {
 			return null;
 		}
+		JsonValue lastUpdateTimeJson = meta.get("lastUpdateTime");
+		if (lastUpdateTimeJson != null) {
+			result.setLastUpdateTime(lastUpdateTimeJson.asLong());
+		}
 		return result;
 	}
 

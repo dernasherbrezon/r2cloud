@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Type;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.After;
@@ -14,19 +12,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.eclipsesource.json.Json;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
+import com.eclipsesource.json.JsonArray;
 
-import ru.r2cloud.ClassAdapter;
-import ru.r2cloud.DateAdapter;
 import ru.r2cloud.FixedClock;
 import ru.r2cloud.JsonHttpResponse;
 import ru.r2cloud.SatnogsServerMock;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
-import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.model.Satellite;
 
 public class SatnogsClientTest {
@@ -55,7 +47,7 @@ public class SatnogsClientTest {
 		List<Satellite> satellite = client.loadSatellites();
 		assertEquals(1, satellite.size());
 		assertNull(satellite.get(0).getTle());
-		
+
 		server.setTransmittersMock(new JsonHttpResponse("satnogs/transmitters.json", 200));
 		server.setTleMockDirectory("satnogs");
 
@@ -65,7 +57,7 @@ public class SatnogsClientTest {
 		assertTrue(client.loadSatellites().isEmpty());
 		server.setSatellitesMock("[ [1,2,3] ]", 200);
 		assertTrue(client.loadSatellites().isEmpty());
-		
+
 		server.setSatellitesMock(new JsonHttpResponse("satnogs/satellites.json", 200));
 		server.setTransmittersMock("not a json", 200);
 		assertTrue(client.loadSatellites().isEmpty());
@@ -81,12 +73,11 @@ public class SatnogsClientTest {
 		server.setTransmittersMock(new JsonHttpResponse("satnogs/transmitters.json", 200));
 		server.setTleMockDirectory("satnogs");
 		List<Satellite> actual = client.loadSatellites();
-		Gson GSON = new GsonBuilder().registerTypeAdapter(Date.class, new DateAdapter()).registerTypeAdapter(new TypeToken<Class<? extends Beacon>>() {
-		}.getType(), new ClassAdapter()).create();
-		Type listOfMyClassObject = new TypeToken<List<Satellite>>() {
-		}.getType();
-		String serialized = GSON.toJson(actual, listOfMyClassObject);
-		TestUtil.assertJson("expected/satnogsSatellites.json", Json.parse(serialized).asArray());
+		JsonArray array = new JsonArray();
+		for (Satellite cur : actual) {
+			array.add(cur.toJson());
+		}
+		TestUtil.assertJson("expected/satnogsSatellites.json", array);
 	}
 
 	@Before
