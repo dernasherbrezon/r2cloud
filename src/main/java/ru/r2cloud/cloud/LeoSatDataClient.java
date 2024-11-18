@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -105,7 +106,18 @@ public class LeoSatDataClient {
 				}
 				return Collections.emptyList();
 			}
-			List<Satellite> result = readNewLaunches(response.body());
+			Optional<String> lastModifiedOnServer = response.headers().firstValue("Last-Modified");
+			lastModified = 0;
+			if (lastModifiedOnServer.isPresent()) {
+				SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+				sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+				try {
+					lastModified = sdf.parse(lastModifiedOnServer.get()).getTime();
+				} catch (java.text.ParseException e) {
+					LOG.error("invalid date provided: {}", lastModifiedOnServer.get(), e);
+				}
+			}
+			List<Satellite> result = readNewLaunches(response.body(), lastModified);
 			LOG.info("new satellites from leosatdata were loaded: {}", result.size());
 			return result;
 		} catch (IOException e) {
@@ -141,7 +153,18 @@ public class LeoSatDataClient {
 				}
 				return Collections.emptyList();
 			}
-			List<Satellite> result = readSatellites(response.body());
+			Optional<String> lastModifiedOnServer = response.headers().firstValue("Last-Modified");
+			lastModified = 0;
+			if (lastModifiedOnServer.isPresent()) {
+				SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+				sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+				try {
+					lastModified = sdf.parse(lastModifiedOnServer.get()).getTime();
+				} catch (java.text.ParseException e) {
+					LOG.error("invalid date provided: {}", lastModifiedOnServer.get(), e);
+				}
+			}
+			List<Satellite> result = readSatellites(response.body(), lastModified);
 			LOG.info("satellites from leosatdata were loaded: {}", result.size());
 			return result;
 		} catch (IOException e) {
@@ -227,7 +250,7 @@ public class LeoSatDataClient {
 		}
 	}
 
-	private static List<Satellite> readSatellites(String body) {
+	private static List<Satellite> readSatellites(String body, long lastModified) {
 		JsonValue parsedJson;
 		try {
 			parsedJson = Json.parse(body);
@@ -258,12 +281,15 @@ public class LeoSatDataClient {
 				continue;
 			}
 			cur.setSource(SatelliteSource.LEOSATDATA);
+			if (cur.getLastUpdateTime() == 0) {
+				cur.setLastUpdateTime(lastModified);
+			}
 			result.add(cur);
 		}
 		return result;
 	}
 
-	private List<Satellite> readNewLaunches(String body) {
+	private List<Satellite> readNewLaunches(String body, long lastModified) {
 		JsonValue parsedJson;
 		try {
 			parsedJson = Json.parse(body);
@@ -302,6 +328,9 @@ public class LeoSatDataClient {
 			newLaunch.setPriority(Priority.HIGH);
 			newLaunch.setTle(readTle(asObject.get("tle")));
 			newLaunch.setSource(SatelliteSource.LEOSATDATA);
+			if (newLaunch.getLastUpdateTime() == 0) {
+				newLaunch.setLastUpdateTime(lastModified);
+			}
 			result.add(newLaunch);
 		}
 		return result;

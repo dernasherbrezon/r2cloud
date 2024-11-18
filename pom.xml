@@ -28,6 +28,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jdk.version>openjdk-17-jre-headless</jdk.version>
 	</properties>
 
 	<distributionManagement>
@@ -88,7 +89,7 @@
 		<dependency>
 			<groupId>ru.r2cloud</groupId>
 			<artifactId>jradio</artifactId>
-			<version>1.101</version>
+			<version>1.103</version>
 		</dependency>
 		<dependency>
 			<groupId>org.nanohttpd</groupId>
@@ -277,7 +278,7 @@
 			<plugin>
 				<groupId>com.aerse.maven</groupId>
 				<artifactId>deb-maven-plugin</artifactId>
-				<version>1.16</version>
+				<version>1.19</version>
 				<executions>
 					<execution>
 						<id>package</id>
@@ -292,19 +293,7 @@
 					<unixGroupId>pi</unixGroupId>
 					<arch>all</arch>
 					<section>embedded</section>
-					<osDependencies>
-						<r2cloud-ui>&gt;=20240303125106</r2cloud-ui>
-						<r2cloud-jdk>&gt;=17.0.5-1</r2cloud-jdk>
-						<nginx-light>&gt;=1.10.3</nginx-light>
-						<rtl-sdr>&gt;=0.6.4</rtl-sdr>
-						<!-- required for stdbuf to force stderr flushing -->
-						<coreutils>&gt;=8.26</coreutils>
-						<!-- required by wxtoimg -->
-						<libxft2>&gt;=2.3.2</libxft2>
-						<sox>&gt;=14.4.1</sox>
-						<!-- required by deps-maven-plugin -->
-						<wget/>
-					</osDependencies>
+					<depends>r2cloud-ui (>=20241102151628), ${jdk.version}, nginx-light(>=1.10.3), rtl-sdr(>=0.6.4), coreutils(>=8.26), libxft2(>=2.3.2), sox(>=14.4.1), wget</depends>
 					<javaServiceWrapper>false</javaServiceWrapper>
 					<fileSets>
 						<fileSet>
@@ -314,10 +303,6 @@
 						<fileSet>
 							<source>${basedir}/src/main/deb/lib</source>
 							<target>/lib</target>
-						</fileSet>
-						<fileSet>
-							<source>${basedir}/src/main/deb/html</source>
-							<target>html</target>
 						</fileSet>
 						<fileSet>
 							<source>${basedir}/src/main/resources/.wxtoimglic</source>

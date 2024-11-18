@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.util.zip.GZIPInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +19,6 @@ import ru.r2cloud.model.Observation;
 import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.SignedURL;
-import ru.r2cloud.util.Util;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
 import ru.r2cloud.web.ModelAndView;
@@ -78,12 +76,12 @@ public class ObservationSigMfData extends AbstractHttpController {
 			if (ifModifiedSince != null && ifModifiedSince >= entity.getRawPath().lastModified() / 1000) {
 				response = NanoHTTPD.newFixedLengthResponse(fi.iki.elonen.NanoHTTPD.Response.Status.NOT_MODIFIED, "application/octet-stream", null);
 			} else {
-				Long totalBytes = Util.readTotalBytes(entity.getRawPath().toPath());
 				InputStream is = new BufferedInputStream(new FileInputStream(entity.getRawPath()));
+				response = NanoHTTPD.newFixedLengthResponse(fi.iki.elonen.NanoHTTPD.Response.Status.OK, "application/octet-stream", is, entity.getRawPath().length());
 				if (entity.getRawPath().toString().endsWith(".gz")) {
-					is = new GZIPInputStream(is);
+					// do not re-encode in NanoHTTPD
+					response.addHeader("Content-Encoding", "gzip");
 				}
-				response = NanoHTTPD.newFixedLengthResponse(fi.iki.elonen.NanoHTTPD.Response.Status.OK, "application/octet-stream", is, totalBytes);
 				// convert to seconds
 				response.addHeader("Cache-Control", "private, max-age=" + ((int) (config.getLong("server.static.signed.validMillis") / 1000)));
 			}

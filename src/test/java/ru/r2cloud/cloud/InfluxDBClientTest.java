@@ -52,6 +52,7 @@ public class InfluxDBClientTest {
 		observation.setStartTimeMillis(1601173648133L);
 		observation.setEndTimeMillis(1601173678133L);
 		observation.setNumberOfDecodedPackets(10L);
+		observation.setTotalSize(1024L);
 
 		Satellite satellite = new Satellite();
 		satellite.setName("CAS-5A (FO-118)");
@@ -60,7 +61,7 @@ public class InfluxDBClientTest {
 		List<String> metrics = server.getMetricsByDatabase().get("r2cloud");
 		assertNotNull(metrics);
 		assertEquals(1, metrics.size());
-		assertEquals("observation,satellite=CAS-5A(FO-118),deviceId=rtlsdr.0,antennaType=DIRECTIONAL,hostname=test.local tleUpdateLatency=30000,tleEpochLatency=30000,numberOfDecodedPackets=10,duration=30000 1601173648133000000", metrics.get(0));
+		assertEquals("observation,satellite=CAS-5A(FO-118),deviceId=rtlsdr.0,antennaType=DIRECTIONAL,hostname=test.local tleUpdateLatency=30000,tleEpochLatency=30000,numberOfDecodedPackets=10,totalSize=1024,duration=30000 1601173648133000000", metrics.get(0));
 	}
 
 	@Test

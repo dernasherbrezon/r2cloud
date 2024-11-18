@@ -158,9 +158,11 @@ public class Housekeeping {
 				continue;
 			}
 			if (oldTle == null && newTle != null) {
+				reloadTle = true;
 				cur.setTle(newTle);
 			}
 			if (oldTle != null && newTle == null) {
+				reloadTle = true;
 				cur.setTle(oldTle);
 			}
 			if (oldTle != null && newTle != null) {

@@ -84,10 +84,6 @@ public class SatnogsClient {
 		List<Satellite> result = loadAllSatellites(groupBySatelliteId);
 		for (Satellite cur : result) {
 			dedupTransmittersByKey(cur);
-			if (!cur.getPriority().equals(Priority.HIGH)) {
-				continue;
-			}
-			cur.setTle(loadTleBySatelliteId(cur.getId()));
 		}
 		LOG.info("satellites from satnogs were loaded: {}", result.size());
 		return result;
@@ -180,6 +176,8 @@ public class SatnogsClient {
 		List<Satellite> result = new ArrayList<>();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		SimpleDateFormat updatedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		updatedFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		for (int i = 0; i < parsedArray.size(); i++) {
 			JsonValue jsonValue = parsedArray.get(i);
 			if (!jsonValue.isObject()) {
@@ -212,6 +210,16 @@ public class SatnogsClient {
 			// thus disabled by default even if "new launch"
 			// https://gitlab.com/librespacefoundation/satnogs/satnogs-db/-/issues/551
 			cur.setEnabled(false);
+			cur.setTle(loadTleBySatelliteId(id));
+			String updatedStr = getStringSafely(satellite, "updated");
+			if (updatedStr != null) {
+				try {
+					updatedStr = updatedStr.substring(0, updatedStr.length() - 4);
+					cur.setLastUpdateTime(updatedFormat.parse(updatedStr).getTime());
+				} catch (java.text.ParseException e) {
+					// ignore
+				}
+			}
 			// schedule observations anyway
 			if (status.equalsIgnoreCase("future")) {
 				cur.setId(id);

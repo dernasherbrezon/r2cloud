@@ -9,9 +9,18 @@ public class DecoderResult {
 	private String channelA;
 	private String channelB;
 	private Long numberOfDecodedPackets = 0L;
+	private Long totalSize = 0L;
 
 	private File imagePath;
 	private File dataPath;
+	
+	public Long getTotalSize() {
+		return totalSize;
+	}
+	
+	public void setTotalSize(Long totalSize) {
+		this.totalSize = totalSize;
+	}
 
 	public File getRawPath() {
 		return rawPath;

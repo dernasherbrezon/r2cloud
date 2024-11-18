@@ -31,11 +31,14 @@ public class LoraDecoder implements Decoder {
 		result.setRawPath(null);
 		long numberOfDecodedPackets = 0;
 		try (BeaconInputStream<? extends Beacon> bis = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(rawFile)), beacon)) {
+			long totalSize = 0;
 			while (bis.hasNext()) {
-				bis.next();
+				Beacon beacon = bis.next();
 				numberOfDecodedPackets++;
+				totalSize += beacon.getRawData().length;
 			}
 			result.setNumberOfDecodedPackets(numberOfDecodedPackets);
+			result.setTotalSize(totalSize);
 
 		} catch (IOException e) {
 			LOG.error("unable to read lora beacons", e);

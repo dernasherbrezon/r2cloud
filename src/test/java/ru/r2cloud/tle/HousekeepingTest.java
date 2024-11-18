@@ -156,6 +156,7 @@ public class HousekeepingTest {
 
 		config = new TestConfiguration(tempFolder, FileSystems.getDefault());
 		config.setProperty("tle.cacheFileLocation", new File(tempFolder.getRoot(), "tle.json").getAbsolutePath());
+		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-test.json");
 		config.setProperty("satellites.leosatdata.location", new File(tempFolder.getRoot(), "leosatdata.json").getAbsolutePath());
 		config.setProperty("satellites.leosatdata.new.location", new File(tempFolder.getRoot(), "leosatdata.new.json").getAbsolutePath());
 		config.setProperty("satellites.satnogs.location", new File(tempFolder.getRoot(), "satnogs.json").getAbsolutePath());

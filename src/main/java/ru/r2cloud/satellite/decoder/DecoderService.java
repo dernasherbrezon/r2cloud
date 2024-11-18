@@ -150,6 +150,7 @@ public class DecoderService implements Lifecycle {
 		observation.setChannelA(result.getChannelA());
 		observation.setChannelB(result.getChannelB());
 		observation.setNumberOfDecodedPackets(result.getNumberOfDecodedPackets());
+		observation.setTotalSize(result.getTotalSize());
 		observation.setImagePath(result.getImagePath());
 		observation.setDataPath(result.getDataPath());
 		observation.setStatus(ObservationStatus.DECODED);

@@ -1,44 +1,29 @@
 [
 	{
-		"id": "53464",
 		"name": "TUMnanoSAT",
-		"enabled": false,
+		"noradId": "53464",
 		"priority": "NORMAL",
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "AX25",
 				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"beaconSizeBytes": 0,
 				"frequency": 436680000,
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
 				],
-				"bpskDifferential": false,
-				"bpskCenterFrequency": 0.0,
-				"deviation": 5000,
-				"afCarrier": 0,
-				"transitionWidth": 2000.0,
-				"loraBandwidth": 0,
-				"loraSpreadFactor": 0,
-				"loraCodingRate": 0,
-				"loraSyncword": 0,
-				"loraPreambleLength": 0,
-				"loraLdro": 0,
-				"status": "ENABLED",
-				"updated": 1660259232836,
-				"enabled": false,
-				"satelliteId": "EUEU-0112-5297-2105-4789"
+				"status": "ENABLED"
 			}
 		],
-		"source": "SATNOGS"
+		"lastUpdateTime": 1660566222623
 	},
 	{
-		"id": "43908",
 		"name": "LUME-1",
-		"enabled": false,
+		"noradId": "43908",
 		"priority": "NORMAL",
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
@@ -51,110 +36,50 @@
 					9600,
 					4800
 				],
-				"bpskDifferential": false,
-				"bpskCenterFrequency": 0.0,
-				"deviation": 5000,
-				"afCarrier": 0,
-				"transitionWidth": 2000.0,
-				"loraBandwidth": 0,
-				"loraSpreadFactor": 0,
-				"loraCodingRate": 0,
-				"loraSyncword": 0,
-				"loraPreambleLength": 0,
-				"loraLdro": 0,
-				"status": "ENABLED",
-				"updated": 1616533349387,
-				"enabled": false,
-				"satelliteId": "QXDQ-9755-0160-9983-1765"
+				"status": "ENABLED"
 			}
 		],
-		"source": "SATNOGS"
+		"lastUpdateTime": 1650904308036
 	},
 	{
-		"id": "52950",
 		"name": "CTIM",
-		"enabled": false,
+		"noradId": "52950",
 		"priority": "NORMAL",
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
 				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"beaconSizeBytes": 0,
 				"frequency": 437396000,
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
 				],
-				"bpskDifferential": false,
-				"bpskCenterFrequency": 0.0,
-				"deviation": 5000,
-				"afCarrier": 0,
-				"transitionWidth": 2000.0,
-				"loraBandwidth": 0,
-				"loraSpreadFactor": 0,
-				"loraCodingRate": 0,
-				"loraSyncword": 0,
-				"loraPreambleLength": 0,
-				"loraLdro": 0,
-				"status": "ENABLED",
-				"updated": 1659891135340,
-				"enabled": false,
-				"satelliteId": "CSGC-5605-1718-3109-5402"
+				"status": "ENABLED"
 			}
 		],
-		"source": "SATNOGS"
+		"lastUpdateTime": 1659986870989
 	},
 	{
-		"id": "BDML-1083-7096-5526-2883",
 		"name": "Skoltech B2",
-		"enabled": false,
-		"tle": {
-			"raw": [
-				"0 OBJECT L",
-				"1 53380U 22096L   22229.57175693  .00005563  00000-0  22547-3 0  9990",
-				"2 53380  97.4353 130.9847 0005660  72.7520 287.4337 15.25041840  1267"
-			],
-			"lastUpdateTime": 1660816317365
-		},
+		"noradId": "BDML-1083-7096-5526-2883",
 		"priority": "HIGH",
+		"enabled": false,
 		"start": 1660816307365,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "USP",
 				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
-				"beaconSizeBytes": 0,
 				"frequency": 435598000,
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
 				],
-				"bpskDifferential": false,
-				"bpskCenterFrequency": 0.0,
-				"deviation": 5000,
-				"afCarrier": 0,
-				"transitionWidth": 2000.0,
-				"loraBandwidth": 0,
-				"loraSpreadFactor": 0,
-				"loraCodingRate": 0,
-				"loraSyncword": 0,
-				"loraPreambleLength": 0,
-				"loraLdro": 0,
-				"status": "ENABLED",
-				"updated": 1660748306832,
-				"enabled": false,
-				"satelliteId": "BDML-1083-7096-5526-2883",
-				"tle": {
-					"raw": [
-						"0 OBJECT L",
-						"1 53380U 22096L   22229.57175693  .00005563  00000-0  22547-3 0  9990",
-						"2 53380  97.4353 130.9847 0005660  72.7520 287.4337 15.25041840  1267"
-					],
-					"lastUpdateTime": 1660816317365
-				}
+				"status": "ENABLED"
 			}
 		],
-		"source": "SATNOGS"
+		"lastUpdateTime": 1660152501110
 	}
 ]

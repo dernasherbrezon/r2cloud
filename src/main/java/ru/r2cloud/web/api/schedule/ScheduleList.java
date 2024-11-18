@@ -31,6 +31,7 @@ public class ScheduleList extends AbstractHttpController {
 			curSatellite.add("name", cur.getName());
 			curSatellite.add("enabled", cur.isEnabled());
 			curSatellite.add("status", cur.getOverallStatus().name());
+			curSatellite.add("source", cur.getSource().name());
 			Transmitter transmitter = null;
 			for (Transmitter curTransmitter : cur.getTransmitters()) {
 				ObservationRequest nextObservation = deviceManager.findFirstByTransmitter(curTransmitter);

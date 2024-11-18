@@ -1,6 +1,34 @@
 chmod 755 ${config.installDir}/lib/download.sh
 ${config.installDir}/lib/download.sh ${config.installDir}/lib/ /usr/share/java/r2cloud/
 
+if id "${config.user}" &>/dev/null; then
+    echo "User '${config.user}' already exists."
+else
+    useradd -m ${config.user}
+    echo "User '${config.user}' created."
+fi
+
+if ! getent group ${config.group} > /dev/null; then
+    groupadd ${config.group}
+    echo "Group '${config.group}' created."
+fi
+
+if [ $(getent group dialout) ]; then
+    usermod -a -G dialout ${config.user}
+fi
+
+if [ $(getent group plugdev) ]; then
+    usermod -a -G plugdev ${config.user}
+fi
+
+if [ $(getent group systemd-journal) ]; then
+    usermod -a -G systemd-journal ${config.user}
+fi
+
+if [ -d /var/lib/nginx/proxy ]; then
+	chown -R www-data:www-data /var/lib/nginx/proxy
+fi
+
 chown -R ${config.user}:${config.group} ${config.installDir} /usr/share/java/r2cloud/*.jar
 chmod 640 ${config.installDir}/lib/*.jar /usr/share/java/r2cloud/*.jar
 
@@ -42,10 +70,6 @@ fi
 
 if [ -f /etc/sudoers.d/nginx ]; then
 	chmod 440 /etc/sudoers.d/nginx
-fi
-
-if [ $(getent group systemd-journal) ]; then
-    usermod -a -G systemd-journal ${config.user}
 fi
 
 if [ ! -d /var/log/journal ]; then
