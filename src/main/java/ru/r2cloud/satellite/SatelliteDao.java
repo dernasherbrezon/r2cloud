@@ -256,7 +256,9 @@ public class SatelliteDao {
 				continue;
 			}
 			cur.setSource(source);
-			cur.setLastUpdateTime(lastUpdateTime);
+			if (cur.getLastUpdateTime() == 0) {
+				cur.setLastUpdateTime(lastUpdateTime);
+			}
 			result.add(cur);
 		}
 		return result;

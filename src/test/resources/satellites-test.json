@@ -1490,7 +1490,8 @@
 				"frequency": 137620000,
 				"bandwidth": 34000
 			}
-		]
+		],
+		"lastUpdateTime": 1719525695573
 	},
 	{
 		"name": "SWAMPSAT-2",
