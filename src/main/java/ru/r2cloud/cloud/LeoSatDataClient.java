@@ -281,7 +281,9 @@ public class LeoSatDataClient {
 				continue;
 			}
 			cur.setSource(SatelliteSource.LEOSATDATA);
-			cur.setLastUpdateTime(lastModified);
+			if (cur.getLastUpdateTime() == 0) {
+				cur.setLastUpdateTime(lastModified);
+			}
 			result.add(cur);
 		}
 		return result;
@@ -326,7 +328,9 @@ public class LeoSatDataClient {
 			newLaunch.setPriority(Priority.HIGH);
 			newLaunch.setTle(readTle(asObject.get("tle")));
 			newLaunch.setSource(SatelliteSource.LEOSATDATA);
-			newLaunch.setLastUpdateTime(lastModified);
+			if (newLaunch.getLastUpdateTime() == 0) {
+				newLaunch.setLastUpdateTime(lastModified);
+			}
 			result.add(newLaunch);
 		}
 		return result;
