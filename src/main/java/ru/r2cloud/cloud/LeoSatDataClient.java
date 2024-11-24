@@ -361,7 +361,10 @@ public class LeoSatDataClient {
 		Tle result = new Tle(new String[] { line1, line2, line3 });
 		// assume downloaded TLE is always fresh
 		result.setLastUpdateTime(clock.millis());
-		result.setSource(hostname);
+		result.setSource(tleObj.getString("source", null));
+		if (result.getSource() == null) {
+			result.setSource(hostname);
+		}
 		return result;
 	}
 

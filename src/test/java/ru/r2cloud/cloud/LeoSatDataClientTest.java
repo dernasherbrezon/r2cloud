@@ -176,6 +176,7 @@ public class LeoSatDataClientTest {
 		List<Satellite> result = client.loadNewLaunches(0);
 		assertEquals(2, result.size());
 		assertSatellite("LUCKY-7", true, result.get(0));
+		assertEquals("Satellite team", result.get(0).getTle().getSource());
 		// by default all enabled
 		assertSatellite("PAINANI 1", true, result.get(1));
 	}
