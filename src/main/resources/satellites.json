@@ -1,5 +1,517 @@
 [
 	{
+		"id": "R2CLOUD453",
+		"name": "LASARSAT",
+		"noradId": "62391",
+		"enabled": true,
+		"start": 1734780840000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 436925000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"deviation": 5000,
+				"assistedHeader": "AAEBAAAAAAEAAQAAAAEAAQAAAAAAAAEAAAAAAAAAAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQAAAQEBAQAAAQABAQABAAABAAAAAAABAQAAAAABAQAAAQABAQAAAQABAAABAAABAAEBAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1736702391000
+	},
+	{
+		"id": "R2CLOUD451",
+		"name": "APRIZESAT 10",
+		"noradId": "40019",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 400573000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"deviation": 5000,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1733256226000
+	},
+	{
+		"id": "R2CLOUD450",
+		"name": "Altair",
+		"noradId": "61779",
+		"enabled": false,
+		"start": 1730754240000,
+		"transmitters": [
+			{
+				"modulation": "AFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 435215000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"deviation": 600,
+				"afCarrier": 1700,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1733683055000
+	},
+	{
+		"id": "R2CLOUD449",
+		"name": "COSMOGIRLSAT",
+		"noradId": "60953",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "AFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 145825000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"deviation": 600,
+				"afCarrier": 1700,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1732383025000
+	},
+	{
+		"id": "R2CLOUD448",
+		"name": "DORA",
+		"noradId": "61502",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "OPENLST",
+				"beaconClass": "ru.r2cloud.jradio.dora.DoraBeacon",
+				"frequency": 436825000,
+				"bandwidth": 20000,
+				"baudRates": [
+					7415
+				],
+				"deviation": 5000,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1732378401000
+	},
+	{
+		"id": "R2CLOUD447",
+		"name": "ZIMSAT-2",
+		"noradId": "61783",
+		"enabled": false,
+		"start": 1730777760000,
+		"transmitters": [
+			{
+				"modulation": "AFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437050000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1135
+				],
+				"deviation": 600,
+				"afCarrier": 1700,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1733683076000
+	},
+	{
+		"id": "R2CLOUD446",
+		"name": "Polytech Universe-5",
+		"noradId": "61745",
+		"enabled": false,
+		"start": 1730777760000,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 436350000,
+				"bandwidth": 62500,
+				"status": "ENABLED",
+				"loraBandwidth": 62500,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 7,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1735468746000
+	},
+	{
+		"id": "R2CLOUD445",
+		"name": "Polytech Universe-4",
+		"noradId": "61747",
+		"enabled": false,
+		"start": 1730777760000,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 435250000,
+				"bandwidth": 62500,
+				"status": "ENABLED",
+				"loraBandwidth": 62500,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 7,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1735468766000
+	},
+	{
+		"id": "R2CLOUD444",
+		"name": "HyperView-1G",
+		"noradId": "61772",
+		"enabled": false,
+		"start": 1730777760000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 436540000,
+				"bandwidth": 20000,
+				"baudRates": [
+					2400
+				],
+				"status": "ENABLED"
+			},
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 436600000,
+				"bandwidth": 20000,
+				"baudRates": [
+					2400
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1733683227000
+	},
+	{
+		"id": "R2CLOUD443",
+		"name": "Nokhcho",
+		"noradId": "61767",
+		"enabled": false,
+		"start": 1730777760000,
+		"transmitters": [
+			{
+				"modulation": "AFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437550000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1135
+				],
+				"deviation": 600,
+				"afCarrier": 1700,
+				"status": "ENABLED"
+			},
+			{
+				"modulation": "AFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 435750000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1135
+				],
+				"deviation": 600,
+				"afCarrier": 1700,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1735468795000
+	},
+	{
+		"id": "R2CLOUD442",
+		"name": "YUZGU-60",
+		"noradId": "61787",
+		"enabled": false,
+		"start": 1730777760000,
+		"transmitters": [
+			{
+				"modulation": "AFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 435750000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1135
+				],
+				"deviation": 600,
+				"afCarrier": 1700,
+				"status": "ENABLED"
+			},
+			{
+				"modulation": "AFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437050000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1135
+				],
+				"deviation": 600,
+				"afCarrier": 1700,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1735468812000
+	},
+	{
+		"id": "R2CLOUD441",
+		"name": "MORDOVIA-IOT",
+		"noradId": "61765",
+		"enabled": false,
+		"start": 1730777760000,
+		"transmitters": [
+			{
+				"modulation": "AFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 435750000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1135
+				],
+				"deviation": 600,
+				"afCarrier": 1700,
+				"status": "ENABLED"
+			},
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 437865000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 7,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1733683255000
+	},
+	{
+		"id": "R2CLOUD440",
+		"name": "RUZAEVKA-390",
+		"noradId": "61766",
+		"enabled": false,
+		"start": 1730777760000,
+		"transmitters": [
+			{
+				"modulation": "AFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 435750000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1135
+				],
+				"deviation": 600,
+				"afCarrier": 1700,
+				"status": "ENABLED"
+			},
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 437865000,
+				"bandwidth": 125000,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 7,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1733683272000
+	},
+	{
+		"id": "R2CLOUD439",
+		"name": "TUSUR GO",
+		"noradId": "61782",
+		"enabled": true,
+		"start": 1730777760000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.geoscan.GeoscanBeacon",
+				"frequency": 437730000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1733682986000
+	},
+	{
+		"id": "R2CLOUD438",
+		"name": "Vizard-ion",
+		"noradId": "61749",
+		"enabled": true,
+		"start": 1730777760000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.geoscan.GeoscanBeacon",
+				"frequency": 436870000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1733683295000
+	},
+	{
+		"id": "R2CLOUD437",
+		"name": "SamSat-Ionosphere",
+		"noradId": "61784",
+		"enabled": false,
+		"start": 1730777760000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437400000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1733683310000
+	},
+	{
+		"id": "R2CLOUD436",
+		"name": "ArcticSat-1",
+		"noradId": "61762",
+		"enabled": false,
+		"start": 1730777760000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 435890000,
+				"bandwidth": 20000,
+				"baudRates": [
+					2400,
+					4800,
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1733683324000
+	},
+	{
+		"id": "R2CLOUD435",
+		"name": "Colibri-S",
+		"noradId": "61746",
+		"enabled": true,
+		"start": 1730777760000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.geoscan.GeoscanBeacon",
+				"frequency": 436835000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1733683341000
+	},
+	{
+		"id": "R2CLOUD434",
+		"name": "RTU MIREA1",
+		"noradId": "61775",
+		"enabled": true,
+		"start": 1730777760000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.geoscan.GeoscanBeacon",
+				"frequency": 436200000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1733683356000
+	},
+	{
+		"id": "R2CLOUD433",
+		"name": "Horizon",
+		"noradId": "61755",
+		"enabled": true,
+		"start": 1730777760000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.geoscan.GeoscanBeacon",
+				"frequency": 435430000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1733683372000
+	},
+	{
 		"id": "R2CLOUD432",
 		"name": "SAKURA",
 		"noradId": "60954",
@@ -18,7 +530,8 @@
 				"afCarrier": 1700,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1729955361000
 	},
 	{
 		"id": "R2CLOUD431",
@@ -38,7 +551,8 @@
 				"deviation": 5000,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1729955000000
 	},
 	{
 		"id": "R2CLOUD430",
@@ -59,7 +573,8 @@
 				"afCarrier": 1700,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1728772627000
 	},
 	{
 		"id": "R2CLOUD429",
@@ -80,7 +595,8 @@
 				"afCarrier": 1700,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1728772382000
 	},
 	{
 		"id": "R2CLOUD428",
@@ -101,7 +617,8 @@
 				"afCarrier": 1700,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1728771710000
 	},
 	{
 		"id": "R2CLOUD427",
@@ -122,7 +639,8 @@
 				"status": "ENABLED",
 				"syncword": "10010011000010110101000111011110"
 			}
-		]
+		],
+		"lastUpdateTime": 1728231718000
 	},
 	{
 		"id": "R2CLOUD426",
@@ -142,7 +660,8 @@
 				"deviation": 2400,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1728228257000
 	},
 	{
 		"id": "R2CLOUD425",
@@ -165,7 +684,8 @@
 				"loraCodingRate": 7,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1724971674000
 	},
 	{
 		"id": "R2CLOUD424",
@@ -187,7 +707,8 @@
 				"assistedHeader": "AAABAAAAAAEAAAEBAAEAAQAAAAEAAQEAAAABAQABAAEAAAEAAAAAAQAAAAAAAAAAAAAAAAABAQEAAAAAAQEAAQAAAAABAQABAAAAAAABAQAAAQABAAEAAQAAAAABAAABAAABAQAAAAEBAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1725388559000
 	},
 	{
 		"id": "R2CLOUD423",
@@ -208,7 +729,8 @@
 				"deviation": 5000,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1725388577000
 	},
 	{
 		"id": "R2CLOUD422",
@@ -229,7 +751,30 @@
 				"deviation": 5000,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1728231009000
+	},
+	{
+		"id": "R2CLOUD421",
+		"name": "PTD-4",
+		"noradId": "60565",
+		"enabled": false,
+		"start": 1723834560000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 401205000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"deviation": 5000,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1734510157000
 	},
 	{
 		"id": "R2CLOUD420",
@@ -251,7 +796,8 @@
 				"assistedHeader": "AAEBAAAAAAEAAQAAAAEAAQAAAAAAAAEAAAAAAAAAAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQEAAAAAAQEAAQAAAAABAQABAAAAAAABAQAAAQABAAEAAQAAAAABAAABAAABAQAAAAEBAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1725388609000
 	},
 	{
 		"id": "R2CLOUD419",
@@ -271,7 +817,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1725388627000
 	},
 	{
 		"id": "R2CLOUD418",
@@ -292,7 +839,8 @@
 				"deviation": 5000,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1725388647000
 	},
 	{
 		"id": "R2CLOUD417",
@@ -314,7 +862,8 @@
 				"assistedHeader": "AAEBAAABAAEAAAAAAAEAAQABAAAAAAABAAEBAAAAAAEAAQABAAAAAQAAAAAAAAEAAAAAAAABAQAAAQEAAQAAAQAAAQABAAABAAEBAQABAQAAAQEAAAEAAQABAAAAAAABAAAAAQABAAEBAQEAAQEBAQEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1725388667000
 	},
 	{
 		"id": "R2CLOUD416",
@@ -334,7 +883,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1725388680000
 	},
 	{
 		"id": "R2CLOUD415",
@@ -356,7 +906,8 @@
 				"assistedHeader": "AAEAAAEAAAEAAAAAAAEAAQABAAEAAAABAAABAQAAAAEAAAABAQAAAQAAAAEAAQABAAAAAAAAAAAAAQAAAQAAAQAAAAAAAQABAAEAAQAAAAEAAAEBAAAAAQAAAAEBAAABAAAAAQABAAEBAAAAAAAAAAEBAAAAAAAAAAABAQAAAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1725388697000
 	},
 	{
 		"id": "R2CLOUD414",
@@ -377,7 +928,8 @@
 				"deviation": 5000,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1725388713000
 	},
 	{
 		"id": "R2CLOUD413",
@@ -398,7 +950,8 @@
 				"deviation": 5000,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1725388734000
 	},
 	{
 		"id": "R2CLOUD412",
@@ -419,7 +972,8 @@
 				"deviation": 5000,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1725388746000
 	},
 	{
 		"id": "R2CLOUD411",
@@ -440,7 +994,8 @@
 				"deviation": 5000,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1725388758000
 	},
 	{
 		"id": "R2CLOUD410",
@@ -460,7 +1015,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1725384682000
 	},
 	{
 		"id": "R2CLOUD409",
@@ -482,7 +1038,8 @@
 				"assistedHeader": "AAAAAQAAAAEAAQEBAQAAAQAAAAAAAQEAAAABAAEBAAEAAAEBAAAAAQAAAAEAAQABAAAAAAABAQAAAAABAAAAAQAAAAAAAQABAAABAAABAQAAAQAAAAEAAQABAAEAAQABAAAAAAAAAAABAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1725388781000
 	},
 	{
 		"id": "R2CLOUD408",
@@ -503,7 +1060,8 @@
 				"deviation": 5000,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1725388797000
 	},
 	{
 		"id": "R2CLOUD407",
@@ -524,7 +1082,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723715366000
 	},
 	{
 		"id": "R2CLOUD406",
@@ -545,7 +1104,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723715340000
 	},
 	{
 		"id": "R2CLOUD405",
@@ -566,7 +1126,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723715313000
 	},
 	{
 		"id": "R2CLOUD404",
@@ -587,7 +1148,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723715231000
 	},
 	{
 		"id": "R2CLOUD403",
@@ -608,7 +1170,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723715180000
 	},
 	{
 		"id": "R2CLOUD402",
@@ -629,7 +1192,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723715151000
 	},
 	{
 		"id": "R2CLOUD401",
@@ -650,7 +1214,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723715114000
 	},
 	{
 		"id": "R2CLOUD400",
@@ -671,7 +1236,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723715083000
 	},
 	{
 		"id": "R2CLOUD399",
@@ -692,7 +1258,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723715045000
 	},
 	{
 		"id": "R2CLOUD398",
@@ -713,7 +1280,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723714993000
 	},
 	{
 		"id": "R2CLOUD397",
@@ -734,7 +1302,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723714957000
 	},
 	{
 		"id": "R2CLOUD396",
@@ -755,7 +1324,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723714889000
 	},
 	{
 		"id": "R2CLOUD395",
@@ -776,7 +1346,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723714811000
 	},
 	{
 		"id": "R2CLOUD394",
@@ -797,7 +1368,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723714777000
 	},
 	{
 		"id": "R2CLOUD393",
@@ -818,7 +1390,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723714673000
 	},
 	{
 		"id": "R2CLOUD392",
@@ -840,7 +1413,8 @@
 				"deviation": 5000,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723714614000
 	},
 	{
 		"id": "R2CLOUD391",
@@ -871,7 +1445,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1728774012000
 	},
 	{
 		"id": "R2CLOUD390",
@@ -893,7 +1468,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723557473000
 	},
 	{
 		"id": "R2CLOUD388",
@@ -912,7 +1488,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1719646755000
 	},
 	{
 		"id": "R2CLOUD387",
@@ -932,7 +1509,8 @@
 				"assistedHeader": "AAEAAAEAAAEAAQEAAAEAAQABAAEBAAEAAAEAAAABAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQAAAAEAAAAAAQABAQAAAAABAAAAAQABAAEAAAAAAAABAAAAAAAAAAEAAAAAAAAAAQABAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1719646579000
 	},
 	{
 		"id": "R2CLOUD385",
@@ -953,7 +1531,8 @@
 				"afCarrier": 1700,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1719602669000
 	},
 	{
 		"id": "R2CLOUD384",
@@ -974,7 +1553,8 @@
 				"afCarrier": 1700,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1719602451000
 	},
 	{
 		"id": "R2CLOUD383",
@@ -994,7 +1574,8 @@
 				"status": "ENABLED",
 				"syncword": "10010011000010110101000111011110"
 			}
-		]
+		],
+		"lastUpdateTime": 1719599719000
 	},
 	{
 		"id": "R2CLOUD382",
@@ -1015,7 +1596,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1713008128000
 	},
 	{
 		"id": "R2CLOUD381",
@@ -1038,7 +1620,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1712490810000
 	},
 	{
 		"id": "R2CLOUD380",
@@ -1061,7 +1644,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1712490820000
 	},
 	{
 		"id": "R2CLOUD379",
@@ -1080,7 +1664,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1710195746000
 	},
 	{
 		"id": "R2CLOUD378",
@@ -1114,7 +1699,8 @@
 				"assistedHeader": "AAEBAAAAAAEAAQAAAAEAAQAAAAAAAAEAAAAAAAAAAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQEAAAABAAAAAQAAAAAAAQABAAAAAAABAQAAAQEAAAEAAQAAAQEBAAABAAAAAAEBAAEBAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1728773684000
 	},
 	{
 		"id": "R2CLOUD377",
@@ -1138,7 +1724,8 @@
 				"loraCodingRate": 4,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1715105787000
 	},
 	{
 		"id": "R2CLOUD376",
@@ -1162,7 +1749,8 @@
 				"loraCodingRate": 4,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1715105771000
 	},
 	{
 		"id": "R2CLOUD374",
@@ -1182,26 +1770,8 @@
 				"assistedHeader": "AAEAAQAAAAEAAQEAAAEAAQABAQEAAAABAAEBAAABAAEAAAAAAAEBAAABAAAAAQEAAAAAAAABAQEAAAAAAAEAAQAAAAEBAAABAAEBAAABAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
-	},
-	{
-		"id": "R2CLOUD373",
-		"name": "CENTAURI 5 (TYVAK-0212)",
-		"noradId": "52742",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 400180000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "ENABLED"
-			}
-		]
+		],
+		"lastUpdateTime": 1708096587000
 	},
 	{
 		"id": "R2CLOUD368",
@@ -1224,7 +1794,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1706367947000
 	},
 	{
 		"id": "R2CLOUD367",
@@ -1244,7 +1815,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1706367405000
 	},
 	{
 		"id": "R2CLOUD366",
@@ -1264,7 +1836,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1706367423000
 	},
 	{
 		"id": "R2CLOUD365",
@@ -1284,7 +1857,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1705264766000
 	},
 	{
 		"id": "R2CLOUD364",
@@ -1303,7 +1877,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1704224403000
 	},
 	{
 		"id": "R2CLOUD363",
@@ -1323,7 +1898,8 @@
 				"assistedHeader": "AAEBAAAAAAEAAQAAAQAAAQABAQAAAAABAAAAAAABAQAAAAEAAAEBAAAAAQEBAAABAAAAAAAAAAAAAQEAAAAAAQABAAABAAABAAEBAAAAAAEAAAAAAAEBAAAAAQAAAQEAAAABAQEAAAEBAAAAAAAAAAEBAAAAAAAAAAABAQAAAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1704200823000
 	},
 	{
 		"id": "R2CLOUD362",
@@ -1346,7 +1922,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1703089323000
 	},
 	{
 		"id": "R2CLOUD361",
@@ -1365,7 +1942,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1702327687000
 	},
 	{
 		"id": "R2CLOUD360",
@@ -1384,7 +1962,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1702325216000
 	},
 	{
 		"id": "R2CLOUD359",
@@ -1403,7 +1982,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1702325115000
 	},
 	{
 		"id": "R2CLOUD358",
@@ -1422,7 +2002,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723671030000
 	},
 	{
 		"id": "R2CLOUD357",
@@ -1441,7 +2022,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1705831222000
 	},
 	{
 		"id": "R2CLOUD356",
@@ -1462,7 +2044,8 @@
 				"assistedHeader": "AAABAQAAAAEAAAABAAEBAAABAQABAAABAAABAAEAAAEAAAAAAQEAAQAAAAAAAAEAAAAAAAABAQEAAAEBAAAAAQAAAAABAQABAAABAQABAQAAAAEBAAAAAQAAAQAAAQABAAEBAAAAAAEBAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723557498000
 	},
 	{
 		"id": "R2CLOUD355",
@@ -1481,7 +2064,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1701937042000
 	},
 	{
 		"id": "R2CLOUD354",
@@ -1502,7 +2086,8 @@
 				"assistedHeader": "AAEAAQAAAAEAAQEAAAEAAQABAQEAAAABAAEBAAABAAEAAAAAAAEBAAABAAAAAQEAAAAAAAABAQEAAAEAAAAAAQABAAAAAQEAAAABAAABAQAAAAAAAAABAAAAAAAAAAEAAAAAAAAAAQABAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1702324734000
 	},
 	{
 		"id": "R2CLOUD353",
@@ -1525,7 +2110,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1700766554000
 	},
 	{
 		"id": "R2CLOUD352",
@@ -1548,7 +2134,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1700766506000
 	},
 	{
 		"id": "R2CLOUD351",
@@ -1571,7 +2158,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1700766457000
 	},
 	{
 		"id": "R2CLOUD350",
@@ -1594,7 +2182,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1700766380000
 	},
 	{
 		"id": "R2CLOUD349",
@@ -1613,7 +2202,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1700765947000
 	},
 	{
 		"id": "R2CLOUD348",
@@ -1637,7 +2227,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1715016753000
 	},
 	{
 		"id": "R2CLOUD342",
@@ -1661,7 +2252,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1715016630000
 	},
 	{
 		"id": "R2CLOUD341",
@@ -1685,7 +2277,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1715016607000
 	},
 	{
 		"id": "R2CLOUD340",
@@ -1709,7 +2302,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1715016499000
 	},
 	{
 		"id": "R2CLOUD339",
@@ -1729,7 +2323,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1702324649000
 	},
 	{
 		"id": "R2CLOUD338",
@@ -1749,7 +2344,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1704200488000
 	},
 	{
 		"id": "R2CLOUD336",
@@ -1770,7 +2366,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1704305253000
 	},
 	{
 		"id": "R2CLOUD335",
@@ -1791,7 +2388,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1704305258000
 	},
 	{
 		"id": "R2CLOUD334",
@@ -1812,7 +2410,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1704305264000
 	},
 	{
 		"id": "R2CLOUD333",
@@ -1833,7 +2432,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1704305244000
 	},
 	{
 		"id": "R2CLOUD332",
@@ -1854,7 +2454,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1704305275000
 	},
 	{
 		"id": "R2CLOUD331",
@@ -1875,7 +2476,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1704305280000
 	},
 	{
 		"id": "R2CLOUD330",
@@ -1896,7 +2498,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1704305291000
 	},
 	{
 		"id": "R2CLOUD329",
@@ -1917,7 +2520,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1704305297000
 	},
 	{
 		"id": "R2CLOUD328",
@@ -1940,7 +2544,8 @@
 				"loraCodingRate": 6,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1700507551000
 	},
 	{
 		"id": "R2CLOUD327",
@@ -1961,7 +2566,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1704396258000
 	},
 	{
 		"id": "R2CLOUD326",
@@ -1980,7 +2586,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1700507268000
 	},
 	{
 		"id": "R2CLOUD325",
@@ -2003,7 +2610,8 @@
 				"loraCodingRate": 6,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1699914688000
 	},
 	{
 		"id": "R2CLOUD324",
@@ -2023,7 +2631,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1702324567000
 	},
 	{
 		"id": "R2CLOUD323",
@@ -2043,7 +2652,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1702324532000
 	},
 	{
 		"id": "R2CLOUD322",
@@ -2063,7 +2673,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1702324496000
 	},
 	{
 		"id": "R2CLOUD321",
@@ -2083,7 +2694,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1702324450000
 	},
 	{
 		"id": "R2CLOUD319",
@@ -2106,7 +2718,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1705264800000
 	},
 	{
 		"id": "R2CLOUD317",
@@ -2126,7 +2739,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1702322675000
 	},
 	{
 		"id": "R2CLOUD316",
@@ -2146,7 +2760,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1702322649000
 	},
 	{
 		"id": "R2CLOUD315",
@@ -2166,7 +2781,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1702322620000
 	},
 	{
 		"id": "R2CLOUD314",
@@ -2186,7 +2802,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1702322575000
 	},
 	{
 		"id": "R2CLOUD313",
@@ -2206,7 +2823,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1705264719000
 	},
 	{
 		"id": "R2CLOUD312",
@@ -2226,7 +2844,8 @@
 				"assistedHeader": "AAEAAQAAAAEAAQEAAAEAAQABAAAAAQEAAAABAAEBAAEAAQEBAAEAAQAAAAAAAAEAAAAAAAABAQAAAQABAAAAAQABAQAAAQABAAEAAAABAQAAAQEBAAEAAQABAQAAAQABAAAAAAAAAQABAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1697666446000
 	},
 	{
 		"id": "R2CLOUD311",
@@ -2249,7 +2868,8 @@
 				"loraCodingRate": 6,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1706367570000
 	},
 	{
 		"id": "R2CLOUD310",
@@ -2272,7 +2892,8 @@
 				"loraCodingRate": 6,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1706367545000
 	},
 	{
 		"id": "R2CLOUD309",
@@ -2295,7 +2916,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1704016085000
 	},
 	{
 		"id": "R2CLOUD308",
@@ -2318,7 +2940,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1704016077000
 	},
 	{
 		"id": "R2CLOUD306",
@@ -2341,26 +2964,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
-	},
-	{
-		"id": "R2CLOUD305",
-		"name": "CENTAURI-4 (TYVAK-0211)",
-		"noradId": "48898",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 400180000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "ENABLED"
-			}
-		]
+		],
+		"lastUpdateTime": 1723114151000
 	},
 	{
 		"id": "R2CLOUD304",
@@ -2381,7 +2986,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1693303308000
 	},
 	{
 		"id": "R2CLOUD303",
@@ -2400,7 +3006,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1702327730000
 	},
 	{
 		"id": "R2CLOUD302",
@@ -2421,7 +3028,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1693301975000
 	},
 	{
 		"id": "R2CLOUD301",
@@ -2442,7 +3050,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1693301884000
 	},
 	{
 		"id": "R2CLOUD300",
@@ -2463,7 +3072,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1693301812000
 	},
 	{
 		"id": "R2CLOUD299",
@@ -2484,7 +3094,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1693301735000
 	},
 	{
 		"id": "R2CLOUD298",
@@ -2505,7 +3116,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1693301456000
 	},
 	{
 		"id": "R2CLOUD297",
@@ -2526,7 +3138,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1693301463000
 	},
 	{
 		"id": "R2CLOUD296",
@@ -2547,7 +3160,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1693300917000
 	},
 	{
 		"id": "R2CLOUD295",
@@ -2568,7 +3182,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1693300861000
 	},
 	{
 		"id": "R2CLOUD294",
@@ -2591,7 +3206,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1692969760000
 	},
 	{
 		"id": "R2CLOUD293",
@@ -2614,7 +3230,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1692969596000
 	},
 	{
 		"id": "R2CLOUD292",
@@ -2637,7 +3254,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1692969571000
 	},
 	{
 		"id": "R2CLOUD291",
@@ -2660,7 +3278,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1692969536000
 	},
 	{
 		"id": "R2CLOUD290",
@@ -2683,7 +3302,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1692969486000
 	},
 	{
 		"id": "R2CLOUD289",
@@ -2702,7 +3322,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1692969125000
 	},
 	{
 		"id": "R2CLOUD286",
@@ -2721,7 +3342,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1690822398000
 	},
 	{
 		"id": "R2CLOUD285",
@@ -2740,7 +3362,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1690226073000
 	},
 	{
 		"id": "R2CLOUD284",
@@ -2760,7 +3383,8 @@
 				"assistedHeader": "AAEBAAABAAEAAAAAAAEAAQABAAEAAAABAAEAAAEAAAEAAQEAAAEAAQAAAAEAAQABAAAAAAAAAAAAAQAAAAAAAQAAAAEBAAABAAAAAQEAAAEAAQAAAAAAAQAAAAEBAAABAAAAAQEAAAEBAAAAAAAAAAEBAAAAAAAAAAABAQAAAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1690225879000
 	},
 	{
 		"id": "R2CLOUD283",
@@ -2779,7 +3403,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1690099931000
 	},
 	{
 		"id": "R2CLOUD282",
@@ -2812,7 +3437,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1694966379000
 	},
 	{
 		"id": "R2CLOUD281",
@@ -2832,7 +3458,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1688889244000
 	},
 	{
 		"id": "R2CLOUD280",
@@ -2852,7 +3479,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1700765001000
 	},
 	{
 		"id": "R2CLOUD279",
@@ -2871,7 +3499,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1687076436000
 	},
 	{
 		"id": "R2CLOUD278",
@@ -2890,7 +3519,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1687076384000
 	},
 	{
 		"id": "R2CLOUD275",
@@ -2913,7 +3543,8 @@
 				"loraCodingRate": 7,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1694341076000
 	},
 	{
 		"id": "R2CLOUD273",
@@ -2937,7 +3568,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1686997349000
 	},
 	{
 		"id": "R2CLOUD271",
@@ -2961,7 +3593,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1706368368000
 	},
 	{
 		"id": "R2CLOUD270",
@@ -2985,7 +3618,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1686996926000
 	},
 	{
 		"id": "R2CLOUD269",
@@ -3009,7 +3643,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1686996849000
 	},
 	{
 		"id": "R2CLOUD268",
@@ -3033,7 +3668,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1686996725000
 	},
 	{
 		"id": "R2CLOUD266",
@@ -3056,7 +3692,8 @@
 				"loraCodingRate": 8,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1697488254000
 	},
 	{
 		"id": "R2CLOUD263",
@@ -3079,7 +3716,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1686953135000
 	},
 	{
 		"id": "R2CLOUD250",
@@ -3100,7 +3738,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1719603035000
 	},
 	{
 		"id": "R2CLOUD249",
@@ -3120,7 +3759,8 @@
 				"status": "ENABLED",
 				"syncword": "10010011000010110101000111011110"
 			}
-		]
+		],
+		"lastUpdateTime": 1719606104000
 	},
 	{
 		"id": "R2CLOUD248",
@@ -3139,7 +3779,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1685212391000
 	},
 	{
 		"id": "R2CLOUD247",
@@ -3158,7 +3799,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1685212022000
 	},
 	{
 		"id": "R2CLOUD246",
@@ -3177,7 +3819,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1685211945000
 	},
 	{
 		"id": "R2CLOUD245",
@@ -3196,7 +3839,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1706647863000
 	},
 	{
 		"id": "R2CLOUD243",
@@ -3215,7 +3859,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1682759868000
 	},
 	{
 		"id": "R2CLOUD241",
@@ -3236,7 +3881,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1685657476000
 	},
 	{
 		"id": "R2CLOUD240",
@@ -3256,7 +3902,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1682114673000
 	},
 	{
 		"id": "R2CLOUD239",
@@ -3289,7 +3936,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1692969015000
 	},
 	{
 		"id": "R2CLOUD238",
@@ -3310,7 +3958,8 @@
 				"assistedHeader": "AAAAAAABAAEAAAABAQAAAQABAAAAAAABAAABAQEAAAEAAQEAAAEAAQABAAAAAQEAAAAAAAABAQEAAQEAAAAAAQABAQEBAAABAAABAQEAAAEAAAABAAEAAQAAAQAAAQEAAAEAAAABAQABAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1682114728000
 	},
 	{
 		"id": "R2CLOUD237",
@@ -3330,7 +3979,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1682114768000
 	},
 	{
 		"id": "R2CLOUD236",
@@ -3351,7 +4001,8 @@
 				"assistedHeader": "AAABAAAAAAEAAQEAAAAAAQAAAAEAAQABAAAAAAAAAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQAAAQEAAAAAAQABAAABAAABAAABAAABAAEAAAEAAAAAAQABAAEAAAABAAAAAAAAAQABAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1685657579000
 	},
 	{
 		"id": "R2CLOUD235",
@@ -3370,7 +4021,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1688757523000
 	},
 	{
 		"id": "R2CLOUD232",
@@ -3389,7 +4041,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1678129734000
 	},
 	{
 		"id": "R2CLOUD231",
@@ -3408,7 +4061,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1678129590000
 	},
 	{
 		"id": "R2CLOUD230",
@@ -3428,7 +4082,8 @@
 				"assistedHeader": "AAEAAQAAAAEAAAABAQAAAQABAQEBAAABAAABAQAAAAEAAAABAQAAAQAAAAEAAQABAAAAAAAAAAAAAQABAAAAAQAAAAEBAAABAAEBAQEAAAEAAAEBAAAAAQAAAAEBAAABAAAAAQABAAEBAAAAAAAAAAEBAAAAAAAAAAABAQAAAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1678128449000
 	},
 	{
 		"id": "R2CLOUD228",
@@ -3447,7 +4102,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1678033712000
 	},
 	{
 		"id": "R2CLOUD227",
@@ -3466,7 +4122,8 @@
 				],
 				"status": "WEAK"
 			}
-		]
+		],
+		"lastUpdateTime": 1677951677000
 	},
 	{
 		"id": "R2CLOUD225",
@@ -3485,7 +4142,8 @@
 				],
 				"status": "WEAK"
 			}
-		]
+		],
+		"lastUpdateTime": 1677950514000
 	},
 	{
 		"id": "R2CLOUD223",
@@ -3504,7 +4162,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1677703677000
 	},
 	{
 		"id": "R2CLOUD218",
@@ -3523,7 +4182,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1697488290000
 	},
 	{
 		"id": "R2CLOUD214",
@@ -3543,7 +4203,8 @@
 				"assistedHeader": "AAAAAAABAAEAAAABAQAAAQABAAAAAAABAAABAQEAAAEAAQEAAAEAAQABAAAAAQEAAAAAAAABAQEAAQEAAAAAAQABAQEBAAABAAABAQEAAAEAAAABAAEAAQABAAAAAQEAAAABAAABAQABAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1674659894000
 	},
 	{
 		"id": "R2CLOUD213",
@@ -3563,7 +4224,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1673943452000
 	},
 	{
 		"id": "R2CLOUD211",
@@ -3582,7 +4244,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1673859266000
 	},
 	{
 		"id": "R2CLOUD208",
@@ -3614,7 +4277,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1728773871000
 	},
 	{
 		"id": "R2CLOUD205",
@@ -3633,7 +4297,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1673857868000
 	},
 	{
 		"id": "R2CLOUD204",
@@ -3653,7 +4318,8 @@
 				"assistedHeader": "AAAAAAABAAEAAAABAQAAAQABAAAAAAABAAABAQEAAAEAAQEAAAEAAQABAAAAAQEAAAAAAAABAQEAAQEAAAAAAQABAQEBAAABAAABAQEAAAEAAAABAAEAAQABAAAAAQEAAAEAAAABAQABAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1692968813000
 	},
 	{
 		"id": "R2CLOUD203",
@@ -3674,7 +4340,8 @@
 				"status": "ENABLED",
 				"syncword": "10010011000010110101000111011110"
 			}
-		]
+		],
+		"lastUpdateTime": 1719599612000
 	},
 	{
 		"id": "R2CLOUD201",
@@ -3693,7 +4360,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1666992210000
 	},
 	{
 		"id": "R2CLOUD200",
@@ -3712,7 +4380,8 @@
 				],
 				"status": "WEAK"
 			}
-		]
+		],
+		"lastUpdateTime": 1706651796000
 	},
 	{
 		"id": "R2CLOUD199",
@@ -3731,7 +4400,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1666992215000
 	},
 	{
 		"id": "R2CLOUD197",
@@ -3750,7 +4420,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1666518446000
 	},
 	{
 		"id": "R2CLOUD196",
@@ -3769,7 +4440,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1666518376000
 	},
 	{
 		"id": "R2CLOUD195",
@@ -3788,7 +4460,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1666518291000
 	},
 	{
 		"id": "R2CLOUD194",
@@ -3807,7 +4480,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1666518168000
 	},
 	{
 		"id": "R2CLOUD193",
@@ -3827,7 +4501,8 @@
 				"assistedHeader": "AAEAAQAAAAEAAQEAAAEAAQABAQEAAAABAAEBAAABAAEAAAAAAAEBAAABAAAAAQEAAAAAAAABAQEAAQEAAAEAAQABAQAAAQABAAABAAABAQAAAQAAAAEBAAAAAAEAAQEAAAEAAAABAQABAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1666517994000
 	},
 	{
 		"id": "R2CLOUD192",
@@ -3846,7 +4521,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1666517006000
 	},
 	{
 		"id": "R2CLOUD190",
@@ -3865,7 +4541,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1665909808000
 	},
 	{
 		"id": "R2CLOUD187",
@@ -3885,7 +4562,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1666995466000
 	},
 	{
 		"id": "R2CLOUD186",
@@ -3905,7 +4583,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1685738157000
 	},
 	{
 		"id": "R2CLOUD182",
@@ -3927,7 +4606,8 @@
 				"loraLdro": 0,
 				"loraCodingRate": 6
 			}
-		]
+		],
+		"lastUpdateTime": 1672770549000
 	},
 	{
 		"id": "R2CLOUD181",
@@ -3949,7 +4629,8 @@
 				"loraLdro": 0,
 				"loraCodingRate": 6
 			}
-		]
+		],
+		"lastUpdateTime": 1672770562000
 	},
 	{
 		"id": "R2CLOUD180",
@@ -3969,7 +4650,8 @@
 				"assistedHeader": "AAEBAAABAAEAAQEBAQAAAQAAAAEBAAABAAAAAQABAAEAAQEBAAAAAQABAQAAAQABAAAAAAAAAQAAAQEAAAEAAQAAAAEAAQABAAEAAQAAAAEAAAAAAAEAAQAAAQAAAQEAAAAAAAAAAQAAAAAAAAABAAEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD178",
@@ -3989,7 +4671,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD176",
@@ -4008,7 +4691,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1702327800000
 	},
 	{
 		"id": "R2CLOUD171",
@@ -4029,7 +4713,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1708867048000
 	},
 	{
 		"id": "R2CLOUD158",
@@ -4049,7 +4734,8 @@
 				],
 				"status": "WEAK"
 			}
-		]
+		],
+		"lastUpdateTime": 1692980613000
 	},
 	{
 		"id": "R2CLOUD155",
@@ -4069,7 +4755,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1673859112000
 	},
 	{
 		"id": "R2CLOUD154",
@@ -4088,7 +4775,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD153",
@@ -4107,7 +4795,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD151",
@@ -4126,7 +4815,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD150",
@@ -4146,7 +4836,8 @@
 				"assistedHeader": "AAEAAAEAAAEAAQEAAAEAAQABAAEBAAEAAAEAAAABAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQAAAAEAAAAAAQABAQAAAAABAAAAAQABAAEAAAAAAAABAAAAAAAAAAEAAAAAAAAAAQABAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD149",
@@ -4166,7 +4857,8 @@
 				"assistedHeader": "AAEBAAABAAEAAAAAAAEAAQABAAAAAAABAAEBAAAAAAEAAQABAAAAAQAAAAAAAAEAAAAAAAABAQAAAQEAAQAAAQAAAQABAAABAAEBAQABAQAAAQEAAAEAAQABAAAAAAABAAAAAQABAAEBAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662312139000
 	},
 	{
 		"id": "R2CLOUD148",
@@ -4187,7 +4879,8 @@
 				"assistedHeader": "AAEAAAEAAAEAAAEBAQAAAQAAAAEAAAABAAEAAQABAAEAAQEAAAEAAQAAAAEAAQABAQABAAEBAQAAAQAAAQAAAQAAAQEBAAABAAAAAQAAAAEAAQABAAEAAQABAQAAAQABAAABAAABAAEBAAEAAQEBAQEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1723146746000
 	},
 	{
 		"id": "R2CLOUD146",
@@ -4207,7 +4900,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1706651751000
 	},
 	{
 		"id": "R2CLOUD145",
@@ -4227,7 +4921,8 @@
 				"assistedHeader": "AAABAAAAAAEAAAEBAQAAAQAAAAAAAQEAAAEBAAAAAAEAAQEAAQAAAQABAAEAAQABAAAAAAABAQEAAAEAAAAAAQAAAQEBAAABAAAAAAABAQAAAQAAAQAAAQABAQEBAAABAAAAAQABAAEBAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1663276232000
 	},
 	{
 		"id": "R2CLOUD143",
@@ -4247,7 +4942,8 @@
 				],
 				"status": "WEAK"
 			}
-		]
+		],
+		"lastUpdateTime": 1681769296000
 	},
 	{
 		"id": "R2CLOUD142",
@@ -4267,7 +4963,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1663275714000
 	},
 	{
 		"id": "R2CLOUD139",
@@ -4289,7 +4986,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD138",
@@ -4308,7 +5006,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD137",
@@ -4327,7 +5026,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662311625000
 	},
 	{
 		"id": "R2CLOUD133",
@@ -4348,7 +5048,8 @@
 				"afCarrier": 1700,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1707729417000
 	},
 	{
 		"id": "R2CLOUD132",
@@ -4367,7 +5068,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1707729427000
 	},
 	{
 		"id": "R2CLOUD131",
@@ -4387,7 +5089,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1707729451000
 	},
 	{
 		"id": "R2CLOUD130",
@@ -4406,7 +5109,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1707729462000
 	},
 	{
 		"id": "R2CLOUD129",
@@ -4426,7 +5130,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1695318687000
 	},
 	{
 		"id": "R2CLOUD126",
@@ -4448,7 +5153,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1663578483000
 	},
 	{
 		"id": "R2CLOUD125",
@@ -4467,7 +5173,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1694968259000
 	},
 	{
 		"id": "R2CLOUD124",
@@ -4488,7 +5195,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1694967717000
 	},
 	{
 		"id": "R2CLOUD123",
@@ -4509,7 +5217,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1694968370000
 	},
 	{
 		"id": "R2CLOUD122",
@@ -4528,7 +5237,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1719602190000
 	},
 	{
 		"id": "R2CLOUD119",
@@ -4547,7 +5257,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1665909179000
 	},
 	{
 		"id": "R2CLOUD114",
@@ -4567,7 +5278,8 @@
 				"assistedHeader": "AAEBAAAAAAEAAQAAAAEAAQAAAAAAAAEAAAAAAAAAAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQAAAQAAAQAAAQABAAABAAABAAAAAAABAQAAAQABAAEAAQABAQAAAQABAAAAAAAAAQABAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQEBAAEAAQABAAEBAAABAAEA",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD113",
@@ -4586,7 +5298,8 @@
 				],
 				"status": "WEAK"
 			}
-		]
+		],
+		"lastUpdateTime": 1688854812000
 	},
 	{
 		"id": "R2CLOUD112",
@@ -4605,7 +5318,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD111",
@@ -4625,7 +5339,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD108",
@@ -4645,7 +5360,8 @@
 				"assistedHeader": "AAEBAQABAQAAAAEAAQEAAQABAAAAAQEAAAEBAAEAAAEAAQEAAAEAAQABAAEAAQABAAAAAAABAQAAAQEAAQAAAQABAQAAAQABAAEAAQABAAEAAQEAAAAAAQABAAAAAQEAAAAAAAAAAQABAAAAAQEBAAAAAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1688855233000
 	},
 	{
 		"id": "R2CLOUD107",
@@ -4664,7 +5380,8 @@
 				],
 				"status": "WEAK"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD105",
@@ -4683,7 +5400,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD104",
@@ -4704,7 +5422,8 @@
 				"assistedHeader": "AAAAAQEAAAEAAQAAAAAAAQAAAAEAAQABAAEAAQEAAAEAAQEBAQAAAQABAQAAAQABAAAAAAABAQEAAAABAQAAAQABAAAAAAABAAAAAQABAAEAAQABAQAAAQABAQEBAAABAAEBAAABAAEBAQAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD103",
@@ -4723,7 +5442,8 @@
 				],
 				"status": "WEAK"
 			}
-		]
+		],
+		"lastUpdateTime": 1728928141000
 	},
 	{
 		"id": "R2CLOUD97",
@@ -4744,7 +5464,8 @@
 				"afCarrier": 1700,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD94",
@@ -4764,7 +5485,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1709481431000
 	},
 	{
 		"id": "R2CLOUD92",
@@ -4785,7 +5507,8 @@
 				"afCarrier": 1700,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD91",
@@ -4804,7 +5527,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662311988000
 	},
 	{
 		"id": "R2CLOUD90",
@@ -4823,7 +5547,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662311950000
 	},
 	{
 		"id": "R2CLOUD89",
@@ -4842,7 +5567,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662311784000
 	},
 	{
 		"id": "R2CLOUD88",
@@ -4861,7 +5587,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662311774000
 	},
 	{
 		"id": "R2CLOUD87",
@@ -4880,7 +5607,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662311651000
 	},
 	{
 		"id": "R2CLOUD83",
@@ -4901,7 +5629,8 @@
 				"afCarrier": 1500,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1719609360000
 	},
 	{
 		"id": "R2CLOUD82",
@@ -4920,7 +5649,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1677537762000
 	},
 	{
 		"id": "R2CLOUD81",
@@ -4955,7 +5685,8 @@
 				"loraCodingRate": 5,
 				"loraCrc": true
 			}
-		]
+		],
+		"lastUpdateTime": 1699786369000
 	},
 	{
 		"id": "R2CLOUD80",
@@ -4974,7 +5705,8 @@
 				],
 				"status": "WEAK"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD78",
@@ -4993,7 +5725,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD77",
@@ -5014,7 +5747,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1666810804000
 	},
 	{
 		"id": "R2CLOUD75",
@@ -5033,7 +5767,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1709241047000
 	},
 	{
 		"id": "R2CLOUD72",
@@ -5052,7 +5787,8 @@
 				],
 				"status": "WEAK"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD68",
@@ -5071,7 +5807,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD66",
@@ -5090,7 +5827,8 @@
 				],
 				"status": "WEAK"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD55",
@@ -5109,7 +5847,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD53",
@@ -5128,7 +5867,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD52",
@@ -5148,7 +5888,8 @@
 				"assistedHeader": "AAEBAAAAAAEAAQAAAAEAAQAAAAAAAAEAAAAAAAAAAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQAAAAEAAAAAAQAAAQABAAABAAEAAAABAQAAAQEAAAEAAQABAQABAAABAAAAAAAAAQABAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD51",
@@ -5167,7 +5908,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD48",
@@ -5186,7 +5928,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD47",
@@ -5205,7 +5948,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD46",
@@ -5224,7 +5968,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD45",
@@ -5243,7 +5988,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD40",
@@ -5264,7 +6010,8 @@
 				"transitionWidth": 200.0,
 				"status": "WEAK"
 			}
-		]
+		],
+		"lastUpdateTime": 1675377291000
 	},
 	{
 		"id": "R2CLOUD39",
@@ -5283,7 +6030,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD33",
@@ -5305,7 +6053,8 @@
 				"bpskDifferential": false,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD30",
@@ -5324,26 +6073,8 @@
 				],
 				"status": "WEAK"
 			}
-		]
-	},
-	{
-		"id": "R2CLOUD29",
-		"name": "LUCKY-7",
-		"noradId": "44406",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "CUSTOM",
-				"beaconClass": "ru.r2cloud.jradio.lucky7.Lucky7Beacon",
-				"frequency": 437525000,
-				"bandwidth": 20000,
-				"baudRates": [
-					4800
-				],
-				"status": "ENABLED"
-			}
-		]
+		],
+		"lastUpdateTime": 1662312122000
 	},
 	{
 		"id": "R2CLOUD23",
@@ -5362,7 +6093,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1665909160000
 	},
 	{
 		"id": "R2CLOUD21",
@@ -5381,7 +6113,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD20",
@@ -5402,7 +6135,8 @@
 				"bpskDifferential": true,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD18",
@@ -5421,7 +6155,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD17",
@@ -5440,7 +6175,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD15",
@@ -5461,7 +6197,8 @@
 				"afCarrier": 1500,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD14",
@@ -5482,7 +6219,8 @@
 				"afCarrier": 1500,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD13",
@@ -5503,7 +6241,8 @@
 				"afCarrier": 1500,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD12",
@@ -5524,7 +6263,8 @@
 				"afCarrier": 1500,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD11",
@@ -5543,7 +6283,8 @@
 				],
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1665909193000
 	},
 	{
 		"id": "R2CLOUD8",
@@ -5564,7 +6305,8 @@
 				"bpskDifferential": true,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD7",
@@ -5585,7 +6327,8 @@
 				"afCarrier": 3600,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1719601341000
 	},
 	{
 		"id": "R2CLOUD3",
@@ -5599,7 +6342,8 @@
 				"bandwidth": 34000,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD2",
@@ -5613,7 +6357,8 @@
 				"bandwidth": 34000,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	},
 	{
 		"id": "R2CLOUD1",
@@ -5627,6 +6372,7 @@
 				"bandwidth": 34000,
 				"status": "ENABLED"
 			}
-		]
+		],
+		"lastUpdateTime": 1662310762000
 	}
 ]
