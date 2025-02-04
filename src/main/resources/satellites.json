@@ -9,7 +9,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"beaconClass": "ru.r2cloud.jradio.lasarsat.LasarsatBeacon",
 				"frequency": 436925000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -20,7 +20,29 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1736702391000
+		"lastUpdateTime": 1738699847000
+	},
+	{
+		"id": "R2CLOUD452",
+		"name": "CROCUBE",
+		"noradId": "62394",
+		"enabled": true,
+		"start": 1734780840000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.crocube.CrocubeBeacon",
+				"frequency": 436775000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"deviation": 5000,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1738699791000
 	},
 	{
 		"id": "R2CLOUD451",
