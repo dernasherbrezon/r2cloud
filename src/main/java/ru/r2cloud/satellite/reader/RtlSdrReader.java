@@ -48,7 +48,7 @@ public class RtlSdrReader implements IQReader {
 				break;
 			}
 			// in practice rtl-sdr can't archive more than 2.4MSPS
-			if (rate > 2_400_000) {
+			if (rate > deviceConfiguration.getMaximumSampleRate()) {
 				continue;
 			}
 			if (((rate > 300000) && (rate <= 900000))) {

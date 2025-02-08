@@ -10,6 +10,7 @@ public class DeviceConfiguration {
 	private DeviceType deviceType;
 	private long minimumFrequency;
 	private long maximumFrequency;
+	private long maximumSampleRate;
 
 	private String host;
 	private int port;
@@ -28,6 +29,14 @@ public class DeviceConfiguration {
 	private SdrServerConfiguration sdrServerConfiguration;
 	private double maximumBatteryVoltage;
 	private double minimumBatteryVoltage;
+	
+	public long getMaximumSampleRate() {
+		return maximumSampleRate;
+	}
+	
+	public void setMaximumSampleRate(long maximumSampleRate) {
+		this.maximumSampleRate = maximumSampleRate;
+	}
 
 	public DeviceType getDeviceType() {
 		return deviceType;

@@ -1,7 +1,10 @@
 package ru.r2cloud.device;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceStatus;
+import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.SdrStatus;
 import ru.r2cloud.model.Transmitter;
@@ -13,6 +16,7 @@ import ru.r2cloud.satellite.TransmitterFilter;
 import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.reader.IQReader;
 import ru.r2cloud.satellite.reader.PlutoSdrReader;
+import ru.r2cloud.satellite.reader.SatdumpReader;
 import ru.r2cloud.sdr.PlutoStatusProcess;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
@@ -35,7 +39,11 @@ public class PlutoSdrDevice extends Device {
 
 	@Override
 	public IQReader createReader(ObservationRequest req, Transmitter transmitter, DeviceConfiguration deviceConfiguration) {
-		return new PlutoSdrReader(config, deviceConfiguration, processFactory, req, transmitter);
+		if (transmitter.getFraming() == Framing.SATDUMP) {
+			return new SatdumpReader(config, deviceConfiguration, processFactory, req, transmitter, new ReentrantLock());
+		} else {
+			return new PlutoSdrReader(config, deviceConfiguration, processFactory, req, transmitter);
+		}
 	}
 
 	@Override

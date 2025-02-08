@@ -255,7 +255,7 @@ public class R2Cloud {
 				cur.setMinimumFrequency(24_000_000);
 				cur.setMaximumFrequency(1_700_000_000);
 			}
-			deviceManager.addDevice(new SpyServerDevice(cur.getId(), new SdrServerTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur)));
+			deviceManager.addDevice(new SpyServerDevice(cur.getId(), new SdrServerTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), processFactory));
 		}
 
 		// setup web server

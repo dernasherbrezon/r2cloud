@@ -33,6 +33,9 @@ public class DeviceTransmitterFilter implements TransmitterFilter {
 		if ((satellite.getFrequency() - bandwidth / 2) < config.getMinimumFrequency()) {
 			return false;
 		}
+		if (config.getMaximumSampleRate() != 0 && config.getMaximumSampleRate() < bandwidth) {
+			return false;
+		}
 		return true;
 	}
 
