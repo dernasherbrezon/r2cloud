@@ -66,6 +66,12 @@ public class DeviceConfigSave extends AbstractHttpController {
 			}
 			config.setBiast(WebServer.getBoolean(request, "biast"));
 			config.setPpm((int) readOptionalLong(request, "ppm", 0, errors));
+			if (config.getMaximumFrequency() > 1_766_000_000L) {
+				errors.put("maximumFrequency", "RTL-SDR doesn't support more than 1766 Mhz");
+			}
+			if (config.getMinimumFrequency() < 500_000L) {
+				errors.put("minimumFrequency", "RTL-SDR doesn't support less than 500 Khz");
+			}
 			break;
 		}
 		case LORAAT: {

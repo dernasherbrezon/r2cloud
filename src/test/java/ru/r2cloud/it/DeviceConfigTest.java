@@ -44,6 +44,19 @@ public class DeviceConfigTest extends RegisteredTest {
 		response = client.saveDeviceConfig(device.toJson());
 		assertEquals(400, response.statusCode());
 		assertErrorInField("gain", response);
+
+		device = createConfig();
+		device.setMaximumFrequency(1_777_000_000L);
+		response = client.saveDeviceConfig(device.toJson());
+		assertEquals(400, response.statusCode());
+		assertErrorInField("maximumFrequency", response);
+
+		device = createConfig();
+		device.setMinimumFrequency(400_000L);
+		response = client.saveDeviceConfig(device.toJson());
+		assertEquals(400, response.statusCode());
+		assertErrorInField("minimumFrequency", response);
+
 	}
 
 	@Test
