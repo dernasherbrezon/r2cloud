@@ -61,7 +61,7 @@ public class SatdumpReader implements IQReader {
 			}
 			startTimeMillis = System.currentTimeMillis();
 			String commandLine = config.getProperty("satellites.satdump.path") + " live " + transmitter.getSatdumpPipeline() + " " + outputDirectory.getAbsolutePath() + " --source " + deviceConfiguration.getDeviceType().getSatdumpCode() + " --gain " + deviceConfiguration.getGain() + biast + " --samplerate "
-					+ (transmitter.getBandwidth() * 2) + " --frequency " + transmitter.getFrequency() + " --general_gain " + deviceConfiguration.getGain() + " --timeout " + ((req.getEndTimeMillis() - req.getStartTimeMillis()) / 1000);
+					+ transmitter.getBandwidth() + " --frequency " + transmitter.getFrequency() + " --general_gain " + deviceConfiguration.getGain() + " --timeout " + ((req.getEndTimeMillis() - req.getStartTimeMillis()) / 1000);
 			if (deviceConfiguration.getDeviceType().equals(DeviceType.SPYSERVER)) {
 				commandLine += " --ip_address " + deviceConfiguration.getHost() + " --port " + deviceConfiguration.getPort();
 			}

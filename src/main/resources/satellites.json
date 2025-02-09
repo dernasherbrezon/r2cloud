@@ -6374,7 +6374,16 @@
 		"enabled": true,
 		"transmitters": [
 			{
+				"framing": "SATDUMP",
+				"modulation": "BPSK",
+				"frequency": 1707000000,
+				"bandwidth": 3000000,
+				"status": "ENABLED",
+				"satdumpPipeline": "noaa_hrpt"
+			},
+			{
 				"framing": "APT",
+				"modulation": "AM",
 				"frequency": 137912500,
 				"bandwidth": 34000,
 				"status": "ENABLED"

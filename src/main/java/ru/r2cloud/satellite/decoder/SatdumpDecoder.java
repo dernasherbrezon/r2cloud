@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.DecoderResult;
-import ru.r2cloud.model.DeviceType;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;

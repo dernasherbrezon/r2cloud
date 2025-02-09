@@ -39,12 +39,12 @@ public class RtlSdrReaderTest {
 		ObservationRequest req = new ObservationRequest();
 		req.setSatelliteId(satelliteId);
 
-		DeviceConfiguration deviceConfiguration = new DeviceConfiguration();
+		DeviceConfiguration deviceConfiguration = createDeviceConfig();
 		deviceConfiguration.setBiast(true);
-		
+
 		Transmitter transmitter = new Transmitter();
 		transmitter.setBaudRates(Collections.singletonList(9600));
-		
+
 		RtlSdrReader o = new RtlSdrReader(config, deviceConfiguration, factory, req, transmitter, new ReentrantLock());
 		IQData iqData = o.start();
 		o.complete();
@@ -59,7 +59,7 @@ public class RtlSdrReaderTest {
 		ObservationRequest req = new ObservationRequest();
 		req.setSatelliteId(satelliteId);
 
-		DeviceConfiguration deviceConfiguration = new DeviceConfiguration();
+		DeviceConfiguration deviceConfiguration = createDeviceConfig();
 		deviceConfiguration.setBiast(true);
 
 		Transmitter transmitter = new Transmitter();
@@ -78,11 +78,11 @@ public class RtlSdrReaderTest {
 
 		ObservationRequest req = new ObservationRequest();
 		req.setSatelliteId(satelliteId);
-		
+
 		Transmitter transmitter = new Transmitter();
 		transmitter.setBaudRates(Collections.singletonList(9600));
 
-		RtlSdrReader o = new RtlSdrReader(config, new DeviceConfiguration(), factory, req, transmitter, new ReentrantLock());
+		RtlSdrReader o = new RtlSdrReader(config, createDeviceConfig(), factory, req, transmitter, new ReentrantLock());
 		IQData iqData = o.start();
 		o.complete();
 		assertNull(iqData.getDataFile());
@@ -99,7 +99,7 @@ public class RtlSdrReaderTest {
 		Transmitter transmitter = new Transmitter();
 		transmitter.setBaudRates(Collections.singletonList(9600));
 
-		RtlSdrReader o = new RtlSdrReader(config, new DeviceConfiguration(), factory, req, transmitter, new ReentrantLock());
+		RtlSdrReader o = new RtlSdrReader(config, createDeviceConfig(), factory, req, transmitter, new ReentrantLock());
 		IQData iqData = o.start();
 		o.complete();
 		assertNotNull(iqData.getDataFile());
@@ -115,6 +115,12 @@ public class RtlSdrReaderTest {
 		config.setProperty("satellites.rtlsdr.biast.path", rtlBiast);
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
 		config.update();
+	}
+	
+	private static DeviceConfiguration createDeviceConfig() {
+		DeviceConfiguration result = new DeviceConfiguration();
+		result.setMaximumSampleRate(2400000L);
+		return result;
 	}
 
 	private Map<String, ProcessWrapperMock> create(ProcessWrapperMock rtl) {
