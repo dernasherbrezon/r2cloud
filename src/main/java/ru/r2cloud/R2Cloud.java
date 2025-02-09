@@ -249,11 +249,17 @@ public class R2Cloud {
 				SpyServerStatus status = client.getStatus();
 				cur.setMinimumFrequency(status.getMinFrequency());
 				cur.setMaximumFrequency(status.getMaxFrequency());
+				if (!status.getSupportedSampleRates().isEmpty()) {
+					cur.setMaximumSampleRate(status.getSupportedSampleRates().get(status.getSupportedSampleRates().size() - 1));
+				}
 				client.stop();
 			} catch (IOException e) {
 				Util.logIOException(LOG, "[" + cur.getId() + "] unable to init device frequencies. Use default: 24Mhz - 1700Mhz", e);
 				cur.setMinimumFrequency(24_000_000);
 				cur.setMaximumFrequency(1_700_000_000);
+			}
+			if (cur.getMaximumSampleRate() == 0L) {
+				cur.setMaximumSampleRate(2_400_000); // some reasonble sample rate. supported both by airspy and rtlsdr
 			}
 			deviceManager.addDevice(new SpyServerDevice(cur.getId(), new SdrServerTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), processFactory));
 		}
