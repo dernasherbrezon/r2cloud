@@ -6353,19 +6353,50 @@
 		"lastUpdateTime": 1719601341000
 	},
 	{
+		"id": "R2CLOUD9999",
+		"name": "EWS-G2 (GOES 15)",
+		"noradId": "36411",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 1694100000,
+				"bandwidth": 2400000,
+				"baudRates": [
+					927000
+				],
+				"status": "ENABLED",
+				"beaconSizeBytes": 8192,
+				"satdumpPipeline": "goes_hrit"
+			}
+		],
+		"lastUpdateTime": 1962310762000
+	},
+	{
 		"id": "R2CLOUD3",
 		"name": "NOAA 19",
 		"noradId": "33591",
 		"enabled": true,
 		"transmitters": [
 			{
+				"framing": "SATDUMP",
+				"modulation": "BPSK",
+				"frequency": 1698000000,
+				"bandwidth": 2400000,
+				"status": "ENABLED",
+				"satdumpPipeline": "noaa_hrpt"
+			},
+			{
 				"framing": "APT",
+				"modulation": "AM",
 				"frequency": 137100000,
 				"bandwidth": 34000,
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1662310762000
+		"lastUpdateTime": 1962310762000
 	},
 	{
 		"id": "R2CLOUD2",
@@ -6377,7 +6408,7 @@
 				"framing": "SATDUMP",
 				"modulation": "BPSK",
 				"frequency": 1707000000,
-				"bandwidth": 3000000,
+				"bandwidth": 2400000,
 				"status": "ENABLED",
 				"satdumpPipeline": "noaa_hrpt"
 			},
@@ -6389,7 +6420,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1662310762000
+		"lastUpdateTime": 1962310762000
 	},
 	{
 		"id": "R2CLOUD1",
@@ -6398,12 +6429,21 @@
 		"enabled": true,
 		"transmitters": [
 			{
+				"framing": "SATDUMP",
+				"modulation": "BPSK",
+				"frequency": 1702500000,
+				"bandwidth": 2400000,
+				"status": "ENABLED",
+				"satdumpPipeline": "noaa_hrpt"
+			},
+			{
 				"framing": "APT",
+				"modulation": "AM",
 				"frequency": 137620000,
 				"bandwidth": 34000,
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1662310762000
+		"lastUpdateTime": 1962310762000
 	}
 ]
