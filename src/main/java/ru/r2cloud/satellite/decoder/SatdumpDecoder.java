@@ -64,7 +64,7 @@ public class SatdumpDecoder implements Decoder {
 	private File decodeImage(File rawFile, Observation request, final Transmitter transmitter) {
 		File outputDirectory = new File(config.getTempDirectory(), request.getId());
 		ProcessWrapper process = null;
-		String commandLine = config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " cadu " + rawFile.getAbsolutePath() + " " + rawFile.getParentFile().getAbsolutePath();
+		String commandLine = config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " cadu " + rawFile.getAbsolutePath() + " " + rawFile.getParentFile().getAbsolutePath() + " --tle_override explicitly_missing ";
 		try {
 			process = factory.create(commandLine, Redirect.INHERIT, true);
 			int responseCode = process.waitFor();
