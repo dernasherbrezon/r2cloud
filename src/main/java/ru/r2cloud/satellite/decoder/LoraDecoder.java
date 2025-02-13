@@ -29,7 +29,7 @@ public class LoraDecoder implements Decoder {
 	public DecoderResult decode(File rawFile, Observation request, final Transmitter transmitter) {
 		DecoderResult result = new DecoderResult();
 		result.setRawPath(null);
-		long numberOfDecodedPackets = 0;
+		int numberOfDecodedPackets = 0;
 		try (BeaconInputStream<? extends Beacon> bis = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(rawFile)), beacon)) {
 			long totalSize = 0;
 			while (bis.hasNext()) {

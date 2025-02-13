@@ -55,14 +55,12 @@ public abstract class TelemetryDecoder implements Decoder {
 			return result;
 		}
 
-		long numberOfDecodedPackets = 0;
 		long totalSize = 0;
 		float sampleRate = req.getSampleRate();
-		File binFile = new File(config.getTempDirectory(), req.getId() + ".bin");
-		List<BeaconSource<? extends Beacon>> input = null;
-		try (BeaconOutputStream aos = new BeaconOutputStream(new FileOutputStream(binFile))) {
-			for (Integer baudRate : transmitter.getBaudRates()) {
-				input = createBeaconSources(rawIq, req, transmitter, baudRate);
+		List<Beacon> allBeacons = new ArrayList<>();
+		for (Integer baudRate : transmitter.getBaudRates()) {
+			try {
+				List<BeaconSource<? extends Beacon>> input = createBeaconSources(rawIq, req, transmitter, baudRate);
 				for (int i = 0; i < input.size(); i++) {
 					if (Thread.currentThread().isInterrupted()) {
 						LOG.info("decoding thread interrupted. stopping...");
@@ -79,7 +77,6 @@ public abstract class TelemetryDecoder implements Decoder {
 							meta.setBaud(baudRate);
 							next.setRxMeta(meta);
 							beacons.add(next);
-							numberOfDecodedPackets++;
 							totalSize += next.getRawData().length;
 						}
 					} finally {
@@ -89,9 +86,6 @@ public abstract class TelemetryDecoder implements Decoder {
 						try (FloatInput next = new DopplerCorrectedSource(predict, rawIq, req, transmitter, baudRate, true)) {
 							SnrCalculator.enrichSnr(next, beacons, transmitter.getBandwidth(), 1);
 						}
-					}
-					for (Beacon cur : beacons) {
-						aos.write(cur);
 					}
 					// decode only one image per observation
 					if (result.getImagePath() == null) {
@@ -103,19 +97,28 @@ public abstract class TelemetryDecoder implements Decoder {
 							}
 						}
 					}
+					allBeacons.addAll(beacons);
 				}
+			} catch (Exception e) {
+				LOG.error("[{}] unable to process baud rate {}", req.getId(), baudRate, e);
 			}
-		} catch (Exception e) {
-			LOG.error("unable to process: {}", rawIq, e);
+		}
+		result.setNumberOfDecodedPackets(allBeacons.size());
+		result.setTotalSize(totalSize);
+		if (allBeacons.isEmpty()) {
 			return result;
 		}
-		result.setNumberOfDecodedPackets(numberOfDecodedPackets);
-		result.setTotalSize(totalSize);
-		if (numberOfDecodedPackets <= 0) {
-			Util.deleteQuietly(binFile);
-		} else {
-			result.setDataPath(binFile);
+
+		File binFile = new File(config.getTempDirectory(), req.getId() + ".bin");
+		try (BeaconOutputStream aos = new BeaconOutputStream(new FileOutputStream(binFile))) {
+			for (Beacon cur : allBeacons) {
+				aos.write(cur);
+			}
+		} catch (Exception e) {
+			LOG.error("[{}] unable to process: {}", req.getId(), rawIq, e);
+			return result;
 		}
+		result.setDataPath(binFile);
 		return result;
 	}
 

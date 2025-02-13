@@ -8,7 +8,7 @@ public class DecoderResult {
 
 	private String channelA;
 	private String channelB;
-	private Long numberOfDecodedPackets = 0L;
+	private int numberOfDecodedPackets;
 	private Long totalSize = 0L;
 
 	private File imagePath;
@@ -46,11 +46,11 @@ public class DecoderResult {
 		this.channelB = channelB;
 	}
 
-	public Long getNumberOfDecodedPackets() {
+	public int getNumberOfDecodedPackets() {
 		return numberOfDecodedPackets;
 	}
 
-	public void setNumberOfDecodedPackets(Long numberOfDecodedPackets) {
+	public void setNumberOfDecodedPackets(int numberOfDecodedPackets) {
 		this.numberOfDecodedPackets = numberOfDecodedPackets;
 	}
 
