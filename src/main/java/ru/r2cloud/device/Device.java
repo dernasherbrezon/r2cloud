@@ -210,15 +210,15 @@ public abstract class Device implements Lifecycle {
 			if (rotatorService != null) {
 				rotatorFuture = rotatorService.schedule(req, current, startFuture);
 			}
-			Runnable completeTask = new SafeRunnable() {
+			Runnable onComplete = new SafeRunnable() {
 
 				@Override
 				public void safeRun() {
 					reader.complete();
 				}
 			};
-			Future<?> stopRtlSdrFuture = stopThread.schedule(completeTask, req.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
-			schedule.assignTasksToSlot(req.getId(), new ScheduledObservation(startFuture, stopRtlSdrFuture, completeTask, rotatorFuture));
+			Future<?> onCompleteFuture = stopThread.schedule(onComplete, req.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
+			schedule.assignTasksToSlot(req.getId(), new ScheduledObservation(startFuture, onCompleteFuture, onComplete, rotatorFuture));
 		}
 	}
 
