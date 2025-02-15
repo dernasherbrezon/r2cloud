@@ -37,7 +37,7 @@ public class LoraDecoderTest {
 		LoraDecoder decoder = new LoraDecoder(RawBeacon.class);
 		DecoderResult result = decoder.decode(rawFile, new Observation(), new Transmitter());
 		assertNotNull(result);
-		assertEquals(1, result.getNumberOfDecodedPackets().longValue());
+		assertEquals(1, result.getNumberOfDecodedPackets());
 		assertNotNull(result.getDataPath());
 	}
 
@@ -50,7 +50,7 @@ public class LoraDecoderTest {
 		LoraDecoder decoder = new LoraDecoder(RawBeacon.class);
 		DecoderResult result = decoder.decode(rawFile, new Observation(), new Transmitter());
 		assertNotNull(result);
-		assertEquals(0, result.getNumberOfDecodedPackets().longValue());
+		assertEquals(0, result.getNumberOfDecodedPackets());
 		assertNull(result.getDataPath());
 		assertFalse(rawFile.exists());
 	}

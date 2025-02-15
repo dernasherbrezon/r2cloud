@@ -46,7 +46,7 @@ public class LRPTDecoder implements Decoder {
 		DecoderResult result = new DecoderResult();
 		result.setRawPath(rawIq);
 
-		long numberOfDecodedPackets = 0;
+		int numberOfDecodedPackets = 0;
 		File binFile = new File(config.getTempDirectory(), "lrpt-" + req.getId() + ".bin");
 		try {
 			DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req, transmitter, baudRate);

@@ -70,9 +70,9 @@ public class DecoderServiceTest {
 		Decoder decoder = mock(Decoder.class);
 		when(decoders.findByTransmitter(any())).thenReturn(decoder);
 		DecoderResult firstCall = new DecoderResult();
-		firstCall.setNumberOfDecodedPackets(1L);
+		firstCall.setNumberOfDecodedPackets(1);
 		DecoderResult secondCall = new DecoderResult();
-		secondCall.setNumberOfDecodedPackets(2L);
+		secondCall.setNumberOfDecodedPackets(2);
 		when(decoder.decode(any(), any(), any())).thenReturn(firstCall, secondCall);
 		service.retryObservations();
 		service.decode(observation.getSatelliteId(), observation.getId());

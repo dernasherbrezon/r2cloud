@@ -54,7 +54,7 @@ public class DecoderTest {
 		Transmitter transmitter = satellite.getById(transmitterId);
 		Decoder decoder = decoders.findByTransmitter(transmitter);
 		DecoderResult result = decoder.decode(wav, req, transmitter);
-		assertEquals(expectedPackets, result.getNumberOfDecodedPackets().longValue());
+		assertEquals(expectedPackets, result.getNumberOfDecodedPackets());
 		assertNotNull(result.getDataPath());
 		assertNotNull(result.getRawPath());
 	}

@@ -60,7 +60,10 @@ public class Schedule {
 		if (previous == null) {
 			return null;
 		}
-		LOG.info("cancelling {}: {}", observationId, previousReq.getStartTimeMillis());
+		// log only never executed tasks
+		if (previousReq.getStartTimeMillis() > System.currentTimeMillis()) {
+			LOG.info("cancelling {}: {}", observationId, previousReq.getStartTimeMillis());
+		}
 		previous.cancel();
 		return previous;
 	}
