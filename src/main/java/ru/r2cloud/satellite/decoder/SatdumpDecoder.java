@@ -35,7 +35,7 @@ public class SatdumpDecoder implements Decoder {
 			return result;
 		}
 		if (transmitter.getBeaconSizeBytes() > 0) {
-			long numberOfDecodedPackets = rawFile.length() / transmitter.getBeaconSizeBytes();
+			int numberOfDecodedPackets = (int) (rawFile.length() / transmitter.getBeaconSizeBytes());
 			if (rawFile.length() % transmitter.getBeaconSizeBytes() != 0) {
 				LOG.warn("[{}] unexpected number of bytes in the .cadu file. number of packets is incorrect", request.getId());
 			}

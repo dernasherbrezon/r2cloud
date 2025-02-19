@@ -6375,6 +6375,28 @@
 		"lastUpdateTime": 1962310762000
 	},
 	{
+		"id": "R2CLOUD9998",
+		"name": "FENGYUN 4A",
+		"noradId": "41882",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 1697000000,
+				"bandwidth": 2400000,
+				"baudRates": [
+					927000
+				],
+				"status": "ENABLED",
+				"beaconSizeBytes": 8192,
+				"satdumpPipeline": "fengyun4_a_lrit"
+			}
+		],
+		"lastUpdateTime": 1962310762000
+	},
+	{
 		"id": "R2CLOUD3",
 		"name": "NOAA 19",
 		"noradId": "33591",
