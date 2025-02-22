@@ -21,20 +21,13 @@ import java.util.TimeZone;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import ru.r2cloud.FixedClock;
-import ru.r2cloud.JsonHttpResponse;
-import ru.r2cloud.LeoSatDataServerMock;
-import ru.r2cloud.SatnogsServerMock;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
-import ru.r2cloud.cloud.LeoSatDataClient;
-import ru.r2cloud.cloud.SatnogsClient;
 import ru.r2cloud.device.Device;
 import ru.r2cloud.device.SdrServerDevice;
 import ru.r2cloud.model.AntennaConfiguration;
@@ -42,6 +35,7 @@ import ru.r2cloud.model.AntennaType;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SatelliteSource;
 import ru.r2cloud.model.SdrServerConfiguration;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
@@ -52,14 +46,11 @@ public class ScheduleTest {
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private Schedule schedule;
-	private LeoSatDataServerMock server;
-	private SatnogsServerMock satnogs;
 	private TestConfiguration config;
 	private SatelliteDao satelliteDao;
 	private long current;
 	private ObservationFactory factory;
 	private AntennaConfiguration antenna;
-	private FixedClock clock;
 	
 	@Test
 	public void testExplicitSchedule() throws Exception {
@@ -75,17 +66,10 @@ public class ScheduleTest {
 
 	@Test
 	public void testScheduleForNewLaunches() throws Exception {
-		satnogs.setSatellitesMock(new JsonHttpResponse("satnogs/satellites.json", 200));
-		satnogs.setTransmittersMock(new JsonHttpResponse("satnogs/transmitters.json", 200));
-		satnogs.setTleMockDirectory("satnogs");
-		server.setSatelliteMock(new JsonHttpResponse("r2cloudclienttest/satellite.json", 200));
-		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunch-for-scheduletest.json", 200));
-		
 		current = getTime("2022-09-30 22:17:01.000");
-		satelliteDao.saveSatnogs(new SatnogsClient(config, clock).loadSatellites(), current);
-		LeoSatDataClient leosatClient = new LeoSatDataClient(config, clock);
-		satelliteDao.saveLeosatdata(leosatClient.loadSatellites(current), current);
-		satelliteDao.saveLeosatdataNew(leosatClient.loadNewLaunches(current), current);
+		satelliteDao.saveSatnogs(SatelliteDao.loadFromClasspathConfig("satellites-satnogs.json", SatelliteSource.SATNOGS), current);
+		satelliteDao.saveLeosatdata(SatelliteDao.loadFromClasspathConfig("satellites-leosatdata.json", SatelliteSource.LEOSATDATA), current);
+		satelliteDao.saveLeosatdataNew(SatelliteDao.loadFromClasspathConfig("satellites-leosatdata-newlaunches.json", SatelliteSource.LEOSATDATA), current);
 		satelliteDao.reindex();
 		
 		List<ObservationRequest> expected = readExpected("expected/scheduleNewLaunches.txt");
@@ -183,15 +167,6 @@ public class ScheduleTest {
 	public void start() throws Exception {
 		current = getTime("2020-09-30 22:17:01.000");
 
-		server = new LeoSatDataServerMock();
-		server.setSatelliteMock("[]", 200);
-		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/empty-array-response.json", 200));
-		server.start();
-		satnogs = new SatnogsServerMock();
-		satnogs.setSatellitesMock("[]", 200);
-		satnogs.setTransmittersMock("[]", 200);
-		satnogs.start();
-
 		antenna = new AntennaConfiguration();
 		antenna.setType(AntennaType.OMNIDIRECTIONAL);
 		antenna.setMinElevation(8);
@@ -202,29 +177,16 @@ public class ScheduleTest {
 		config.setProperty("locaiton.lon", "0.01");
 		config.setProperty("r2cloud.newLaunches", true);
 		config.setProperty("r2cloud.apiKey", UUID.randomUUID().toString());
-		config.setProperty("leosatdata.hostname", server.getUrl());
 		config.setProperty("satnogs.satellites", true);
-		config.setProperty("satnogs.hostname", satnogs.getUrl());
 		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-test.json");
 		config.setProperty("scheduler.orekit.path", "./src/test/resources/data/orekit-data");
 
-		clock = new FixedClock(current);
 		satelliteDao = new SatelliteDao(config);
 		satelliteDao.setTle(TestUtil.loadTle("tle-2020-09-27.txt"));
 		PredictOreKit predict = new PredictOreKit(config);
 		factory = new ObservationFactory(predict);
 		schedule = new Schedule(new SequentialTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
 
-	}
-
-	@After
-	public void stop() {
-		if (server != null) {
-			server.stop();
-		}
-		if (satnogs != null) {
-			satnogs.stop();
-		}
 	}
 
 	private static void assertObservations(List<ObservationRequest> expected, List<ObservationRequest> actual) {

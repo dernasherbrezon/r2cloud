@@ -202,6 +202,7 @@ public class Satellite {
 				if (cur == null) {
 					continue;
 				}
+				cur.setPriority(result.getPriority());
 				transmitters.add(cur);
 			}
 		}
@@ -211,6 +212,10 @@ public class Satellite {
 		JsonValue lastUpdateTimeJson = meta.get("lastUpdateTime");
 		if (lastUpdateTimeJson != null) {
 			result.setLastUpdateTime(lastUpdateTimeJson.asLong());
+		}
+		JsonValue tle = meta.get("tle");
+		if (tle != null) {
+			result.setTle(Tle.fromJson(tle.asObject()));
 		}
 		return result;
 	}
@@ -234,6 +239,9 @@ public class Satellite {
 		result.add("transmitters", transmittersJson);
 		if (lastUpdateTime != 0) {
 			result.add("lastUpdateTime", lastUpdateTime);
+		}
+		if (tle != null) {
+			result.add("tle", tle.toJson());
 		}
 		return result;
 	}

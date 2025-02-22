@@ -254,7 +254,7 @@ public class SatelliteDao {
 		}
 	}
 
-	private static List<Satellite> loadFromClasspathConfig(String metaLocation, SatelliteSource source) {
+	public static List<Satellite> loadFromClasspathConfig(String metaLocation, SatelliteSource source) {
 		List<Satellite> result = new ArrayList<>();
 		InputStream is = SatelliteDao.class.getClassLoader().getResourceAsStream(metaLocation);
 		if (is == null) {

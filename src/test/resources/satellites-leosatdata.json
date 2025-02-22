@@ -1,0 +1,21 @@
+[
+	{
+		"name": "2022-096K",
+		"noradId": "53379",
+		"priority": "NORMAL",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 435000000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		]
+	}
+]
