@@ -316,6 +316,9 @@ public abstract class Device implements Lifecycle {
 	}
 
 	public ObservationRequest schedule(Transmitter transmitter) {
+		if (findById(transmitter.getId()) == null) {
+			return null;
+		}
 		List<ObservationRequest> batch = schedule.addToSchedule(deviceConfiguration.getAntennaConfiguration(), transmitter, clock.millis());
 		if (batch.isEmpty()) {
 			return null;
