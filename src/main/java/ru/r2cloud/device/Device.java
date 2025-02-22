@@ -312,11 +312,6 @@ public abstract class Device implements Lifecycle {
 	}
 
 	public ObservationRequest findFirstByTransmitter(Transmitter transmitter) {
-		// schedule can be shared. thus containing observations from different
-		// transmitters
-		if (!filter.accept(transmitter)) {
-			return null;
-		}
 		return schedule.findFirstByTransmitterId(transmitter.getId(), clock.millis());
 	}
 

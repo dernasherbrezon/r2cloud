@@ -75,9 +75,9 @@ public class TleDao {
 		}
 	}
 
-	public void saveTle(Map<String, Tle> tle) {
+	public void saveTle(Map<String, Tle> tle, long currentTime) {
 		index(tle);
-		lastUpdateTime = System.currentTimeMillis();
+		lastUpdateTime = currentTime;
 		saveTle(cacheFileLocation, tle);
 	}
 

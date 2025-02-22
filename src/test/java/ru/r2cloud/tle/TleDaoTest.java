@@ -43,7 +43,7 @@ public class TleDaoTest {
 		// TleDao doesn't verify Tle format
 		tle.put(UUID.randomUUID().toString(), new Tle(new String[] { UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString() }));
 
-		dao.saveTle(tle);
+		dao.saveTle(tle, System.currentTimeMillis());
 
 		Map<String, Tle> actual = dao.findAll();
 		assertEquals(1, actual.size());
@@ -52,7 +52,7 @@ public class TleDaoTest {
 		Path failingPath = fs.getPath(fileLocation).getParent();
 		fs.mock(failingPath, new FailingByteChannelCallback(10));
 		tle.put(UUID.randomUUID().toString(), new Tle(new String[] { UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString() }));
-		dao.saveTle(tle);
+		dao.saveTle(tle, System.currentTimeMillis());
 		fs.removeMock(failingPath);
 
 		// the new value cached in-memory

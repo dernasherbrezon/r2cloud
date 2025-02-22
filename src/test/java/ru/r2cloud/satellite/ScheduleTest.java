@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -51,7 +50,7 @@ public class ScheduleTest {
 	private long current;
 	private ObservationFactory factory;
 	private AntennaConfiguration antenna;
-	
+
 	@Test
 	public void testExplicitSchedule() throws Exception {
 		Map<String, Integer> priorities = new HashMap<>();
@@ -66,12 +65,12 @@ public class ScheduleTest {
 
 	@Test
 	public void testScheduleForNewLaunches() throws Exception {
-		current = getTime("2022-09-30 22:17:01.000");
+		current = TestUtil.getTime("2022-09-30 22:17:01.000");
 		satelliteDao.saveSatnogs(SatelliteDao.loadFromClasspathConfig("satellites-satnogs.json", SatelliteSource.SATNOGS), current);
 		satelliteDao.saveLeosatdata(SatelliteDao.loadFromClasspathConfig("satellites-leosatdata.json", SatelliteSource.LEOSATDATA), current);
 		satelliteDao.saveLeosatdataNew(SatelliteDao.loadFromClasspathConfig("satellites-leosatdata-newlaunches.json", SatelliteSource.LEOSATDATA), current);
 		satelliteDao.reindex();
-		
+
 		List<ObservationRequest> expected = readExpected("expected/scheduleNewLaunches.txt");
 		List<ObservationRequest> actual = schedule.createInitialSchedule(antenna, extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
@@ -110,9 +109,9 @@ public class ScheduleTest {
 		List<ObservationRequest> actual = schedule.createInitialSchedule(antenna, extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
 
-		ObservationRequest first = schedule.findFirstByTransmitterId("40378-0", getTime("2020-10-01 11:38:34.491"));
+		ObservationRequest first = schedule.findFirstByTransmitterId("40378-0", TestUtil.getTime("2020-10-01 11:38:34.491"));
 		assertEquals("1601553418714-40378-0", first.getId());
-		assertNull(schedule.findFirstByTransmitterId("40378-0", getTime("2020-10-02 11:43:56.801")));
+		assertNull(schedule.findFirstByTransmitterId("40378-0", TestUtil.getTime("2020-10-02 11:43:56.801")));
 
 		// tasks and ensure previous got cancelled
 		ScheduledObservation tasks = new ScheduledObservation(null, null, null, null);
@@ -123,7 +122,7 @@ public class ScheduleTest {
 		schedule.assignTasksToSlot(first.getId(), differentTasks);
 		assertTrue(tasks.isCancelled());
 
-		List<ObservationRequest> sublist = schedule.findObservations(getTime("2020-10-01 10:55:40.000"), getTime("2020-10-01 13:04:14.000"));
+		List<ObservationRequest> sublist = schedule.findObservations(TestUtil.getTime("2020-10-01 10:55:40.000"), TestUtil.getTime("2020-10-01 13:04:14.000"));
 		assertObservations(readExpected("expected/scheduleSublist.txt"), sublist);
 
 		List<ObservationRequest> noaa18 = schedule.addToSchedule(antenna, satelliteDao.findByName("NOAA 18").getTransmitters().get(0), current);
@@ -148,24 +147,24 @@ public class ScheduleTest {
 		actual = schedule.createInitialSchedule(antenna, extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
 
-		first = schedule.findFirstByTransmitterId("40378-0", getTime("2020-10-01 11:38:34.491"));
+		first = schedule.findFirstByTransmitterId("40378-0", TestUtil.getTime("2020-10-01 11:38:34.491"));
 		// slot is occupied
-		assertNull(schedule.moveObservation(first, getTime("2020-10-02 11:11:00.359")));
-		first = schedule.findFirstByTransmitterId("40378-0", getTime("2020-10-01 11:38:34.491"));
-		ObservationRequest movedTo = schedule.moveObservation(first, getTime("2020-10-02 00:00:00.000"));
+		assertNull(schedule.moveObservation(first, TestUtil.getTime("2020-10-02 11:11:00.359")));
+		first = schedule.findFirstByTransmitterId("40378-0", TestUtil.getTime("2020-10-01 11:38:34.491"));
+		ObservationRequest movedTo = schedule.moveObservation(first, TestUtil.getTime("2020-10-02 00:00:00.000"));
 		assertNotNull(movedTo);
-		assertEquals(getTime("2020-10-02 00:00:00.000"), movedTo.getStartTimeMillis());
-		assertEquals(getTime("2020-10-02 00:05:37.617"), movedTo.getEndTimeMillis());
+		assertEquals(TestUtil.getTime("2020-10-02 00:00:00.000"), movedTo.getStartTimeMillis());
+		assertEquals(TestUtil.getTime("2020-10-02 00:05:37.617"), movedTo.getEndTimeMillis());
 
 		schedule.cancelAll();
-		long partialStart = getTime("2020-09-30 23:00:46.872");
+		long partialStart = TestUtil.getTime("2020-09-30 23:00:46.872");
 		actual = schedule.createInitialSchedule(antenna, extractSatellites(expected, satelliteDao), partialStart);
 		assertEquals(partialStart, actual.get(0).getStartTimeMillis());
 	}
 
 	@Before
 	public void start() throws Exception {
-		current = getTime("2020-09-30 22:17:01.000");
+		current = TestUtil.getTime("2020-09-30 22:17:01.000");
 
 		antenna = new AntennaConfiguration();
 		antenna.setType(AntennaType.OMNIDIRECTIONAL);
@@ -238,7 +237,7 @@ public class ScheduleTest {
 
 	private static List<ObservationRequest> readExpected(String filename) throws Exception {
 		List<ObservationRequest> result = new ArrayList<>();
-		SimpleDateFormat sdf = createDateFormatter();
+		SimpleDateFormat sdf = TestUtil.createDateFormatter();
 		try (BufferedReader r = new BufferedReader(new InputStreamReader(ScheduleTest.class.getClassLoader().getResourceAsStream(filename)))) {
 			String curLine = null;
 			Pattern COMMA = Pattern.compile(",");
@@ -254,20 +253,10 @@ public class ScheduleTest {
 		return result;
 	}
 
-	private static SimpleDateFormat createDateFormatter() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-		return sdf;
-	}
-
-	private static long getTime(String str) throws Exception {
-		return createDateFormatter().parse(str).getTime();
-	}
-
 	// used to create assertion .txt files
 	@SuppressWarnings("unused")
 	private void printObservations(List<ObservationRequest> actual) {
-		SimpleDateFormat sdf = createDateFormatter();
+		SimpleDateFormat sdf = TestUtil.createDateFormatter();
 		for (ObservationRequest cur : actual) {
 			Satellite sat = satelliteDao.findById(cur.getSatelliteId());
 			Transmitter transmitter = sat.getTransmitters().get(0);

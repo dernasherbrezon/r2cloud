@@ -3,52 +3,48 @@ package ru.r2cloud.tle;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.nio.file.FileSystems;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ScheduledExecutorService;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import ru.r2cloud.FixedClock;
 import ru.r2cloud.TestConfiguration;
+import ru.r2cloud.TestUtil;
 import ru.r2cloud.cloud.LeoSatDataClient;
-import ru.r2cloud.model.Framing;
-import ru.r2cloud.model.Priority;
+import ru.r2cloud.device.DeviceManager;
+import ru.r2cloud.device.RtlSdrDevice;
+import ru.r2cloud.model.AntennaConfiguration;
+import ru.r2cloud.model.AntennaType;
+import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteSource;
 import ru.r2cloud.model.Tle;
-import ru.r2cloud.model.Transmitter;
+import ru.r2cloud.predict.PredictOreKit;
+import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.PriorityService;
+import ru.r2cloud.satellite.ProcessFactoryMock;
+import ru.r2cloud.satellite.ProcessWrapperMock;
 import ru.r2cloud.satellite.SatelliteDao;
-import ru.r2cloud.util.DefaultClock;
-import ru.r2cloud.util.ThreadPoolFactory;
+import ru.r2cloud.satellite.SdrTransmitterFilter;
 
 public class HousekeepingTest {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
-	private ThreadPoolFactory threadPool;
-	private ScheduledExecutorService executor;
 	private TestConfiguration config;
 	private SatelliteDao satelliteDao;
 	private CelestrakClient celestrak;
@@ -56,109 +52,96 @@ public class HousekeepingTest {
 	private TleDao tleDao;
 	private PriorityService priorityService;
 	private Map<String, Tle> tleData;
-	private Housekeeping dao;
+	private Housekeeping housekeeping;
+	private DeviceManager deviceManager;
+	private FixedClock clock;
 
 	@Test
 	public void testReloadTleForNewSatellites() throws Exception {
 		config.setProperty("r2cloud.apiKey", UUID.randomUUID().toString());
 		config.setProperty("r2cloud.newLaunches", true);
-		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null, priorityService, null);
 
-		String id = "R2CLOUD001";
-		List<Satellite> newLaunches = Collections.singletonList(createNewLaunch(id));
-		when(leosatdata.loadNewLaunches(anyLong())).thenReturn(newLaunches);
+		// no new satellites
+		String satelliteId = "R2CLOUD3";
+		housekeeping.run();
+		assertNull(satelliteDao.findById(satelliteId));
 
-		// call leosatdata and setup caches
-		dao.run();
-
-		Satellite sat = satelliteDao.findById(id);
+		// fast-forward time and setup newly launched satellite
+		reset(leosatdata);
+		when(leosatdata.loadNewLaunches(anyLong())).thenReturn(SatelliteDao.loadFromClasspathConfig("satellites-leosatdata-newlaunches.json", SatelliteSource.LEOSATDATA));
+		clock.setMillis(clock.millis() + 2 * config.getLong("housekeeping.leosatdata.new.periodMillis"));
+		housekeeping.run();
+		Satellite sat = satelliteDao.findById(satelliteId);
 		assertNotNull(sat);
 		assertNotNull(sat.getTle());
+		assertNotNull(deviceManager.findFirstByTransmitter(sat.getTransmitters().get(0)));
 
-		// this will force load from the disk
-		// TLE is not saved onto disk
+		// this will test if tle and satellite information is saved onto disk
 		satelliteDao = new SatelliteDao(config);
-		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null, priorityService, null);
-		// this will setup tle cache
-		dao.run();
+		housekeeping = new Housekeeping(config, satelliteDao, null, celestrak, tleDao, null, leosatdata, null, priorityService, deviceManager, clock);
+		housekeeping.run();
 
-		sat = satelliteDao.findById(id);
+		sat = satelliteDao.findById(satelliteId);
 		assertNotNull(sat);
 		assertNotNull(sat.getTle());
+
+		// newly launched satellite was moved to normal
+		reset(leosatdata);
+		when(leosatdata.loadSatellites(anyLong())).thenReturn(Collections.emptyList());
+		clock.setMillis(clock.millis() + 2 * config.getLong("housekeeping.leosatdata.new.periodMillis"));
+		housekeeping.run();
+		assertNull(satelliteDao.findById(satelliteId));
+		assertNull(deviceManager.findFirstByTransmitter(sat.getTransmitters().get(0)));
 	}
 
 	@Test
 	public void testReloadFailure() {
-		String satelliteId = "40069";
+		String satelliteId = "42784";
 		Satellite sat = satelliteDao.findById(satelliteId);
 		assertNull(sat.getTle());
 
-		dao = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null, priorityService, null);
-		dao.run();
+		housekeeping.run();
 		assertNotNull(sat.getTle());
 	}
 
 	@Test
 	public void testTleUpdate() throws Exception {
-		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null, priorityService, null);
-		reloader.run();
-		Satellite meteor = satelliteDao.findById("40069");
+		housekeeping.run();
+		Satellite meteor = satelliteDao.findById("42784");
 		assertNotNull(meteor);
 		assertNotNull(meteor.getTle());
-		assertEquals(meteor.getTle().getRaw()[1], "1 40069U 14037A   18286.52491495 -.00000023  00000-0  92613-5 0  9990");
-		assertEquals(meteor.getTle().getRaw()[2], "2 40069  98.5901 334.4030 0004544 256.4188 103.6490 14.20654800221188");
+		assertEquals(meteor.getTle().getRaw()[1], "1 42784U 17036V   22114.09726310  .00014064  00000+0  52305-3 0  9992");
+		assertEquals(meteor.getTle().getRaw()[2], "2 42784  97.2058 157.8198 0011701 152.8519 207.3335 15.27554982268713");
 
-		config.setProperty("housekeeping.tle.periodMillis", "-10000");
+		clock.setMillis(clock.millis() + 2 * config.getLong("housekeeping.tle.periodMillis"));
 
 		Tle newTle = new Tle(new String[] { "METEOR M-2", "1 40069U 14037A   24217.61569736  .00000303  00000-0  15898-3 0  9993", "2 40069  98.4390 209.6955 0005046 206.9570 153.1346 14.21009510522504" });
-		tleData.put("40069", newTle);
+		tleData.put("42784", newTle);
 
-		reloader.run();
+		housekeeping.run();
 
-		meteor = satelliteDao.findById("40069");
+		meteor = satelliteDao.findById("42784");
 		assertNotNull(meteor);
 		assertNotNull(meteor.getTle());
-		assertEquals(meteor.getTle().getRaw()[1], newTle.getRaw()[1]);
-		assertEquals(meteor.getTle().getRaw()[2], newTle.getRaw()[2]);
-	}
-
-	@Test
-	public void testSuccess() throws Exception {
-		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null, priorityService, null);
-		reloader.start();
-
-		verify(executor).scheduleAtFixedRate(any(), anyLong(), anyLong(), any());
-	}
-
-	@Test
-	public void testLifecycle() {
-		Housekeeping reloader = new Housekeeping(config, satelliteDao, threadPool, celestrak, tleDao, null, leosatdata, null, priorityService, null);
-		reloader.start();
-		reloader.start();
-		verify(executor, times(1)).scheduleAtFixedRate(any(), anyLong(), anyLong(), any());
+		assertEquals(newTle.getRaw()[1], meteor.getTle().getRaw()[1]);
+		assertEquals(newTle.getRaw()[2], meteor.getTle().getRaw()[2]);
 	}
 
 	@Before
 	public void start() throws Exception {
-		tleData = new HashMap<>();
-		try (BufferedReader r = new BufferedReader(new InputStreamReader(HousekeepingTest.class.getClassLoader().getResourceAsStream("sample-tle.txt")))) {
-			String curLine = null;
-			List<String> lines = new ArrayList<>();
-			while ((curLine = r.readLine()) != null) {
-				lines.add(curLine);
-			}
-			for (int i = 0; i < lines.size(); i += 3) {
-				tleData.put(lines.get(i + 2).substring(2, 2 + 5).trim(), new Tle(new String[] { lines.get(i), lines.get(i + 1), lines.get(i + 2) }));
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		clock = new FixedClock(TestUtil.getTime("2020-09-30 22:17:01.000"));
+		tleData = TestUtil.loadTle("sample-tle.txt");
+
+		String rtlsdr = UUID.randomUUID().toString();
 
 		config = new TestConfiguration(tempFolder, FileSystems.getDefault());
+		config.setProperty("locaiton.lat", "51.49");
+		config.setProperty("locaiton.lon", "0.01");
 		config.setProperty("tle.cacheFileLocation", new File(tempFolder.getRoot(), "tle.json").getAbsolutePath());
-		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-test.json");
+		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-test-schedule.json"); // just smaller number of satellites
 		config.setProperty("satellites.leosatdata.location", new File(tempFolder.getRoot(), "leosatdata.json").getAbsolutePath());
 		config.setProperty("satellites.leosatdata.new.location", new File(tempFolder.getRoot(), "leosatdata.new.json").getAbsolutePath());
+		config.setProperty("satellites.rtlsdrwrapper.path", rtlsdr);
 		config.setProperty("satellites.satnogs.location", new File(tempFolder.getRoot(), "satnogs.json").getAbsolutePath());
 		config.update();
 
@@ -168,39 +151,35 @@ public class HousekeepingTest {
 		when(celestrak.downloadTle()).thenReturn(tleData);
 		tleDao = new TleDao(config);
 
-		priorityService = new PriorityService(config, new DefaultClock());
-
-		threadPool = mock(ThreadPoolFactory.class);
-		executor = mock(ScheduledExecutorService.class);
-		when(threadPool.newScheduledThreadPool(anyInt(), any())).thenReturn(executor);
+		priorityService = new PriorityService(config, clock);
 
 		leosatdata = mock(LeoSatDataClient.class);
 		when(leosatdata.loadSatellites(anyLong())).thenReturn(Collections.emptyList());
+
+		Map<String, ProcessWrapperMock> mocks = new HashMap<>();
+		mocks.put(rtlsdr, new ProcessWrapperMock(null, null, 0));
+		ProcessFactoryMock processFactory = new ProcessFactoryMock(mocks, UUID.randomUUID().toString());
+
+		PredictOreKit predict = new PredictOreKit(config);
+		ObservationFactory factory = new ObservationFactory(predict);
+
+		AntennaConfiguration antenna = new AntennaConfiguration();
+		antenna.setType(AntennaType.OMNIDIRECTIONAL);
+		antenna.setMinElevation(8);
+		antenna.setGuaranteedElevation(20);
+
+		DeviceConfiguration deviceConfig = new DeviceConfiguration();
+		deviceConfig.setId(UUID.randomUUID().toString());
+		deviceConfig.setAntennaConfiguration(antenna);
+		deviceConfig.setMinimumFrequency(100_000_000);
+		deviceConfig.setMaximumFrequency(1_700_000_000);
+
+		RtlSdrDevice device = new RtlSdrDevice(deviceConfig.getId(), new SdrTransmitterFilter(deviceConfig), 1, factory, null, clock, deviceConfig, null, null, predict, null, config, processFactory);
+
+		deviceManager = new DeviceManager(config);
+		deviceManager.addDevice(device);
+
+		housekeeping = new Housekeeping(config, satelliteDao, null, celestrak, tleDao, null, leosatdata, null, priorityService, deviceManager, clock);
 	}
 
-	private static Satellite create(String id) {
-		Satellite result = new Satellite();
-		result.setId(id);
-		result.setName(UUID.randomUUID().toString());
-		result.setPriority(Priority.NORMAL);
-		result.setSource(SatelliteSource.LEOSATDATA);
-		Transmitter transmitter = new Transmitter();
-		transmitter.setFrequency(466000000);
-		transmitter.setFraming(Framing.CUSTOM);
-		result.setTransmitters(Collections.singletonList(transmitter));
-		return result;
-	}
-
-	private static Satellite createNewLaunch(String id) {
-		Satellite result = create(id);
-		result.setTle(new Tle(new String[] { result.getName(), "1 00001U 17036V   22114.09726310  .00014064  00000+0  52305-3 0  9992", "2 00001  97.2058 157.8198 0011701 152.8519 207.3335 15.27554982268713" }));
-		return result;
-	}
-
-	@After
-	public void stop() {
-		if (dao != null) {
-			dao.stop();
-		}
-	}
 }

@@ -21,8 +21,10 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.zip.GZIPInputStream;
 
@@ -277,4 +279,13 @@ public class TestUtil {
 		return result;
 	}
 
+	public static SimpleDateFormat createDateFormatter() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		return sdf;
+	}
+
+	public static long getTime(String str) throws Exception {
+		return createDateFormatter().parse(str).getTime();
+	}
 }

@@ -49,12 +49,36 @@ public class DeviceManager implements Lifecycle {
 		}
 	}
 
-	public ObservationRequest schedule(Satellite satellite) {
+	public ObservationRequest enable(Satellite satellite) {
 		LOG.info("satellite {} enabled", satellite);
 		ObservationRequest result = null;
 		for (Transmitter cur : satellite.getTransmitters()) {
 			for (int i = 0; i < devices.size(); i++) {
 				ObservationRequest req = nextDevice().schedule(cur);
+				// satellite might have several transmitters enabled
+				// return observation for the first scheduled
+				if (req != null) {
+					if (result == null) {
+						result = req;
+					}
+					break;
+				}
+			}
+		}
+		return result;
+	}
+
+	public ObservationRequest schedule(Satellite satellite) {
+		LOG.info("scheduling satellite {}", satellite);
+		ObservationRequest result = null;
+		for (Transmitter cur : satellite.getTransmitters()) {
+			for (int i = 0; i < devices.size(); i++) {
+				Device nextDevice = nextDevice();
+				// permanently assign transmitter to the device and schedule
+				if (!nextDevice.tryTransmitter(cur)) {
+					continue;
+				}
+				ObservationRequest req = nextDevice.schedule(cur);
 				// satellite might have several transmitters enabled
 				// return observation for the first scheduled
 				if (req != null) {
