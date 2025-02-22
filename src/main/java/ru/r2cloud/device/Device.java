@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -50,7 +49,7 @@ public abstract class Device implements Lifecycle {
 	public static final int DC_OFFSET = 10_000;
 
 	protected final String id;
-	private final List<Transmitter> scheduledTransmitters = new ArrayList<>();
+	private final List<Transmitter> assignedTransmitters = new ArrayList<>();
 	private final TransmitterFilter filter;
 	private final Schedule schedule;
 	private final int numberOfConcurrentObservations;
@@ -99,7 +98,7 @@ public abstract class Device implements Lifecycle {
 		if (!filter.accept(transmitter)) {
 			return false;
 		}
-		scheduledTransmitters.add(transmitter);
+		assignedTransmitters.add(transmitter);
 		return true;
 	}
 
@@ -228,13 +227,17 @@ public abstract class Device implements Lifecycle {
 			numberOfObservationsOnCurrentBand = 0;
 		}
 		synchronized (this) {
-			if (scheduledTransmitters.isEmpty()) {
+			if (assignedTransmitters.isEmpty()) {
 				LOG.info("[{}] no available satellites for this device", id);
 				return;
 			}
-			reCalculateFrequencyBands(scheduledTransmitters);
+			// schedule can be shared. thus cancel by explicit list of transmitters
+			for (Transmitter cur : assignedTransmitters) {
+				schedule.cancelByTransmitter(cur.getId());
+			}
+			reCalculateFrequencyBands(assignedTransmitters);
 			long current = clock.millis();
-			List<ObservationRequest> newSchedule = schedule.createInitialSchedule(deviceConfiguration.getAntennaConfiguration(), scheduledTransmitters, current);
+			List<ObservationRequest> newSchedule = schedule.createInitialSchedule(deviceConfiguration.getAntennaConfiguration(), assignedTransmitters, current);
 			for (ObservationRequest cur : newSchedule) {
 				Transmitter fullSatelliteInfo = findById(cur.getTransmitterId());
 				if (fullSatelliteInfo == null) {
@@ -317,20 +320,14 @@ public abstract class Device implements Lifecycle {
 		return schedule.findFirstByTransmitterId(transmitter.getId(), clock.millis());
 	}
 
-	public ObservationRequest enableTransmitter(Transmitter transmitter) {
-		if (!tryTransmitter(transmitter)) {
+	public ObservationRequest schedule(Transmitter transmitter) {
+		List<ObservationRequest> batch = schedule.addToSchedule(deviceConfiguration.getAntennaConfiguration(), transmitter, clock.millis());
+		if (batch.isEmpty()) {
 			return null;
 		}
-		List<ObservationRequest> batch = schedule.getByTransmitterId(transmitter.getId());
-		if (batch.isEmpty()) {
-			batch = schedule.addToSchedule(deviceConfiguration.getAntennaConfiguration(), transmitter, clock.millis());
-			if (batch.isEmpty()) {
-				return null;
-			}
 
-			for (ObservationRequest cur : batch) {
-				schedule(cur, transmitter);
-			}
+		for (ObservationRequest cur : batch) {
+			schedule(cur, transmitter);
 		}
 
 		// return first
@@ -338,49 +335,21 @@ public abstract class Device implements Lifecycle {
 		return batch.get(0);
 	}
 
-	public List<ObservationRequest> findScheduledObservations() {
+	public synchronized List<ObservationRequest> findScheduledObservations() {
 		List<ObservationRequest> result = new ArrayList<>();
-		for (Transmitter cur : scheduledTransmitters) {
+		for (Transmitter cur : assignedTransmitters) {
 			result.addAll(schedule.getByTransmitterId(cur.getId()));
 		}
 		return result;
 	}
 
-	public synchronized void disableTransmitter(Transmitter transmitter) {
-		if (removeTransmitter(transmitter.getId())) {
-			reschedule();
-			LOG.info("[{}] rescheduled", id);
-		}
-	}
-
 	public synchronized Transmitter findById(String id) {
-		for (Transmitter cur : scheduledTransmitters) {
+		for (Transmitter cur : assignedTransmitters) {
 			if (cur.getId().equals(id)) {
 				return cur;
 			}
 		}
 		return null;
-	}
-
-	public synchronized void removeAllTransmitters() {
-		for (Transmitter cur : scheduledTransmitters) {
-			schedule.cancelByTransmitter(cur.getId());
-		}
-		scheduledTransmitters.clear();
-	}
-
-	private boolean removeTransmitter(String id) {
-		boolean removed = false;
-		Iterator<Transmitter> it = scheduledTransmitters.iterator();
-		while (it.hasNext()) {
-			Transmitter cur = it.next();
-			if (cur.getId().equalsIgnoreCase(id)) {
-				removed = true;
-				it.remove();
-				break;
-			}
-		}
-		return removed;
 	}
 
 	public DeviceStatus getStatus() {

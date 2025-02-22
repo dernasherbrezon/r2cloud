@@ -96,6 +96,10 @@ public class PriorityService {
 		return cache.get(id);
 	}
 
+	public Map<String, Integer> findAll() {
+		return cache;
+	}
+
 	private List<String> download(String url) {
 		HttpURLConnection con = null;
 		try {

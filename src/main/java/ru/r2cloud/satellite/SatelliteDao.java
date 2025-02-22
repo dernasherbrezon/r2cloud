@@ -28,6 +28,7 @@ import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteComparator;
 import ru.r2cloud.model.SatelliteSource;
+import ru.r2cloud.model.Tle;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
@@ -80,6 +81,45 @@ public class SatelliteDao {
 		satnogs.addAll(loadSatellites);
 		satnogsLastUpdateTime = currentTime;
 		save(config.getPathFromProperty(SATNOGS_LOCATION), satnogs, currentTime);
+	}
+
+	public synchronized boolean setPriorities(Map<String, Integer> priorities) {
+		boolean result = false;
+		for (Satellite cur : findAll()) {
+			Integer priority = priorities.get(cur.getId());
+			if (priority == null) {
+				continue;
+			}
+			if (cur.getPriorityIndex() != priority) {
+				result = true;
+			}
+			cur.setPriorityIndex(priority);
+		}
+		return result;
+	}
+
+	public synchronized Map<String, Tle> setTle(Map<String, Tle> tle) {
+		Map<String, Tle> updated = new HashMap<>();
+		for (Satellite cur : findAll()) {
+			Tle oldTle = cur.getTle();
+			Tle newTle = tle.get(cur.getId());
+			if (oldTle == null && newTle == null) {
+				continue;
+			}
+			if (oldTle == null && newTle != null) {
+				cur.setTle(newTle);
+			}
+			if (oldTle != null && newTle == null) {
+				cur.setTle(oldTle);
+			}
+			if (oldTle != null && newTle != null) {
+				// always update to new one
+				// even if it is the same
+				cur.setTle(newTle);
+			}
+			updated.put(cur.getId(), cur.getTle());
+		}
+		return updated;
 	}
 
 	private void loadFromDisk() {

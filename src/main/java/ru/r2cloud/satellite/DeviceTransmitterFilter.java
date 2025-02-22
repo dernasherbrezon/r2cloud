@@ -13,24 +13,21 @@ public class DeviceTransmitterFilter implements TransmitterFilter {
 	}
 
 	@Override
-	public boolean accept(Transmitter satellite) {
-		if (!satellite.isEnabled()) {
+	public boolean accept(Transmitter transmitter) {
+		if (transmitter.getStatus() == null) {
 			return false;
 		}
-		if (satellite.getStatus() == null) {
+		if (transmitter.getStatus().equals(TransmitterStatus.DECAYED) || transmitter.getStatus().equals(TransmitterStatus.DISABLED)) {
 			return false;
 		}
-		if (satellite.getStatus().equals(TransmitterStatus.DECAYED) || satellite.getStatus().equals(TransmitterStatus.DISABLED)) {
-			return false;
-		}
-		long bandwidth = satellite.getBandwidth();
+		long bandwidth = transmitter.getBandwidth();
 		if (bandwidth == 0) {
-			bandwidth = satellite.getLoraBandwidth();
+			bandwidth = transmitter.getLoraBandwidth();
 		}
-		if ((satellite.getFrequency() + bandwidth / 2) > config.getMaximumFrequency()) {
+		if ((transmitter.getFrequency() + bandwidth / 2) > config.getMaximumFrequency()) {
 			return false;
 		}
-		if ((satellite.getFrequency() - bandwidth / 2) < config.getMinimumFrequency()) {
+		if ((transmitter.getFrequency() - bandwidth / 2) < config.getMinimumFrequency()) {
 			return false;
 		}
 		return true;

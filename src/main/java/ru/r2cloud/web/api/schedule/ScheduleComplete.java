@@ -19,10 +19,10 @@ public class ScheduleComplete extends AbstractHttpController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ScheduleComplete.class);
 
-	private final DeviceManager scheduler;
+	private final DeviceManager deviceManager;
 
-	public ScheduleComplete(DeviceManager scheduler) {
-		this.scheduler = scheduler;
+	public ScheduleComplete(DeviceManager deviceManager) {
+		this.deviceManager = deviceManager;
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class ScheduleComplete extends AbstractHttpController {
 			return new BadRequest(errors);
 		}
 
-		if (scheduler.completeImmediately(observationId)) {
+		if (deviceManager.completeImmediately(observationId)) {
 			return new Success();
 		} else {
 			return new NotFound();

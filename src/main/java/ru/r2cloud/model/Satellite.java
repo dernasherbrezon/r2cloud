@@ -39,6 +39,11 @@ public class Satellite {
 
 	public void setPriorityIndex(int priorityIndex) {
 		this.priorityIndex = priorityIndex;
+		if (transmitters != null) {
+			for (Transmitter cur : transmitters) {
+				cur.setPriorityIndex(priorityIndex);
+			}
+		}
 	}
 
 	public SatelliteSource getSource() {

@@ -18,7 +18,6 @@ import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.ObservationRequestComparator;
-import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
@@ -31,7 +30,6 @@ public class DeviceManager implements Lifecycle {
 	private static final Logger LOG = LoggerFactory.getLogger(DeviceManager.class);
 
 	private final Configuration config;
-	private final SatelliteDao dao;
 	private final ThreadPoolFactory threadpoolFactory;
 	private final List<Device> devices = new ArrayList<>();
 	private final Clock clock;
@@ -39,8 +37,7 @@ public class DeviceManager implements Lifecycle {
 
 	private int currentDevice = 0;
 
-	public DeviceManager(Configuration config, SatelliteDao dao, ThreadPoolFactory threadpoolFactory, Clock clock) {
-		this.dao = dao;
+	public DeviceManager(Configuration config, ThreadPoolFactory threadpoolFactory, Clock clock) {
 		this.config = config;
 		this.threadpoolFactory = threadpoolFactory;
 		this.clock = clock;
@@ -61,19 +58,6 @@ public class DeviceManager implements Lifecycle {
 
 	private void reschedule() {
 		for (int i = 0; i < devices.size(); i++) {
-			devices.get(i).removeAllTransmitters();
-		}
-		List<Satellite> all = dao.findEnabled();
-		for (Satellite cur : all) {
-			for (Transmitter curTransmitter : cur.getTransmitters()) {
-				for (int i = 0; i < devices.size(); i++) {
-					if (next().tryTransmitter(curTransmitter)) {
-						break;
-					}
-				}
-			}
-		}
-		for (int i = 0; i < devices.size(); i++) {
 			devices.get(i).reschedule();
 		}
 		long period = (long) PredictOreKit.PREDICT_INTERVAL_SECONDS * 1000;
@@ -90,32 +74,53 @@ public class DeviceManager implements Lifecycle {
 		}
 	}
 
-	public ObservationRequest enableSatellite(Satellite satellite) {
+	public ObservationRequest schedule(Satellite satellite) {
 		LOG.info("satellite {} enabled", satellite);
 		ObservationRequest result = null;
-		for (int i = 0; i < devices.size(); i++) {
-			for (Transmitter cur : satellite.getTransmitters()) {
-				ObservationRequest req = next().enableTransmitter(cur);
+		for (Transmitter cur : satellite.getTransmitters()) {
+			for (int i = 0; i < devices.size(); i++) {
+				ObservationRequest req = nextDevice().schedule(cur);
 				// satellite might have several transmitters enabled
 				// return observation for the first scheduled
 				if (req != null) {
-					result = req;
+					if (result == null) {
+						result = req;
+					}
+					break;
 				}
 			}
 		}
 		return result;
 	}
-
-	public void disableSatellite(Satellite satelliteToEdit) {
-		LOG.info("satellite {} disabled. reschedule", satelliteToEdit.getId());
+	
+	public void schedule(List<Satellite> all) {
+		for (Satellite cur : all) {
+			for (Transmitter curTransmitter : cur.getTransmitters()) {
+				for (int i = 0; i < devices.size(); i++) {
+					if (nextDevice().tryTransmitter(curTransmitter)) {
+						break;
+					}
+				}
+			}
+		}
 		for (int i = 0; i < devices.size(); i++) {
-			for (Transmitter curTransmitter : satelliteToEdit.getTransmitters()) {
-				devices.get(i).disableTransmitter(curTransmitter);
+			devices.get(i).reschedule();
+		}
+	}
+
+	public void cancelObservations(Satellite satellite) {
+		LOG.info("cancelling observations for satellite {}", satellite.getId());
+		for (int i = 0; i < devices.size(); i++) {
+			for (Transmitter curTransmitter : satellite.getTransmitters()) {
+				if (devices.get(i).findById(curTransmitter.getId()) == null) {
+					continue;
+				}
+				devices.get(i).reschedule();
 			}
 		}
 	}
 
-	private Device next() {
+	private Device nextDevice() {
 		if (currentDevice >= devices.size()) {
 			currentDevice = 0;
 		}

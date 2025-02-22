@@ -1,8 +1,6 @@
 package ru.r2cloud.tle;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -12,8 +10,7 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.cloud.LeoSatDataClient;
 import ru.r2cloud.cloud.NotModifiedException;
 import ru.r2cloud.cloud.SatnogsClient;
-import ru.r2cloud.model.Satellite;
-import ru.r2cloud.model.Tle;
+import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.satellite.PriorityService;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.decoder.DecoderService;
@@ -35,10 +32,11 @@ public class Housekeeping {
 	private final TleDao tleDao;
 	private final DecoderService decoder;
 	private final PriorityService priorityService;
+	private final DeviceManager deviceManager;
 
 	private ScheduledExecutorService executor = null;
 
-	public Housekeeping(Configuration config, SatelliteDao dao, ThreadPoolFactory threadFactory, CelestrakClient celestrak, TleDao tleDao, SatnogsClient satnogs, LeoSatDataClient leosatdata, DecoderService decoder, PriorityService priorityService) {
+	public Housekeeping(Configuration config, SatelliteDao dao, ThreadPoolFactory threadFactory, CelestrakClient celestrak, TleDao tleDao, SatnogsClient satnogs, LeoSatDataClient leosatdata, DecoderService decoder, PriorityService priorityService, DeviceManager deviceManager) {
 		this.config = config;
 		this.threadFactory = threadFactory;
 		this.dao = dao;
@@ -48,6 +46,7 @@ public class Housekeeping {
 		this.leosatdata = leosatdata;
 		this.decoder = decoder;
 		this.priorityService = priorityService;
+		this.deviceManager = deviceManager;
 	}
 
 	public synchronized void start() {
@@ -56,6 +55,10 @@ public class Housekeeping {
 		}
 		// must be executed on the same thread for other beans to pick up
 		run();
+		// can be only null in tests
+		if (deviceManager != null) {
+			deviceManager.schedule(dao.findAll());
+		}
 		long periodMillis = config.getLong("housekeeping.periodMillis");
 		executor = threadFactory.newScheduledThreadPool(1, new NamingThreadFactory("housekeeping"));
 		executor.scheduleAtFixedRate(new Runnable() {
@@ -69,7 +72,8 @@ public class Housekeeping {
 
 	public void run() {
 		boolean reloadSatellites = reloadSatellites();
-		boolean reloadSatellitesPriority = reloadPriority();
+		priorityService.reload();
+		boolean reloadSatellitesPriority = dao.setPriorities(priorityService.findAll());
 		if (reloadSatellites || reloadSatellitesPriority) {
 			dao.reindex();
 		}
@@ -78,22 +82,6 @@ public class Housekeeping {
 		if (decoder != null) {
 			decoder.retryObservations();
 		}
-	}
-
-	private boolean reloadPriority() {
-		priorityService.reload();
-		boolean result = false;
-		for (Satellite cur : dao.findAll()) {
-			Integer priority = priorityService.find(cur.getId());
-			if (priority == null) {
-				continue;
-			}
-			if (cur.getPriorityIndex() != priority) {
-				result = true;
-			}
-			cur.setPriorityIndex(priority);
-		}
-		return result;
 	}
 
 	private boolean reloadSatellites() {
@@ -150,31 +138,7 @@ public class Housekeeping {
 		}
 		// do not store on disk ever growing tle list
 		// store only supported satellites
-		Map<String, Tle> updated = new HashMap<>();
-		for (Satellite cur : dao.findAll()) {
-			Tle oldTle = cur.getTle();
-			Tle newTle = tleDao.find(cur.getId(), cur.getName());
-			if (oldTle == null && newTle == null) {
-				continue;
-			}
-			if (oldTle == null && newTle != null) {
-				reloadTle = true;
-				cur.setTle(newTle);
-			}
-			if (oldTle != null && newTle == null) {
-				reloadTle = true;
-				cur.setTle(oldTle);
-			}
-			if (oldTle != null && newTle != null) {
-				// always update to new one
-				// even if it is the same
-				cur.setTle(newTle);
-			}
-			updated.put(cur.getId(), cur.getTle());
-		}
-		if (reloadTle) {
-			tleDao.saveTle(updated);
-		}
+		tleDao.saveTle(dao.setTle(tleDao.findAll()));
 	}
 
 	public synchronized void stop() {
