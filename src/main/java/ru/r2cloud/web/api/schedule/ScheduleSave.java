@@ -75,6 +75,7 @@ public class ScheduleSave extends AbstractHttpController {
 			entity.add("frequency", transmitter.getFrequency());
 		}
 		entity.add("source", satelliteToEdit.getSource().name());
+		entity.add("status", satelliteToEdit.getOverallStatus().name());
 
 		ModelAndView result = new ModelAndView();
 		result.setData(entity);
