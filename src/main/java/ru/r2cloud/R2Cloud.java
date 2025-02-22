@@ -180,7 +180,7 @@ public class R2Cloud {
 
 		observationFactory = new ObservationFactory(predict);
 
-		deviceManager = new DeviceManager(props, threadFactory, clock);
+		deviceManager = new DeviceManager(props);
 		Map<String, SharedSchedule> sharedSchedule = createSharedSchedules(props, observationFactory);
 		for (DeviceConfiguration cur : props.getRtlSdrConfigurations()) {
 			deviceManager.addDevice(new RtlSdrDevice(cur.getId(), new SdrTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, processFactory));
@@ -256,7 +256,7 @@ public class R2Cloud {
 			}
 			deviceManager.addDevice(new SpyServerDevice(cur.getId(), new SdrServerTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur)));
 		}
-		
+
 		houseKeeping = new Housekeeping(props, satelliteDao, threadFactory, new CelestrakClient(props, clock), tleDao, satnogsClient, leoSatDataClient, decoderService, priorityService, deviceManager);
 
 		// setup web server

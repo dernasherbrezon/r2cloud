@@ -35,6 +35,7 @@ public class Housekeeping {
 	private final DeviceManager deviceManager;
 
 	private ScheduledExecutorService executor = null;
+	private long lastPredictMillis;
 
 	public Housekeeping(Configuration config, SatelliteDao dao, ThreadPoolFactory threadFactory, CelestrakClient celestrak, TleDao tleDao, SatnogsClient satnogs, LeoSatDataClient leosatdata, DecoderService decoder, PriorityService priorityService, DeviceManager deviceManager) {
 		this.config = config;
@@ -55,10 +56,6 @@ public class Housekeeping {
 		}
 		// must be executed on the same thread for other beans to pick up
 		run();
-		// can be only null in tests
-		if (deviceManager != null) {
-			deviceManager.schedule(dao.findAll());
-		}
 		long periodMillis = config.getLong("housekeeping.periodMillis");
 		executor = threadFactory.newScheduledThreadPool(1, new NamingThreadFactory("housekeeping"));
 		executor.scheduleAtFixedRate(new Runnable() {
@@ -78,6 +75,18 @@ public class Housekeeping {
 			dao.reindex();
 		}
 		reloadTle();
+		long predictPeriod = config.getLong("housekeeping.predictMillis");
+		long current = System.currentTimeMillis();
+		// can be only null in tests
+		if (deviceManager != null && current - lastPredictMillis > predictPeriod) {
+			if (lastPredictMillis == 0) {
+				deviceManager.schedule(dao.findAll());
+			} else {
+				deviceManager.reschedule();
+			}
+			lastPredictMillis = current;
+			LOG.info("observations re-scheduled. next update: {}", new Date(current + predictPeriod));
+		}
 		// decoder is null in tests only
 		if (decoder != null) {
 			decoder.retryObservations();

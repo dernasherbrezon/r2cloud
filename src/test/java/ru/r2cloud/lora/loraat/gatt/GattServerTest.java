@@ -155,7 +155,7 @@ public class GattServerTest {
 		Clock clock = new FixedClock(currentTime);
 
 		device = new LoraAtBleDevice(deviceConfiguration.getId(), new LoraTransmitterFilter(deviceConfiguration), 1, factory, threadFactory, clock, deviceConfiguration, null, null, predict, null, config);
-		DeviceManager manager = new DeviceManager(config, threadFactory, clock);
+		DeviceManager manager = new DeviceManager(config);
 		manager.addDevice(device);
 		String unixFile = "/tmp/system_dbus_r2cloud_test_" + Math.abs(new Random().nextInt());
 		bluezServer = new BluezServer(unixFile);

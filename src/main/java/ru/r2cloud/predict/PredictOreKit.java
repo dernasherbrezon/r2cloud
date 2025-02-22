@@ -51,16 +51,17 @@ import ru.r2cloud.util.Util;
 
 public class PredictOreKit {
 
-	public static final double PREDICT_INTERVAL_SECONDS = 3600. * 24 * 2;
 	private static final Logger LOG = LoggerFactory.getLogger(PredictOreKit.class);
 	private static final double SPEED_OF_LIGHT = 2.99792458E8;
 
 	private final Configuration config;
 	private final Frame earthFrame;
 	private final BodyShape earth;
+	private final long predictIntervalSeconds;
 
 	public PredictOreKit(Configuration config) {
 		this.config = config;
+		this.predictIntervalSeconds = config.getLong("housekeeping.predictMillis") / 1000;
 
 		File orekitData = new File(config.getProperty("scheduler.orekit.path"));
 		if (!orekitData.exists()) {
@@ -114,7 +115,7 @@ public class PredictOreKit {
 		}
 	}
 
-	private static List<SatPass> calculateFixedDirectional(AntennaConfiguration antenna, AbsoluteDate initialDate, TopocentricFrame baseStationFrame, TLEPropagator tlePropagator, @SuppressWarnings("rawtypes") EventHandler handler) {
+	private List<SatPass> calculateFixedDirectional(AntennaConfiguration antenna, AbsoluteDate initialDate, TopocentricFrame baseStationFrame, TLEPropagator tlePropagator, @SuppressWarnings("rawtypes") EventHandler handler) {
 		// orekit expects azimuth in counter clock wise degrees
 		double azimuthRadians = FastMath.toRadians(Util.convertAzimuthToDegress(antenna.getAzimuth()));
 		double elevationRadians = FastMath.toRadians(antenna.getElevation());
@@ -128,7 +129,7 @@ public class PredictOreKit {
 		tlePropagator.clearEventsDetectors();
 		tlePropagator.addEventDetector(logger.monitorDetector(detector));
 		try {
-			tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, PREDICT_INTERVAL_SECONDS));
+			tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, predictIntervalSeconds));
 		} catch (Exception e) {
 			LOG.error("unable to calculate schedule for {} date: {}", tlePropagator.getTLE().getSatelliteNumber(), initialDate, e);
 			return Collections.emptyList();
@@ -136,7 +137,7 @@ public class PredictOreKit {
 		return convert(initialDate, logger.getLoggedEvents());
 	}
 
-	private static List<SatPass> calculateOmnidirectional(AntennaConfiguration antenna, AbsoluteDate initialDate, TopocentricFrame baseStationFrame, TLEPropagator tlePropagator) {
+	private List<SatPass> calculateOmnidirectional(AntennaConfiguration antenna, AbsoluteDate initialDate, TopocentricFrame baseStationFrame, TLEPropagator tlePropagator) {
 		List<AbsoluteDate> max = new ArrayList<>();
 		ElevationExtremumDetector maxDetector = new ElevationExtremumDetector(600, 1, baseStationFrame).withMaxIter(48 * 60).withHandler(new EventHandler<ElevationExtremumDetector>() {
 			@Override
@@ -150,7 +151,7 @@ public class PredictOreKit {
 		tlePropagator.clearEventsDetectors();
 		tlePropagator.addEventDetector(new EventSlopeFilter<EventDetector>(maxDetector, FilterType.TRIGGER_ONLY_DECREASING_EVENTS));
 		try {
-			tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, PREDICT_INTERVAL_SECONDS));
+			tlePropagator.propagate(initialDate, new AbsoluteDate(initialDate, predictIntervalSeconds));
 		} catch (Exception e) {
 			LOG.error("unable to calculate schedule for {} date: {}", tlePropagator.getTLE().getSatelliteNumber(), initialDate, e);
 			return Collections.emptyList();
