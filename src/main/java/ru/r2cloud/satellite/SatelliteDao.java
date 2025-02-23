@@ -163,13 +163,13 @@ public class SatelliteDao {
 
 		// default from config
 		for (Satellite cur : staticSatellites) {
-			satelliteById.put(cur.getId(), cur);
+			indexSatellite(cur);
 		}
 
 		if (config.getProperty("r2cloud.apiKey") != null) {
 			// new and overrides from server
 			for (Satellite cur : leosatdata) {
-				satelliteById.put(cur.getId(), cur);
+				indexSatellite(cur);
 			}
 		}
 
@@ -192,7 +192,7 @@ public class SatelliteDao {
 				}
 			}
 			for (Satellite cur : dedupByName.values()) {
-				satelliteById.put(cur.getId(), cur);
+				indexSatellite(cur);
 			}
 		}
 
@@ -203,6 +203,14 @@ public class SatelliteDao {
 		}
 		Collections.sort(satellites, SatelliteComparator.ID_COMPARATOR);
 		printStatsByPriorityAndSource();
+	}
+
+	private void indexSatellite(Satellite sat) {
+		Satellite old = satelliteById.get(sat.getId());
+		if (old == null || old.getLastUpdateTime() <= sat.getLastUpdateTime()) {
+			satelliteById.put(sat.getId(), sat);
+			return;
+		}
 	}
 
 	private void normalize(Satellite satellite) {

@@ -1,0 +1,21 @@
+[
+	{
+		"name": "PEGASUS",
+		"noradId": "42784",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.at03.At03Beacon",
+				"frequency": 436670000,
+				"bandwidth": 12000,
+				"status": "ENABLED",
+				"baudRates": [
+					9600
+				]
+			}
+		],
+		"lastUpdateTime": 1601004221000
+	}
+]
