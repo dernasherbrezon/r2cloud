@@ -294,10 +294,10 @@ public class R2Cloud {
 	public void start() {
 		metrics.start();
 		decoderService.start();
-		houseKeeping.start();
 		// device manager should start after tle (it uses TLE to schedule
 		// observations)
 		deviceManager.start();
+		houseKeeping.start();
 		if (gattServer != null) {
 			gattServer.start();
 		}
