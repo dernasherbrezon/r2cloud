@@ -89,7 +89,9 @@ public class IntegrationConfiguration {
 
 	public JsonObject toJson() {
 		JsonObject result = new JsonObject();
-		result.add("apiKey", apiKey);
+		if (apiKey != null) {
+			result.add("apiKey", apiKey);
+		}
 		result.add("syncSpectogram", syncSpectogram);
 		result.add("newLaunch", newLaunch);
 		result.add("satnogs", satnogs);
