@@ -108,7 +108,6 @@ public abstract class Device implements Lifecycle {
 			long initialDopplerFrequency = predict.getDownlinkFreq(transmitter.getFrequency(), req.getStartTimeMillis(), predict.getPosition(), tlePropagator);
 			req.setFrequency(initialDopplerFrequency + DC_OFFSET);
 		}
-		LOG.info("[{}] scheduled next pass for {}. start: {} end: {}", id, transmitter, new Date(req.getStartTimeMillis()), new Date(req.getEndTimeMillis()));
 		IQReader reader = createReader(req, transmitter, deviceConfiguration);
 		Runnable readTask = new SafeRunnable() {
 
@@ -218,6 +217,7 @@ public abstract class Device implements Lifecycle {
 			};
 			Future<?> onCompleteFuture = stopThread.schedule(onComplete, req.getEndTimeMillis() - current, TimeUnit.MILLISECONDS);
 			schedule.assignTasksToSlot(req.getId(), new ScheduledObservation(startFuture, onCompleteFuture, onComplete, rotatorFuture));
+			LOG.info("[{}] scheduled next pass for {}. start: {} end: {}", id, transmitter, new Date(req.getStartTimeMillis()), new Date(req.getEndTimeMillis()));
 		}
 	}
 
