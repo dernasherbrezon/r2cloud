@@ -74,7 +74,7 @@ public class LeoSatDataClient {
 			HttpResponse<String> response = sendWithRetry(request, BodyHandlers.ofString());
 			if (response.statusCode() != 200) {
 				if (LOG.isErrorEnabled()) {
-					LOG.error("unable to save meta. response code: {}. response: {}", response.statusCode(), response.body());
+					LOG.error("[{}] unable to save meta. response code: {}. response: {}", observation.getId(), response.statusCode(), response.body());
 				}
 				if (response.statusCode() == 400) {
 					throw new IllegalArgumentException();
