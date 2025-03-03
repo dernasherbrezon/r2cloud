@@ -26,6 +26,9 @@ public class ScheduleList extends AbstractHttpController {
 	public ModelAndView doGet(IHTTPSession session) {
 		JsonArray entity = new JsonArray();
 		for (Satellite cur : satelliteDao.findAll()) {
+			if (cur.getTle() == null) {
+				continue;
+			}
 			JsonObject curSatellite = new JsonObject();
 			curSatellite.add("id", cur.getId());
 			curSatellite.add("name", cur.getName());
@@ -48,6 +51,9 @@ public class ScheduleList extends AbstractHttpController {
 			}
 			if (transmitter != null) {
 				curSatellite.add("frequency", transmitter.getFrequency());
+				if (transmitter.getModulation() != null) {
+					curSatellite.add("modulation", transmitter.getModulation().toString());
+				}
 			}
 			entity.add(curSatellite);
 		}
