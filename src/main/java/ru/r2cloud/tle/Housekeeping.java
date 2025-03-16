@@ -15,6 +15,7 @@ import ru.r2cloud.cloud.NotModifiedException;
 import ru.r2cloud.cloud.SatnogsClient;
 import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.Tle;
 import ru.r2cloud.satellite.PriorityService;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.decoder.DecoderService;
@@ -189,9 +190,12 @@ public class Housekeeping {
 		} else {
 			LOG.info("Skip TLE update. Last update was {}. Next update: {}", new Date(tleDao.getLastUpdateTime()), new Date(tleDao.getLastUpdateTime() + periodMillis));
 		}
+		Map<String, Tle> delta = dao.setTle(tleDao.findAll());
 		// do not store on disk ever growing tle list
 		// store only supported satellites
-		tleDao.saveTle(dao.setTle(tleDao.findAll()), currentTime);
+		if (reloadTle) {
+			tleDao.saveTle(delta, currentTime);
+		}
 	}
 
 	public synchronized void stop() {

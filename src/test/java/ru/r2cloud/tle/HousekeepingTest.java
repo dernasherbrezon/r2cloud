@@ -106,31 +106,33 @@ public class HousekeepingTest {
 
 	@Test
 	public void testTleUpdate() throws Exception {
+		Tle initial = new Tle(new String[] { "PEGASUS", "1 42784U 17036V   22114.09726310  .00014064  00000+0  52305-3 0  9992", "2 42784  97.2058 157.8198 0011701 152.8519 207.3335 15.27554982268713" });
+		initial.setSource("test data");
+		initial.setLastUpdateTime(clock.millis());
+
 		housekeeping.run();
-		Satellite meteor = satelliteDao.findById("42784");
-		assertNotNull(meteor);
-		assertNotNull(meteor.getTle());
-		assertEquals(meteor.getTle().getRaw()[1], "1 42784U 17036V   22114.09726310  .00014064  00000+0  52305-3 0  9992");
-		assertEquals(meteor.getTle().getRaw()[2], "2 42784  97.2058 157.8198 0011701 152.8519 207.3335 15.27554982268713");
+		assertTle(initial, satelliteDao.findById("42784"));
 
-		clock.setMillis(clock.millis() + 2 * config.getLong("housekeeping.tle.periodMillis"));
+		// skipped update should not last update time for tle
+		clock.setMillis(clock.millis() + config.getLong("housekeeping.tle.periodMillis") - 1);
+		housekeeping.run();
+		assertTle(initial, satelliteDao.findById("42784"));
 
-		Tle newTle = new Tle(new String[] { "METEOR M-2", "1 40069U 14037A   24217.61569736  .00000303  00000-0  15898-3 0  9993", "2 40069  98.4390 209.6955 0005046 206.9570 153.1346 14.21009510522504" });
+		clock.setMillis(clock.millis() + 2);
+
+		Tle newTle = new Tle(new String[] { "PEGASUS", "1 42784U 17036V   22115.09726310  .00014064  00000+0  52305-3 0  9992", "2 42784  97.2058 157.8198 0011701 152.8519 207.3335 15.27554982268713" });
+		newTle.setSource("test data");
+		newTle.setLastUpdateTime(clock.millis());
 		tleData.put("42784", newTle);
 
 		housekeeping.run();
-
-		meteor = satelliteDao.findById("42784");
-		assertNotNull(meteor);
-		assertNotNull(meteor.getTle());
-		assertEquals(newTle.getRaw()[1], meteor.getTle().getRaw()[1]);
-		assertEquals(newTle.getRaw()[2], meteor.getTle().getRaw()[2]);
+		assertTle(newTle, satelliteDao.findById("42784"));
 	}
 
 	@Before
 	public void start() throws Exception {
 		clock = new FixedClock(TestUtil.getTime("2020-09-30 22:17:01.000"));
-		tleData = TestUtil.loadTle("sample-tle.txt");
+		tleData = TestUtil.loadTle("sample-tle.txt", clock.millis());
 
 		String rtlsdr = UUID.randomUUID().toString();
 
@@ -180,6 +182,20 @@ public class HousekeepingTest {
 		deviceManager.addDevice(device);
 
 		housekeeping = new Housekeeping(config, satelliteDao, null, celestrak, tleDao, null, leosatdata, null, priorityService, deviceManager, clock);
+	}
+
+	private static void assertTle(Tle expected, Satellite actualSatellite) {
+		assertNotNull(actualSatellite);
+		assertTle(expected, actualSatellite.getTle());
+	}
+
+	private static void assertTle(Tle expected, Tle actual) {
+		assertNotNull(actual);
+		for (int i = 0; i < expected.getRaw().length; i++) {
+			assertEquals(expected.getRaw()[i], actual.getRaw()[i]);
+		}
+		assertEquals(expected.getLastUpdateTime(), actual.getLastUpdateTime());
+		assertEquals(expected.getSource(), actual.getSource());
 	}
 
 }

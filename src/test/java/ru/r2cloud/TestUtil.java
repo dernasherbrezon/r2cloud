@@ -252,8 +252,7 @@ public class TestUtil {
 		}
 	}
 
-	public static Map<String, Tle> loadTle(String name) {
-		long millis = System.currentTimeMillis();
+	public static Map<String, Tle> loadTle(String name, long millis) {
 		Map<String, Tle> result = new HashMap<>();
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(name), StandardCharsets.UTF_8))) {
 			// only first line matters
@@ -277,6 +276,10 @@ public class TestUtil {
 			throw new RuntimeException(e);
 		}
 		return result;
+	}
+
+	public static Map<String, Tle> loadTle(String name) {
+		return loadTle(name, System.currentTimeMillis());
 	}
 
 	public static SimpleDateFormat createDateFormatter() {
