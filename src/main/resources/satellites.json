@@ -1,5 +1,54 @@
 [
 	{
+		"id": "R2CLOUD469",
+		"name": "SATGUS",
+		"noradId": "62713",
+		"enabled": false,
+		"start": 1736878740000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 400200000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"deviation": 5000,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1741084030000
+	},
+	{
+		"id": "R2CLOUD468",
+		"name": "HYPE",
+		"noradId": "62687",
+		"enabled": false,
+		"start": 1736878740000,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 437400000,
+				"bandwidth": 125000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 10,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1741084066000
+	},
+	{
 		"id": "R2CLOUD467",
 		"name": "INNOCUBE",
 		"noradId": "62616",
@@ -133,6 +182,28 @@
 			}
 		],
 		"lastUpdateTime": 1739695376000
+	},
+	{
+		"id": "R2CLOUD461",
+		"name": "SCV AMAZING ANTONIUS",
+		"noradId": "62628",
+		"enabled": false,
+		"start": 1736878740000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 401415000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"deviation": 5000,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1741084095000
 	},
 	{
 		"id": "R2CLOUD460",
@@ -823,28 +894,6 @@
 			}
 		],
 		"lastUpdateTime": 1728772382000
-	},
-	{
-		"id": "R2CLOUD428",
-		"name": "EOS-7",
-		"noradId": "55562",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "AFSK",
-				"framing": "AX25",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 145825000,
-				"bandwidth": 20000,
-				"baudRates": [
-					1200
-				],
-				"deviation": 600,
-				"afCarrier": 1700,
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1728771710000
 	},
 	{
 		"id": "R2CLOUD427",
@@ -2389,31 +2438,6 @@
 		"lastUpdateTime": 1700765947000
 	},
 	{
-		"id": "R2CLOUD348",
-		"name": "PICO-1A-9",
-		"noradId": "58690",
-		"enabled": true,
-		"start": 1699728540000,
-		"transmitters": [
-			{
-				"modulation": "LORA",
-				"framing": "LORA",
-				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
-				"frequency": 454300000,
-				"bandwidth": 125000,
-				"status": "ENABLED",
-				"loraBandwidth": 125000,
-				"loraSpreadFactor": 9,
-				"loraSyncword": 18,
-				"loraPreambleLength": 8,
-				"loraExplicitHeader": true,
-				"loraCodingRate": 5,
-				"loraCrc": true
-			}
-		],
-		"lastUpdateTime": 1715016753000
-	},
-	{
 		"id": "R2CLOUD342",
 		"name": "PICO-1A-3",
 		"noradId": "58330",
@@ -3396,30 +3420,6 @@
 		"lastUpdateTime": 1692969596000
 	},
 	{
-		"id": "R2CLOUD292",
-		"name": "RS52SG",
-		"noradId": "57325",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "LORA",
-				"framing": "LORA",
-				"beaconClass": "ru.r2cloud.jradio.sstk1.StratosatTk1PicoBeacon",
-				"frequency": 436260000,
-				"bandwidth": 250000,
-				"status": "ENABLED",
-				"loraBandwidth": 250000,
-				"loraSpreadFactor": 10,
-				"loraSyncword": 18,
-				"loraPreambleLength": 8,
-				"loraExplicitHeader": true,
-				"loraCodingRate": 5,
-				"loraCrc": true
-			}
-		],
-		"lastUpdateTime": 1692969571000
-	},
-	{
 		"id": "R2CLOUD291",
 		"name": "RS52SV",
 		"noradId": "57324",
@@ -3665,30 +3665,6 @@
 		"lastUpdateTime": 1687076384000
 	},
 	{
-		"id": "R2CLOUD275",
-		"name": "MDQube-SAT1",
-		"noradId": "50986",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "LORA",
-				"framing": "LORA",
-				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
-				"frequency": 436900000,
-				"bandwidth": 125000,
-				"status": "WEAK",
-				"loraBandwidth": 125000,
-				"loraSpreadFactor": 11,
-				"loraSyncword": 18,
-				"loraPreambleLength": 8,
-				"loraExplicitHeader": true,
-				"loraCodingRate": 7,
-				"loraCrc": true
-			}
-		],
-		"lastUpdateTime": 1694341076000
-	},
-	{
 		"id": "R2CLOUD273",
 		"name": "JILIN-01 GAOFEN 3D 29",
 		"noradId": "52446",
@@ -3812,30 +3788,6 @@
 			}
 		],
 		"lastUpdateTime": 1686996725000
-	},
-	{
-		"id": "R2CLOUD266",
-		"name": "SAPLING GIGANTEUM",
-		"noradId": "56213",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "LORA",
-				"framing": "LORA",
-				"beaconClass": "ru.r2cloud.jradio.sapling.SaplingGiganteumBeacon",
-				"frequency": 437400000,
-				"bandwidth": 125000,
-				"status": "ENABLED",
-				"loraBandwidth": 125000,
-				"loraSpreadFactor": 7,
-				"loraSyncword": 18,
-				"loraPreambleLength": 8,
-				"loraExplicitHeader": true,
-				"loraCodingRate": 8,
-				"loraCrc": true
-			}
-		],
-		"lastUpdateTime": 1697488254000
 	},
 	{
 		"id": "R2CLOUD263",
@@ -4167,39 +4119,6 @@
 			}
 		],
 		"lastUpdateTime": 1673859266000
-	},
-	{
-		"id": "R2CLOUD208",
-		"name": "BDSAT-2",
-		"noradId": "55098",
-		"enabled": true,
-		"start": 1641168000000,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 145850000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"deviation": 5000,
-				"status": "ENABLED"
-			},
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.bdsat.BdSat2Beacon",
-				"frequency": 436025000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1728773871000
 	},
 	{
 		"id": "R2CLOUD205",
