@@ -121,7 +121,6 @@ public class DecoderService implements Lifecycle {
 		}
 		Decoder decoder = decoders.findByTransmitter(transmitter);
 		if (decoder == null) {
-			LOG.error("[{}] unknown decoder for {} transmitter {}", observation.getId(), observation.getSatelliteId(), observation.getTransmitterId());
 			return false;
 		}
 		if (rawFile == null || !rawFile.getParentFile().exists()) {
