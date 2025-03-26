@@ -1,5 +1,693 @@
 [
 	{
+		"id": "R2CLOUD500",
+		"name": "WREN-1",
+		"noradId": "60478",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 137925000,
+				"bandwidth": 125000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 10,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742682643000
+	},
+	{
+		"id": "R2CLOUD499",
+		"name": "Platform-5",
+		"noradId": "58339",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 137100000,
+				"bandwidth": 125000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 10,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742681181000
+	},
+	{
+		"id": "R2CLOUD498",
+		"name": "Tianqi-32",
+		"noradId": "61197",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 400450000,
+				"bandwidth": 500000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 500000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742666863000
+	},
+	{
+		"id": "R2CLOUD497",
+		"name": "Tianqi-31",
+		"noradId": "61198",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 400450000,
+				"bandwidth": 500000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 500000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742666838000
+	},
+	{
+		"id": "R2CLOUD496",
+		"name": "Tianqi-30",
+		"noradId": "61195",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 400450000,
+				"bandwidth": 500000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 500000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742666809000
+	},
+	{
+		"id": "R2CLOUD495",
+		"name": "Tianqi-29",
+		"noradId": "61196",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 400450000,
+				"bandwidth": 500000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 500000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742666761000
+	},
+	{
+		"id": "R2CLOUD494",
+		"name": "Tianqi-28",
+		"noradId": "59909",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 400450000,
+				"bandwidth": 500000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 500000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742666722000
+	},
+	{
+		"id": "R2CLOUD493",
+		"name": "Tianqi-27",
+		"noradId": "59911",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 400450000,
+				"bandwidth": 500000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 500000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742666705000
+	},
+	{
+		"id": "R2CLOUD492",
+		"name": "Tianqi-26",
+		"noradId": "59912",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 400450000,
+				"bandwidth": 500000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 500000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742666684000
+	},
+	{
+		"id": "R2CLOUD491",
+		"name": "Tianqi-25",
+		"noradId": "59910",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 400450000,
+				"bandwidth": 500000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 500000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742666655000
+	},
+	{
+		"id": "R2CLOUD490",
+		"name": "HOD-HOD-1A",
+		"noradId": "61768",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 436250000,
+				"bandwidth": 125000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 10,
+				"loraSyncword": 18,
+				"loraPreambleLength": 14,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 6,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742666602000
+	},
+	{
+		"id": "R2CLOUD489",
+		"name": "ONDOSAT-OWL-5",
+		"noradId": "62385",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 400160000,
+				"bandwidth": 250000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 250000,
+				"loraSpreadFactor": 10,
+				"loraSyncword": 18,
+				"loraPreambleLength": 64,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742666360000
+	},
+	{
+		"id": "R2CLOUD488",
+		"name": "ONDOSAT-OWL-4",
+		"noradId": "62404",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 400160000,
+				"bandwidth": 250000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 250000,
+				"loraSpreadFactor": 10,
+				"loraSyncword": 18,
+				"loraPreambleLength": 64,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742666329000
+	},
+	{
+		"id": "R2CLOUD487",
+		"name": "PICO-1B-9",
+		"noradId": "60566",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 450187500,
+				"bandwidth": 125000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742666171000
+	},
+	{
+		"id": "R2CLOUD486",
+		"name": "PICO-1B-7",
+		"noradId": "60568",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 450187500,
+				"bandwidth": 125000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742666109000
+	},
+	{
+		"id": "R2CLOUD485",
+		"name": "PICO-1B-6",
+		"noradId": "60569",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 450062500,
+				"bandwidth": 125000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742666071000
+	},
+	{
+		"id": "R2CLOUD484",
+		"name": "PICO-1B-4",
+		"noradId": "60570",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 450062500,
+				"bandwidth": 125000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742665886000
+	},
+	{
+		"id": "R2CLOUD483",
+		"name": "PICO-1B-3",
+		"noradId": "60564",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 450187500,
+				"bandwidth": 125000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742665839000
+	},
+	{
+		"id": "R2CLOUD482",
+		"name": "PICO-1B-2",
+		"noradId": "60571",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 450062500,
+				"bandwidth": 125000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742665795000
+	},
+	{
+		"id": "R2CLOUD481",
+		"name": "PICO-1B-1",
+		"noradId": "60572",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 450187500,
+				"bandwidth": 125000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742665754000
+	},
+	{
+		"id": "R2CLOUD480",
+		"name": "MDQUBESAT-2",
+		"noradId": "58665",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 436900000,
+				"bandwidth": 250000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 250000,
+				"loraSpreadFactor": 10,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742665678000
+	},
+	{
+		"id": "R2CLOUD479",
+		"name": "Norby-3",
+		"noradId": "61761",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 436570000,
+				"bandwidth": 250000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 250000,
+				"loraSpreadFactor": 10,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742665631000
+	},
+	{
+		"id": "R2CLOUD478",
+		"name": "Vladivostok-1",
+		"noradId": "61751",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 436805000,
+				"bandwidth": 62500,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 62500,
+				"loraSpreadFactor": 8,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 6,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742665597000
+	},
+	{
+		"id": "R2CLOUD477",
+		"name": "CSTP-2.11",
+		"noradId": "61744",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 437985000,
+				"bandwidth": 62500,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 62500,
+				"loraSpreadFactor": 8,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 6,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742665556000
+	},
+	{
+		"id": "R2CLOUD476",
+		"name": "CSTP-2.2",
+		"noradId": "61775",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 437050000,
+				"bandwidth": 62500,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 62500,
+				"loraSpreadFactor": 8,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 6,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742665516000
+	},
+	{
+		"id": "R2CLOUD475",
+		"name": "CSTP-2.1",
+		"noradId": "61777",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 437485000,
+				"bandwidth": 62500,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 62500,
+				"loraSpreadFactor": 8,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 6,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1742665417000
+	},
+	{
 		"id": "R2CLOUD469",
 		"name": "SATGUS",
 		"noradId": "62713",
@@ -769,7 +1457,7 @@
 	{
 		"id": "R2CLOUD434",
 		"name": "RTU MIREA1",
-		"noradId": "61775",
+		"noradId": "61785",
 		"enabled": true,
 		"start": 1730777760000,
 		"transmitters": [
@@ -785,7 +1473,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1733683356000
+		"lastUpdateTime": 1742665485000
 	},
 	{
 		"id": "R2CLOUD433",
@@ -807,28 +1495,6 @@
 			}
 		],
 		"lastUpdateTime": 1733683372000
-	},
-	{
-		"id": "R2CLOUD432",
-		"name": "SAKURA",
-		"noradId": "60954",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "AFSK",
-				"framing": "AX25",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 145825000,
-				"bandwidth": 20000,
-				"baudRates": [
-					1200
-				],
-				"deviation": 600,
-				"afCarrier": 1700,
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1729955361000
 	},
 	{
 		"id": "R2CLOUD431",
@@ -4119,26 +4785,6 @@
 			}
 		],
 		"lastUpdateTime": 1673859266000
-	},
-	{
-		"id": "R2CLOUD205",
-		"name": "CAS-5A (FO-118)",
-		"noradId": "54684",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 435650000,
-				"bandwidth": 20000,
-				"baudRates": [
-					4800
-				],
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1673857868000
 	},
 	{
 		"id": "R2CLOUD204",
