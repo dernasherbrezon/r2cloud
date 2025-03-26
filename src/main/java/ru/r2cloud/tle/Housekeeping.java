@@ -85,6 +85,7 @@ public class Housekeeping {
 		boolean reloadSatellites = reloadSatellites(currentTime);
 		if (reloadSatellites || reloadSatellitesPriority) {
 			dao.reindex();
+			dao.setTle(tleDao.findAll());
 		}
 
 		Map<String, Satellite> current = index(dao.findAll());
@@ -93,7 +94,7 @@ public class Housekeeping {
 		long predictPeriod = config.getLong("housekeeping.predictMillis");
 		// can be only null in tests
 		if (deviceManager != null) {
-			if (currentTime - lastPredictMillis > predictPeriod) {
+			if (currentTime - lastPredictMillis >= predictPeriod) {
 				if (lastPredictMillis == 0) {
 					deviceManager.schedule(dao.findAll());
 				} else {
@@ -145,7 +146,7 @@ public class Housekeeping {
 
 		if (config.getBoolean("satnogs.satellites")) {
 			long periodMillis = config.getLong("housekeeping.satnogs.periodMillis");
-			boolean reload = currentTime - dao.getSatnogsLastUpdateTime() > periodMillis;
+			boolean reload = currentTime - dao.getSatnogsLastUpdateTime() >= periodMillis;
 			if (reload) {
 				atLeastOneReloaded = true;
 				dao.saveSatnogs(satnogs.loadSatellites(), currentTime);
@@ -154,7 +155,7 @@ public class Housekeeping {
 
 		if (config.getProperty("r2cloud.apiKey") != null) {
 			long periodMillis = config.getLong("housekeeping.leosatdata.periodMillis");
-			boolean reload = currentTime - dao.getLeosatdataLastUpdateTime() > periodMillis;
+			boolean reload = currentTime - dao.getLeosatdataLastUpdateTime() >= periodMillis;
 			if (reload) {
 				try {
 					dao.saveLeosatdata(leosatdata.loadSatellites(dao.getLeosatdataLastUpdateTime()), currentTime);
@@ -166,7 +167,7 @@ public class Housekeeping {
 
 			if (config.getBoolean("r2cloud.newLaunches")) {
 				periodMillis = config.getLong("housekeeping.leosatdata.new.periodMillis");
-				reload = currentTime - dao.getLeosatdataNewLastUpdateTime() > periodMillis;
+				reload = currentTime - dao.getLeosatdataNewLastUpdateTime() >= periodMillis;
 				if (reload) {
 					try {
 						dao.saveLeosatdataNew(leosatdata.loadNewLaunches(dao.getLeosatdataNewLastUpdateTime()), currentTime);
@@ -184,18 +185,14 @@ public class Housekeeping {
 
 	private void reloadTle(long currentTime) {
 		long periodMillis = config.getLong("housekeeping.tle.periodMillis");
-		boolean reloadTle = (currentTime - tleDao.getLastUpdateTime() > periodMillis);
-		if (reloadTle) {
-			tleDao.putAll(celestrak.downloadTle());
-		} else {
+		boolean reloadTle = (currentTime - tleDao.getLastUpdateTime() >= periodMillis);
+		if (!reloadTle) {
 			LOG.info("Skip TLE update. Last update was {}. Next update: {}", new Date(tleDao.getLastUpdateTime()), new Date(tleDao.getLastUpdateTime() + periodMillis));
+			return;
 		}
-		Map<String, Tle> delta = dao.setTle(tleDao.findAll());
-		// do not store on disk ever growing tle list
-		// store only supported satellites
-		if (reloadTle) {
-			tleDao.saveTle(delta, currentTime);
-		}
+		Map<String, Tle> newTle = celestrak.downloadTle();
+		tleDao.saveTle(newTle, currentTime);
+		dao.setTle(newTle);
 	}
 
 	public synchronized void stop() {

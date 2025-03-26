@@ -65,10 +65,6 @@ public class TleDao {
 	private void index(Map<String, Tle> tleById) {
 		cache.clear();
 		cacheByName.clear();
-		putAll(tleById);
-	}
-
-	public void putAll(Map<String, Tle> tleById) {
 		cache.putAll(tleById);
 		for (Tle cur : tleById.values()) {
 			cacheByName.put(cur.getRaw()[0], cur);

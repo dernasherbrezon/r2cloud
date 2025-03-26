@@ -98,8 +98,7 @@ public class SatelliteDao {
 		return result;
 	}
 
-	public synchronized Map<String, Tle> setTle(Map<String, Tle> tle) {
-		Map<String, Tle> updated = new HashMap<>();
+	public void setTle(Map<String, Tle> tle) {
 		for (Satellite cur : findAll()) {
 			Tle oldTle = cur.getTle();
 			Tle newTle = tle.get(cur.getId());
@@ -117,9 +116,7 @@ public class SatelliteDao {
 				// even if it is the same
 				cur.setTle(newTle);
 			}
-			updated.put(cur.getId(), cur.getTle());
 		}
-		return updated;
 	}
 
 	private void loadFromDisk() {
