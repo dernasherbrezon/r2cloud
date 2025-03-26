@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,6 +39,9 @@ public class SpectogramServiceTest {
 	public void testNoInputFile() {
 		SpectogramService service = new SpectogramService(config);
 		assertNull(service.create(null));
+		Observation observation = new Observation();
+		observation.setRawPath(new File(UUID.randomUUID().toString()));
+		assertNull(service.create(observation));
 	}
 
 	@Test
