@@ -15,7 +15,6 @@ import ru.r2cloud.cloud.NotModifiedException;
 import ru.r2cloud.cloud.SatnogsClient;
 import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.model.Satellite;
-import ru.r2cloud.model.Tle;
 import ru.r2cloud.satellite.PriorityService;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.decoder.DecoderService;
@@ -186,13 +185,11 @@ public class Housekeeping {
 	private void reloadTle(long currentTime) {
 		long periodMillis = config.getLong("housekeeping.tle.periodMillis");
 		boolean reloadTle = (currentTime - tleDao.getLastUpdateTime() >= periodMillis);
-		if (!reloadTle) {
+		if (reloadTle) {
 			LOG.info("Skip TLE update. Last update was {}. Next update: {}", new Date(tleDao.getLastUpdateTime()), new Date(tleDao.getLastUpdateTime() + periodMillis));
-			return;
+			tleDao.saveTle(celestrak.downloadTle(), currentTime);
 		}
-		Map<String, Tle> newTle = celestrak.downloadTle();
-		tleDao.saveTle(newTle, currentTime);
-		dao.setTle(newTle);
+		dao.setTle(tleDao.findAll());
 	}
 
 	public synchronized void stop() {
