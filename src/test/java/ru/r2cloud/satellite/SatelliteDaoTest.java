@@ -32,6 +32,7 @@ public class SatelliteDaoTest {
 		satelliteDao.reindex();
 		Satellite expected = satelliteDao.findById("42784");
 		assertEquals(1601504221000L, expected.getLastUpdateTime());
+		assertEquals(1, satelliteDao.findById("46494").getTransmitters().size());
 	}
 
 	@Before
@@ -45,6 +46,7 @@ public class SatelliteDaoTest {
 		config.setProperty("satnogs.satellites", true);
 		config.setProperty("tle.cacheFileLocation", new File(tempFolder.getRoot(), "tle.json").getAbsolutePath());
 		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-test-schedule.json"); // just smaller number of satellites
+		config.setProperty("satellites.custom.location", "./src/test/resources/satellites-custom.json");
 		config.setProperty("satellites.leosatdata.location", new File(tempFolder.getRoot(), "leosatdata.json").getAbsolutePath());
 		config.setProperty("satellites.leosatdata.new.location", new File(tempFolder.getRoot(), "leosatdata.new.json").getAbsolutePath());
 		config.setProperty("satellites.satnogs.location", new File(tempFolder.getRoot(), "satnogs.json").getAbsolutePath());

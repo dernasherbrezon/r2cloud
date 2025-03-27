@@ -38,6 +38,7 @@ public class SatelliteDao {
 	private static final String SATNOGS_LOCATION = "satellites.satnogs.location";
 	private static final String LEOSATDATA_NEW_LOCATION = "satellites.leosatdata.new.location";
 	private static final String LEOSATDATA_LOCATION = "satellites.leosatdata.location";
+	private static final String CUSTOM_LOCATION = "satellites.custom.location";
 	private static final Logger LOG = LoggerFactory.getLogger(SatelliteDao.class);
 	private static final String CLASSPATH_PREFIX = "classpath:";
 
@@ -47,6 +48,7 @@ public class SatelliteDao {
 	private final List<Satellite> staticSatellites = new ArrayList<>();
 	private final List<Satellite> leosatdata = new ArrayList<>();
 	private final List<Satellite> leosatDataNewLaunches = new ArrayList<>();
+	private final List<Satellite> custom = new ArrayList<>();
 
 	private final List<Satellite> satellites = new ArrayList<>();
 	private final Map<String, Satellite> satelliteByName = new HashMap<>();
@@ -55,6 +57,7 @@ public class SatelliteDao {
 	private long satnogsLastUpdateTime;
 	private long leosatdataLastUpdateTime;
 	private long leosatdataNewLastUpdateTime;
+	private long customLastUpdateTime;
 
 	public SatelliteDao(Configuration config) {
 		this.config = config;
@@ -137,6 +140,9 @@ public class SatelliteDao {
 
 		leosatdataNewLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty(LEOSATDATA_NEW_LOCATION));
 		leosatDataNewLaunches.addAll(loadFromConfig(config.getPathFromProperty(LEOSATDATA_NEW_LOCATION), SatelliteSource.LEOSATDATA, leosatdataNewLastUpdateTime));
+
+		customLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty(CUSTOM_LOCATION));
+		custom.addAll(loadFromConfig(config.getPathFromProperty(CUSTOM_LOCATION), SatelliteSource.CUSTOM, customLastUpdateTime));
 	}
 
 	public synchronized void reindex() {
@@ -191,6 +197,12 @@ public class SatelliteDao {
 			for (Satellite cur : dedupByName.values()) {
 				indexSatellite(cur);
 			}
+		}
+
+		// very last step, override everything with the user's custom config
+		// forcefully override. don't use LastUpdateTime
+		for (Satellite cur : custom) {
+			satelliteById.put(cur.getId(), cur);
 		}
 
 		satellites.addAll(satelliteById.values());

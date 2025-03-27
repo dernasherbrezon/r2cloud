@@ -1,0 +1,22 @@
+[
+	{
+		"name": "NORBI",
+		"noradId": "46494",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.norbi.NorbiBeacon",
+				"frequency": 436703000,
+				"loraBandwidth": 250000,
+				"loraSpreadFactor": 10,
+				"loraCodingRate": 5,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"status": "WEAK",
+				"loraLdro": 1
+			}
+		]
+	}
+]
