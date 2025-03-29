@@ -21,6 +21,10 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.zip.GZIPInputStream;
 
@@ -35,6 +39,7 @@ import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.it.ObservationTest;
 import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.Tle;
 import ru.r2cloud.util.Util;
 
 public class TestUtil {
@@ -245,14 +250,45 @@ public class TestUtil {
 			Util.closeQuietly(actualIs);
 			Util.closeQuietly(expectedIs);
 		}
-
-//		try (InputStream actualIs = new FileInputStream(actual); InputStream expectedIs = new FileInputStream(expected)) {
-//			if (actual.getName().endsWith("gz")) {
-//				actualIs = new GZIPInputStream(actualIs);
-//			}
-//		} catch (IOException e) {
-//			throw new RuntimeException(e);
-//		}
 	}
 
+	public static Map<String, Tle> loadTle(String name, long millis) {
+		Map<String, Tle> result = new HashMap<>();
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(name), StandardCharsets.UTF_8))) {
+			// only first line matters
+			String curLine = null;
+			while ((curLine = in.readLine()) != null) {
+				String line1 = in.readLine();
+				if (line1 == null) {
+					break;
+				}
+				String line2 = in.readLine();
+				if (line2 == null) {
+					break;
+				}
+				String noradId = line2.substring(2, 2 + 5).trim();
+				Tle value = new Tle(new String[] { curLine.trim(), line1, line2 });
+				value.setLastUpdateTime(millis);
+				value.setSource("test data");
+				result.put(noradId, value);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return result;
+	}
+
+	public static Map<String, Tle> loadTle(String name) {
+		return loadTle(name, System.currentTimeMillis());
+	}
+
+	public static SimpleDateFormat createDateFormatter() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		return sdf;
+	}
+
+	public static long getTime(String str) throws Exception {
+		return createDateFormatter().parse(str).getTime();
+	}
 }

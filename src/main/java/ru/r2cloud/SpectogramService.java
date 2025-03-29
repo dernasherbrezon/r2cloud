@@ -38,7 +38,7 @@ public class SpectogramService {
 		if (observation == null) {
 			return null;
 		}
-		if (observation.getRawPath() == null) {
+		if (observation.getRawPath() == null || !observation.getRawPath().exists()) {
 			return null;
 		}
 		LOG.info("[{}] generating spectogram", observation.getId());

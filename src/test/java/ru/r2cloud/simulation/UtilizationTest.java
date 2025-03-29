@@ -32,6 +32,7 @@ import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.tle.Housekeeping;
 import ru.r2cloud.tle.TleDao;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.DefaultClock;
 import ru.r2cloud.util.ThreadPoolFactoryImpl;
 
 public class UtilizationTest {
@@ -67,7 +68,7 @@ public class UtilizationTest {
 		SatelliteDao satelliteDao = new SatelliteDao(config);
 		TleDao tleDao = new TleDao(config);
 		PriorityService priorityService = new PriorityService(config, new FixedClock(current));
-		Housekeeping houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config, new FixedClock(current)), tleDao, null, null, null, priorityService);
+		Housekeeping houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config, new FixedClock(current)), tleDao, null, null, null, priorityService, null, new DefaultClock());
 		houseKeeping.start();
 		ObservationFactory factory = new ObservationFactory(predict);
 

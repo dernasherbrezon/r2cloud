@@ -63,7 +63,7 @@ public class SdrServerDevice extends Device {
 
 		List<BandFrequency> bandwidths = new ArrayList<>();
 		for (Transmitter curTransmitter : scheduledTransmitters) {
-			if (curTransmitter.getBaudRates().isEmpty()) {
+			if (!curTransmitter.isEnabled() || curTransmitter.getBaudRates().isEmpty()) {
 				continue;
 			}
 			Integer maxBaudRate = Collections.max(curTransmitter.getBaudRates());

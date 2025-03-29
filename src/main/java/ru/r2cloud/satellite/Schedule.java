@@ -91,6 +91,9 @@ public class Schedule {
 	public synchronized List<ObservationRequest> createInitialSchedule(AntennaConfiguration antenna, List<Transmitter> allSatellites, long current) {
 		Map<String, List<ObservationRequest>> passesBySatellite = new HashMap<>();
 		for (Transmitter cur : allSatellites) {
+			if (!cur.isEnabled()) {
+				continue;
+			}
 			List<ObservationRequest> passes = factory.createSchedule(antenna, new Date(current), cur);
 			if (passes.isEmpty()) {
 				continue;
@@ -103,6 +106,9 @@ public class Schedule {
 		List<Transmitter> normal = new ArrayList<>();
 		List<Transmitter> explicitPriority = new ArrayList<>();
 		for (Transmitter cur : allSatellites) {
+			if (!cur.isEnabled()) {
+				continue;
+			}
 			if (!cur.getPriority().equals(Priority.NORMAL)) {
 				continue;
 			}

@@ -65,19 +65,15 @@ public class TleDao {
 	private void index(Map<String, Tle> tleById) {
 		cache.clear();
 		cacheByName.clear();
-		putAll(tleById);
-	}
-
-	public void putAll(Map<String, Tle> tleById) {
 		cache.putAll(tleById);
 		for (Tle cur : tleById.values()) {
 			cacheByName.put(cur.getRaw()[0], cur);
 		}
 	}
 
-	public void saveTle(Map<String, Tle> tle) {
+	public void saveTle(Map<String, Tle> tle, long currentTime) {
 		index(tle);
-		lastUpdateTime = System.currentTimeMillis();
+		lastUpdateTime = currentTime;
 		saveTle(cacheFileLocation, tle);
 	}
 

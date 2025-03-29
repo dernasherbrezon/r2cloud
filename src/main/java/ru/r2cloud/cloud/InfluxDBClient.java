@@ -106,6 +106,10 @@ public class InfluxDBClient {
 		httpclient.sendAsync(request, BodyHandlers.ofString()).exceptionally(e -> {
 			Util.logIOException(LOG, false, "unable to send metric", e);
 			return null;
+		}).whenComplete((result, exception) -> {
+			if (result.statusCode() != 200 && result.statusCode() != 204) {
+				LOG.warn("unable to send metrics: {} - {}", result.statusCode(), result.body());
+			}
 		});
 	}
 
@@ -124,6 +128,10 @@ public class InfluxDBClient {
 		httpclient.sendAsync(request, BodyHandlers.ofString()).exceptionally(e -> {
 			Util.logIOException(LOG, false, "unable to send metric", e);
 			return null;
+		}).whenComplete((result, exception) -> {
+			if (result.statusCode() != 200 && result.statusCode() != 204) {
+				LOG.warn("unable to send metrics: {} - {}", result.statusCode(), result.body());
+			}
 		});
 	}
 

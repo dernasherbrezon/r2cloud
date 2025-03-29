@@ -1,0 +1,106 @@
+[
+	{
+		"name": "TUMnanoSAT",
+		"noradId": "53464",
+		"priority": "NORMAL",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 436680000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1660566222623,
+		"tle": {
+			"line1": "TUMNANOSAT",
+			"line2": "1 53464U 98067UD  22226.73602287  .00035547  00000+0  60268-3 0  9999",
+			"line3": "2 53464  51.6409  46.5226 0007902 141.9590 283.7101 15.51135793   373",
+			"updated": 1601504221000,
+			"source": "http://localhost:8007"
+		}
+	},
+	{
+		"name": "LUME-1",
+		"noradId": "43908",
+		"priority": "NORMAL",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"beaconSizeBytes": 255,
+				"frequency": 437060000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600,
+					4800
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1650904308036
+	},
+	{
+		"name": "CTIM",
+		"noradId": "52950",
+		"priority": "NORMAL",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437396000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1659986870989,
+		"tle": {
+			"line1": "0 CTIM",
+			"line2": "1 52950U 22074G   22229.41325164  .00005772  00000-0  24324-3 0  9998",
+			"line3": "2 52950  45.0204 227.3467 0001271 143.1212 216.9760 15.24303475  7039",
+			"updated": 1601504221000,
+			"source": "http://localhost:8007"
+		}
+	},
+	{
+		"name": "Skoltech B2",
+		"noradId": "BDML-1083-7096-5526-2883",
+		"priority": "HIGH",
+		"enabled": false,
+		"start": 1601504211000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 435598000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1660152501110,
+		"tle": {
+			"line1": "0 OBJECT L",
+			"line2": "1 53380U 22096L   22229.57175693  .00005563  00000-0  22547-3 0  9990",
+			"line3": "2 53380  97.4353 130.9847 0005660  72.7520 287.4337 15.25041840  1267",
+			"updated": 1601504221000,
+			"source": "http://localhost:8007"
+		}
+	}
+]

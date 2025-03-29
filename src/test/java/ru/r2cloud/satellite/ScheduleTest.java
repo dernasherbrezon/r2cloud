@@ -7,35 +7,26 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import ru.r2cloud.CelestrakServer;
-import ru.r2cloud.FixedClock;
-import ru.r2cloud.JsonHttpResponse;
-import ru.r2cloud.LeoSatDataServerMock;
-import ru.r2cloud.MockServer;
-import ru.r2cloud.SatnogsServerMock;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
-import ru.r2cloud.cloud.LeoSatDataClient;
-import ru.r2cloud.cloud.SatnogsClient;
 import ru.r2cloud.device.Device;
 import ru.r2cloud.device.SdrServerDevice;
 import ru.r2cloud.model.AntennaConfiguration;
@@ -43,13 +34,10 @@ import ru.r2cloud.model.AntennaType;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.SatelliteSource;
 import ru.r2cloud.model.SdrServerConfiguration;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
-import ru.r2cloud.tle.CelestrakClient;
-import ru.r2cloud.tle.Housekeeping;
-import ru.r2cloud.tle.TleDao;
-import ru.r2cloud.util.ThreadPoolFactoryImpl;
 
 public class ScheduleTest {
 
@@ -57,21 +45,19 @@ public class ScheduleTest {
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private Schedule schedule;
-	private CelestrakServer celestrak;
-	private LeoSatDataServerMock server;
-	private SatnogsServerMock satnogs;
 	private TestConfiguration config;
 	private SatelliteDao satelliteDao;
-	private Housekeeping houseKeeping;
-	private MockServer mockServer;
 	private long current;
 	private ObservationFactory factory;
 	private AntennaConfiguration antenna;
 
 	@Test
 	public void testExplicitSchedule() throws Exception {
-		mockServer.mockResponse("/priorities", "43908\n43814\n");
-		houseKeeping.run();
+		Map<String, Integer> priorities = new HashMap<>();
+		priorities.put("43814", 0);
+		priorities.put("43908", 1);
+		satelliteDao.setPriorities(priorities);
+
 		List<ObservationRequest> expected = readExpected("expected/scheduleExplicit.txt");
 		List<ObservationRequest> actual = schedule.createInitialSchedule(antenna, extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
@@ -79,13 +65,12 @@ public class ScheduleTest {
 
 	@Test
 	public void testScheduleForNewLaunches() throws Exception {
-		satnogs.setSatellitesMock(new JsonHttpResponse("satnogs/satellites.json", 200));
-		satnogs.setTransmittersMock(new JsonHttpResponse("satnogs/transmitters.json", 200));
-		satnogs.setTleMockDirectory("satnogs");
-		server.setSatelliteMock(new JsonHttpResponse("r2cloudclienttest/satellite.json", 200));
-		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/newlaunch-for-scheduletest.json", 200));
-		houseKeeping.run();
-		current = getTime("2022-09-30 22:17:01.000");
+		current = TestUtil.getTime("2022-09-30 22:17:01.000");
+		satelliteDao.saveSatnogs(SatelliteDao.loadFromClasspathConfig("satellites-satnogs.json", SatelliteSource.SATNOGS), current);
+		satelliteDao.saveLeosatdata(SatelliteDao.loadFromClasspathConfig("satellites-leosatdata.json", SatelliteSource.LEOSATDATA), current);
+		satelliteDao.saveLeosatdataNew(SatelliteDao.loadFromClasspathConfig("satellites-leosatdata-newlaunches.json", SatelliteSource.LEOSATDATA), current);
+		satelliteDao.reindex();
+
 		List<ObservationRequest> expected = readExpected("expected/scheduleNewLaunches.txt");
 		List<ObservationRequest> actual = schedule.createInitialSchedule(antenna, extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
@@ -93,7 +78,6 @@ public class ScheduleTest {
 
 	@Test
 	public void testSequentialTimetableForRotator() throws Exception {
-		houseKeeping.run();
 		schedule = new Schedule(new SequentialTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
 		List<ObservationRequest> expected = readExpected("expected/schedule.txt");
 		List<ObservationRequest> actual = schedule.createInitialSchedule(antenna, extractSatellites(expected, satelliteDao), current);
@@ -102,7 +86,6 @@ public class ScheduleTest {
 
 	@Test
 	public void testScheduleBasedOnOverlapedTimetable() throws Exception {
-		houseKeeping.run();
 		schedule = new Schedule(new OverlappedTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
 		List<ObservationRequest> expected = readExpected("expected/scheduleOverlapedTimetable.txt");
 		List<ObservationRequest> actual = schedule.createInitialSchedule(antenna, extractSatellites(expected, satelliteDao), current);
@@ -122,14 +105,13 @@ public class ScheduleTest {
 
 	@Test
 	public void testBasicOperations() throws Exception {
-		houseKeeping.run();
 		List<ObservationRequest> expected = readExpected("expected/schedule.txt");
 		List<ObservationRequest> actual = schedule.createInitialSchedule(antenna, extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
 
-		ObservationRequest first = schedule.findFirstByTransmitterId("40378-0", getTime("2020-10-01 11:38:34.491"));
+		ObservationRequest first = schedule.findFirstByTransmitterId("40378-0", TestUtil.getTime("2020-10-01 11:38:34.491"));
 		assertEquals("1601553418714-40378-0", first.getId());
-		assertNull(schedule.findFirstByTransmitterId("40378-0", getTime("2020-10-02 11:43:56.801")));
+		assertNull(schedule.findFirstByTransmitterId("40378-0", TestUtil.getTime("2020-10-02 11:43:56.801")));
 
 		// tasks and ensure previous got cancelled
 		ScheduledObservation tasks = new ScheduledObservation(null, null, null, null);
@@ -140,7 +122,7 @@ public class ScheduleTest {
 		schedule.assignTasksToSlot(first.getId(), differentTasks);
 		assertTrue(tasks.isCancelled());
 
-		List<ObservationRequest> sublist = schedule.findObservations(getTime("2020-10-01 10:55:40.000"), getTime("2020-10-01 13:04:14.000"));
+		List<ObservationRequest> sublist = schedule.findObservations(TestUtil.getTime("2020-10-01 10:55:40.000"), TestUtil.getTime("2020-10-01 13:04:14.000"));
 		assertObservations(readExpected("expected/scheduleSublist.txt"), sublist);
 
 		List<ObservationRequest> noaa18 = schedule.addToSchedule(antenna, satelliteDao.findByName("NOAA 18").getTransmitters().get(0), current);
@@ -165,40 +147,25 @@ public class ScheduleTest {
 		actual = schedule.createInitialSchedule(antenna, extractSatellites(expected, satelliteDao), current);
 		assertObservations(expected, actual);
 
-		first = schedule.findFirstByTransmitterId("40378-0", getTime("2020-10-01 11:38:34.491"));
+		first = schedule.findFirstByTransmitterId("40378-0", TestUtil.getTime("2020-10-01 11:38:34.491"));
 		// slot is occupied
-		assertNull(schedule.moveObservation(first, getTime("2020-10-02 11:11:00.359")));
-		first = schedule.findFirstByTransmitterId("40378-0", getTime("2020-10-01 11:38:34.491"));
-		ObservationRequest movedTo = schedule.moveObservation(first, getTime("2020-10-02 00:00:00.000"));
+		assertNull(schedule.moveObservation(first, TestUtil.getTime("2020-10-02 11:11:00.359")));
+		first = schedule.findFirstByTransmitterId("40378-0", TestUtil.getTime("2020-10-01 11:38:34.491"));
+		ObservationRequest movedTo = schedule.moveObservation(first, TestUtil.getTime("2020-10-02 00:00:00.000"));
 		assertNotNull(movedTo);
-		assertEquals(getTime("2020-10-02 00:00:00.000"), movedTo.getStartTimeMillis());
-		assertEquals(getTime("2020-10-02 00:05:37.617"), movedTo.getEndTimeMillis());
+		assertEquals(TestUtil.getTime("2020-10-02 00:00:00.000"), movedTo.getStartTimeMillis());
+		assertEquals(TestUtil.getTime("2020-10-02 00:05:37.617"), movedTo.getEndTimeMillis());
 
 		schedule.cancelAll();
-		long partialStart = getTime("2020-09-30 23:00:46.872");
+		long partialStart = TestUtil.getTime("2020-09-30 23:00:46.872");
 		actual = schedule.createInitialSchedule(antenna, extractSatellites(expected, satelliteDao), partialStart);
 		assertEquals(partialStart, actual.get(0).getStartTimeMillis());
 	}
 
 	@Before
 	public void start() throws Exception {
-		current = getTime("2020-09-30 22:17:01.000");
+		current = TestUtil.getTime("2020-09-30 22:17:01.000");
 
-		celestrak = new CelestrakServer();
-		celestrak.mockResponse(TestUtil.loadExpected("tle-2020-09-27.txt"));
-		celestrak.start();
-		server = new LeoSatDataServerMock();
-		server.setSatelliteMock("[]", 200);
-		server.setNewLaunchMock(new JsonHttpResponse("r2cloudclienttest/empty-array-response.json", 200));
-		server.start();
-		satnogs = new SatnogsServerMock();
-		satnogs.setSatellitesMock("[]", 200);
-		satnogs.setTransmittersMock("[]", 200);
-		satnogs.start();
-
-		mockServer = new MockServer(8011);
-		mockServer.start();
-		
 		antenna = new AntennaConfiguration();
 		antenna.setType(AntennaType.OMNIDIRECTIONAL);
 		antenna.setMinElevation(8);
@@ -209,49 +176,16 @@ public class ScheduleTest {
 		config.setProperty("locaiton.lon", "0.01");
 		config.setProperty("r2cloud.newLaunches", true);
 		config.setProperty("r2cloud.apiKey", UUID.randomUUID().toString());
-		config.setProperty("leosatdata.hostname", server.getUrl());
 		config.setProperty("satnogs.satellites", true);
-		config.setProperty("satnogs.hostname", satnogs.getUrl());
-		config.setList("tle.urls", celestrak.getUrls());
-		config.setProperty("tle.cacheFileLocation", new File(tempFolder.getRoot(), "tle.txt").getAbsolutePath());
 		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-test.json");
-		config.setProperty("satellites.satnogs.location", new File(tempFolder.getRoot(), "satnogs.json").getAbsolutePath());
-		config.setProperty("satellites.leosatdata.location", new File(tempFolder.getRoot(), "leosatdata.json").getAbsolutePath());
-		config.setProperty("satellites.leosatdata.new.location", new File(tempFolder.getRoot(), "leosatdata.new.json").getAbsolutePath());
 		config.setProperty("scheduler.orekit.path", "./src/test/resources/data/orekit-data");
-		config.setProperty("satellites.priority.location", new File(tempFolder.getRoot(), "priorities.txt").getAbsolutePath());
-		config.setProperty("satellites.priority.url", mockServer.getUrl() + "/priorities");
 
-		FixedClock clock = new FixedClock(current);
-		LeoSatDataClient r2cloudClient = new LeoSatDataClient(config, clock);
-		SatnogsClient satnogsClient = new SatnogsClient(config, clock);
 		satelliteDao = new SatelliteDao(config);
-		TleDao tleDao = new TleDao(config);
-		PriorityService priorityService = new PriorityService(config, clock);
-		houseKeeping = new Housekeeping(config, satelliteDao, new ThreadPoolFactoryImpl(60000), new CelestrakClient(config, clock), tleDao, satnogsClient, r2cloudClient, null, priorityService);
+		satelliteDao.setTle(TestUtil.loadTle("tle-2020-09-27.txt"));
 		PredictOreKit predict = new PredictOreKit(config);
 		factory = new ObservationFactory(predict);
 		schedule = new Schedule(new SequentialTimetable(Device.PARTIAL_TOLERANCE_MILLIS), factory);
 
-	}
-
-	@After
-	public void stop() {
-		if (celestrak != null) {
-			celestrak.stop();
-		}
-		if (server != null) {
-			server.stop();
-		}
-		if (satnogs != null) {
-			satnogs.stop();
-		}
-		if (mockServer != null) {
-			mockServer.stop();
-		}
-		if (houseKeeping != null) {
-			houseKeeping.stop();
-		}
 	}
 
 	private static void assertObservations(List<ObservationRequest> expected, List<ObservationRequest> actual) {
@@ -288,6 +222,7 @@ public class ScheduleTest {
 			if (curSatellite == null) {
 				continue;
 			}
+			curSatellite.setEnabled(true);
 			result.addAll(curSatellite.getTransmitters());
 		}
 		SdrServerConfiguration sdrServerConfiguration = new SdrServerConfiguration();
@@ -302,7 +237,7 @@ public class ScheduleTest {
 
 	private static List<ObservationRequest> readExpected(String filename) throws Exception {
 		List<ObservationRequest> result = new ArrayList<>();
-		SimpleDateFormat sdf = createDateFormatter();
+		SimpleDateFormat sdf = TestUtil.createDateFormatter();
 		try (BufferedReader r = new BufferedReader(new InputStreamReader(ScheduleTest.class.getClassLoader().getResourceAsStream(filename)))) {
 			String curLine = null;
 			Pattern COMMA = Pattern.compile(",");
@@ -318,20 +253,10 @@ public class ScheduleTest {
 		return result;
 	}
 
-	private static SimpleDateFormat createDateFormatter() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-		return sdf;
-	}
-
-	private static long getTime(String str) throws Exception {
-		return createDateFormatter().parse(str).getTime();
-	}
-
 	// used to create assertion .txt files
 	@SuppressWarnings("unused")
 	private void printObservations(List<ObservationRequest> actual) {
-		SimpleDateFormat sdf = createDateFormatter();
+		SimpleDateFormat sdf = TestUtil.createDateFormatter();
 		for (ObservationRequest cur : actual) {
 			Satellite sat = satelliteDao.findById(cur.getSatelliteId());
 			Transmitter transmitter = sat.getTransmitters().get(0);

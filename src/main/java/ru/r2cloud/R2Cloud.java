@@ -177,11 +177,10 @@ public class R2Cloud {
 		decoders = new Decoders(predict, props, processFactory);
 		decoderService = new DecoderService(props, decoders, resultDao, leoSatDataService, threadFactory, influxClient, satelliteDao);
 		priorityService = new PriorityService(props, clock);
-		houseKeeping = new Housekeeping(props, satelliteDao, threadFactory, new CelestrakClient(props, clock), tleDao, satnogsClient, leoSatDataClient, decoderService, priorityService);
 
 		observationFactory = new ObservationFactory(predict);
 
-		deviceManager = new DeviceManager(props, satelliteDao, threadFactory, clock);
+		deviceManager = new DeviceManager(props);
 		Map<String, SharedSchedule> sharedSchedule = createSharedSchedules(props, observationFactory);
 		for (DeviceConfiguration cur : props.getRtlSdrConfigurations()) {
 			deviceManager.addDevice(new RtlSdrDevice(cur.getId(), new SdrTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, processFactory));
@@ -261,8 +260,10 @@ public class R2Cloud {
 			if (cur.getMaximumSampleRate() == 0L) {
 				cur.setMaximumSampleRate(2_400_000); // some reasonble sample rate. supported both by airspy and rtlsdr
 			}
-			deviceManager.addDevice(new SpyServerDevice(cur.getId(), new SdrServerTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), processFactory));
+			deviceManager.addDevice(new SpyServerDevice(cur.getId(), new SdrServerTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur)));
 		}
+
+		houseKeeping = new Housekeeping(props, satelliteDao, threadFactory, new CelestrakClient(props, clock), tleDao, satnogsClient, leoSatDataClient, decoderService, priorityService, deviceManager, clock);
 
 		// setup web server
 		index(new Health());
@@ -299,10 +300,10 @@ public class R2Cloud {
 	public void start() {
 		metrics.start();
 		decoderService.start();
-		houseKeeping.start();
 		// device manager should start after tle (it uses TLE to schedule
 		// observations)
 		deviceManager.start();
+		houseKeeping.start();
 		if (gattServer != null) {
 			gattServer.start();
 		}

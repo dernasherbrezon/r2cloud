@@ -22,11 +22,11 @@ public class ScheduleSave extends AbstractHttpController {
 	private static final Logger LOG = LoggerFactory.getLogger(ScheduleSave.class);
 
 	private final SatelliteDao dao;
-	private final DeviceManager scheduler;
+	private final DeviceManager deviceManager;
 
-	public ScheduleSave(SatelliteDao dao, DeviceManager scheduler) {
+	public ScheduleSave(SatelliteDao dao, DeviceManager deviceManager) {
 		this.dao = dao;
-		this.scheduler = scheduler;
+		this.deviceManager = deviceManager;
 	}
 
 	@Override
@@ -54,9 +54,9 @@ public class ScheduleSave extends AbstractHttpController {
 
 		ObservationRequest nextObservation = null;
 		if (enabled) {
-			nextObservation = scheduler.enableSatellite(satelliteToEdit);
+			nextObservation = deviceManager.enable(satelliteToEdit);
 		} else {
-			scheduler.disableSatellite(satelliteToEdit);
+			deviceManager.cancelObservations(satelliteToEdit);
 		}
 
 		JsonObject entity = new JsonObject();
@@ -74,6 +74,8 @@ public class ScheduleSave extends AbstractHttpController {
 		if (transmitter != null) {
 			entity.add("frequency", transmitter.getFrequency());
 		}
+		entity.add("source", satelliteToEdit.getSource().name());
+		entity.add("status", satelliteToEdit.getOverallStatus().name());
 
 		ModelAndView result = new ModelAndView();
 		result.setData(entity);

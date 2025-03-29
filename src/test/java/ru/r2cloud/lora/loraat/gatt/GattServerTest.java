@@ -53,7 +53,6 @@ import ru.r2cloud.model.TransmitterStatus;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.LoraTransmitterFilter;
 import ru.r2cloud.satellite.ObservationFactory;
-import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.ThreadPoolFactoryImpl;
 
@@ -152,12 +151,11 @@ public class GattServerTest {
 		DeviceConfiguration deviceConfiguration = config.getLoraAtBleConfigurations().get(0);
 		PredictOreKit predict = new PredictOreKit(config);
 		ObservationFactory factory = new ObservationFactory(predict);
-		SatelliteDao satelliteDao = new SatelliteDao(config);
 		ThreadPoolFactoryImpl threadFactory = new ThreadPoolFactoryImpl(60000);
 		Clock clock = new FixedClock(currentTime);
 
 		device = new LoraAtBleDevice(deviceConfiguration.getId(), new LoraTransmitterFilter(deviceConfiguration), 1, factory, threadFactory, clock, deviceConfiguration, null, null, predict, null, config);
-		DeviceManager manager = new DeviceManager(config, satelliteDao, threadFactory, clock);
+		DeviceManager manager = new DeviceManager(config);
 		manager.addDevice(device);
 		String unixFile = "/tmp/system_dbus_r2cloud_test_" + Math.abs(new Random().nextInt());
 		bluezServer = new BluezServer(unixFile);

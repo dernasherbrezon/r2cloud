@@ -2,6 +2,7 @@ package ru.r2cloud.tle;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -12,11 +13,12 @@ import org.slf4j.LoggerFactory;
 import ru.r2cloud.cloud.LeoSatDataClient;
 import ru.r2cloud.cloud.NotModifiedException;
 import ru.r2cloud.cloud.SatnogsClient;
+import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.model.Satellite;
-import ru.r2cloud.model.Tle;
 import ru.r2cloud.satellite.PriorityService;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.decoder.DecoderService;
+import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.NamingThreadFactory;
 import ru.r2cloud.util.ThreadPoolFactory;
@@ -35,10 +37,13 @@ public class Housekeeping {
 	private final TleDao tleDao;
 	private final DecoderService decoder;
 	private final PriorityService priorityService;
+	private final DeviceManager deviceManager;
+	private final Clock clock;
 
 	private ScheduledExecutorService executor = null;
+	private long lastPredictMillis;
 
-	public Housekeeping(Configuration config, SatelliteDao dao, ThreadPoolFactory threadFactory, CelestrakClient celestrak, TleDao tleDao, SatnogsClient satnogs, LeoSatDataClient leosatdata, DecoderService decoder, PriorityService priorityService) {
+	public Housekeeping(Configuration config, SatelliteDao dao, ThreadPoolFactory threadFactory, CelestrakClient celestrak, TleDao tleDao, SatnogsClient satnogs, LeoSatDataClient leosatdata, DecoderService decoder, PriorityService priorityService, DeviceManager deviceManager, Clock clock) {
 		this.config = config;
 		this.threadFactory = threadFactory;
 		this.dao = dao;
@@ -48,6 +53,8 @@ public class Housekeeping {
 		this.leosatdata = leosatdata;
 		this.decoder = decoder;
 		this.priorityService = priorityService;
+		this.deviceManager = deviceManager;
+		this.clock = clock;
 	}
 
 	public synchronized void start() {
@@ -68,42 +75,77 @@ public class Housekeeping {
 	}
 
 	public void run() {
-		boolean reloadSatellites = reloadSatellites();
-		boolean reloadSatellitesPriority = reloadPriority();
+		long currentTime = clock.millis();
+
+		priorityService.reload();
+		boolean reloadSatellitesPriority = dao.setPriorities(priorityService.findAll());
+
+		Map<String, Satellite> previous = index(dao.findAll());
+		boolean reloadSatellites = reloadSatellites(currentTime);
 		if (reloadSatellites || reloadSatellitesPriority) {
 			dao.reindex();
+			dao.setTle(tleDao.findAll());
 		}
-		reloadTle();
+
+		Map<String, Satellite> current = index(dao.findAll());
+
+		reloadTle(currentTime);
+		long predictPeriod = config.getLong("housekeeping.predictMillis");
+		// can be only null in tests
+		if (deviceManager != null) {
+			if (currentTime - lastPredictMillis >= predictPeriod) {
+				if (lastPredictMillis == 0) {
+					deviceManager.schedule(dao.findAll());
+				} else {
+					deviceManager.reschedule();
+				}
+				lastPredictMillis = currentTime;
+				LOG.info("observations re-scheduled. next update: {}", new Date(currentTime + predictPeriod));
+			} else {
+				// some satellites can move from new launches to normal. thus change id.
+				// some satellite might be removed
+				for (Satellite cur : current.values()) {
+					if (previous.containsKey(cur.getId())) {
+						continue;
+					}
+					deviceManager.schedule(cur);
+				}
+				boolean reschedule = false;
+				for (Satellite cur : previous.values()) {
+					if (current.containsKey(cur.getId())) {
+						continue;
+					}
+					// disabled satellites won't be scheduled
+					cur.setEnabled(false);
+					reschedule = true;
+					LOG.info("disabling satellite observations: {}", cur.getId());
+				}
+				if (reschedule) {
+					deviceManager.reschedule();
+				}
+			}
+		}
 		// decoder is null in tests only
 		if (decoder != null) {
 			decoder.retryObservations();
 		}
 	}
 
-	private boolean reloadPriority() {
-		priorityService.reload();
-		boolean result = false;
-		for (Satellite cur : dao.findAll()) {
-			Integer priority = priorityService.find(cur.getId());
-			if (priority == null) {
-				continue;
-			}
-			if (cur.getPriorityIndex() != priority) {
-				result = true;
-			}
-			cur.setPriorityIndex(priority);
+	private static Map<String, Satellite> index(List<Satellite> sat) {
+		Map<String, Satellite> result = new HashMap<>();
+		for (Satellite cur : sat) {
+			result.put(cur.getId(), cur);
 		}
 		return result;
 	}
 
-	private boolean reloadSatellites() {
-		long currentTime = System.currentTimeMillis();
+	private boolean reloadSatellites(long currentTime) {
 
 		boolean atLeastOneReloaded = false;
 
 		if (config.getBoolean("satnogs.satellites")) {
 			long periodMillis = config.getLong("housekeeping.satnogs.periodMillis");
-			boolean reload = currentTime - dao.getSatnogsLastUpdateTime() > periodMillis;
+			boolean reload = currentTime - dao.getSatnogsLastUpdateTime() >= periodMillis;
 			if (reload) {
 				atLeastOneReloaded = true;
 				dao.saveSatnogs(satnogs.loadSatellites(), currentTime);
@@ -112,7 +154,7 @@ public class Housekeeping {
 
 		if (config.getProperty("r2cloud.apiKey") != null) {
 			long periodMillis = config.getLong("housekeeping.leosatdata.periodMillis");
-			boolean reload = currentTime - dao.getLeosatdataLastUpdateTime() > periodMillis;
+			boolean reload = currentTime - dao.getLeosatdataLastUpdateTime() >= periodMillis;
 			if (reload) {
 				try {
 					dao.saveLeosatdata(leosatdata.loadSatellites(dao.getLeosatdataLastUpdateTime()), currentTime);
@@ -124,7 +166,7 @@ public class Housekeeping {
 
 			if (config.getBoolean("r2cloud.newLaunches")) {
 				periodMillis = config.getLong("housekeeping.leosatdata.new.periodMillis");
-				reload = currentTime - dao.getLeosatdataNewLastUpdateTime() > periodMillis;
+				reload = currentTime - dao.getLeosatdataNewLastUpdateTime() >= periodMillis;
 				if (reload) {
 					try {
 						dao.saveLeosatdataNew(leosatdata.loadNewLaunches(dao.getLeosatdataNewLastUpdateTime()), currentTime);
@@ -140,41 +182,14 @@ public class Housekeeping {
 		return atLeastOneReloaded;
 	}
 
-	private void reloadTle() {
+	private void reloadTle(long currentTime) {
 		long periodMillis = config.getLong("housekeeping.tle.periodMillis");
-		boolean reloadTle = (System.currentTimeMillis() - tleDao.getLastUpdateTime() > periodMillis);
+		boolean reloadTle = (currentTime - tleDao.getLastUpdateTime() >= periodMillis);
 		if (reloadTle) {
-			tleDao.putAll(celestrak.downloadTle());
-		} else {
 			LOG.info("Skip TLE update. Last update was {}. Next update: {}", new Date(tleDao.getLastUpdateTime()), new Date(tleDao.getLastUpdateTime() + periodMillis));
+			tleDao.saveTle(celestrak.downloadTle(), currentTime);
 		}
-		// do not store on disk ever growing tle list
-		// store only supported satellites
-		Map<String, Tle> updated = new HashMap<>();
-		for (Satellite cur : dao.findAll()) {
-			Tle oldTle = cur.getTle();
-			Tle newTle = tleDao.find(cur.getId(), cur.getName());
-			if (oldTle == null && newTle == null) {
-				continue;
-			}
-			if (oldTle == null && newTle != null) {
-				reloadTle = true;
-				cur.setTle(newTle);
-			}
-			if (oldTle != null && newTle == null) {
-				reloadTle = true;
-				cur.setTle(oldTle);
-			}
-			if (oldTle != null && newTle != null) {
-				// always update to new one
-				// even if it is the same
-				cur.setTle(newTle);
-			}
-			updated.put(cur.getId(), cur.getTle());
-		}
-		if (reloadTle) {
-			tleDao.saveTle(updated);
-		}
+		dao.setTle(tleDao.findAll());
 	}
 
 	public synchronized void stop() {

@@ -25,11 +25,11 @@ public class ScheduleStart extends AbstractHttpController {
 	private static final Logger LOG = LoggerFactory.getLogger(ScheduleStart.class);
 
 	private final SatelliteDao satelliteDao;
-	private final DeviceManager scheduler;
+	private final DeviceManager deviceManager;
 
-	public ScheduleStart(SatelliteDao satelliteDao, DeviceManager scheduler) {
+	public ScheduleStart(SatelliteDao satelliteDao, DeviceManager deviceManager) {
 		this.satelliteDao = satelliteDao;
-		this.scheduler = scheduler;
+		this.deviceManager = deviceManager;
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class ScheduleStart extends AbstractHttpController {
 
 		LOG.info("start observation for satellite {}", id);
 
-		List<ObservationRequest> req = scheduler.startImmediately(satellite);
+		List<ObservationRequest> req = deviceManager.startImmediately(satellite);
 		if (req == null) {
 			return new InternalServerError();
 		}

@@ -28,6 +28,7 @@ import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteComparator;
 import ru.r2cloud.model.SatelliteSource;
+import ru.r2cloud.model.Tle;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
@@ -37,6 +38,7 @@ public class SatelliteDao {
 	private static final String SATNOGS_LOCATION = "satellites.satnogs.location";
 	private static final String LEOSATDATA_NEW_LOCATION = "satellites.leosatdata.new.location";
 	private static final String LEOSATDATA_LOCATION = "satellites.leosatdata.location";
+	private static final String CUSTOM_LOCATION = "satellites.custom.location";
 	private static final Logger LOG = LoggerFactory.getLogger(SatelliteDao.class);
 	private static final String CLASSPATH_PREFIX = "classpath:";
 
@@ -46,6 +48,7 @@ public class SatelliteDao {
 	private final List<Satellite> staticSatellites = new ArrayList<>();
 	private final List<Satellite> leosatdata = new ArrayList<>();
 	private final List<Satellite> leosatDataNewLaunches = new ArrayList<>();
+	private final List<Satellite> custom = new ArrayList<>();
 
 	private final List<Satellite> satellites = new ArrayList<>();
 	private final Map<String, Satellite> satelliteByName = new HashMap<>();
@@ -54,6 +57,7 @@ public class SatelliteDao {
 	private long satnogsLastUpdateTime;
 	private long leosatdataLastUpdateTime;
 	private long leosatdataNewLastUpdateTime;
+	private long customLastUpdateTime;
 
 	public SatelliteDao(Configuration config) {
 		this.config = config;
@@ -82,6 +86,42 @@ public class SatelliteDao {
 		save(config.getPathFromProperty(SATNOGS_LOCATION), satnogs, currentTime);
 	}
 
+	public synchronized boolean setPriorities(Map<String, Integer> priorities) {
+		boolean result = false;
+		for (Satellite cur : findAll()) {
+			Integer priority = priorities.get(cur.getId());
+			if (priority == null) {
+				continue;
+			}
+			if (cur.getPriorityIndex() != priority) {
+				result = true;
+			}
+			cur.setPriorityIndex(priority);
+		}
+		return result;
+	}
+
+	public void setTle(Map<String, Tle> tle) {
+		for (Satellite cur : findAll()) {
+			Tle oldTle = cur.getTle();
+			Tle newTle = tle.get(cur.getId());
+			if (oldTle == null && newTle == null) {
+				continue;
+			}
+			if (oldTle == null && newTle != null) {
+				cur.setTle(newTle);
+			}
+			if (oldTle != null && newTle == null) {
+				cur.setTle(oldTle);
+			}
+			if (oldTle != null && newTle != null) {
+				// always update to new one
+				// even if it is the same
+				cur.setTle(newTle);
+			}
+		}
+	}
+
 	private void loadFromDisk() {
 		satnogsLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty(SATNOGS_LOCATION));
 		satnogs.addAll(loadFromConfig(config.getPathFromProperty(SATNOGS_LOCATION), SatelliteSource.SATNOGS, satnogsLastUpdateTime));
@@ -100,6 +140,9 @@ public class SatelliteDao {
 
 		leosatdataNewLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty(LEOSATDATA_NEW_LOCATION));
 		leosatDataNewLaunches.addAll(loadFromConfig(config.getPathFromProperty(LEOSATDATA_NEW_LOCATION), SatelliteSource.LEOSATDATA, leosatdataNewLastUpdateTime));
+
+		customLastUpdateTime = getLastModifiedTimeSafely(config.getPathFromProperty(CUSTOM_LOCATION));
+		custom.addAll(loadFromConfig(config.getPathFromProperty(CUSTOM_LOCATION), SatelliteSource.CUSTOM, customLastUpdateTime));
 	}
 
 	public synchronized void reindex() {
@@ -154,6 +197,12 @@ public class SatelliteDao {
 			for (Satellite cur : dedupByName.values()) {
 				indexSatellite(cur);
 			}
+		}
+
+		// very last step, override everything with the user's custom config
+		// forcefully override. don't use LastUpdateTime
+		for (Satellite cur : custom) {
+			satelliteById.put(cur.getId(), cur);
 		}
 
 		satellites.addAll(satelliteById.values());
@@ -222,7 +271,7 @@ public class SatelliteDao {
 		}
 	}
 
-	private static List<Satellite> loadFromClasspathConfig(String metaLocation, SatelliteSource source) {
+	public static List<Satellite> loadFromClasspathConfig(String metaLocation, SatelliteSource source) {
 		List<Satellite> result = new ArrayList<>();
 		InputStream is = SatelliteDao.class.getClassLoader().getResourceAsStream(metaLocation);
 		if (is == null) {

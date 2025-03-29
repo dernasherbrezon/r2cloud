@@ -17,7 +17,6 @@ import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.reader.IQReader;
 import ru.r2cloud.satellite.reader.RtlFmReader;
 import ru.r2cloud.satellite.reader.RtlSdrReader;
-import ru.r2cloud.satellite.reader.SatdumpReader;
 import ru.r2cloud.sdr.RtlStatusProcess;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.Configuration;
@@ -43,8 +42,6 @@ public class RtlSdrDevice extends Device {
 	public IQReader createReader(ObservationRequest req, Transmitter transmitter, DeviceConfiguration deviceConfiguration) {
 		if (transmitter.getFraming() == Framing.APT) {
 			return new RtlFmReader(config, deviceConfiguration, processFactory, req, lock);
-		} else if (transmitter.getFraming() == Framing.SATDUMP) {
-			return new SatdumpReader(config, deviceConfiguration, processFactory, req, transmitter, lock);
 		} else {
 			return new RtlSdrReader(config, deviceConfiguration, processFactory, req, transmitter, lock);
 		}

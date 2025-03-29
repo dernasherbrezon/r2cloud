@@ -1,0 +1,57 @@
+[
+	{
+		"name": "LUCKY-7",
+		"noradId": "R2CLOUD2",
+		"priority": "HIGH",
+		"enabled": true,
+		"start": 1639300332000,
+		"end": 1639386732000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.lucky7.Lucky7Beacon",
+				"frequency": 437525000,
+				"bandwidth": 20000,
+				"baudRates": [
+					4800
+				],
+				"status": "ENABLED"
+			}
+		],
+		"tle": {
+			"line1": "LUCKY-7",
+			"line2": "1 44406U 19038W   20069.88080907  .00000505  00000-0  32890-4 0  9992",
+			"line3": "2 44406  97.5270  32.5584 0026284 107.4758 252.9348 15.12089395 37524",
+			"updated": 1601504221000,
+			"source": "http://localhost:8001"
+		}
+	},
+	{
+		"name": "ASTRO-BIO",
+		"noradId": "R2CLOUD3",
+		"priority": "HIGH",
+		"enabled": false,
+		"start": 1601607600000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 435600000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"tle": {
+			"line1": "ASTRO-BIO",
+			"line2": "1 84002U          22194.52504630  .00000000  00000-0  00000-0 0    00",
+			"line3": "2 84002  70.1600  50.0000 0000815  30.0000 147.0000  6.38669028    02",
+			"updated": 1601504221000,
+			"source": "http://localhost:8001"
+		}
+	}
+]
