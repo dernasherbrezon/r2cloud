@@ -13,7 +13,6 @@ import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ProcessWrapper;
-import ru.r2cloud.util.Util;
 
 public class SatdumpDecoder implements Decoder {
 
@@ -30,60 +29,60 @@ public class SatdumpDecoder implements Decoder {
 	@Override
 	public DecoderResult decode(File rawFile, Observation request, final Transmitter transmitter) {
 		DecoderResult result = new DecoderResult();
-		result.setRawPath(null);
-		if (rawFile.length() == 0) {
+		if (!rawFile.exists() || rawFile.length() == 0) {
 			return result;
 		}
-		if (transmitter.getBeaconSizeBytes() > 0) {
-			int numberOfDecodedPackets = (int) (rawFile.length() / transmitter.getBeaconSizeBytes());
-			if (rawFile.length() % transmitter.getBeaconSizeBytes() != 0) {
-				LOG.warn("[{}] unexpected number of bytes in the .cadu file. number of packets is incorrect", request.getId());
-			}
-			result.setNumberOfDecodedPackets(numberOfDecodedPackets);
-			result.setTotalSize(rawFile.length());
-			if (numberOfDecodedPackets > 0) {
-				result.setImagePath(decodeImage(rawFile, request, transmitter));
-			}
-			if (numberOfDecodedPackets <= 0) {
-				Util.deleteQuietly(rawFile);
-			} else {
-				result.setDataPath(rawFile);
-			}
-		} else {
-			// FIXME test analog images
-			if (rawFile.length() > 0) {
-				result.setImagePath(decodeImage(rawFile, request, transmitter));
-			} else {
-				Util.deleteQuietly(rawFile);
-			}
-		}
-
-		return result;
-	}
-
-	private File decodeImage(File rawFile, Observation request, final Transmitter transmitter) {
-		File outputDirectory = new File(config.getTempDirectory(), request.getId());
+		result.setRawPath(rawFile);
 		ProcessWrapper process = null;
-		String commandLine = config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " cadu " + rawFile.getAbsolutePath() + " " + rawFile.getParentFile().getAbsolutePath() + " --tle_override explicitly_missing ";
+		String commandLine = config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " baseband " + rawFile.getAbsolutePath() + " " + rawFile.getParentFile().getAbsolutePath() + " --tle_override explicitly_missing --samplerate " + request.getSampleRate()
+				+ " --baseband_format ziq";
 		try {
 			process = factory.create(commandLine, Redirect.INHERIT, true);
 			int responseCode = process.waitFor();
 			if (responseCode != 0) {
 				LOG.error("[{}] invalid response code from satdump: {}", request.getId(), responseCode);
-				Util.deleteDirectory(outputDirectory.toPath());
 			} else {
 				LOG.info("[{}] satdump stopped: {}", request.getId(), responseCode);
 			}
-			// FIXME search for the image file
-			return null;
 		} catch (IOException e) {
 			LOG.error("[{}] unable to decode", request.getId(), e);
-			return null;
+			return result;
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			return null;
+			return result;
+		}
+		if (transmitter.getBeaconSizeBytes() > 0) {
+			int numberOfDecodedPackets = 0;
+			File data = find(rawFile.getParentFile().listFiles(), ".cadu");
+			if (data != null) {
+				numberOfDecodedPackets = (int) (data.length() / transmitter.getBeaconSizeBytes());
+				if (data.length() % transmitter.getBeaconSizeBytes() != 0) {
+					LOG.warn("[{}] unexpected number of bytes in the data file. number of packets is incorrect", request.getId());
+				}
+			}
+			result.setNumberOfDecodedPackets(numberOfDecodedPackets);
+			result.setTotalSize(data.length());
+			if (numberOfDecodedPackets > 0) {
+				result.setDataPath(data);
+			}
+			if (numberOfDecodedPackets > 0) {
+				// FIXME search for images and attach to the result
+			}
+		} else {
+			// FIXME test analog images
+//				result.setImagePath(decodeImage(rawFile, request, transmitter));
 		}
 
+		return result;
+	}
+
+	private static File find(File[] files, String extension) {
+		for (File cur : files) {
+			if (cur.getName().endsWith(extension)) {
+				return cur;
+			}
+		}
+		return null;
 	}
 
 }

@@ -1,6 +1,9 @@
 package ru.r2cloud.satellite.reader;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.ArrayList;
@@ -13,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DeviceConfiguration;
+import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
@@ -93,8 +97,20 @@ public class RtlSdrReader implements IQReader {
 		}
 		try {
 			startTimeMillis = System.currentTimeMillis();
-			rtlSdr = factory.create(config.getProperty("satellites.rtlsdrwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + sampleRate + " -g " + deviceConfiguration.getGain() + " -p "
-					+ deviceConfiguration.getPpm() + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
+			if (transmitter.getFraming().equals(Framing.SATDUMP)) {
+				try (DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(rawFile)))) {
+					dos.write("ZIQ_".getBytes());
+					dos.writeByte(1);
+					dos.writeByte(8);
+					dos.writeLong(sampleRate);
+					dos.writeLong(0);
+				}
+				rtlSdr = factory.create(config.getProperty("satellites.rtlsdrziqwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + sampleRate + " -g " + deviceConfiguration.getGain()
+						+ " -p " + deviceConfiguration.getPpm() + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
+			} else {
+				rtlSdr = factory.create(config.getProperty("satellites.rtlsdrwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + sampleRate + " -g " + deviceConfiguration.getGain() + " -p "
+						+ deviceConfiguration.getPpm() + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
+			}
 			int responseCode = rtlSdr.waitFor();
 			// rtl_sdr should be killed by the reaper process
 			// all other codes are invalid. even 0
