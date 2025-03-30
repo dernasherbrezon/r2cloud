@@ -4039,7 +4039,7 @@
 	},
 	{
 		"id": "R2CLOUD294",
-		"name": "RS52SE",
+		"name": "RS52SV",
 		"noradId": "57327",
 		"enabled": true,
 		"transmitters": [
@@ -4059,7 +4059,7 @@
 				"loraCrc": true
 			}
 		],
-		"lastUpdateTime": 1692969760000
+		"lastUpdateTime": 1743372129000
 	},
 	{
 		"id": "R2CLOUD293",
@@ -4087,7 +4087,7 @@
 	},
 	{
 		"id": "R2CLOUD291",
-		"name": "RS52SV",
+		"name": "RS52SB",
 		"noradId": "57324",
 		"enabled": true,
 		"transmitters": [
@@ -4107,11 +4107,11 @@
 				"loraCrc": true
 			}
 		],
-		"lastUpdateTime": 1692969536000
+		"lastUpdateTime": 1743372093000
 	},
 	{
 		"id": "R2CLOUD290",
-		"name": "RS52SB",
+		"name": "RS52SE",
 		"noradId": "57323",
 		"enabled": true,
 		"transmitters": [
@@ -4131,7 +4131,7 @@
 				"loraCrc": true
 			}
 		],
-		"lastUpdateTime": 1692969486000
+		"lastUpdateTime": 1743372079000
 	},
 	{
 		"id": "R2CLOUD289",
