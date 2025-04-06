@@ -1,7 +1,6 @@
 package ru.r2cloud.satellite.reader;
 
 import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,6 +23,7 @@ import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ProcessWrapper;
 import ru.r2cloud.util.Util;
+import ru.r2cloud.util.ZiqOutputStream;
 
 public class RtlSdrReader implements IQReader {
 
@@ -95,16 +95,18 @@ public class RtlSdrReader implements IQReader {
 			LOG.error("[{}] cannot find sample rate for: {}", req.getId(), maxBaudRate);
 			return null;
 		}
+		DataFormat dataFormat;
+		if (transmitter.getFraming().equals(Framing.SATDUMP)) {
+			dataFormat = DataFormat.ZIQ;
+		} else {
+			dataFormat = DataFormat.COMPLEX_UNSIGNED_BYTE;
+		}
 		try {
 			startTimeMillis = System.currentTimeMillis();
-			if (transmitter.getFraming().equals(Framing.SATDUMP)) {
-				try (DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(rawFile)))) {
-					dos.write("ZIQ_".getBytes());
-					dos.writeByte(1);
-					dos.writeByte(8);
-					dos.writeLong(sampleRate);
-					dos.writeLong(0);
-				}
+			if (dataFormat.equals(DataFormat.ZIQ)) {
+				// this will setup required header
+				ZiqOutputStream ziq = new ZiqOutputStream(new BufferedOutputStream(new FileOutputStream(rawFile)), true, 8, sampleRate);
+				ziq.close();
 				rtlSdr = factory.create(config.getProperty("satellites.rtlsdrziqwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + sampleRate + " -g " + deviceConfiguration.getGain()
 						+ " -p " + deviceConfiguration.getPpm() + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
 			} else {
@@ -129,7 +131,7 @@ public class RtlSdrReader implements IQReader {
 		IQData result = new IQData();
 		result.setActualStart(startTimeMillis);
 		result.setActualEnd(endTimeMillis);
-		result.setDataFormat(DataFormat.COMPLEX_UNSIGNED_BYTE);
+		result.setDataFormat(dataFormat);
 		result.setSampleRate(sampleRate);
 		if (rawFile.exists()) {
 			result.setDataFile(rawFile);
