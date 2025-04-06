@@ -78,29 +78,30 @@ public class RtlSdrReader implements IQReader {
 	}
 
 	private IQData startInternally() throws InterruptedException {
-		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw.gz");
 		Long startTimeMillis = null;
 		Long endTimeMillis = null;
 		if (!startBiasT(config, deviceConfiguration, factory, req)) {
 			return null;
 		}
-
 		Integer maxBaudRate = Collections.max(transmitter.getBaudRates());
 		if (maxBaudRate == null) {
 			return null;
 		}
-
 		Long sampleRate = Util.getSmallestGoodDeviceSampleRate(maxBaudRate, supportedSampleRates);
 		if (sampleRate == null) {
 			LOG.error("[{}] cannot find sample rate for: {}", req.getId(), maxBaudRate);
 			return null;
 		}
 		DataFormat dataFormat;
+		String extension;
 		if (transmitter.getFraming().equals(Framing.SATDUMP)) {
 			dataFormat = DataFormat.ZIQ;
+			extension = ".raw";
 		} else {
 			dataFormat = DataFormat.COMPLEX_UNSIGNED_BYTE;
+			extension = ".raw.gz";
 		}
+		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + extension);
 		try {
 			startTimeMillis = System.currentTimeMillis();
 			if (dataFormat.equals(DataFormat.ZIQ)) {

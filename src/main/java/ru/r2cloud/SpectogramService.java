@@ -22,6 +22,7 @@ import ru.r2cloud.jradio.source.WavFileSource;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.Util;
+import ru.r2cloud.util.ZiqInputStream;
 
 public class SpectogramService {
 
@@ -101,6 +102,9 @@ public class SpectogramService {
 				ctx.setSampleRate(req.getSampleRate());
 				ctx.setTotalSamples(totalBytes / 8);
 				source = new InputStreamSource(is, ctx);
+				break;
+			case ZIQ:
+				source = new ZiqInputStream(is, (long) (((double) req.getEndTimeMillis() - req.getStartTimeMillis()) / 1000 * req.getSampleRate())); // very rough estimation
 				break;
 			default:
 				throw new IllegalArgumentException("unsupported data format: " + req.getDataFormat());
