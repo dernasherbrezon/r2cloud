@@ -24,6 +24,15 @@ public class Satellite {
 	private List<Transmitter> transmitters;
 	private SatelliteSource source;
 	private long lastUpdateTime;
+	private List<Instrument> instruments;
+
+	public List<Instrument> getInstruments() {
+		return instruments;
+	}
+
+	public void setInstruments(List<Instrument> instruments) {
+		this.instruments = instruments;
+	}
 
 	public long getLastUpdateTime() {
 		return lastUpdateTime;
@@ -216,6 +225,19 @@ public class Satellite {
 		JsonValue tle = meta.get("tle");
 		if (tle != null) {
 			result.setTle(Tle.fromJson(tle.asObject()));
+		}
+		JsonValue instruments = meta.get("instruments");
+		if (instruments != null && instruments.isArray()) {
+			List<Instrument> satelliteInstruments = new ArrayList<>();
+			JsonArray instrumentsArray = instruments.asArray();
+			for (int i = 0; i < instrumentsArray.size(); i++) {
+				Instrument cur = Instrument.fromJson(instrumentsArray.get(i).asObject());
+				if (cur == null) {
+					continue;
+				}
+				satelliteInstruments.add(cur);
+			}
+			result.setInstruments(satelliteInstruments);
 		}
 		return result;
 	}

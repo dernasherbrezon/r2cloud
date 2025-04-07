@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 
+import ru.r2cloud.model.Instrument;
 import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteComparator;
@@ -39,6 +40,7 @@ public class SatelliteDao {
 	private static final String LEOSATDATA_NEW_LOCATION = "satellites.leosatdata.new.location";
 	private static final String LEOSATDATA_LOCATION = "satellites.leosatdata.location";
 	private static final String CUSTOM_LOCATION = "satellites.custom.location";
+	private static final String INSTRUMENT_LOCATION = "satellites.instrument.location";
 	private static final Logger LOG = LoggerFactory.getLogger(SatelliteDao.class);
 	private static final String CLASSPATH_PREFIX = "classpath:";
 
@@ -53,6 +55,7 @@ public class SatelliteDao {
 	private final List<Satellite> satellites = new ArrayList<>();
 	private final Map<String, Satellite> satelliteByName = new HashMap<>();
 	private final Map<String, Satellite> satelliteById = new HashMap<>();
+	private final Map<String, Instrument> instrumentById = new HashMap<>();
 
 	private long satnogsLastUpdateTime;
 	private long leosatdataLastUpdateTime;
@@ -61,6 +64,7 @@ public class SatelliteDao {
 
 	public SatelliteDao(Configuration config) {
 		this.config = config;
+		loadInstruments(config.getPathFromProperty(INSTRUMENT_LOCATION));
 		loadFromDisk();
 		reindex();
 	}
@@ -240,6 +244,21 @@ public class SatelliteDao {
 			cur.setTle(satellite.getTle());
 			cur.setFrequencyBand(cur.getFrequency());
 		}
+		if (satellite.getInstruments() != null) {
+			List<Instrument> instruments = new ArrayList<>();
+			for (Instrument cur : satellite.getInstruments()) {
+				Instrument enriched = instrumentById.get(cur.getId());
+				if (enriched == null) {
+					LOG.warn("unable to find instrument by id: {}", cur.getId());
+					continue;
+				}
+				Instrument satEnriched = new Instrument(enriched);
+				satEnriched.setEnabled(cur.isEnabled());
+				satEnriched.setPrimary(cur.isPrimary());
+				instruments.add(satEnriched);
+			}
+			satellite.setInstruments(instruments);
+		}
 	}
 
 	private static void save(Path location, List<Satellite> satellites, long lastUpdateTime) {
@@ -293,6 +312,26 @@ public class SatelliteDao {
 			result.add(cur);
 		}
 		return result;
+	}
+
+	private void loadInstruments(Path location) {
+		if (!Files.exists(location)) {
+			return;
+		}
+		JsonArray raw;
+		try (BufferedReader r = Files.newBufferedReader(location)) {
+			raw = Json.parse(r).asArray();
+		} catch (Exception e) {
+			LOG.error("unable to load instruments", e);
+			return;
+		}
+		for (int i = 0; i < raw.size(); i++) {
+			Instrument cur = Instrument.fromJson(raw.get(i).asObject());
+			if (cur == null) {
+				continue;
+			}
+			instrumentById.put(cur.getId(), cur);
+		}
 	}
 
 	private static List<Satellite> loadFromConfig(Path metaLocation, SatelliteSource source, long lastUpdateTime) {
