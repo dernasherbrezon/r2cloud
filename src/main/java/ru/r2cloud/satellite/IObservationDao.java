@@ -26,4 +26,8 @@ public interface IObservationDao {
 
 	boolean update(Observation cur);
 
+	File saveChannel(String satelliteId, String observationId, String instrumentId, String channelId, File imagePath);
+
+	File saveCombined(String satelliteId, String observationId, String instrumentId, File combinedImagePath);
+
 }

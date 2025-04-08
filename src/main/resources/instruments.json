@@ -1,6 +1,6 @@
 [
 	{
-		"id": "AVHRR/3",
+		"id": "AVHRR3",
 		"name": "AVHRR/3",
 		"satdumpName": "AVHRR",
 		"satdumpCombined": "avhrr_3_rgb_NOAA_Natural_Color.png",
@@ -33,7 +33,7 @@
 		]
 	},
 	{
-		"id": "HIRS/3",
+		"id": "HIRS3",
 		"name": "HIRS",
 		"satdumpName": "HIRS",
 		"satdumpCombined": "hirs_Visible_Channel.png",
@@ -122,7 +122,7 @@
 		]
 	},
 	{
-		"id": "HIRS/4",
+		"id": "HIRS4",
 		"name": "HIRS",
 		"satdumpName": "HIRS",
 		"satdumpCombined": "hirs_Visible_Channel.png",
@@ -211,7 +211,7 @@
 		]
 	},
 	{
-		"id": "AMSU-A",
+		"id": "AMSUA",
 		"name": "AMSU-A",
 		"satdumpName": "AMSU",
 		"satdumpCombined": "amsu_a_rgb_AMSU_False_Color.png",
@@ -280,7 +280,7 @@
 		]
 	},
 	{
-		"id": "AMSU-B",
+		"id": "AMSUB",
 		"name": "AMSU-B",
 		"satdumpName": "AMSU",
 		"satdumpCombined": "amsu_b_rgb_AMSU_False_Color.png",
@@ -309,7 +309,7 @@
 		]
 	},
 	{
-		"id": "SEM-2",
+		"id": "SEM2",
 		"name": "SEM-2",
 		"satdumpName": "SEM",
 		"satdumpCombined": "amsu_b_rgb_AMSU_False_Color.png",
@@ -339,7 +339,7 @@
 		]
 	},
 	{
-		"id": "SBUV/2",
+		"id": "SBUV2",
 		"name": "SBUV/2",
 		"satdumpName": "SBUV",
 		"description": "Solar Backscatter Ultraviolet Radiometer",

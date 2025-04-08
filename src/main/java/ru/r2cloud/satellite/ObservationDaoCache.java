@@ -118,6 +118,30 @@ public class ObservationDaoCache implements IObservationDao {
 	}
 
 	@Override
+	public File saveChannel(String satelliteId, String observationId, String instrumentId, String channelId, File imagePath) {
+		File result = impl.saveChannel(satelliteId, observationId, instrumentId, channelId, imagePath);
+		// if updated, then update internal cache
+		if (result != null) {
+			synchronized (byId) {
+				index(impl.find(satelliteId, observationId));
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public File saveCombined(String satelliteId, String observationId, String instrumentId, File combinedImagePath) {
+		File result = impl.saveCombined(satelliteId, observationId, instrumentId, combinedImagePath);
+		// if updated, then update internal cache
+		if (result != null) {
+			synchronized (byId) {
+				index(impl.find(satelliteId, observationId));
+			}
+		}
+		return result;
+	}
+
+	@Override
 	public File saveData(String satelliteId, String observationId, File a) {
 		File result = impl.saveData(satelliteId, observationId, a);
 		if (result != null) {

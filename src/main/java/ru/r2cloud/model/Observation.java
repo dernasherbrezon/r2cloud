@@ -1,10 +1,13 @@
 package ru.r2cloud.model;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hipparchus.util.FastMath;
 import org.orekit.bodies.GeodeticPoint;
 
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
@@ -27,8 +30,6 @@ public class Observation {
 	private DeviceConfiguration device;
 
 	// observation status
-	private String channelA;
-	private String channelB;
 	private Long numberOfDecodedPackets;
 	private Long totalSize = 0L;
 
@@ -37,8 +38,11 @@ public class Observation {
 	private String sigmfDataURL;
 	private String sigmfMetaURL;
 
+	private String channelA;
+	private String channelB;
 	private String aURL;
 	private File imagePath;
+	private List<Instrument> instruments;
 
 	private String spectogramURL;
 	private File spectogramPath;
@@ -284,6 +288,14 @@ public class Observation {
 		this.sampleRate = sampleRate;
 	}
 
+	public List<Instrument> getInstruments() {
+		return instruments;
+	}
+
+	public void setInstruments(List<Instrument> instruments) {
+		this.instruments = instruments;
+	}
+
 	public static Observation fromJson(JsonObject meta) {
 		Observation result = new Observation();
 		result.setId(meta.getString("id", null));
@@ -334,6 +346,19 @@ public class Observation {
 		if (deviceConfig != null) {
 			result.setDevice(DeviceConfiguration.fromJson(deviceConfig.asObject()));
 		}
+		JsonValue instruments = meta.get("instruments");
+		if (instruments != null) {
+			JsonArray instrumentsArray = instruments.asArray();
+			List<Instrument> instrumentsObj = new ArrayList<>();
+			for (int i = 0; i < instrumentsArray.size(); i++) {
+				Instrument cur = Instrument.fromJson(instrumentsArray.get(i).asObject());
+				if (cur == null) {
+					continue;
+				}
+				instrumentsObj.add(cur);
+			}
+			result.setInstruments(instrumentsObj);
+		}
 		return result;
 	}
 
@@ -383,6 +408,13 @@ public class Observation {
 		if (device != null) {
 			json.add("device", device.toJson());
 		}
+		if (getInstruments() != null) {
+			JsonArray instrumentsArray = new JsonArray();
+			for (Instrument cur : getInstruments()) {
+				instrumentsArray.add(cur.toJson(signed));
+			}
+			json.add("instruments", instrumentsArray);
+		}
 		return json;
 	}
 
@@ -411,7 +443,7 @@ public class Observation {
 	}
 
 	public boolean hasData() {
-		return aURL != null || dataURL != null;
+		return aURL != null || dataURL != null || instruments != null;
 	}
 
 }

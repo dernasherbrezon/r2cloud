@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -31,6 +32,8 @@ import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.model.AntennaConfiguration;
 import ru.r2cloud.model.AntennaType;
 import ru.r2cloud.model.DeviceConfiguration;
+import ru.r2cloud.model.Instrument;
+import ru.r2cloud.model.InstrumentChannel;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationStatus;
 import ru.r2cloud.model.Page;
@@ -200,12 +203,35 @@ public class ObservationDaoTest {
 	public void testCrud() throws Exception {
 		Observation req = createObservation();
 		req.setStatus(ObservationStatus.RECEIVED);
+		InstrumentChannel channel0 = new InstrumentChannel();
+		channel0.setId("0");
+		channel0.setDescription(UUID.randomUUID().toString());
+		InstrumentChannel channel1 = new InstrumentChannel();
+		channel1.setId("1");
+		channel1.setDescription(UUID.randomUUID().toString());
+		List<InstrumentChannel> channels = new ArrayList<>();
+		channels.add(channel0);
+		channels.add(channel1);
+		Instrument instrument = new Instrument();
+		instrument.setChannels(channels);
+		instrument.setId("0");
+		instrument.setDescription(UUID.randomUUID().toString());
+		instrument.setName(UUID.randomUUID().toString());
+		instrument.setSatdumpCombined(UUID.randomUUID().toString());
+		instrument.setSatdumpName(UUID.randomUUID().toString());
+		List<Instrument> instruments = new ArrayList<>();
+		instruments.add(instrument);
+		req.setInstruments(instruments);
+
 		assertNotNull(dao.update(req, createTempFile("wav")));
 		Observation actual = dao.find(req.getSatelliteId(), req.getId());
 		assertNotNull(actual.getRawPath());
 		assertNull(actual.getDataPath());
 		assertNull(actual.getImagePath());
 		assertNull(actual.getSpectogramPath());
+		assertNull(actual.getInstruments().get(0).getCombinedImagePath());
+		assertNull(actual.getInstruments().get(0).getChannels().get(0).getImagePath());
+		assertNull(actual.getInstruments().get(0).getChannels().get(1).getImagePath());
 		assertEquals(2, actual.getFrequency());
 		assertEquals(req.getTle(), actual.getTle());
 		assertEquals(req.getGroundStation().getLatitude(), actual.getGroundStation().getLatitude(), 0.0);
@@ -218,6 +244,9 @@ public class ObservationDaoTest {
 		assertNotNull(dao.saveData(req.getSatelliteId(), req.getId(), createTempFile("data")));
 		assertNotNull(dao.saveImage(req.getSatelliteId(), req.getId(), createTempFile("image")));
 		assertNotNull(dao.saveSpectogram(req.getSatelliteId(), req.getId(), createTempFile("spectogram")));
+		assertNotNull(dao.saveCombined(req.getSatelliteId(), req.getId(), instrument.getId(), createTempFile("combined")));
+		assertNotNull(dao.saveChannel(req.getSatelliteId(), req.getId(), instrument.getId(), channel0.getId(), createTempFile("channel0.png")));
+		assertNotNull(dao.saveChannel(req.getSatelliteId(), req.getId(), instrument.getId(), channel1.getId(), createTempFile("channel1.png")));
 
 		actual = dao.find(req.getSatelliteId(), req.getId());
 		assertNotNull(actual.getSpectogramPath());
@@ -228,6 +257,12 @@ public class ObservationDaoTest {
 		assertNotNull(actual.getDataURL());
 		assertNotNull(actual.getaURL());
 		assertNotNull(actual.getRawURL());
+		assertNotNull(actual.getInstruments().get(0).getCombinedImageURL());
+		assertNotNull(actual.getInstruments().get(0).getChannels().get(0).getImageURL());
+		assertNotNull(actual.getInstruments().get(0).getChannels().get(1).getImageURL());
+		assertNotNull(actual.getInstruments().get(0).getCombinedImagePath());
+		assertNotNull(actual.getInstruments().get(0).getChannels().get(0).getImagePath());
+		assertNotNull(actual.getInstruments().get(0).getChannels().get(1).getImagePath());
 
 		Observation full = new Observation(req.getReq());
 		full.setChannelA(UUID.randomUUID().toString());

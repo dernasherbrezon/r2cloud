@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
+import ru.r2cloud.model.Instrument;
+import ru.r2cloud.model.InstrumentChannel;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationComparator;
 import ru.r2cloud.model.Page;
@@ -182,8 +184,37 @@ public class ObservationDao implements IObservationDao {
 			full.setSpectogramPath(spectogram.toFile());
 			full.setSpectogramURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + SPECTOGRAM_FILENAME);
 		}
-
+		if (full.getInstruments() != null) {
+			for (Instrument cur : full.getInstruments()) {
+				for (InstrumentChannel curChannel : cur.getChannels()) {
+					Path curPath = resolveByPrefix(curDirectory, cur.getId() + "-" + curChannel.getId() + ".");
+					if (curPath == null) {
+						continue;
+					}
+					File file = curPath.toFile();
+					curChannel.setImagePath(file);
+					curChannel.setImageURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + file.getName());
+				}
+				Path combinedPath = resolveByPrefix(curDirectory, cur.getId() + ".");
+				if (combinedPath != null) {
+					File combinedFile = combinedPath.toFile();
+					cur.setCombinedImagePath(combinedFile);
+					// assume each instrument save 1 image
+					cur.setCombinedImageURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + combinedFile.getName());
+				}
+			}
+		}
 		return full;
+	}
+
+	private static Path resolveByPrefix(Path baseDir, String prefix) {
+		File[] files = baseDir.toFile().listFiles();
+		for (File cur : files) {
+			if (cur.getName().startsWith(prefix)) {
+				return cur.toPath();
+			}
+		}
+		return null;
 	}
 
 	private static Path resolveRawPath(Path baseDir) {
@@ -206,6 +237,38 @@ public class ObservationDao implements IObservationDao {
 			return null;
 		}
 		if (!a.renameTo(dest.toFile())) {
+			return null;
+		}
+		return dest.toFile();
+	}
+
+	@Override
+	public File saveChannel(String satelliteId, String observationId, String instrumentId, String channelId, File imagePath) {
+		if (imagePath == null) {
+			return null;
+		}
+		Path dest = getObservationBasepath(satelliteId, observationId).resolve(instrumentId + "-" + channelId + "." + getExtension(imagePath.getName()));
+		if (Files.exists(dest)) {
+			LOG.info(DEST_ALREADY_EXIST_MESSAGE, dest.toAbsolutePath());
+			return null;
+		}
+		if (!imagePath.renameTo(dest.toFile())) {
+			return null;
+		}
+		return dest.toFile();
+	}
+
+	@Override
+	public File saveCombined(String satelliteId, String observationId, String instrumentId, File combinedImagePath) {
+		if (combinedImagePath == null) {
+			return null;
+		}
+		Path dest = getObservationBasepath(satelliteId, observationId).resolve(instrumentId + "." + getExtension(combinedImagePath.getName()));
+		if (Files.exists(dest)) {
+			LOG.info(DEST_ALREADY_EXIST_MESSAGE, dest.toAbsolutePath());
+			return null;
+		}
+		if (!combinedImagePath.renameTo(dest.toFile())) {
 			return null;
 		}
 		return dest.toFile();
@@ -342,6 +405,14 @@ public class ObservationDao implements IObservationDao {
 
 	private Path getObservationBasepath(String satelliteId, String observationId) {
 		return basepath.resolve(satelliteId).resolve("data").resolve(observationId);
+	}
+
+	private static String getExtension(String filename) {
+		int index = filename.lastIndexOf('.');
+		if (index == -1) {
+			return filename;
+		}
+		return filename.substring(index + 1);
 	}
 
 }
