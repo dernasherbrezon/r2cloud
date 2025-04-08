@@ -23,6 +23,10 @@ public class ProcessFactoryMock extends ProcessFactory {
 
 	@Override
 	public ProcessWrapper create(String commandLine, Redirect redirectError, boolean inheritIO) throws IOException {
+		return handle(commandLine);
+	}
+
+	private ProcessWrapper handle(String commandLine) {
 		String[] parts = SPACE.split(commandLine);
 		ProcessWrapperMock result = reply.get(parts[0]);
 		for (String cur : parts) {
@@ -32,5 +36,10 @@ public class ProcessFactoryMock extends ProcessFactory {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public ProcessWrapper create(String commandLine, boolean redirectErrorStream, boolean inheritIO) throws IOException {
+		return handle(commandLine);
 	}
 }

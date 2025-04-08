@@ -85,12 +85,14 @@ public class RtlSdrReader implements IQReader {
 		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw");
 		try {
 			startTimeMillis = System.currentTimeMillis();
-			rtlSdr = factory.create(config.getProperty("satellites.satdump.path") + " record " + rawFile.getAbsolutePath() + " --source rtlsdr --samplerate " + transmitter.getBandwidth() + " --frequency " + req.getFrequency() + " --baseband_format ziq --gain " + deviceConfiguration.getGain()
+			rtlSdr = factory.create(config.getProperty("satellites.satdump.path") + " record " + rawFile.getAbsolutePath() + " --source rtlsdr --samplerate " + transmitter.getBandwidth() + " --frequency " + req.getFrequency() + " --baseband_format ziq --bit_depth 8 --gain " + deviceConfiguration.getGain()
 					+ " --bias " + deviceConfiguration.isBiast() + " --ppm_correction " + deviceConfiguration.getPpm(), true, false);
-			SatdumpLogProcessor logs = new SatdumpLogProcessor(req.getId(), rtlSdr.getInputStream());
-			logs.start();
+			new SatdumpLogProcessor(req.getId(), rtlSdr.getInputStream(), "satdump-record-stdio").start();
+			new SatdumpLogProcessor(req.getId(), rtlSdr.getErrorStream(), "satdump-record-stderr").start();
+			// satdump create prefix only.
+			rawFile = new File(rawFile.getAbsolutePath() + ".ziq");
 			int responseCode = rtlSdr.waitFor();
-			if (responseCode != 0) {
+			if (responseCode != 0 && responseCode != 141) {
 				LOG.error("[{}] invalid response code satdump: {}", req.getId(), responseCode);
 				Util.deleteQuietly(rawFile);
 			} else {

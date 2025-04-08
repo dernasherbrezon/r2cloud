@@ -2,7 +2,6 @@ package ru.r2cloud.satellite.decoder;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.ProcessBuilder.Redirect;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +17,7 @@ import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ProcessWrapper;
+import ru.r2cloud.util.SatdumpLogProcessor;
 
 public class SatdumpDecoder implements Decoder {
 
@@ -39,10 +39,12 @@ public class SatdumpDecoder implements Decoder {
 		}
 		result.setRawPath(rawFile);
 		ProcessWrapper process = null;
-		String commandLine = config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " baseband " + rawFile.getAbsolutePath() + " " + rawFile.getParentFile().getAbsolutePath() + " --tle_override explicitly_missing --samplerate " + request.getSampleRate()
+		String commandLine = config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " baseband " + rawFile.getAbsolutePath() + " " + rawFile.getParentFile().getAbsolutePath() + " --tle_override explicitly_missing --dc_block true --samplerate " + request.getSampleRate()
 				+ " --baseband_format ziq";
 		try {
-			process = factory.create(commandLine, Redirect.INHERIT, true);
+			process = factory.create(commandLine, true, false);
+			new SatdumpLogProcessor(request.getId(), process.getInputStream(), "satdump-decode-stdio").start();
+			new SatdumpLogProcessor(request.getId(), process.getErrorStream(), "satdump-decode-stderr").start();
 			int responseCode = process.waitFor();
 			if (responseCode != 0) {
 				LOG.error("[{}] invalid response code from satdump: {}", request.getId(), responseCode);

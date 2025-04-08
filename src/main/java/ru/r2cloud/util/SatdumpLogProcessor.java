@@ -14,10 +14,12 @@ public class SatdumpLogProcessor {
 
 	private final String id;
 	private final InputStream is;
+	private final String type;
 
-	public SatdumpLogProcessor(String id, InputStream is) {
+	public SatdumpLogProcessor(String id, InputStream is, String type) {
 		this.id = id;
 		this.is = is;
+		this.type = type;
 	}
 
 	public void start() {
@@ -66,7 +68,7 @@ public class SatdumpLogProcessor {
 					LOG.error("[{}] unable to read input", id, e);
 				}
 			}
-		}, "satdump-daemon");
+		}, type);
 		tis.setDaemon(true);
 		tis.start();
 	}
@@ -93,6 +95,10 @@ public class SatdumpLogProcessor {
 		}
 		// remove debug
 		if (str.startsWith("Loading ")) {
+			return false;
+		}
+		// remove redundant
+		if (str.contains("Done!")) {
 			return false;
 		}
 		return true;

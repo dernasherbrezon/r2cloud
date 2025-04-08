@@ -24,14 +24,14 @@ public class ZiqTest {
 		ZiqOutputStream os = new ZiqOutputStream(baos, compressed, 8, 48000);
 		os.write(data);
 		os.close();
-		ZiqInputStream is = new ZiqInputStream(new ByteArrayInputStream(baos.toByteArray()), (long) (data.length / 2));
-		assertEquals(-0.91796875, is.readFloat(), 0.0000001);
+		ZiqInputStream is = new ZiqInputStream(new ByteArrayInputStream(baos.toByteArray()), 48000, (long) (data.length / 2));
+		assertEquals(0.078125, is.readFloat(), 0.0000001);
 		assertEquals(0, is.getContext().getCurrentSample().getValue());
-		assertEquals(-0.83984375, is.readFloat(), 0.0000001);
+		assertEquals(0.15625, is.readFloat(), 0.0000001);
 		assertEquals(1, is.getContext().getCurrentSample().getValue());
-		assertEquals(-0.76171875, is.readFloat(), 0.0000001);
+		assertEquals(0.234375, is.readFloat(), 0.0000001);
 		assertEquals(1, is.getContext().getCurrentSample().getValue());
-		assertEquals(-0.68359375, is.readFloat(), 0.0000001);
+		assertEquals(0.3125, is.readFloat(), 0.0000001);
 		assertEquals(2, is.getContext().getCurrentSample().getValue());
 		try {
 			is.readFloat();

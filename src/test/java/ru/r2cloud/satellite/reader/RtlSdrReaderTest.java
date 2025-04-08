@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -117,7 +118,9 @@ public class RtlSdrReaderTest {
 	@Test
 	public void testZiqSuccess() throws Exception {
 		String satelliteId = UUID.randomUUID().toString();
-		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 0, true)), satelliteId);
+		ProcessWrapperMock mock = new ProcessWrapperMock(new ByteArrayInputStream(new byte[0]), null, new ByteArrayInputStream(new byte[0]), 0, true);
+		mock.setBackingFileExtension(".ziq");
+		ProcessFactoryMock factory = new ProcessFactoryMock(create(mock), satelliteId);
 
 		ObservationRequest req = new ObservationRequest();
 		req.setSatelliteId(satelliteId);

@@ -2,6 +2,7 @@ package ru.r2cloud.util;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,13 +21,15 @@ public class ZiqInputStream extends InputStream implements FloatInput {
 	private final DataInputStream dis;
 	private long framePos = 0;
 	private final Context context;
-	private float[] lookupTable;
+	private final byte[] buffer = new byte[8192];
+	private int maxSize = buffer.length;
+	private int currentPosition = maxSize;
 
-	public ZiqInputStream(File file, Long totalSamples) throws IOException {
-		this(new BufferedInputStream(new FileInputStream(file)), totalSamples);
+	public ZiqInputStream(File file, long sampleRate, Long totalSamples) throws IOException {
+		this(new BufferedInputStream(new FileInputStream(file)), sampleRate, totalSamples);
 	}
 
-	public ZiqInputStream(InputStream impl, Long totalSamples) throws IOException {
+	public ZiqInputStream(InputStream impl, long sampleRate, Long totalSamples) throws IOException {
 		DataInputStream dis = new DataInputStream(impl);
 		byte[] magic = new byte[MAGIC.length];
 		dis.readFully(magic);
@@ -37,24 +40,39 @@ public class ZiqInputStream extends InputStream implements FloatInput {
 		this.context = new Context();
 		context.setChannels(2);
 		context.setSampleSizeInBits(dis.readUnsignedByte());
-		context.setSampleRate(dis.readLong());
+		long actualSampleRate = dis.readLong();
+		boolean bigEndian;
+		// ziq uses whatever operating system endianess have
+		if (sampleRate == actualSampleRate) {
+			bigEndian = true; // that's because DataInputStream is big-endian
+		} else {
+			bigEndian = false;
+		}
+		context.setSampleRate(sampleRate);
 		context.setTotalSamples(totalSamples);
 		context.setCurrentSample(() -> framePos / context.getChannels());
-		long jsonAnnotationsLength = dis.readLong();
-		dis.skip(jsonAnnotationsLength); // not used
-		if (context.getSampleSizeInBits() == 8) {
-			lookupTable = new float[0x100];
-			for (int i = 0; i < lookupTable.length; ++i) {
-				lookupTable[i] = (i - 127.5f) / 128.0f;
-			}
+		long jsonAnnotationsLength;
+		if (bigEndian) {
+			jsonAnnotationsLength = dis.readLong();
 		} else {
-			throw new IOException("unsupported sample size: " + context.getSampleSizeInBits());
+			jsonAnnotationsLength = readLittleEndian(dis);
 		}
+
+		dis.skip(jsonAnnotationsLength); // not used
 		if (isCompressed) {
-			this.dis = new DataInputStream(new ZstdInputStream(impl));
+			ZstdInputStream zis = new ZstdInputStream(impl);
+			zis.setContinuous(true);
+			this.dis = new DataInputStream(zis);
 		} else {
 			this.dis = dis;
 		}
+	}
+
+	private static long readLittleEndian(DataInputStream dis) throws IOException {
+		byte[] readBuffer = new byte[8];
+		dis.readFully(readBuffer, 0, 8);
+		return ((long) readBuffer[7] << 56) + ((long) (readBuffer[6] & 255) << 48) + ((long) (readBuffer[5] & 255) << 40) + ((long) (readBuffer[4] & 255) << 32) + ((long) (readBuffer[3] & 255) << 24) + ((readBuffer[2] & 255) << 16) + ((readBuffer[1] & 255) << 8) + (readBuffer[0] & 255);
+
 	}
 
 	@Override
@@ -80,12 +98,20 @@ public class ZiqInputStream extends InputStream implements FloatInput {
 	@Override
 	public float readFloat() throws IOException {
 		float result;
+		if (currentPosition >= maxSize) {
+			maxSize = dis.read(buffer);
+			currentPosition = 0;
+			if (maxSize == -1) {
+				throw new EOFException();
+			}
+		}
 		if (context.getSampleSizeInBits() == 8) {
-			result = lookupTable[dis.readUnsignedByte()];
+			result = buffer[currentPosition] / 128.0f;
 		} else {
 			throw new IOException("unsupported sample size: " + context.getSampleSizeInBits());
 		}
 		framePos++;
+		currentPosition++;
 		return result;
 	}
 

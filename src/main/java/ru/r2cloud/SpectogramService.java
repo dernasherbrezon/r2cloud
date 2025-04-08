@@ -104,7 +104,7 @@ public class SpectogramService {
 				source = new InputStreamSource(is, ctx);
 				break;
 			case ZIQ:
-				source = new ZiqInputStream(is, (long) (((double) req.getEndTimeMillis() - req.getStartTimeMillis()) / 1000 * req.getSampleRate())); // very rough estimation
+				source = new ZiqInputStream(is, req.getSampleRate(), (long) (((double) req.getEndTimeMillis() - req.getStartTimeMillis()) / 1000 * req.getSampleRate())); // very rough estimation
 				break;
 			default:
 				throw new IllegalArgumentException("unsupported data format: " + req.getDataFormat());
