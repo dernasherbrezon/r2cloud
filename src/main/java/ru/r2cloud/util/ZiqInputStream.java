@@ -14,7 +14,7 @@ import com.github.luben.zstd.ZstdInputStream;
 import ru.r2cloud.jradio.Context;
 import ru.r2cloud.jradio.FloatInput;
 
-public class ZiqInputStream implements FloatInput {
+public class ZiqInputStream extends InputStream implements FloatInput {
 
 	static final byte[] MAGIC = "ZIQ_".getBytes(StandardCharsets.US_ASCII);
 	private final DataInputStream dis;
@@ -63,6 +63,21 @@ public class ZiqInputStream implements FloatInput {
 	}
 
 	@Override
+	public int read() throws IOException {
+		return dis.read();
+	}
+
+	@Override
+	public int read(byte[] b) throws IOException {
+		return dis.read(b);
+	}
+
+	@Override
+	public int read(byte[] b, int off, int len) throws IOException {
+		return dis.read(b, off, len);
+	}
+
+	@Override
 	public float readFloat() throws IOException {
 		float result;
 		if (context.getSampleSizeInBits() == 8) {
@@ -78,4 +93,5 @@ public class ZiqInputStream implements FloatInput {
 	public void close() throws IOException {
 		dis.close();
 	}
+
 }
