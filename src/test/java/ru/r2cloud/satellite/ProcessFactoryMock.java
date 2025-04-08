@@ -40,6 +40,10 @@ public class ProcessFactoryMock extends ProcessFactory {
 
 	@Override
 	public ProcessWrapper create(String commandLine, boolean redirectErrorStream, boolean inheritIO) throws IOException {
-		return handle(commandLine);
+		ProcessWrapper result = handle(commandLine);
+		if (result == null) {
+			return super.create(commandLine, redirectErrorStream, inheritIO);
+		}
+		return result;
 	}
 }
