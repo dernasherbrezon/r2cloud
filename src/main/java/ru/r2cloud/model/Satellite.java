@@ -265,6 +265,19 @@ public class Satellite {
 		if (tle != null) {
 			result.add("tle", tle.toJson());
 		}
+		if (instruments != null) {
+			JsonArray instrumentsArray = new JsonArray();
+			// do not save full instrument info
+			// it will be enriched by the dao from the instruments.json
+			for (Instrument cur : instruments) {
+				JsonObject curObj = new JsonObject();
+				curObj.add("id", cur.getId());
+				curObj.add("enabled", cur.isEnabled());
+				curObj.add("primary", cur.isPrimary());
+				instrumentsArray.add(curObj);
+			}
+			result.add("instruments", instrumentsArray);
+		}
 		return result;
 	}
 

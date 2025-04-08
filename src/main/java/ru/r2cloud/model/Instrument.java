@@ -1,5 +1,6 @@
 package ru.r2cloud.model;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,12 +8,16 @@ import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
+import ru.r2cloud.util.SignedURL;
+
 public class Instrument {
 
 	private String id;
 	private String name;
 	private String satdumpName;
 	private String satdumpCombined;
+	private File combinedImagePath;
+	private String combinedImageURL;
 	private String description;
 	private List<InstrumentChannel> channels;
 	private boolean enabled;
@@ -27,6 +32,8 @@ public class Instrument {
 		this.name = other.name;
 		this.satdumpName = other.satdumpName;
 		this.satdumpCombined = other.satdumpCombined;
+		this.combinedImagePath = other.combinedImagePath;
+		this.combinedImageURL = other.combinedImageURL;
 		this.description = other.description;
 		if (other.channels != null) {
 			this.channels = new ArrayList<>(other.channels.size());
@@ -36,6 +43,14 @@ public class Instrument {
 		}
 		this.enabled = other.enabled;
 		this.primary = other.primary;
+	}
+
+	public File getCombinedImagePath() {
+		return combinedImagePath;
+	}
+
+	public void setCombinedImagePath(File combinedImagePath) {
+		this.combinedImagePath = combinedImagePath;
 	}
 
 	public boolean isEnabled() {
@@ -102,6 +117,14 @@ public class Instrument {
 		this.channels = channels;
 	}
 
+	public String getCombinedImageURL() {
+		return combinedImageURL;
+	}
+
+	public void setCombinedImageURL(String combinedImageURL) {
+		this.combinedImageURL = combinedImageURL;
+	}
+
 	public static Instrument fromJson(JsonObject obj) {
 		Instrument result = new Instrument();
 		result.setId(obj.getString("id", null));
@@ -127,6 +150,41 @@ public class Instrument {
 			}
 			result.setChannels(instrumentChannels);
 		}
+		return result;
+	}
+
+	public JsonObject toJson(SignedURL signed) {
+		JsonObject result = new JsonObject();
+		result.add("id", id);
+		result.add("enabled", enabled);
+		result.add("primary", primary);
+		if (name != null) {
+			result.add("name", name);
+		}
+		if (satdumpName != null) {
+			result.add("satdumpName", satdumpName);
+		}
+		if (satdumpCombined != null) {
+			result.add("satdumpCombined", satdumpCombined);
+		}
+		if (description != null) {
+			result.add("description", description);
+		}
+		if (combinedImageURL != null) {
+			if (signed != null) {
+				result.add("combinedImageURL", signed.sign(combinedImageURL));
+			} else {
+				result.add("combinedImageURL", combinedImageURL);
+			}
+		}
+		if (channels != null) {
+			JsonArray channelsArrays = new JsonArray();
+			for (InstrumentChannel cur : channels) {
+				channelsArrays.add(cur.toJson(signed));
+			}
+			result.add("channels", channelsArrays);
+		}
+
 		return result;
 	}
 

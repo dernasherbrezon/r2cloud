@@ -1,11 +1,17 @@
 package ru.r2cloud.model;
 
+import java.io.File;
+
 import com.eclipsesource.json.JsonObject;
+
+import ru.r2cloud.util.SignedURL;
 
 public class InstrumentChannel {
 
 	private String id;
 	private String description;
+	private File imagePath;
+	private String imageURL;
 
 	public InstrumentChannel() {
 		// do nothing
@@ -14,6 +20,24 @@ public class InstrumentChannel {
 	public InstrumentChannel(InstrumentChannel other) {
 		this.id = other.id;
 		this.description = other.description;
+		this.imagePath = other.imagePath;
+		this.imageURL = other.imageURL;
+	}
+
+	public String getImageURL() {
+		return imageURL;
+	}
+
+	public void setImageURL(String imageURL) {
+		this.imageURL = imageURL;
+	}
+
+	public File getImagePath() {
+		return imagePath;
+	}
+
+	public void setImagePath(File imagePath) {
+		this.imagePath = imagePath;
 	}
 
 	public String getId() {
@@ -39,6 +63,22 @@ public class InstrumentChannel {
 			return null;
 		}
 		result.setDescription(obj.getString("description", null));
+		return result;
+	}
+
+	public JsonObject toJson(SignedURL signed) {
+		JsonObject result = new JsonObject();
+		result.add("id", id);
+		if (description != null) {
+			result.add("description", description);
+		}
+		if (imageURL != null) {
+			if (signed != null) {
+				result.add("imageURL", signed.sign(imageURL));
+			} else {
+				result.add("imageURL", imageURL);
+			}
+		}
 		return result;
 	}
 
