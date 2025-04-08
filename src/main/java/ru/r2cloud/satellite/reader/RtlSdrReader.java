@@ -20,6 +20,7 @@ import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ProcessWrapper;
+import ru.r2cloud.util.SatdumpLogProcessor;
 import ru.r2cloud.util.Util;
 
 public class RtlSdrReader implements IQReader {
@@ -81,20 +82,13 @@ public class RtlSdrReader implements IQReader {
 	private IQData startSatdump() throws InterruptedException {
 		Long startTimeMillis = null;
 		Long endTimeMillis = null;
-		Integer maxBaudRate = Collections.max(transmitter.getBaudRates());
-		if (maxBaudRate == null) {
-			return null;
-		}
-		Long sampleRate = Util.getSmallestGoodDeviceSampleRate(maxBaudRate, supportedSampleRates);
-		if (sampleRate == null) {
-			LOG.error("[{}] cannot find sample rate for: {}", req.getId(), maxBaudRate);
-			return null;
-		}
 		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw");
 		try {
 			startTimeMillis = System.currentTimeMillis();
-			rtlSdr = factory.create(config.getProperty("satellites.satdump.path") + " record " + rawFile.getAbsolutePath() + " --source rtlsdr --samplerate " + sampleRate + " --frequency " + req.getFrequency() + " --baseband_format ziq --gain " + deviceConfiguration.getGain() + " --bias "
-					+ deviceConfiguration.isBiast() + " --ppm_correction " + deviceConfiguration.getPpm(), Redirect.INHERIT, false);
+			rtlSdr = factory.create(config.getProperty("satellites.satdump.path") + " record " + rawFile.getAbsolutePath() + " --source rtlsdr --samplerate " + transmitter.getBandwidth() + " --frequency " + req.getFrequency() + " --baseband_format ziq --gain " + deviceConfiguration.getGain()
+					+ " --bias " + deviceConfiguration.isBiast() + " --ppm_correction " + deviceConfiguration.getPpm(), true, false);
+			SatdumpLogProcessor logs = new SatdumpLogProcessor(req.getId(), rtlSdr.getInputStream());
+			logs.start();
 			int responseCode = rtlSdr.waitFor();
 			if (responseCode != 0) {
 				LOG.error("[{}] invalid response code satdump: {}", req.getId(), responseCode);
@@ -111,7 +105,7 @@ public class RtlSdrReader implements IQReader {
 		result.setActualStart(startTimeMillis);
 		result.setActualEnd(endTimeMillis);
 		result.setDataFormat(DataFormat.ZIQ);
-		result.setSampleRate(sampleRate);
+		result.setSampleRate(transmitter.getBandwidth());
 		if (rawFile.exists()) {
 			result.setDataFile(rawFile);
 		}
