@@ -10,6 +10,8 @@ import ru.r2cloud.Lifecycle;
 import ru.r2cloud.cloud.InfluxDBClient;
 import ru.r2cloud.cloud.LeoSatDataService;
 import ru.r2cloud.model.DecoderResult;
+import ru.r2cloud.model.Instrument;
+import ru.r2cloud.model.InstrumentChannel;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationStatus;
 import ru.r2cloud.model.Page;
@@ -132,7 +134,7 @@ public class DecoderService implements Lifecycle {
 			return false;
 		}
 		LOG.info("[{}] decoding", observation.getId());
-		DecoderResult result = decoder.decode(rawFile, observation, transmitter);
+		DecoderResult result = decoder.decode(rawFile, observation, transmitter, satellite);
 		LOG.info("[{}] decoded packets {}", observation.getId(), result.getNumberOfDecodedPackets());
 
 		if (result.getDataPath() != null) {
@@ -140,6 +142,14 @@ public class DecoderService implements Lifecycle {
 		}
 		if (result.getImagePath() != null) {
 			result.setImagePath(dao.saveImage(observation.getSatelliteId(), observation.getId(), result.getImagePath()));
+		}
+		if (result.getInstruments() != null) {
+			for (Instrument cur : result.getInstruments()) {
+				for (InstrumentChannel curChannel : cur.getChannels()) {
+					curChannel.setImagePath(dao.saveChannel(observation.getSatelliteId(), observation.getId(), cur.getId(), curChannel.getId(), curChannel.getImagePath()));
+				}
+				cur.setCombinedImagePath(dao.saveCombined(observation.getSatelliteId(), observation.getId(), cur.getId(), cur.getCombinedImagePath()));
+			}
 		}
 
 		observation.setRawPath(result.getRawPath());
@@ -153,6 +163,7 @@ public class DecoderService implements Lifecycle {
 		observation.setImagePath(result.getImagePath());
 		observation.setDataPath(result.getDataPath());
 		observation.setStatus(ObservationStatus.DECODED);
+		observation.setInstruments(result.getInstruments());
 
 		dao.update(observation);
 		r2cloudService.uploadObservation(observation);

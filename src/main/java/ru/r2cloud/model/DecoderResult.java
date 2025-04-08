@@ -1,6 +1,7 @@
 package ru.r2cloud.model;
 
 import java.io.File;
+import java.util.List;
 
 public class DecoderResult {
 
@@ -13,6 +14,15 @@ public class DecoderResult {
 
 	private File imagePath;
 	private File dataPath;
+	private List<Instrument> instruments;
+	
+	public List<Instrument> getInstruments() {
+		return instruments;
+	}
+	
+	public void setInstruments(List<Instrument> instruments) {
+		this.instruments = instruments;
+	}
 	
 	public Long getTotalSize() {
 		return totalSize;

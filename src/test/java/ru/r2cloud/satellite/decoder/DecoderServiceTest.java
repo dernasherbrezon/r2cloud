@@ -73,7 +73,7 @@ public class DecoderServiceTest {
 		firstCall.setNumberOfDecodedPackets(1);
 		DecoderResult secondCall = new DecoderResult();
 		secondCall.setNumberOfDecodedPackets(2);
-		when(decoder.decode(any(), any(), any())).thenReturn(firstCall, secondCall);
+		when(decoder.decode(any(), any(), any(), any())).thenReturn(firstCall, secondCall);
 		service.retryObservations();
 		service.decode(observation.getSatelliteId(), observation.getId());
 

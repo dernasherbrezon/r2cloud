@@ -8,26 +8,32 @@
 		"channels": [
 			{
 				"id": "1",
+				"satdumpName": "AVHRR-1.png",
 				"description": "0.58 - 0.68μm"
 			},
 			{
 				"id": "2",
+				"satdumpName": "AVHRR-2.png",
 				"description": "0.725-1.00μm"
 			},
 			{
 				"id": "3a",
+				"satdumpName": "AVHRR-3a.png",
 				"description": "1.58 - 1.64μm"
 			},
 			{
 				"id": "3b",
+				"satdumpName": "AVHRR-3b.png",
 				"description": "3.55 - 3.93μm"
 			},
 			{
 				"id": "4",
+				"satdumpName": "AVHRR-4.png",
 				"description": "10.3 - 11.3μm"
 			},
 			{
 				"id": "5",
+				"satdumpName": "AVHRR-5.png",
 				"description": "11.5 - 12.5μm"
 			}
 		]
@@ -41,82 +47,102 @@
 		"channels": [
 			{
 				"id": "1",
+				"satdumpName": "HIRS-1.png",
 				"description": "14.95μm"
 			},
 			{
 				"id": "2",
+				"satdumpName": "HIRS-2.png",
 				"description": "14.71μm"
 			},
 			{
 				"id": "3",
+				"satdumpName": "HIRS-3.png",
 				"description": "14.49μm"
 			},
 			{
 				"id": "4",
+				"satdumpName": "HIRS-4.png",
 				"description": "14.22μm"
 			},
 			{
 				"id": "5",
+				"satdumpName": "HIRS-5.png",
 				"description": "13.97μm"
 			},
 			{
 				"id": "6",
+				"satdumpName": "HIRS-6.png",
 				"description": "13.64μm"
 			},
 			{
 				"id": "7",
+				"satdumpName": "HIRS-7.png",
 				"description": "13.35μm"
 			},
 			{
 				"id": "8",
+				"satdumpName": "HIRS-8.png",
 				"description": "11.11μm"
 			},
 			{
 				"id": "9",
+				"satdumpName": "HIRS-9.png",
 				"description": "9.71μm"
 			},
 			{
 				"id": "10",
+				"satdumpName": "HIRS-10.png",
 				"description": "12.45μm"
 			},
 			{
 				"id": "11",
+				"satdumpName": "HIRS-11.png",
 				"description": "7.33μm"
 			},
 			{
 				"id": "12",
+				"satdumpName": "HIRS-12.png",
 				"description": "6.52μm"
 			},
 			{
 				"id": "13",
+				"satdumpName": "HIRS-13.png",
 				"description": "4.57μm"
 			},
 			{
 				"id": "14",
+				"satdumpName": "HIRS-14.png",
 				"description": "4.52μm"
 			},
 			{
 				"id": "15",
+				"satdumpName": "HIRS-15.png",
 				"description": "4.47μm"
 			},
 			{
 				"id": "16",
+				"satdumpName": "HIRS-16.png",
 				"description": "4.45μm"
 			},
 			{
 				"id": "17",
+				"satdumpName": "HIRS-17.png",
 				"description": "4.13μm"
 			},
 			{
 				"id": "18",
+				"satdumpName": "HIRS-18.png",
 				"description": "4.0μm"
 			},
 			{
 				"id": "19",
+				"satdumpName": "HIRS-19.png",
 				"description": "3.76μm"
 			},
 			{
 				"id": "20",
+				"satdumpName": "HIRS-20.png",
 				"description": "0.69μm"
 			}
 		]
@@ -130,82 +156,102 @@
 		"channels": [
 			{
 				"id": "1",
+				"satdumpName": "HIRS-1.png",
 				"description": "14.95μm"
 			},
 			{
 				"id": "2",
+				"satdumpName": "HIRS-2.png",
 				"description": "14.71μm"
 			},
 			{
 				"id": "3",
+				"satdumpName": "HIRS-3.png",
 				"description": "14.49μm"
 			},
 			{
 				"id": "4",
+				"satdumpName": "HIRS-4.png",
 				"description": "14.22μm"
 			},
 			{
 				"id": "5",
+				"satdumpName": "HIRS-5.png",
 				"description": "13.97μm"
 			},
 			{
 				"id": "6",
+				"satdumpName": "HIRS-6.png",
 				"description": "13.64μm"
 			},
 			{
 				"id": "7",
+				"satdumpName": "HIRS-7.png",
 				"description": "13.35μm"
 			},
 			{
 				"id": "8",
+				"satdumpName": "HIRS-8.png",
 				"description": "11.11μm"
 			},
 			{
 				"id": "9",
+				"satdumpName": "HIRS-9.png",
 				"description": "9.71μm"
 			},
 			{
 				"id": "10",
+				"satdumpName": "HIRS-10.png",
 				"description": "12.45μm"
 			},
 			{
 				"id": "11",
+				"satdumpName": "HIRS-11.png",
 				"description": "7.33μm"
 			},
 			{
 				"id": "12",
+				"satdumpName": "HIRS-12.png",
 				"description": "6.52μm"
 			},
 			{
 				"id": "13",
+				"satdumpName": "HIRS-13.png",
 				"description": "4.57μm"
 			},
 			{
 				"id": "14",
+				"satdumpName": "HIRS-14.png",
 				"description": "4.52μm"
 			},
 			{
 				"id": "15",
+				"satdumpName": "HIRS-15.png",
 				"description": "4.47μm"
 			},
 			{
 				"id": "16",
+				"satdumpName": "HIRS-16.png",
 				"description": "4.45μm"
 			},
 			{
 				"id": "17",
+				"satdumpName": "HIRS-17.png",
 				"description": "4.13μm"
 			},
 			{
 				"id": "18",
+				"satdumpName": "HIRS-18.png",
 				"description": "4.0μm"
 			},
 			{
 				"id": "19",
+				"satdumpName": "HIRS-19.png",
 				"description": "3.76μm"
 			},
 			{
 				"id": "20",
+				"satdumpName": "HIRS-20.png",
 				"description": "0.69μm"
 			}
 		]
@@ -219,62 +265,77 @@
 		"channels": [
 			{
 				"id": "1",
+				"satdumpName": "AMSU-A-1.png",
 				"description": "23.8GHz"
 			},
 			{
 				"id": "2",
+				"satdumpName": "AMSU-A-2.png",
 				"description": "31.4GHz"
 			},
 			{
 				"id": "3",
+				"satdumpName": "AMSU-A-3.png",
 				"description": "50.3GHz"
 			},
 			{
 				"id": "4",
+				"satdumpName": "AMSU-A-4.png",
 				"description": "52.8GHz"
 			},
 			{
 				"id": "5",
+				"satdumpName": "AMSU-A-5.png",
 				"description": "53.596 ± 0.115GHz"
 			},
 			{
 				"id": "6",
+				"satdumpName": "AMSU-A-6.png",
 				"description": "54.4GHz"
 			},
 			{
 				"id": "7",
+				"satdumpName": "AMSU-A-7.png",
 				"description": "54.94GHz"
 			},
 			{
 				"id": "8",
+				"satdumpName": "AMSU-A-8.png",
 				"description": "55.5GHz"
 			},
 			{
 				"id": "9",
+				"satdumpName": "AMSU-A-9.png",
 				"description": "57.290GHz"
 			},
 			{
 				"id": "10",
+				"satdumpName": "AMSU-A-10.png",
 				"description": "57.290 ± 0.217GHz"
 			},
 			{
 				"id": "11",
+				"satdumpName": "AMSU-A-11.png",
 				"description": "57.290 ± 0.3222 ± 0.048GHz"
 			},
 			{
 				"id": "12",
+				"satdumpName": "AMSU-A-12.png",
 				"description": "57.290 ± 0.3222 ± 0.022GHz"
 			},
 			{
 				"id": "13",
+				"satdumpName": "AMSU-A-13.png",
 				"description": "57.290 ± 0.3222 ± 0.010GHz"
 			},
 			{
 				"id": "14",
+				"satdumpName": "AMSU-A-14.png",
 				"description": "57.290 ± 0.3222 ± 0.0045GHz"
 			},
 			{
 				"id": "15",
+				"satdumpName": "AMSU-A-15.png",
 				"description": "89.0GHz"
 			}
 		]
@@ -288,22 +349,27 @@
 		"channels": [
 			{
 				"id": "16",
+				"satdumpName": "AMSU-B-16.png",
 				"description": "89.0±0.9GHz"
 			},
 			{
 				"id": "17",
+				"satdumpName": "AMSU-B-17.png",
 				"description": "150.0±0.9GHz"
 			},
 			{
 				"id": "18",
+				"satdumpName": "AMSU-B-18.png",
 				"description": "183.31±1.00GHz"
 			},
 			{
 				"id": "19",
+				"satdumpName": "AMSU-B-19.png",
 				"description": "183.31±3.00GHz"
 			},
 			{
 				"id": "20",
+				"satdumpName": "AMSU-B-20.png",
 				"description": "183.31±7.00GHz"
 			}
 		]
@@ -322,19 +388,24 @@
 		"description": "The Microwave Humidity Sounder",
 		"channels": [
 			{
-				"id": "1"
+				"id": "1",
+				"satdumpName": "MHS-1.png"
 			},
 			{
-				"id": "2"
+				"id": "2",
+				"satdumpName": "MHS-2.png"
 			},
 			{
-				"id": "3"
+				"id": "3",
+				"satdumpName": "MHS-3.png"
 			},
 			{
-				"id": "4"
+				"id": "4",
+				"satdumpName": "MHS-4.png"
 			},
 			{
-				"id": "5"
+				"id": "5",
+				"satdumpName": "MHS-5.png"
 			}
 		]
 	},
@@ -346,50 +417,62 @@
 		"channels": [
 			{
 				"id": "1",
+				"satdumpName": "SBUV-1.png",
 				"description": "252.0nm"
 			},
 			{
 				"id": "2",
+				"satdumpName": "SBUV-2.png",
 				"description": "273.61nm"
 			},
 			{
 				"id": "3",
+				"satdumpName": "SBUV-3.png",
 				"description": "283.1nm"
 			},
 			{
 				"id": "4",
+				"satdumpName": "SBUV-4.png",
 				"description": "287.7nm"
 			},
 			{
 				"id": "5",
+				"satdumpName": "SBUV-5.png",
 				"description": "292.29nm"
 			},
 			{
 				"id": "6",
+				"satdumpName": "SBUV-6.png",
 				"description": "297.59nm"
 			},
 			{
 				"id": "7",
+				"satdumpName": "SBUV-7.png",
 				"description": "301.97nm"
 			},
 			{
 				"id": "8",
+				"satdumpName": "SBUV-8.png",
 				"description": "305.87nm"
 			},
 			{
 				"id": "9",
+				"satdumpName": "SBUV-9.png",
 				"description": "312.57nm"
 			},
 			{
 				"id": "10",
+				"satdumpName": "SBUV-10.png",
 				"description": "317.56nm"
 			},
 			{
 				"id": "11",
+				"satdumpName": "SBUV-11.png",
 				"description": "331.26nm"
 			},
 			{
 				"id": "12",
+				"satdumpName": "SBUV-12.png",
 				"description": "339.89nm"
 			}
 		]

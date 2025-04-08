@@ -3,12 +3,17 @@ package ru.r2cloud.satellite.decoder;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.DecoderResult;
+import ru.r2cloud.model.Instrument;
+import ru.r2cloud.model.InstrumentChannel;
 import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
@@ -27,7 +32,7 @@ public class SatdumpDecoder implements Decoder {
 	}
 
 	@Override
-	public DecoderResult decode(File rawFile, Observation request, final Transmitter transmitter) {
+	public DecoderResult decode(File rawFile, Observation request, final Transmitter transmitter, final Satellite satellite) {
 		DecoderResult result = new DecoderResult();
 		if (!rawFile.exists() || rawFile.length() == 0) {
 			return result;
@@ -51,6 +56,7 @@ public class SatdumpDecoder implements Decoder {
 			Thread.currentThread().interrupt();
 			return result;
 		}
+		boolean imagesAvailable = true;
 		if (transmitter.getBeaconSizeBytes() > 0) {
 			int numberOfDecodedPackets = 0;
 			File data = find(rawFile.getParentFile().listFiles(), ".cadu");
@@ -65,12 +71,45 @@ public class SatdumpDecoder implements Decoder {
 			if (numberOfDecodedPackets > 0) {
 				result.setDataPath(data);
 			}
-			if (numberOfDecodedPackets > 0) {
-				// FIXME search for images and attach to the result
+			imagesAvailable = (numberOfDecodedPackets > 0);
+		}
+		if (satellite.getInstruments() != null && imagesAvailable) {
+			File base = rawFile.getParentFile();
+			List<Instrument> instruments = new ArrayList<>(satellite.getInstruments().size());
+			for (Instrument cur : satellite.getInstruments()) {
+				if (!cur.isEnabled()) {
+					continue;
+				}
+				File instrumentDir = new File(base, cur.getSatdumpName());
+				if (!instrumentDir.exists()) {
+					continue;
+				}
+				List<InstrumentChannel> availableChannels = new ArrayList<>(cur.getChannels().size());
+				for (InstrumentChannel curChannel : cur.getChannels()) {
+					File channelFile = new File(instrumentDir, curChannel.getSatdumpName());
+					if (!channelFile.exists()) {
+						continue;
+					}
+					InstrumentChannel enriched = new InstrumentChannel(curChannel);
+					enriched.setImagePath(channelFile);
+					availableChannels.add(enriched);
+				}
+				if (availableChannels.isEmpty()) {
+					continue;
+				}
+				Instrument enrichedInstrument = new Instrument(cur);
+				enrichedInstrument.setChannels(availableChannels);
+				if (cur.getSatdumpCombined() != null) {
+					File combined = new File(instrumentDir, cur.getSatdumpCombined());
+					if (combined.exists()) {
+						enrichedInstrument.setCombinedImagePath(combined);
+					}
+				}
+				instruments.add(enrichedInstrument);
 			}
-		} else {
-			// FIXME test analog images
-//				result.setImagePath(decodeImage(rawFile, request, transmitter));
+			if (!instruments.isEmpty()) {
+				result.setInstruments(instruments);
+			}
 		}
 
 		return result;

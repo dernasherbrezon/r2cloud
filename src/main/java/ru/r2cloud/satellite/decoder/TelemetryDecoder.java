@@ -26,6 +26,7 @@ import ru.r2cloud.jradio.sink.SnrCalculator;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.DemodulatorType;
 import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.sdrmodem.SdrModemClient;
@@ -47,7 +48,7 @@ public abstract class TelemetryDecoder implements Decoder {
 	}
 
 	@Override
-	public DecoderResult decode(File rawIq, Observation req, final Transmitter transmitter) {
+	public DecoderResult decode(File rawIq, Observation req, final Transmitter transmitter, final Satellite satellite) {
 		DecoderResult result = new DecoderResult();
 		result.setRawPath(rawIq);
 		if (transmitter.getBaudRates() == null || transmitter.getBaudRates().isEmpty()) {

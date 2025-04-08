@@ -53,7 +53,7 @@ public class DecoderTest {
 		Satellite satellite = dao.findById(satelliteId);
 		Transmitter transmitter = satellite.getById(transmitterId);
 		Decoder decoder = decoders.findByTransmitter(transmitter);
-		DecoderResult result = decoder.decode(wav, req, transmitter);
+		DecoderResult result = decoder.decode(wav, req, transmitter, satellite);
 		assertEquals(expectedPackets, result.getNumberOfDecodedPackets());
 		assertNotNull(result.getDataPath());
 		assertNotNull(result.getRawPath());

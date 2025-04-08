@@ -33,7 +33,7 @@ public class Ax100DecoderTest {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/delphini1.raw.gz");
 		Observation req = TestUtil.loadObservation("data/delphini1.raw.gz.json");
 		transmitter.setBandwidth(transmitter.getBandwidth() * 100); // GfskDecoder will fail here
-		decoder.decode(wav, req, transmitter);
+		decoder.decode(wav, req, transmitter, satellite);
 		File bin = new File(tempFolder.getRoot(), req.getId() + ".bin");
 		assertFalse(bin.exists());
 	}

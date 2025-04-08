@@ -9,6 +9,7 @@ import ru.r2cloud.util.SignedURL;
 public class InstrumentChannel {
 
 	private String id;
+	private String satdumpName;
 	private String description;
 	private File imagePath;
 	private String imageURL;
@@ -19,9 +20,18 @@ public class InstrumentChannel {
 
 	public InstrumentChannel(InstrumentChannel other) {
 		this.id = other.id;
+		this.satdumpName = other.satdumpName;
 		this.description = other.description;
 		this.imagePath = other.imagePath;
 		this.imageURL = other.imageURL;
+	}
+
+	public String getSatdumpName() {
+		return satdumpName;
+	}
+
+	public void setSatdumpName(String satdumpName) {
+		this.satdumpName = satdumpName;
 	}
 
 	public String getImageURL() {
@@ -63,6 +73,7 @@ public class InstrumentChannel {
 			return null;
 		}
 		result.setDescription(obj.getString("description", null));
+		result.setSatdumpName(obj.getString("satdumpName", null));
 		return result;
 	}
 
@@ -78,6 +89,9 @@ public class InstrumentChannel {
 			} else {
 				result.add("imageURL", imageURL);
 			}
+		}
+		if (satdumpName != null) {
+			result.add("satdumpName", satdumpName);
 		}
 		return result;
 	}
