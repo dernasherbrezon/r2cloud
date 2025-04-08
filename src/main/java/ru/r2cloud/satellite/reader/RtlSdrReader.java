@@ -1,8 +1,6 @@
 package ru.r2cloud.satellite.reader;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.ArrayList;
@@ -23,7 +21,6 @@ import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ProcessWrapper;
 import ru.r2cloud.util.Util;
-import ru.r2cloud.util.ZiqOutputStream;
 
 public class RtlSdrReader implements IQReader {
 
@@ -71,13 +68,57 @@ public class RtlSdrReader implements IQReader {
 	public IQData start() throws InterruptedException {
 		lock.lock();
 		try {
-			return startInternally();
+			if (transmitter.getFraming().equals(Framing.SATDUMP)) {
+				return startSatdump();
+			} else {
+				return startRtlSdr();
+			}
 		} finally {
 			lock.unlock();
 		}
 	}
 
-	private IQData startInternally() throws InterruptedException {
+	private IQData startSatdump() throws InterruptedException {
+		Long startTimeMillis = null;
+		Long endTimeMillis = null;
+		Integer maxBaudRate = Collections.max(transmitter.getBaudRates());
+		if (maxBaudRate == null) {
+			return null;
+		}
+		Long sampleRate = Util.getSmallestGoodDeviceSampleRate(maxBaudRate, supportedSampleRates);
+		if (sampleRate == null) {
+			LOG.error("[{}] cannot find sample rate for: {}", req.getId(), maxBaudRate);
+			return null;
+		}
+		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw");
+		try {
+			startTimeMillis = System.currentTimeMillis();
+			rtlSdr = factory.create(config.getProperty("satellites.satdump.path") + " record " + rawFile.getAbsolutePath() + " --source rtlsdr --samplerate " + sampleRate + " --frequency " + req.getFrequency() + " --baseband_format ziq --gain " + deviceConfiguration.getGain() + " --bias "
+					+ deviceConfiguration.isBiast() + " --ppm_correction " + deviceConfiguration.getPpm(), Redirect.INHERIT, false);
+			int responseCode = rtlSdr.waitFor();
+			if (responseCode != 0) {
+				LOG.error("[{}] invalid response code satdump: {}", req.getId(), responseCode);
+				Util.deleteQuietly(rawFile);
+			} else {
+				LOG.info("[{}] satdump stopped: {}", req.getId(), responseCode);
+			}
+		} catch (IOException e) {
+			LOG.error("[{}] unable to run", req.getId(), e);
+		} finally {
+			endTimeMillis = System.currentTimeMillis();
+		}
+		IQData result = new IQData();
+		result.setActualStart(startTimeMillis);
+		result.setActualEnd(endTimeMillis);
+		result.setDataFormat(DataFormat.ZIQ);
+		result.setSampleRate(sampleRate);
+		if (rawFile.exists()) {
+			result.setDataFile(rawFile);
+		}
+		return result;
+	}
+
+	private IQData startRtlSdr() throws InterruptedException {
 		Long startTimeMillis = null;
 		Long endTimeMillis = null;
 		if (!startBiasT(config, deviceConfiguration, factory, req)) {
@@ -92,28 +133,11 @@ public class RtlSdrReader implements IQReader {
 			LOG.error("[{}] cannot find sample rate for: {}", req.getId(), maxBaudRate);
 			return null;
 		}
-		DataFormat dataFormat;
-		String extension;
-		if (transmitter.getFraming().equals(Framing.SATDUMP)) {
-			dataFormat = DataFormat.ZIQ;
-			extension = ".raw";
-		} else {
-			dataFormat = DataFormat.COMPLEX_UNSIGNED_BYTE;
-			extension = ".raw.gz";
-		}
-		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + extension);
+		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw.gz");
 		try {
 			startTimeMillis = System.currentTimeMillis();
-			if (dataFormat.equals(DataFormat.ZIQ)) {
-				// this will setup required header
-				ZiqOutputStream ziq = new ZiqOutputStream(new BufferedOutputStream(new FileOutputStream(rawFile)), true, 8, sampleRate);
-				ziq.close();
-				rtlSdr = factory.create(config.getProperty("satellites.rtlsdrziqwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + sampleRate + " -g " + deviceConfiguration.getGain()
-						+ " -p " + deviceConfiguration.getPpm() + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
-			} else {
-				rtlSdr = factory.create(config.getProperty("satellites.rtlsdrwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + sampleRate + " -g " + deviceConfiguration.getGain() + " -p "
-						+ deviceConfiguration.getPpm() + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
-			}
+			rtlSdr = factory.create(config.getProperty("satellites.rtlsdrwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + sampleRate + " -g " + deviceConfiguration.getGain() + " -p "
+					+ deviceConfiguration.getPpm() + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
 			int responseCode = rtlSdr.waitFor();
 			// rtl_sdr should be killed by the reaper process
 			// all other codes are invalid. even 0
@@ -132,7 +156,7 @@ public class RtlSdrReader implements IQReader {
 		IQData result = new IQData();
 		result.setActualStart(startTimeMillis);
 		result.setActualEnd(endTimeMillis);
-		result.setDataFormat(dataFormat);
+		result.setDataFormat(DataFormat.COMPLEX_UNSIGNED_BYTE);
 		result.setSampleRate(sampleRate);
 		if (rawFile.exists()) {
 			result.setDataFile(rawFile);

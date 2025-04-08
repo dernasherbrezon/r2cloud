@@ -33,7 +33,7 @@ public class RtlSdrReaderTest {
 	private TestConfiguration config;
 	private String rtlsdr;
 	private String rtlBiast;
-	private String rtlsdrZiq;
+	private String satdump;
 
 	@Test
 	public void testBiasTSuccess() throws Exception {
@@ -69,6 +69,7 @@ public class RtlSdrReaderTest {
 
 		Transmitter transmitter = new Transmitter();
 		transmitter.setBaudRates(Collections.singletonList(9600));
+		transmitter.setFraming(Framing.AX25G3RUH);
 
 		RtlSdrReader o = new RtlSdrReader(config, deviceConfiguration, factory, req, transmitter, new ReentrantLock());
 		IQData iqData = o.start();
@@ -116,7 +117,7 @@ public class RtlSdrReaderTest {
 	@Test
 	public void testZiqSuccess() throws Exception {
 		String satelliteId = UUID.randomUUID().toString();
-		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 143, true)), satelliteId);
+		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 0, true)), satelliteId);
 
 		ObservationRequest req = new ObservationRequest();
 		req.setSatelliteId(satelliteId);
@@ -135,12 +136,12 @@ public class RtlSdrReaderTest {
 	@Before
 	public void start() throws Exception {
 		rtlsdr = UUID.randomUUID().toString();
-		rtlsdrZiq = UUID.randomUUID().toString();
+		satdump = UUID.randomUUID().toString();
 		rtlBiast = UUID.randomUUID().toString();
 
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("satellites.rtlsdrwrapper.path", rtlsdr);
-		config.setProperty("satellites.rtlsdrziqwrapper.path", rtlsdrZiq);
+		config.setProperty("satellites.satdump.path", satdump);
 		config.setProperty("satellites.rtlsdr.biast.path", rtlBiast);
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
 		config.update();
@@ -159,7 +160,7 @@ public class RtlSdrReaderTest {
 	private Map<String, ProcessWrapperMock> create(ProcessWrapperMock rtl, ProcessWrapperMock bias) {
 		Map<String, ProcessWrapperMock> result = new HashMap<>();
 		result.put(rtlsdr, rtl);
-		result.put(rtlsdrZiq, rtl);
+		result.put(satdump, rtl);
 		result.put(rtlBiast, bias);
 		return result;
 	}
