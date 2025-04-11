@@ -186,14 +186,16 @@ public class ObservationDao implements IObservationDao {
 		}
 		if (full.getInstruments() != null) {
 			for (Instrument cur : full.getInstruments()) {
-				for (InstrumentChannel curChannel : cur.getChannels()) {
-					Path curPath = resolveByPrefix(curDirectory, cur.getId() + "-" + curChannel.getId() + ".");
-					if (curPath == null) {
-						continue;
+				if (cur.getChannels() != null) {
+					for (InstrumentChannel curChannel : cur.getChannels()) {
+						Path curPath = resolveByPrefix(curDirectory, cur.getId() + "-" + curChannel.getId() + ".");
+						if (curPath == null) {
+							continue;
+						}
+						File file = curPath.toFile();
+						curChannel.setImagePath(file);
+						curChannel.setImageURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + file.getName());
 					}
-					File file = curPath.toFile();
-					curChannel.setImagePath(file);
-					curChannel.setImageURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + file.getName());
 				}
 				Path combinedPath = resolveByPrefix(curDirectory, cur.getId() + ".");
 				if (combinedPath != null) {

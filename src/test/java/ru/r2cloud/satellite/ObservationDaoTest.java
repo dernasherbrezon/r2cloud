@@ -219,8 +219,14 @@ public class ObservationDaoTest {
 		instrument.setName(UUID.randomUUID().toString());
 		instrument.setSatdumpCombined(UUID.randomUUID().toString());
 		instrument.setSatdumpName(UUID.randomUUID().toString());
+		Instrument instrument1 = new Instrument();
+		instrument1.setId("1");
+		instrument1.setDescription(UUID.randomUUID().toString());
+		instrument1.setName(UUID.randomUUID().toString());
+		instrument1.setSatdumpName(UUID.randomUUID().toString());
 		List<Instrument> instruments = new ArrayList<>();
 		instruments.add(instrument);
+		instruments.add(instrument1);
 		req.setInstruments(instruments);
 
 		assertNotNull(dao.update(req, createTempFile("wav")));
