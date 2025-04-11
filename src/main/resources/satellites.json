@@ -1,5 +1,48 @@
 [
 	{
+		"id": "R2CLOUD502",
+		"name": "UVSQ-SAT-NG",
+		"noradId": "63251",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 401850000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200,
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1744360699000
+	},
+	{
+		"id": "R2CLOUD501",
+		"name": "SITRO-AIS-43",
+		"noradId": "61755",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 401145000,
+				"bandwidth": 20000,
+				"baudRates": [
+					2400,
+					4800,
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1744359674000
+	},
+	{
 		"id": "R2CLOUD500",
 		"name": "WREN-1",
 		"noradId": "60478",
@@ -570,7 +613,7 @@
 				"bandwidth": 250000,
 				"deviation": 0,
 				"transitionWidth": 0.0,
-				"status": "ENABLED",
+				"status": "WEAK",
 				"loraBandwidth": 250000,
 				"loraSpreadFactor": 10,
 				"loraSyncword": 18,
@@ -581,7 +624,7 @@
 				"loraCrc": true
 			}
 		],
-		"lastUpdateTime": 1742665631000
+		"lastUpdateTime": 1744318462000
 	},
 	{
 		"id": "R2CLOUD478",
@@ -686,6 +729,117 @@
 			}
 		],
 		"lastUpdateTime": 1742665417000
+	},
+	{
+		"id": "R2CLOUD474",
+		"name": "TEVEL2-1",
+		"noradId": "63217",
+		"enabled": false,
+		"start": 1742020560000,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 436400000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1744360516000
+	},
+	{
+		"id": "R2CLOUD473",
+		"name": "NUSHSAT-1",
+		"noradId": "63211",
+		"enabled": false,
+		"start": 1742020560000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 436200000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"deviation": 5000,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1744360492000
+	},
+	{
+		"id": "R2CLOUD472",
+		"name": "BOTSAT-1",
+		"noradId": "63216",
+		"enabled": false,
+		"start": 1742020560000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 401360000,
+				"bandwidth": 20000,
+				"baudRates": [
+					4800
+				],
+				"deviation": 5000,
+				"assistedHeader": "AAEAAQAAAAEAAQEAAAEAAQABAQEAAAABAAEBAAABAAEAAAAAAAEBAAABAAAAAQEAAAAAAAABAQEAAAEAAAAAAQABAQEBAAABAAAAAQABAAEAAQEAAAEAAQABAAAAAAABAAAAAQABAAEBAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1744360471000
+	},
+	{
+		"id": "R2CLOUD471",
+		"name": "ION SCV-017",
+		"noradId": "63230",
+		"enabled": false,
+		"start": 1742020560000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 401414500,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"deviation": 5000,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1744360452000
+	},
+	{
+		"id": "R2CLOUD470",
+		"name": "OTP-2",
+		"noradId": "63235",
+		"enabled": false,
+		"start": 1742020560000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 400500000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"deviation": 5000,
+				"assistedHeader": "AAEAAQAAAAEAAQEAAAEAAQABAQEAAAABAAEBAAABAAEAAAAAAAEBAAABAAAAAQEAAAAAAAABAQEAAQAAAAAAAQAAAQAAAAABAAEBAAAAAAEAAAABAAAAAQABAAEAAAABAAABAQAAAAEBAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1744360428000
 	},
 	{
 		"id": "R2CLOUD469",
@@ -1478,7 +1632,7 @@
 	{
 		"id": "R2CLOUD433",
 		"name": "Horizon",
-		"noradId": "61755",
+		"noradId": "61757",
 		"enabled": true,
 		"start": 1730777760000,
 		"transmitters": [
@@ -1494,7 +1648,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1733683372000
+		"lastUpdateTime": 1744359168000
 	},
 	{
 		"id": "R2CLOUD431",
@@ -2967,7 +3121,7 @@
 	},
 	{
 		"id": "R2CLOUD354",
-		"name": "Barry-1",
+		"name": "BARRY-1",
 		"noradId": "58338",
 		"enabled": false,
 		"start": 1699728540000,
@@ -2985,7 +3139,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1702324734000
+		"lastUpdateTime": 1744362110000
 	},
 	{
 		"id": "R2CLOUD353",
