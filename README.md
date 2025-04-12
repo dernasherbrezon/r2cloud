@@ -19,8 +19,8 @@ r2cloud can track and decode various radio signals from satellites such as:
 
  - r2cloud knows about hundreds of satellites, their orbits, radio channels and communication protocols
  - it can automatically schedule observations for the selected satellites
- - once satellite is within the antenna range, r2cloud will receive the signal, save it and decode it
- - decoded data will be displayed on UI or can be forwarded to the central data warehouses for the analysis
+ - once the satellite is within the antenna range, r2cloud will receive the signal, save it and decode it
+ - decoded data will be displayed on UI or can be forwarded to the central data warehouses for an analysis
 
 Detailed features could be found in the [documentation](https://github.com/dernasherbrezon/r2cloud/wiki/Features).
 
@@ -32,18 +32,18 @@ The following hardware is required:
  - SDR receiver
  - *nix-based computer
 
-Please check recommended [bill of materials](https://github.com/dernasherbrezon/r2cloud/wiki/Bill-of-materials). This is very basic setup, but it is guaranteed to be working.
+Please check recommended [bill of materials](https://github.com/dernasherbrezon/r2cloud/wiki/Bill-of-materials). This is a very basic setup, but it is guaranteed to work.
 
 ## Software 
 
 1. Install r2cloud
-  - From the image. This is the easiest way to install r2cloud on Raspberry PI. It will require brand new SD card:
+  - From the image. This is the easiest way to install r2cloud on Raspberry PI. It will require a brand new SD card:
     - Download the [latest](http://apt.leosatdata.com/dist/image_2025-04-02-r2cloud-lite.zip) official image
-    - Insert SD card into the card reader and flash it. You could use [Raspberry PI Imager](https://www.raspberrypi.com/software/) or [Etcher](https://etcher.io) to do this
-    - Insert SD card into the card reader and create file ```r2cloud.txt``` in the root directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
+    - Insert the SD card into the card reader and flash it. You could use [Raspberry PI Imager](https://www.raspberrypi.com/software/) or [Etcher](https://etcher.io) to do this
+    - Insert the SD card into the card reader and create the file ```r2cloud.txt``` in the root directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
   
   - Or from [repository binaries](https://leosatdata.com/apt.html). Suitable for Ubuntu or Debian:
-    - Login via SSH and create ```r2cloud.txt``` file in /boot directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
+    - Login via SSH and create ```r2cloud.txt``` file in /boot directory. This file should contain any random text. This text is a login token. This token will then be used during the initial setup.
     - Execute the following commands:
 ```
 sudo apt-get install curl lsb-release
