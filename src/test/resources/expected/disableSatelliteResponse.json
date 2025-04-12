@@ -1,0 +1,9 @@
+{
+	"id": "42784",
+	"name": "PEGASUS",
+	"enabled": false,
+	"frequency": 436670000,
+	"modulation": "GFSK",
+	"source": "CONFIG",
+	"status": "ENABLED"
+}
