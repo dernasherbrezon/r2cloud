@@ -151,6 +151,13 @@ public class ObservationDao implements IObservationDao {
 		if (!Files.exists(dest)) {
 			return null;
 		}
+		try {
+			if (Files.size(dest) == 0L) {
+				return null;
+			}
+		} catch (IOException e1) {
+			return null;
+		}
 		Observation full;
 		try (BufferedReader r = Files.newBufferedReader(dest)) {
 			JsonObject meta = Json.parse(r).asObject();
