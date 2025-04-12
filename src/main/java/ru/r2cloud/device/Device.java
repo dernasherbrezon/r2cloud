@@ -134,6 +134,7 @@ public abstract class Device implements Lifecycle {
 						}
 						if (currentBandFrequency == null) {
 							currentBandFrequency = transmitter.getFrequencyBand();
+							numberOfObservationsOnCurrentBand = 0;
 							LOG.info("starting observations on {} hz", currentBandFrequency);
 						}
 						numberOfObservationsOnCurrentBand++;
@@ -153,6 +154,7 @@ public abstract class Device implements Lifecycle {
 							if (numberOfObservationsOnCurrentBand <= 0) {
 								LOG.info("no more observations on: {} hz", currentBandFrequency);
 								currentBandFrequency = null;
+								numberOfObservationsOnCurrentBand = 0;
 							}
 							sdrServerLock.notifyAll();
 						}
