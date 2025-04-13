@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -97,6 +98,10 @@ public abstract class Device implements Lifecycle {
 	public synchronized boolean tryTransmitter(Transmitter transmitter) {
 		if (!filter.accept(transmitter)) {
 			return false;
+		}
+		Transmitter previous = findById(transmitter.getId());
+		if (previous != null) {
+			return true;
 		}
 		assignedTransmitters.add(transmitter);
 		return true;
@@ -333,6 +338,19 @@ public abstract class Device implements Lifecycle {
 		// return first
 		Collections.sort(batch, ObservationRequestComparator.INSTANCE);
 		return batch.get(0);
+	}
+
+	public synchronized boolean remove(String transmitterId) {
+		Iterator<Transmitter> it = assignedTransmitters.iterator();
+		while (it.hasNext()) {
+			Transmitter cur = it.next();
+			if (cur.getId().equals(transmitterId)) {
+				it.remove();
+				schedule.cancelByTransmitter(transmitterId);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public synchronized List<ObservationRequest> findScheduledObservations() {

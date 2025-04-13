@@ -31,7 +31,7 @@
 		"name": "ASTRO-BIO",
 		"noradId": "R2CLOUD3",
 		"priority": "HIGH",
-		"enabled": false,
+		"enabled": true,
 		"start": 1601607600000,
 		"transmitters": [
 			{

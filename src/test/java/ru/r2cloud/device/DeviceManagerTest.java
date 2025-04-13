@@ -1,10 +1,12 @@
 package ru.r2cloud.device;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.nio.file.FileSystems;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -19,6 +21,8 @@ import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.AntennaConfiguration;
 import ru.r2cloud.model.AntennaType;
 import ru.r2cloud.model.DeviceConfiguration;
+import ru.r2cloud.model.ObservationRequest;
+import ru.r2cloud.model.Satellite;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.ProcessFactoryMock;
@@ -35,12 +39,27 @@ public class DeviceManagerTest {
 	private TestConfiguration config;
 	private DeviceManager manager;
 	private FixedClock clock;
+	private DeviceConfiguration deviceConfig;
 
 	@Test
 	public void testEnableNotCompatibleSatellite() {
+		deviceConfig.setMinimumFrequency(100_000_000);
+		deviceConfig.setMaximumFrequency(200_000_000);
 		manager.schedule(satelliteDao.findAll());
 		assertTrue(manager.findScheduledObservations().isEmpty());
 		assertNull(manager.enable(satelliteDao.findById("42784")));
+	}
+
+	@Test
+	public void testAddTransmitterOnce() {
+		deviceConfig.setMinimumFrequency(400_000_000);
+		deviceConfig.setMaximumFrequency(500_000_000);
+		Satellite sat = satelliteDao.findById("42784");
+		manager.schedule(sat);
+		List<ObservationRequest> previous = manager.findScheduledObservations();
+		manager.schedule(sat);
+		List<ObservationRequest> current = manager.findScheduledObservations();
+		assertEquals(previous.size(), current.size());
 	}
 
 	@Before
@@ -68,11 +87,9 @@ public class DeviceManagerTest {
 		antenna.setMinElevation(8);
 		antenna.setGuaranteedElevation(20);
 
-		DeviceConfiguration deviceConfig = new DeviceConfiguration();
+		deviceConfig = new DeviceConfiguration();
 		deviceConfig.setId(UUID.randomUUID().toString());
 		deviceConfig.setAntennaConfiguration(antenna);
-		deviceConfig.setMinimumFrequency(100_000_000);
-		deviceConfig.setMaximumFrequency(200_000_000);
 
 		RtlSdrDevice device = new RtlSdrDevice(deviceConfig.getId(), new SdrTransmitterFilter(deviceConfig), 1, factory, null, clock, deviceConfig, null, null, predict, null, config, processFactory);
 
