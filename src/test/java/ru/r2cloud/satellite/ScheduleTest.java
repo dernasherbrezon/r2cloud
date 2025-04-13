@@ -162,6 +162,14 @@ public class ScheduleTest {
 		assertEquals(partialStart, actual.get(0).getStartTimeMillis());
 	}
 
+	@Test
+	public void testDoNotScheduleDisabled() {
+		Satellite satellite = satelliteDao.findByName("NOAA 18");
+		satellite.setEnabled(false);
+		List<ObservationRequest> result = schedule.addToSchedule(antenna, satellite.getTransmitters().get(0), current);
+		assertTrue(result.isEmpty());
+	}
+
 	@Before
 	public void start() throws Exception {
 		current = TestUtil.getTime("2020-09-30 22:17:01.000");

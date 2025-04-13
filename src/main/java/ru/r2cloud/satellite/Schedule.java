@@ -208,6 +208,9 @@ public class Schedule {
 	// even if this satellite will be scheduled well forward the rest of satellites
 	// whole schedule will be cleared on next re-schedule
 	public synchronized List<ObservationRequest> addToSchedule(AntennaConfiguration antenna, Transmitter transmitter, long current) {
+		if (!transmitter.isEnabled()) {
+			return Collections.emptyList();
+		}
 		List<ObservationRequest> previous = observationsByTransmitterId.get(transmitter.getId());
 		if (previous != null && !previous.isEmpty()) {
 			return previous;
