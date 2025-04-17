@@ -39,17 +39,15 @@ public class SatdumpDecoder implements Decoder {
 		}
 		result.setRawPath(rawFile);
 		ProcessWrapper process = null;
-		String commandLine = config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " baseband " + rawFile.getAbsolutePath() + " " + rawFile.getParentFile().getAbsolutePath() + " --tle_override explicitly_missing --dc_block true --samplerate " + request.getSampleRate()
-				+ " --baseband_format ziq";
+		String commandLine = config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " baseband " + rawFile.getAbsolutePath() + " " + rawFile.getParentFile().getAbsolutePath() + " --dc_block true --samplerate " + request.getSampleRate() + " --baseband_format ziq";
 		try {
 			process = factory.create(commandLine, true, false);
 			new SatdumpLogProcessor(request.getId(), process.getInputStream(), "satdump-decode-stdio").start();
 			new SatdumpLogProcessor(request.getId(), process.getErrorStream(), "satdump-decode-stderr").start();
 			int responseCode = process.waitFor();
 			if (responseCode != 0) {
-				LOG.error("[{}] invalid response code from satdump: {}", request.getId(), responseCode);
-			} else {
-				LOG.info("[{}] satdump stopped: {}", request.getId(), responseCode);
+				LOG.info("[{}] invalid response code from satdump. assume no data: {}", request.getId(), responseCode);
+				return result;
 			}
 		} catch (IOException e) {
 			LOG.error("[{}] unable to decode", request.getId(), e);

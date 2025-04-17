@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -133,6 +134,15 @@ public class ObservationDaoTest {
 		page.setSatelliteId("");
 		actual = dao.findAll(page);
 		assertEquals(expectedObservations, actual.size());
+
+		String satelliteId = UUID.randomUUID().toString();
+		String observationId = UUID.randomUUID().toString();
+		File observationDir = new File(tempFolder.getRoot().getAbsolutePath(), satelliteId + File.separator + "data" + File.separator + observationId);
+		assertTrue(observationDir.mkdirs());
+		try (FileOutputStream fos = new FileOutputStream(new File(observationDir, "meta.json"))) {
+			// do nothing. create empty file
+		}
+		assertNull(dao.find(satelliteId, observationId));
 
 	}
 

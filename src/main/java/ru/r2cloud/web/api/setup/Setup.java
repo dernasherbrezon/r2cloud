@@ -1,6 +1,7 @@
 package ru.r2cloud.web.api.setup;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 
 import org.slf4j.Logger;
@@ -51,13 +52,18 @@ public class Setup extends AbstractHttpController {
 			errors.put(KEYWORD_PARAMETER, Messages.CANNOT_BE_EMPTY);
 		}
 
+		File keywordFile = getFile();
+		if (keywordFile == null) {
+			errors.setGeneral("Unable to read r2cloud file");
+		}
+
 		if (!errors.isEmpty()) {
 			LOG.info("unable to save: {}", errors);
 			return new BadRequest(errors);
 		}
 
 		// keyword location extracted for dev environment
-		try (BufferedReader r = new BufferedReader(new FileReader(config.getProperty("server.keyword.location")))) {
+		try (BufferedReader r = new BufferedReader(new FileReader(keywordFile))) {
 			String actualKeyword = r.readLine();
 			// actualKeyword can be null here
 			// keyword should not be null here. However eclipse complains about
@@ -87,6 +93,16 @@ public class Setup extends AbstractHttpController {
 	@Override
 	public String getRequestMappingURL() {
 		return "/api/v1/setup/setup";
+	}
+
+	private File getFile() {
+		for (String cur : config.getProperties("server.keyword.location")) {
+			File result = new File(cur);
+			if (result.exists()) {
+				return result;
+			}
+		}
+		return null;
 	}
 
 }

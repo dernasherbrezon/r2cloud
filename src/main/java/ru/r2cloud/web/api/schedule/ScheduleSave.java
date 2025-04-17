@@ -73,6 +73,9 @@ public class ScheduleSave extends AbstractHttpController {
 		}
 		if (transmitter != null) {
 			entity.add("frequency", transmitter.getFrequency());
+			if (transmitter.getModulation() != null) {
+				entity.add("modulation", transmitter.getModulation().toString());
+			}
 		}
 		entity.add("source", satelliteToEdit.getSource().name());
 		entity.add("status", satelliteToEdit.getOverallStatus().name());

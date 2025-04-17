@@ -1,6 +1,7 @@
 package ru.r2cloud.util;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -61,9 +62,18 @@ public class SatdumpLogProcessor {
 							}
 							continue;
 						}
+						message = match(curLine, "(T)");
+						if (message != null) {
+							if (accept(message)) {
+								LOG.trace("[{}] {}", id, message);
+							}
+							continue;
+						}
 						LOG.info(curLine);
 					}
 					r.close();
+				} catch (IOException e) {
+					// do nothing. most likely process is down or stream was closed
 				} catch (Exception e) {
 					LOG.error("[{}] unable to read input", id, e);
 				}
@@ -99,6 +109,10 @@ public class SatdumpLogProcessor {
 		}
 		// remove redundant
 		if (str.contains("Done!")) {
+			return false;
+		}
+		// log error missing data multiple times
+		if (str.contains("One or more of the required channels are missing!")) {
 			return false;
 		}
 		return true;

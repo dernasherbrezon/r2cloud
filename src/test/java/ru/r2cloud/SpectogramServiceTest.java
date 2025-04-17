@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
@@ -36,11 +37,20 @@ public class SpectogramServiceTest {
 	}
 
 	@Test
-	public void testNoInputFile() {
+	public void testNoInputFile() throws Exception {
 		SpectogramService service = new SpectogramService(config);
 		assertNull(service.create(null));
 		Observation observation = new Observation();
 		observation.setRawPath(new File(UUID.randomUUID().toString()));
+		assertNull(service.create(observation));
+		File empty = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
+		try (FileOutputStream fos = new FileOutputStream(empty)) {
+			// do nothing
+		}
+		observation = new Observation();
+		observation.setRawPath(empty);
+		observation.setDataFormat(DataFormat.COMPLEX_UNSIGNED_BYTE);
+		observation.setSampleRate(48000);
 		assertNull(service.create(observation));
 	}
 

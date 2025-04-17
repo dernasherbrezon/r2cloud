@@ -103,7 +103,7 @@ public class Housekeeping {
 				LOG.info("observations re-scheduled. next update: {}", new Date(currentTime + predictPeriod));
 			} else {
 				// some satellites can move from new launches to normal. thus change id.
-				// some satellite might be removed
+				// some satellites might be removed
 				for (Satellite cur : current.values()) {
 					if (previous.containsKey(cur.getId())) {
 						continue;
@@ -117,8 +117,10 @@ public class Housekeeping {
 					}
 					// disabled satellites won't be scheduled
 					cur.setEnabled(false);
-					reschedule = true;
-					LOG.info("disabling satellite observations: {}", cur.getId());
+					boolean removed = deviceManager.remove(cur);
+					if (removed) {
+						reschedule = true;
+					}
 				}
 				if (reschedule) {
 					deviceManager.reschedule();

@@ -1,0 +1,10 @@
+{
+	"id": "42784",
+	"name": "PEGASUS",
+	"enabled": true,
+	"nextPass": 1559982858904,
+	"frequency": 436670000,
+	"modulation": "GFSK",
+	"source": "CONFIG",
+	"status": "ENABLED"
+}

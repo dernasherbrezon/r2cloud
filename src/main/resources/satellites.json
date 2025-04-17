@@ -1,5 +1,150 @@
 [
 	{
+		"id": "R2CLOUD507",
+		"name": "FOSSASAT-2E20 (TAT-O)",
+		"noradId": "63003",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 401700000,
+				"bandwidth": 125000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 11,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 8,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1744707925000
+	},
+	{
+		"id": "R2CLOUD506",
+		"name": "FOSSASAT-2E18 (TAT-A)",
+		"noradId": "62686",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 401700000,
+				"bandwidth": 125000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 11,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 8,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1744707874000
+	},
+	{
+		"id": "R2CLOUD505",
+		"name": "FOSSASAT-2E19 (TAT-E)",
+		"noradId": "62676",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 401700000,
+				"bandwidth": 125000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 11,
+				"loraSyncword": 18,
+				"loraPreambleLength": 8,
+				"loraLdro": 1,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 8,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1744707792000
+	},
+	{
+		"id": "R2CLOUD504",
+		"name": "ION SCV-008",
+		"noradId": "55051",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 401415000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"deviation": 5000,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1744489740000
+	},
+	{
+		"id": "R2CLOUD502",
+		"name": "UVSQ-SAT-NG",
+		"noradId": "63251",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 401850000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200,
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1744360699000
+	},
+	{
+		"id": "R2CLOUD501",
+		"name": "SITRO-AIS-43",
+		"noradId": "61755",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 401145000,
+				"bandwidth": 20000,
+				"baudRates": [
+					2400,
+					4800,
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1744359674000
+	},
+	{
 		"id": "R2CLOUD500",
 		"name": "WREN-1",
 		"noradId": "60478",
@@ -570,7 +715,7 @@
 				"bandwidth": 250000,
 				"deviation": 0,
 				"transitionWidth": 0.0,
-				"status": "ENABLED",
+				"status": "WEAK",
 				"loraBandwidth": 250000,
 				"loraSpreadFactor": 10,
 				"loraSyncword": 18,
@@ -581,7 +726,7 @@
 				"loraCrc": true
 			}
 		],
-		"lastUpdateTime": 1742665631000
+		"lastUpdateTime": 1744318462000
 	},
 	{
 		"id": "R2CLOUD478",
@@ -686,6 +831,117 @@
 			}
 		],
 		"lastUpdateTime": 1742665417000
+	},
+	{
+		"id": "R2CLOUD474",
+		"name": "TEVEL2-1",
+		"noradId": "63217",
+		"enabled": false,
+		"start": 1742020560000,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 436400000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1744360516000
+	},
+	{
+		"id": "R2CLOUD473",
+		"name": "NUSHSAT-1",
+		"noradId": "63211",
+		"enabled": false,
+		"start": 1742020560000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 436200000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"deviation": 5000,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1744360492000
+	},
+	{
+		"id": "R2CLOUD472",
+		"name": "BOTSAT-1",
+		"noradId": "63216",
+		"enabled": false,
+		"start": 1742020560000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 401360000,
+				"bandwidth": 20000,
+				"baudRates": [
+					4800
+				],
+				"deviation": 5000,
+				"assistedHeader": "AAEAAQAAAAEAAQEAAAEAAQABAQEAAAABAAEBAAABAAEAAAAAAAEBAAABAAAAAQEAAAAAAAABAQEAAAEAAAAAAQABAQEBAAABAAAAAQABAAEAAQEAAAEAAQABAAAAAAABAAAAAQABAAEBAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1744360471000
+	},
+	{
+		"id": "R2CLOUD471",
+		"name": "ION SCV-017",
+		"noradId": "63230",
+		"enabled": false,
+		"start": 1742020560000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 401414500,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"deviation": 5000,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1744360452000
+	},
+	{
+		"id": "R2CLOUD470",
+		"name": "OTP-2",
+		"noradId": "63235",
+		"enabled": false,
+		"start": 1742020560000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 400500000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"deviation": 5000,
+				"assistedHeader": "AAEAAQAAAAEAAQEAAAEAAQABAQEAAAABAAEBAAABAAEAAAAAAAEBAAABAAAAAQEAAAAAAAABAQEAAQAAAAAAAQAAAQAAAAABAAEBAAAAAAEAAAABAAAAAQABAAEAAAABAAABAQAAAAEBAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1744360428000
 	},
 	{
 		"id": "R2CLOUD469",
@@ -959,6 +1215,56 @@
 			}
 		],
 		"lastUpdateTime": 1739695305000
+	},
+	{
+		"id": "R2CLOUD457",
+		"name": "PARUS-T1",
+		"noradId": "98707",
+		"enabled": false,
+		"start": 1736878740000,
+		"transmitters": [
+			{
+				"modulation": "AFSK",
+				"framing": "AX25",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 145825000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200
+				],
+				"deviation": 600,
+				"afCarrier": 1700,
+				"status": "WEAK"
+			}
+		],
+		"lastUpdateTime": 1744372787000
+	},
+	{
+		"id": "R2CLOUD456",
+		"name": "ONDOSAT-OWL",
+		"noradId": "98716",
+		"enabled": false,
+		"start": 1734780840000,
+		"transmitters": [
+			{
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 400160000,
+				"bandwidth": 250000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "WEAK",
+				"loraBandwidth": 250000,
+				"loraSpreadFactor": 10,
+				"loraSyncword": 18,
+				"loraPreambleLength": 64,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1744372770000
 	},
 	{
 		"id": "R2CLOUD455",
@@ -1357,7 +1663,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "CUSTOM",
-				"beaconClass": "ru.r2cloud.jradio.geoscan.GeoscanBeacon",
+				"beaconClass": "ru.r2cloud.jradio.geoscan.Geoscan2Beacon",
 				"frequency": 437730000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -1366,7 +1672,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1733682986000
+		"lastUpdateTime": 1744645653000
 	},
 	{
 		"id": "R2CLOUD438",
@@ -1378,7 +1684,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "CUSTOM",
-				"beaconClass": "ru.r2cloud.jradio.geoscan.GeoscanBeacon",
+				"beaconClass": "ru.r2cloud.jradio.geoscan.Geoscan2Beacon",
 				"frequency": 436870000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -1387,7 +1693,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1733683295000
+		"lastUpdateTime": 1744645804000
 	},
 	{
 		"id": "R2CLOUD437",
@@ -1443,7 +1749,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "CUSTOM",
-				"beaconClass": "ru.r2cloud.jradio.geoscan.GeoscanBeacon",
+				"beaconClass": "ru.r2cloud.jradio.geoscan.Geoscan2Beacon",
 				"frequency": 436835000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -1452,7 +1758,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1733683341000
+		"lastUpdateTime": 1744645733000
 	},
 	{
 		"id": "R2CLOUD434",
@@ -1464,7 +1770,7 @@
 			{
 				"modulation": "GFSK",
 				"framing": "CUSTOM",
-				"beaconClass": "ru.r2cloud.jradio.geoscan.GeoscanBeacon",
+				"beaconClass": "ru.r2cloud.jradio.geoscan.Geoscan2Beacon",
 				"frequency": 436200000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -1473,19 +1779,19 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1742665485000
+		"lastUpdateTime": 1744641515000
 	},
 	{
 		"id": "R2CLOUD433",
 		"name": "Horizon",
-		"noradId": "61755",
+		"noradId": "61757",
 		"enabled": true,
 		"start": 1730777760000,
 		"transmitters": [
 			{
 				"modulation": "GFSK",
 				"framing": "CUSTOM",
-				"beaconClass": "ru.r2cloud.jradio.geoscan.GeoscanBeacon",
+				"beaconClass": "ru.r2cloud.jradio.geoscan.Geoscan2Beacon",
 				"frequency": 435430000,
 				"bandwidth": 20000,
 				"baudRates": [
@@ -1494,7 +1800,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1733683372000
+		"lastUpdateTime": 1744645608000
 	},
 	{
 		"id": "R2CLOUD431",
@@ -2521,7 +2827,7 @@
 	{
 		"id": "R2CLOUD381",
 		"name": "ONDOSAT-OWL-2",
-		"noradId": "59117",
+		"noradId": "59113",
 		"enabled": false,
 		"transmitters": [
 			{
@@ -2540,7 +2846,7 @@
 				"loraCrc": true
 			}
 		],
-		"lastUpdateTime": 1712490810000
+		"lastUpdateTime": 1743240995000
 	},
 	{
 		"id": "R2CLOUD380",
@@ -2967,7 +3273,7 @@
 	},
 	{
 		"id": "R2CLOUD354",
-		"name": "Barry-1",
+		"name": "BARRY-1",
 		"noradId": "58338",
 		"enabled": false,
 		"start": 1699728540000,
@@ -2985,7 +3291,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1702324734000
+		"lastUpdateTime": 1744362110000
 	},
 	{
 		"id": "R2CLOUD353",
@@ -3571,30 +3877,6 @@
 		"lastUpdateTime": 1702324450000
 	},
 	{
-		"id": "R2CLOUD319",
-		"name": "KAFASAT",
-		"noradId": "58317",
-		"enabled": true,
-		"start": 1699728540000,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.kafasat.KafasatBeacon",
-				"frequency": 435835000,
-				"bandwidth": 20000,
-				"baudRates": [
-					1200,
-					2400,
-					4800,
-					9600
-				],
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1705264800000
-	},
-	{
 		"id": "R2CLOUD317",
 		"name": "BRO-10",
 		"noradId": "58331",
@@ -4039,7 +4321,7 @@
 	},
 	{
 		"id": "R2CLOUD294",
-		"name": "RS52SE",
+		"name": "RS52SV",
 		"noradId": "57327",
 		"enabled": true,
 		"transmitters": [
@@ -4059,7 +4341,7 @@
 				"loraCrc": true
 			}
 		],
-		"lastUpdateTime": 1692969760000
+		"lastUpdateTime": 1743372129000
 	},
 	{
 		"id": "R2CLOUD293",
@@ -4087,7 +4369,7 @@
 	},
 	{
 		"id": "R2CLOUD291",
-		"name": "RS52SV",
+		"name": "RS52SB",
 		"noradId": "57324",
 		"enabled": true,
 		"transmitters": [
@@ -4107,11 +4389,11 @@
 				"loraCrc": true
 			}
 		],
-		"lastUpdateTime": 1692969536000
+		"lastUpdateTime": 1743372093000
 	},
 	{
 		"id": "R2CLOUD290",
-		"name": "RS52SB",
+		"name": "RS52SE",
 		"noradId": "57323",
 		"enabled": true,
 		"transmitters": [
@@ -4131,7 +4413,7 @@
 				"loraCrc": true
 			}
 		],
-		"lastUpdateTime": 1692969486000
+		"lastUpdateTime": 1743372079000
 	},
 	{
 		"id": "R2CLOUD289",
@@ -4850,26 +5132,6 @@
 		"lastUpdateTime": 1666992210000
 	},
 	{
-		"id": "R2CLOUD197",
-		"name": "GOMX-4B",
-		"noradId": "43196",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX100",
-				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
-				"frequency": 400800000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1666518446000
-	},
-	{
 		"id": "R2CLOUD196",
 		"name": "KSM1-A",
 		"noradId": "46912",
@@ -4990,52 +5252,6 @@
 			}
 		],
 		"lastUpdateTime": 1666995466000
-	},
-	{
-		"id": "R2CLOUD182",
-		"name": "2022-096B",
-		"noradId": "53371",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "LORA",
-				"framing": "LORA",
-				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
-				"frequency": 437575000,
-				"bandwidth": 62500,
-				"status": "ENABLED",
-				"loraBandwidth": 62500,
-				"loraSpreadFactor": 8,
-				"loraSyncword": 18,
-				"loraPreambleLength": 8,
-				"loraLdro": 0,
-				"loraCodingRate": 6
-			}
-		],
-		"lastUpdateTime": 1672770549000
-	},
-	{
-		"id": "R2CLOUD181",
-		"name": "2022-096C",
-		"noradId": "53372",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "LORA",
-				"framing": "LORA",
-				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
-				"frequency": 436895000,
-				"bandwidth": 62500,
-				"status": "ENABLED",
-				"loraBandwidth": 62500,
-				"loraSpreadFactor": 8,
-				"loraSyncword": 18,
-				"loraPreambleLength": 8,
-				"loraLdro": 0,
-				"loraCodingRate": 6
-			}
-		],
-		"lastUpdateTime": 1672770562000
 	},
 	{
 		"id": "R2CLOUD180",
@@ -5369,26 +5585,6 @@
 			}
 		],
 		"lastUpdateTime": 1707729417000
-	},
-	{
-		"id": "R2CLOUD132",
-		"name": "NANOSATC-BR2",
-		"noradId": "47950",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "BPSK",
-				"framing": "AX25",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 145867000,
-				"bandwidth": 10000,
-				"baudRates": [
-					1200
-				],
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1707729427000
 	},
 	{
 		"id": "R2CLOUD131",
@@ -5764,26 +5960,6 @@
 			}
 		],
 		"lastUpdateTime": 1709481431000
-	},
-	{
-		"id": "R2CLOUD90",
-		"name": "XW-2C",
-		"noradId": "40906",
-		"enabled": false,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 145770000,
-				"bandwidth": 48000,
-				"baudRates": [
-					19200
-				],
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1662311950000
 	},
 	{
 		"id": "R2CLOUD83",

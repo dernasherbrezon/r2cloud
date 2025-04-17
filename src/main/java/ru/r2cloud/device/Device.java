@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -104,6 +105,10 @@ public abstract class Device implements Lifecycle {
 		if (!filter.accept(transmitter)) {
 			return false;
 		}
+		Transmitter previous = findById(transmitter.getId());
+		if (previous != null) {
+			return true;
+		}
 		assignedTransmitters.add(transmitter);
 		return true;
 	}
@@ -140,6 +145,7 @@ public abstract class Device implements Lifecycle {
 						}
 						if (currentBandFrequency == null) {
 							currentBandFrequency = transmitter.getFrequencyBand();
+							numberOfObservationsOnCurrentBand = 0;
 							LOG.info("starting observations on {} hz", currentBandFrequency);
 						}
 						numberOfObservationsOnCurrentBand++;
@@ -159,6 +165,7 @@ public abstract class Device implements Lifecycle {
 							if (numberOfObservationsOnCurrentBand <= 0) {
 								LOG.info("no more observations on: {} hz", currentBandFrequency);
 								currentBandFrequency = null;
+								numberOfObservationsOnCurrentBand = 0;
 							}
 							sdrServerLock.notifyAll();
 						}
@@ -337,6 +344,19 @@ public abstract class Device implements Lifecycle {
 		// return first
 		Collections.sort(batch, ObservationRequestComparator.INSTANCE);
 		return batch.get(0);
+	}
+
+	public synchronized boolean remove(String transmitterId) {
+		Iterator<Transmitter> it = assignedTransmitters.iterator();
+		while (it.hasNext()) {
+			Transmitter cur = it.next();
+			if (cur.getId().equals(transmitterId)) {
+				it.remove();
+				schedule.cancelByTransmitter(transmitterId);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public synchronized List<ObservationRequest> findScheduledObservations() {

@@ -92,6 +92,21 @@ public class DeviceManager implements Lifecycle {
 		return result;
 	}
 
+	public boolean remove(Satellite satellite) {
+		LOG.info("disabling satellite: {}", satellite);
+		boolean result = false;
+		for (int i = 0; i < devices.size(); i++) {
+			for (Transmitter curTransmitter : satellite.getTransmitters()) {
+				boolean removed = devices.get(i).remove(curTransmitter.getId());
+				if (removed) {
+					result = true;
+					break;
+				}
+			}
+		}
+		return result;
+	}
+
 	public void schedule(List<Satellite> all) {
 		for (Satellite cur : all) {
 			for (Transmitter curTransmitter : cur.getTransmitters()) {
@@ -108,7 +123,7 @@ public class DeviceManager implements Lifecycle {
 	}
 
 	public void cancelObservations(Satellite satellite) {
-		LOG.info("cancelling observations for satellite {}", satellite.getId());
+		LOG.info("cancelling observations for satellite {}", satellite);
 		for (int i = 0; i < devices.size(); i++) {
 			for (Transmitter curTransmitter : satellite.getTransmitters()) {
 				if (devices.get(i).findById(curTransmitter.getId()) == null) {
