@@ -54,7 +54,7 @@ public class RtlSdrReaderTest {
 		RtlSdrReader o = new RtlSdrReader(config, deviceConfiguration, factory, req, transmitter, new ReentrantLock());
 		IQData iqData = o.start();
 		o.complete();
-		assertNotNull(iqData.getDataFile());
+		assertNotNull(iqData.getIq());
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class RtlSdrReaderTest {
 		RtlSdrReader o = new RtlSdrReader(config, createDeviceConfig(), factory, req, transmitter, new ReentrantLock());
 		IQData iqData = o.start();
 		o.complete();
-		assertNull(iqData.getDataFile());
+		assertNull(iqData.getIq());
 	}
 
 	@Test
@@ -111,7 +111,7 @@ public class RtlSdrReaderTest {
 		RtlSdrReader o = new RtlSdrReader(config, createDeviceConfig(), factory, req, transmitter, new ReentrantLock());
 		IQData iqData = o.start();
 		o.complete();
-		assertNotNull(iqData.getDataFile());
+		assertNotNull(iqData.getIq());
 		assertEquals(DataFormat.COMPLEX_UNSIGNED_BYTE, iqData.getDataFormat());
 	}
 
@@ -131,7 +131,7 @@ public class RtlSdrReaderTest {
 		RtlSdrReader o = new RtlSdrReader(config, createDeviceConfig(), factory, req, transmitter, new ReentrantLock());
 		IQData iqData = o.start();
 		o.complete();
-		assertNotNull(iqData.getDataFile());
+		assertNotNull(iqData.getIq());
 		assertEquals(DataFormat.COMPLEX_UNSIGNED_BYTE, iqData.getDataFormat());
 	}
 

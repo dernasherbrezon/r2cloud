@@ -72,7 +72,7 @@ public class R2loraReaderTest {
 		reader.complete();
 		IQData iqData = reader.start();
 		assertNotNull(iqData);
-		assertNotNull(iqData.getDataFile());
+		assertNotNull(iqData.getIq());
 
 		TestUtil.assertJson("r2loratest/request.json", Json.parse(handler.getRequest()).asObject());
 	}

@@ -50,7 +50,7 @@ public abstract class TelemetryDecoder implements Decoder {
 	@Override
 	public DecoderResult decode(File rawIq, Observation req, final Transmitter transmitter, final Satellite satellite) {
 		DecoderResult result = new DecoderResult();
-		result.setRawPath(rawIq);
+		result.setIq(rawIq);
 		if (transmitter.getBaudRates() == null || transmitter.getBaudRates().isEmpty()) {
 			LOG.error("[{}] baud rate is missing: {}", req.getId(), req.getSatelliteId());
 			return result;
@@ -89,12 +89,12 @@ public abstract class TelemetryDecoder implements Decoder {
 						}
 					}
 					// decode only one image per observation
-					if (result.getImagePath() == null) {
+					if (result.getImage() == null) {
 						BufferedImage image = decodeImage(beacons);
 						if (image != null) {
 							File imageFile = saveImage("image-" + req.getId() + ".jpg", image);
 							if (imageFile != null) {
-								result.setImagePath(imageFile);
+								result.setImage(imageFile);
 							}
 						}
 					}
@@ -119,7 +119,7 @@ public abstract class TelemetryDecoder implements Decoder {
 			LOG.error("[{}] unable to process: {}", req.getId(), rawIq, e);
 			return result;
 		}
-		result.setDataPath(binFile);
+		result.setData(binFile);
 		return result;
 	}
 

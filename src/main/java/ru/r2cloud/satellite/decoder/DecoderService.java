@@ -137,22 +137,22 @@ public class DecoderService implements Lifecycle {
 		DecoderResult result = decoder.decode(rawFile, observation, transmitter, satellite);
 		LOG.info("[{}] decoded packets {}", observation.getId(), result.getNumberOfDecodedPackets());
 
-		if (result.getDataPath() != null) {
-			result.setDataPath(dao.saveData(observation.getSatelliteId(), observation.getId(), result.getDataPath()));
+		if (result.getData() != null) {
+			result.setData(dao.saveData(observation.getSatelliteId(), observation.getId(), result.getData()));
 		}
-		if (result.getImagePath() != null) {
-			result.setImagePath(dao.saveImage(observation.getSatelliteId(), observation.getId(), result.getImagePath()));
+		if (result.getImage() != null) {
+			result.setImage(dao.saveImage(observation.getSatelliteId(), observation.getId(), result.getImage()));
 		}
 		if (result.getInstruments() != null) {
 			for (Instrument cur : result.getInstruments()) {
 				for (InstrumentChannel curChannel : cur.getChannels()) {
-					curChannel.setImagePath(dao.saveChannel(observation.getSatelliteId(), observation.getId(), cur.getId(), curChannel.getId(), curChannel.getImagePath()));
+					curChannel.setImage(dao.saveChannel(observation.getSatelliteId(), observation.getId(), cur.getId(), curChannel.getId(), curChannel.getImage()));
 				}
-				cur.setCombinedImagePath(dao.saveCombined(observation.getSatelliteId(), observation.getId(), cur.getId(), cur.getCombinedImagePath()));
+				cur.setCombinedImage(dao.saveCombined(observation.getSatelliteId(), observation.getId(), cur.getId(), cur.getCombinedImage()));
 			}
 		}
 
-		observation.setRawPath(result.getRawPath());
+		observation.setRawPath(result.getIq());
 		if (observation.getRawPath() == null) {
 			observation.setRawURL(null);
 		}
@@ -160,8 +160,8 @@ public class DecoderService implements Lifecycle {
 		observation.setChannelB(result.getChannelB());
 		observation.setNumberOfDecodedPackets((long) result.getNumberOfDecodedPackets());
 		observation.setTotalSize(result.getTotalSize());
-		observation.setImagePath(result.getImagePath());
-		observation.setDataPath(result.getDataPath());
+		observation.setImagePath(result.getImage());
+		observation.setDataPath(result.getData());
 		observation.setStatus(ObservationStatus.DECODED);
 		observation.setInstruments(result.getInstruments());
 

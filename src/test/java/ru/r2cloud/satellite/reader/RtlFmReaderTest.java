@@ -56,7 +56,7 @@ public class RtlFmReaderTest {
 		RtlFmReader o = new RtlFmReader(config, new DeviceConfiguration(), factory, req, new ReentrantLock());
 		IQData iqData = o.start();
 		o.complete();
-		assertNull(iqData.getDataFile());
+		assertNull(iqData.getIq());
 	}
 
 	@Test

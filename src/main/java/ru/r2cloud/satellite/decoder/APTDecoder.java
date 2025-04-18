@@ -36,7 +36,7 @@ public class APTDecoder implements Decoder {
 	@Override
 	public DecoderResult decode(final File wavFile, final Observation request, final Transmitter transmitter, final Satellite satellite) {
 		DecoderResult result = new DecoderResult();
-		result.setRawPath(wavFile);
+		result.setIq(wavFile);
 		File image = new File(config.getTempDirectory(), "apt-" + request.getId() + ".jpg");
 		ProcessWrapper process = null;
 		try {
@@ -65,7 +65,7 @@ public class APTDecoder implements Decoder {
 			tis.start();
 			process.waitFor();
 			if (convert(result, lines)) {
-				result.setImagePath(image);
+				result.setImage(image);
 			} else {
 				Util.deleteQuietly(image);
 			}

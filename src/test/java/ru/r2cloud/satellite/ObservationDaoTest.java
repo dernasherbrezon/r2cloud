@@ -245,9 +245,9 @@ public class ObservationDaoTest {
 		assertNull(actual.getDataPath());
 		assertNull(actual.getImagePath());
 		assertNull(actual.getSpectogramPath());
-		assertNull(actual.getInstruments().get(0).getCombinedImagePath());
-		assertNull(actual.getInstruments().get(0).getChannels().get(0).getImagePath());
-		assertNull(actual.getInstruments().get(0).getChannels().get(1).getImagePath());
+		assertNull(actual.getInstruments().get(0).getCombinedImage());
+		assertNull(actual.getInstruments().get(0).getChannels().get(0).getImage());
+		assertNull(actual.getInstruments().get(0).getChannels().get(1).getImage());
 		assertEquals(2, actual.getFrequency());
 		assertEquals(req.getTle(), actual.getTle());
 		assertEquals(req.getGroundStation().getLatitude(), actual.getGroundStation().getLatitude(), 0.0);
@@ -276,9 +276,9 @@ public class ObservationDaoTest {
 		assertNotNull(actual.getInstruments().get(0).getCombinedImageURL());
 		assertNotNull(actual.getInstruments().get(0).getChannels().get(0).getImageURL());
 		assertNotNull(actual.getInstruments().get(0).getChannels().get(1).getImageURL());
-		assertNotNull(actual.getInstruments().get(0).getCombinedImagePath());
-		assertNotNull(actual.getInstruments().get(0).getChannels().get(0).getImagePath());
-		assertNotNull(actual.getInstruments().get(0).getChannels().get(1).getImagePath());
+		assertNotNull(actual.getInstruments().get(0).getCombinedImage());
+		assertNotNull(actual.getInstruments().get(0).getChannels().get(0).getImage());
+		assertNotNull(actual.getInstruments().get(0).getChannels().get(1).getImage());
 
 		Observation full = new Observation(req.getReq());
 		full.setChannelA(UUID.randomUUID().toString());

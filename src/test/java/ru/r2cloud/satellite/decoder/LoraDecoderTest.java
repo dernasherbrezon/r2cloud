@@ -39,7 +39,7 @@ public class LoraDecoderTest {
 		DecoderResult result = decoder.decode(rawFile, new Observation(), new Transmitter(), new Satellite());
 		assertNotNull(result);
 		assertEquals(1, result.getNumberOfDecodedPackets());
-		assertNotNull(result.getDataPath());
+		assertNotNull(result.getData());
 	}
 
 	@Test
@@ -52,7 +52,7 @@ public class LoraDecoderTest {
 		DecoderResult result = decoder.decode(rawFile, new Observation(), new Transmitter(), new Satellite());
 		assertNotNull(result);
 		assertEquals(0, result.getNumberOfDecodedPackets());
-		assertNull(result.getDataPath());
+		assertNull(result.getData());
 		assertFalse(rawFile.exists());
 	}
 

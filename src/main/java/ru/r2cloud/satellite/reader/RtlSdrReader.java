@@ -116,7 +116,7 @@ public class RtlSdrReader implements IQReader {
 		result.setDataFormat(DataFormat.COMPLEX_UNSIGNED_BYTE);
 		result.setSampleRate(sampleRate);
 		if (rawFile.exists()) {
-			result.setDataFile(rawFile);
+			result.setIq(rawFile);
 		}
 		return result;
 	}

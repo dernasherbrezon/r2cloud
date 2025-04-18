@@ -39,7 +39,7 @@ public class SatdumpDecoderTest {
 	@Test
 	public void testSuccess() throws Exception {
 		DecoderResult result = decoder.decode(new File(UUID.randomUUID().toString()), null, null, null);
-		assertNull(result.getRawPath());
+		assertNull(result.getIq());
 
 		TestUtil.copyFolder(new File("./src/test/resources/satdump_noaa18/").toPath(), tempFolder.getRoot().toPath());
 		File raw = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
@@ -58,16 +58,16 @@ public class SatdumpDecoderTest {
 		assertNotNull(result.getInstruments());
 		assertEquals(2, result.getInstruments().size()); // test data don't have more than 2 instruments
 		Instrument avhrr3 = findById(result, "AVHRR3");
-		assertNotNull(avhrr3.getCombinedImagePath());
+		assertNotNull(avhrr3.getCombinedImage());
 		assertEquals(6, avhrr3.getChannels().size());
 		for (InstrumentChannel cur : avhrr3.getChannels()) {
-			assertNotNull(cur.getImagePath());
+			assertNotNull(cur.getImage());
 		}
 		Instrument amsu = findById(result, "AMSUA");
-		assertNull(amsu.getCombinedImagePath()); // not configured in the test data
+		assertNull(amsu.getCombinedImage()); // not configured in the test data
 		assertEquals(2, amsu.getChannels().size());
 		for (InstrumentChannel cur : amsu.getChannels()) {
-			assertNotNull(cur.getImagePath());
+			assertNotNull(cur.getImage());
 		}
 		// explicitly test disabled instruments
 		assertNull(findById(result, "MHS"));

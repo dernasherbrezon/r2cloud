@@ -37,7 +37,7 @@ public class SatdumpDecoder implements Decoder {
 		if (!rawFile.exists() || rawFile.length() == 0) {
 			return result;
 		}
-		result.setRawPath(rawFile);
+		result.setIq(rawFile);
 		ProcessWrapper process = null;
 		String commandLine = config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " baseband " + rawFile.getAbsolutePath() + " " + rawFile.getParentFile().getAbsolutePath() + " --dc_block true --samplerate " + request.getSampleRate() + " --baseband_format "
 				+ request.getDataFormat().getSatdump();
@@ -74,7 +74,7 @@ public class SatdumpDecoder implements Decoder {
 			result.setNumberOfDecodedPackets(numberOfDecodedPackets);
 			result.setTotalSize(data.length());
 			if (numberOfDecodedPackets > 0) {
-				result.setDataPath(data);
+				result.setData(data);
 			}
 			imagesAvailable = (numberOfDecodedPackets > 0);
 		}
@@ -98,7 +98,7 @@ public class SatdumpDecoder implements Decoder {
 							continue;
 						}
 						InstrumentChannel enriched = new InstrumentChannel(curChannel);
-						enriched.setImagePath(channelFile);
+						enriched.setImage(channelFile);
 						availableChannels.add(enriched);
 					}
 					if (availableChannels.isEmpty()) {
@@ -109,7 +109,7 @@ public class SatdumpDecoder implements Decoder {
 				if (cur.getSatdumpCombined() != null) {
 					File combined = new File(instrumentDir, cur.getSatdumpCombined());
 					if (combined.exists()) {
-						enrichedInstrument.setCombinedImagePath(combined);
+						enrichedInstrument.setCombinedImage(combined);
 					}
 				}
 				instruments.add(enrichedInstrument);

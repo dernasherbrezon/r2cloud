@@ -200,14 +200,14 @@ public class ObservationDao implements IObservationDao {
 							continue;
 						}
 						File file = curPath.toFile();
-						curChannel.setImagePath(file);
+						curChannel.setImage(file);
 						curChannel.setImageURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + file.getName());
 					}
 				}
 				Path combinedPath = resolveByPrefix(curDirectory, cur.getId() + ".");
 				if (combinedPath != null) {
 					File combinedFile = combinedPath.toFile();
-					cur.setCombinedImagePath(combinedFile);
+					cur.setCombinedImage(combinedFile);
 					// assume each instrument save 1 image
 					cur.setCombinedImageURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + combinedFile.getName());
 				}

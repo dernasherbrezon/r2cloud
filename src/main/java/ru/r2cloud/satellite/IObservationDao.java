@@ -22,7 +22,7 @@ public interface IObservationDao {
 
 	void cancel(Observation observation);
 
-	File update(Observation observation, File rawFile);
+	File update(Observation observation, File iq);
 
 	boolean update(Observation cur);
 

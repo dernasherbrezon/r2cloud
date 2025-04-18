@@ -185,7 +185,7 @@ public abstract class Device implements Lifecycle {
 					}
 				}
 
-				if (data == null || data.getDataFile() == null) {
+				if (data == null || data.getIq() == null) {
 					observationDao.cancel(observation);
 					return;
 				}
@@ -196,8 +196,8 @@ public abstract class Device implements Lifecycle {
 				observation.setDataFormat(data.getDataFormat());
 				observation.setSampleRate(data.getSampleRate());
 
-				File dataFile = observationDao.update(observation, data.getDataFile());
-				if (dataFile == null) {
+				File iq = observationDao.update(observation, data.getIq());
+				if (iq == null) {
 					return;
 				}
 

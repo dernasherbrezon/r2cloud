@@ -45,7 +45,7 @@ public class LRPTDecoder implements Decoder {
 		int baudRate = transmitter.getBaudRates().get(0);
 		MeteorM lrpt = null;
 		DecoderResult result = new DecoderResult();
-		result.setRawPath(rawIq);
+		result.setIq(rawIq);
 
 		int numberOfDecodedPackets = 0;
 		File binFile = new File(config.getTempDirectory(), "lrpt-" + req.getId() + ".bin");
@@ -70,14 +70,14 @@ public class LRPTDecoder implements Decoder {
 		if (numberOfDecodedPackets <= 0) {
 			Util.deleteQuietly(binFile);
 		} else {
-			result.setDataPath(binFile);
+			result.setData(binFile);
 			try (LRPTInputStream lrptFile = new LRPTInputStream(new FileInputStream(binFile))) {
 				MeteorImage image = new MeteorImage(lrptFile);
 				BufferedImage actual = image.toBufferedImage();
 				if (actual != null) {
 					File imageFile = new File(config.getTempDirectory(), "lrpt-" + req.getId() + ".jpg");
 					ImageIO.write(actual, "jpg", imageFile);
-					result.setImagePath(imageFile);
+					result.setImage(imageFile);
 				}
 			} catch (IOException e) {
 				LOG.error("unable to generate image", e);

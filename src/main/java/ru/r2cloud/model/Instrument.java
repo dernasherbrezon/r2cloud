@@ -16,7 +16,7 @@ public class Instrument {
 	private String name;
 	private String satdumpName;
 	private String satdumpCombined;
-	private File combinedImagePath;
+	private File combinedImage;
 	private String combinedImageURL;
 	private String description;
 	private List<InstrumentChannel> channels;
@@ -32,7 +32,7 @@ public class Instrument {
 		this.name = other.name;
 		this.satdumpName = other.satdumpName;
 		this.satdumpCombined = other.satdumpCombined;
-		this.combinedImagePath = other.combinedImagePath;
+		this.combinedImage = other.combinedImage;
 		this.combinedImageURL = other.combinedImageURL;
 		this.description = other.description;
 		if (other.channels != null) {
@@ -45,12 +45,12 @@ public class Instrument {
 		this.primary = other.primary;
 	}
 
-	public File getCombinedImagePath() {
-		return combinedImagePath;
+	public File getCombinedImage() {
+		return combinedImage;
 	}
 
-	public void setCombinedImagePath(File combinedImagePath) {
-		this.combinedImagePath = combinedImagePath;
+	public void setCombinedImage(File combinedImage) {
+		this.combinedImage = combinedImage;
 	}
 
 	public boolean isEnabled() {

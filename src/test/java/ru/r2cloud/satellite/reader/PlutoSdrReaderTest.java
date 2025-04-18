@@ -43,7 +43,7 @@ public class PlutoSdrReaderTest {
 		PlutoSdrReader o = new PlutoSdrReader(config, new DeviceConfiguration(), factory, req, transmitter);
 		IQData iqData = o.start();
 		o.complete();
-		assertNull(iqData.getDataFile());
+		assertNull(iqData.getIq());
 	}
 
 	@Test
@@ -60,7 +60,7 @@ public class PlutoSdrReaderTest {
 		PlutoSdrReader o = new PlutoSdrReader(config, new DeviceConfiguration(), factory, req, transmitter);
 		IQData iqData = o.start();
 		o.complete();
-		assertNotNull(iqData.getDataFile());
+		assertNotNull(iqData.getIq());
 	}
 
 	@Before

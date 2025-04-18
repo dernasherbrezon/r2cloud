@@ -55,8 +55,8 @@ public class DecoderTest {
 		Decoder decoder = decoders.findByTransmitter(transmitter);
 		DecoderResult result = decoder.decode(wav, req, transmitter, satellite);
 		assertEquals(expectedPackets, result.getNumberOfDecodedPackets());
-		assertNotNull(result.getDataPath());
-		assertNotNull(result.getRawPath());
+		assertNotNull(result.getData());
+		assertNotNull(result.getIq());
 	}
 
 	@Parameterized.Parameters

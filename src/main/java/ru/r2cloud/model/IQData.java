@@ -5,7 +5,7 @@ import java.io.File;
 public class IQData {
 
 	private DataFormat dataFormat;
-	private File dataFile;
+	private File iq;
 	private long actualStart;
 	private long actualEnd;
 	private long sampleRate;
@@ -42,12 +42,12 @@ public class IQData {
 		this.actualEnd = actualEnd;
 	}
 
-	public File getDataFile() {
-		return dataFile;
+	public File getIq() {
+		return iq;
 	}
 	
-	public void setDataFile(File dataFile) {
-		this.dataFile = dataFile;
+	public void setIq(File iq) {
+		this.iq = iq;
 	}
 
 }

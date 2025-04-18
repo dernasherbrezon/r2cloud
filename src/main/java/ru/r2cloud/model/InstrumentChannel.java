@@ -11,7 +11,7 @@ public class InstrumentChannel {
 	private String id;
 	private String satdumpName;
 	private String description;
-	private File imagePath;
+	private File image;
 	private String imageURL;
 
 	public InstrumentChannel() {
@@ -22,7 +22,7 @@ public class InstrumentChannel {
 		this.id = other.id;
 		this.satdumpName = other.satdumpName;
 		this.description = other.description;
-		this.imagePath = other.imagePath;
+		this.image = other.image;
 		this.imageURL = other.imageURL;
 	}
 
@@ -42,12 +42,12 @@ public class InstrumentChannel {
 		this.imageURL = imageURL;
 	}
 
-	public File getImagePath() {
-		return imagePath;
+	public File getImage() {
+		return image;
 	}
 
-	public void setImagePath(File imagePath) {
-		this.imagePath = imagePath;
+	public void setImage(File image) {
+		this.image = image;
 	}
 
 	public String getId() {

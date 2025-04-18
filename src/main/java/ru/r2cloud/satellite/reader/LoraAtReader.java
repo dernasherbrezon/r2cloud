@@ -85,7 +85,7 @@ public class LoraAtReader implements IQReader {
 		IQData result = new IQData();
 		result.setActualStart(startTimeMillis);
 		result.setActualEnd(endTimeMillis);
-		result.setDataFile(rawFile);
+		result.setIq(rawFile);
 		result.setDataFormat(DataFormat.UNKNOWN);
 		return result;
 	}

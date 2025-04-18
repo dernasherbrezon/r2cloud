@@ -5,15 +5,15 @@ import java.util.List;
 
 public class DecoderResult {
 
-	private File rawPath;
+	private File iq;
 
 	private String channelA;
 	private String channelB;
 	private int numberOfDecodedPackets;
 	private Long totalSize = 0L;
 
-	private File imagePath;
-	private File dataPath;
+	private File image;
+	private File data;
 	private List<Instrument> instruments;
 	
 	public List<Instrument> getInstruments() {
@@ -32,12 +32,12 @@ public class DecoderResult {
 		this.totalSize = totalSize;
 	}
 
-	public File getRawPath() {
-		return rawPath;
+	public File getIq() {
+		return iq;
 	}
 	
-	public void setRawPath(File rawPath) {
-		this.rawPath = rawPath;
+	public void setIq(File iq) {
+		this.iq = iq;
 	}
 
 	public String getChannelA() {
@@ -64,20 +64,20 @@ public class DecoderResult {
 		this.numberOfDecodedPackets = numberOfDecodedPackets;
 	}
 
-	public File getImagePath() {
-		return imagePath;
+	public File getImage() {
+		return image;
 	}
 
-	public void setImagePath(File imagePath) {
-		this.imagePath = imagePath;
+	public void setImage(File image) {
+		this.image = image;
 	}
 
-	public File getDataPath() {
-		return dataPath;
+	public File getData() {
+		return data;
 	}
 
-	public void setDataPath(File dataPath) {
-		this.dataPath = dataPath;
+	public void setData(File data) {
+		this.data = data;
 	}
 
 }
