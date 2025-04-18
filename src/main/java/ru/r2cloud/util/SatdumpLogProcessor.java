@@ -48,6 +48,14 @@ public class SatdumpLogProcessor {
 							}
 							continue;
 						}
+						// critical => error
+						message = match(curLine, "(C)");
+						if (message != null) {
+							if (accept(message)) {
+								LOG.error("[{}] {}", id, message);
+							}
+							continue;
+						}
 						message = match(curLine, "(W)");
 						if (message != null) {
 							if (accept(message)) {
@@ -113,6 +121,10 @@ public class SatdumpLogProcessor {
 		}
 		// log error missing data multiple times
 		if (str.contains("One or more of the required channels are missing!")) {
+			return false;
+		}
+		// too many messages like this
+		if (str.contains("GCPs have the same Lat,Lon")) {
 			return false;
 		}
 		return true;

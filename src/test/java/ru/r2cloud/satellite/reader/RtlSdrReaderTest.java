@@ -32,9 +32,9 @@ public class RtlSdrReaderTest {
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private TestConfiguration config;
-	private String rtlsdr;
+	private String rtlsdrWrapper;
 	private String rtlBiast;
-	private String satdump;
+	private String rtlsdr;
 
 	@Test
 	public void testBiasTSuccess() throws Exception {
@@ -116,10 +116,9 @@ public class RtlSdrReaderTest {
 	}
 
 	@Test
-	public void testZiqSuccess() throws Exception {
+	public void testSatdumpSuccess() throws Exception {
 		String satelliteId = UUID.randomUUID().toString();
 		ProcessWrapperMock mock = new ProcessWrapperMock(new ByteArrayInputStream(new byte[0]), null, new ByteArrayInputStream(new byte[0]), 0, true);
-		mock.setBackingFileExtension(".ziq");
 		ProcessFactoryMock factory = new ProcessFactoryMock(create(mock), satelliteId);
 
 		ObservationRequest req = new ObservationRequest();
@@ -133,18 +132,18 @@ public class RtlSdrReaderTest {
 		IQData iqData = o.start();
 		o.complete();
 		assertNotNull(iqData.getDataFile());
-		assertEquals(DataFormat.ZIQ, iqData.getDataFormat());
+		assertEquals(DataFormat.COMPLEX_UNSIGNED_BYTE, iqData.getDataFormat());
 	}
 
 	@Before
 	public void start() throws Exception {
+		rtlsdrWrapper = UUID.randomUUID().toString();
 		rtlsdr = UUID.randomUUID().toString();
-		satdump = UUID.randomUUID().toString();
 		rtlBiast = UUID.randomUUID().toString();
 
 		config = new TestConfiguration(tempFolder);
-		config.setProperty("satellites.rtlsdrwrapper.path", rtlsdr);
-		config.setProperty("satellites.satdump.path", satdump);
+		config.setProperty("satellites.rtlsdrwrapper.path", rtlsdrWrapper);
+		config.setProperty("satellites.rtlsdr.path", rtlsdr);
 		config.setProperty("satellites.rtlsdr.biast.path", rtlBiast);
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
 		config.update();
@@ -162,8 +161,8 @@ public class RtlSdrReaderTest {
 
 	private Map<String, ProcessWrapperMock> create(ProcessWrapperMock rtl, ProcessWrapperMock bias) {
 		Map<String, ProcessWrapperMock> result = new HashMap<>();
+		result.put(rtlsdrWrapper, rtl);
 		result.put(rtlsdr, rtl);
-		result.put(satdump, rtl);
 		result.put(rtlBiast, bias);
 		return result;
 	}

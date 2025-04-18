@@ -25,6 +25,15 @@ public class Satellite {
 	private SatelliteSource source;
 	private long lastUpdateTime;
 	private List<Instrument> instruments;
+	private String satdumpSatelliteNumber;
+
+	public String getSatdumpSatelliteNumber() {
+		return satdumpSatelliteNumber;
+	}
+
+	public void setSatdumpSatelliteNumber(String satdumpSatelliteNumber) {
+		this.satdumpSatelliteNumber = satdumpSatelliteNumber;
+	}
 
 	public List<Instrument> getInstruments() {
 		return instruments;
@@ -239,6 +248,10 @@ public class Satellite {
 			}
 			result.setInstruments(satelliteInstruments);
 		}
+		JsonValue satdumpSatelliteNumber = meta.get("satdumpSatelliteNumber");
+		if (satdumpSatelliteNumber != null) {
+			result.setSatdumpSatelliteNumber(satdumpSatelliteNumber.asString());
+		}
 		return result;
 	}
 
@@ -277,6 +290,9 @@ public class Satellite {
 				instrumentsArray.add(curObj);
 			}
 			result.add("instruments", instrumentsArray);
+		}
+		if (satdumpSatelliteNumber != null) {
+			result.add("satdumpSatelliteNumber", satdumpSatelliteNumber);
 		}
 		return result;
 	}

@@ -39,7 +39,12 @@ public class SatdumpDecoder implements Decoder {
 		}
 		result.setRawPath(rawFile);
 		ProcessWrapper process = null;
-		String commandLine = config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " baseband " + rawFile.getAbsolutePath() + " " + rawFile.getParentFile().getAbsolutePath() + " --dc_block true --samplerate " + request.getSampleRate() + " --baseband_format ziq";
+		String commandLine = config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " baseband " + rawFile.getAbsolutePath() + " " + rawFile.getParentFile().getAbsolutePath() + " --dc_block true --samplerate " + request.getSampleRate() + " --baseband_format "
+				+ request.getDataFormat().getSatdump();
+		if (satellite.getSatdumpSatelliteNumber() != null) {
+			commandLine += " --satellite_number " + satellite.getSatdumpSatelliteNumber();
+		}
+		commandLine += " --start_timestamp " + request.getStartTimeMillis();
 		try {
 			process = factory.create(commandLine, true, false);
 			new SatdumpLogProcessor(request.getId(), process.getInputStream(), "satdump-decode-stdio").start();
@@ -84,21 +89,23 @@ public class SatdumpDecoder implements Decoder {
 				if (!instrumentDir.exists()) {
 					continue;
 				}
-				List<InstrumentChannel> availableChannels = new ArrayList<>(cur.getChannels().size());
-				for (InstrumentChannel curChannel : cur.getChannels()) {
-					File channelFile = new File(instrumentDir, curChannel.getSatdumpName());
-					if (!channelFile.exists()) {
+				Instrument enrichedInstrument = new Instrument(cur);
+				if (cur.getChannels() != null) {
+					List<InstrumentChannel> availableChannels = new ArrayList<>(cur.getChannels().size());
+					for (InstrumentChannel curChannel : cur.getChannels()) {
+						File channelFile = new File(instrumentDir, curChannel.getSatdumpName());
+						if (!channelFile.exists()) {
+							continue;
+						}
+						InstrumentChannel enriched = new InstrumentChannel(curChannel);
+						enriched.setImagePath(channelFile);
+						availableChannels.add(enriched);
+					}
+					if (availableChannels.isEmpty()) {
 						continue;
 					}
-					InstrumentChannel enriched = new InstrumentChannel(curChannel);
-					enriched.setImagePath(channelFile);
-					availableChannels.add(enriched);
+					enrichedInstrument.setChannels(availableChannels);
 				}
-				if (availableChannels.isEmpty()) {
-					continue;
-				}
-				Instrument enrichedInstrument = new Instrument(cur);
-				enrichedInstrument.setChannels(availableChannels);
 				if (cur.getSatdumpCombined() != null) {
 					File combined = new File(instrumentDir, cur.getSatdumpCombined());
 					if (combined.exists()) {

@@ -64,20 +64,6 @@ public class SpectogramServiceTest {
 		}
 	}
 
-	@Test
-	public void testFromZiq() throws Exception {
-		File file = TestUtil.setupClasspathResource(tempFolder, "data/ziq.raw");
-		SpectogramService service = new SpectogramService(config);
-		Observation observation = create(file, 2_400_000);
-		observation.setDataFormat(DataFormat.ZIQ);
-		observation.setStartTimeMillis(1742981241557L);
-		observation.setEndTimeMillis(1742981242557L);
-		File result = service.create(observation);
-		try (InputStream expected = SpectogramServiceTest.class.getClassLoader().getResourceAsStream("spectogram-ziq.raw.png"); InputStream actual = new FileInputStream(result)) {
-			assertStreamsEqual(expected, actual);
-		}
-	}
-
 	private static void assertStreamsEqual(InputStream expected, InputStream actual) throws IOException {
 		while (true) {
 			int expectedByte = expected.read();

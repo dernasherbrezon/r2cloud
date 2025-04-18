@@ -20,7 +20,6 @@ import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ProcessWrapper;
-import ru.r2cloud.util.SatdumpLogProcessor;
 import ru.r2cloud.util.Util;
 
 public class RtlSdrReader implements IQReader {
@@ -69,75 +68,37 @@ public class RtlSdrReader implements IQReader {
 	public IQData start() throws InterruptedException {
 		lock.lock();
 		try {
-			if (transmitter.getFraming().equals(Framing.SATDUMP)) {
-				return startSatdump();
-			} else {
-				return startRtlSdr();
-			}
+			return startInternally();
 		} finally {
 			lock.unlock();
 		}
 	}
 
-	private IQData startSatdump() throws InterruptedException {
-		Long startTimeMillis = null;
-		Long endTimeMillis = null;
-		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw");
-		try {
-			startTimeMillis = System.currentTimeMillis();
-			rtlSdr = factory.create(config.getProperty("satellites.satdump.path") + " record " + rawFile.getAbsolutePath() + " --source rtlsdr --samplerate " + transmitter.getBandwidth() + " --frequency " + req.getFrequency() + " --baseband_format ziq --bit_depth 8 --gain " + deviceConfiguration.getGain()
-					+ " --bias " + deviceConfiguration.isBiast() + " --ppm_correction " + deviceConfiguration.getPpm(), true, false);
-			new SatdumpLogProcessor(req.getId(), rtlSdr.getInputStream(), "satdump-record-stdio").start();
-			new SatdumpLogProcessor(req.getId(), rtlSdr.getErrorStream(), "satdump-record-stderr").start();
-			// satdump create prefix only.
-			rawFile = new File(rawFile.getAbsolutePath() + ".ziq");
-			int responseCode = rtlSdr.waitFor();
-			if (responseCode != 0 && responseCode != 141) {
-				LOG.error("[{}] invalid response code satdump: {}", req.getId(), responseCode);
-				Util.deleteQuietly(rawFile);
-			} else {
-				LOG.info("[{}] satdump stopped: {}", req.getId(), responseCode);
-			}
-		} catch (IOException e) {
-			LOG.error("[{}] unable to run", req.getId(), e);
-		} finally {
-			endTimeMillis = System.currentTimeMillis();
-		}
-		IQData result = new IQData();
-		result.setActualStart(startTimeMillis);
-		result.setActualEnd(endTimeMillis);
-		result.setDataFormat(DataFormat.ZIQ);
-		result.setSampleRate(transmitter.getBandwidth());
-		if (rawFile.exists()) {
-			result.setDataFile(rawFile);
-		}
-		return result;
-	}
-
-	private IQData startRtlSdr() throws InterruptedException {
+	private IQData startInternally() throws InterruptedException {
 		Long startTimeMillis = null;
 		Long endTimeMillis = null;
 		if (!startBiasT(config, deviceConfiguration, factory, req)) {
 			return null;
 		}
-		Integer maxBaudRate = Collections.max(transmitter.getBaudRates());
-		if (maxBaudRate == null) {
-			return null;
-		}
-		Long sampleRate = Util.getSmallestGoodDeviceSampleRate(maxBaudRate, supportedSampleRates);
+		Long sampleRate = getSampleRate(transmitter);
 		if (sampleRate == null) {
-			LOG.error("[{}] cannot find sample rate for: {}", req.getId(), maxBaudRate);
 			return null;
 		}
-		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw.gz");
+		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + getExtension(transmitter));
 		try {
 			startTimeMillis = System.currentTimeMillis();
-			rtlSdr = factory.create(config.getProperty("satellites.rtlsdrwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + sampleRate + " -g " + deviceConfiguration.getGain() + " -p "
-					+ deviceConfiguration.getPpm() + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
+			if (transmitter.getFraming().equals(Framing.SATDUMP)) {
+				rtlSdr = factory.create(config.getProperty("satellites.rtlsdr.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + transmitter.getBandwidth() + " -g " + deviceConfiguration.getGain() + " -p " + deviceConfiguration.getPpm() + " " + rawFile.getAbsolutePath(),
+						Redirect.INHERIT, false);
+			} else {
+				rtlSdr = factory.create(config.getProperty("satellites.rtlsdrwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + sampleRate + " -g " + deviceConfiguration.getGain() + " -p "
+						+ deviceConfiguration.getPpm() + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
+			}
 			int responseCode = rtlSdr.waitFor();
-			// rtl_sdr should be killed by the reaper process
-			// all other codes are invalid. even 0
-			if (responseCode != 143) {
+			// when using wrapper rtl_sdr should be killed by the reaper process. thus
+			// code=143 is OK
+			// when using rtl_sdr directly response code is 0 is OK
+			if (responseCode != 143 && responseCode != 0) {
 				LOG.error("[{}] invalid response code rtl_sdr: {}", req.getId(), responseCode);
 				Util.deleteQuietly(rawFile);
 			} else {
@@ -158,6 +119,30 @@ public class RtlSdrReader implements IQReader {
 			result.setDataFile(rawFile);
 		}
 		return result;
+	}
+
+	private static String getExtension(Transmitter transmitter) {
+		if (transmitter.getFraming().equals(Framing.SATDUMP)) {
+			return ".raw";
+		}
+		return ".raw.gz";
+	}
+
+	private Long getSampleRate(Transmitter transmitter) {
+		if (transmitter.getFraming() != null && transmitter.getFraming().equals(Framing.SATDUMP)) {
+			return transmitter.getBandwidth();
+		}
+		Integer maxBaudRate = Collections.max(transmitter.getBaudRates());
+		if (maxBaudRate == null) {
+			LOG.error("[{}] no configured baud raters", req.getId());
+			return null;
+		}
+		Long sampleRate = Util.getSmallestGoodDeviceSampleRate(maxBaudRate, supportedSampleRates);
+		if (sampleRate == null) {
+			LOG.error("[{}] cannot find sample rate for: {}", req.getId(), maxBaudRate);
+			return null;
+		}
+		return sampleRate;
 	}
 
 	static boolean startBiasT(Configuration config, DeviceConfiguration deviceConfiguration, ProcessFactory factory, ObservationRequest req) throws InterruptedException {
