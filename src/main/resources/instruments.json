@@ -476,5 +476,44 @@
 				"description": "339.89nm"
 			}
 		]
+	},
+	{
+		"id": "MSUMR",
+		"name": "MSU-MR",
+		"satdumpName": "MSU-MR",
+		"description": "Multi-purpose VIS/IR imagery",
+		"satdumpCombined": "msu_mr_rgb_AVHRR_221_False_Color.png",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "MSU-MR-1.png",
+				"description": "0.50 - 0.70µm"
+			},
+			{
+				"id": "2",
+				"satdumpName": "MSU-MR-2.png",
+				"description": "0.70 - 1.10µm"
+			},
+			{
+				"id": "3",
+				"satdumpName": "MSU-MR-3.png",
+				"description": "1.60 - 1.80µm"
+			},
+			{
+				"id": "4",
+				"satdumpName": "MSU-MR-4.png",
+				"description": "3.50 - 4.10µm"
+			},
+			{
+				"id": "5",
+				"satdumpName": "MSU-MR-5.png",
+				"description": "10.5 - 11.5µm"
+			},
+			{
+				"id": "6",
+				"satdumpName": "MSU-MR-6.png",
+				"description": "11.5 - 12.5µm"
+			}
+		]
 	}
 ]

@@ -39,6 +39,7 @@ public class SpectogramService {
 			return null;
 		}
 		if (observation.getRawPath() == null || !observation.getRawPath().exists() || observation.getRawPath().length() == 0) {
+			LOG.info("[{}] iq file is missing. skip spectogram", observation.getId());
 			return null;
 		}
 		LOG.info("[{}] generating spectogram", observation.getId());

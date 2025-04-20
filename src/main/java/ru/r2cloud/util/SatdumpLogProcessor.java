@@ -43,11 +43,18 @@ public class SatdumpLogProcessor {
 						}
 						message = match(curLine, "(E)");
 						if (message != null) {
-							if (accept(message)) {
+							if (!accept(message)) {
+								continue;
+							}
+							// re-classify. missing data is not an error
+							if (message.contains("Couldn't calibrate image with wedges") || message.contains("Failure solving!")) {
+								LOG.info("[{}] {}", id, message);
+							} else {
 								LOG.error("[{}] {}", id, message);
 							}
 							continue;
 						}
+
 						// critical => error
 						message = match(curLine, "(C)");
 						if (message != null) {
