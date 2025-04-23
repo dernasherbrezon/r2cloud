@@ -1,0 +1,25 @@
+{
+	"id": "1576269809672",
+	"start": 1576269901780,
+	"end": 1576269903780,
+	"sampleRate": 288000,
+	"frequency": 137350000,
+	"satellite": "28654",
+	"transmitterId": "28654-1",
+	"bandwidth": 7000,
+	"status": "RECEIVED",
+	"tle": {
+		"line1": "NOAA 18",
+		"line2": "1 28654U 05018A   24020.45178200  .00000347  00000+0  20938-3 0  9992",
+		"line3": "2 28654  98.8897  98.5894 0015123 123.5725 236.6893 14.13104636962256"
+	},
+	"groundStation": {
+		"lat": 56.31,
+		"lon": 38.13
+	},
+	"numberOfDecodedPackets": 0,
+	"dataFormat": "COMPLEX_UNSIGNED_BYTE",
+	"baudRates": [
+		8320
+	]
+}

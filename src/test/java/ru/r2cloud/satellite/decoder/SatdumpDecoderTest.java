@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -18,6 +18,7 @@ import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
+import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.Instrument;
 import ru.r2cloud.model.InstrumentChannel;
@@ -42,21 +43,18 @@ public class SatdumpDecoderTest {
 		assertNull(result.getIq());
 
 		TestUtil.copyFolder(new File("./src/test/resources/satdump_noaa18/").toPath(), tempFolder.getRoot().toPath());
-		File raw = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
-		// create some file
-		try (OutputStream os = new FileOutputStream(raw)) {
-			os.write(1);
-		}
+		File raw = new File(tempFolder.getRoot(), "output.raw");
 
 		Observation req = new Observation();
 		req.setId(UUID.randomUUID().toString());
 		req.setSampleRate(2_400_000);
+		req.setDataFormat(DataFormat.COMPLEX_UNSIGNED_BYTE);
 		Satellite noaa18 = satelliteDao.findById("28654");
 		Transmitter lBand = noaa18.getById("28654-0");
 
 		result = decoder.decode(raw, req, lBand, noaa18);
 		assertNotNull(result.getInstruments());
-		assertEquals(2, result.getInstruments().size()); // test data don't have more than 2 instruments
+		assertEquals(3, result.getInstruments().size()); // test data don't have more than 3 instruments
 		Instrument avhrr3 = findById(result, "AVHRR3");
 		assertNotNull(avhrr3.getCombinedImage());
 		assertEquals(6, avhrr3.getChannels().size());
@@ -71,13 +69,16 @@ public class SatdumpDecoderTest {
 		}
 		// explicitly test disabled instruments
 		assertNull(findById(result, "MHS"));
+		Instrument sem = findById(result, "SEM2");
+		assertNotNull(sem.getCombinedImage());
+		assertNull(sem.getChannels());
 	}
 
 	@Before
 	public void start() throws Exception {
 		String satdump = UUID.randomUUID().toString();
 		Map<String, ProcessWrapperMock> mocks = new HashMap<>();
-		mocks.put(satdump, new ProcessWrapperMock(null, null, 0));
+		mocks.put(satdump, new ProcessWrapperMock(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), new ByteArrayInputStream(new byte[0]), 0, false));
 		ProcessFactoryMock processFactory = new ProcessFactoryMock(mocks, UUID.randomUUID().toString());
 
 		TestConfiguration config = new TestConfiguration(tempFolder);

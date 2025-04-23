@@ -50,7 +50,7 @@ public class SatdumpDecoder implements Decoder {
 			new SatdumpLogProcessor(request.getId(), process.getInputStream(), "satdump-decode-stdio").start();
 			new SatdumpLogProcessor(request.getId(), process.getErrorStream(), "satdump-decode-stderr").start();
 			int responseCode = process.waitFor();
-			if (responseCode != 0) {
+			if (responseCode != 0 && responseCode != 1) {
 				LOG.info("[{}] invalid response code from satdump. assume no data: {}", request.getId(), responseCode);
 				return result;
 			}
