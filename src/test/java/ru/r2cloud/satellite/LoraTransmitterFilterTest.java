@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import ru.r2cloud.NoOpTransmitterFilter;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Transmitter;
@@ -17,7 +18,7 @@ public class LoraTransmitterFilterTest {
 		DeviceConfiguration config = new DeviceConfiguration();
 		config.setMinimumFrequency(432_000_000);
 		config.setMaximumFrequency(450_000_000);
-		LoraTransmitterFilter filter = new LoraTransmitterFilter(config);
+		LoraTransmitterFilter filter = new LoraTransmitterFilter(config, new NoOpTransmitterFilter());
 		Transmitter satellite = createValid();
 		assertTrue(filter.accept(satellite));
 		satellite.setFrequency(868_000_000);

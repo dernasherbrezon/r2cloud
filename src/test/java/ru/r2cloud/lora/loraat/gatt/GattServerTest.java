@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.FixedClock;
+import ru.r2cloud.NoOpTransmitterFilter;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.device.LoraAtBleDevice;
@@ -154,7 +155,7 @@ public class GattServerTest {
 		ThreadPoolFactoryImpl threadFactory = new ThreadPoolFactoryImpl(60000);
 		Clock clock = new FixedClock(currentTime);
 
-		device = new LoraAtBleDevice(deviceConfiguration.getId(), new LoraTransmitterFilter(deviceConfiguration), 1, factory, threadFactory, clock, deviceConfiguration, null, null, predict, null, config);
+		device = new LoraAtBleDevice(deviceConfiguration.getId(), new LoraTransmitterFilter(deviceConfiguration, new NoOpTransmitterFilter()), 1, factory, threadFactory, clock, deviceConfiguration, null, null, predict, null, config);
 		DeviceManager manager = new DeviceManager(config);
 		manager.addDevice(device);
 		String unixFile = "/tmp/system_dbus_r2cloud_test_" + Math.abs(new Random().nextInt());

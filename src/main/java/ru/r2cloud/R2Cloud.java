@@ -44,6 +44,7 @@ import ru.r2cloud.lora.r2lora.R2loraClient;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.SharedSchedule;
 import ru.r2cloud.predict.PredictOreKit;
+import ru.r2cloud.satellite.FramingFilter;
 import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.satellite.LoraTransmitterFilter;
 import ru.r2cloud.satellite.ObservationDao;
@@ -177,28 +178,29 @@ public class R2Cloud {
 		decoders = new Decoders(predict, props, processFactory);
 		decoderService = new DecoderService(props, decoders, resultDao, leoSatDataService, threadFactory, influxClient, satelliteDao);
 		priorityService = new PriorityService(props, clock);
+		FramingFilter framingFilter = new FramingFilter(props, processFactory);
 
 		observationFactory = new ObservationFactory(predict);
 
 		deviceManager = new DeviceManager(props);
 		Map<String, SharedSchedule> sharedSchedule = createSharedSchedules(props, observationFactory);
 		for (DeviceConfiguration cur : props.getRtlSdrConfigurations()) {
-			deviceManager.addDevice(new RtlSdrDevice(cur.getId(), new SdrTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, processFactory));
+			deviceManager.addDevice(new RtlSdrDevice(cur.getId(), new SdrTransmitterFilter(cur, framingFilter), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, processFactory));
 		}
 		for (DeviceConfiguration cur : props.getSdrServerConfigurations()) {
 			int numberOfConcurrentObservations = 1;
 			if (cur.getRotatorConfiguration() == null) {
 				numberOfConcurrentObservations = 5;
 			}
-			deviceManager.addDevice(new SdrServerDevice(cur.getId(), new SdrServerTransmitterFilter(cur), numberOfConcurrentObservations, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur)));
+			deviceManager.addDevice(new SdrServerDevice(cur.getId(), new SdrServerTransmitterFilter(cur, framingFilter), numberOfConcurrentObservations, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur)));
 		}
 		for (DeviceConfiguration cur : props.getPlutoSdrConfigurations()) {
-			deviceManager.addDevice(new PlutoSdrDevice(cur.getId(), new SdrServerTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, processFactory));
+			deviceManager.addDevice(new PlutoSdrDevice(cur.getId(), new SdrServerTransmitterFilter(cur, framingFilter), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, processFactory));
 		}
 		for (DeviceConfiguration cur : props.getLoraConfigurations()) {
 			R2loraClient client = new R2loraClient(cur.getHost(), cur.getPort(), cur.getUsername(), cur.getPassword(), cur.getTimeout());
 			populateFrequencies(client.getStatus(), cur);
-			deviceManager.addDevice(new LoraDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), client));
+			deviceManager.addDevice(new LoraDevice(cur.getId(), new LoraTransmitterFilter(cur, framingFilter), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), client));
 		}
 		for (DeviceConfiguration cur : props.getLoraAtConfigurations()) {
 			LoraAtClient client = new LoraAtSerialClient2(cur.getHost(), cur.getTimeout(), new JSerial(), clock);
@@ -215,13 +217,13 @@ public class R2Cloud {
 				LOG.info("[{}] protocol version 2 is supported", cur.getId());
 			}
 			populateFrequencies(client.getStatus(), cur);
-			deviceManager.addDevice(new LoraAtDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), client));
+			deviceManager.addDevice(new LoraAtDevice(cur.getId(), new LoraTransmitterFilter(cur, framingFilter), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), client));
 		}
 		for (DeviceConfiguration cur : props.getLoraAtBleConfigurations()) {
 			if (gattServer == null) {
 				gattServer = new GattServer(deviceManager, AddressBuilder.getSystemConnection(), clock);
 			}
-			deviceManager.addDevice(new LoraAtBleDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props));
+			deviceManager.addDevice(new LoraAtBleDevice(cur.getId(), new LoraTransmitterFilter(cur, framingFilter), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props));
 		}
 		for (DeviceConfiguration cur : props.getLoraAtBlecConfigurations()) {
 			if (gattClient == null) {
@@ -234,12 +236,12 @@ public class R2Cloud {
 				}
 				gattClient = new GattClient(bus, clock, cur.getTimeout());
 			}
-			deviceManager.addDevice(new LoraAtBlecDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, gattClient));
+			deviceManager.addDevice(new LoraAtBlecDevice(cur.getId(), new LoraTransmitterFilter(cur, framingFilter), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, gattClient));
 		}
 		for (DeviceConfiguration cur : props.getLoraAtWifiConfigurations()) {
 			LoraAtWifiClient client = new LoraAtWifiClient(cur.getHost(), cur.getPort(), cur.getUsername(), cur.getPassword(), cur.getTimeout());
 			populateFrequencies(client.getStatus(), cur);
-			deviceManager.addDevice(new LoraAtDevice(cur.getId(), new LoraTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), client));
+			deviceManager.addDevice(new LoraAtDevice(cur.getId(), new LoraTransmitterFilter(cur, framingFilter), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), client));
 		}
 		for (DeviceConfiguration cur : props.getSpyServerConfigurations()) {
 			SpyClient client = new SpyClient(cur.getHost(), cur.getPort(), cur.getTimeout());
@@ -260,7 +262,7 @@ public class R2Cloud {
 			if (cur.getMaximumSampleRate() == 0L) {
 				cur.setMaximumSampleRate(2_400_000); // some reasonble sample rate. supported both by airspy and rtlsdr
 			}
-			deviceManager.addDevice(new SpyServerDevice(cur.getId(), new SdrServerTransmitterFilter(cur), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur)));
+			deviceManager.addDevice(new SpyServerDevice(cur.getId(), new SdrServerTransmitterFilter(cur, framingFilter), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur)));
 		}
 
 		houseKeeping = new Housekeeping(props, satelliteDao, threadFactory, new CelestrakClient(props, clock), tleDao, satnogsClient, leoSatDataClient, decoderService, priorityService, deviceManager, clock);

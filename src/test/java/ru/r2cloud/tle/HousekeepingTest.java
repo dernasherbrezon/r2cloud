@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.FixedClock;
+import ru.r2cloud.NoOpTransmitterFilter;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.cloud.LeoSatDataClient;
@@ -176,7 +177,7 @@ public class HousekeepingTest {
 		deviceConfig.setMinimumFrequency(100_000_000);
 		deviceConfig.setMaximumFrequency(1_700_000_000);
 
-		RtlSdrDevice device = new RtlSdrDevice(deviceConfig.getId(), new SdrTransmitterFilter(deviceConfig), 1, factory, null, clock, deviceConfig, null, null, predict, null, config, processFactory);
+		RtlSdrDevice device = new RtlSdrDevice(deviceConfig.getId(), new SdrTransmitterFilter(deviceConfig, new NoOpTransmitterFilter()), 1, factory, null, clock, deviceConfig, null, null, predict, null, config, processFactory);
 
 		deviceManager = new DeviceManager(config);
 		deviceManager.addDevice(device);
