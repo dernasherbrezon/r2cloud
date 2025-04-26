@@ -23,25 +23,37 @@ public class FramingFilterTest {
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
-	private FramingFilter filter;
 	private TestConfiguration config;
 	private ProcessFactoryMock processFactory;
+	private ProcessWrapperMock satdumpMock;
+	private ProcessWrapperMock wxtoimgMock;
 
 	@Test
 	public void testSuccess() {
-		filter = new FramingFilter(config, processFactory);
+		assertExternalTool("satellites.satdump.path", satdumpMock, Framing.SATDUMP);
+		assertExternalTool("satellites.wxtoimg.path", wxtoimgMock, Framing.APT);
+
+		FramingFilter filter = new FramingFilter(config, processFactory);
 		Transmitter transmitter = new Transmitter();
-		transmitter.setFraming(Framing.APT);
 		assertTrue(filter.accept(transmitter));
+
 		transmitter.setFraming(Framing.SATDUMP);
+		satdumpMock.setStatusCode(1);
+		config.setProperty("satellits.validate.external", false);
+		assertTrue(filter.accept(transmitter));
+	}
+
+	private void assertExternalTool(String configName, ProcessWrapperMock mock, Framing framing) {
+		FramingFilter filter = new FramingFilter(config, processFactory);
+		Transmitter transmitter = new Transmitter();
+		transmitter.setFraming(framing);
 		assertTrue(filter.accept(transmitter));
 		
-		config.setProperty("satellites.satdump.path", UUID.randomUUID().toString());
-		config.setProperty("satellites.wxtoimg.path", UUID.randomUUID().toString());
 		filter = new FramingFilter(config, processFactory);
-		transmitter.setFraming(Framing.APT);
+		mock.setStatusCode(1);
 		assertFalse(filter.accept(transmitter));
-		transmitter.setFraming(Framing.SATDUMP);
+		config.setProperty(configName, UUID.randomUUID().toString());
+		filter = new FramingFilter(config, processFactory);
 		assertFalse(filter.accept(transmitter));
 	}
 
@@ -50,8 +62,10 @@ public class FramingFilterTest {
 		String satdump = UUID.randomUUID().toString();
 		String wxtoimg = UUID.randomUUID().toString();
 		Map<String, ProcessWrapperMock> mocks = new HashMap<>();
-		mocks.put(satdump, new ProcessWrapperMock(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), new ByteArrayInputStream(new byte[0]), 0, false));
-		mocks.put(wxtoimg, new ProcessWrapperMock(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), new ByteArrayInputStream(new byte[0]), 0, false));
+		satdumpMock = new ProcessWrapperMock(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), new ByteArrayInputStream(new byte[0]), 0, false);
+		wxtoimgMock = new ProcessWrapperMock(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), new ByteArrayInputStream(new byte[0]), 0, false);
+		mocks.put(satdump, satdumpMock);
+		mocks.put(wxtoimg, wxtoimgMock);
 		processFactory = new ProcessFactoryMock(mocks, UUID.randomUUID().toString());
 
 		config = new TestConfiguration(tempFolder);

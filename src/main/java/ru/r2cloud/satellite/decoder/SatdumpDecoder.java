@@ -1,13 +1,21 @@
 package ru.r2cloud.satellite.decoder;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.jradio.lrpt.Vcdu;
+import ru.r2cloud.jradio.util.IOUtils;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.Instrument;
 import ru.r2cloud.model.InstrumentChannel;
@@ -69,6 +77,27 @@ public class SatdumpDecoder implements Decoder {
 				numberOfDecodedPackets = (int) (data.length() / transmitter.getBeaconSizeBytes());
 				if (data.length() % transmitter.getBeaconSizeBytes() != 0) {
 					LOG.warn("[{}] unexpected number of bytes in the data file. number of packets is incorrect", request.getId());
+				}
+				if (transmitter.getSatdumpPipeline().equalsIgnoreCase("meteor_m2-x_lrpt")) {
+					// make lrpt-compatible data file
+					File lrpt = new File(config.getTempDirectory(), "lrpt.bin");
+					try (InputStream input = new BufferedInputStream(new FileInputStream(data)); OutputStream os = new BufferedOutputStream(new FileOutputStream(lrpt))) {
+						// 1024 - fixed size in satdump
+						byte[] current = new byte[1024];
+						byte[] buffer = new byte[Vcdu.SIZE];
+						while (true) {
+							try {
+								IOUtils.readFully(input, current);
+								System.arraycopy(current, 4, buffer, 0, buffer.length);
+								os.write(buffer);
+							} catch (IOException e) {
+								break;
+							}
+						}
+						data = lrpt;
+					} catch (Exception e) {
+						LOG.error("[{}] can't convert to lrpt", request.getId(), e);
+					}
 				}
 			}
 			result.setNumberOfDecodedPackets(numberOfDecodedPackets);

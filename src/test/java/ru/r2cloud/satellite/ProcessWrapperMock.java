@@ -20,7 +20,7 @@ public class ProcessWrapperMock implements ProcessWrapper {
 	private final InputStream is;
 	private final OutputStream os;
 	private final InputStream er;
-	private final int statusCode;
+	private int statusCode;
 	private final boolean writeOnWait;
 
 	private boolean alive;
@@ -134,5 +134,9 @@ public class ProcessWrapperMock implements ProcessWrapper {
 				LOG.error("unable to close", e);
 			}
 		}
+	}
+	
+	public void setStatusCode(int statusCode) {
+		this.statusCode = statusCode;
 	}
 }
