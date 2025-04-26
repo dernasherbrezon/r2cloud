@@ -1,0 +1,25 @@
+{
+	"id": "1576269809672",
+	"start": 1576269901780,
+	"end": 1576269903780,
+	"sampleRate": 288000,
+	"frequency": 137900000,
+	"satellite": "57166",
+	"transmitterId": "57166-0",
+	"bandwidth": 288000,
+	"status": "RECEIVED",
+	"tle": {
+		"line1": "METEOR-M2 3",
+		"line2": "1 57166U 23091A   25115.17129014  .00000048  00000+0  40073-4 0  9998",
+		"line3": "2 57166  98.6652 172.3159 0003014 316.9775  43.1167 14.23994196 95023"
+	},
+	"groundStation": {
+		"lat": 56.31,
+		"lon": 38.13
+	},
+	"numberOfDecodedPackets": 0,
+	"dataFormat": "COMPLEX_UNSIGNED_BYTE",
+	"baudRates": [
+		72000
+	]
+}
