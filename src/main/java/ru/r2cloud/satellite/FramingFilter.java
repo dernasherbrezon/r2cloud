@@ -31,6 +31,9 @@ public class FramingFilter implements TransmitterFilter {
 		if (transmitter.getFraming() == null) {
 			return true;
 		}
+		if (!config.getBoolean("satellits.validate.external")) {
+			return true;
+		}
 		if (transmitter.getFraming().equals(Framing.SATDUMP)) {
 			if (satdumpAvailable == null) {
 				satdumpAvailable = checkSatdump();
