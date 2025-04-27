@@ -371,6 +371,7 @@ public class Configuration {
 			config.setPort(getInteger(prefix + "port"));
 			config.setMinimumFrequency(getLong(prefix + "minFrequency"));
 			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
+			config.setMaximumSampleRate(2560000L);
 			config.setTimeout(timeout);
 			config.setId(deviceType.name().toLowerCase(Locale.UK) + "." + cur);
 			config.setName("SDR-SERVER - " + config.getHost() + ":" + config.getPort());
@@ -423,6 +424,7 @@ public class Configuration {
 			String prefix = deviceType.name().toLowerCase(Locale.UK) + ".device." + cur + ".";
 			config.setMinimumFrequency(getLong(prefix + "minFrequency"));
 			config.setMaximumFrequency(getLong(prefix + "maxFrequency"));
+			config.setMaximumSampleRate(2560000L);
 			config.setRtlDeviceId(getProperty(prefix + "index"));
 			config.setGain(getDouble(prefix + "gain").floatValue());
 			config.setBiast(getBoolean(prefix + "biast"));

@@ -21,11 +21,15 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 import javax.imageio.ImageIO;
@@ -106,6 +110,20 @@ public class TestUtil {
 		}
 		try (InputStream is = TestUtil.class.getClassLoader().getResourceAsStream(classpathFrom); OutputStream w = new FileOutputStream(to)) {
 			Util.copy(is, w);
+		}
+	}
+
+	public static void copyFolder(Path src, Path dest) throws IOException {
+		try (Stream<Path> stream = Files.walk(src)) {
+			stream.forEach(source -> copy(source, dest.resolve(src.relativize(source))));
+		}
+	}
+
+	private static void copy(Path source, Path dest) {
+		try {
+			Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING);
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 

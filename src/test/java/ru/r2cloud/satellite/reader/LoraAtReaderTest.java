@@ -62,7 +62,7 @@ public class LoraAtReaderTest {
 		reader.complete();
 		IQData iqData = reader.start();
 		assertNotNull(iqData);
-		assertNotNull(iqData.getDataFile());
+		assertNotNull(iqData.getIq());
 	}
 
 	@Before

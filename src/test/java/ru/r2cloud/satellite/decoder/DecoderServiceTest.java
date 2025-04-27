@@ -7,7 +7,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -25,6 +29,8 @@ import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationStatus;
 import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.satellite.ObservationDao;
+import ru.r2cloud.satellite.ProcessFactoryMock;
+import ru.r2cloud.satellite.ProcessWrapperMock;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.DefaultClock;
 
@@ -37,7 +43,31 @@ public class DecoderServiceTest {
 	private IObservationDao dao;
 	private SatelliteDao satelliteDao;
 	private Decoders decoders;
-	
+	private TestConfiguration config;
+
+	@Test
+	public void testDecodedInstruments() throws Exception {
+		String satdump = UUID.randomUUID().toString();
+		config.setProperty("satellites.satdump.path", satdump);
+		Map<String, ProcessWrapperMock> mocks = new HashMap<>();
+		mocks.put(satdump, new ProcessWrapperMock(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), new ByteArrayInputStream(new byte[0]), 0, false));
+		ProcessFactoryMock processFactory = new ProcessFactoryMock(mocks, UUID.randomUUID().toString());
+		SatdumpDecoder decoder = new SatdumpDecoder(config, processFactory);
+		when(decoders.findByTransmitter(any())).thenReturn(decoder);
+
+		Observation observation = TestUtil.loadObservation("satdump_noaa18/meta.json");
+		File destination = new File(config.getProperty("satellites.basepath.location") + File.separator + observation.getSatelliteId() + File.separator + "data" + File.separator + observation.getId());
+		assertTrue(destination.mkdirs());
+		TestUtil.copyFolder(new File("./src/test/resources/satdump_noaa18/").toPath(), destination.toPath());
+
+		dao.insert(observation);
+		dao.update(observation, new File(destination, "output.raw"));
+		service.decode(observation.getSatelliteId(), observation.getId());
+
+		observation = dao.find(observation.getSatelliteId(), observation.getId());
+		assertEquals(3, observation.getInstruments().size());
+	}
+
 	@Test
 	public void testDeletedBeforeDecodingStarted() throws Exception {
 		Decoder decoder = mock(Decoder.class);
@@ -49,9 +79,9 @@ public class DecoderServiceTest {
 		observation.setStatus(ObservationStatus.RECEIVED);
 		dao.insert(observation);
 		wav = dao.update(observation, wav);
-		
+
 		assertTrue(wav.delete());
-		
+
 		service.decode(observation.getSatelliteId(), observation.getId());
 
 		observation = dao.find(observation.getSatelliteId(), observation.getId());
@@ -73,7 +103,7 @@ public class DecoderServiceTest {
 		firstCall.setNumberOfDecodedPackets(1);
 		DecoderResult secondCall = new DecoderResult();
 		secondCall.setNumberOfDecodedPackets(2);
-		when(decoder.decode(any(), any(), any())).thenReturn(firstCall, secondCall);
+		when(decoder.decode(any(), any(), any(), any())).thenReturn(firstCall, secondCall);
 		service.retryObservations();
 		service.decode(observation.getSatelliteId(), observation.getId());
 
@@ -85,7 +115,7 @@ public class DecoderServiceTest {
 	@Before
 	public void start() throws Exception {
 		File basepath = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
-		TestConfiguration config = new TestConfiguration(tempFolder);
+		config = new TestConfiguration(tempFolder);
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
 		config.setProperty("r2cloud.newLaunches", false);
 		config.setProperty("satellites.basepath.location", basepath.getAbsolutePath());

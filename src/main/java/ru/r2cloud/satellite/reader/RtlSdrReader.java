@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DeviceConfiguration;
+import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
@@ -48,7 +49,7 @@ public class RtlSdrReader implements IQReader {
 				break;
 			}
 			// in practice rtl-sdr can't archive more than 2.4MSPS
-			if (rate > 2_400_000) {
+			if (rate > deviceConfiguration.getMaximumSampleRate()) {
 				continue;
 			}
 			if (((rate > 300000) && (rate <= 900000))) {
@@ -74,31 +75,30 @@ public class RtlSdrReader implements IQReader {
 	}
 
 	private IQData startInternally() throws InterruptedException {
-		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + ".raw.gz");
 		Long startTimeMillis = null;
 		Long endTimeMillis = null;
 		if (!startBiasT(config, deviceConfiguration, factory, req)) {
 			return null;
 		}
-
-		Integer maxBaudRate = Collections.max(transmitter.getBaudRates());
-		if (maxBaudRate == null) {
-			return null;
-		}
-
-		Long sampleRate = Util.getSmallestGoodDeviceSampleRate(maxBaudRate, supportedSampleRates);
+		Long sampleRate = getSampleRate(transmitter);
 		if (sampleRate == null) {
-			LOG.error("[{}] cannot find sample rate for: {}", req.getId(), maxBaudRate);
 			return null;
 		}
+		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + getExtension(transmitter));
 		try {
 			startTimeMillis = System.currentTimeMillis();
-			rtlSdr = factory.create(config.getProperty("satellites.rtlsdrwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + sampleRate + " -g " + deviceConfiguration.getGain() + " -p "
-					+ deviceConfiguration.getPpm() + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
+			if (transmitter.getFraming().equals(Framing.SATDUMP)) {
+				rtlSdr = factory.create(config.getProperty("satellites.rtlsdr.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + transmitter.getBandwidth() + " -g " + deviceConfiguration.getGain() + " -p " + deviceConfiguration.getPpm() + " " + rawFile.getAbsolutePath(),
+						Redirect.INHERIT, false);
+			} else {
+				rtlSdr = factory.create(config.getProperty("satellites.rtlsdrwrapper.path") + " -rtl " + config.getProperty("satellites.rtlsdr.path") + " -f " + req.getFrequency() + " -d " + deviceConfiguration.getRtlDeviceId() + " -s " + sampleRate + " -g " + deviceConfiguration.getGain() + " -p "
+						+ deviceConfiguration.getPpm() + " -o " + rawFile.getAbsolutePath(), Redirect.INHERIT, false);
+			}
 			int responseCode = rtlSdr.waitFor();
-			// rtl_sdr should be killed by the reaper process
-			// all other codes are invalid. even 0
-			if (responseCode != 143) {
+			// when using wrapper rtl_sdr should be killed by the reaper process. thus
+			// code=143 is OK
+			// when using rtl_sdr directly response code is 0 is OK
+			if (responseCode != 143 && responseCode != 0) {
 				LOG.error("[{}] invalid response code rtl_sdr: {}", req.getId(), responseCode);
 				Util.deleteQuietly(rawFile);
 			} else {
@@ -116,9 +116,33 @@ public class RtlSdrReader implements IQReader {
 		result.setDataFormat(DataFormat.COMPLEX_UNSIGNED_BYTE);
 		result.setSampleRate(sampleRate);
 		if (rawFile.exists()) {
-			result.setDataFile(rawFile);
+			result.setIq(rawFile);
 		}
 		return result;
+	}
+
+	private static String getExtension(Transmitter transmitter) {
+		if (transmitter.getFraming().equals(Framing.SATDUMP)) {
+			return ".raw";
+		}
+		return ".raw.gz";
+	}
+
+	private Long getSampleRate(Transmitter transmitter) {
+		if (transmitter.getFraming() != null && transmitter.getFraming().equals(Framing.SATDUMP)) {
+			return transmitter.getBandwidth();
+		}
+		Integer maxBaudRate = Collections.max(transmitter.getBaudRates());
+		if (maxBaudRate == null) {
+			LOG.error("[{}] no configured baud raters", req.getId());
+			return null;
+		}
+		Long sampleRate = Util.getSmallestGoodDeviceSampleRate(maxBaudRate, supportedSampleRates);
+		if (sampleRate == null) {
+			LOG.error("[{}] cannot find sample rate for: {}", req.getId(), maxBaudRate);
+			return null;
+		}
+		return sampleRate;
 	}
 
 	static boolean startBiasT(Configuration config, DeviceConfiguration deviceConfiguration, ProcessFactory factory, ObservationRequest req) throws InterruptedException {

@@ -93,6 +93,9 @@ public class Decoders {
 		if (transmitter.getFraming().equals(Framing.LRPT)) {
 			return new LRPTDecoder(predict, props);
 		}
+		if (transmitter.getFraming().equals(Framing.SATDUMP)) {
+			return new SatdumpDecoder(props, processFactory);
+		}
 		if (transmitter.getFraming().equals(Framing.APT)) {
 			return new APTDecoder(props, processFactory);
 		}

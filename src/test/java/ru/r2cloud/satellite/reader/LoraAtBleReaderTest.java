@@ -47,7 +47,7 @@ public class LoraAtBleReaderTest {
 		reader.complete();
 		IQData iqData = reader.start();
 		assertNotNull(iqData);
-		assertNotNull(iqData.getDataFile());
+		assertNotNull(iqData.getIq());
 		assertTrue(device.getFrames().isEmpty());
 	}
 

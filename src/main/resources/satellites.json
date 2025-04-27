@@ -6698,12 +6698,13 @@
 		"transmitters": [
 			{
 				"framing": "APT",
+				"modulation": "AM",
 				"frequency": 137100000,
 				"bandwidth": 34000,
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1662310762000
+		"lastUpdateTime": 1962310762000
 	},
 	{
 		"id": "R2CLOUD2",
@@ -6713,12 +6714,13 @@
 		"transmitters": [
 			{
 				"framing": "APT",
+				"modulation": "AM",
 				"frequency": 137912500,
 				"bandwidth": 34000,
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1662310762000
+		"lastUpdateTime": 1962310762000
 	},
 	{
 		"id": "R2CLOUD1",
@@ -6728,11 +6730,12 @@
 		"transmitters": [
 			{
 				"framing": "APT",
+				"modulation": "AM",
 				"frequency": 137620000,
 				"bandwidth": 34000,
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1662310762000
+		"lastUpdateTime": 1962310762000
 	}
 ]

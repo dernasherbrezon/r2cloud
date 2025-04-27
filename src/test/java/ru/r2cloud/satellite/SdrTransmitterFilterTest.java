@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import ru.r2cloud.NoOpTransmitterFilter;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Transmitter;
@@ -17,7 +18,7 @@ public class SdrTransmitterFilterTest {
 		DeviceConfiguration config = new DeviceConfiguration();
 		config.setMinimumFrequency(100_000_000);
 		config.setMaximumFrequency(180_000_000);
-		SdrTransmitterFilter filter = new SdrTransmitterFilter(config);
+		SdrTransmitterFilter filter = new SdrTransmitterFilter(config, new NoOpTransmitterFilter());
 		Transmitter satellite = createValid();
 		assertTrue(filter.accept(satellite));
 		satellite.setFrequency(433_000_000);

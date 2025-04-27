@@ -6,10 +6,12 @@ import ru.r2cloud.model.TransmitterStatus;
 
 public class DeviceTransmitterFilter implements TransmitterFilter {
 
+	private final TransmitterFilter framingFilter;
 	private final DeviceConfiguration config;
 
-	public DeviceTransmitterFilter(DeviceConfiguration config) {
+	public DeviceTransmitterFilter(DeviceConfiguration config, TransmitterFilter framingFilter) {
 		this.config = config;
+		this.framingFilter = framingFilter;
 	}
 
 	@Override
@@ -28,6 +30,13 @@ public class DeviceTransmitterFilter implements TransmitterFilter {
 			return false;
 		}
 		if ((transmitter.getFrequency() - bandwidth / 2) < config.getMinimumFrequency()) {
+			return false;
+		}
+		if (config.getMaximumSampleRate() != 0 && config.getMaximumSampleRate() < bandwidth) {
+			return false;
+		}
+		boolean result = framingFilter.accept(transmitter);
+		if (!result) {
 			return false;
 		}
 		return true;

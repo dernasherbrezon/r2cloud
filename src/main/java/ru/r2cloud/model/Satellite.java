@@ -24,6 +24,24 @@ public class Satellite {
 	private List<Transmitter> transmitters;
 	private SatelliteSource source;
 	private long lastUpdateTime;
+	private List<Instrument> instruments;
+	private String satdumpSatelliteNumber;
+
+	public String getSatdumpSatelliteNumber() {
+		return satdumpSatelliteNumber;
+	}
+
+	public void setSatdumpSatelliteNumber(String satdumpSatelliteNumber) {
+		this.satdumpSatelliteNumber = satdumpSatelliteNumber;
+	}
+
+	public List<Instrument> getInstruments() {
+		return instruments;
+	}
+
+	public void setInstruments(List<Instrument> instruments) {
+		this.instruments = instruments;
+	}
 
 	public long getLastUpdateTime() {
 		return lastUpdateTime;
@@ -217,6 +235,23 @@ public class Satellite {
 		if (tle != null) {
 			result.setTle(Tle.fromJson(tle.asObject()));
 		}
+		JsonValue instruments = meta.get("instruments");
+		if (instruments != null && instruments.isArray()) {
+			List<Instrument> satelliteInstruments = new ArrayList<>();
+			JsonArray instrumentsArray = instruments.asArray();
+			for (int i = 0; i < instrumentsArray.size(); i++) {
+				Instrument cur = Instrument.fromJson(instrumentsArray.get(i).asObject());
+				if (cur == null) {
+					continue;
+				}
+				satelliteInstruments.add(cur);
+			}
+			result.setInstruments(satelliteInstruments);
+		}
+		JsonValue satdumpSatelliteNumber = meta.get("satdumpSatelliteNumber");
+		if (satdumpSatelliteNumber != null) {
+			result.setSatdumpSatelliteNumber(satdumpSatelliteNumber.asString());
+		}
 		return result;
 	}
 
@@ -242,6 +277,22 @@ public class Satellite {
 		}
 		if (tle != null) {
 			result.add("tle", tle.toJson());
+		}
+		if (instruments != null) {
+			JsonArray instrumentsArray = new JsonArray();
+			// do not save full instrument info
+			// it will be enriched by the dao from the instruments.json
+			for (Instrument cur : instruments) {
+				JsonObject curObj = new JsonObject();
+				curObj.add("id", cur.getId());
+				curObj.add("enabled", cur.isEnabled());
+				curObj.add("primary", cur.isPrimary());
+				instrumentsArray.add(curObj);
+			}
+			result.add("instruments", instrumentsArray);
+		}
+		if (satdumpSatelliteNumber != null) {
+			result.add("satdumpSatelliteNumber", satdumpSatelliteNumber);
 		}
 		return result;
 	}

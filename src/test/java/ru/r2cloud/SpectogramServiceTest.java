@@ -58,7 +58,7 @@ public class SpectogramServiceTest {
 	public void testSpectogramForIq() throws Exception {
 		File file = TestUtil.setupClasspathResource(tempFolder, "data/40069-1553411549943.raw.gz");
 		SpectogramService service = new SpectogramService(config);
-		File result = service.create(createIq(file, 288_000));
+		File result = service.create(create(file, 288_000));
 		try (InputStream expected = SpectogramServiceTest.class.getClassLoader().getResourceAsStream("spectogram-output.raw.gz.png"); InputStream actual = new FileInputStream(result)) {
 			assertStreamsEqual(expected, actual);
 		}
@@ -81,7 +81,7 @@ public class SpectogramServiceTest {
 		return result;
 	}
 
-	private static Observation createIq(File iq, int sampleRate) {
+	private static Observation create(File iq, int sampleRate) {
 		Observation req = new Observation();
 		req.setSampleRate(sampleRate);
 		req.setDataFormat(DataFormat.COMPLEX_UNSIGNED_BYTE);
@@ -95,4 +95,5 @@ public class SpectogramServiceTest {
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
 		config.update();
 	}
+
 }

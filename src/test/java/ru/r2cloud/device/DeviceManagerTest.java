@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.FixedClock;
+import ru.r2cloud.NoOpTransmitterFilter;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.AntennaConfiguration;
@@ -91,7 +92,7 @@ public class DeviceManagerTest {
 		deviceConfig.setId(UUID.randomUUID().toString());
 		deviceConfig.setAntennaConfiguration(antenna);
 
-		RtlSdrDevice device = new RtlSdrDevice(deviceConfig.getId(), new SdrTransmitterFilter(deviceConfig), 1, factory, null, clock, deviceConfig, null, null, predict, null, config, processFactory);
+		RtlSdrDevice device = new RtlSdrDevice(deviceConfig.getId(), new SdrTransmitterFilter(deviceConfig, new NoOpTransmitterFilter()), 1, factory, null, clock, deviceConfig, null, null, predict, null, config, processFactory);
 
 		manager = new DeviceManager(null);
 		manager.addDevice(device);

@@ -4,8 +4,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -62,6 +64,7 @@ public abstract class Device implements Lifecycle {
 	private final DecoderService decoderService;
 	private final DeviceConfiguration deviceConfiguration;
 	private final PredictOreKit predict;
+	private final Set<Framing> noDopplerCorrection = new HashSet<>();
 
 	private Long currentBandFrequency = null;
 	private int numberOfObservationsOnCurrentBand = 0;
@@ -93,6 +96,9 @@ public abstract class Device implements Lifecycle {
 				this.schedule = new Schedule(new OverlappedTimetable(PARTIAL_TOLERANCE_MILLIS), observationFactory);
 			}
 		}
+
+		this.noDopplerCorrection.add(Framing.APT);
+		this.noDopplerCorrection.add(Framing.SATDUMP);
 	}
 
 	public synchronized boolean tryTransmitter(Transmitter transmitter) {
@@ -108,7 +114,7 @@ public abstract class Device implements Lifecycle {
 	}
 
 	private void schedule(ObservationRequest req, Transmitter transmitter) {
-		if (deviceConfiguration.isCompencateDcOffset() && !transmitter.getFraming().equals(Framing.APT)) {
+		if (deviceConfiguration.isCompencateDcOffset() && !noDopplerCorrection.contains(transmitter.getFraming())) {
 			TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(transmitter.getTle().getRaw()[1], transmitter.getTle().getRaw()[2]));
 			long initialDopplerFrequency = predict.getDownlinkFreq(transmitter.getFrequency(), req.getStartTimeMillis(), predict.getPosition(), tlePropagator);
 			req.setFrequency(initialDopplerFrequency + DC_OFFSET);
@@ -179,7 +185,7 @@ public abstract class Device implements Lifecycle {
 					}
 				}
 
-				if (data == null || data.getDataFile() == null) {
+				if (data == null || data.getIq() == null) {
 					observationDao.cancel(observation);
 					return;
 				}
@@ -190,8 +196,8 @@ public abstract class Device implements Lifecycle {
 				observation.setDataFormat(data.getDataFormat());
 				observation.setSampleRate(data.getSampleRate());
 
-				File dataFile = observationDao.update(observation, data.getDataFile());
-				if (dataFile == null) {
+				File iq = observationDao.update(observation, data.getIq());
+				if (iq == null) {
 					return;
 				}
 

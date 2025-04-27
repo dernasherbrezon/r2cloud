@@ -43,6 +43,7 @@ public class Transmitter {
 	private boolean loraCrc;
 	private TransmitterStatus status;
 	private Date updated;
+	private String satdumpPipeline;
 
 	// copied from satellite
 	// to simplify code
@@ -93,6 +94,15 @@ public class Transmitter {
 		if (copy.updated != null) {
 			this.updated = new Date(copy.updated.getTime());
 		}
+		this.satdumpPipeline = copy.satdumpPipeline;
+	}
+
+	public String getSatdumpPipeline() {
+		return satdumpPipeline;
+	}
+
+	public void setSatdumpPipeline(String satdumpPipeline) {
+		this.satdumpPipeline = satdumpPipeline;
 	}
 
 	public String getSyncword() {
@@ -488,6 +498,10 @@ public class Transmitter {
 		} else {
 			result.setStatus(TransmitterStatus.ENABLED);
 		}
+		JsonValue satdumpPipeline = asObject.get("satdumpPipeline");
+		if (satdumpPipeline != null) {
+			result.setSatdumpPipeline(satdumpPipeline.asString());
+		}
 		return result;
 	}
 
@@ -561,6 +575,9 @@ public class Transmitter {
 		}
 		if (transitionWidth != 2000) {
 			result.add("transitionWidth", transitionWidth);
+		}
+		if (satdumpPipeline != null) {
+			result.add("satdumpPipeline", satdumpPipeline);
 		}
 		return result;
 	}

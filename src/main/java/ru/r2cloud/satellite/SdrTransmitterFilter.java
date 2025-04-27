@@ -6,8 +6,8 @@ import ru.r2cloud.model.Transmitter;
 
 public class SdrTransmitterFilter extends DeviceTransmitterFilter {
 
-	public SdrTransmitterFilter(DeviceConfiguration config) {
-		super(config);
+	public SdrTransmitterFilter(DeviceConfiguration config, TransmitterFilter framingFilter) {
+		super(config, framingFilter);
 	}
 
 	@Override

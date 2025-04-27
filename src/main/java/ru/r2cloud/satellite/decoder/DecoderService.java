@@ -10,6 +10,8 @@ import ru.r2cloud.Lifecycle;
 import ru.r2cloud.cloud.InfluxDBClient;
 import ru.r2cloud.cloud.LeoSatDataService;
 import ru.r2cloud.model.DecoderResult;
+import ru.r2cloud.model.Instrument;
+import ru.r2cloud.model.InstrumentChannel;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationStatus;
 import ru.r2cloud.model.Page;
@@ -132,17 +134,27 @@ public class DecoderService implements Lifecycle {
 			return false;
 		}
 		LOG.info("[{}] decoding", observation.getId());
-		DecoderResult result = decoder.decode(rawFile, observation, transmitter);
+		DecoderResult result = decoder.decode(rawFile, observation, transmitter, satellite);
 		LOG.info("[{}] decoded packets {}", observation.getId(), result.getNumberOfDecodedPackets());
 
-		if (result.getDataPath() != null) {
-			result.setDataPath(dao.saveData(observation.getSatelliteId(), observation.getId(), result.getDataPath()));
+		if (result.getData() != null) {
+			result.setData(dao.saveData(observation.getSatelliteId(), observation.getId(), result.getData()));
 		}
-		if (result.getImagePath() != null) {
-			result.setImagePath(dao.saveImage(observation.getSatelliteId(), observation.getId(), result.getImagePath()));
+		if (result.getImage() != null) {
+			result.setImage(dao.saveImage(observation.getSatelliteId(), observation.getId(), result.getImage()));
+		}
+		if (result.getInstruments() != null) {
+			for (Instrument cur : result.getInstruments()) {
+				if (cur.getChannels() != null) {
+					for (InstrumentChannel curChannel : cur.getChannels()) {
+						curChannel.setImage(dao.saveChannel(observation.getSatelliteId(), observation.getId(), cur.getId(), curChannel.getId(), curChannel.getImage()));
+					}
+				}
+				cur.setCombinedImage(dao.saveCombined(observation.getSatelliteId(), observation.getId(), cur.getId(), cur.getCombinedImage()));
+			}
 		}
 
-		observation.setRawPath(result.getRawPath());
+		observation.setRawPath(result.getIq());
 		if (observation.getRawPath() == null) {
 			observation.setRawURL(null);
 		}
@@ -150,9 +162,10 @@ public class DecoderService implements Lifecycle {
 		observation.setChannelB(result.getChannelB());
 		observation.setNumberOfDecodedPackets((long) result.getNumberOfDecodedPackets());
 		observation.setTotalSize(result.getTotalSize());
-		observation.setImagePath(result.getImagePath());
-		observation.setDataPath(result.getDataPath());
+		observation.setImagePath(result.getImage());
+		observation.setDataPath(result.getData());
 		observation.setStatus(ObservationStatus.DECODED);
+		observation.setInstruments(result.getInstruments());
 
 		dao.update(observation);
 		r2cloudService.uploadObservation(observation);

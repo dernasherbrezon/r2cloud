@@ -1,6 +1,9 @@
 package ru.r2cloud.satellite;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.nio.file.FileSystems;
@@ -14,6 +17,7 @@ import org.junit.rules.TemporaryFolder;
 import ru.r2cloud.FixedClock;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
+import ru.r2cloud.model.Instrument;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.SatelliteSource;
 
@@ -35,6 +39,26 @@ public class SatelliteDaoTest {
 		assertEquals(1, satelliteDao.findById("46494").getTransmitters().size());
 	}
 
+	@Test
+	public void testLoadInstruments() {
+		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-noaa.json");
+		satelliteDao = new SatelliteDao(config);
+		Satellite sat = satelliteDao.findById("33591");
+		assertNotNull(sat.getInstruments());
+		assertEquals(6, sat.getInstruments().size());
+		Instrument avhrr3 = findById(sat, "AVHRR3");
+		assertNotNull(avhrr3);
+		assertTrue(avhrr3.isPrimary());
+		assertNotNull(avhrr3.getChannels());
+
+		// test server-side can override instruments
+		satelliteDao.saveLeosatdata(SatelliteDao.loadFromClasspathConfig("satellites-leosatdata-older-noaa.json", SatelliteSource.LEOSATDATA), clock.millis());
+		satelliteDao.reindex();
+		sat = satelliteDao.findById("33591");
+		avhrr3 = findById(sat, "AVHRR3");
+		assertFalse(avhrr3.isEnabled());
+	}
+
 	@Before
 	public void start() throws Exception {
 		clock = new FixedClock(TestUtil.getTime("2020-09-30 22:17:01.000"));
@@ -53,6 +77,15 @@ public class SatelliteDaoTest {
 		config.update();
 
 		satelliteDao = new SatelliteDao(config);
+	}
+
+	private static Instrument findById(Satellite sat, String id) {
+		for (Instrument cur : sat.getInstruments()) {
+			if (cur.getId().equals(id)) {
+				return cur;
+			}
+		}
+		return null;
 	}
 
 }

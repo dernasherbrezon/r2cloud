@@ -6,8 +6,8 @@ import ru.r2cloud.model.Transmitter;
 
 public class SdrServerTransmitterFilter extends SdrTransmitterFilter {
 
-	public SdrServerTransmitterFilter(DeviceConfiguration config) {
-		super(config);
+	public SdrServerTransmitterFilter(DeviceConfiguration config, FramingFilter framingFilter) {
+		super(config, framingFilter);
 	}
 
 	@Override
@@ -16,6 +16,9 @@ public class SdrServerTransmitterFilter extends SdrTransmitterFilter {
 			return false;
 		}
 		if (satellite.getFraming().equals(Framing.APT)) {
+			return false;
+		}
+		if (satellite.getFraming().equals(Framing.SATDUMP)) {
 			return false;
 		}
 		return true;

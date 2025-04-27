@@ -6,8 +6,8 @@ import ru.r2cloud.model.Transmitter;
 
 public class LoraTransmitterFilter extends DeviceTransmitterFilter {
 
-	public LoraTransmitterFilter(DeviceConfiguration config) {
-		super(config);
+	public LoraTransmitterFilter(DeviceConfiguration config, TransmitterFilter framingFilter) {
+		super(config, framingFilter);
 	}
 
 	@Override

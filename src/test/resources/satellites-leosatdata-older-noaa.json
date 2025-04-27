@@ -1,0 +1,79 @@
+[
+	{
+		"id": "R2CLOUD3",
+		"name": "NOAA 19",
+		"noradId": "33591",
+		"enabled": true,
+		"transmitters": [
+			{
+				"framing": "SATDUMP",
+				"modulation": "BPSK",
+				"frequency": 1698000000,
+				"bandwidth": 2400000,
+				"status": "ENABLED",
+				"baudRates": [
+					665400
+				],
+				"satdumpPipeline": "noaa_hrpt"
+			},
+			{
+				"framing": "SATDUMP",
+				"modulation": "BPSK",
+				"frequency": 1702500000,
+				"bandwidth": 6000000,
+				"status": "ENABLED",
+				"baudRates": [
+					2661600
+				],
+				"satdumpPipeline": "noaa_gac"
+			},
+			{
+				"framing": "APT",
+				"modulation": "AM",
+				"frequency": 137100000,
+				"bandwidth": 34000,
+				"status": "ENABLED",
+				"satdumpPipeline": "noaa_apt"
+			},
+			{
+				"framing": "SATDUMP",
+				"modulation": "AM",
+				"frequency": 137770000,
+				"bandwidth": 144000,
+				"status": "ENABLED",
+				"baudRates": [
+					8320
+				],
+				"satdumpPipeline": "noaa_dsb"
+			}
+		],
+		"instruments": [
+			{
+				"id": "AVHRR3",
+				"enabled": false,
+				"primary": true
+			},
+			{
+				"id": "MHS",
+				"enabled": true
+			},
+			{
+				"id": "HIRS4",
+				"enabled": true
+			},
+			{
+				"id": "AMSUA",
+				"enabled": true
+			},
+			{
+				"id": "SEM2",
+				"enabled": true
+			},
+			{
+				"id": "SBUV2",
+				"enabled": false
+			}
+		],
+		"lastUpdateTime": 1962310772000
+	}
+]

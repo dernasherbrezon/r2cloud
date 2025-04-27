@@ -110,9 +110,9 @@ public class SdrModemClientTest {
 
 		File wav = TestUtil.setupClasspathResource(tempFolder, "data/delfipq.raw.gz");
 		Decoder decoder = decoders.findByTransmitter(transmitter);
-		DecoderResult result = decoder.decode(wav, req, transmitter);
+		DecoderResult result = decoder.decode(wav, req, transmitter, satellite);
 		assertEquals(1, result.getNumberOfDecodedPackets());
-		try (BeaconInputStream<DelfiPqBeacon> source = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(result.getDataPath())), DelfiPqBeacon.class)) {
+		try (BeaconInputStream<DelfiPqBeacon> source = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(result.getData())), DelfiPqBeacon.class)) {
 			assertTrue(source.hasNext());
 			AssertJson.assertObjectsEqual("DelfiPqBeacon.json", source.next());
 		}

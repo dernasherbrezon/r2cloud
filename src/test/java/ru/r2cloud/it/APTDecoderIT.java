@@ -14,6 +14,7 @@ import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.satellite.decoder.APTDecoder;
 import ru.r2cloud.util.ProcessFactory;
@@ -30,8 +31,8 @@ public class APTDecoderIT {
 	public void testSuccess() throws Exception {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "8bit.wav");
 		APTDecoder decoder = new APTDecoder(config, factory);
-		DecoderResult result = decoder.decode(wav, new Observation(), new Transmitter());
-		assertNull(result.getImagePath());
+		DecoderResult result = decoder.decode(wav, new Observation(), new Transmitter(), new Satellite());
+		assertNull(result.getImage());
 		assertEquals("3/3B (mid infrared)", result.getChannelA());
 		assertEquals("4 (thermal infrared)", result.getChannelB());
 	}

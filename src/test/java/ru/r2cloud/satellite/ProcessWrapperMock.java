@@ -19,11 +19,13 @@ public class ProcessWrapperMock implements ProcessWrapper {
 
 	private final InputStream is;
 	private final OutputStream os;
-	private final int statusCode;
+	private final InputStream er;
+	private int statusCode;
 	private final boolean writeOnWait;
 
 	private boolean alive;
 	private File backingFile;
+	private String backingFileExtension;
 
 	public ProcessWrapperMock(InputStream is, OutputStream os) {
 		this(is, os, 0);
@@ -34,8 +36,13 @@ public class ProcessWrapperMock implements ProcessWrapper {
 	}
 
 	public ProcessWrapperMock(InputStream is, OutputStream os, int statusCode, boolean writeOnWait) {
+		this(is, os, null, statusCode, writeOnWait);
+	}
+
+	public ProcessWrapperMock(InputStream is, OutputStream os, InputStream er, int statusCode, boolean writeOnWait) {
 		this.is = is;
 		this.os = os;
+		this.er = er;
 		alive = true;
 		this.statusCode = statusCode;
 		this.writeOnWait = writeOnWait;
@@ -96,11 +103,19 @@ public class ProcessWrapperMock implements ProcessWrapper {
 
 	@Override
 	public InputStream getErrorStream() {
-		return null;
+		return er;
 	}
 
 	public void setBackingFile(File backingFile) {
-		this.backingFile = backingFile;
+		if (backingFileExtension != null) {
+			this.backingFile = new File(backingFile.getAbsolutePath() + backingFileExtension);
+		} else {
+			this.backingFile = backingFile;
+		}
+	}
+	
+	public void setBackingFileExtension(String backingFileExtension) {
+		this.backingFileExtension = backingFileExtension;
 	}
 
 	private void stop() {
@@ -119,5 +134,9 @@ public class ProcessWrapperMock implements ProcessWrapper {
 				LOG.error("unable to close", e);
 			}
 		}
+	}
+	
+	public void setStatusCode(int statusCode) {
+		this.statusCode = statusCode;
 	}
 }

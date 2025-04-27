@@ -12,6 +12,7 @@ import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Util;
 
@@ -26,9 +27,9 @@ public class LoraDecoder implements Decoder {
 	}
 
 	@Override
-	public DecoderResult decode(File rawFile, Observation request, final Transmitter transmitter) {
+	public DecoderResult decode(File rawFile, Observation request, final Transmitter transmitter, final Satellite satellite) {
 		DecoderResult result = new DecoderResult();
-		result.setRawPath(null);
+		result.setIq(null);
 		int numberOfDecodedPackets = 0;
 		try (BeaconInputStream<? extends Beacon> bis = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(rawFile)), beacon)) {
 			long totalSize = 0;
@@ -46,7 +47,7 @@ public class LoraDecoder implements Decoder {
 		if (numberOfDecodedPackets <= 0) {
 			Util.deleteQuietly(rawFile);
 		} else {
-			result.setDataPath(rawFile);
+			result.setData(rawFile);
 		}
 		return result;
 	}
