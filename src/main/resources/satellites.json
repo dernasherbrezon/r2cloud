@@ -1,5 +1,564 @@
 [
 	{
+		"id": "R2CLOUD532",
+		"name": "ARKTIKA-M 1",
+		"noradId": "47719",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"frequency": 7865000000,
+				"bandwidth": 45000000,
+				"baudRates": [
+					30720000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "arktika_rdas"
+			}
+		],
+		"lastUpdateTime": 1746008877000
+	},
+	{
+		"id": "R2CLOUD531",
+		"name": "HINODE (SOLAR-B)",
+		"noradId": "29479",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"frequency": 2256220000,
+				"bandwidth": 2400000,
+				"baudRates": [
+					262000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "hinode_s_dump"
+			},
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"frequency": 2256220000,
+				"bandwidth": 2400000,
+				"baudRates": [
+					65600
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "hinode_s_tlm"
+			}
+		],
+		"lastUpdateTime": 1746008858000
+	},
+	{
+		"id": "R2CLOUD530",
+		"name": "DMSP 5D-3 F18 (USA 210)",
+		"noradId": "35951",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"frequency": 2252500000,
+				"bandwidth": 2000000,
+				"baudRates": [
+					1024000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "dmsp_rtd"
+			}
+		],
+		"lastUpdateTime": 1746001796000
+	},
+	{
+		"id": "R2CLOUD529",
+		"name": "DMSP 5D-3 F17 (USA 191)",
+		"noradId": "29522",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"frequency": 2252500000,
+				"bandwidth": 2000000,
+				"baudRates": [
+					1024000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "dmsp_rtd"
+			}
+		],
+		"lastUpdateTime": 1746001780000
+	},
+	{
+		"id": "R2CLOUD528",
+		"name": "IRIS",
+		"noradId": "39197",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"frequency": 8483000000,
+				"bandwidth": 2400000,
+				"baudRates": [
+					512000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "iris_s_dump"
+			},
+			{
+				"modulation": "OQPSK",
+				"framing": "SATDUMP",
+				"frequency": 2220800000,
+				"bandwidth": 20000000,
+				"baudRates": [
+					7500000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "iris_dump"
+			}
+		],
+		"lastUpdateTime": 1746001763000
+	},
+	{
+		"id": "R2CLOUD527",
+		"name": "MATS",
+		"noradId": "54227",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "OQPSK",
+				"framing": "SATDUMP",
+				"frequency": 2214000000,
+				"bandwidth": 6000000,
+				"baudRates": [
+					1562000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "mats_dump"
+			}
+		],
+		"lastUpdateTime": 1746001747000
+	},
+	{
+		"id": "R2CLOUD526",
+		"name": "SCISAT 1",
+		"noradId": "27858",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "QPSK",
+				"framing": "SATDUMP",
+				"frequency": 2232000000,
+				"bandwidth": 4000000,
+				"baudRates": [
+					2000000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "scisat1_dump"
+			}
+		],
+		"lastUpdateTime": 1746001604000
+	},
+	{
+		"id": "R2CLOUD525",
+		"name": "PVCC",
+		"noradId": "58025",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"frequency": 2221000000,
+				"bandwidth": 4000000,
+				"baudRates": [
+					2000000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "pvcc_s_dump"
+			},
+			{
+				"modulation": "OQPSK",
+				"framing": "SATDUMP",
+				"frequency": 8175500000,
+				"bandwidth": 60000000,
+				"baudRates": [
+					50000000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "pvcc_x_dump"
+			}
+		],
+		"lastUpdateTime": 1746001587000
+	},
+	{
+		"id": "R2CLOUD524",
+		"name": "PROBA-V",
+		"noradId": "39159",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"frequency": 2235000000,
+				"bandwidth": 4000000,
+				"baudRates": [
+					1919000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "probav_s_dump"
+			},
+			{
+				"modulation": "OQPSK",
+				"framing": "SATDUMP",
+				"frequency": 8300000000,
+				"bandwidth": 60000000,
+				"baudRates": [
+					35000000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "probav_x_dump"
+			}
+		],
+		"lastUpdateTime": 1746001570000
+	},
+	{
+		"id": "R2CLOUD523",
+		"name": "PROBA-2",
+		"noradId": "36037",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"frequency": 2235000000,
+				"bandwidth": 4000000,
+				"baudRates": [
+					2000000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "proba2_dump"
+			}
+		],
+		"lastUpdateTime": 1746001537000
+	},
+	{
+		"id": "R2CLOUD522",
+		"name": "PROBA-1",
+		"noradId": "26958",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"frequency": 2235000000,
+				"bandwidth": 4000000,
+				"baudRates": [
+					2000000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "proba1_dump"
+			}
+		],
+		"lastUpdateTime": 1746001521000
+	},
+	{
+		"id": "R2CLOUD521",
+		"name": "FENGYUN 3G",
+		"noradId": "56232",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "QPSK",
+				"framing": "SATDUMP",
+				"frequency": 7790000000,
+				"bandwidth": 12000000,
+				"baudRates": [
+					6000000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "fengyun3_g_ahrpt"
+			}
+		],
+		"lastUpdateTime": 1746001504000
+	},
+	{
+		"id": "R2CLOUD520",
+		"name": "FENGYUN 3F",
+		"noradId": "57490",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "QPSK",
+				"framing": "SATDUMP",
+				"frequency": 7790000000,
+				"bandwidth": 60000000,
+				"baudRates": [
+					38400000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "fengyun3_f_ahrpt"
+			}
+		],
+		"lastUpdateTime": 1746001484000
+	},
+	{
+		"id": "R2CLOUD519",
+		"name": "FENGYUN 3E",
+		"noradId": "49008",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "QPSK",
+				"framing": "SATDUMP",
+				"frequency": 7860000000,
+				"bandwidth": 60000000,
+				"baudRates": [
+					38400000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "fengyun3_e_ahrpt"
+			}
+		],
+		"lastUpdateTime": 1746001467000
+	},
+	{
+		"id": "R2CLOUD518",
+		"name": "FENGYUN 3D",
+		"noradId": "43010",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "QPSK",
+				"framing": "SATDUMP",
+				"frequency": 7820000000,
+				"bandwidth": 60000000,
+				"baudRates": [
+					30000000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "fengyun3_d_ahrpt"
+			}
+		],
+		"lastUpdateTime": 1746001451000
+	},
+	{
+		"id": "R2CLOUD517",
+		"name": "FENGYUN 3C",
+		"noradId": "39260",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "QPSK",
+				"framing": "SATDUMP",
+				"frequency": 1701400000,
+				"bandwidth": 6000000,
+				"baudRates": [
+					2600000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "fengyun3_c_ahrpt"
+			}
+		],
+		"lastUpdateTime": 1746001433000
+	},
+	{
+		"id": "R2CLOUD516",
+		"name": "OTB-3-GAZELLE",
+		"noradId": "54023",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "QPSK",
+				"framing": "SATDUMP",
+				"beaconSizeBytes": 8192,
+				"frequency": 1703000000,
+				"bandwidth": 2400000,
+				"baudRates": [
+					1000000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "gazelle_l_band"
+			}
+		],
+		"lastUpdateTime": 1746001415000
+	},
+	{
+		"id": "R2CLOUD515",
+		"name": "EOS-6 (OCEANSAT-3)",
+		"noradId": "54361",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "QPSK",
+				"framing": "SATDUMP",
+				"frequency": 1703000000,
+				"bandwidth": 2400000,
+				"baudRates": [
+					1000000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "oceansat3_argos"
+			},
+			{
+				"modulation": "QPSK",
+				"framing": "SATDUMP",
+				"frequency": 8275000000,
+				"bandwidth": 60000000,
+				"baudRates": [
+					80000000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "oceansat3_dump"
+			}
+		],
+		"lastUpdateTime": 1746001396000
+	},
+	{
+		"id": "R2CLOUD514",
+		"name": "SARAL",
+		"noradId": "39086",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "QPSK",
+				"framing": "SATDUMP",
+				"frequency": 1698400000,
+				"bandwidth": 2400000,
+				"baudRates": [
+					400000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "saral_l_band"
+			}
+		],
+		"lastUpdateTime": 1746001377000
+	},
+	{
+		"id": "R2CLOUD513",
+		"name": "ANGELS",
+		"noradId": "44876",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "QPSK",
+				"framing": "SATDUMP",
+				"frequency": 1698400000,
+				"bandwidth": 2400000,
+				"baudRates": [
+					400000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "angels_l_band"
+			}
+		],
+		"lastUpdateTime": 1746001360000
+	},
+	{
+		"id": "R2CLOUD512",
+		"name": "METOP-C",
+		"noradId": "43689",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "QPSK",
+				"framing": "SATDUMP",
+				"frequency": 1701300000,
+				"bandwidth": 6000000,
+				"baudRates": [
+					2333333
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "metop_ahrpt"
+			},
+			{
+				"modulation": "QPSK",
+				"framing": "SATDUMP",
+				"frequency": 7800000000,
+				"bandwidth": 45000000,
+				"baudRates": [
+					35000000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "metop_dump"
+			}
+		],
+		"lastUpdateTime": 1746001342000
+	},
+	{
+		"id": "R2CLOUD511",
+		"name": "METOP-B",
+		"noradId": "38771",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "QPSK",
+				"framing": "SATDUMP",
+				"frequency": 1701300000,
+				"bandwidth": 6000000,
+				"baudRates": [
+					2333333
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "metop_ahrpt"
+			},
+			{
+				"modulation": "QPSK",
+				"framing": "SATDUMP",
+				"frequency": 7800000000,
+				"bandwidth": 45000000,
+				"baudRates": [
+					35000000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "metop_dump"
+			}
+		],
+		"lastUpdateTime": 1746001248000
+	},
+	{
+		"id": "R2CLOUD510",
+		"name": "METEOR-M2 4",
+		"noradId": "59051",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "OQPSK",
+				"framing": "SATDUMP",
+				"beaconSizeBytes": 1024,
+				"frequency": 137100000,
+				"bandwidth": 288000,
+				"baudRates": [
+					72000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "meteor_m2-x_lrpt"
+			},
+			{
+				"modulation": "OQPSK",
+				"framing": "SATDUMP",
+				"beaconSizeBytes": 1024,
+				"frequency": 1700000000,
+				"bandwidth": 2400000,
+				"baudRates": [
+					665400
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "meteor_hrpt"
+			}
+		],
+		"lastUpdateTime": 1746001201000,
+		"instruments": [
+			{
+				"id": "MSUMR",
+				"enabled": true,
+				"primary": true
+			}
+		],
+		"satdumpSatelliteNumber": "M2-4"
+	},
+	{
 		"id": "R2CLOUD509",
 		"name": "BRO-15",
 		"noradId": "60553",
@@ -983,14 +1542,14 @@
 				"frequency": 400500000,
 				"bandwidth": 20000,
 				"baudRates": [
-					9600
+					4800
 				],
 				"deviation": 5000,
 				"assistedHeader": "AAEAAQAAAAEAAQEAAAEAAQABAQEAAAABAAEBAAABAAEAAAAAAAEBAAABAAAAAQEAAAAAAAABAQEAAQAAAAAAAQAAAQAAAAABAAEBAAAAAAEAAAABAAAAAQABAAEAAAABAAABAQAAAAEBAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1744360428000
+		"lastUpdateTime": 1745334815000
 	},
 	{
 		"id": "R2CLOUD469",
@@ -1487,15 +2046,15 @@
 				"bandwidth": 62500,
 				"status": "ENABLED",
 				"loraBandwidth": 62500,
-				"loraSpreadFactor": 9,
+				"loraSpreadFactor": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
 				"loraExplicitHeader": true,
-				"loraCodingRate": 7,
+				"loraCodingRate": 6,
 				"loraCrc": true
 			}
 		],
-		"lastUpdateTime": 1745317920000
+		"lastUpdateTime": 1745513771000
 	},
 	{
 		"id": "R2CLOUD445",
@@ -1512,15 +2071,15 @@
 				"bandwidth": 62500,
 				"status": "ENABLED",
 				"loraBandwidth": 62500,
-				"loraSpreadFactor": 9,
+				"loraSpreadFactor": 8,
 				"loraSyncword": 18,
 				"loraPreambleLength": 8,
 				"loraExplicitHeader": true,
-				"loraCodingRate": 7,
+				"loraCodingRate": 6,
 				"loraCrc": true
 			}
 		],
-		"lastUpdateTime": 1745317903000
+		"lastUpdateTime": 1745481249000
 	},
 	{
 		"id": "R2CLOUD444",
@@ -2086,14 +2645,14 @@
 				"frequency": 435350000,
 				"bandwidth": 20000,
 				"baudRates": [
-					9600
+					4800
 				],
 				"deviation": 5000,
 				"assistedHeader": "AAEBAAAAAAEAAQAAAAEAAQAAAAAAAAEAAAAAAAAAAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQEAAAAAAQEAAQAAAAABAQABAAAAAAABAQAAAQABAAEAAQAAAAABAAABAAABAQAAAAEBAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1725388609000
+		"lastUpdateTime": 1745513875000
 	},
 	{
 		"id": "R2CLOUD419",
@@ -4604,22 +5163,43 @@
 		"id": "R2CLOUD280",
 		"name": "METEOR-M2 3",
 		"noradId": "57166",
-		"enabled": false,
+		"enabled": true,
 		"start": 1687865640000,
 		"transmitters": [
 			{
-				"modulation": "QPSK",
-				"framing": "LRPT",
-				"beaconClass": "ru.r2cloud.jradio.lrpt.Vcdu",
+				"modulation": "OQPSK",
+				"framing": "SATDUMP",
+				"beaconSizeBytes": 1024,
 				"frequency": 137900000,
-				"bandwidth": 144000,
+				"bandwidth": 288000,
 				"baudRates": [
 					72000
 				],
-				"status": "ENABLED"
+				"status": "ENABLED",
+				"satdumpPipeline": "meteor_m2-x_lrpt"
+			},
+			{
+				"modulation": "OQPSK",
+				"framing": "SATDUMP",
+				"beaconSizeBytes": 1024,
+				"frequency": 1700000000,
+				"bandwidth": 2400000,
+				"baudRates": [
+					665400
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "meteor_hrpt"
 			}
 		],
-		"lastUpdateTime": 1700765001000
+		"lastUpdateTime": 1746001127000,
+		"instruments": [
+			{
+				"id": "MSUMR",
+				"enabled": true,
+				"primary": true
+			}
+		],
+		"satdumpSatelliteNumber": "M2-3"
 	},
 	{
 		"id": "R2CLOUD279",
@@ -6119,7 +6699,7 @@
 				"framing": "AX100",
 				"beaconClass": "ru.r2cloud.jradio.aistechsat2.Aistechsat2Beacon",
 				"beaconSizeBytes": 255,
-				"frequency": 436600000,
+				"frequency": 436730000,
 				"bandwidth": 20000,
 				"baudRates": [
 					4800,
@@ -6128,7 +6708,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1666810804000
+		"lastUpdateTime": 1745391928000
 	},
 	{
 		"id": "R2CLOUD75",
@@ -6159,16 +6739,16 @@
 			{
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"beaconClass": "ru.r2cloud.jradio.snuglite.SnugliteBeacon",
 				"frequency": 437275000,
 				"bandwidth": 20000,
 				"baudRates": [
 					9600
 				],
-				"status": "WEAK"
+				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1662310762000
+		"lastUpdateTime": 1746000057000
 	},
 	{
 		"id": "R2CLOUD68",
@@ -6697,14 +7277,81 @@
 		"enabled": true,
 		"transmitters": [
 			{
-				"framing": "APT",
 				"modulation": "AM",
+				"framing": "APT",
 				"frequency": 137100000,
-				"bandwidth": 34000,
-				"status": "ENABLED"
+				"bandwidth": 240000,
+				"status": "ENABLED",
+				"satdumpPipeline": "noaa_apt"
+			},
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"frequency": 1698000000,
+				"bandwidth": 2400000,
+				"baudRates": [
+					665400
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "noaa_hrpt"
+			},
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"frequency": 1702500000,
+				"bandwidth": 6000000,
+				"baudRates": [
+					2661600
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "noaa_gac"
+			},
+			{
+				"modulation": "AM",
+				"framing": "SATDUMP",
+				"frequency": 137770000,
+				"bandwidth": 288000,
+				"baudRates": [
+					8320
+				],
+				"status": "DISABLED",
+				"satdumpPipeline": "noaa_dsb"
 			}
 		],
-		"lastUpdateTime": 1962310762000
+		"lastUpdateTime": 1746000441000,
+		"instruments": [
+			{
+				"id": "AVHRR3",
+				"enabled": true,
+				"primary": true
+			},
+			{
+				"id": "MHS",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "HIRS4",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "AMSUA",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "SEM2",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "SBUV2",
+				"enabled": false,
+				"primary": false
+			}
+		],
+		"satdumpSatelliteNumber": "19"
 	},
 	{
 		"id": "R2CLOUD2",
@@ -6713,14 +7360,81 @@
 		"enabled": true,
 		"transmitters": [
 			{
-				"framing": "APT",
 				"modulation": "AM",
+				"framing": "APT",
 				"frequency": 137912500,
-				"bandwidth": 34000,
-				"status": "ENABLED"
+				"bandwidth": 240000,
+				"status": "ENABLED",
+				"satdumpPipeline": "noaa_apt"
+			},
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"frequency": 1707000000,
+				"bandwidth": 2400000,
+				"baudRates": [
+					665400
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "noaa_hrpt"
+			},
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"frequency": 1698000000,
+				"bandwidth": 6000000,
+				"baudRates": [
+					2661600
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "noaa_gac"
+			},
+			{
+				"modulation": "AM",
+				"framing": "SATDUMP",
+				"frequency": 137350000,
+				"bandwidth": 288000,
+				"baudRates": [
+					8320
+				],
+				"status": "DISABLED",
+				"satdumpPipeline": "noaa_dsb"
 			}
 		],
-		"lastUpdateTime": 1962310762000
+		"lastUpdateTime": 1746000245000,
+		"instruments": [
+			{
+				"id": "AVHRR3",
+				"enabled": true,
+				"primary": true
+			},
+			{
+				"id": "MHS",
+				"enabled": false,
+				"primary": false
+			},
+			{
+				"id": "HIRS4",
+				"enabled": false,
+				"primary": false
+			},
+			{
+				"id": "AMSUA",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "SEM2",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "SBUV2",
+				"enabled": false,
+				"primary": false
+			}
+		],
+		"satdumpSatelliteNumber": "18"
 	},
 	{
 		"id": "R2CLOUD1",
@@ -6729,13 +7443,75 @@
 		"enabled": true,
 		"transmitters": [
 			{
-				"framing": "APT",
 				"modulation": "AM",
+				"framing": "APT",
 				"frequency": 137620000,
-				"bandwidth": 34000,
-				"status": "ENABLED"
+				"bandwidth": 240000,
+				"status": "ENABLED",
+				"satdumpPipeline": "noaa_apt"
+			},
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"frequency": 1702500000,
+				"bandwidth": 2400000,
+				"baudRates": [
+					665400
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "noaa_hrpt"
+			},
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"frequency": 2247500000,
+				"bandwidth": 6000000,
+				"baudRates": [
+					2661600
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "noaa_gac"
+			},
+			{
+				"modulation": "AM",
+				"framing": "SATDUMP",
+				"frequency": 137350000,
+				"bandwidth": 288000,
+				"baudRates": [
+					8320
+				],
+				"status": "DISABLED",
+				"satdumpPipeline": "noaa_dsb"
 			}
 		],
-		"lastUpdateTime": 1962310762000
+		"lastUpdateTime": 1746000180000,
+		"instruments": [
+			{
+				"id": "AVHRR3",
+				"enabled": true,
+				"primary": true
+			},
+			{
+				"id": "HIRS3",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "AMSUA",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "AMSUB",
+				"enabled": false,
+				"primary": false
+			},
+			{
+				"id": "SEM2",
+				"enabled": true,
+				"primary": false
+			}
+		],
+		"satdumpSatelliteNumber": "15"
 	}
 ]
