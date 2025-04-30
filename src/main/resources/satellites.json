@@ -527,7 +527,7 @@
 				"modulation": "OQPSK",
 				"framing": "SATDUMP",
 				"beaconSizeBytes": 1024,
-				"frequency": 137100000,
+				"frequency": 137900000,
 				"bandwidth": 288000,
 				"baudRates": [
 					72000
