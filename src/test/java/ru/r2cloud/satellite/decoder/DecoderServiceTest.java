@@ -47,10 +47,10 @@ public class DecoderServiceTest {
 
 	@Test
 	public void testDecodedInstruments() throws Exception {
-		String satdump = UUID.randomUUID().toString();
-		config.setProperty("satellites.satdump.path", satdump);
+		String taskset = UUID.randomUUID().toString();
+		config.setProperty("satellites.taskset.path", taskset);
 		Map<String, ProcessWrapperMock> mocks = new HashMap<>();
-		mocks.put(satdump, new ProcessWrapperMock(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), new ByteArrayInputStream(new byte[0]), 0, false));
+		mocks.put(taskset, new ProcessWrapperMock(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), new ByteArrayInputStream(new byte[0]), 0, false));
 		ProcessFactoryMock processFactory = new ProcessFactoryMock(mocks, UUID.randomUUID().toString());
 		SatdumpDecoder decoder = new SatdumpDecoder(config, processFactory);
 		when(decoders.findByTransmitter(any())).thenReturn(decoder);

@@ -110,14 +110,14 @@ public class SatdumpDecoderTest {
 
 	@Before
 	public void start() throws Exception {
-		String satdump = UUID.randomUUID().toString();
+		String taskset = UUID.randomUUID().toString();
 		Map<String, ProcessWrapperMock> mocks = new HashMap<>();
-		mocks.put(satdump, new ProcessWrapperMock(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), new ByteArrayInputStream(new byte[0]), 0, false));
+		mocks.put(taskset, new ProcessWrapperMock(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), new ByteArrayInputStream(new byte[0]), 0, false));
 		ProcessFactoryMock processFactory = new ProcessFactoryMock(mocks, UUID.randomUUID().toString());
 
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
-		config.setProperty("satellites.satdump.path", satdump);
+		config.setProperty("satellites.taskset.path", taskset);
 		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-noaa.json");
 
 		satelliteDao = new SatelliteDao(config);

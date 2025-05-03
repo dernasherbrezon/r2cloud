@@ -47,7 +47,7 @@ public class SatdumpDecoder implements Decoder {
 		}
 		result.setIq(rawFile);
 		ProcessWrapper process = null;
-		String commandLine = config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " baseband " + rawFile.getAbsolutePath() + " " + rawFile.getParentFile().getAbsolutePath() + " --dc_block true --samplerate " + request.getSampleRate() + " --baseband_format "
+		String commandLine = config.getProperty("satellites.taskset.path") + " " + config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " baseband " + rawFile.getAbsolutePath() + " " + rawFile.getParentFile().getAbsolutePath() + " --dc_block true --samplerate " + request.getSampleRate() + " --baseband_format "
 				+ request.getDataFormat().getSatdump();
 		if (satellite.getSatdumpSatelliteNumber() != null) {
 			commandLine += " --satellite_number " + satellite.getSatdumpSatelliteNumber();
