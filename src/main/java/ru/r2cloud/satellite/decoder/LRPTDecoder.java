@@ -1,6 +1,7 @@
 package ru.r2cloud.satellite.decoder;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,9 +14,10 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.jradio.blocks.Constellation;
 import ru.r2cloud.jradio.demod.QpskDemodulator;
-import ru.r2cloud.jradio.lrpt.LRPTInputStream;
+import ru.r2cloud.jradio.lrpt.PacketReassembly;
 import ru.r2cloud.jradio.lrpt.Vcdu;
 import ru.r2cloud.jradio.meteor.MeteorImage;
 import ru.r2cloud.jradio.meteor.MeteorM;
@@ -57,7 +59,7 @@ public class LRPTDecoder implements Decoder {
 			try (OutputStream fos = new BufferedOutputStream(new FileOutputStream(binFile))) {
 				while (lrpt.hasNext()) {
 					Vcdu next = lrpt.next();
-					fos.write(next.getData());
+					fos.write(next.getRawData());
 					numberOfDecodedPackets++;
 				}
 			}
@@ -71,8 +73,8 @@ public class LRPTDecoder implements Decoder {
 			Util.deleteQuietly(binFile);
 		} else {
 			result.setData(binFile);
-			try (LRPTInputStream lrptFile = new LRPTInputStream(new FileInputStream(binFile))) {
-				MeteorImage image = new MeteorImage(lrptFile);
+			try (BeaconInputStream<Vcdu> bis = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(binFile)), Vcdu.class)) {
+				MeteorImage image = new MeteorImage(new PacketReassembly(bis));
 				BufferedImage actual = image.toBufferedImage();
 				if (actual != null) {
 					File imageFile = new File(config.getTempDirectory(), "lrpt-" + req.getId() + ".jpg");

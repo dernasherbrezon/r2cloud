@@ -22,7 +22,7 @@ import org.junit.rules.TemporaryFolder;
 
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
-import ru.r2cloud.jradio.lrpt.LRPTInputStream;
+import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.jradio.lrpt.Vcdu;
 import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DecoderResult;
@@ -63,9 +63,9 @@ public class SatdumpDecoderTest {
 		assertEquals(1, result.getInstruments().size());
 		assertNotNull(result.getData());
 		List<Vcdu> data = new ArrayList<>();
-		try (LRPTInputStream is = new LRPTInputStream(new BufferedInputStream(new FileInputStream(result.getData())))) {
-			while (is.hasNext()) {
-				data.add(is.next());
+		try (BeaconInputStream<Vcdu> bis = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(result.getData())), Vcdu.class)) {
+			while (bis.hasNext()) {
+				data.add(bis.next());
 			}
 		}
 		assertEquals(2, data.size());
