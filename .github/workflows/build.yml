@@ -8,6 +8,8 @@ name: Main Workflow
 jobs:
   build:
     runs-on: ubuntu-22.04
+    env:
+      JAVA_HOME: ${JAVA_HOME_17_X64}
     steps:
     - uses: actions/checkout@v3
       with:
@@ -24,22 +26,11 @@ jobs:
         key: ${{ runner.os }}-maven
         restore-keys: |
           ${{ runner.os }}-maven-
-      
-    - name: Set up Ruby 2.6
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: '3.0'
-        bundler-cache: true
 
     - name: Check license
       run: |
         gem install license_finder
         license_finder
-
-    - uses: actions/setup-java@v3
-      with:
-        distribution: 'liberica'
-        java-version: '17'
 
     - name: SonarCloud Scan
       run: mvn clean verify sonar:sonar -Pcoverage -Dsonar.scm.disabled=true -Dsonar.projectKey=ru.r2cloud:r2cloud -Dsonar.organization=dernasherbrezon-github -Dsonar.host.url=https://sonarcloud.io -Dsonar.language=java
@@ -72,17 +63,17 @@ jobs:
       run: |
         cd ./target/
         [[ -f ~/.m2/repository/apt-cli-1.7.jar ]] || wget --no-clobber --quiet -O ~/.m2/repository/apt-cli-1.7.jar https://github.com/dernasherbrezon/apt-cli/releases/download/apt-cli-1.7/apt-cli.jar
-        java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename bullseye --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
-        java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename bookworm --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
-        java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename bionic --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
-        java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename focal --gpg-keyname F2DCBFDCA5A70917   save --patterns ./*.deb
-        java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename jammy --gpg-keyname F2DCBFDCA5A70917   save --patterns ./*.deb
+        ${JAVA_HOME}/bin/java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename bullseye --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
+        ${JAVA_HOME}/bin/java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename bookworm --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
+        ${JAVA_HOME}/bin/java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename bionic --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
+        ${JAVA_HOME}/bin/java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename focal --gpg-keyname F2DCBFDCA5A70917   save --patterns ./*.deb
+        ${JAVA_HOME}/bin/java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename jammy --gpg-keyname F2DCBFDCA5A70917   save --patterns ./*.deb
         echo "building for old OS"
         cd ..
         mvn clean
         mvn -Dmaven.test.skip=true -Djdk.version="r2cloud-jdk (>=17.0.13-1)" package
         cd ./target/
-        java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename stretch --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
-        java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename buster --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
+        ${JAVA_HOME}/bin/java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename stretch --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
+        ${JAVA_HOME}/bin/java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename buster --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
         
         
