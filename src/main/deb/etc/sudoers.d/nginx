@@ -1,2 +1,0 @@
-pi ALL=(ALL) NOPASSWD: /usr/sbin/nginx -s reload
-#new line at the end of file is vital. do not delete it

@@ -1,5 +1,7 @@
 chmod 755 ${config.installDir}/lib/download.sh
 ${config.installDir}/lib/download.sh ${config.installDir}/lib/ /usr/share/java/r2cloud/
+chown -R ${config.user}:${config.group} ${config.installDir} /usr/share/java/r2cloud/*.jar
+chmod 640 ${config.installDir}/lib/*.jar /usr/share/java/r2cloud/*.jar
 
 if id "${config.user}" &>/dev/null; then
     echo "User '${config.user}' already exists."
@@ -29,9 +31,6 @@ if [ -d /var/lib/nginx/proxy ]; then
 	chown -R www-data:www-data /var/lib/nginx/proxy
 fi
 
-chown -R ${config.user}:${config.group} ${config.installDir} /usr/share/java/r2cloud/*.jar
-chmod 640 ${config.installDir}/lib/*.jar /usr/share/java/r2cloud/*.jar
-
 # try unload modules. if module in use, then modprobe return non-zero status. ignore it
 modprobe --remove rtl2832 || true
 modprobe --remove dvb_usb_rtl28xxu || true
@@ -42,11 +41,14 @@ if [ -d /run/systemd/system ]; then
 	systemctl start r2cloud.service
 fi
 
-# backup old nginx configuration
-if [ -f /etc/nginx/nginx.conf ]; then
-	cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.backup
+# restore backup nginx configuration
+if [ -f /etc/nginx/nginx.conf.backup ]; then
+	mv /etc/nginx/nginx.conf.backup /etc/nginx/nginx.conf
 fi
-cp ${config.installDir}/etc/r2cloud-prod.conf /etc/nginx/nginx.conf;
+if [ -f /etc/nginx/sites-enabled/default ]; then
+	rm /etc/nginx/sites-enabled/default
+fi
+
 if [ -f /etc/cron.daily/r2cloud ]; then
 	chmod 755 /etc/cron.daily/r2cloud
 fi
@@ -66,15 +68,4 @@ fi
 
 if [ -f /run/nginx.pid ]; then
 	nginx -s reload
-fi
-
-if [ -f /etc/sudoers.d/nginx ]; then
-	chmod 440 /etc/sudoers.d/nginx
-fi
-
-if [ ! -d /var/log/journal ]; then
-    echo "enable persistent journald logs"
-    mkdir -p /var/log/journal
-    #fix group permissions for the folder
-    systemd-tmpfiles --create --prefix /var/log/journal
 fi
