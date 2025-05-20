@@ -29,7 +29,7 @@ jobs:
 
     - name: Check license
       run: |
-        gem install license_finder
+        sudo gem install license_finder
         license_finder
 
     - name: SonarCloud Scan
