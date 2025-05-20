@@ -8,8 +8,6 @@ name: Main Workflow
 jobs:
   build:
     runs-on: ubuntu-22.04
-    env:
-      JAVA_HOME: ${JAVA_HOME_17_X64}
     steps:
     - uses: actions/checkout@v3
       with:
