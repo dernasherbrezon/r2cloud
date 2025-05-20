@@ -66,6 +66,7 @@ if [ ! -f ${config.installDir}/ssl/domain-chain.crt ]; then
     rm ${config.installDir}/ssl/domain.csr
 fi
 
+# ignore status code, because r2cloud might not be the only default server 
 if [ -f /run/nginx.pid ]; then
-	nginx -s reload
+	nginx -s reload || true
 fi

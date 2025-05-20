@@ -3,5 +3,5 @@ if [ -d /run/systemd/system ]; then
 fi
 
 if [ -f /run/nginx.pid ]; then
-	nginx -s reload
+	nginx -s reload || true
 fi
