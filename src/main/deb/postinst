@@ -36,8 +36,8 @@ modprobe --remove rtl2832 || true
 modprobe --remove dvb_usb_rtl28xxu || true
 modprobe --remove e4000 || true
 
-systemctl enable r2cloud.service
 if [ -d /run/systemd/system ]; then
+	systemctl enable r2cloud.service
 	systemctl start r2cloud.service
 fi
 
