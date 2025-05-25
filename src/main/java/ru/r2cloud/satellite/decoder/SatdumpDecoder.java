@@ -13,9 +13,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconOutputStream;
 import ru.r2cloud.jradio.fec.ccsds.UncorrectableException;
-import ru.r2cloud.jradio.lrpt.Vcdu;
 import ru.r2cloud.jradio.util.IOUtils;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.Instrument;
@@ -31,6 +31,7 @@ import ru.r2cloud.util.SatdumpLogProcessor;
 public class SatdumpDecoder implements Decoder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SatdumpDecoder.class);
+	private static final int SYNCWORD_LENGTH = 4;
 
 	private final ProcessFactory factory;
 	private final Configuration config;
@@ -74,24 +75,24 @@ public class SatdumpDecoder implements Decoder {
 		if (transmitter.getBeaconSizeBytes() > 0) {
 			int numberOfDecodedPackets = 0;
 			File data = find(rawFile.getParentFile().listFiles(), ".cadu");
-			if (data != null) {
-				numberOfDecodedPackets = (int) (data.length() / transmitter.getBeaconSizeBytes());
-				if (data.length() % transmitter.getBeaconSizeBytes() != 0) {
+			if (data != null && transmitter.getSatdumpCaduSizeBytes() != 0) {
+				numberOfDecodedPackets = (int) (data.length() / transmitter.getSatdumpCaduSizeBytes());
+				if (data.length() % transmitter.getSatdumpCaduSizeBytes() != 0) {
 					LOG.warn("[{}] unexpected number of bytes in the data file. number of packets is incorrect", request.getId());
 				}
-				if (transmitter.getSatdumpPipeline().equalsIgnoreCase("meteor_m2-x_lrpt")) {
-					// make lrpt-compatible data file
-					File lrpt = new File(config.getTempDirectory(), "lrpt.bin");
-					try (InputStream input = new BufferedInputStream(new FileInputStream(data)); BeaconOutputStream bos = new BeaconOutputStream(new BufferedOutputStream(new FileOutputStream(lrpt)))) {
-						// 1024 - fixed size in satdump
-						byte[] current = new byte[1024];
-						byte[] buffer = new byte[Vcdu.SIZE];
+				if (transmitter.getBeaconClass() != null) {
+					// make beaconstream-compatible data file
+					File dataFile = new File(config.getTempDirectory(), "data.bin");
+					try (InputStream input = new BufferedInputStream(new FileInputStream(data)); BeaconOutputStream bos = new BeaconOutputStream(new BufferedOutputStream(new FileOutputStream(dataFile)))) {
+						byte[] cadu = new byte[transmitter.getSatdumpCaduSizeBytes()];
+						// beacon doesn't include ASM and ReedSolomon
+						byte[] beaconBytes = new byte[transmitter.getBeaconSizeBytes() - SYNCWORD_LENGTH];
 						while (true) {
 							try {
-								IOUtils.readFully(input, current);
-								System.arraycopy(current, 4, buffer, 0, buffer.length);
-								Vcdu cur = new Vcdu();
-								cur.readExternal(buffer);
+								IOUtils.readFully(input, cadu);
+								System.arraycopy(cadu, SYNCWORD_LENGTH, beaconBytes, 0, beaconBytes.length);
+								Beacon cur = transmitter.getBeaconClass().getDeclaredConstructor().newInstance();
+								cur.readExternal(beaconBytes);
 								bos.write(cur);
 							} catch (UncorrectableException e) {
 								continue;
@@ -99,9 +100,9 @@ public class SatdumpDecoder implements Decoder {
 								break;
 							}
 						}
-						data = lrpt;
+						data = dataFile;
 					} catch (Exception e) {
-						LOG.error("[{}] can't convert to lrpt", request.getId(), e);
+						LOG.error("[{}] can't convert to beacon", request.getId(), e);
 					}
 				}
 			}

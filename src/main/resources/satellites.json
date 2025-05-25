@@ -372,7 +372,7 @@
 			{
 				"modulation": "QPSK",
 				"framing": "SATDUMP",
-				"beaconSizeBytes": 8192,
+				"beaconSizeBytes": 1024,
 				"frequency": 1703000000,
 				"bandwidth": 2400000,
 				"baudRates": [
@@ -526,26 +526,30 @@
 			{
 				"modulation": "OQPSK",
 				"framing": "SATDUMP",
-				"beaconSizeBytes": 1024,
+				"beaconSizeBytes": 892,
+				"beaconClass": "ru.r2cloud.jradio.lrpt.Vcdu",
 				"frequency": 137900000,
 				"bandwidth": 288000,
 				"baudRates": [
 					72000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "meteor_m2-x_lrpt"
+				"satdumpPipeline": "meteor_m2-x_lrpt",
+				"satdumpCaduSizeBytes": 1024
 			},
 			{
 				"modulation": "OQPSK",
 				"framing": "SATDUMP",
-				"beaconSizeBytes": 1024,
+				"beaconSizeBytes": 892,
+				"beaconClass": "ru.r2cloud.jradio.lrpt.Vcdu",
 				"frequency": 1700000000,
 				"bandwidth": 2400000,
 				"baudRates": [
 					665400
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "meteor_hrpt"
+				"satdumpPipeline": "meteor_hrpt",
+				"satdumpCaduSizeBytes": 1024
 			}
 		],
 		"lastUpdateTime": 1746001201000,
@@ -5169,26 +5173,30 @@
 			{
 				"modulation": "OQPSK",
 				"framing": "SATDUMP",
-				"beaconSizeBytes": 1024,
+				"beaconSizeBytes": 892,
+				"beaconClass": "ru.r2cloud.jradio.lrpt.Vcdu",
 				"frequency": 137900000,
 				"bandwidth": 288000,
 				"baudRates": [
 					72000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "meteor_m2-x_lrpt"
+				"satdumpPipeline": "meteor_m2-x_lrpt",
+				"satdumpCaduSizeBytes": 1024
 			},
 			{
 				"modulation": "OQPSK",
 				"framing": "SATDUMP",
-				"beaconSizeBytes": 1024,
+				"beaconSizeBytes": 892,
+				"beaconClass": "ru.r2cloud.jradio.lrpt.Vcdu",
 				"frequency": 1700000000,
 				"bandwidth": 2400000,
 				"baudRates": [
 					665400
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "meteor_hrpt"
+				"satdumpPipeline": "meteor_hrpt",
+				"satdumpCaduSizeBytes": 1024
 			}
 		],
 		"lastUpdateTime": 1746001127000,

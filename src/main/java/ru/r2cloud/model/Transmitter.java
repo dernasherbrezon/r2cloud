@@ -44,6 +44,7 @@ public class Transmitter {
 	private TransmitterStatus status;
 	private Date updated;
 	private String satdumpPipeline;
+	private int satdumpCaduSizeBytes;
 
 	// copied from satellite
 	// to simplify code
@@ -95,6 +96,15 @@ public class Transmitter {
 			this.updated = new Date(copy.updated.getTime());
 		}
 		this.satdumpPipeline = copy.satdumpPipeline;
+		this.satdumpCaduSizeBytes = copy.satdumpCaduSizeBytes;
+	}
+
+	public int getSatdumpCaduSizeBytes() {
+		return satdumpCaduSizeBytes;
+	}
+
+	public void setSatdumpCaduSizeBytes(int satdumpCaduSizeBytes) {
+		this.satdumpCaduSizeBytes = satdumpCaduSizeBytes;
 	}
 
 	public String getSatdumpPipeline() {
@@ -502,6 +512,10 @@ public class Transmitter {
 		if (satdumpPipeline != null) {
 			result.setSatdumpPipeline(satdumpPipeline.asString());
 		}
+		JsonValue satdumpCaduSizeBytes = asObject.get("satdumpCaduSizeBytes");
+		if (satdumpCaduSizeBytes != null) {
+			result.setSatdumpCaduSizeBytes(satdumpCaduSizeBytes.asInt());
+		}
 		return result;
 	}
 
@@ -578,6 +592,9 @@ public class Transmitter {
 		}
 		if (satdumpPipeline != null) {
 			result.add("satdumpPipeline", satdumpPipeline);
+		}
+		if (satdumpCaduSizeBytes != 0) {
+			result.add("satdumpCaduSizeBytes", satdumpCaduSizeBytes);
 		}
 		return result;
 	}

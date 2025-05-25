@@ -12,11 +12,13 @@
 				"frequency": 137900000,
 				"bandwidth": 288000,
 				"status": "ENABLED",
-				"beaconSizeBytes": 1024,
+				"beaconSizeBytes": 892,
+				"beaconClass": "ru.r2cloud.jradio.lrpt.Vcdu",
 				"baudRates": [
 					72000
 				],
-				"satdumpPipeline": "meteor_m2-x_lrpt"
+				"satdumpPipeline": "meteor_m2-x_lrpt",
+				"satdumpCaduSizeBytes": 1024
 			},
 			{
 				"framing": "SATDUMP",
@@ -28,7 +30,8 @@
 				"baudRates": [
 					665400
 				],
-				"satdumpPipeline": "meteor_hrpt"
+				"satdumpPipeline": "meteor_hrpt",
+				"satdumpCaduSizeBytes": 1024
 			}
 		],
 		"instruments": [
