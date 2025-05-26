@@ -8,16 +8,19 @@
 			{
 				"modulation": "BPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1024,
 				"frequency": 7865000000,
 				"bandwidth": 45000000,
 				"baudRates": [
 					30720000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "arktika_rdas"
+				"satdumpPipeline": "arktika_rdas",
+				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1746008877000
+		"lastUpdateTime": 1748248097000
 	},
 	{
 		"id": "R2CLOUD531",
@@ -28,27 +31,33 @@
 			{
 				"modulation": "BPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 892,
 				"frequency": 2256220000,
 				"bandwidth": 2400000,
 				"baudRates": [
 					262000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "hinode_s_dump"
+				"satdumpPipeline": "hinode_s_dump",
+				"satdumpCaduSizeBytes": 1024
 			},
 			{
 				"modulation": "BPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 892,
 				"frequency": 2256220000,
 				"bandwidth": 2400000,
 				"baudRates": [
 					65600
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "hinode_s_tlm"
+				"satdumpPipeline": "hinode_s_tlm",
+				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1746008858000
+		"lastUpdateTime": 1748207337000
 	},
 	{
 		"id": "R2CLOUD530",
@@ -68,7 +77,8 @@
 				"satdumpPipeline": "dmsp_rtd"
 			}
 		],
-		"lastUpdateTime": 1746001796000
+		"lastUpdateTime": 1748207663000,
+		"satdumpSatelliteNumber": "18"
 	},
 	{
 		"id": "R2CLOUD529",
@@ -88,29 +98,33 @@
 				"satdumpPipeline": "dmsp_rtd"
 			}
 		],
-		"lastUpdateTime": 1746001780000
+		"lastUpdateTime": 1748207673000,
+		"satdumpSatelliteNumber": "17"
 	},
 	{
 		"id": "R2CLOUD528",
 		"name": "IRIS",
 		"noradId": "39197",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "BPSK",
 				"framing": "SATDUMP",
-				"frequency": 8483000000,
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1788,
+				"frequency": 2220800000,
 				"bandwidth": 2400000,
 				"baudRates": [
 					512000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "iris_s_dump"
+				"satdumpPipeline": "iris_s_dump",
+				"satdumpCaduSizeBytes": 1788
 			},
 			{
 				"modulation": "OQPSK",
 				"framing": "SATDUMP",
-				"frequency": 2220800000,
+				"frequency": 8483000000,
 				"bandwidth": 20000000,
 				"baudRates": [
 					7500000
@@ -119,7 +133,7 @@
 				"satdumpPipeline": "iris_dump"
 			}
 		],
-		"lastUpdateTime": 1746001763000
+		"lastUpdateTime": 1748208191000
 	},
 	{
 		"id": "R2CLOUD527",
@@ -130,16 +144,19 @@
 			{
 				"modulation": "OQPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1279,
 				"frequency": 2214000000,
 				"bandwidth": 6000000,
 				"baudRates": [
 					1562000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "mats_dump"
+				"satdumpPipeline": "mats_dump",
+				"satdumpCaduSizeBytes": 1279
 			}
 		],
-		"lastUpdateTime": 1746001747000
+		"lastUpdateTime": 1748211394000
 	},
 	{
 		"id": "R2CLOUD526",
@@ -150,16 +167,19 @@
 			{
 				"modulation": "QPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1199,
 				"frequency": 2232000000,
 				"bandwidth": 4000000,
 				"baudRates": [
 					2000000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "scisat1_dump"
+				"satdumpPipeline": "scisat1_dump",
+				"satdumpCaduSizeBytes": 1199
 			}
 		],
-		"lastUpdateTime": 1746001604000
+		"lastUpdateTime": 1748211384000
 	},
 	{
 		"id": "R2CLOUD525",
@@ -170,27 +190,33 @@
 			{
 				"modulation": "BPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1279,
 				"frequency": 2221000000,
 				"bandwidth": 4000000,
 				"baudRates": [
 					2000000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "pvcc_s_dump"
+				"satdumpPipeline": "pvcc_s_dump",
+				"satdumpCaduSizeBytes": 1279
 			},
 			{
 				"modulation": "OQPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1279,
 				"frequency": 8175500000,
 				"bandwidth": 60000000,
 				"baudRates": [
 					50000000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "pvcc_x_dump"
+				"satdumpPipeline": "pvcc_x_dump",
+				"satdumpCaduSizeBytes": 1279
 			}
 		],
-		"lastUpdateTime": 1746001587000
+		"lastUpdateTime": 1748247657000
 	},
 	{
 		"id": "R2CLOUD524",
@@ -201,27 +227,33 @@
 			{
 				"modulation": "BPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1279,
 				"frequency": 2235000000,
 				"bandwidth": 4000000,
 				"baudRates": [
 					1919000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "probav_s_dump"
+				"satdumpPipeline": "probav_s_dump",
+				"satdumpCaduSizeBytes": 1279
 			},
 			{
 				"modulation": "OQPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1279,
 				"frequency": 8300000000,
 				"bandwidth": 60000000,
 				"baudRates": [
 					35000000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "probav_x_dump"
+				"satdumpPipeline": "probav_x_dump",
+				"satdumpCaduSizeBytes": 1279
 			}
 		],
-		"lastUpdateTime": 1746001570000
+		"lastUpdateTime": 1748247790000
 	},
 	{
 		"id": "R2CLOUD523",
@@ -232,16 +264,19 @@
 			{
 				"modulation": "BPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1279,
 				"frequency": 2235000000,
 				"bandwidth": 4000000,
 				"baudRates": [
 					2000000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "proba2_dump"
+				"satdumpPipeline": "proba2_dump",
+				"satdumpCaduSizeBytes": 1279
 			}
 		],
-		"lastUpdateTime": 1746001537000
+		"lastUpdateTime": 1748247835000
 	},
 	{
 		"id": "R2CLOUD522",
@@ -252,16 +287,19 @@
 			{
 				"modulation": "BPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1279,
 				"frequency": 2235000000,
 				"bandwidth": 4000000,
 				"baudRates": [
 					2000000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "proba1_dump"
+				"satdumpPipeline": "proba1_dump",
+				"satdumpCaduSizeBytes": 1279
 			}
 		],
-		"lastUpdateTime": 1746001521000
+		"lastUpdateTime": 1748247862000
 	},
 	{
 		"id": "R2CLOUD521",
@@ -272,16 +310,19 @@
 			{
 				"modulation": "QPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1024,
 				"frequency": 7790000000,
 				"bandwidth": 12000000,
 				"baudRates": [
 					6000000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "fengyun3_g_ahrpt"
+				"satdumpPipeline": "fengyun3_g_ahrpt",
+				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1746001504000
+		"lastUpdateTime": 1748248032000
 	},
 	{
 		"id": "R2CLOUD520",
@@ -292,16 +333,19 @@
 			{
 				"modulation": "QPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1024,
 				"frequency": 7790000000,
 				"bandwidth": 60000000,
 				"baudRates": [
 					38400000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "fengyun3_f_ahrpt"
+				"satdumpPipeline": "fengyun3_f_ahrpt",
+				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1746001484000
+		"lastUpdateTime": 1748248116000
 	},
 	{
 		"id": "R2CLOUD519",
@@ -312,16 +356,19 @@
 			{
 				"modulation": "QPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1024,
 				"frequency": 7860000000,
 				"bandwidth": 60000000,
 				"baudRates": [
 					38400000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "fengyun3_e_ahrpt"
+				"satdumpPipeline": "fengyun3_e_ahrpt",
+				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1746001467000
+		"lastUpdateTime": 1748248147000
 	},
 	{
 		"id": "R2CLOUD518",
@@ -332,16 +379,19 @@
 			{
 				"modulation": "QPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1024,
 				"frequency": 7820000000,
 				"bandwidth": 60000000,
 				"baudRates": [
 					30000000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "fengyun3_d_ahrpt"
+				"satdumpPipeline": "fengyun3_d_ahrpt",
+				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1746001451000
+		"lastUpdateTime": 1748248168000
 	},
 	{
 		"id": "R2CLOUD517",
@@ -352,26 +402,30 @@
 			{
 				"modulation": "QPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1024,
 				"frequency": 1701400000,
 				"bandwidth": 6000000,
 				"baudRates": [
 					2600000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "fengyun3_c_ahrpt"
+				"satdumpPipeline": "fengyun3_c_ahrpt",
+				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1746001433000
+		"lastUpdateTime": 1748248224000
 	},
 	{
 		"id": "R2CLOUD516",
 		"name": "OTB-3-GAZELLE",
 		"noradId": "54023",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "QPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
 				"beaconSizeBytes": 1024,
 				"frequency": 1703000000,
 				"bandwidth": 2400000,
@@ -379,81 +433,94 @@
 					1000000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "gazelle_l_band"
+				"satdumpPipeline": "gazelle_l_band",
+				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1746001415000
+		"lastUpdateTime": 1748248290000
 	},
 	{
 		"id": "R2CLOUD515",
 		"name": "EOS-6 (OCEANSAT-3)",
 		"noradId": "54361",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "QPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1024,
 				"frequency": 1703000000,
 				"bandwidth": 2400000,
 				"baudRates": [
 					1000000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "oceansat3_argos"
+				"satdumpPipeline": "oceansat3_argos",
+				"satdumpCaduSizeBytes": 1024
 			},
 			{
 				"modulation": "QPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 2044,
 				"frequency": 8275000000,
 				"bandwidth": 60000000,
 				"baudRates": [
 					80000000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "oceansat3_dump"
+				"satdumpPipeline": "oceansat3_dump",
+				"satdumpCaduSizeBytes": 2044
 			}
 		],
-		"lastUpdateTime": 1746001396000
+		"lastUpdateTime": 1748248429000
 	},
 	{
 		"id": "R2CLOUD514",
 		"name": "SARAL",
 		"noradId": "39086",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "QPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1024,
 				"frequency": 1698400000,
 				"bandwidth": 2400000,
 				"baudRates": [
 					400000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "saral_l_band"
+				"satdumpPipeline": "saral_l_band",
+				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1746001377000
+		"lastUpdateTime": 1748248573000
 	},
 	{
 		"id": "R2CLOUD513",
 		"name": "ANGELS",
 		"noradId": "44876",
-		"enabled": true,
+		"enabled": false,
 		"transmitters": [
 			{
 				"modulation": "QPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1024,
 				"frequency": 1698400000,
 				"bandwidth": 2400000,
 				"baudRates": [
 					400000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "angels_l_band"
+				"satdumpPipeline": "angels_l_band",
+				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1746001360000
+		"lastUpdateTime": 1748248678000
 	},
 	{
 		"id": "R2CLOUD512",
@@ -464,27 +531,33 @@
 			{
 				"modulation": "QPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1024,
 				"frequency": 1701300000,
 				"bandwidth": 6000000,
 				"baudRates": [
 					2333333
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "metop_ahrpt"
+				"satdumpPipeline": "metop_ahrpt",
+				"satdumpCaduSizeBytes": 1024
 			},
 			{
 				"modulation": "QPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1024,
 				"frequency": 7800000000,
 				"bandwidth": 45000000,
 				"baudRates": [
 					35000000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "metop_dump"
+				"satdumpPipeline": "metop_dump",
+				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1746001342000
+		"lastUpdateTime": 1748248854000
 	},
 	{
 		"id": "R2CLOUD511",
@@ -495,27 +568,33 @@
 			{
 				"modulation": "QPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1024,
 				"frequency": 1701300000,
 				"bandwidth": 6000000,
 				"baudRates": [
 					2333333
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "metop_ahrpt"
+				"satdumpPipeline": "metop_ahrpt",
+				"satdumpCaduSizeBytes": 1024
 			},
 			{
 				"modulation": "QPSK",
 				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1024,
 				"frequency": 7800000000,
 				"bandwidth": 45000000,
 				"baudRates": [
 					35000000
 				],
 				"status": "ENABLED",
-				"satdumpPipeline": "metop_dump"
+				"satdumpPipeline": "metop_dump",
+				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1746001248000
+		"lastUpdateTime": 1748248969000
 	},
 	{
 		"id": "R2CLOUD510",
@@ -526,8 +605,8 @@
 			{
 				"modulation": "OQPSK",
 				"framing": "SATDUMP",
-				"beaconSizeBytes": 892,
 				"beaconClass": "ru.r2cloud.jradio.lrpt.Vcdu",
+				"beaconSizeBytes": 892,
 				"frequency": 137900000,
 				"bandwidth": 288000,
 				"baudRates": [
@@ -540,8 +619,8 @@
 			{
 				"modulation": "OQPSK",
 				"framing": "SATDUMP",
-				"beaconSizeBytes": 892,
 				"beaconClass": "ru.r2cloud.jradio.lrpt.Vcdu",
+				"beaconSizeBytes": 892,
 				"frequency": 1700000000,
 				"bandwidth": 2400000,
 				"baudRates": [
@@ -552,7 +631,7 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1746001201000,
+		"lastUpdateTime": 1748197784000,
 		"instruments": [
 			{
 				"id": "MSUMR",
@@ -712,6 +791,28 @@
 			}
 		],
 		"lastUpdateTime": 1744489740000
+	},
+	{
+		"id": "R2CLOUD503",
+		"name": "HERMES H3",
+		"noradId": "63835",
+		"enabled": false,
+		"start": 1742020560000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CCSDS",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 401500000,
+				"bandwidth": 20000,
+				"baudRates": [
+					25000
+				],
+				"deviation": 5000,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1746950609000
 	},
 	{
 		"id": "R2CLOUD502",
@@ -3884,28 +3985,6 @@
 		"lastUpdateTime": 1701937042000
 	},
 	{
-		"id": "R2CLOUD354",
-		"name": "BARRY-1",
-		"noradId": "58338",
-		"enabled": false,
-		"start": 1699728540000,
-		"transmitters": [
-			{
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 401500000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"assistedHeader": "AAEAAQAAAAEAAQEAAAEAAQABAQEAAAABAAEBAAABAAEAAAAAAAEBAAABAAAAAQEAAAAAAAABAQEAAAEAAAAAAQABAAAAAQEAAAABAAABAQAAAAAAAAABAAAAAAAAAAEAAAAAAAAAAQABAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1744362110000
-	},
-	{
 		"id": "R2CLOUD353",
 		"name": "TIANQI-24",
 		"noradId": "57795",
@@ -5173,8 +5252,8 @@
 			{
 				"modulation": "OQPSK",
 				"framing": "SATDUMP",
-				"beaconSizeBytes": 892,
 				"beaconClass": "ru.r2cloud.jradio.lrpt.Vcdu",
+				"beaconSizeBytes": 892,
 				"frequency": 137900000,
 				"bandwidth": 288000,
 				"baudRates": [
@@ -5187,8 +5266,8 @@
 			{
 				"modulation": "OQPSK",
 				"framing": "SATDUMP",
-				"beaconSizeBytes": 892,
 				"beaconClass": "ru.r2cloud.jradio.lrpt.Vcdu",
+				"beaconSizeBytes": 892,
 				"frequency": 1700000000,
 				"bandwidth": 2400000,
 				"baudRates": [
@@ -5199,7 +5278,7 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1746001127000,
+		"lastUpdateTime": 1748197849000,
 		"instruments": [
 			{
 				"id": "MSUMR",
