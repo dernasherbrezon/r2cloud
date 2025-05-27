@@ -86,7 +86,7 @@ public class SatdumpDecoder implements Decoder {
 					try (InputStream input = new BufferedInputStream(new FileInputStream(data)); BeaconOutputStream bos = new BeaconOutputStream(new BufferedOutputStream(new FileOutputStream(dataFile)))) {
 						byte[] cadu = new byte[transmitter.getSatdumpCaduSizeBytes()];
 						// beacon doesn't include ASM and ReedSolomon
-						byte[] beaconBytes = new byte[transmitter.getBeaconSizeBytes() - SYNCWORD_LENGTH];
+						byte[] beaconBytes = new byte[transmitter.getBeaconSizeBytes()];
 						while (true) {
 							try {
 								IOUtils.readFully(input, cadu);
