@@ -557,6 +557,43 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
+		"instruments": [
+			{
+				"id": "AVHRR3",
+				"enabled": true,
+				"primary": true
+			},
+			{
+				"id": "ASCAT",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "AMSUA",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "GOME2",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "IASI",
+				"enabled": false,
+				"primary": false
+			},
+			{
+				"id": "MHS",
+				"enabled": false,
+				"primary": false
+			},
+			{
+				"id": "SEM2",
+				"enabled": false,
+				"primary": false
+			}
+		],
 		"lastUpdateTime": 1748248854000
 	},
 	{
@@ -592,6 +629,43 @@
 				"status": "ENABLED",
 				"satdumpPipeline": "metop_dump",
 				"satdumpCaduSizeBytes": 1024
+			}
+		],
+		"instruments": [
+			{
+				"id": "AVHRR3",
+				"enabled": true,
+				"primary": true
+			},
+			{
+				"id": "ASCAT",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "AMSUA",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "GOME2",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "IASI",
+				"enabled": false,
+				"primary": false
+			},
+			{
+				"id": "MHS",
+				"enabled": false,
+				"primary": false
+			},
+			{
+				"id": "SEM2",
+				"enabled": false,
+				"primary": false
 			}
 		],
 		"lastUpdateTime": 1748248969000

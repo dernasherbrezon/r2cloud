@@ -515,5 +515,26 @@
 				"description": "11.5 - 12.5µm"
 			}
 		]
+	},
+	{
+		"id": "ASCAT",
+		"name": "ASCAT",
+		"satdumpName": "ASCAT",
+		"description": "Advanced Scatterometer",
+		"satdumpCombined": "ASCAT-ALL.png"
+	},
+	{
+		"id": "GOME2",
+		"name": "GOME-2",
+		"satdumpName": "GOME",
+		"description": "Global Ozone Monitoring Experiment-2",
+		"satdumpCombined": "GOME-ALL.png"
+	},
+	{
+		"id": "IASI",
+		"name": "IASI",
+		"satdumpName": "IASI",
+		"description": "Infrared atmospheric sounding interferometer. 8461 channels",
+		"satdumpCombined": "IASI-ALL.png"
 	}
 ]
