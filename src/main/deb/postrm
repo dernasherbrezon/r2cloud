@@ -1,3 +1,11 @@
+if systemctl is-active r2cloud; then
+	systemctl stop r2cloud.service
+fi
+
+if systemctl is-enabled r2cloud; then
+	systemctl disable r2cloud.service
+fi
+
 if [ -d /run/systemd/system ]; then
 	systemctl --system daemon-reload >/dev/null || true
 fi
