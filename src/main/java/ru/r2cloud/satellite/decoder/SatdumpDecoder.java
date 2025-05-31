@@ -48,33 +48,19 @@ public class SatdumpDecoder implements Decoder {
 			return result;
 		}
 		result.setIq(rawFile);
-		ProcessWrapper process = null;
-		String commandLine = config.getProperty("satellites.taskset.path") + " " + config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " baseband " + rawFile.getAbsolutePath() + " " + rawFile.getParentFile().getAbsolutePath() + " --dc_block true --samplerate "
-				+ request.getSampleRate() + " --baseband_format " + request.getDataFormat().getSatdump();
-		if (satellite.getSatdumpSatelliteNumber() != null) {
-			commandLine += " --satellite_number " + satellite.getSatdumpSatelliteNumber();
-		}
-		commandLine += " --start_timestamp " + request.getStartTimeMillis();
-		try {
-			process = factory.create(commandLine, true, false);
-			new SatdumpLogProcessor(request.getId(), process.getInputStream(), "satdump-decode-stdio").start();
-			new SatdumpLogProcessor(request.getId(), process.getErrorStream(), "satdump-decode-stderr").start();
-			int responseCode = process.waitFor();
-			if (responseCode != 0 && responseCode != 1) {
-				LOG.info("[{}] invalid response code from satdump. assume no data: {}", request.getId(), responseCode);
+		File data = find(rawFile.getParentFile().listFiles(), ".cadu");
+		if (data != null) {
+			if (!processCadu(data, request, transmitter)) {
 				return result;
 			}
-		} catch (IOException e) {
-			LOG.error("[{}] unable to decode", request.getId(), e);
-			return result;
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			return result;
+		} else {
+			if (!processBaseband(rawFile, request, transmitter, satellite)) {
+				return result;
+			}
 		}
 		boolean imagesAvailable = true;
 		if (transmitter.getBeaconSizeBytes() > 0) {
 			int numberOfDecodedPackets = 0;
-			File data = find(rawFile.getParentFile().listFiles(), ".cadu");
 			if (data != null && transmitter.getSatdumpCaduSizeBytes() != 0) {
 				numberOfDecodedPackets = (int) (data.length() / transmitter.getSatdumpCaduSizeBytes());
 				if (data.length() % transmitter.getSatdumpCaduSizeBytes() != 0) {
@@ -155,6 +141,63 @@ public class SatdumpDecoder implements Decoder {
 		}
 
 		return result;
+	}
+
+	private boolean processCadu(File cadu, Observation request, final Transmitter transmitter) {
+		ProcessWrapper process = null;
+		String taskset = config.getProperty("satellites.taskset.path");
+		if (taskset == null) {
+			taskset = "";
+		}
+		String commandLine = taskset + " " + config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " cadu " + cadu.getAbsolutePath() + " " + cadu.getParentFile().getAbsolutePath();
+		try {
+			process = factory.create(commandLine.trim(), true, false);
+			new SatdumpLogProcessor(request.getId(), process.getInputStream(), "satdump-decode-stdio").start();
+			new SatdumpLogProcessor(request.getId(), process.getErrorStream(), "satdump-decode-stderr").start();
+			int responseCode = process.waitFor();
+			if (responseCode != 0 && responseCode != 1) {
+				LOG.info("[{}] invalid response code from satdump. assume no data: {}", request.getId(), responseCode);
+				return false;
+			}
+			return true;
+		} catch (IOException e) {
+			LOG.error("[{}] unable to decode", request.getId(), e);
+			return false;
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return false;
+		}
+	}
+
+	private boolean processBaseband(File rawFile, Observation request, final Transmitter transmitter, final Satellite satellite) {
+		ProcessWrapper process = null;
+		String taskset = config.getProperty("satellites.taskset.path");
+		if (taskset == null) {
+			taskset = "";
+		}
+		String commandLine = taskset + " " + config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " baseband " + rawFile.getAbsolutePath() + " " + rawFile.getParentFile().getAbsolutePath() + " --dc_block true --samplerate "
+				+ request.getSampleRate() + " --baseband_format " + request.getDataFormat().getSatdump();
+		if (satellite.getSatdumpSatelliteNumber() != null) {
+			commandLine += " --satellite_number " + satellite.getSatdumpSatelliteNumber();
+		}
+		commandLine += " --start_timestamp " + request.getStartTimeMillis();
+		try {
+			process = factory.create(commandLine.trim(), true, false);
+			new SatdumpLogProcessor(request.getId(), process.getInputStream(), "satdump-decode-stdio").start();
+			new SatdumpLogProcessor(request.getId(), process.getErrorStream(), "satdump-decode-stderr").start();
+			int responseCode = process.waitFor();
+			if (responseCode != 0 && responseCode != 1) {
+				LOG.info("[{}] invalid response code from satdump. assume no data: {}", request.getId(), responseCode);
+				return false;
+			}
+			return true;
+		} catch (IOException e) {
+			LOG.error("[{}] unable to decode", request.getId(), e);
+			return false;
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return false;
+		}
 	}
 
 	private static File find(File[] files, String extension) {
