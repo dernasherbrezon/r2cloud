@@ -2,6 +2,8 @@ package ru.r2cloud.web.api.observation;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +34,14 @@ import ru.r2cloud.web.api.Messages;
 public class ObservationLoad extends AbstractHttpController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ObservationLoad.class);
+
+	private static final Set<String> SATDUMP_TELEMETRY = new HashSet<>();
+
+	static {
+		SATDUMP_TELEMETRY.add("39086");
+		SATDUMP_TELEMETRY.add("54023");
+		SATDUMP_TELEMETRY.add("44876");
+	}
 
 	private final IObservationDao resultDao;
 	private final SignedURL signed;
@@ -85,6 +95,9 @@ public class ObservationLoad extends AbstractHttpController {
 	private static JsonArray convertBeacons(Satellite satellite, Observation entity) {
 		Transmitter transmitter = satellite.getById(entity.getTransmitterId());
 		if (transmitter == null) {
+			return null;
+		}
+		if (transmitter.getSatdumpPipeline() != null && !SATDUMP_TELEMETRY.contains(satellite.getId())) {
 			return null;
 		}
 		Class<? extends Beacon> clazz = transmitter.getBeaconClass();
