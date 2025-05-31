@@ -444,6 +444,23 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
+		"instruments": [
+			{
+				"id": "VIRR",
+				"enabled": true,
+				"primary": true
+			},
+			{
+				"id": "MWHS2",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "ERM1",
+				"enabled": true,
+				"primary": false
+			}
+		],
 		"lastUpdateTime": 1748716335000
 	},
 	{

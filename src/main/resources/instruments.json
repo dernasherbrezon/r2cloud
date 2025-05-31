@@ -794,5 +794,155 @@
 				"description": "325.15±6.6 GHz"
 			}
 		]
+	},
+	{
+		"id": "ERM1",
+		"name": "ERM-1",
+		"satdumpName": "ERM",
+		"description": "Earth Radiation Measurement",
+		"satdumpCombined": "ERM-1.png"
+	},
+	{
+		"id": "MWHS2",
+		"name": "MWHS-2",
+		"satdumpName": "MWHS-2",
+		"description": "Micro-Wave Humidity Sounder",
+		"satdumpCombined": "mwhs2_rgb_MWHS_False_Color.png",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "MWHS2-1.png",
+				"description": "89 GHz"
+			},
+			{
+				"id": "2",
+				"satdumpName": "MWHS2-2.png",
+				"description": "118.75±0.08 GHz"
+			},
+			{
+				"id": "3",
+				"satdumpName": "MWHS2-3.png",
+				"description": "118.75±0.2 GHz"
+			},
+			{
+				"id": "4",
+				"satdumpName": "MWHS2-4.png",
+				"description": "118.75±0.3 GHz"
+			},
+			{
+				"id": "5",
+				"satdumpName": "MWHS2-5.png",
+				"description": "118.75±0.8 GHz"
+			},
+			{
+				"id": "6",
+				"satdumpName": "MWHS2-6.png",
+				"description": "118.75±1.1 GHz"
+			},
+			{
+				"id": "7",
+				"satdumpName": "MWHS2-7.png",
+				"description": "118.75±2.5 GHz"
+			},
+			{
+				"id": "8",
+				"satdumpName": "MWHS2-8.png",
+				"description": "118.75±3.0 GHz"
+			},
+			{
+				"id": "9",
+				"satdumpName": "MWHS2-9.png",
+				"description": "118.75±5.0 GHz"
+			},
+			{
+				"id": "10",
+				"satdumpName": "MWHS2-10.png",
+				"description": "166 GHz"
+			},
+			{
+				"id": "11",
+				"satdumpName": "MWHS2-11.png",
+				"description": "183±1 GHz"
+			},
+			{
+				"id": "12",
+				"satdumpName": "MWHS2-12.png",
+				"description": "183±1.8 GHz"
+			},
+			{
+				"id": "13",
+				"satdumpName": "MWHS2-13.png",
+				"description": "183±3 GHz"
+			},
+			{
+				"id": "14",
+				"satdumpName": "MWHS2-14.png",
+				"description": "183±4.5 GHz"
+			},
+			{
+				"id": "15",
+				"satdumpName": "MWHS2-15.png",
+				"description": "183±7 GHz"
+			}
+		]
+	},
+	{
+		"id": "VIRR",
+		"name": "VIRR",
+		"satdumpName": "VIRR",
+		"description": "Multi-purpose imagery with emphasis on vegetation and ocean colour",
+		"satdumpCombined": "virr_rgb_221_corrected.png",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "VIRR-1.png",
+				"description": "0.43 - 0.48 µm"
+			},
+			{
+				"id": "2",
+				"satdumpName": "VIRR-2.png",
+				"description": "0.48 - 0.53 µm"
+			},
+			{
+				"id": "3",
+				"satdumpName": "VIRR-3.png",
+				"description": "0.53 - 0.58 µm"
+			},
+			{
+				"id": "4",
+				"satdumpName": "VIRR-4.png",
+				"description": "0.58 - 0.68 µm"
+			},
+			{
+				"id": "5",
+				"satdumpName": "VIRR-5.png",
+				"description": "0.84 – 0.89 µm"
+			},
+			{
+				"id": "6",
+				"satdumpName": "VIRR-6.png",
+				"description": "1.325 - 1.395 µm"
+			},
+			{
+				"id": "7",
+				"satdumpName": "VIRR-7.png",
+				"description": "1.55 - 1.64 µm"
+			},
+			{
+				"id": "8",
+				"satdumpName": "VIRR-8.png",
+				"description": "3.55 - 3.93 µm"
+			},
+			{
+				"id": "9",
+				"satdumpName": "VIRR-9.png",
+				"description": "10.3 - 11.3 µm"
+			},
+			{
+				"id": "10",
+				"satdumpName": "VIRR-10.png",
+				"description": "11.5 - 12.5 µm"
+			}
+		]
 	}
 ]
