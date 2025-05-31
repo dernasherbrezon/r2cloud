@@ -690,5 +690,109 @@
 		"satdumpName": "IASI",
 		"description": "Infrared atmospheric sounding interferometer. 8461 channels",
 		"satdumpCombined": "IASI-ALL.png"
+	},
+	{
+		"id": "MWR",
+		"name": "MWR (Sterna)",
+		"satdumpName": "STERNA",
+		"description": "Measure temperature and humidity profiles primarily over the Arctic",
+		"satdumpCombined": "sterna_rgb_AMSU_False_Color.png",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "STERNA-1.png",
+				"description": "50.3 GHz"
+			},
+			{
+				"id": "2",
+				"satdumpName": "STERNA-2.png",
+				"description": "52.8 GHz"
+			},
+			{
+				"id": "3",
+				"satdumpName": "STERNA-3.png",
+				"description": "53.246 GHz"
+			},
+			{
+				"id": "4",
+				"satdumpName": "STERNA-4.png",
+				"description": "53.596 GHz"
+			},
+			{
+				"id": "5",
+				"satdumpName": "STERNA-5.png",
+				"description": "54.4 GHz"
+			},
+			{
+				"id": "6",
+				"satdumpName": "STERNA-6.png",
+				"description": "54.94 GHz"
+			},
+			{
+				"id": "7",
+				"satdumpName": "STERNA-7.png",
+				"description": "55.5 GHz"
+			},
+			{
+				"id": "8",
+				"satdumpName": "STERNA-8.png",
+				"description": "57.290344 GHz"
+			},
+			{
+				"id": "9",
+				"satdumpName": "STERNA-9.png",
+				"description": "89 GHz"
+			},
+			{
+				"id": "10",
+				"satdumpName": "STERNA-10.png",
+				"description": "165.5 GHz"
+			},
+			{
+				"id": "11",
+				"satdumpName": "STERNA-11.png",
+				"description": "176.311 GHz"
+			},
+			{
+				"id": "12",
+				"satdumpName": "STERNA-12.png",
+				"description": "178.811 GHz"
+			},
+			{
+				"id": "13",
+				"satdumpName": "STERNA-13.png",
+				"description": "180.311 GHz"
+			},
+			{
+				"id": "14",
+				"satdumpName": "STERNA-14.png",
+				"description": "181.511 GHz"
+			},
+			{
+				"id": "15",
+				"satdumpName": "STERNA-15.png",
+				"description": "182.311 GHz"
+			},
+			{
+				"id": "16",
+				"satdumpName": "STERNA-16.png",
+				"description": "325.15±1.2 GHz"
+			},
+			{
+				"id": "17",
+				"satdumpName": "STERNA-17.png",
+				"description": "325.15±2.4 GHz"
+			},
+			{
+				"id": "18",
+				"satdumpName": "STERNA-18.png",
+				"description": "325.15±4.1 GHz"
+			},
+			{
+				"id": "19",
+				"satdumpName": "STERNA-19.png",
+				"description": "325.15±6.6 GHz"
+			}
+		]
 	}
 ]
