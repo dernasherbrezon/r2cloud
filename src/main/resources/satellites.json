@@ -711,6 +711,11 @@
 				"id": "MSUMR",
 				"enabled": true,
 				"primary": true
+			},
+			{
+				"id": "MTVZA",
+				"enabled": true,
+				"primary": false
 			}
 		],
 		"satdumpSatelliteNumber": "M2-4"
@@ -5358,6 +5363,11 @@
 				"id": "MSUMR",
 				"enabled": true,
 				"primary": true
+			},
+			{
+				"id": "MTVZA",
+				"enabled": true,
+				"primary": false
 			}
 		],
 		"satdumpSatelliteNumber": "M2-3"

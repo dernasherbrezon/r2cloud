@@ -517,6 +517,160 @@
 		]
 	},
 	{
+		"id": "MTVZA",
+		"name": "MTVZA-GY",
+		"satdumpName": "MTVZA",
+		"description": "Multi-purpose imager with temperature/humidity sounding channels for improved precipitation",
+		"satdumpCombined": "mtvza_rgb_443_(AMSU_221_equivalent).png",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "MTVZA-1.png",
+				"description": "10.6Ghz Vertical"
+			},
+			{
+				"id": "2",
+				"satdumpName": "MTVZA-2.png",
+				"description": "10.6Ghz Horizontal"
+			},
+			{
+				"id": "3",
+				"satdumpName": "MTVZA-3.png",
+				"description": "18.7Ghz Vertical"
+			},
+			{
+				"id": "4",
+				"satdumpName": "MTVZA-4.png",
+				"description": "18.7Ghz Horizontal"
+			},
+			{
+				"id": "5",
+				"satdumpName": "MTVZA-5.png",
+				"description": "23.8Ghz Vertical"
+			},
+			{
+				"id": "6",
+				"satdumpName": "MTVZA-6.png",
+				"description": "23.8Ghz Horizontal"
+			},
+			{
+				"id": "7",
+				"satdumpName": "MTVZA-7.png",
+				"description": "31.5Ghz Vertical"
+			},
+			{
+				"id": "8",
+				"satdumpName": "MTVZA-8.png",
+				"description": "31.5Ghz Horizontal"
+			},
+			{
+				"id": "9",
+				"satdumpName": "MTVZA-9.png",
+				"description": "36.7Ghz Vertical"
+			},
+			{
+				"id": "10",
+				"satdumpName": "MTVZA-10.png",
+				"description": "36.7Ghz Horizontal"
+			},
+			{
+				"id": "11",
+				"satdumpName": "MTVZA-11.png",
+				"description": "42.0Ghz Vertical"
+			},
+			{
+				"id": "12",
+				"satdumpName": "MTVZA-12.png",
+				"description": "42.0Ghz Horizontal"
+			},
+			{
+				"id": "13",
+				"satdumpName": "MTVZA-13.png",
+				"description": "48.0Ghz Vertical"
+			},
+			{
+				"id": "14",
+				"satdumpName": "MTVZA-14.png",
+				"description": "48.0Ghz Horizontal"
+			},
+			{
+				"id": "15",
+				"satdumpName": "MTVZA-15.png",
+				"description": "52.80Ghz Vertical"
+			},
+			{
+				"id": "16",
+				"satdumpName": "MTVZA-16.png",
+				"description": "53.30Ghz Vertical"
+			},
+			{
+				"id": "17",
+				"satdumpName": "MTVZA-17.png",
+				"description": "53.80Ghz Vertical"
+			},
+			{
+				"id": "18",
+				"satdumpName": "MTVZA-18.png",
+				"description": "54.64Ghz Vertical"
+			},
+			{
+				"id": "19",
+				"satdumpName": "MTVZA-19.png",
+				"description": "55.63Ghz Vertical"
+			},
+			{
+				"id": "20",
+				"satdumpName": "MTVZA-20.png",
+				"description": "57.290344±0.3222±0.1Ghz Horizontal"
+			},
+			{
+				"id": "21",
+				"satdumpName": "MTVZA-21.png",
+				"description": "57.290344±0.3222±0.05Ghz Horizontal"
+			},
+			{
+				"id": "22",
+				"satdumpName": "MTVZA-22.png",
+				"description": "57.290344±0.3222±0.025Ghz Horizontal"
+			},
+			{
+				"id": "23",
+				"satdumpName": "MTVZA-23.png",
+				"description": "57.290344±0.3222±0.01Ghz Horizontal"
+			},
+			{
+				"id": "24",
+				"satdumpName": "MTVZA-24.png",
+				"description": "57.290344±0.3222±0.005Ghz Horizontal"
+			},
+			{
+				"id": "25",
+				"satdumpName": "MTVZA-25.png",
+				"description": "91.655Ghz Vertical"
+			},
+			{
+				"id": "26",
+				"satdumpName": "MTVZA-26.png",
+				"description": "91.655Ghz Horizontal"
+			},
+			{
+				"id": "27",
+				"satdumpName": "MTVZA-27.png",
+				"description": "183.31 ± 1.0Ghz Vertical"
+			},
+			{
+				"id": "28",
+				"satdumpName": "MTVZA-28.png",
+				"description": "183.31 ± 3.0Ghz Vertical"
+			},
+			{
+				"id": "29",
+				"satdumpName": "MTVZA-29.png",
+				"description": "183.31 ± 7.0Ghz Vertical"
+			}
+		]
+	},
+	{
 		"id": "ASCAT",
 		"name": "ASCAT",
 		"satdumpName": "ASCAT",
