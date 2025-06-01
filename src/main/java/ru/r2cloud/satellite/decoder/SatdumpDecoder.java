@@ -57,6 +57,7 @@ public class SatdumpDecoder implements Decoder {
 			if (!processBaseband(rawFile, request, transmitter, satellite)) {
 				return result;
 			}
+			data = find(rawFile.getParentFile().listFiles(), ".cadu");
 		}
 		boolean imagesAvailable = true;
 		if (transmitter.getBeaconSizeBytes() > 0) {
@@ -93,7 +94,9 @@ public class SatdumpDecoder implements Decoder {
 				}
 			}
 			result.setNumberOfDecodedPackets(numberOfDecodedPackets);
-			result.setTotalSize(data.length());
+			if (data != null) {
+				result.setTotalSize(data.length());
+			}
 			if (numberOfDecodedPackets > 0) {
 				result.setData(data);
 			}
@@ -175,8 +178,8 @@ public class SatdumpDecoder implements Decoder {
 		if (taskset == null) {
 			taskset = "";
 		}
-		String commandLine = taskset + " " + config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " baseband " + rawFile.getAbsolutePath() + " " + rawFile.getParentFile().getAbsolutePath() + " --dc_block true --samplerate "
-				+ request.getSampleRate() + " --baseband_format " + request.getDataFormat().getSatdump();
+		String commandLine = taskset + " " + config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " baseband " + rawFile.getAbsolutePath() + " " + rawFile.getParentFile().getAbsolutePath() + " --dc_block true --samplerate " + request.getSampleRate()
+				+ " --baseband_format " + request.getDataFormat().getSatdump();
 		if (satellite.getSatdumpSatelliteNumber() != null) {
 			commandLine += " --satellite_number " + satellite.getSatdumpSatelliteNumber();
 		}
