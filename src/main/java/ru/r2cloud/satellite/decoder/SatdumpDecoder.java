@@ -50,7 +50,7 @@ public class SatdumpDecoder implements Decoder {
 		result.setIq(rawFile);
 		File data = find(rawFile.getParentFile().listFiles(), ".cadu");
 		if (data != null) {
-			if (!processCadu(data, request, transmitter)) {
+			if (!processCadu(data, request, transmitter, satellite)) {
 				return result;
 			}
 		} else {
@@ -146,13 +146,16 @@ public class SatdumpDecoder implements Decoder {
 		return result;
 	}
 
-	private boolean processCadu(File cadu, Observation request, final Transmitter transmitter) {
+	private boolean processCadu(File cadu, Observation request, final Transmitter transmitter, final Satellite satellite) {
 		ProcessWrapper process = null;
 		String taskset = config.getProperty("satellites.taskset.path");
 		if (taskset == null) {
 			taskset = "";
 		}
 		String commandLine = taskset + " " + config.getProperty("satellites.satdump.path") + " " + transmitter.getSatdumpPipeline() + " cadu " + cadu.getAbsolutePath() + " " + cadu.getParentFile().getAbsolutePath();
+		if (satellite.getSatdumpSatelliteNumber() != null) {
+			commandLine += " --satellite_number " + satellite.getSatdumpSatelliteNumber();
+		}
 		try {
 			process = factory.create(commandLine.trim(), true, false);
 			new SatdumpLogProcessor(request.getId(), process.getInputStream(), "satdump-decode-stdio").start();
