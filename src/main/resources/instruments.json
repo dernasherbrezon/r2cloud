@@ -944,5 +944,63 @@
 				"description": "11.5 - 12.5 µm"
 			}
 		]
+	},
+	{
+		"id": "MSUGSA",
+		"name": "MSU-GS/A",
+		"satdumpName": "MSU-GS",
+		"description": "Multi-purpose imagery and wind derivation by tracking clouds and water vapour features",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "MSU-GS-1.png",
+				"description": "0.50 - 0.65 µm"
+			},
+			{
+				"id": "2",
+				"satdumpName": "MSU-GS-2.png",
+				"description": "0.65 - 0.80 µm"
+			},
+			{
+				"id": "3",
+				"satdumpName": "MSU-GS-3.png",
+				"description": "0.80 - 0.90 µm"
+			},
+			{
+				"id": "4",
+				"satdumpName": "MSU-GS-4.png",
+				"description": "3.50 - 4.00 µm"
+			},
+			{
+				"id": "5",
+				"satdumpName": "MSU-GS-5.png",
+				"description": "5.70 - 7.00 µm"
+			},
+			{
+				"id": "6",
+				"satdumpName": "MSU-GS-6.png",
+				"description": "7.50 - 8.50 µm"
+			},
+			{
+				"id": "7",
+				"satdumpName": "MSU-GS-7.png",
+				"description": "8.20 - 9.20 µm"
+			},
+			{
+				"id": "8",
+				"satdumpName": "MSU-GS-8.png",
+				"description": "9.20 - 10.2 µm"
+			},
+			{
+				"id": "9",
+				"satdumpName": "MSU-GS-9.png",
+				"description": "10.2 - 11.2 µm"
+			},
+			{
+				"id": "10",
+				"satdumpName": "MSU-GS-10.png",
+				"description": "11.2 - 12.5 µm"
+			}
+		]
 	}
 ]

@@ -50,6 +50,13 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
+		"instruments": [
+			{
+				"id": "MSUGSA",
+				"enabled": true,
+				"primary": true
+			}
+		],
 		"lastUpdateTime": 1748716208000
 	},
 	{
