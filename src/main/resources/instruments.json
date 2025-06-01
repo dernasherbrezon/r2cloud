@@ -1002,5 +1002,464 @@
 				"description": "11.2 - 12.5 µm"
 			}
 		]
+	},
+	{
+		"id": "MERSIRM",
+		"name": "MERSI-RM",
+		"satdumpName": "MERSI-RM",
+		"description": "Multi-purpose imagery to support cloud and precipitation observations with PMR",
+		"satdumpCombined": "mersirm_rgb_Natural_Color_corrected.png",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "MERSI-RM-1.png",
+				"description": "650 nm"
+			},
+			{
+				"id": "2",
+				"satdumpName": "MERSI-RM-2.png",
+				"description": "865 nm"
+			},
+			{
+				"id": "3",
+				"satdumpName": "MERSI-RM-3.png",
+				"description": "940 nm"
+			},
+			{
+				"id": "4",
+				"satdumpName": "MERSI-RM-4.png",
+				"description": "1380 nm"
+			},
+			{
+				"id": "5",
+				"satdumpName": "MERSI-RM-5.png",
+				"description": "1640 nm"
+			},
+			{
+				"id": "6",
+				"satdumpName": "MERSI-RM-6.png",
+				"description": "3.80 μm"
+			},
+			{
+				"id": "7",
+				"satdumpName": "MERSI-RM-7.png",
+				"description": "10.8 μm"
+			},
+			{
+				"id": "8",
+				"satdumpName": "MERSI-RM-8.png",
+				"description": "12.0 μm"
+			}
+		]
+	},
+	{
+		"id": "MWRIRM",
+		"name": "MWRI-RM",
+		"satdumpName": "MWRI-RM",
+		"description": "Micro-Wave Radiation Imager for the Rainfall Mission",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "MWRI-RM-1.png",
+				"description": "10.65 GHz"
+			},
+			{
+				"id": "2",
+				"satdumpName": "MWRI-RM-2.png",
+				"description": "18.7 GHz"
+			},
+			{
+				"id": "3",
+				"satdumpName": "MWRI-RM-3.png",
+				"description": "23.8 GHz"
+			},
+			{
+				"id": "4",
+				"satdumpName": "MWRI-RM-4.png",
+				"description": "36.5 GHz"
+			},
+			{
+				"id": "5",
+				"satdumpName": "MWRI-RM-5.png",
+				"description": "50.30 GHz"
+			},
+			{
+				"id": "6",
+				"satdumpName": "MWRI-RM-6.png",
+				"description": "52.61 GHz"
+			},
+			{
+				"id": "7",
+				"satdumpName": "MWRI-RM-7.png",
+				"description": "53.24 GHz"
+			},
+			{
+				"id": "8",
+				"satdumpName": "MWRI-RM-8.png",
+				"description": "53.75 GHz"
+			},
+			{
+				"id": "9",
+				"satdumpName": "MWRI-RM-9.png",
+				"description": "89.0 GHz"
+			},
+			{
+				"id": "10",
+				"satdumpName": "MWRI-RM-10.png",
+				"description": "118.7503±3.2 GHz"
+			},
+			{
+				"id": "11",
+				"satdumpName": "MWRI-RM-11.png",
+				"description": "118.7503±2.1 GHz"
+			},
+			{
+				"id": "12",
+				"satdumpName": "MWRI-RM-12.png",
+				"description": "118.7503±1.4 GHz"
+			},
+			{
+				"id": "13",
+				"satdumpName": "MWRI-RM-13.png",
+				"description": "118.7503±1.2 GHz"
+			},
+			{
+				"id": "14",
+				"satdumpName": "MWRI-RM-14.png",
+				"description": "165.5±0.75 GHz"
+			},
+			{
+				"id": "15",
+				"satdumpName": "MWRI-RM-15.png",
+				"description": "183.31±2.0 GHz"
+			},
+			{
+				"id": "16",
+				"satdumpName": "MWRI-RM-16.png",
+				"description": "183.31±3.4 GHz"
+			},
+			{
+				"id": "17",
+				"satdumpName": "MWRI-RM-17.png",
+				"description": "183.31±7.0 GHz"
+			}
+		]
+	},
+	{
+		"id": "MERSI3",
+		"name": "MERSI-3",
+		"satdumpName": "MERSI-3",
+		"description": "Multi-purpose imagery, including ocean colour",
+		"satdumpCombined": "mersi3_rgb_True_Color_corrected.png",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "MERSI3-1.png",
+				"description": "412 nm"
+			},
+			{
+				"id": "2",
+				"satdumpName": "MERSI3-2.png",
+				"description": "443 nm"
+			},
+			{
+				"id": "3",
+				"satdumpName": "MERSI3-3.png",
+				"description": "470 nm"
+			},
+			{
+				"id": "4",
+				"satdumpName": "MERSI3-4.png",
+				"description": "490 nm"
+			},
+			{
+				"id": "5",
+				"satdumpName": "MERSI3-5.png",
+				"description": "550 nm"
+			},
+			{
+				"id": "6",
+				"satdumpName": "MERSI3-6.png",
+				"description": "555 nm"
+			},
+			{
+				"id": "7",
+				"satdumpName": "MERSI3-7.png",
+				"description": "650 nm"
+			},
+			{
+				"id": "8",
+				"satdumpName": "MERSI3-8.png",
+				"description": "670 nm"
+			},
+			{
+				"id": "9",
+				"satdumpName": "MERSI3-9.png",
+				"description": "709 nm"
+			},
+			{
+				"id": "10",
+				"satdumpName": "MERSI3-10.png",
+				"description": "746 nm"
+			},
+			{
+				"id": "11",
+				"satdumpName": "MERSI3-11.png",
+				"description": "865 nm"
+			},
+			{
+				"id": "12",
+				"satdumpName": "MERSI3-12.png",
+				"description": "865 nm"
+			},
+			{
+				"id": "13",
+				"satdumpName": "MERSI3-13.png",
+				"description": "905 nm"
+			},
+			{
+				"id": "14",
+				"satdumpName": "MERSI3-14.png",
+				"description": "936 nm"
+			},
+			{
+				"id": "15",
+				"satdumpName": "MERSI3-15.png",
+				"description": "940 nm"
+			},
+			{
+				"id": "16",
+				"satdumpName": "MERSI3-16.png",
+				"description": "1030 nm"
+			},
+			{
+				"id": "17",
+				"satdumpName": "MERSI3-17.png",
+				"description": "1380 nm"
+			},
+			{
+				"id": "18",
+				"satdumpName": "MERSI3-18.png",
+				"description": "1640 nm"
+			},
+			{
+				"id": "19",
+				"satdumpName": "MERSI3-19.png",
+				"description": "2130 nm"
+			},
+			{
+				"id": "20",
+				"satdumpName": "MERSI3-20.png",
+				"description": "3.80 μm"
+			},
+			{
+				"id": "21",
+				"satdumpName": "MERSI3-21.png",
+				"description": "4.05 μm"
+			},
+			{
+				"id": "22",
+				"satdumpName": "MERSI3-22.png",
+				"description": "7.20 μm"
+			},
+			{
+				"id": "23",
+				"satdumpName": "MERSI3-23.png",
+				"description": "8.55 μm"
+			},
+			{
+				"id": "24",
+				"satdumpName": "MERSI3-24.png",
+				"description": "10.8 μm"
+			},
+			{
+				"id": "25",
+				"satdumpName": "MERSI3-25.png",
+				"description": "12.0 μm"
+			}
+		]
+	},
+	{
+		"id": "MWHS2",
+		"name": "MWHS-2",
+		"satdumpName": "MWHS-2",
+		"description": "Humidity sounding in nearly-all-weather conditions. Also, precipitation",
+		"satdumpCombined": "mwhs2_rgb_MWHS_False_Color.png",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "MWHS2-1.png",
+				"description": "89 Ghz"
+			},
+			{
+				"id": "2",
+				"satdumpName": "MWHS2-2.png",
+				"description": "118.75±0.08 Ghz"
+			},
+			{
+				"id": "3",
+				"satdumpName": "MWHS2-3.png",
+				"description": "118.75±0.2 Ghz"
+			},
+			{
+				"id": "4",
+				"satdumpName": "MWHS2-4.png",
+				"description": "118.75±0.3 Ghz"
+			},
+			{
+				"id": "5",
+				"satdumpName": "MWHS2-5.png",
+				"description": "118.75±0.8 Ghz"
+			},
+			{
+				"id": "6",
+				"satdumpName": "MWHS2-6.png",
+				"description": "118.75±1.1 Ghz"
+			},
+			{
+				"id": "7",
+				"satdumpName": "MWHS2-7.png",
+				"description": "118.75±2.5 Ghz"
+			},
+			{
+				"id": "8",
+				"satdumpName": "MWHS2-8.png",
+				"description": "118.75±3.0 Ghz"
+			},
+			{
+				"id": "9",
+				"satdumpName": "MWHS2-9.png",
+				"description": "118.75±5.0 Ghz"
+			},
+			{
+				"id": "10",
+				"satdumpName": "MWHS2-10.png",
+				"description": "166 Ghz"
+			},
+			{
+				"id": "11",
+				"satdumpName": "MWHS2-11.png",
+				"description": "183±1 Ghz"
+			},
+			{
+				"id": "12",
+				"satdumpName": "MWHS2-12.png",
+				"description": "183±1.8 Ghz"
+			},
+			{
+				"id": "13",
+				"satdumpName": "MWHS2-13.png",
+				"description": "183±3 Ghz"
+			},
+			{
+				"id": "14",
+				"satdumpName": "MWHS2-14.png",
+				"description": "183±4.5 Ghz"
+			},
+			{
+				"id": "15",
+				"satdumpName": "MWHS2-15.png",
+				"description": "183±7 Ghz"
+			}
+		]
+	},
+	{
+		"id": "MWTS3",
+		"name": "MWTS-3",
+		"satdumpName": "MWTS-3",
+		"description": "Temperature sounding in nearly-all-weather conditions",
+		"satdumpCombined": "MWTS3_rgb_MWRI-2_10.20.23_like_MWRI_123.png",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "MWTS3-1.png",
+				"description": "23.8 Ghz"
+			},
+			{
+				"id": "2",
+				"satdumpName": "MWTS3-2.png",
+				"description": "31.4 Ghz"
+			},
+			{
+				"id": "3",
+				"satdumpName": "MWTS3-3.png",
+				"description": "50.30 Ghz"
+			},
+			{
+				"id": "4",
+				"satdumpName": "MWTS3-4.png",
+				"description": "51.76 Ghz"
+			},
+			{
+				"id": "5",
+				"satdumpName": "MWTS3-5.png",
+				"description": "52.8 Ghz"
+			},
+			{
+				"id": "6",
+				"satdumpName": "MWTS3-6.png",
+				"description": "53.246 ± 0.08 Ghz"
+			},
+			{
+				"id": "7",
+				"satdumpName": "MWTS3-7.png",
+				"description": "53.596 ± 0.115 Ghz"
+			},
+			{
+				"id": "8",
+				"satdumpName": "MWTS3-8.png",
+				"description": "53.948 ± 0.081 Ghz"
+			},
+			{
+				"id": "9",
+				"satdumpName": "MWTS3-9.png",
+				"description": "54.40 Ghz"
+			},
+			{
+				"id": "10",
+				"satdumpName": "MWTS3-10.png",
+				"description": "54.94 Ghz"
+			},
+			{
+				"id": "11",
+				"satdumpName": "MWTS3-11.png",
+				"description": "55.50 Ghz"
+			},
+			{
+				"id": "12",
+				"satdumpName": "MWTS3-12.png",
+				"description": "57.290 Ghz"
+			},
+			{
+				"id": "13",
+				"satdumpName": "MWTS3-13.png",
+				"description": "57.290 ± 0.217 Ghz"
+			},
+			{
+				"id": "14",
+				"satdumpName": "MWTS3-14.png",
+				"description": "57.290 ± 0.322 ± 0.048 Ghz"
+			},
+			{
+				"id": "15",
+				"satdumpName": "MWTS3-15.png",
+				"description": "57.290 ± 0.322 ± 0.022 Ghz"
+			},
+			{
+				"id": "16",
+				"satdumpName": "MWTS3-16.png",
+				"description": "57.290 ± 0.322 ± 0.010 Ghz"
+			},
+			{
+				"id": "17",
+				"satdumpName": "MWTS3-17.png",
+				"description": "57.290 ± 0.322 ± 0.0045 Ghz"
+			},
+			{
+				"id": "18",
+				"satdumpName": "MWTS3-18.png",
+				"description": "89 Ghz"
+			}
+		]
 	}
 ]

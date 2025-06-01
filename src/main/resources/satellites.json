@@ -359,6 +359,18 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
+		"instruments": [
+			{
+				"id": "MERSIRM",
+				"enabled": true,
+				"primary": true
+			},
+			{
+				"id": "MWRIRM",
+				"enabled": true,
+				"primary": false
+			}
+		],
 		"lastUpdateTime": 1748716305000
 	},
 	{
@@ -380,6 +392,28 @@
 				"status": "ENABLED",
 				"satdumpPipeline": "fengyun3_f_ahrpt",
 				"satdumpCaduSizeBytes": 1024
+			}
+		],
+		"instruments": [
+			{
+				"id": "MERSI3",
+				"enabled": true,
+				"primary": true
+			},
+			{
+				"id": "MWHS2",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "MWRI2",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "MWTS3",
+				"enabled": true,
+				"primary": false
 			}
 		],
 		"lastUpdateTime": 1748716310000
