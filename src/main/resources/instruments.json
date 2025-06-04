@@ -1856,5 +1856,333 @@
 				"description": ""
 			}
 		]
+	},
+	{
+		"id": "OMI",
+		"name": "OMI",
+		"satdumpName": "OMI",
+		"description": "Ozone Monitoring Instrument",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "OMI-ALL-1.png",
+				"description": "270-380 nm"
+			},
+			{
+				"id": "2",
+				"satdumpName": "OMI-ALL-2.png",
+				"description": "350-500 nm"
+			}
+		]
+	},
+	{
+		"id": "MODIS",
+		"name": "MODIS",
+		"satdumpName": "MODIS",
+		"description": "Moderate-resolution Imaging Spectro-radiometer",
+		"satdumpCombined": "modis_rgb_True_Color_corrected.png",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "MODIS-1.png",
+				"description": "645 nm"
+			},
+			{
+				"id": "2",
+				"satdumpName": "MODIS-2.png",
+				"description": "858 nm"
+			},
+			{
+				"id": "3",
+				"satdumpName": "MODIS-3.png",
+				"description": "469 nm"
+			},
+			{
+				"id": "4",
+				"satdumpName": "MODIS-4.png",
+				"description": "555 nm"
+			},
+			{
+				"id": "5",
+				"satdumpName": "MODIS-5.png",
+				"description": "1240 nm"
+			},
+			{
+				"id": "6",
+				"satdumpName": "MODIS-6.png",
+				"description": "1640 nm"
+			},
+			{
+				"id": "7",
+				"satdumpName": "MODIS-7.png",
+				"description": "2130 nm"
+			},
+			{
+				"id": "8",
+				"satdumpName": "MODIS-8.png",
+				"description": "412 nm"
+			},
+			{
+				"id": "9",
+				"satdumpName": "MODIS-9.png",
+				"description": "443 nm"
+			},
+			{
+				"id": "10",
+				"satdumpName": "MODIS-10.png",
+				"description": "488 nm"
+			},
+			{
+				"id": "11",
+				"satdumpName": "MODIS-11.png",
+				"description": "531 nm"
+			},
+			{
+				"id": "12",
+				"satdumpName": "MODIS-12.png",
+				"description": "551 nm"
+			},
+			{
+				"id": "13H",
+				"satdumpName": "MODIS-13H.png",
+				"description": "667 nm"
+			},
+			{
+				"id": "13L",
+				"satdumpName": "MODIS-13L.png",
+				"description": "667 nm"
+			},
+			{
+				"id": "14H",
+				"satdumpName": "MODIS-14H.png",
+				"description": "678 nm"
+			},
+			{
+				"id": "14L",
+				"satdumpName": "MODIS-14L.png",
+				"description": "678 nm"
+			},
+			{
+				"id": "15",
+				"satdumpName": "MODIS-15.png",
+				"description": "748 nm"
+			},
+			{
+				"id": "16",
+				"satdumpName": "MODIS-16.png",
+				"description": "870 nm"
+			},
+			{
+				"id": "17",
+				"satdumpName": "MODIS-17.png",
+				"description": "905 nm"
+			},
+			{
+				"id": "18",
+				"satdumpName": "MODIS-18.png",
+				"description": "936 nm"
+			},
+			{
+				"id": "19",
+				"satdumpName": "MODIS-19.png",
+				"description": "940 nm"
+			},
+			{
+				"id": "20",
+				"satdumpName": "MODIS-20.png",
+				"description": "1375 nm"
+			},
+			{
+				"id": "21",
+				"satdumpName": "MODIS-21.png",
+				"description": "3.750 µm"
+			},
+			{
+				"id": "22",
+				"satdumpName": "MODIS-22.png",
+				"description": "3.959 µm"
+			},
+			{
+				"id": "23",
+				"satdumpName": "MODIS-23.png",
+				"description": "3.959 µm"
+			},
+			{
+				"id": "24",
+				"satdumpName": "MODIS-24.png",
+				"description": "4.050 µm"
+			},
+			{
+				"id": "25",
+				"satdumpName": "MODIS-25.png",
+				"description": "4.515 µm"
+			},
+			{
+				"id": "26",
+				"satdumpName": "MODIS-26.png",
+				"description": "4.515 µm"
+			},
+			{
+				"id": "27",
+				"satdumpName": "MODIS-27.png",
+				"description": "6.715 µm"
+			},
+			{
+				"id": "28",
+				"satdumpName": "MODIS-28.png",
+				"description": "7.325 µm"
+			},
+			{
+				"id": "29",
+				"satdumpName": "MODIS-29.png",
+				"description": "8.550 µm"
+			},
+			{
+				"id": "30",
+				"satdumpName": "MODIS-30.png",
+				"description": "9.730 µm"
+			},
+			{
+				"id": "31",
+				"satdumpName": "MODIS-31.png",
+				"description": "11.030 µm"
+			},
+			{
+				"id": "32",
+				"satdumpName": "MODIS-32.png",
+				"description": "12.020 µm"
+			},
+			{
+				"id": "33",
+				"satdumpName": "MODIS-33.png",
+				"description": "13.335 µm"
+			},
+			{
+				"id": "34",
+				"satdumpName": "MODIS-34.png",
+				"description": "13.635 µm"
+			},
+			{
+				"id": "35",
+				"satdumpName": "MODIS-35.png",
+				"description": "13.935 µm"
+			},
+			{
+				"id": "36",
+				"satdumpName": "MODIS-36.png",
+				"description": "14.235 µm"
+			}
+		]
+	},
+	{
+		"id": "AIRS",
+		"name": "AIRS",
+		"satdumpName": "AIRS",
+		"description": "Temperature/humidity sounding, ozone profile and total-column green-house gases",
+		"satdumpCombined": "airs_rgb_HIRS_False_Color.png",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "AIRS-1.png",
+				"description": ""
+			}
+		]
+	},
+	{
+		"id": "AMSUA1",
+		"name": "AMSU-A",
+		"satdumpName": "AMSU",
+		"satdumpCombined": "amsu_a_rgb_AMSU_False_Color.png",
+		"description": "The advanced microwave sounding unit.",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "AMSU-A1-1.png",
+				"description": "23.8GHz"
+			},
+			{
+				"id": "2",
+				"satdumpName": "AMSU-A1-2.png",
+				"description": "31.4GHz"
+			},
+			{
+				"id": "3",
+				"satdumpName": "AMSU-A1-3.png",
+				"description": "50.3GHz"
+			},
+			{
+				"id": "4",
+				"satdumpName": "AMSU-A1-4.png",
+				"description": "52.8GHz"
+			},
+			{
+				"id": "5",
+				"satdumpName": "AMSU-A1-5.png",
+				"description": "53.596 ± 0.115GHz"
+			},
+			{
+				"id": "6",
+				"satdumpName": "AMSU-A1-6.png",
+				"description": "54.4GHz"
+			},
+			{
+				"id": "7",
+				"satdumpName": "AMSU-A1-7.png",
+				"description": "54.94GHz"
+			},
+			{
+				"id": "8",
+				"satdumpName": "AMSU-A1-8.png",
+				"description": "55.5GHz"
+			},
+			{
+				"id": "9",
+				"satdumpName": "AMSU-A1-9.png",
+				"description": "57.290GHz"
+			},
+			{
+				"id": "10",
+				"satdumpName": "AMSU-A1-10.png",
+				"description": "57.290 ± 0.217GHz"
+			},
+			{
+				"id": "11",
+				"satdumpName": "AMSU-A1-11.png",
+				"description": "57.290 ± 0.3222 ± 0.048GHz"
+			},
+			{
+				"id": "12",
+				"satdumpName": "AMSU-A1-12.png",
+				"description": "57.290 ± 0.3222 ± 0.022GHz"
+			},
+			{
+				"id": "13",
+				"satdumpName": "AMSU-A1-13.png",
+				"description": "57.290 ± 0.3222 ± 0.010GHz"
+			}
+		]
+	},
+	{
+		"id": "CERES",
+		"name": "CERES",
+		"satdumpName": "CERES-FM3",
+		"description": "Clouds and the Earth’s Radiant Energy System",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "CERES-LONGWAVE.png",
+				"description": "8 - 12 µm"
+			},
+			{
+				"id": "2",
+				"satdumpName": "CERES-SHORTWAVE.png",
+				"description": "0.3 - 5.0 µm"
+			},
+			{
+				"id": "3",
+				"satdumpName": "CERES-TOTAL.png",
+				"description": "0.3 - 100 µm"
+			}
+		]
 	}
 ]

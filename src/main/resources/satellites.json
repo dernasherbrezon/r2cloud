@@ -1,5 +1,110 @@
 [
 	{
+		"id": "R2CLOUD536",
+		"name": "AURA",
+		"noradId": "28376",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "OQPSK",
+				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1020,
+				"frequency": 8160000000,
+				"bandwidth": 15000000,
+				"baudRates": [
+					7500000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "aura_db",
+				"satdumpCaduSizeBytes": 1024
+			}
+		],
+		"lastUpdateTime": 1749061024000,
+		"instruments": [
+			{
+				"id": "OMI",
+				"enabled": true,
+				"primary": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD535",
+		"name": "TERRA",
+		"noradId": "25994",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1020,
+				"frequency": 8212500000,
+				"bandwidth": 45000000,
+				"baudRates": [
+					13125000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "terra_db",
+				"satdumpCaduSizeBytes": 1024
+			}
+		],
+		"lastUpdateTime": 1749060943000,
+		"instruments": [
+			{
+				"id": "MODIS",
+				"enabled": true,
+				"primary": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD534",
+		"name": "AQUA",
+		"noradId": "27424",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "OQPSK",
+				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1020,
+				"frequency": 8160000000,
+				"bandwidth": 15000000,
+				"baudRates": [
+					7500000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "aqua_db",
+				"satdumpCaduSizeBytes": 1024
+			}
+		],
+		"lastUpdateTime": 1749060810000,
+		"instruments": [
+			{
+				"id": "MODIS",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "AIRS",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "AMSUA1",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "CERES",
+				"enabled": true,
+				"primary": false
+			}
+		]
+	},
+	{
 		"id": "R2CLOUD533",
 		"name": "ARCTIC WEATHER SATELLITE",
 		"noradId": "60543",
@@ -20,14 +125,14 @@
 				"satdumpCaduSizeBytes": 1279
 			}
 		],
+		"lastUpdateTime": 1748717143000,
 		"instruments": [
 			{
 				"id": "MWR",
 				"enabled": true,
 				"primary": true
 			}
-		],
-		"lastUpdateTime": 1748716189000
+		]
 	},
 	{
 		"id": "R2CLOUD532",
@@ -50,14 +155,14 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
+		"lastUpdateTime": 1748773125000,
 		"instruments": [
 			{
 				"id": "MSUGSA",
 				"enabled": true,
 				"primary": true
 			}
-		],
-		"lastUpdateTime": 1748716208000
+		]
 	},
 	{
 		"id": "R2CLOUD531",
@@ -359,6 +464,7 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
+		"lastUpdateTime": 1748791276000,
 		"instruments": [
 			{
 				"id": "MERSIRM",
@@ -370,8 +476,7 @@
 				"enabled": true,
 				"primary": false
 			}
-		],
-		"lastUpdateTime": 1748716305000
+		]
 	},
 	{
 		"id": "R2CLOUD520",
@@ -394,6 +499,7 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
+		"lastUpdateTime": 1748797258000,
 		"instruments": [
 			{
 				"id": "MERSI3",
@@ -415,8 +521,7 @@
 				"enabled": true,
 				"primary": false
 			}
-		],
-		"lastUpdateTime": 1748716310000
+		]
 	},
 	{
 		"id": "R2CLOUD519",
@@ -439,6 +544,7 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
+		"lastUpdateTime": 1748989550000,
 		"instruments": [
 			{
 				"id": "MERSILL",
@@ -460,8 +566,7 @@
 				"enabled": true,
 				"primary": false
 			}
-		],
-		"lastUpdateTime": 1748716317000
+		]
 	},
 	{
 		"id": "R2CLOUD518",
@@ -484,6 +589,7 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
+		"lastUpdateTime": 1749060287000,
 		"instruments": [
 			{
 				"id": "MERSI2",
@@ -510,8 +616,7 @@
 				"enabled": true,
 				"primary": false
 			}
-		],
-		"lastUpdateTime": 1748716339000
+		]
 	},
 	{
 		"id": "R2CLOUD517",
@@ -534,6 +639,7 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
+		"lastUpdateTime": 1748727308000,
 		"instruments": [
 			{
 				"id": "VIRR",
@@ -550,8 +656,7 @@
 				"enabled": true,
 				"primary": false
 			}
-		],
-		"lastUpdateTime": 1748716335000
+		]
 	},
 	{
 		"id": "R2CLOUD516",
