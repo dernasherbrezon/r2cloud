@@ -1461,5 +1461,400 @@
 				"description": "89 Ghz"
 			}
 		]
+	},
+	{
+		"id": "MERSILL",
+		"name": "MERSI-LL",
+		"satdumpName": "MERSI-LL",
+		"description": "Multi-purpose imagery with low-level light capability",
+		"satdumpCombined": "mersill_rgb_AVHRR_221_False_Color_corrected.png",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "MERSILL-1.png",
+				"description": ""
+			},
+			{
+				"id": "2",
+				"satdumpName": "MERSILL-2.png",
+				"description": ""
+			},
+			{
+				"id": "3",
+				"satdumpName": "MERSILL-3.png",
+				"description": ""
+			},
+			{
+				"id": "4",
+				"satdumpName": "MERSILL-4.png",
+				"description": ""
+			},
+			{
+				"id": "5",
+				"satdumpName": "MERSILL-5.png",
+				"description": ""
+			},
+			{
+				"id": "6",
+				"satdumpName": "MERSILL-6.png",
+				"description": ""
+			},
+			{
+				"id": "7",
+				"satdumpName": "MERSILL-7.png",
+				"description": ""
+			},
+			{
+				"id": "8",
+				"satdumpName": "MERSILL-8.png",
+				"description": ""
+			},
+			{
+				"id": "9",
+				"satdumpName": "MERSILL-9.png",
+				"description": ""
+			},
+			{
+				"id": "10",
+				"satdumpName": "MERSILL-10.png",
+				"description": ""
+			},
+			{
+				"id": "11",
+				"satdumpName": "MERSILL-11.png",
+				"description": ""
+			},
+			{
+				"id": "12",
+				"satdumpName": "MERSILL-12.png",
+				"description": ""
+			},
+			{
+				"id": "13",
+				"satdumpName": "MERSILL-13.png",
+				"description": ""
+			},
+			{
+				"id": "14",
+				"satdumpName": "MERSILL-14.png",
+				"description": ""
+			},
+			{
+				"id": "15",
+				"satdumpName": "MERSILL-15.png",
+				"description": ""
+			},
+			{
+				"id": "16",
+				"satdumpName": "MERSILL-16.png",
+				"description": ""
+			},
+			{
+				"id": "17",
+				"satdumpName": "MERSILL-17.png",
+				"description": ""
+			},
+			{
+				"id": "18",
+				"satdumpName": "MERSILL-18.png",
+				"description": ""
+			}
+		]
+	},
+	{
+		"id": "XEUVI",
+		"name": "XEUVI",
+		"satdumpName": "XEUVI",
+		"description": "Solar imagery in the X-ray and EUV ranges",
+		"satdumpCombined": "XEUVI_1.png"
+	},
+	{
+		"id": "GAS",
+		"name": "GAS",
+		"satdumpName": "GAS",
+		"description": "Greenhouse-gases Absorption Spectrometer",
+		"satdumpCombined": "GAS.png"
+	},
+	{
+		"id": "MERSI2",
+		"name": "MERSI-2",
+		"satdumpName": "MERSI-2",
+		"description": "Multi-purpose imagery, including ocean colour",
+		"satdumpCombined": "mersi2_rgb_True_Color_corrected.png",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "MERSI2-1.png",
+				"description": "412 nm"
+			},
+			{
+				"id": "2",
+				"satdumpName": "MERSI2-2.png",
+				"description": "443 nm"
+			},
+			{
+				"id": "3",
+				"satdumpName": "MERSI2-3.png",
+				"description": "470 nm"
+			},
+			{
+				"id": "4",
+				"satdumpName": "MERSI2-4.png",
+				"description": "490 nm"
+			},
+			{
+				"id": "5",
+				"satdumpName": "MERSI2-5.png",
+				"description": "550 nm"
+			},
+			{
+				"id": "6",
+				"satdumpName": "MERSI2-6.png",
+				"description": "555 nm"
+			},
+			{
+				"id": "7",
+				"satdumpName": "MERSI2-7.png",
+				"description": "650 nm"
+			},
+			{
+				"id": "8",
+				"satdumpName": "MERSI2-8.png",
+				"description": "670 nm"
+			},
+			{
+				"id": "9",
+				"satdumpName": "MERSI2-9.png",
+				"description": "709 nm"
+			},
+			{
+				"id": "10",
+				"satdumpName": "MERSI2-10.png",
+				"description": "746 nm"
+			},
+			{
+				"id": "11",
+				"satdumpName": "MERSI2-11.png",
+				"description": "865 nm"
+			},
+			{
+				"id": "12",
+				"satdumpName": "MERSI2-12.png",
+				"description": "865 nm"
+			},
+			{
+				"id": "13",
+				"satdumpName": "MERSI2-13.png",
+				"description": "905 nm"
+			},
+			{
+				"id": "14",
+				"satdumpName": "MERSI2-14.png",
+				"description": "936 nm"
+			},
+			{
+				"id": "15",
+				"satdumpName": "MERSI2-15.png",
+				"description": "940 nm"
+			},
+			{
+				"id": "16",
+				"satdumpName": "MERSI2-16.png",
+				"description": "1240 nm"
+			},
+			{
+				"id": "17",
+				"satdumpName": "MERSI2-17.png",
+				"description": "1380 nm"
+			},
+			{
+				"id": "18",
+				"satdumpName": "MERSI2-18.png",
+				"description": "1640 nm"
+			},
+			{
+				"id": "19",
+				"satdumpName": "MERSI2-19.png",
+				"description": "2130 nm"
+			},
+			{
+				"id": "20",
+				"satdumpName": "MERSI2-20.png",
+				"description": "3.80 μm"
+			},
+			{
+				"id": "21",
+				"satdumpName": "MERSI2-21.png",
+				"description": "4.05 μm"
+			},
+			{
+				"id": "22",
+				"satdumpName": "MERSI2-22.png",
+				"description": "7.20 μm"
+			},
+			{
+				"id": "23",
+				"satdumpName": "MERSI2-23.png",
+				"description": "8.55 μm"
+			},
+			{
+				"id": "24",
+				"satdumpName": "MERSI2-24.png",
+				"description": "10.8 μm"
+			},
+			{
+				"id": "25",
+				"satdumpName": "MERSI2-25.png",
+				"description": "12.0 μm"
+			}
+		]
+	},
+	{
+		"id": "MWRI1",
+		"name": "MWRI-1",
+		"satdumpName": "MWRI",
+		"description": "Multi-purpose imagery with emphasis on precipitation",
+		"satdumpCombined": "mwri_rgb_MWRI_123.png",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "MWRI-1.png",
+				"description": "10.65 GHz"
+			},
+			{
+				"id": "2",
+				"satdumpName": "MWRI-2.png",
+				"description": "18.7 GHz"
+			},
+			{
+				"id": "3",
+				"satdumpName": "MWRI-3.png",
+				"description": "23.8 GHz"
+			},
+			{
+				"id": "4",
+				"satdumpName": "MWRI-4.png",
+				"description": "36.5 GHz"
+			},
+			{
+				"id": "5",
+				"satdumpName": "MWRI-5.png",
+				"description": "50.30 GHz"
+			},
+			{
+				"id": "6",
+				"satdumpName": "MWRI-6.png",
+				"description": "52.61 GHz"
+			},
+			{
+				"id": "7",
+				"satdumpName": "MWRI-7.png",
+				"description": "53.24 GHz"
+			},
+			{
+				"id": "8",
+				"satdumpName": "MWRI-8.png",
+				"description": "53.75 GHz"
+			},
+			{
+				"id": "9",
+				"satdumpName": "MWRI-9.png",
+				"description": "89.0 GHz"
+			},
+			{
+				"id": "10",
+				"satdumpName": "MWRI-10.png",
+				"description": "118.7503±3.2 GHz"
+			}
+		]
+	},
+	{
+		"id": "MWTS2",
+		"name": "MWTS-2",
+		"satdumpName": "MWTS-2",
+		"description": "Temperature sounding in nearly-all-weather conditions",
+		"satdumpCombined": "mwts2_rgb_AMSU_False_Color.png",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "MWTS2-1.png",
+				"description": "50.30 GHz"
+			},
+			{
+				"id": "2",
+				"satdumpName": "MWTS2-2.png",
+				"description": "51.76 GHz"
+			},
+			{
+				"id": "3",
+				"satdumpName": "MWTS2-3.png",
+				"description": "52.8 GHz"
+			},
+			{
+				"id": "4",
+				"satdumpName": "MWTS2-4.png",
+				"description": "53.596 GHz"
+			},
+			{
+				"id": "5",
+				"satdumpName": "MWTS2-5.png",
+				"description": "54.40 GHz"
+			},
+			{
+				"id": "6",
+				"satdumpName": "MWTS2-6.png",
+				"description": "54.94 GHz"
+			},
+			{
+				"id": "7",
+				"satdumpName": "MWTS2-7.png",
+				"description": "55.50 GHz"
+			},
+			{
+				"id": "8",
+				"satdumpName": "MWTS2-8.png",
+				"description": "57.290 GHz"
+			},
+			{
+				"id": "9",
+				"satdumpName": "MWTS2-9.png",
+				"description": "57.290 ± 0.217 GHz"
+			},
+			{
+				"id": "10",
+				"satdumpName": "MWTS2-10.png",
+				"description": "57.290 ± 0.322 ± 0.048 GHz"
+			},
+			{
+				"id": "11",
+				"satdumpName": "MWTS2-10.png",
+				"description": "57.290 ± 0.322 ± 0.022 GHz"
+			},
+			{
+				"id": "12",
+				"satdumpName": "MWTS2-10.png",
+				"description": "57.290 ± 0.322 ± 0.010 GHz"
+			},
+			{
+				"id": "13",
+				"satdumpName": "MWTS2-10.png",
+				"description": "57.290 ± 0.322 ± 0.0045 GHz"
+			},
+			{
+				"id": "14",
+				"satdumpName": "MWTS2-10.png",
+				"description": ""
+			},
+			{
+				"id": "15",
+				"satdumpName": "MWTS2-10.png",
+				"description": ""
+			},
+			{
+				"id": "16",
+				"satdumpName": "MWTS2-10.png",
+				"description": ""
+			}
+		]
 	}
 ]

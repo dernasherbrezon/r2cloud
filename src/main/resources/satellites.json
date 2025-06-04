@@ -439,6 +439,28 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
+		"instruments": [
+			{
+				"id": "MERSILL",
+				"enabled": true,
+				"primary": true
+			},
+			{
+				"id": "MWHS2",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "MWTS3",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "XEUVI",
+				"enabled": true,
+				"primary": false
+			}
+		],
 		"lastUpdateTime": 1748716317000
 	},
 	{
@@ -460,6 +482,33 @@
 				"status": "ENABLED",
 				"satdumpPipeline": "fengyun3_d_ahrpt",
 				"satdumpCaduSizeBytes": 1024
+			}
+		],
+		"instruments": [
+			{
+				"id": "MERSI2",
+				"enabled": true,
+				"primary": true
+			},
+			{
+				"id": "GAS",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "MWHS2",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "MWRI1",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "MWTS2",
+				"enabled": true,
+				"primary": false
 			}
 		],
 		"lastUpdateTime": 1748716339000
