@@ -20,7 +20,7 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1749061024000,
+		"lastUpdateTime": 1749062268000,
 		"instruments": [
 			{
 				"id": "OMI",
@@ -50,7 +50,7 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1749060943000,
+		"lastUpdateTime": 1749064524000,
 		"instruments": [
 			{
 				"id": "MODIS",
@@ -80,7 +80,7 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1749060810000,
+		"lastUpdateTime": 1749064536000,
 		"instruments": [
 			{
 				"id": "MODIS",

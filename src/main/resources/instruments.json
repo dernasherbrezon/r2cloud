@@ -1012,42 +1012,42 @@
 		"channels": [
 			{
 				"id": "1",
-				"satdumpName": "MERSI-RM-1.png",
+				"satdumpName": "MERSIRM-1.png",
 				"description": "650 nm"
 			},
 			{
 				"id": "2",
-				"satdumpName": "MERSI-RM-2.png",
+				"satdumpName": "MERSIRM-2.png",
 				"description": "865 nm"
 			},
 			{
 				"id": "3",
-				"satdumpName": "MERSI-RM-3.png",
+				"satdumpName": "MERSIRM-3.png",
 				"description": "940 nm"
 			},
 			{
 				"id": "4",
-				"satdumpName": "MERSI-RM-4.png",
+				"satdumpName": "MERSIRM-4.png",
 				"description": "1380 nm"
 			},
 			{
 				"id": "5",
-				"satdumpName": "MERSI-RM-5.png",
+				"satdumpName": "MERSIRM-5.png",
 				"description": "1640 nm"
 			},
 			{
 				"id": "6",
-				"satdumpName": "MERSI-RM-6.png",
+				"satdumpName": "MERSIRM-6.png",
 				"description": "3.80 μm"
 			},
 			{
 				"id": "7",
-				"satdumpName": "MERSI-RM-7.png",
+				"satdumpName": "MERSIRM-7.png",
 				"description": "10.8 μm"
 			},
 			{
 				"id": "8",
-				"satdumpName": "MERSI-RM-8.png",
+				"satdumpName": "MERSIRM-8.png",
 				"description": "12.0 μm"
 			}
 		]
@@ -1769,6 +1769,145 @@
 		]
 	},
 	{
+		"id": "MWRI2",
+		"name": "MWRI-2",
+		"satdumpName": "MWRI-2",
+		"description": "Multi-purpose microwave imagery",
+		"satdumpCombined": "mwri2_rgb_MWRI-2_10.20.23_like_MWRI_123.png",
+		"channels": [
+			{
+				"id": "1",
+				"satdumpName": "MWRI2-1.png",
+				"description": "10.65 Ghz Vertical"
+			},
+			{
+				"id": "2",
+				"satdumpName": "MWRI2-2.png",
+				"description": "10.65 Ghz Horizontal"
+			},
+			{
+				"id": "3",
+				"satdumpName": "MWRI2-3.png",
+				"description": "18.7 Ghz Vertical"
+			},
+			{
+				"id": "4",
+				"satdumpName": "MWRI2-4.png",
+				"description": "18.7 Ghz Horizontal"
+			},
+			{
+				"id": "5",
+				"satdumpName": "MWRI2-5.png",
+				"description": "23.8 Ghz Vertical"
+			},
+			{
+				"id": "6",
+				"satdumpName": "MWRI2-6.png",
+				"description": "23.8 Ghz Horizontal"
+			},
+			{
+				"id": "7",
+				"satdumpName": "MWRI2-7.png",
+				"description": "36.5 Ghz Vertical"
+			},
+			{
+				"id": "8",
+				"satdumpName": "MWRI2-8.png",
+				"description": "36.5 Ghz Horizontal"
+			},
+			{
+				"id": "9",
+				"satdumpName": "MWRI2-9.png",
+				"description": "50.3 Ghz Vertical"
+			},
+			{
+				"id": "10",
+				"satdumpName": "MWRI2-10.png",
+				"description": "50.3 Ghz Horizontal"
+			},
+			{
+				"id": "11",
+				"satdumpName": "MWRI2-11.png",
+				"description": "52.61 Ghz Vertical"
+			},
+			{
+				"id": "12",
+				"satdumpName": "MWRI2-12.png",
+				"description": "52.61 Ghz Horizontal"
+			},
+			{
+				"id": "13",
+				"satdumpName": "MWRI2-13.png",
+				"description": "53.24 Ghz Vertical"
+			},
+			{
+				"id": "14",
+				"satdumpName": "MWRI2-14.png",
+				"description": "53.24 Ghz Horizontal"
+			},
+			{
+				"id": "15",
+				"satdumpName": "MWRI2-15.png",
+				"description": "53.75 Ghz Vertical"
+			},
+			{
+				"id": "16",
+				"satdumpName": "MWRI2-16.png",
+				"description": "53.75 Ghz Horizontal"
+			},
+			{
+				"id": "17",
+				"satdumpName": "MWRI2-17.png",
+				"description": "89 Ghz Vertical"
+			},
+			{
+				"id": "18",
+				"satdumpName": "MWRI2-18.png",
+				"description": "89 Ghz Horizontal"
+			},
+			{
+				"id": "19",
+				"satdumpName": "MWRI2-19.png",
+				"description": "118.7503±3.2 Ghz Vertical"
+			},
+			{
+				"id": "20",
+				"satdumpName": "MWRI2-20.png",
+				"description": "118.7503±3.2 Ghz Horizontal"
+			},
+			{
+				"id": "21",
+				"satdumpName": "MWRI2-21.png",
+				"description": "118.7503±2.1 Ghz Vertical"
+			},
+			{
+				"id": "22",
+				"satdumpName": "MWRI2-22.png",
+				"description": "118.7503±2.1 Ghz Horizontal"
+			},
+			{
+				"id": "23",
+				"satdumpName": "MWRI2-23.png",
+				"description": "118.7503±1.4 Ghz Vertical"
+			},
+			{
+				"id": "24",
+				"satdumpName": "MWRI2-24.png",
+				"description": "118.7503±1.4 Ghz Horizontal"
+			},
+			{
+				"id": "25",
+				"satdumpName": "MWRI2-25.png",
+				"description": "118.7503±1.2 Ghz Vertical"
+			},
+			{
+				"id": "26",
+				"satdumpName": "MWRI2-26.png",
+				"description": "118.7503±1.2 Ghz Horizontal"
+			}
+		]
+	},
+	{
 		"id": "MWTS2",
 		"name": "MWTS-2",
 		"satdumpName": "MWTS-2",
@@ -1827,32 +1966,32 @@
 			},
 			{
 				"id": "11",
-				"satdumpName": "MWTS2-10.png",
+				"satdumpName": "MWTS2-11.png",
 				"description": "57.290 ± 0.322 ± 0.022 GHz"
 			},
 			{
 				"id": "12",
-				"satdumpName": "MWTS2-10.png",
+				"satdumpName": "MWTS2-12.png",
 				"description": "57.290 ± 0.322 ± 0.010 GHz"
 			},
 			{
 				"id": "13",
-				"satdumpName": "MWTS2-10.png",
+				"satdumpName": "MWTS2-13.png",
 				"description": "57.290 ± 0.322 ± 0.0045 GHz"
 			},
 			{
 				"id": "14",
-				"satdumpName": "MWTS2-10.png",
+				"satdumpName": "MWTS2-14.png",
 				"description": ""
 			},
 			{
 				"id": "15",
-				"satdumpName": "MWTS2-10.png",
+				"satdumpName": "MWTS2-15.png",
 				"description": ""
 			},
 			{
 				"id": "16",
-				"satdumpName": "MWTS2-10.png",
+				"satdumpName": "MWTS2-16.png",
 				"description": ""
 			}
 		]
