@@ -589,6 +589,46 @@
 				"id": "XEUVI",
 				"enabled": true,
 				"primary": false
+			},
+			{
+				"id": "WindRadCHorizontal10",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "WindRadCHorizontal20",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "WindRadCVertical10",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "WindRadCVertical20",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "WindRadKuHorizontal10",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "WindRadKuHorizontal20",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "WindRadKuVertical10",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "WindRadKuVertical20",
+				"enabled": true,
+				"primary": false
 			}
 		]
 	},

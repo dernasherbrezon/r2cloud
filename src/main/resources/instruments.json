@@ -2355,5 +2355,69 @@
 		"description": "Precipitation Measurement Radar in Ka-band",
 		"series": true,
 		"satdumpImageSeries": "PMR_\\d+\\.png"
+	},
+	{
+		"id": "WindRadCHorizontal10",
+		"name": "WindRad C-band horizontal 10km",
+		"satdumpName": "WindRAD/C-Band",
+		"description": "Wind Radar",
+		"series": true,
+		"satdumpImageSeries": "WindRAD-Pol1--\\d+\\.png"
+	},
+	{
+		"id": "WindRadCHorizontal20",
+		"name": "WindRad C-band horizontal 20km",
+		"satdumpName": "WindRAD/C-Band",
+		"description": "Wind Radar",
+		"series": true,
+		"satdumpImageSeries": "WindRAD-Pol2--\\d+\\.png"
+	},
+	{
+		"id": "WindRadCVertical10",
+		"name": "WindRad C-band vertical 10km",
+		"satdumpName": "WindRAD/C-Band",
+		"description": "Wind Radar",
+		"series": true,
+		"satdumpImageSeries": "WindRAD-Pol3--\\d+\\.png"
+	},
+	{
+		"id": "WindRadCVertical20",
+		"name": "WindRad C-band vertical 20km",
+		"satdumpName": "WindRAD/C-Band",
+		"description": "Wind Radar",
+		"series": true,
+		"satdumpImageSeries": "WindRAD-Pol4--\\d+\\.png"
+	},
+	{
+		"id": "WindRadKuHorizontal10",
+		"name": "WindRad Ku-band horizontal 10km",
+		"satdumpName": "WindRAD/Ku-Band",
+		"description": "Wind Radar",
+		"series": true,
+		"satdumpImageSeries": "WindRAD-Pol1--\\d+\\.png"
+	},
+	{
+		"id": "WindRadKuHorizontal20",
+		"name": "WindRad Ku-band horizontal 20km",
+		"satdumpName": "WindRAD/Ku-Band",
+		"description": "Wind Radar",
+		"series": true,
+		"satdumpImageSeries": "WindRAD-Pol2--\\d+\\.png"
+	},
+	{
+		"id": "WindRadKuVertical10",
+		"name": "WindRad Ku-band vertical 10km",
+		"satdumpName": "WindRAD/Ku-Band",
+		"description": "Wind Radar",
+		"series": true,
+		"satdumpImageSeries": "WindRAD-Pol3--\\d+\\.png"
+	},
+	{
+		"id": "WindRadKuVertical20",
+		"name": "WindRad Ku-band vertical 20km",
+		"satdumpName": "WindRAD/Ku-Band",
+		"description": "Wind Radar",
+		"series": true,
+		"satdumpImageSeries": "WindRAD-Pol4--\\d+\\.png"
 	}
 ]
