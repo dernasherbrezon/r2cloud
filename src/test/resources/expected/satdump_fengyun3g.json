@@ -1,0 +1,59 @@
+{
+	"id": "1576269809672",
+	"start": 1576269901780,
+	"end": 1576269903780,
+	"satellite": "56232",
+	"transmitterId": "56232-0",
+	"tle": {
+		"line1": "FENGYUN 3G",
+		"line2": "1 56232U 23055A   25159.43695824  .00026610  00000+0  39960-3 0  9990",
+		"line3": "2 56232  49.9938 113.2214 0012273 113.1862 247.0400 15.54568495121916",
+		"updated": 0
+	},
+	"groundStation": {
+		"lat": 56.31,
+		"lon": 38.13
+	},
+	"dataFormat": "COMPLEX_UNSIGNED_BYTE",
+	"sampleRate": 12000000,
+	"actualFrequency": -1,
+	"numberOfDecodedPackets": 1,
+	"totalSize": 1076,
+	"rawURL": "/api/v1/admin/static/satellites/56232/data/1576269809672/output.raw",
+	"data": "/api/v1/admin/static/satellites/56232/data/1576269809672/data.bin",
+	"sigmfDataURL": "/api/v1/static/observation/sigmf/data?satelliteId=56232&id=1576269809672",
+	"sigmfMetaURL": "/api/v1/static/observation/sigmf/meta?satelliteId=56232&id=1576269809672",
+	"status": "DECODED",
+	"instruments": [
+		{
+			"id": "MWRIRM",
+			"enabled": true,
+			"primary": false,
+			"series": false,
+			"name": "MWRI-RM",
+			"satdumpName": "MWRI-RM",
+			"description": "Micro-Wave Radiation Imager for the Rainfall Mission",
+			"channels": [
+				{
+					"id": "1",
+					"description": "10.65 GHz",
+					"imageURL": "/api/v1/admin/static/satellites/56232/data/1576269809672/MWRIRM-1.png",
+					"satdumpName": "MWRI-RM-1.png"
+				}
+			]
+		},
+		{
+			"id": "PMRKu",
+			"enabled": true,
+			"primary": false,
+			"series": true,
+			"name": "PMR Ku-band",
+			"satdumpName": "PMR-1",
+			"description": "Precipitation Measurement Radar in Ku-band",
+			"imageSeriesURL": [
+				"/api/v1/admin/static/satellites/56232/data/1576269809672/PMRKu-0.png"
+			],
+			"satdumpImageSeries": "PMR_\\d+\\.png"
+		}
+	]
+}

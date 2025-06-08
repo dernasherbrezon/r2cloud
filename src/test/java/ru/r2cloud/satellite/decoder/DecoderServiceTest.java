@@ -62,6 +62,18 @@ public class DecoderServiceTest {
 	}
 
 	@Test
+	public void testSeries() throws Exception {
+		File raw = TestUtil.copyResource(tempFolder, "satdump_fengyun3g/source_output.raw");
+		Observation observation = TestUtil.copyObservation(config.getProperty("satellites.basepath.location"), "satdump_fengyun3g");
+		dao.insert(observation);
+		raw = dao.update(observation, raw);
+
+		service.decode(observation.getSatelliteId(), observation.getId());
+
+		TestUtil.assertJson("expected/satdump_fengyun3g.json", dao.find(observation.getSatelliteId(), observation.getId()).toJson(null));
+	}
+
+	@Test
 	public void testResumeFromCadu() throws Exception {
 		File raw = TestUtil.copyResource(tempFolder, "satdump_meteor/source_output.raw");
 		Observation observation = TestUtil.copyObservation(config.getProperty("satellites.basepath.location"), "satdump_meteor");

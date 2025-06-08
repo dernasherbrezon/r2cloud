@@ -1831,5 +1831,50 @@
 			}
 		],
 		"lastUpdateTime": 1962310762000
+	},
+	{
+		"id": "R2CLOUD521",
+		"name": "FENGYUN 3G",
+		"noradId": "56232",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "QPSK",
+				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1020,
+				"frequency": 7790000000,
+				"bandwidth": 12000000,
+				"baudRates": [
+					6000000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "fengyun3_g_ahrpt",
+				"satdumpCaduSizeBytes": 1024
+			}
+		],
+		"lastUpdateTime": 1749374594000,
+		"instruments": [
+			{
+				"id": "MERSIRM",
+				"enabled": true,
+				"primary": true
+			},
+			{
+				"id": "MWRIRM",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "PMRKu",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "PMRKa",
+				"enabled": true,
+				"primary": false
+			}
+		]
 	}
 ]

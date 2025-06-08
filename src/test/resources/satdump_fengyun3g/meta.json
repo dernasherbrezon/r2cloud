@@ -1,0 +1,26 @@
+{
+	"id": "1576269809672",
+	"start": 1576269901780,
+	"end": 1576269903780,
+	"sampleRate": 12000000,
+	"frequency": 137350000,
+	"satellite": "56232",
+	"transmitterId": "56232-0",
+	"bandwidth": 12000000,
+	"status": "RECEIVED",
+	"tle": {
+		"line1": "FENGYUN 3G",
+		"line2": "1 56232U 23055A   25159.43695824  .00026610  00000+0  39960-3 0  9990",
+		"line3": "2 56232  49.9938 113.2214 0012273 113.1862 247.0400 15.54568495121916",
+		"updated": 0
+	},
+	"groundStation": {
+		"lat": 56.31,
+		"lon": 38.13
+	},
+	"numberOfDecodedPackets": 0,
+	"dataFormat": "COMPLEX_UNSIGNED_BYTE",
+	"baudRates": [
+		6000000
+	]
+}
