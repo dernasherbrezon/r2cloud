@@ -203,6 +203,12 @@ public class ObservationDao implements IObservationDao {
 						curChannel.setImage(file);
 						curChannel.setImageURL("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + file.getName());
 					}
+				} else if (cur.isSeries()) {
+					List<String> seriesUrls = new ArrayList<>();
+					for (Path curPath : resolveMultipleByPrefix(curDirectory, cur.getId() + "-")) {
+						seriesUrls.add("/api/v1/admin/static/satellites/" + satelliteId + "/data/" + full.getId() + "/" + curPath.toFile().getName());
+					}
+					cur.setImageSeriesURL(seriesUrls);
 				}
 				Path combinedPath = resolveByPrefix(curDirectory, cur.getId() + ".");
 				if (combinedPath != null) {
@@ -214,6 +220,18 @@ public class ObservationDao implements IObservationDao {
 			}
 		}
 		return full;
+	}
+
+	private static List<Path> resolveMultipleByPrefix(Path baseDir, String prefix) {
+		List<Path> result = new ArrayList<>();
+		File[] files = baseDir.toFile().listFiles();
+		for (File cur : files) {
+			if (cur.getName().startsWith(prefix)) {
+				result.add(cur.toPath());
+			}
+		}
+		//FIXME sort by name
+		return result;
 	}
 
 	private static Path resolveByPrefix(Path baseDir, String prefix) {
@@ -281,6 +299,27 @@ public class ObservationDao implements IObservationDao {
 			return null;
 		}
 		return dest.toFile();
+	}
+
+	@Override
+	public List<File> saveImageSeries(String satelliteId, String observationId, String instrumentId, List<File> series) {
+		if (series == null) {
+			return Collections.emptyList();
+		}
+		List<File> result = new ArrayList<>(series.size());
+		for (int i = 0; i < series.size(); i++) {
+			File seriesImage = series.get(i);
+			Path dest = getObservationBasepath(satelliteId, observationId).resolve(instrumentId + "-" + i + "." + getExtension(seriesImage.getName()));
+			if (Files.exists(dest)) {
+				LOG.info(DEST_ALREADY_EXIST_MESSAGE, dest.toAbsolutePath());
+				continue;
+			}
+			if (!seriesImage.renameTo(dest.toFile())) {
+				continue;
+			}
+			result.add(dest.toFile());
+		}
+		return result;
 	}
 
 	@Override

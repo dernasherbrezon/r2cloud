@@ -8,7 +8,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,6 +132,25 @@ public class SatdumpDecoder implements Decoder {
 						continue;
 					}
 					enrichedInstrument.setChannels(availableChannels);
+				} else if (cur.isSeries()) {
+					Pattern pattern = Pattern.compile(cur.getSatdumpImageSeries());
+					List<File> imageSeries = new ArrayList<>();
+					List<File> allFiles = new ArrayList<>();
+					for (File curFile : instrumentDir.listFiles()) {
+						allFiles.add(curFile);
+					}
+					Collections.sort(allFiles, new Comparator<File>() {
+						@Override
+						public int compare(File o1, File o2) {
+							return o1.getName().compareTo(o2.getName());
+						}
+					});
+					for (File curSeries : allFiles) {
+						if (pattern.matcher(curSeries.getName()).matches()) {
+							imageSeries.add(curSeries);
+						}
+					}
+					enrichedInstrument.setImageSeries(imageSeries);
 				}
 				if (cur.getSatdumpCombined() != null) {
 					File combined = new File(instrumentDir, cur.getSatdumpCombined());

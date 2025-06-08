@@ -149,6 +149,8 @@ public class DecoderService implements Lifecycle {
 					for (InstrumentChannel curChannel : cur.getChannels()) {
 						curChannel.setImage(dao.saveChannel(observation.getSatelliteId(), observation.getId(), cur.getId(), curChannel.getId(), curChannel.getImage()));
 					}
+				} else if (cur.isSeries()) {
+					cur.setImageSeries(dao.saveImageSeries(observation.getSatelliteId(), observation.getId(), cur.getId(), cur.getImageSeries()));
 				}
 				cur.setCombinedImage(dao.saveCombined(observation.getSatelliteId(), observation.getId(), cur.getId(), cur.getCombinedImage()));
 			}

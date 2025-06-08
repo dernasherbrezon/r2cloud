@@ -141,6 +141,18 @@ public class ObservationDaoCache implements IObservationDao {
 		return result;
 	}
 
+
+	@Override
+	public List<File> saveImageSeries(String satelliteId, String observationId, String instrumentId, List<File> series) {
+		List<File> result = impl.saveImageSeries(satelliteId, observationId, instrumentId, series);
+		if (result != null && !result.isEmpty()) {
+			synchronized (byId) {
+				index(impl.find(satelliteId, observationId));
+			}
+		}
+		return result;
+	}
+
 	@Override
 	public File saveData(String satelliteId, String observationId, File a) {
 		File result = impl.saveData(satelliteId, observationId, a);

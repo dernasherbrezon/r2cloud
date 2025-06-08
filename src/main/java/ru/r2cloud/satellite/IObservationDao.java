@@ -30,4 +30,6 @@ public interface IObservationDao {
 
 	File saveCombined(String satelliteId, String observationId, String instrumentId, File combinedImagePath);
 
+	List<File> saveImageSeries(String satelliteId, String observationId, String instrumentId, List<File> series);
+
 }

@@ -2323,5 +2323,37 @@
 				"description": "0.3 - 100 µm"
 			}
 		]
+	},
+	{
+		"id": "HRC",
+		"name": "HRC",
+		"satdumpName": "HRC",
+		"description": "High Resolution Camera",
+		"series": true,
+		"satdumpImageSeries": "HRC\\-\\d+\\-EQU\\.png"
+	},
+	{
+		"id": "SWAP",
+		"name": "SWAP",
+		"satdumpName": "SWAP",
+		"description": "Sun Watcher using Active Pixel System detector and Image Processing",
+		"series": true,
+		"satdumpImageSeries": "SWAP_\\d+T\\d+Z\\.png"
+	},
+	{
+		"id": "PMRKu",
+		"name": "PMR Ku-band",
+		"satdumpName": "PMR-1",
+		"description": "Precipitation Measurement Radar in Ku-band",
+		"series": true,
+		"satdumpImageSeries": "PMR_\\d+\\.png"
+	},
+	{
+		"id": "PMRKa",
+		"name": "PMR Ka-band",
+		"satdumpName": "PMR-2",
+		"description": "Precipitation Measurement Radar in Ka-band",
+		"series": true,
+		"satdumpImageSeries": "PMR_\\d+\\.png"
 	}
 ]

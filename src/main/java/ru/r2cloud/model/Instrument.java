@@ -20,8 +20,12 @@ public class Instrument {
 	private String combinedImageURL;
 	private String description;
 	private List<InstrumentChannel> channels;
+	private String satdumpImageSeries;
+	private List<File> imageSeries;
+	private List<String> imageSeriesURL;
 	private boolean enabled;
 	private boolean primary;
+	private boolean series;
 
 	public Instrument() {
 		// do nothing
@@ -43,6 +47,46 @@ public class Instrument {
 		}
 		this.enabled = other.enabled;
 		this.primary = other.primary;
+		this.series = other.series;
+		this.satdumpImageSeries = other.satdumpImageSeries;
+		if (other.imageSeriesURL != null) {
+			this.imageSeriesURL = new ArrayList<>(other.imageSeriesURL);
+		}
+		if (other.imageSeries != null) {
+			this.imageSeries = new ArrayList<>(other.imageSeries);
+		}
+	}
+
+	public String getSatdumpImageSeries() {
+		return satdumpImageSeries;
+	}
+
+	public void setSatdumpImageSeries(String satdumpImageSeries) {
+		this.satdumpImageSeries = satdumpImageSeries;
+	}
+
+	public List<File> getImageSeries() {
+		return imageSeries;
+	}
+
+	public void setImageSeries(List<File> imageSeries) {
+		this.imageSeries = imageSeries;
+	}
+
+	public List<String> getImageSeriesURL() {
+		return imageSeriesURL;
+	}
+
+	public void setImageSeriesURL(List<String> imageSeriesURL) {
+		this.imageSeriesURL = imageSeriesURL;
+	}
+
+	public boolean isSeries() {
+		return series;
+	}
+
+	public void setSeries(boolean series) {
+		this.series = series;
 	}
 
 	public File getCombinedImage() {
@@ -133,6 +177,7 @@ public class Instrument {
 		}
 		result.setEnabled(obj.getBoolean("enabled", false));
 		result.setPrimary(obj.getBoolean("primary", false));
+		result.setSeries(obj.getBoolean("series", false));
 		result.setName(obj.getString("name", null));
 		result.setSatdumpName(obj.getString("satdumpName", null));
 		result.setSatdumpCombined(obj.getString("satdumpCombined", null));
@@ -150,6 +195,7 @@ public class Instrument {
 			}
 			result.setChannels(instrumentChannels);
 		}
+		result.setSatdumpImageSeries(obj.getString("satdumpImageSeries", null));
 		return result;
 	}
 
@@ -158,6 +204,7 @@ public class Instrument {
 		result.add("id", id);
 		result.add("enabled", enabled);
 		result.add("primary", primary);
+		result.add("series", series);
 		if (name != null) {
 			result.add("name", name);
 		}
@@ -176,6 +223,20 @@ public class Instrument {
 			} else {
 				result.add("combinedImageURL", combinedImageURL);
 			}
+		}
+		if (imageSeriesURL != null) {
+			JsonArray series = new JsonArray();
+			for (String cur : imageSeriesURL) {
+				if (signed != null) {
+					series.add(signed.sign(cur));
+				} else {
+					series.add(cur);
+				}
+			}
+			result.add("imageSeriesURL", series);
+		}
+		if (satdumpImageSeries != null) {
+			result.add("satdumpImageSeries", satdumpImageSeries);
 		}
 		if (channels != null) {
 			JsonArray channelsArrays = new JsonArray();

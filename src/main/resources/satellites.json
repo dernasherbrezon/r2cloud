@@ -418,7 +418,14 @@
 				"satdumpCaduSizeBytes": 1279
 			}
 		],
-		"lastUpdateTime": 1748716288000
+		"lastUpdateTime": 1748716288000,
+		"instruments": [
+			{
+				"id": "SWAP",
+				"enabled": true,
+				"primary": true
+			}
+		]
 	},
 	{
 		"id": "R2CLOUD522",
@@ -441,7 +448,14 @@
 				"satdumpCaduSizeBytes": 1279
 			}
 		],
-		"lastUpdateTime": 1748716299000
+		"lastUpdateTime": 1748716299000,
+		"instruments": [
+			{
+				"id": "HRC",
+				"enabled": true,
+				"primary": true
+			}
+		]
 	},
 	{
 		"id": "R2CLOUD521",
@@ -473,6 +487,16 @@
 			},
 			{
 				"id": "MWRIRM",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "PMRKu",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "PMRKa",
 				"enabled": true,
 				"primary": false
 			}
