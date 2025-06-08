@@ -2419,5 +2419,13 @@
 		"description": "Wind Radar",
 		"series": true,
 		"satdumpImageSeries": "WindRAD-Pol4--\\d+\\.png"
+	},
+	{
+		"id": "SWSWAI",
+		"name": "SWS/WAI",
+		"satdumpName": "WAI",
+		"description": "Space Weather Suite / Wide-field Auroral Imager",
+		"series": true,
+		"satdumpImageSeries": "WAI_\\d+\\.png"
 	}
 ]

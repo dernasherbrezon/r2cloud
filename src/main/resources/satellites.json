@@ -679,6 +679,11 @@
 				"id": "MWTS2",
 				"enabled": true,
 				"primary": false
+			},
+			{
+				"id": "SWSWAI",
+				"enabled": true,
+				"primary": false
 			}
 		]
 	},
