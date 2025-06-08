@@ -17,6 +17,8 @@ public class ProcessFactoryMock extends ProcessFactory {
 
 	private final Map<String, ProcessWrapperMock> reply;
 	private final String filePrefix;
+	
+	private int defaultCode = 0;
 
 	public ProcessFactoryMock(Map<String, ProcessWrapperMock> reply, String filePrefix) {
 		this.reply = reply;
@@ -44,8 +46,12 @@ public class ProcessFactoryMock extends ProcessFactory {
 	public ProcessWrapper create(String commandLine, boolean redirectErrorStream, boolean inheritIO) throws IOException {
 		ProcessWrapper result = handle(commandLine);
 		if (result == null) {
-			return new ProcessWrapperMock(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), new ByteArrayInputStream(new byte[0]), 0, false);
+			return new ProcessWrapperMock(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), new ByteArrayInputStream(new byte[0]), defaultCode, false);
 		}
 		return result;
+	}
+	
+	public void setDefaultCode(int defaultCode) {
+		this.defaultCode = defaultCode;
 	}
 }

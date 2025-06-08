@@ -187,6 +187,17 @@ public class TestUtil {
 		}
 	}
 
+	public static void assertImage(String expectedFilename, BufferedImage actual) throws IOException {
+		try (InputStream is1 = ObservationTest.class.getClassLoader().getResourceAsStream(expectedFilename)) {
+			BufferedImage expected = ImageIO.read(is1);
+			for (int i = 0; i < expected.getWidth(); i++) {
+				for (int j = 0; j < expected.getHeight(); j++) {
+					assertEquals(expected.getRGB(i, j), actual.getRGB(i, j));
+				}
+			}
+		}
+	}
+
 	public static void assertJson(String classPathResource, JsonArray actual) {
 		assertNotNull(actual);
 		try (Reader is = new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(classPathResource), StandardCharsets.UTF_8)) {

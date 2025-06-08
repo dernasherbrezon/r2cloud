@@ -2,9 +2,11 @@ package ru.r2cloud.satellite.decoder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -18,6 +20,10 @@ import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.cloud.InfluxDBClient;
 import ru.r2cloud.cloud.LeoSatDataService;
+import ru.r2cloud.jradio.BeaconInputStream;
+import ru.r2cloud.jradio.lrpt.PacketReassembly;
+import ru.r2cloud.jradio.lrpt.Vcdu;
+import ru.r2cloud.jradio.meteor.MeteorImage;
 import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationStatus;
@@ -40,6 +46,7 @@ public class DecoderServiceTest {
 	private SatelliteDao satelliteDao;
 	private Decoders decoders;
 	private TestConfiguration config;
+	private ProcessFactoryMock processFactory;
 
 	@Test
 	public void testEmptyCadu() throws Exception {
@@ -64,7 +71,25 @@ public class DecoderServiceTest {
 
 		service.decode(observation.getSatelliteId(), observation.getId());
 
-		TestUtil.assertJson("expected/satdump_meteor.json", dao.find(observation.getSatelliteId(), observation.getId()).toJson(null));
+		observation = dao.find(observation.getSatelliteId(), observation.getId());
+		TestUtil.assertJson("expected/satdump_meteor.json", observation.toJson(null));
+		try (BeaconInputStream<Vcdu> is = new BeaconInputStream<>(new FileInputStream(observation.getDataPath()), Vcdu.class)) {
+			MeteorImage meteorImage = new MeteorImage(new PacketReassembly(is));
+			TestUtil.assertImage("expected/satdump_meteor.png", meteorImage.toBufferedImage());
+		}
+	}
+
+	@Test
+	public void testCaduInvalidResponse() throws Exception {
+		File raw = TestUtil.copyResource(tempFolder, "satdump_meteor/source_output.raw");
+		Observation observation = TestUtil.copyObservation(config.getProperty("satellites.basepath.location"), "satdump_meteor");
+		dao.insert(observation);
+		raw = dao.update(observation, raw);
+		TestUtil.copyResource(new File(raw.getParentFile(), "meteor.cadu"), "satdump_meteor/source_cadu.bin");
+
+		processFactory.setDefaultCode(255);
+		service.decode(observation.getSatelliteId(), observation.getId());
+		assertNull(dao.find(observation.getSatelliteId(), observation.getId()).getInstruments());
 	}
 
 	@Test
@@ -75,8 +100,19 @@ public class DecoderServiceTest {
 		assertNotNull(dao.update(observation, raw));
 
 		service.decode(observation.getSatelliteId(), observation.getId());
-
 		TestUtil.assertJson("expected/satdump_noaa18.json", dao.find(observation.getSatelliteId(), observation.getId()).toJson(null));
+	}
+
+	@Test
+	public void testInvalidResponse() throws Exception {
+		File raw = TestUtil.copyResource(tempFolder, "satdump_noaa18/source_output.raw");
+		Observation observation = TestUtil.copyObservation(config.getProperty("satellites.basepath.location"), "satdump_noaa18");
+		dao.insert(observation);
+		assertNotNull(dao.update(observation, raw));
+
+		processFactory.setDefaultCode(255);
+		service.decode(observation.getSatelliteId(), observation.getId());
+		assertNull(dao.find(observation.getSatelliteId(), observation.getId()).getInstruments());
 	}
 
 	@Test
@@ -134,7 +170,7 @@ public class DecoderServiceTest {
 		satelliteDao = new SatelliteDao(config);
 		dao = new ObservationDao(config);
 
-		ProcessFactoryMock processFactory = new ProcessFactoryMock(new HashMap<>(), UUID.randomUUID().toString());
+		processFactory = new ProcessFactoryMock(new HashMap<>(), UUID.randomUUID().toString());
 		decoders = new Decoders(new PredictOreKit(config), config, processFactory);
 		service = new DecoderService(config, decoders, dao, new LeoSatDataService(config, dao, null, null), new ExecuteNowThreadFactory(true), new InfluxDBClient(config, new DefaultClock()), satelliteDao);
 		service.start();
