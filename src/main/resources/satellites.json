@@ -1,5 +1,27 @@
 [
 	{
+		"id": "R2CLOUD537",
+		"name": "DX1",
+		"noradId": "40071",
+		"enabled": false,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 438226000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"deviation": 5000,
+				"assistedHeader": "AAAAAQAAAAEAAQEAAAEAAQABAQAAAAABAAAAAAABAQAAAAAAAAEBAAABAAAAAQEAAAAAAAABAQAAAAABAAAAAQABAAAAAAEBAAEAAQABAQEAAAEAAAEBAQABAAABAAEBAAEAAAAAAQEBAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1749332722000
+	},
+	{
 		"id": "R2CLOUD536",
 		"name": "AURA",
 		"noradId": "28376",
@@ -418,7 +440,7 @@
 				"satdumpCaduSizeBytes": 1279
 			}
 		],
-		"lastUpdateTime": 1748716288000,
+		"lastUpdateTime": 1749339168000,
 		"instruments": [
 			{
 				"id": "SWAP",
@@ -448,7 +470,7 @@
 				"satdumpCaduSizeBytes": 1279
 			}
 		],
-		"lastUpdateTime": 1748716299000,
+		"lastUpdateTime": 1749339181000,
 		"instruments": [
 			{
 				"id": "HRC",
@@ -478,7 +500,7 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1748791276000,
+		"lastUpdateTime": 1749374594000,
 		"instruments": [
 			{
 				"id": "MERSIRM",
@@ -568,7 +590,7 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1748989550000,
+		"lastUpdateTime": 1749374543000,
 		"instruments": [
 			{
 				"id": "MERSILL",
@@ -653,7 +675,7 @@
 				"satdumpCaduSizeBytes": 1024
 			}
 		],
-		"lastUpdateTime": 1749060287000,
+		"lastUpdateTime": 1749374524000,
 		"instruments": [
 			{
 				"id": "MERSI2",
