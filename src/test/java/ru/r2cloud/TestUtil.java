@@ -124,6 +124,14 @@ public class TestUtil {
 		return result;
 	}
 
+	public static File copyResource(File to, String testResource) throws IOException {
+		File from = new File("src/test/resources/" + testResource);
+		try (BufferedInputStream is = new BufferedInputStream(new FileInputStream(from)); BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(to))) {
+			Util.copy(is, os);
+		}
+		return to;
+	}
+
 	public static void copy(Reader input, Writer output) throws IOException {
 		char[] buffer = new char[1024 * 4];
 		int n = 0;

@@ -42,7 +42,33 @@ public class DecoderServiceTest {
 	private TestConfiguration config;
 
 	@Test
-	public void testDecodedInstruments() throws Exception {
+	public void testEmptyCadu() throws Exception {
+		File raw = TestUtil.copyResource(tempFolder, "satdump_meteor/source_output.raw");
+		Observation observation = TestUtil.copyObservation(config.getProperty("satellites.basepath.location"), "satdump_meteor");
+		dao.insert(observation);
+		raw = dao.update(observation, raw);
+		TestUtil.copyResource(new File(raw.getParentFile(), "meteor.cadu"), "satdump_meteor/empty_cadu.bin");
+
+		service.decode(observation.getSatelliteId(), observation.getId());
+
+		TestUtil.assertJson("expected/satdump_empty_cadu.json", dao.find(observation.getSatelliteId(), observation.getId()).toJson(null));
+	}
+
+	@Test
+	public void testResumeFromCadu() throws Exception {
+		File raw = TestUtil.copyResource(tempFolder, "satdump_meteor/source_output.raw");
+		Observation observation = TestUtil.copyObservation(config.getProperty("satellites.basepath.location"), "satdump_meteor");
+		dao.insert(observation);
+		raw = dao.update(observation, raw);
+		TestUtil.copyResource(new File(raw.getParentFile(), "meteor.cadu"), "satdump_meteor/source_cadu.bin");
+
+		service.decode(observation.getSatelliteId(), observation.getId());
+
+		TestUtil.assertJson("expected/satdump_meteor.json", dao.find(observation.getSatelliteId(), observation.getId()).toJson(null));
+	}
+
+	@Test
+	public void testNoaa() throws Exception {
 		File raw = TestUtil.copyResource(tempFolder, "satdump_noaa18/source_output.raw");
 		Observation observation = TestUtil.copyObservation(config.getProperty("satellites.basepath.location"), "satdump_noaa18");
 		dao.insert(observation);

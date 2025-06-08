@@ -1472,6 +1472,7 @@
 		"name": "NOAA 18",
 		"noradId": "28654",
 		"enabled": true,
+		"satdumpSatelliteNumber": "18",
 		"transmitters": [
 			{
 				"framing": "APT",
@@ -1786,5 +1787,49 @@
 				]
 			}
 		]
+	},
+	{
+		"id": "R2CLOUD99999",
+		"name": "METEOR-M2 3",
+		"noradId": "57166",
+		"enabled": true,
+		"satdumpSatelliteNumber": "M2-3",
+		"transmitters": [
+			{
+				"framing": "SATDUMP",
+				"modulation": "OQPSK",
+				"frequency": 137900000,
+				"bandwidth": 288000,
+				"status": "ENABLED",
+				"beaconSizeBytes": 892,
+				"beaconClass": "ru.r2cloud.jradio.lrpt.Vcdu",
+				"baudRates": [
+					72000
+				],
+				"satdumpPipeline": "meteor_m2-x_lrpt",
+				"satdumpCaduSizeBytes": 1024
+			},
+			{
+				"framing": "SATDUMP",
+				"modulation": "OQPSK",
+				"frequency": 1700000000,
+				"bandwidth": 2400000,
+				"status": "ENABLED",
+				"beaconSizeBytes": 1024,
+				"baudRates": [
+					665400
+				],
+				"satdumpPipeline": "meteor_hrpt",
+				"satdumpCaduSizeBytes": 1024
+			}
+		],
+		"instruments": [
+			{
+				"id": "MSUMR",
+				"enabled": true,
+				"primary": true
+			}
+		],
+		"lastUpdateTime": 1962310762000
 	}
 ]
