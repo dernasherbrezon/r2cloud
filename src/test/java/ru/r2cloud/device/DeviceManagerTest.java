@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import java.nio.file.FileSystems;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -27,7 +26,6 @@ import ru.r2cloud.model.Satellite;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.satellite.ProcessFactoryMock;
-import ru.r2cloud.satellite.ProcessWrapperMock;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.SdrTransmitterFilter;
 
@@ -67,10 +65,7 @@ public class DeviceManagerTest {
 	public void start() throws Exception {
 		clock = new FixedClock(TestUtil.getTime("2020-09-30 22:17:01.000"));
 
-		String rtlsdr = UUID.randomUUID().toString();
-		Map<String, ProcessWrapperMock> mocks = new HashMap<>();
-		mocks.put(rtlsdr, new ProcessWrapperMock(null, null, 0));
-		ProcessFactoryMock processFactory = new ProcessFactoryMock(mocks, UUID.randomUUID().toString());
+		ProcessFactoryMock processFactory = new ProcessFactoryMock(new HashMap<>(), UUID.randomUUID().toString());
 
 		config = new TestConfiguration(tempFolder, FileSystems.getDefault());
 		config.setProperty("locaiton.lat", "51.49");

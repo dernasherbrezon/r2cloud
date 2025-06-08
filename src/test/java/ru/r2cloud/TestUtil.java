@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,6 +58,14 @@ public class TestUtil {
 		}
 	}
 
+	public static Observation copyObservation(String basepath, String classpath) throws IOException {
+		Observation observation = TestUtil.loadObservation(classpath + "/meta.json");
+		File destination = new File(basepath + File.separator + observation.getSatelliteId() + File.separator + "data" + File.separator + observation.getId());
+		assertTrue(destination.mkdirs());
+		TestUtil.copyFolder(new File("./src/test/resources/" + classpath).toPath(), destination.toPath());
+		return observation;
+	}
+
 	public static String loadExpected(String name) {
 		StringBuilder expectedStr = new StringBuilder();
 		try (BufferedReader r = new BufferedReader(new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(name), StandardCharsets.UTF_8))) {
@@ -80,10 +89,10 @@ public class TestUtil {
 		}
 	}
 
-	public static File setupClasspathResource(TemporaryFolder tempFolder, String name) throws IOException {
-		URL resource = TestUtil.class.getClassLoader().getResource(name);
+	public static File setupClasspathResource(TemporaryFolder tempFolder, String classpathFrom) throws IOException {
+		URL resource = TestUtil.class.getClassLoader().getResource(classpathFrom);
 		if (resource == null) {
-			throw new IllegalArgumentException("unable to find: " + name + " in classpath");
+			throw new IllegalArgumentException("unable to find: " + classpathFrom + " in classpath");
 		}
 		if (resource.getProtocol().equals("file")) {
 			return new File(resource.getFile());
@@ -92,6 +101,25 @@ public class TestUtil {
 		File result = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
 		try (FileOutputStream fos = new FileOutputStream(result); InputStream is = resource.openStream()) {
 			Util.copy(is, fos);
+		}
+		return result;
+	}
+
+	public static File copyClasspathResource(TemporaryFolder tempFolder, String classpathFrom) throws IOException {
+		File result = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
+		copy(classpathFrom, result);
+		return result;
+	}
+
+	public static File copyResource(TemporaryFolder tempFolder, String testResource) throws IOException {
+		String extension = "";
+		if (testResource.endsWith(".gz")) {
+			extension = ".gz";
+		}
+		File result = new File(tempFolder.getRoot(), UUID.randomUUID().toString() + extension);
+		File from = new File("src/test/resources/" + testResource);
+		try (BufferedInputStream is = new BufferedInputStream(new FileInputStream(from)); BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(result))) {
+			Util.copy(is, os);
 		}
 		return result;
 	}

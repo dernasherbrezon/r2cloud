@@ -3,15 +3,9 @@ package ru.r2cloud.satellite.decoder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -24,13 +18,15 @@ import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.cloud.InfluxDBClient;
 import ru.r2cloud.cloud.LeoSatDataService;
-import ru.r2cloud.model.DecoderResult;
+import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationStatus;
+import ru.r2cloud.model.Satellite;
+import ru.r2cloud.model.Transmitter;
+import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.ProcessFactoryMock;
-import ru.r2cloud.satellite.ProcessWrapperMock;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.DefaultClock;
 
@@ -47,39 +43,26 @@ public class DecoderServiceTest {
 
 	@Test
 	public void testDecodedInstruments() throws Exception {
-		String taskset = UUID.randomUUID().toString();
-		config.setProperty("satellites.taskset.path", taskset);
-		Map<String, ProcessWrapperMock> mocks = new HashMap<>();
-		mocks.put(taskset, new ProcessWrapperMock(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), new ByteArrayInputStream(new byte[0]), 0, false));
-		ProcessFactoryMock processFactory = new ProcessFactoryMock(mocks, UUID.randomUUID().toString());
-		SatdumpDecoder decoder = new SatdumpDecoder(config, processFactory);
-		when(decoders.findByTransmitter(any())).thenReturn(decoder);
-
-		Observation observation = TestUtil.loadObservation("satdump_noaa18/meta.json");
-		File destination = new File(config.getProperty("satellites.basepath.location") + File.separator + observation.getSatelliteId() + File.separator + "data" + File.separator + observation.getId());
-		assertTrue(destination.mkdirs());
-		TestUtil.copyFolder(new File("./src/test/resources/satdump_noaa18/").toPath(), destination.toPath());
-
+		File raw = TestUtil.copyResource(tempFolder, "satdump_noaa18/source_output.raw");
+		Observation observation = TestUtil.copyObservation(config.getProperty("satellites.basepath.location"), "satdump_noaa18");
 		dao.insert(observation);
-		dao.update(observation, new File(destination, "output.raw"));
+		assertNotNull(dao.update(observation, raw));
+
 		service.decode(observation.getSatelliteId(), observation.getId());
 
-		observation = dao.find(observation.getSatelliteId(), observation.getId());
-		assertEquals(3, observation.getInstruments().size());
+		TestUtil.assertJson("expected/satdump_noaa18.json", dao.find(observation.getSatelliteId(), observation.getId()).toJson(null));
 	}
 
 	@Test
 	public void testDeletedBeforeDecodingStarted() throws Exception {
-		Decoder decoder = mock(Decoder.class);
-		when(decoders.findByTransmitter(any())).thenReturn(decoder);
-
-		File wav = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
-		TestUtil.copy("data/aausat.raw.gz", wav);
+		File wav = TestUtil.copyResource(tempFolder, "data/aausat.raw.gz");
 		Observation observation = TestUtil.loadObservation("data/aausat.raw.gz.json");
 		observation.setStatus(ObservationStatus.RECEIVED);
+		observation.setNumberOfDecodedPackets(0L);
 		dao.insert(observation);
 		wav = dao.update(observation, wav);
 
+		// simulate retention
 		assertTrue(wav.delete());
 
 		service.decode(observation.getSatelliteId(), observation.getId());
@@ -90,21 +73,21 @@ public class DecoderServiceTest {
 
 	@Test
 	public void testScheduleTwice() throws Exception {
-		File wav = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
-		TestUtil.copy("data/aausat.raw.gz", wav);
+		File wav = TestUtil.copyResource(tempFolder, "data/aausat.raw.gz");
 		Observation observation = TestUtil.loadObservation("data/aausat.raw.gz.json");
 		observation.setStatus(ObservationStatus.RECEIVED);
+		observation.setNumberOfDecodedPackets(0L);
 		dao.insert(observation);
-		dao.update(observation, wav);
+		assertNotNull(dao.update(observation, wav));
 
-		Decoder decoder = mock(Decoder.class);
-		when(decoders.findByTransmitter(any())).thenReturn(decoder);
-		DecoderResult firstCall = new DecoderResult();
-		firstCall.setNumberOfDecodedPackets(1);
-		DecoderResult secondCall = new DecoderResult();
-		secondCall.setNumberOfDecodedPackets(2);
-		when(decoder.decode(any(), any(), any(), any())).thenReturn(firstCall, secondCall);
 		service.retryObservations();
+
+		// this will fail observation on the second attempt
+		// this shouldn't execute because previous attempt already decoded
+		Satellite aausat = satelliteDao.findById(observation.getSatelliteId());
+		Transmitter transmitter = aausat.getById(observation.getTransmitterId());
+		transmitter.setFraming(Framing.CUSTOM);
+
 		service.decode(observation.getSatelliteId(), observation.getId());
 
 		observation = dao.find(observation.getSatelliteId(), observation.getId());
@@ -124,8 +107,9 @@ public class DecoderServiceTest {
 		config.update();
 		satelliteDao = new SatelliteDao(config);
 		dao = new ObservationDao(config);
-		decoders = mock(Decoders.class);
 
+		ProcessFactoryMock processFactory = new ProcessFactoryMock(new HashMap<>(), UUID.randomUUID().toString());
+		decoders = new Decoders(new PredictOreKit(config), config, processFactory);
 		service = new DecoderService(config, decoders, dao, new LeoSatDataService(config, dao, null, null), new ExecuteNowThreadFactory(true), new InfluxDBClient(config, new DefaultClock()), satelliteDao);
 		service.start();
 	}

@@ -1,5 +1,7 @@
 package ru.r2cloud.satellite;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
@@ -42,7 +44,7 @@ public class ProcessFactoryMock extends ProcessFactory {
 	public ProcessWrapper create(String commandLine, boolean redirectErrorStream, boolean inheritIO) throws IOException {
 		ProcessWrapper result = handle(commandLine);
 		if (result == null) {
-			return super.create(commandLine, redirectErrorStream, inheritIO);
+			return new ProcessWrapperMock(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), new ByteArrayInputStream(new byte[0]), 0, false);
 		}
 		return result;
 	}

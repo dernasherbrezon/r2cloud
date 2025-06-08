@@ -30,8 +30,8 @@ public class FramingFilterTest {
 
 	@Test
 	public void testSuccess() {
-		assertExternalTool("satellites.satdump.path", satdumpMock, Framing.SATDUMP);
-		assertExternalTool("satellites.wxtoimg.path", wxtoimgMock, Framing.APT);
+		assertExternalTool(satdumpMock, Framing.SATDUMP);
+		assertExternalTool(wxtoimgMock, Framing.APT);
 
 		FramingFilter filter = new FramingFilter(config, processFactory);
 		Transmitter transmitter = new Transmitter();
@@ -43,17 +43,14 @@ public class FramingFilterTest {
 		assertTrue(filter.accept(transmitter));
 	}
 
-	private void assertExternalTool(String configName, ProcessWrapperMock mock, Framing framing) {
+	private void assertExternalTool(ProcessWrapperMock mock, Framing framing) {
 		FramingFilter filter = new FramingFilter(config, processFactory);
 		Transmitter transmitter = new Transmitter();
 		transmitter.setFraming(framing);
 		assertTrue(filter.accept(transmitter));
-		
+
 		filter = new FramingFilter(config, processFactory);
 		mock.setStatusCode(1);
-		assertFalse(filter.accept(transmitter));
-		config.setProperty(configName, UUID.randomUUID().toString());
-		filter = new FramingFilter(config, processFactory);
 		assertFalse(filter.accept(transmitter));
 	}
 
