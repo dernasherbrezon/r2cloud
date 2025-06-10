@@ -24,6 +24,7 @@ import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.jradio.lrpt.PacketReassembly;
 import ru.r2cloud.jradio.lrpt.Vcdu;
 import ru.r2cloud.jradio.meteor.MeteorImage;
+import ru.r2cloud.model.DemodulatorType;
 import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.ObservationStatus;
@@ -47,6 +48,30 @@ public class DecoderServiceTest {
 	private Decoders decoders;
 	private TestConfiguration config;
 	private ProcessFactoryMock processFactory;
+
+	@Test
+	public void testStratosatTk1() throws Exception {
+		File raw = TestUtil.copyResource(tempFolder, "stratosattk1/source_output.raw");
+		Observation observation = TestUtil.copyObservation(config.getProperty("satellites.basepath.location"), "stratosattk1");
+		dao.insert(observation);
+		raw = dao.update(observation, raw);
+
+		service.decode(observation.getSatelliteId(), observation.getId());
+
+		TestUtil.assertJson("expected/stratosattk1.json", dao.find(observation.getSatelliteId(), observation.getId()).toJson(null));
+	}
+
+	@Test
+	public void testRoseyCubesat() throws Exception {
+		File raw = TestUtil.copyResource(tempFolder, "rosey_cubesat/source_output.raw");
+		Observation observation = TestUtil.copyObservation(config.getProperty("satellites.basepath.location"), "rosey_cubesat");
+		dao.insert(observation);
+		raw = dao.update(observation, raw);
+
+		service.decode(observation.getSatelliteId(), observation.getId());
+
+		TestUtil.assertJson("expected/rosey_cubesat.json", dao.find(observation.getSatelliteId(), observation.getId()).toJson(null));
+	}
 
 	@Test
 	public void testEmptyCadu() throws Exception {
@@ -176,8 +201,10 @@ public class DecoderServiceTest {
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
 		config.setProperty("r2cloud.newLaunches", false);
 		config.setProperty("satellites.basepath.location", basepath.getAbsolutePath());
+		config.setProperty("satellites.demod.BPSK", DemodulatorType.FILE.name());
+		config.setProperty("satellites.demod.GFSK", DemodulatorType.FILE.name());
 		config.remove("r2cloud.apiKey");
-		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-test.json");
+		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-decoder-test.json");
 		config.update();
 		satelliteDao = new SatelliteDao(config);
 		dao = new ObservationDao(config);

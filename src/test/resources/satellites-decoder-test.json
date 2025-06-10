@@ -1,0 +1,215 @@
+[
+	{
+		"name": "AAUSAT 4",
+		"noradId": "41460",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.aausat4.Aausat4Beacon",
+				"frequency": 437424000,
+				"bandwidth": 7000,
+				"baudRates": [
+					2400
+				],
+				"deviation": 2500
+			}
+		]
+	},
+	{
+		"name": "NOAA 18",
+		"noradId": "28654",
+		"enabled": true,
+		"satdumpSatelliteNumber": "18",
+		"transmitters": [
+			{
+				"framing": "APT",
+				"frequency": 137912500,
+				"bandwidth": 34000
+			},
+			{
+				"framing": "SATDUMP",
+				"modulation": "AM",
+				"frequency": 137350000,
+				"bandwidth": 288000,
+				"status": "ENABLED",
+				"baudRates": [
+					8320
+				],
+				"satdumpPipeline": "noaa_dsb"
+			}
+		],
+		"instruments": [
+			{
+				"id": "AVHRR3",
+				"enabled": true,
+				"primary": true
+			},
+			{
+				"id": "MHS",
+				"enabled": false
+			},
+			{
+				"id": "HIRS4",
+				"enabled": false
+			},
+			{
+				"id": "AMSUA",
+				"enabled": true
+			},
+			{
+				"id": "SEM2",
+				"enabled": true
+			},
+			{
+				"id": "SBUV2",
+				"enabled": false
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD99999",
+		"name": "METEOR-M2 3",
+		"noradId": "57166",
+		"enabled": true,
+		"satdumpSatelliteNumber": "M2-3",
+		"transmitters": [
+			{
+				"framing": "SATDUMP",
+				"modulation": "OQPSK",
+				"frequency": 137900000,
+				"bandwidth": 288000,
+				"status": "ENABLED",
+				"beaconSizeBytes": 892,
+				"beaconClass": "ru.r2cloud.jradio.lrpt.Vcdu",
+				"baudRates": [
+					72000
+				],
+				"satdumpPipeline": "meteor_m2-x_lrpt",
+				"satdumpCaduSizeBytes": 1024
+			},
+			{
+				"framing": "SATDUMP",
+				"modulation": "OQPSK",
+				"frequency": 1700000000,
+				"bandwidth": 2400000,
+				"status": "ENABLED",
+				"beaconSizeBytes": 1024,
+				"baudRates": [
+					665400
+				],
+				"satdumpPipeline": "meteor_hrpt",
+				"satdumpCaduSizeBytes": 1024
+			}
+		],
+		"instruments": [
+			{
+				"id": "MSUMR",
+				"enabled": true,
+				"primary": true
+			}
+		],
+		"lastUpdateTime": 1962310762000
+	},
+	{
+		"id": "R2CLOUD521",
+		"name": "FENGYUN 3G",
+		"noradId": "56232",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "QPSK",
+				"framing": "SATDUMP",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"beaconSizeBytes": 1020,
+				"frequency": 7790000000,
+				"bandwidth": 12000000,
+				"baudRates": [
+					6000000
+				],
+				"status": "ENABLED",
+				"satdumpPipeline": "fengyun3_g_ahrpt",
+				"satdumpCaduSizeBytes": 1024
+			}
+		],
+		"lastUpdateTime": 1749374594000,
+		"instruments": [
+			{
+				"id": "MERSIRM",
+				"enabled": true,
+				"primary": true
+			},
+			{
+				"id": "MWRIRM",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "PMRKu",
+				"enabled": true,
+				"primary": false
+			},
+			{
+				"id": "PMRKa",
+				"enabled": true,
+				"primary": false
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD522",
+		"name": "ROSEYCUBESAT-1",
+		"noradId": "56212",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.roseycub.RoseyCubesatBeacon",
+				"frequency": 436825000,
+				"bandwidth": 20000,
+				"baudRates": [
+					1200,
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1749374594000,
+		"instruments": [
+			{
+				"id": "KissCAMV1",
+				"enabled": true,
+				"primary": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD289",
+		"name": "STRATOSAT-TK 1 (RS52S)",
+		"noradId": "57167",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.sstk1.StratosatTk1Beacon",
+				"frequency": 435872000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1692969125000,
+		"instruments": [
+			{
+				"id": "GeoscanHRCAMM",
+				"enabled": true,
+				"primary": true
+			}
+		]
+	}
+]

@@ -2427,5 +2427,17 @@
 		"description": "Space Weather Suite / Wide-field Auroral Imager",
 		"series": true,
 		"satdumpImageSeries": "WAI_\\d+\\.png"
+	},
+	{
+		"id": "KissCAMV1",
+		"name": "KissCAM V1",
+		"description": "Wide-angle camera",
+		"series": true
+	},
+	{
+		"id": "GeoscanHRCAMM",
+		"name": "Geoscan HRCAM-M",
+		"description": "Wide-angle camera",
+		"series": true
 	}
 ]

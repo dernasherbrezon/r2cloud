@@ -114,6 +114,18 @@ public class Satellite {
 		}
 	}
 
+	public Instrument findFirstSeries() {
+		if (instruments == null) {
+			return null;
+		}
+		for (Instrument cur : instruments) {
+			if (cur.isEnabled() && cur.isSeries()) {
+				return cur;
+			}
+		}
+		return null;
+	}
+
 	public Priority getPriority() {
 		return priority;
 	}

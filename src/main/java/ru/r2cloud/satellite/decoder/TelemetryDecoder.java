@@ -25,6 +25,7 @@ import ru.r2cloud.jradio.demod.FskDemodulator;
 import ru.r2cloud.jradio.sink.SnrCalculator;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.DemodulatorType;
+import ru.r2cloud.model.Instrument;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
@@ -88,21 +89,14 @@ public abstract class TelemetryDecoder implements Decoder {
 							SnrCalculator.enrichSnr(next, beacons, transmitter.getBandwidth(), 1);
 						}
 					}
-					// decode only one image per observation
-					if (result.getImage() == null) {
-						BufferedImage image = decodeImage(beacons);
-						if (image != null) {
-							File imageFile = saveImage("image-" + req.getId() + ".jpg", image);
-							if (imageFile != null) {
-								result.setImage(imageFile);
-							}
-						}
-					}
 					allBeacons.addAll(beacons);
 				}
 			} catch (Exception e) {
 				LOG.error("[{}] unable to process baud rate {}", req.getId(), baudRate, e);
 			}
+		}
+		if (satellite.getInstruments() != null) {
+			result.setInstruments(decodeImage(satellite, allBeacons));
 		}
 		result.setNumberOfDecodedPackets(allBeacons.size());
 		result.setTotalSize(totalSize);
@@ -135,6 +129,9 @@ public abstract class TelemetryDecoder implements Decoder {
 			demodulator = new SdrModemClient(config, rawIq, req, transmitter, baudRate);
 			result.add(createBeaconSource(demodulator, req));
 			break;
+		case FILE:
+			result.add(new BeaconInputStreamSource<>(rawIq, transmitter.getBeaconClass()));
+			break;
 		default:
 			LOG.error("unknown demodulator type: " + type);
 			return Collections.emptyList();
@@ -160,11 +157,11 @@ public abstract class TelemetryDecoder implements Decoder {
 	}
 
 	@SuppressWarnings("unused")
-	protected BufferedImage decodeImage(List<? extends Beacon> beacons) {
-		return null;
+	protected List<Instrument> decodeImage(Satellite satellite, List<? extends Beacon> beacons) {
+		return Collections.emptyList();
 	}
 
-	private File saveImage(String path, BufferedImage image) {
+	protected File saveImage(String path, BufferedImage image) {
 		if (image == null) {
 			return null;
 		}

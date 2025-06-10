@@ -5536,7 +5536,14 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1692969125000
+		"lastUpdateTime": 1692969125000,
+		"instruments": [
+			{
+				"id": "GeoscanHRCAMM",
+				"enabled": true,
+				"primary": true
+			}
+		]
 	},
 	{
 		"id": "R2CLOUD285",

@@ -1,0 +1,66 @@
+{
+	"id": "1724488634922-56212-0",
+	"start": 1724488659739,
+	"end": 1724488979421,
+	"satellite": "56212",
+	"transmitterId": "56212-0",
+	"tle": {
+		"line1": "ROSEYCUBESAT-1",
+		"line2": "1 56212U 23054AL  24233.46188957  .00799667  26563-3  24915-2 0  9994",
+		"line3": "2 56212  97.3441 138.7524 0008365 162.8207 197.3352 15.91527761 76494",
+		"updated": 1724201815068,
+		"source": "celestrak.org"
+	},
+	"groundStation": {
+		"lat": 56.18,
+		"lon": 38.17
+	},
+	"dataFormat": "COMPLEX_FLOAT",
+	"sampleRate": 48000,
+	"actualFrequency": 436825000,
+	"numberOfDecodedPackets": 2184,
+	"totalSize": 229240,
+	"rawURL": "/api/v1/admin/static/satellites/56212/data/1724488634922-56212-0/output.raw",
+	"data": "/api/v1/admin/static/satellites/56212/data/1724488634922-56212-0/data.bin",
+	"sigmfDataURL": "/api/v1/static/observation/sigmf/data?satelliteId=56212&id=1724488634922-56212-0",
+	"sigmfMetaURL": "/api/v1/static/observation/sigmf/meta?satelliteId=56212&id=1724488634922-56212-0",
+	"status": "DECODED",
+	"device": {
+		"id": "sdrserver.0",
+		"name": "SDR-SERVER - 127.0.0.1:8090",
+		"deviceType": "SDRSERVER",
+		"minimumFrequency": 400000000,
+		"maximumFrequency": 500000000,
+		"host": "127.0.0.1",
+		"port": 8090,
+		"gain": 0,
+		"rtlDeviceId": "0",
+		"biast": false,
+		"ppm": 0,
+		"bandwidth": 1440000,
+		"bandwidthCrop": 48000,
+		"basepath": "/tmp",
+		"usegzip": false,
+		"antenna": {
+			"antennaType": "OMNIDIRECTIONAL",
+			"azimuth": 0,
+			"elevation": 0,
+			"beamwidth": 0,
+			"minElevation": 5,
+			"guaranteedElevation": 10
+		}
+	},
+	"instruments": [
+		{
+			"id": "KissCAMV1",
+			"enabled": true,
+			"primary": true,
+			"series": true,
+			"name": "KissCAM V1",
+			"description": "Wide-angle camera",
+			"imageSeriesURL": [
+				"/api/v1/admin/static/satellites/56212/data/1724488634922-56212-0/KissCAMV1-0.jpg"
+			]
+		}
+	]
+}
