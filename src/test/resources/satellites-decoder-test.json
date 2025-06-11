@@ -211,5 +211,32 @@
 				"primary": true
 			}
 		]
+	},
+	{
+		"name": "SIREN (RS30S)",
+		"noradId": "53384",
+		"enabled": true,
+		"transmitters": [
+			{
+				"frequency": 437750000,
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"bandwidth": 20000,
+				"baudRates": [
+					2400,
+					4800,
+					9600
+				],
+				"beaconClass": "ru.r2cloud.jradio.sputnix.SputnixBeacon",
+				"status": "ENABLED"
+			}
+		],
+		"instruments": [
+			{
+				"id": "SirenCamera",
+				"enabled": true,
+				"primary": true
+			}
+		]
 	}
 ]

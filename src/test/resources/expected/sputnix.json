@@ -1,0 +1,39 @@
+{
+	"id": "1685482612661-53384-0",
+	"start": 1685482612687,
+	"end": 1685483189090,
+	"satellite": "53384",
+	"transmitterId": "53384-0",
+	"tle": {
+		"line1": "RS30S (SXC3-217 SIREN)",
+		"line2": "1 53384U 22096Q   23148.07818779  .00014984  00000+0  44721-3 0  9993",
+		"line3": "2 53384  97.4165  53.9282 0005907 116.1511 244.0340 15.34708630 44588",
+		"updated": 0
+	},
+	"groundStation": {
+		"lat": 53.72,
+		"lon": 47.57
+	},
+	"sampleRate": 48000,
+	"actualFrequency": 437750000,
+	"numberOfDecodedPackets": 18,
+	"totalSize": 3888,
+	"rawURL": "/api/v1/admin/static/satellites/53384/data/1685482612661-53384-0/output.raw",
+	"data": "/api/v1/admin/static/satellites/53384/data/1685482612661-53384-0/data.bin",
+	"sigmfDataURL": "/api/v1/static/observation/sigmf/data?satelliteId=53384&id=1685482612661-53384-0",
+	"sigmfMetaURL": "/api/v1/static/observation/sigmf/meta?satelliteId=53384&id=1685482612661-53384-0",
+	"status": "DECODED",
+	"instruments": [
+		{
+			"id": "SirenCamera",
+			"enabled": true,
+			"primary": true,
+			"series": true,
+			"name": "Camera",
+			"description": "Wide-angle camera",
+			"imageSeriesURL": [
+				"/api/v1/admin/static/satellites/53384/data/1685482612661-53384-0/SirenCamera-0.jpg"
+			]
+		}
+	]
+}

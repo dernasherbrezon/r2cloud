@@ -2439,5 +2439,11 @@
 		"name": "Geoscan HRCAM-M",
 		"description": "Wide-angle camera",
 		"series": true
+	},
+	{
+		"id": "SirenCamera",
+		"name": "Camera",
+		"description": "Wide-angle camera",
+		"series": true
 	}
 ]

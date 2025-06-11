@@ -1,0 +1,27 @@
+{
+	"id": "1685482612661-53384-0",
+	"start": 1685482612687,
+	"end": 1685483189090,
+	"satellite": "53384",
+	"transmitterId": "53384-0",
+	"tle": {
+		"line1": "RS30S (SXC3-217 SIREN)",
+		"line2": "1 53384U 22096Q   23148.07818779  .00014984  00000+0  44721-3 0  9993",
+		"line3": "2 53384  97.4165  53.9282 0005907 116.1511 244.0340 15.34708630 44588"
+	},
+	"groundStation": {
+		"lat": 53.72,
+		"lon": 47.57
+	},
+	"sdrType": "SDRSERVER",
+	"sampleRate": 48000,
+	"actualFrequency": 437750000,
+	"gain": "40.0",
+	"biast": false,
+	"centerBandFrequency": 438132000,
+	"rtlDeviceId": 0,
+	"ppm": 1,
+	"numberOfDecodedPackets": 0,
+	"rawURL": "/api/v1/admin/static/satellites/53384/data/1685482612661-53384-0/output.raw",
+	"status": "RECEIVED"
+}
