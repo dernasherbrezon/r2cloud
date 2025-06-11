@@ -1,0 +1,26 @@
+{
+	"id": "1576269809672",
+	"start": 1576269901780,
+	"end": 1576269903780,
+	"sampleRate": 48000,
+	"inputSampleRate": 240000,
+	"frequency": 437424000,
+	"actualFrequency": 437444382,
+	"satellite": "41460",
+	"bandwidth": 7000,
+	"status": "RECEIVED",
+	"tle": {
+		"line1": "AAUSAT 4",
+		"line2": "1 41460U 16025E   19341.55205118  .00002805  00000-0  14125-3 0  9995",
+		"line3": "2 41460  98.0956  78.4092 0156992 131.5381 229.9437 15.07963480198566"
+	},
+	"groundStation": {
+		"lat": 56.31,
+		"lon": 38.13
+	},
+	"numberOfDecodedPackets": 0,
+	"dataFormat": "COMPLEX_UNSIGNED_BYTE",
+	"baudRates": [
+		2400
+	]
+}
