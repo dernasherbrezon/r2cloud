@@ -1,0 +1,26 @@
+{
+	"id": "1583840166082",
+	"start": 1583840449104,
+	"end": 1583840451104,
+	"sampleRate": 48000,
+	"inputSampleRate": 240000,
+	"frequency": 437525000,
+	"actualFrequency": 437544703,
+	"satellite": "44406",
+	"bandwidth": 20000,
+	"status": "RECEIVED",
+	"tle": {
+		"line1": "LUCKY-7",
+		"line2": "1 44406U 19038W   20069.88080907  .00000505  00000-0  32890-4 0  9992",
+		"line3": "2 44406  97.5270  32.5584 0026284 107.4758 252.9348 15.12089395 37524"
+	},
+	"groundStation": {
+		"lat": 53.72,
+		"lon": 47.57
+	},
+	"numberOfDecodedPackets": 1,
+	"dataFormat": "COMPLEX_UNSIGNED_BYTE",
+	"baudRates": [
+		4800
+	]
+}

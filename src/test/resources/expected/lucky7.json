@@ -1,0 +1,40 @@
+{
+	"id": "1583840166082",
+	"start": 1583840449104,
+	"end": 1583840451104,
+	"satellite": "44406",
+	"transmitterId": "44406-0",
+	"tle": {
+		"line1": "LUCKY-7",
+		"line2": "1 44406U 19038W   20069.88080907  .00000505  00000-0  32890-4 0  9992",
+		"line3": "2 44406  97.5270  32.5584 0026284 107.4758 252.9348 15.12089395 37524",
+		"updated": 0
+	},
+	"groundStation": {
+		"lat": 53.72,
+		"lon": 47.57
+	},
+	"dataFormat": "COMPLEX_UNSIGNED_BYTE",
+	"sampleRate": 240000,
+	"actualFrequency": 437544703,
+	"numberOfDecodedPackets": 33,
+	"totalSize": 1221,
+	"rawURL": "/api/v1/admin/static/satellites/44406/data/1583840166082/output.raw",
+	"data": "/api/v1/admin/static/satellites/44406/data/1583840166082/data.bin",
+	"sigmfDataURL": "/api/v1/static/observation/sigmf/data?satelliteId=44406&id=1583840166082",
+	"sigmfMetaURL": "/api/v1/static/observation/sigmf/meta?satelliteId=44406&id=1583840166082",
+	"status": "DECODED",
+	"instruments": [
+		{
+			"id": "UnknownOpticalCamera",
+			"enabled": true,
+			"primary": true,
+			"series": true,
+			"name": "Camera",
+			"description": "Unknown optical camera",
+			"imageSeriesURL": [
+				"/api/v1/admin/static/satellites/44406/data/1583840166082/UnknownOpticalCamera-0.jpg"
+			]
+		}
+	]
+}

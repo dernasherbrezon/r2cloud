@@ -6134,7 +6134,7 @@
 		"transmitters": [
 			{
 				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
+				"framing": "CUSTOM",
 				"beaconClass": "ru.r2cloud.jradio.sharjahsat.Sharjahsat1Beacon",
 				"frequency": 437325000,
 				"bandwidth": 20000,
@@ -6144,7 +6144,14 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1697488290000
+		"lastUpdateTime": 1697488290000,
+		"instruments": [
+			{
+				"id": "UnknownOpticalCamera",
+				"enabled": true,
+				"primary": true
+			}
+		]
 	},
 	{
 		"id": "R2CLOUD214",

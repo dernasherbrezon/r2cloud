@@ -265,5 +265,29 @@
 				"primary": true
 			}
 		]
+	},
+	{
+		"name": "LUCKY-7",
+		"noradId": "44406",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.lucky7.Lucky7Beacon",
+				"frequency": 437525000,
+				"bandwidth": 20000,
+				"baudRates": [
+					4800
+				]
+			}
+		],
+		"instruments": [
+			{
+				"id": "UnknownOpticalCamera",
+				"enabled": true,
+				"primary": true
+			}
+		]
 	}
 ]
