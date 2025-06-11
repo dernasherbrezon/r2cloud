@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,7 +18,10 @@ import ru.r2cloud.jradio.fox.Fox1DBeacon;
 import ru.r2cloud.jradio.fox.FoxPictureDecoder;
 import ru.r2cloud.jradio.fox.HighSpeedFox;
 import ru.r2cloud.jradio.fox.PictureScanLine;
+import ru.r2cloud.model.DemodulatorType;
+import ru.r2cloud.model.Instrument;
 import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
@@ -31,8 +35,13 @@ public class FoxDecoder<T extends Beacon> extends FoxSlowDecoder<T> {
 		this.clazz = clazz;
 	}
 
+	@SuppressWarnings("resource")
 	@Override
 	public List<BeaconSource<? extends Beacon>> createBeaconSources(File rawIq, Observation req, final Transmitter transmitter, Integer baudRate) throws IOException {
+		DemodulatorType type = config.getDemodulatorType(transmitter.getModulation());
+		if (type.equals(DemodulatorType.FILE)) {
+			return Collections.singletonList(new BeaconInputStreamSource<>(rawIq, transmitter.getBeaconClass()));
+		}
 		List<BeaconSource<? extends Beacon>> result = new ArrayList<>();
 		switch (baudRate) {
 		case 200: {
@@ -60,7 +69,11 @@ public class FoxDecoder<T extends Beacon> extends FoxSlowDecoder<T> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected BufferedImage decodeImage(List<? extends Beacon> beacons) {
+	protected List<Instrument> decodeImage(Satellite satellite, List<? extends Beacon> beacons) {
+		Instrument camera = satellite.findFirstSeries();
+		if (camera == null) {
+			return Collections.emptyList();
+		}
 		List<PictureScanLine> scanLines = new ArrayList<>();
 		for (Fox1DBeacon cur : (List<Fox1DBeacon>) beacons) {
 			if (cur.getPictureScanLines() == null) {
@@ -68,15 +81,24 @@ public class FoxDecoder<T extends Beacon> extends FoxSlowDecoder<T> {
 			}
 			scanLines.addAll(cur.getPictureScanLines());
 		}
+
+		List<File> series = new ArrayList<>();
+		int index = 0;
 		FoxPictureDecoder pictureDecoder = new FoxPictureDecoder(scanLines);
 		while (pictureDecoder.hasNext()) {
-			BufferedImage cur = pictureDecoder.next();
-			if (cur == null) {
+			BufferedImage image = pictureDecoder.next();
+			if (image == null) {
 				continue;
 			}
-			return cur;
+			File imageFile = saveImage("fox1d-" + index + ".jpg", image);
+			if (imageFile == null) {
+				continue;
+			}
+			series.add(imageFile);
 		}
-		return null;
+		Instrument result = new Instrument(camera);
+		result.setImageSeries(series);
+		return Collections.singletonList(result);
 	}
 
 	@Override

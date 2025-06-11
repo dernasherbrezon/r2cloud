@@ -315,5 +315,31 @@
 				"primary": true
 			}
 		]
+	},
+	{
+		"name": "FOX-1D (AO-92)",
+		"noradId": "43137",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.fox.Fox1DBeacon",
+				"frequency": 145880000,
+				"bandwidth": 5000,
+				"baudRates": [
+					200
+				],
+				"deviation": 1500,
+				"transitionWidth": 200.0
+			}
+		],
+		"instruments": [
+			{
+				"id": "UnknownOpticalCamera",
+				"enabled": true,
+				"primary": true
+			}
+		]
 	}
 ]

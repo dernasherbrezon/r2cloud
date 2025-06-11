@@ -1,0 +1,40 @@
+{
+	"id": "1579974022907",
+	"start": 1579974255119,
+	"end": 1579974261119,
+	"satellite": "43137",
+	"transmitterId": "43137-0",
+	"tle": {
+		"line1": "FOX1D",
+		"line2": "1 43137U 18099AX  20018.56910583  .00000003  00000-0  55417-5 0  9993",
+		"line3": "2 43137  97.7217  92.6265 0014577 340.6485  19.4180 14.95403920 61385",
+		"updated": 0
+	},
+	"groundStation": {
+		"lat": 53.72,
+		"lon": 47.57
+	},
+	"dataFormat": "COMPLEX_UNSIGNED_BYTE",
+	"sampleRate": 240000,
+	"actualFrequency": 145853147,
+	"numberOfDecodedPackets": 1,
+	"totalSize": 5272,
+	"rawURL": "/api/v1/admin/static/satellites/43137/data/1579974022907/output.raw",
+	"data": "/api/v1/admin/static/satellites/43137/data/1579974022907/data.bin",
+	"sigmfDataURL": "/api/v1/static/observation/sigmf/data?satelliteId=43137&id=1579974022907",
+	"sigmfMetaURL": "/api/v1/static/observation/sigmf/meta?satelliteId=43137&id=1579974022907",
+	"status": "DECODED",
+	"instruments": [
+		{
+			"id": "UnknownOpticalCamera",
+			"enabled": true,
+			"primary": true,
+			"series": true,
+			"name": "Camera",
+			"description": "Unknown optical camera",
+			"imageSeriesURL": [
+				"/api/v1/admin/static/satellites/43137/data/1579974022907/UnknownOpticalCamera-0.jpg"
+			]
+		}
+	]
+}
