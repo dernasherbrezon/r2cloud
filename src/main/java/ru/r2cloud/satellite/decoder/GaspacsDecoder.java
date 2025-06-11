@@ -1,7 +1,8 @@
 package ru.r2cloud.satellite.decoder;
 
-import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ru.r2cloud.jradio.Beacon;
@@ -10,7 +11,9 @@ import ru.r2cloud.jradio.ByteInput;
 import ru.r2cloud.jradio.gaspacs.Gaspacs;
 import ru.r2cloud.jradio.gaspacs.GaspacsBeacon;
 import ru.r2cloud.jradio.gaspacs.GaspacsPacketSource;
+import ru.r2cloud.model.Instrument;
 import ru.r2cloud.model.Observation;
+import ru.r2cloud.model.Satellite;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.ssdv.SsdvDecoder;
 import ru.r2cloud.ssdv.SsdvImage;
@@ -24,7 +27,13 @@ public class GaspacsDecoder extends TelemetryDecoder {
 	}
 
 	@Override
-	protected BufferedImage decodeImage(List<? extends Beacon> beacons) {
+	protected List<Instrument> decodeImage(Satellite satellite, List<? extends Beacon> beacons) {
+		Instrument camera = satellite.findFirstSeries();
+		if (camera == null) {
+			return Collections.emptyList();
+		}
+		List<File> series = new ArrayList<>();
+		int index = 0;
 		// real-world packets received from space can be unsorted for some reason
 		// extract them into List for SsdvDecoder to sort and produce better picture
 		List<SsdvPacket> packets = new ArrayList<>();
@@ -35,17 +44,19 @@ public class GaspacsDecoder extends TelemetryDecoder {
 		}
 		SsdvDecoder decoder = new SsdvDecoder(packets);
 		while (decoder.hasNext()) {
-			SsdvImage next = decoder.next();
-			if (next == null) {
+			SsdvImage image = decoder.next();
+			if (image == null) {
 				continue;
 			}
-			BufferedImage cur = next.getImage();
-			if (cur == null) {
+			File imageFile = saveImage("gaspacs-" + index + ".jpg", image.getImage());
+			if (imageFile == null) {
 				continue;
 			}
-			return cur;
+			series.add(imageFile);
 		}
-		return null;
+		Instrument result = new Instrument(camera);
+		result.setImageSeries(series);
+		return Collections.singletonList(result);
 	}
 
 	@Override

@@ -1,0 +1,66 @@
+{
+	"id": "1749624797276-61757-0",
+	"start": 1749624797908,
+	"end": 1749625170332,
+	"satellite": "61757",
+	"transmitterId": "61757-0",
+	"tle": {
+		"line1": "HORIZON (RS59S)",
+		"line2": "1 61757U 24199Y   25160.91279565  .00019835  00000+0  53237-3 0  9997",
+		"line3": "2 61757  97.3559  30.3538 0011375 167.2057 192.9479 15.37918758 80196",
+		"updated": 1749529553419,
+		"source": "celestrak.org"
+	},
+	"groundStation": {
+		"lat": 56.18,
+		"lon": 38.17
+	},
+	"dataFormat": "COMPLEX_FLOAT",
+	"sampleRate": 48000,
+	"actualFrequency": 435430000,
+	"numberOfDecodedPackets": 294,
+	"totalSize": 21168,
+	"rawURL": "/api/v1/admin/static/satellites/61757/data/1749624797276-61757-0/output.raw",
+	"data": "/api/v1/admin/static/satellites/61757/data/1749624797276-61757-0/data.bin",
+	"sigmfDataURL": "/api/v1/static/observation/sigmf/data?satelliteId=61757&id=1749624797276-61757-0",
+	"sigmfMetaURL": "/api/v1/static/observation/sigmf/meta?satelliteId=61757&id=1749624797276-61757-0",
+	"status": "DECODED",
+	"device": {
+		"id": "sdrserver.0",
+		"name": "SDR-SERVER - 127.0.0.1:8090",
+		"deviceType": "SDRSERVER",
+		"minimumFrequency": 400000000,
+		"maximumFrequency": 500000000,
+		"host": "127.0.0.1",
+		"port": 8090,
+		"gain": 0,
+		"rtlDeviceId": "0",
+		"biast": false,
+		"ppm": 0,
+		"bandwidth": 1440000,
+		"bandwidthCrop": 48000,
+		"basepath": "/tmp",
+		"usegzip": false,
+		"antenna": {
+			"antennaType": "OMNIDIRECTIONAL",
+			"azimuth": 0,
+			"elevation": 0,
+			"beamwidth": 0,
+			"minElevation": 5,
+			"guaranteedElevation": 10
+		}
+	},
+	"instruments": [
+		{
+			"id": "UnknownOpticalCamera",
+			"enabled": true,
+			"primary": true,
+			"series": true,
+			"name": "Camera",
+			"description": "Unknown optical camera",
+			"imageSeriesURL": [
+				"/api/v1/admin/static/satellites/61757/data/1749624797276-61757-0/UnknownOpticalCamera-0.jpg"
+			]
+		}
+	]
+}

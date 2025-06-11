@@ -365,5 +365,33 @@
 				"primary": true
 			}
 		]
+	},
+	{
+		"id": "R2CLOUD433",
+		"name": "Horizon",
+		"noradId": "61757",
+		"enabled": true,
+		"start": 1730777760000,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.geoscan.Geoscan2Beacon",
+				"frequency": 435430000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1744645608000,
+		"instruments": [
+			{
+				"id": "UnknownOpticalCamera",
+				"enabled": true,
+				"primary": true
+			}
+		]
 	}
 ]

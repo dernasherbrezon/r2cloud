@@ -50,6 +50,13 @@ public class DecoderServiceTest {
 	private ProcessFactoryMock processFactory;
 
 	@Test
+	public void testGeoscan() throws Exception {
+		Observation observation = setupTestData("geoscan");
+		service.decode(observation.getSatelliteId(), observation.getId());
+		TestUtil.assertJson("expected/geoscan.json", dao.find(observation.getSatelliteId(), observation.getId()).toJson(null));
+	}
+
+	@Test
 	public void testGaspacs() throws Exception {
 		Observation observation = setupTestData("gaspacs");
 		service.decode(observation.getSatelliteId(), observation.getId());
