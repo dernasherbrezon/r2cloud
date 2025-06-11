@@ -2797,7 +2797,14 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1744645653000
+		"lastUpdateTime": 1749677975000,
+		"instruments": [
+			{
+				"id": "UnknownOpticalCamera",
+				"enabled": true,
+				"primary": true
+			}
+		]
 	},
 	{
 		"id": "R2CLOUD438",
@@ -2818,7 +2825,14 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1744645804000
+		"lastUpdateTime": 1749677965000,
+		"instruments": [
+			{
+				"id": "UnknownOpticalCamera",
+				"enabled": true,
+				"primary": true
+			}
+		]
 	},
 	{
 		"id": "R2CLOUD437",
@@ -2883,7 +2897,14 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1744645733000
+		"lastUpdateTime": 1749677953000,
+		"instruments": [
+			{
+				"id": "UnknownOpticalCamera",
+				"enabled": true,
+				"primary": true
+			}
+		]
 	},
 	{
 		"id": "R2CLOUD434",
@@ -2904,7 +2925,14 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1744641515000
+		"lastUpdateTime": 1749677939000,
+		"instruments": [
+			{
+				"id": "UnknownOpticalCamera",
+				"enabled": true,
+				"primary": true
+			}
+		]
 	},
 	{
 		"id": "R2CLOUD433",
@@ -2925,7 +2953,14 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1744645608000
+		"lastUpdateTime": 1749677928000,
+		"instruments": [
+			{
+				"id": "UnknownOpticalCamera",
+				"enabled": true,
+				"primary": true
+			}
+		]
 	},
 	{
 		"id": "R2CLOUD431",
@@ -5536,7 +5571,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1692969125000,
+		"lastUpdateTime": 1749538586000,
 		"instruments": [
 			{
 				"id": "GeoscanHRCAMM",
@@ -6144,7 +6179,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1697488290000,
+		"lastUpdateTime": 1749663896000,
 		"instruments": [
 			{
 				"id": "UnknownOpticalCamera",
@@ -7870,89 +7905,6 @@
 			}
 		],
 		"satdumpSatelliteNumber": "19"
-	},
-	{
-		"id": "R2CLOUD2",
-		"name": "NOAA 18",
-		"noradId": "28654",
-		"enabled": true,
-		"transmitters": [
-			{
-				"modulation": "AM",
-				"framing": "APT",
-				"frequency": 137912500,
-				"bandwidth": 240000,
-				"status": "ENABLED",
-				"satdumpPipeline": "noaa_apt"
-			},
-			{
-				"modulation": "BPSK",
-				"framing": "SATDUMP",
-				"frequency": 1707000000,
-				"bandwidth": 2400000,
-				"baudRates": [
-					665400
-				],
-				"status": "ENABLED",
-				"satdumpPipeline": "noaa_hrpt"
-			},
-			{
-				"modulation": "BPSK",
-				"framing": "SATDUMP",
-				"frequency": 1698000000,
-				"bandwidth": 6000000,
-				"baudRates": [
-					2661600
-				],
-				"status": "ENABLED",
-				"satdumpPipeline": "noaa_gac"
-			},
-			{
-				"modulation": "AM",
-				"framing": "SATDUMP",
-				"frequency": 137350000,
-				"bandwidth": 288000,
-				"baudRates": [
-					8320
-				],
-				"status": "DISABLED",
-				"satdumpPipeline": "noaa_dsb"
-			}
-		],
-		"lastUpdateTime": 1746000245000,
-		"instruments": [
-			{
-				"id": "AVHRR3",
-				"enabled": true,
-				"primary": true
-			},
-			{
-				"id": "MHS",
-				"enabled": false,
-				"primary": false
-			},
-			{
-				"id": "HIRS4",
-				"enabled": false,
-				"primary": false
-			},
-			{
-				"id": "AMSUA",
-				"enabled": true,
-				"primary": false
-			},
-			{
-				"id": "SEM2",
-				"enabled": true,
-				"primary": false
-			},
-			{
-				"id": "SBUV2",
-				"enabled": false,
-				"primary": false
-			}
-		],
-		"satdumpSatelliteNumber": "18"
 	},
 	{
 		"id": "R2CLOUD1",
