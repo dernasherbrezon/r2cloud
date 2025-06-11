@@ -289,5 +289,31 @@
 				"primary": true
 			}
 		]
+	},
+	{
+		"name": "JY1SAT (JO-97)",
+		"noradId": "43803",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "BPSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.jy1sat.Jy1satBeacon",
+				"frequency": 145840000,
+				"bandwidth": 4000,
+				"baudRates": [
+					1200
+				],
+				"bpskCenterFrequency": 0,
+				"bpskDifferential": true
+			}
+		],
+		"instruments": [
+			{
+				"id": "UnknownOpticalCamera",
+				"enabled": true,
+				"primary": true
+			}
+		]
 	}
 ]

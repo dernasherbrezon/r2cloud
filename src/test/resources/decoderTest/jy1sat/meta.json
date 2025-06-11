@@ -1,0 +1,26 @@
+{
+	"id": "1579974022907",
+	"start": 1579974255119,
+	"end": 1579974261119,
+	"sampleRate": 48000,
+	"inputSampleRate": 240000,
+	"frequency": 145840000,
+	"actualFrequency": 145853147,
+	"satellite": "43803",
+	"bandwidth": 4000,
+	"status": "RECEIVED",
+	"tle": {
+		"line1": "JY1SAT (JO-97)",
+		"line2": "1 43803U 18099AX  20018.56910583  .00000003  00000-0  55417-5 0  9993",
+		"line3": "2 43803  97.7217  92.6265 0014577 340.6485  19.4180 14.95403920 61385"
+	},
+	"groundStation": {
+		"lat": 53.72,
+		"lon": 47.57
+	},
+	"numberOfDecodedPackets": 94,
+	"dataFormat": "COMPLEX_UNSIGNED_BYTE",
+	"baudRates": [
+		1200
+	]
+}
