@@ -50,6 +50,13 @@ public class DecoderServiceTest {
 	private ProcessFactoryMock processFactory;
 
 	@Test
+	public void testGaspacs() throws Exception {
+		Observation observation = setupTestData("gaspacs");
+		service.decode(observation.getSatelliteId(), observation.getId());
+		TestUtil.assertJson("expected/gaspacs.json", dao.find(observation.getSatelliteId(), observation.getId()).toJson(null));
+	}
+
+	@Test
 	public void testFox1d() throws Exception {
 		Observation observation = setupTestData("fox1d");
 		service.decode(observation.getSatelliteId(), observation.getId());

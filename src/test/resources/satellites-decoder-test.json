@@ -341,5 +341,29 @@
 				"primary": true
 			}
 		]
+	},
+	{
+		"name": "GASPACS",
+		"noradId": "51439",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.gaspacs.GaspacsBeacon",
+				"frequency": 437364000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				]
+			}
+		],
+		"instruments": [
+			{
+				"id": "UnknownOpticalCamera",
+				"enabled": true,
+				"primary": true
+			}
+		]
 	}
 ]
