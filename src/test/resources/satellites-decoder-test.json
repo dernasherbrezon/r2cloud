@@ -233,7 +233,34 @@
 		],
 		"instruments": [
 			{
-				"id": "SirenCamera",
+				"id": "UnknownOpticalCamera",
+				"enabled": true,
+				"primary": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD218",
+		"name": "SHARJAHSAT-1",
+		"noradId": "55104",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.sharjahsat.Sharjahsat1Beacon",
+				"frequency": 437325000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1697488290000,
+		"instruments": [
+			{
+				"id": "UnknownOpticalCamera",
 				"enabled": true,
 				"primary": true
 			}

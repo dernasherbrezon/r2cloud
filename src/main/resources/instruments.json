@@ -2441,9 +2441,9 @@
 		"series": true
 	},
 	{
-		"id": "SirenCamera",
+		"id": "UnknownOpticalCamera",
 		"name": "Camera",
-		"description": "Wide-angle camera",
+		"description": "Unknown optical camera",
 		"series": true
 	}
 ]

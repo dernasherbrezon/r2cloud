@@ -25,14 +25,14 @@
 	"status": "DECODED",
 	"instruments": [
 		{
-			"id": "SirenCamera",
+			"id": "UnknownOpticalCamera",
 			"enabled": true,
 			"primary": true,
 			"series": true,
 			"name": "Camera",
-			"description": "Wide-angle camera",
+			"description": "Unknown optical camera",
 			"imageSeriesURL": [
-				"/api/v1/admin/static/satellites/53384/data/1685482612661-53384-0/SirenCamera-0.jpg"
+				"/api/v1/admin/static/satellites/53384/data/1685482612661-53384-0/UnknownOpticalCamera-0.jpg"
 			]
 		}
 	]
