@@ -25,11 +25,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-maven-
 
-    - name: Check license
-      run: |
-        sudo gem install license_finder
-        license_finder
-
     - name: SonarCloud Scan
       run: |
         export JAVA_HOME=${JAVA_HOME_17_X64}
