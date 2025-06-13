@@ -1,0 +1,60 @@
+{
+	"id": "1554483451541",
+	"start": 1554483451541,
+	"end": 0,
+	"satellite": "40069",
+	"transmitterId": "40069-0",
+	"tle": {
+		"line1": "meteor",
+		"line2": "1 40069U 14037A   18286.52491495 -.00000023  00000-0  92613-5 0  9990",
+		"line3": "2 40069  98.5901 334.4030 0004544 256.4188 103.6490 14.20654800221188",
+		"updated": 0
+	},
+	"groundStation": {
+		"lat": 53.72,
+		"lon": 47.57
+	},
+	"dataFormat": "COMPLEX_UNSIGNED_BYTE",
+	"sampleRate": 288000,
+	"actualFrequency": 137898800,
+	"numberOfDecodedPackets": 5,
+	"totalSize": 0,
+	"rawURL": "/api/v1/admin/static/satellites/40069/data/1554483451541/output.raw.gz",
+	"data": "/api/v1/admin/static/satellites/40069/data/1554483451541/data.bin",
+	"sigmfDataURL": "/api/v1/static/observation/sigmf/data?satelliteId=40069&id=1554483451541",
+	"sigmfMetaURL": "/api/v1/static/observation/sigmf/meta?satelliteId=40069&id=1554483451541",
+	"status": "DECODED",
+	"instruments": [
+		{
+			"id": "MSUMR",
+			"enabled": true,
+			"primary": true,
+			"series": false,
+			"name": "MSU-MR",
+			"satdumpName": "MSU-MR",
+			"satdumpCombined": "msu_mr_rgb_AVHRR_221_False_Color.png",
+			"description": "Multi-purpose VIS/IR imagery",
+			"combinedImageURL": "/api/v1/admin/static/satellites/40069/data/1554483451541/MSUMR.jpg",
+			"channels": [
+				{
+					"id": "1",
+					"description": "0.50 - 0.70µm",
+					"imageURL": "/api/v1/admin/static/satellites/40069/data/1554483451541/MSUMR-1.jpg",
+					"satdumpName": "MSU-MR-1.png"
+				},
+				{
+					"id": "2",
+					"description": "0.70 - 1.10µm",
+					"imageURL": "/api/v1/admin/static/satellites/40069/data/1554483451541/MSUMR-2.jpg",
+					"satdumpName": "MSU-MR-2.png"
+				},
+				{
+					"id": "5",
+					"description": "10.5 - 11.5µm",
+					"imageURL": "/api/v1/admin/static/satellites/40069/data/1554483451541/MSUMR-5.jpg",
+					"satdumpName": "MSU-MR-5.png"
+				}
+			]
+		}
+	]
+}

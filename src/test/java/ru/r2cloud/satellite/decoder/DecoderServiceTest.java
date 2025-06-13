@@ -50,6 +50,14 @@ public class DecoderServiceTest {
 	private ProcessFactoryMock processFactory;
 
 	@Test
+	public void testLrpt() throws Exception {
+		Observation observation = setupTestData("lrpt", "source_output.raw.gz");
+		service.decode(observation.getSatelliteId(), observation.getId());
+		System.out.println(dao.find(observation.getSatelliteId(), observation.getId()).toJson(null));
+//		TestUtil.assertJson("expected/geoscan.json", dao.find(observation.getSatelliteId(), observation.getId()).toJson(null));
+	}
+
+	@Test
 	public void testGeoscan() throws Exception {
 		Observation observation = setupTestData("geoscan");
 		service.decode(observation.getSatelliteId(), observation.getId());
@@ -219,12 +227,16 @@ public class DecoderServiceTest {
 		service.start();
 	}
 
-	private Observation setupTestData(String name) throws Exception {
-		File raw = TestUtil.copyResource(tempFolder, "decoderTest/" + name + "/source_output.raw");
+	private Observation setupTestData(String name, String rawFilename) throws Exception {
+		File raw = TestUtil.copyResource(tempFolder, "decoderTest/" + name + "/" + rawFilename);
 		Observation observation = TestUtil.copyObservation(config.getProperty("satellites.basepath.location"), "decoderTest/" + name);
 		dao.insert(observation);
 		assertNotNull(dao.update(observation, raw));
 		return dao.find(observation.getSatelliteId(), observation.getId());
+	}
+
+	private Observation setupTestData(String name) throws Exception {
+		return setupTestData(name, "source_output.raw");
 	}
 
 }

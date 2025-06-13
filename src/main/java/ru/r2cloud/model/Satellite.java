@@ -126,6 +126,18 @@ public class Satellite {
 		return null;
 	}
 
+	public Instrument findById(String id) {
+		if (instruments == null) {
+			return null;
+		}
+		for (Instrument cur : instruments) {
+			if (cur.getId().equalsIgnoreCase(id)) {
+				return cur;
+			}
+		}
+		return null;
+	}
+
 	public Priority getPriority() {
 		return priority;
 	}

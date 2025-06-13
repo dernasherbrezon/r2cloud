@@ -1,0 +1,25 @@
+{
+	"id": "1554483451541",
+	"start": 1554483451541,
+	"end": 0,
+	"sampleRate": 150000,
+	"inputSampleRate": 288000,
+	"frequency": 137900000,
+	"actualFrequency": 137898800,
+	"dataFormat": "COMPLEX_UNSIGNED_BYTE",
+	"satellite": "40069",
+	"bandwidth": 140000,
+	"status": "RECEIVED",
+	"tle": {
+		"line1": "meteor",
+		"line2": "1 40069U 14037A   18286.52491495 -.00000023  00000-0  92613-5 0  9990",
+		"line3": "2 40069  98.5901 334.4030 0004544 256.4188 103.6490 14.20654800221188"
+	},
+	"groundStation": {
+		"lat": 53.72,
+		"lon": 47.57
+	},
+	"baudRates": [
+		72000
+	]
+}

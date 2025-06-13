@@ -393,5 +393,34 @@
 				"primary": true
 			}
 		]
+	},
+	{
+		"name": "METEOR-M 2",
+		"noradId": "40069",
+		"enabled": true,
+		"transmitters": [
+			{
+				"modulation": "QPSK",
+				"framing": "LRPT",
+				"frequency": 137900000,
+				"bandwidth": 140000,
+				"baudRates": [
+					72000
+				]
+			}
+		],
+		"lastUpdateTime": 1748704170000,
+		"instruments": [
+			{
+				"id": "MSUMR",
+				"enabled": true,
+				"primary": true
+			},
+			{
+				"id": "MTVZA",
+				"enabled": true,
+				"primary": false
+			}
+		]
 	}
 ]
