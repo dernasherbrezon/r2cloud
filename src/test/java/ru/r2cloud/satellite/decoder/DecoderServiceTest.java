@@ -53,8 +53,7 @@ public class DecoderServiceTest {
 	public void testLrpt() throws Exception {
 		Observation observation = setupTestData("lrpt", "source_output.raw.gz");
 		service.decode(observation.getSatelliteId(), observation.getId());
-		System.out.println(dao.find(observation.getSatelliteId(), observation.getId()).toJson(null));
-//		TestUtil.assertJson("expected/geoscan.json", dao.find(observation.getSatelliteId(), observation.getId()).toJson(null));
+		TestUtil.assertJson("expected/lrpt.json", dao.find(observation.getSatelliteId(), observation.getId()).toJson(null));
 	}
 
 	@Test
