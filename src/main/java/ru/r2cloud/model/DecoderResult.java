@@ -7,27 +7,25 @@ public class DecoderResult {
 
 	private File iq;
 
-	private String channelA;
-	private String channelB;
 	private int numberOfDecodedPackets;
 	private Long totalSize = 0L;
 
 	private File image;
 	private File data;
 	private List<Instrument> instruments;
-	
+
 	public List<Instrument> getInstruments() {
 		return instruments;
 	}
-	
+
 	public void setInstruments(List<Instrument> instruments) {
 		this.instruments = instruments;
 	}
-	
+
 	public Long getTotalSize() {
 		return totalSize;
 	}
-	
+
 	public void setTotalSize(Long totalSize) {
 		this.totalSize = totalSize;
 	}
@@ -35,25 +33,9 @@ public class DecoderResult {
 	public File getIq() {
 		return iq;
 	}
-	
+
 	public void setIq(File iq) {
 		this.iq = iq;
-	}
-
-	public String getChannelA() {
-		return channelA;
-	}
-
-	public void setChannelA(String channelA) {
-		this.channelA = channelA;
-	}
-
-	public String getChannelB() {
-		return channelB;
-	}
-
-	public void setChannelB(String channelB) {
-		this.channelB = channelB;
 	}
 
 	public int getNumberOfDecodedPackets() {
