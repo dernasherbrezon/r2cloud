@@ -20,6 +20,7 @@ import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ProcessFactory;
+import ru.r2cloud.util.ThreadPoolFactory;
 
 public class Decoders {
 
@@ -29,11 +30,13 @@ public class Decoders {
 	private final PredictOreKit predict;
 	private final Configuration props;
 	private final ProcessFactory processFactory;
+	private final ThreadPoolFactory threadFactory;
 
-	public Decoders(PredictOreKit predict, Configuration props, ProcessFactory processFactory) {
+	public Decoders(PredictOreKit predict, Configuration props, ProcessFactory processFactory, ThreadPoolFactory threadFactory) {
 		this.predict = predict;
 		this.props = props;
 		this.processFactory = processFactory;
+		this.threadFactory = threadFactory;
 		index("32789", "32789-0", new DelfiC3Decoder(predict, props));
 		index("39444", "39444-0", new Ao73Decoder(predict, props));
 		index("41460", "41460-0", new Aausat4Decoder(predict, props));
@@ -97,7 +100,7 @@ public class Decoders {
 			return new SatdumpDecoder(props, processFactory);
 		}
 		if (transmitter.getFraming().equals(Framing.APT)) {
-			return new APTDecoder(props, processFactory);
+			return new APTDecoder(props, processFactory, threadFactory);
 		}
 		if (transmitter.getFraming() == null || transmitter.getBeaconClass() == null) {
 			LOG.error("framing or modulation or beacon class are empty for: {}", transmitter.getId());

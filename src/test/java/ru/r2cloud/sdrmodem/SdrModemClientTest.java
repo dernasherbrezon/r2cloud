@@ -134,7 +134,7 @@ public class SdrModemClientTest {
 		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-test.json");
 		dao = new SatelliteDao(config);
 		predict = new PredictOreKit(config);
-		decoders = new Decoders(predict, config, null);
+		decoders = new Decoders(predict, config, null, null);
 	}
 
 	@After

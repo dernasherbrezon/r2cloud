@@ -175,7 +175,7 @@ public class R2Cloud {
 		satelliteDao = new SatelliteDao(props);
 		tleDao = new TleDao(props);
 		signed = new SignedURL(props, clock);
-		decoders = new Decoders(predict, props, processFactory);
+		decoders = new Decoders(predict, props, processFactory, threadFactory);
 		decoderService = new DecoderService(props, decoders, resultDao, leoSatDataService, threadFactory, influxClient, satelliteDao);
 		priorityService = new PriorityService(props, clock);
 		FramingFilter framingFilter = new FramingFilter(props, processFactory);

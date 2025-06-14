@@ -18,6 +18,7 @@ import org.junit.rules.TemporaryFolder;
 import ru.r2cloud.ExecuteNowThreadFactory;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
+import ru.r2cloud.WxtoimgProcessMock;
 import ru.r2cloud.cloud.InfluxDBClient;
 import ru.r2cloud.cloud.LeoSatDataService;
 import ru.r2cloud.jradio.BeaconInputStream;
@@ -34,6 +35,7 @@ import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.satellite.ObservationDao;
 import ru.r2cloud.satellite.ProcessFactoryMock;
+import ru.r2cloud.satellite.ProcessWrapperMock;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.DefaultClock;
 
@@ -48,6 +50,16 @@ public class DecoderServiceTest {
 	private Decoders decoders;
 	private TestConfiguration config;
 	private ProcessFactoryMock processFactory;
+
+	@Test
+	public void testApt() throws Exception {
+		Observation observation = setupTestData("wxtoimg_noaa18");
+		TestUtil.createFile(new File(tempFolder.getRoot(), "channel-a.jpg"), "a");
+		TestUtil.createFile(new File(tempFolder.getRoot(), "channel-b.jpg"), "b");
+		TestUtil.createFile(new File(tempFolder.getRoot(), "composite.jpg"), "composite");
+		service.decode(observation.getSatelliteId(), observation.getId());
+		TestUtil.assertJson("expected/wxtoimg_noaa18.json", dao.find(observation.getSatelliteId(), observation.getId()).toJson(null));
+	}
 
 	@Test
 	public void testLrpt() throws Exception {
@@ -207,6 +219,7 @@ public class DecoderServiceTest {
 
 	@Before
 	public void start() throws Exception {
+		String wxtoimg = UUID.randomUUID().toString();
 		File basepath = new File(tempFolder.getRoot(), UUID.randomUUID().toString());
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
@@ -216,12 +229,21 @@ public class DecoderServiceTest {
 		config.setProperty("satellites.demod.GFSK", DemodulatorType.FILE.name());
 		config.remove("r2cloud.apiKey");
 		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-decoder-test.json");
+		config.setProperty("satellites.wxtoimg.path", wxtoimg);
 		config.update();
 		satelliteDao = new SatelliteDao(config);
 		dao = new ObservationDao(config);
 
-		processFactory = new ProcessFactoryMock(new HashMap<>(), UUID.randomUUID().toString());
-		decoders = new Decoders(new PredictOreKit(config), config, processFactory);
+		HashMap<String, ProcessWrapperMock> reply = new HashMap<>();
+		// @formatter:off
+		reply.put(wxtoimg, new WxtoimgProcessMock("Satellite: NOAA\n"
+				+ "Status: signal processing............................\n"
+				+ "Gain: 6.2\n"
+				+ "Channel A: 2 (near infrared)\n"
+				+ "Channel B: 4 (thermal infrared)"));
+		// @formatter:on
+		processFactory = new ProcessFactoryMock(reply, UUID.randomUUID().toString());
+		decoders = new Decoders(new PredictOreKit(config), config, processFactory, new ExecuteNowThreadFactory(true));
 		service = new DecoderService(config, decoders, dao, new LeoSatDataService(config, dao, null, null), new ExecuteNowThreadFactory(true), new InfluxDBClient(config, new DefaultClock()), satelliteDao);
 		service.start();
 	}

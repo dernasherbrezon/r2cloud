@@ -17,6 +17,7 @@ import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.satellite.decoder.APTDecoder;
 import ru.r2cloud.util.ProcessFactory;
+import ru.r2cloud.util.ThreadPoolFactoryImpl;
 
 public class APTDecoderIT {
 
@@ -29,7 +30,7 @@ public class APTDecoderIT {
 	@Test
 	public void testSuccess() throws Exception {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "8bit.wav");
-		APTDecoder decoder = new APTDecoder(config, factory);
+		APTDecoder decoder = new APTDecoder(config, factory, new ThreadPoolFactoryImpl(config.getThreadPoolShutdownMillis()));
 		DecoderResult result = decoder.decode(wav, new Observation(), new Transmitter(), new Satellite());
 		assertNull(result.getImage());
 	}

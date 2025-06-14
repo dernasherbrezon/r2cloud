@@ -113,7 +113,7 @@ public class ProcessWrapperMock implements ProcessWrapper {
 			this.backingFile = backingFile;
 		}
 	}
-	
+
 	public void setBackingFileExtension(String backingFileExtension) {
 		this.backingFileExtension = backingFileExtension;
 	}
@@ -135,7 +135,7 @@ public class ProcessWrapperMock implements ProcessWrapper {
 			}
 		}
 	}
-	
+
 	public void setStatusCode(int statusCode) {
 		this.statusCode = statusCode;
 	}

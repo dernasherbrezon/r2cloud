@@ -39,6 +39,6 @@ public class DecodersTest {
 		config.update();
 		PredictOreKit predict = new PredictOreKit(config);
 		dao = new SatelliteDao(config);
-		decoders = new Decoders(predict, config, null);
+		decoders = new Decoders(predict, config, null, null);
 	}
 }

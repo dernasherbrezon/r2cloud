@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +21,10 @@ import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.NamingThreadFactory;
 import ru.r2cloud.util.ProcessFactory;
 import ru.r2cloud.util.ProcessWrapper;
+import ru.r2cloud.util.ThreadPoolFactory;
 import ru.r2cloud.util.Util;
 
 public class APTDecoder implements Decoder {
@@ -30,10 +33,12 @@ public class APTDecoder implements Decoder {
 
 	private final ProcessFactory factory;
 	private final Configuration config;
+	private final ThreadPoolFactory threadFactory;
 
-	public APTDecoder(Configuration config, ProcessFactory factory) {
+	public APTDecoder(Configuration config, ProcessFactory factory, ThreadPoolFactory threadFactory) {
 		this.config = config;
 		this.factory = factory;
+		this.threadFactory = threadFactory;
 	}
 
 	@Override
@@ -70,28 +75,26 @@ public class APTDecoder implements Decoder {
 		try {
 			process = factory.create(config.getProperty("satellites.wxtoimg.path") + " -" + channelCommandLine + " -t n -c -o " + wavFile.getAbsolutePath() + " " + imageFile.getAbsolutePath(), true, false);
 			final InputStream is = process.getInputStream();
+			ScheduledExecutorService executor = threadFactory.newScheduledThreadPool(1, new NamingThreadFactory("wxtoimg-daemon"));
 			final List<String> lines = new ArrayList<>();
-			Thread tis = new Thread(new Runnable() {
+			executor.execute(new Runnable() {
 				@Override
 				public void run() {
 					try {
 						BufferedReader r = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 						String curLine = null;
 						while ((curLine = r.readLine()) != null) {
-							synchronized (lines) {
-								LOG.info(curLine);
-								lines.add(curLine);
-							}
+							LOG.info(curLine);
+							lines.add(curLine);
 						}
 						r.close();
 					} catch (Exception e) {
 						LOG.error("unable to read input: {}", wavFile.getAbsolutePath(), e);
 					}
 				}
-			}, "wxtoimg-daemon");
-			tis.setDaemon(true);
-			tis.start();
+			});
 			process.waitFor();
+			Util.shutdown(executor, config.getThreadPoolShutdownMillis());
 			if (!isValidImage(lines)) {
 				Util.deleteQuietly(imageFile);
 				return null;
@@ -127,10 +130,8 @@ public class APTDecoder implements Decoder {
 						BufferedReader r = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 						String curLine = null;
 						while ((curLine = r.readLine()) != null) {
-							synchronized (lines) {
-								LOG.info(curLine);
-								lines.add(curLine);
-							}
+							LOG.info(curLine);
+							lines.add(curLine);
 						}
 						r.close();
 					} catch (Exception e) {
