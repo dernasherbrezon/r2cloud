@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -113,7 +114,10 @@ public class TimeSizeRetentionTest {
 	}
 
 	private static Path getObservationFolder(Path satelliteFolder) throws Exception {
-		List<Path> observations = Util.toList(Files.newDirectoryStream(satelliteFolder.resolve("data")));
+		List<Path> observations;
+		try (DirectoryStream<Path> ds = Files.newDirectoryStream(satelliteFolder.resolve("data"))) {
+			observations = Util.toList(ds);
+		}
 		assertEquals(1, observations.size());
 		return observations.get(0);
 	}
@@ -124,8 +128,8 @@ public class TimeSizeRetentionTest {
 
 	private static void assertFolder(boolean expectedFolder, boolean expectedRaw, boolean expectedData, Path folder) {
 		List<Path> observations;
-		try {
-			observations = Util.toList(Files.newDirectoryStream(folder.resolve("data")));
+		try (DirectoryStream<Path> ds = Files.newDirectoryStream(folder.resolve("data"))) {
+			observations = Util.toList(ds);
 		} catch (IOException e) {
 			e.printStackTrace();
 			fail("unable to get list of directories " + e.getMessage());

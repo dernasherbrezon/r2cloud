@@ -111,8 +111,8 @@ public class ObservationDao implements IObservationDao {
 			return Collections.emptyList();
 		}
 		List<Path> observations;
-		try {
-			observations = Util.toList(Files.newDirectoryStream(dataRoot));
+		try (DirectoryStream<Path> ds = Files.newDirectoryStream(dataRoot)) {
+			observations = Util.toList(ds);
 		} catch (IOException e) {
 			LOG.error("unable to load observations", e);
 			return Collections.emptyList();
@@ -230,7 +230,7 @@ public class ObservationDao implements IObservationDao {
 				result.add(cur.toPath());
 			}
 		}
-		//FIXME sort by name
+		// FIXME sort by name
 		return result;
 	}
 
