@@ -245,24 +245,20 @@ public class R2Cloud {
 		}
 		for (DeviceConfiguration cur : props.getSpyServerConfigurations()) {
 			SpyClient client = new SpyClient(cur.getHost(), cur.getPort(), cur.getTimeout());
-			try {
-				client.start();
-				SpyServerStatus status = client.getStatus();
+			client.start();
+			SpyServerStatus status = client.getStatus();
+			status = client.getStatus();
+			if (cur.getMinimumFrequency() == 0) {
 				cur.setMinimumFrequency(status.getMinFrequency());
+			}
+			if (cur.getMaximumFrequency() == 0) {
 				cur.setMaximumFrequency(status.getMaxFrequency());
-				if (!status.getSupportedSampleRates().isEmpty()) {
-					cur.setMaximumSampleRate(status.getSupportedSampleRates().get(status.getSupportedSampleRates().size() - 1));
-				}
-				client.stop();
-			} catch (IOException e) {
-				Util.logIOException(LOG, "[" + cur.getId() + "] unable to init device frequencies. Use default: 24Mhz - 1700Mhz", e);
-				cur.setMinimumFrequency(24_000_000);
-				cur.setMaximumFrequency(1_700_000_000);
 			}
-			if (cur.getMaximumSampleRate() == 0L) {
-				cur.setMaximumSampleRate(2_400_000); // some reasonble sample rate. supported both by airspy and rtlsdr
+			if (!status.getSupportedSampleRates().isEmpty()) {
+				cur.setMaximumSampleRate(status.getSupportedSampleRates().get(status.getSupportedSampleRates().size() - 1));
 			}
-			deviceManager.addDevice(new SpyServerDevice(cur.getId(), new SdrServerTransmitterFilter(cur, framingFilter), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur)));
+			client.stop();
+			deviceManager.addDevice(new SpyServerDevice(cur.getId(), new SdrServerTransmitterFilter(cur, framingFilter), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), status));
 		}
 
 		houseKeeping = new Housekeeping(props, satelliteDao, threadFactory, new CelestrakClient(props, clock), tleDao, satnogsClient, leoSatDataClient, decoderService, priorityService, deviceManager, clock);

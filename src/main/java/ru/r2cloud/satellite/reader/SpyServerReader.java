@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,39 +32,46 @@ public class SpyServerReader implements IQReader {
 	private final ObservationRequest req;
 	private final DeviceConfiguration deviceConfiguraiton;
 	private final Transmitter transmitter;
+	private final ReentrantLock lock;
 
 	private SpyClient client;
 	private CountDownLatch latch = new CountDownLatch(1);
 	private Long startTimeMillis = null;
 
-	public SpyServerReader(Configuration config, ObservationRequest req, DeviceConfiguration deviceConfiguration, Transmitter transmitter) {
+	public SpyServerReader(Configuration config, ObservationRequest req, DeviceConfiguration deviceConfiguration, Transmitter transmitter, ReentrantLock lock) {
 		this.config = config;
 		this.req = req;
 		this.deviceConfiguraiton = deviceConfiguration;
 		this.transmitter = transmitter;
+		this.lock = lock;
 	}
 
 	@Override
 	public IQData start() throws InterruptedException {
+		lock.lock();
+		try {
+			return startInternally();
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	private IQData startInternally() throws InterruptedException {
 		Integer maxBaudRate = Collections.max(transmitter.getBaudRates());
 		if (maxBaudRate == null) {
 			return null;
 		}
 		client = new SpyClient(deviceConfiguraiton.getHost(), deviceConfiguraiton.getPort(), deviceConfiguraiton.getTimeout());
-		Long endTimeMillis = null;
-		try {
-			client.start();
-		} catch (IOException e) {
-			Util.logIOException(LOG, "[" + req.getId() + "] unable to start client", e);
-			client.stop();
-			return null;
-		}
+		client.start();
 		SpyServerStatus status = client.getStatus();
 		if (!status.getStatus().equals(DeviceConnectionStatus.CONNECTED)) {
+			// stop anyway
+			client.stop();
 			return null;
 		}
 		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + "." + status.getFormat().getExtension());
 		Long sampleRate = null;
+		Long endTimeMillis = null;
 		try (OutputStream os = new BufferedOutputStream(new FileOutputStream(rawFile))) {
 			sampleRate = Util.getSmallestGoodDeviceSampleRate(maxBaudRate, status.getSupportedSampleRates());
 			if (sampleRate == null) {

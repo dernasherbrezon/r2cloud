@@ -61,7 +61,16 @@ public class SpyClient {
 		this.socketTimeout = socketTimeout;
 	}
 
-	public void start() throws IOException {
+	public void start() {
+		try {
+			startInternally();
+		} catch (IOException e) {
+			Util.logIOException(LOG, "unable to start airspy", e);
+			markStatusAsFailed(e);
+		}
+	}
+
+	private void startInternally() throws IOException {
 		socket = new Socket(host, port);
 		socket.setSoTimeout(socketTimeout);
 		socketOut = socket.getOutputStream();
@@ -128,7 +137,6 @@ public class SpyClient {
 								markStatusAsFailed(e);
 							}
 						}
-						stop();
 						break;
 					}
 				}
@@ -141,18 +149,14 @@ public class SpyClient {
 			int remainingMillis = socketTimeout;
 			while (deviceInfo == null || sync == null) {
 				if (remainingMillis <= 0) {
-					status = new SpyServerStatus();
-					status.setStatus(DeviceConnectionStatus.FAILED);
-					status.setFailureMessage("Device is not connected");
+					markStatusAsFailed("Device is not connected");
 					throw new IOException("timeout waiting for sync");
 				}
 				long start = System.currentTimeMillis();
 				try {
 					lock.wait(remainingMillis);
 				} catch (InterruptedException e) {
-					status = new SpyServerStatus();
-					status.setStatus(DeviceConnectionStatus.FAILED);
-					status.setFailureMessage("Device is not connected");
+					markStatusAsFailed("Device is not connected");
 					Thread.currentThread().interrupt();
 					return;
 				}
@@ -244,12 +248,20 @@ public class SpyClient {
 	}
 
 	private void markStatusAsFailed(IOException e) {
+		markStatusAsFailed(e.getMessage());
+	}
+
+	private void markStatusAsFailed(String failureMessage) {
 		synchronized (lock) {
 			if (status == null) {
 				status = new SpyServerStatus();
+				// some reasonable defaults
+				status.setMinFrequency(24_000_000);
+				status.setMaxFrequency(1_766_000_000);
+				status.setSupportedSampleRates(Collections.singletonList(2_400_000L));
 			}
 			status.setStatus(DeviceConnectionStatus.FAILED);
-			status.setFailureMessage(e.getMessage());
+			status.setFailureMessage(failureMessage);
 		}
 	}
 

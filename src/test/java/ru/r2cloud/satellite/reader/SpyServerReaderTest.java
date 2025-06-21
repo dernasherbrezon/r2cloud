@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,7 +41,7 @@ public class SpyServerReaderTest {
 		mock.start();
 
 		deviceConfiguration.setPort(mock.getPort());
-		SpyServerReader reader = new SpyServerReader(config, createValidRequest(), deviceConfiguration, createValidTransmitter());
+		SpyServerReader reader = new SpyServerReader(config, createValidRequest(), deviceConfiguration, createValidTransmitter(), new ReentrantLock());
 		reader.complete();
 		assertNull(reader.start());
 	}
@@ -56,7 +57,7 @@ public class SpyServerReaderTest {
 
 		deviceConfiguration.setPort(mock.getPort());
 		ObservationRequest req = createValidRequest();
-		SpyServerReader reader = new SpyServerReader(config, req, deviceConfiguration, createValidTransmitter());
+		SpyServerReader reader = new SpyServerReader(config, req, deviceConfiguration, createValidTransmitter(), new ReentrantLock());
 		new Thread(new Runnable() {
 
 			@Override
