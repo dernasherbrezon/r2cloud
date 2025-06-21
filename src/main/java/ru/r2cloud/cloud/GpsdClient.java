@@ -46,6 +46,7 @@ public class GpsdClient {
 		}, "gpsd-client");
 		t.start();
 		synchronized (lock) {
+			// ignore spurious wake-up
 			if (!haveResult) {
 				try {
 					lock.wait(config.getInteger("location.gpsd.fixTimeout"));
@@ -80,6 +81,7 @@ public class GpsdClient {
 		int port = config.getInteger("location.gpsd.port");
 		LOG.info("Connecting to GPSD to get coordinates: {}:{}", hostname, port);
 		Socket socket = null;
+		String version = null;
 		try {
 			socket = new Socket(hostname, port);
 			socket.setSoTimeout(config.getInteger("location.gpsd.timeout"));
@@ -99,7 +101,7 @@ public class GpsdClient {
 					continue;
 				}
 				if (clazz.equals("VERSION")) {
-					String version = obj.getString("version", null);
+					version = obj.getString("version", null);
 					if (version == null) {
 						version = obj.getString("release", null);
 					}
@@ -138,7 +140,12 @@ public class GpsdClient {
 				break;
 			}
 		} catch (IOException e) {
-			Util.logIOException(LOG, false, "unable to connect to GPSD", e);
+			// non-null version means we have connection, but gpsd don't have any data
+			// coming from serial connection. Maybe misconfiguration or failed hardware
+			// will be logged later on
+			if (version == null) {
+				Util.logIOException(LOG, false, "unable to connect to GPSD", e);
+			}
 			synchronized (lock) {
 				haveResult = true;
 				lat = null;
