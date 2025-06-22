@@ -23,7 +23,7 @@
 		"deviceType": "LORAATBLEC",
 		"minimumFrequency": 433000000,
 		"maximumFrequency": 480000000,
-		"host": "7b:7a:24:3c:ed:50",
+		"btAddress": "7b:7a:24:3c:ed:50",
 		"gain": 0,
 		"rtlDeviceId": "0",
 		"biast": false,

@@ -1,5 +1,10 @@
 [
 	{
+		"id": "loraatblec.0",
+		"name": "LoRa - 78:DD:08:A3:A7:52",
+		"status": "FAILED"
+	},
+	{
 		"id": "loraatwifi.0",
 		"name": "LoRa - 127.0.0.1:8005",
 		"status": "CONNECTED"

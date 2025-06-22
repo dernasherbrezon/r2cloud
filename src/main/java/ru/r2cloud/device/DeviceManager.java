@@ -219,10 +219,10 @@ public class DeviceManager implements Lifecycle {
 			return null;
 		}
 		for (Device cur : devices) {
-			if (cur.getDeviceConfiguration().getHost() == null) {
-				continue;
+			if (cur.getDeviceConfiguration().getHost() != null && cur.getDeviceConfiguration().getHost().equals(host)) {
+				return cur;
 			}
-			if (cur.getDeviceConfiguration().getHost().equals(host)) {
+			if (cur.getDeviceConfiguration().getBtAddress() != null && cur.getDeviceConfiguration().getBtAddress().equals(host)) {
 				return cur;
 			}
 		}

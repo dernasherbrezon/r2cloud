@@ -1,6 +1,17 @@
 {
 	"devices": [
 		{
+			"id": "loraatblec.0",
+			"status": "FAILED",
+			"connection": "LoRa - 78:DD:08:A3:A7:52",
+			"minFrequency": 900000000,
+			"maxFrequency": 920000000,
+			"rotator": {
+				"status": "DISABLED"
+			}
+		},
+		{
+			"id": "loraatwifi.0",
 			"status": "CONNECTED",
 			"connection": "LoRa - 127.0.0.1:8005",
 			"minFrequency": 144000000,
@@ -10,6 +21,7 @@
 			}
 		},
 		{
+			"id": "loraatwifi.1",
 			"status": "FAILED",
 			"failureMessage": "CONNECTION_FAILURE",
 			"connection": "LoRa - 255.255.255.255:80",
@@ -20,6 +32,7 @@
 			}
 		},
 		{
+			"id": "plutosdr.0",
 			"status": "CONNECTED",
 			"model": "Analog Devices PlutoSDR Rev.B (Z7010-AD9363A)",
 			"connection": "PlutoSDR",
@@ -30,6 +43,7 @@
 			}
 		},
 		{
+			"id": "rtlsdr.0",
 			"status": "CONNECTED",
 			"model": "Realtek, RTL2838UHIDIR, SN: 00000100",
 			"connection": "RTL-SDR 0",
@@ -40,6 +54,7 @@
 			}
 		},
 		{
+			"id": "rtlsdr.1",
 			"status": "FAILED",
 			"failureMessage": "unable to find device",
 			"connection": "RTL-SDR 1",
@@ -52,9 +67,10 @@
 			}
 		},
 		{
+			"id": "spyserver.0",
 			"status": "CONNECTED",
 			"connection": "SpyServer - 127.0.0.1:8008",
-			"minFrequency": 24000000,
+			"minFrequency": 1650000000,
 			"maxFrequency": 1700000000,
 			"rotator": {
 				"status": "DISABLED"

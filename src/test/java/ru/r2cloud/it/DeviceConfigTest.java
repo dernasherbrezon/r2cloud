@@ -63,21 +63,21 @@ public class DeviceConfigTest extends RegisteredTest {
 	public void testSaveLoraAt() throws Exception {
 		DeviceConfiguration device = createConfig();
 		device.setDeviceType(DeviceType.LORAAT);
-		device.setHost("/dev/ttyUSB0");
+		device.setSerialDevice("/dev/ttyUSB0");
 		HttpResponse<String> response = client.saveDeviceConfig(device.toJson());
 		assertEquals(200, response.statusCode());
 		assertEquals("loraat.0", Json.parse(response.body()).asObject().getString("id", null));
 
 		device = createConfig();
 		device.setDeviceType(DeviceType.LORAAT);
-		device.setHost(null);
+		device.setSerialDevice(null);
 		response = client.saveDeviceConfig(device.toJson());
 		assertEquals(400, response.statusCode());
-		assertErrorInField("host", response);
+		assertErrorInField("serialDevice", response);
 
 		device = createConfig();
 		device.setDeviceType(DeviceType.LORAAT);
-		device.setHost("/dev/ttyUSB0");
+		device.setSerialDevice("/dev/ttyUSB0");
 		device.setGain(7.0f);
 		response = client.saveDeviceConfig(device.toJson());
 		assertEquals(400, response.statusCode());
@@ -92,10 +92,10 @@ public class DeviceConfigTest extends RegisteredTest {
 		assertEquals("loraatble.0", Json.parse(response.body()).asObject().getString("id", null));
 
 		device = createValidLoraAtBle();
-		device.setHost(null);
+		device.setBtAddress(null);
 		response = client.saveDeviceConfig(device.toJson());
 		assertEquals(400, response.statusCode());
-		assertErrorInField("host", response);
+		assertErrorInField("btAddress", response);
 
 		device = createValidLoraAtBle();
 		device.setGain(7.0f);
@@ -294,7 +294,7 @@ public class DeviceConfigTest extends RegisteredTest {
 	private static DeviceConfiguration createValidLoraAtBle() {
 		DeviceConfiguration device = createConfig();
 		device.setDeviceType(DeviceType.LORAATBLE);
-		device.setHost("78:DD:08:A3:A7:52");
+		device.setBtAddress("78:DD:08:A3:A7:52");
 		device.setMaximumBatteryVoltage(4.1f);
 		device.setMinimumBatteryVoltage(3.0f);
 		return device;

@@ -58,14 +58,14 @@ public class LoraAtBlecReader implements IQReader {
 		loraRequest.setUseCrc(transmitter.isLoraCrc());
 		loraRequest.setUseExplicitHeader(transmitter.isLoraExplicitHeader());
 		LOG.info("[{}] starting lora observation for {} on {}Mhz", req.getId(), transmitter, loraRequest.getFrequency());
-		LoraResponse response = client.startObservation(deviceConfiguration.getHost(), loraRequest);
+		LoraResponse response = client.startObservation(deviceConfiguration.getBtAddress(), loraRequest);
 		if (!response.getStatus().equals(ResponseStatus.SUCCESS)) {
 			LOG.error("[{}] unable to start lora observation: {}", req.getId(), response.getFailureMessage());
 			return null;
 		}
 		long startTimeMillis = System.currentTimeMillis();
 		latch.await();
-		response = client.stopObservation(deviceConfiguration.getHost());
+		response = client.stopObservation(deviceConfiguration.getBtAddress());
 		long endTimeMillis = System.currentTimeMillis();
 		if (!response.getStatus().equals(ResponseStatus.SUCCESS)) {
 			LOG.error("[{}] unable to stop lora observation: {}", req.getId(), response.getFailureMessage());

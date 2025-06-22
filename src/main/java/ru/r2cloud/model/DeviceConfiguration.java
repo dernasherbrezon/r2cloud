@@ -21,19 +21,37 @@ public class DeviceConfiguration {
 	private RotatorConfiguration rotatorConfiguration;
 	private AntennaConfiguration antennaConfiguration;
 
+	private String btAddress;
 	private float gain;
 	private String rtlDeviceId;
+	private String serialDevice;
 	private boolean biast;
 	private boolean compencateDcOffset;
 	private int ppm;
 	private SdrServerConfiguration sdrServerConfiguration;
 	private double maximumBatteryVoltage;
 	private double minimumBatteryVoltage;
-	
+
+	public String getSerialDevice() {
+		return serialDevice;
+	}
+
+	public void setSerialDevice(String serialDevice) {
+		this.serialDevice = serialDevice;
+	}
+
+	public String getBtAddress() {
+		return btAddress;
+	}
+
+	public void setBtAddress(String btAddress) {
+		this.btAddress = btAddress;
+	}
+
 	public long getMaximumSampleRate() {
 		return maximumSampleRate;
 	}
-	
+
 	public void setMaximumSampleRate(long maximumSampleRate) {
 		this.maximumSampleRate = maximumSampleRate;
 	}
@@ -234,6 +252,12 @@ public class DeviceConfiguration {
 		if (minimumBatteryVoltage != 0) {
 			json.add("minimumBatteryVoltage", minimumBatteryVoltage);
 		}
+		if (btAddress != null) {
+			json.add("btAddress", btAddress);
+		}
+		if (serialDevice != null) {
+			json.add("serialDevice", serialDevice);
+		}
 		if (sdrServerConfiguration != null) {
 			json.add("bandwidth", sdrServerConfiguration.getBandwidth());
 			json.add("bandwidthCrop", sdrServerConfiguration.getBandwidthCrop());
@@ -262,6 +286,8 @@ public class DeviceConfiguration {
 		result.setPort(meta.getInt("port", 0));
 		result.setUsername(meta.getString("username", null));
 		result.setGain(meta.getFloat("gain", 0));
+		result.setBtAddress(meta.getString("btAddress", null));
+		result.setSerialDevice(meta.getString("serialDevice", null));
 		JsonValue rtlDeviceId = meta.get("rtlDeviceId");
 		if (rtlDeviceId == null || rtlDeviceId.isNull()) {
 			result.setRtlDeviceId("0");

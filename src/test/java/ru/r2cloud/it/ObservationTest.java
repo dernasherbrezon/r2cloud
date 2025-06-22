@@ -69,8 +69,8 @@ public class ObservationTest extends RegisteredTest {
 		assertEquals(2, observationIds.size());
 
 		// get observation and assert
-		TestUtil.assertObservation("r2cloudclienttest/46494-0.json", client.awaitObservation(satelliteId, observationIds.get(0), false));
-		TestUtil.assertObservation("r2cloudclienttest/46494-1.json", client.awaitObservation(satelliteId, observationIds.get(1), false));
+		TestUtil.assertObservation("r2cloudclienttest/46494-0.json", client.awaitObservation(satelliteId, observationIds.get(1), false));
+		TestUtil.assertObservation("r2cloudclienttest/46494-1.json", client.awaitObservation(satelliteId, observationIds.get(0), false));
 	}
 
 	static void assertSpectogram(String expectedFilename, byte[] actualBytes) throws IOException {

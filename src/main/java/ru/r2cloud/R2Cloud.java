@@ -203,13 +203,13 @@ public class R2Cloud {
 			deviceManager.addDevice(new LoraDevice(cur.getId(), new LoraTransmitterFilter(cur, framingFilter), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), client));
 		}
 		for (DeviceConfiguration cur : props.getLoraAtConfigurations()) {
-			LoraAtClient client = new LoraAtSerialClient2(cur.getHost(), cur.getTimeout(), new JSerial(), clock);
+			LoraAtClient client = new LoraAtSerialClient2(cur.getSerialDevice(), cur.getTimeout(), new JSerial(), clock);
 			if (!client.isSupported()) {
-				client = new LoraAtSerialClient(cur.getHost(), cur.getTimeout(), new JSerial(), clock);
+				client = new LoraAtSerialClient(cur.getSerialDevice(), cur.getTimeout(), new JSerial(), clock);
 				if (!client.isSupported()) {
 					LOG.info("[{}] protocol is not supported. assume v2", cur.getId());
 					// assume v2. maybe device is not connected
-					client = new LoraAtSerialClient2(cur.getHost(), cur.getTimeout(), new JSerial(), clock);
+					client = new LoraAtSerialClient2(cur.getSerialDevice(), cur.getTimeout(), new JSerial(), clock);
 				} else {
 					LOG.info("[{}] protocol version 1 is supported", cur.getId());
 				}

@@ -75,10 +75,9 @@ public class DeviceConfigSave extends AbstractHttpController {
 			break;
 		}
 		case LORAAT: {
-			// this is not a hostname, but rather device location
-			config.setHost(WebServer.getString(request, "host"));
-			if (config.getHost() == null) {
-				errors.put("host", Messages.CANNOT_BE_EMPTY);
+			config.setSerialDevice(WebServer.getString(request, "serialDevice"));
+			if (config.getSerialDevice() == null) {
+				errors.put("serialDevice", Messages.CANNOT_BE_EMPTY);
 			}
 			config.setGain(readLong(request, "gain", errors));
 			if (config.getGain() > 6) {
@@ -87,10 +86,9 @@ public class DeviceConfigSave extends AbstractHttpController {
 			break;
 		}
 		case LORAATBLEC: {
-			// this is not a hostname, but rather ble address
-			config.setHost(WebServer.getString(request, "host"));
-			if (config.getHost() == null) {
-				errors.put("host", Messages.CANNOT_BE_EMPTY);
+			config.setBtAddress((WebServer.getString(request, "btAddress")));
+			if (config.getBtAddress() == null) {
+				errors.put("btAddress", Messages.CANNOT_BE_EMPTY);
 			}
 			config.setGain(readLong(request, "gain", errors));
 			if (config.getGain() > 6) {
@@ -99,10 +97,9 @@ public class DeviceConfigSave extends AbstractHttpController {
 			break;
 		}
 		case LORAATBLE: {
-			// this is not a hostname, but rather ble address
-			config.setHost(WebServer.getString(request, "host"));
-			if (config.getHost() == null) {
-				errors.put("host", Messages.CANNOT_BE_EMPTY);
+			config.setBtAddress((WebServer.getString(request, "btAddress")));
+			if (config.getBtAddress() == null) {
+				errors.put("btAddress", Messages.CANNOT_BE_EMPTY);
 			}
 			config.setGain(readLong(request, "gain", errors));
 			if (config.getGain() > 6) {
@@ -173,43 +170,7 @@ public class DeviceConfigSave extends AbstractHttpController {
 			LOG.info("unable to save: {}", errors);
 			return new BadRequest(errors);
 		}
-
-		switch (deviceType) {
-		case RTLSDR: {
-			props.saveRtlSdrConfiguration(config);
-			break;
-		}
-		case LORAAT: {
-			props.saveLoraAtConfiguration(config);
-			break;
-		}
-		case LORAATBLE: {
-			props.saveLoraAtBleConfiguration(config);
-			break;
-		}
-		case LORAATBLEC: {
-			props.saveLoraAtBlecConfiguration(config);
-			break;
-		}
-		case LORAATWIFI: {
-			props.saveLoraAtWifiConfiguration(config);
-			break;
-		}
-		case PLUTOSDR: {
-			props.savePlutoSdrConfiguration(config);
-			break;
-		}
-		case SDRSERVER: {
-			props.saveSdrServerConfiguration(config);
-			break;
-		}
-		case SPYSERVER: {
-			props.saveSpyServerConfiguration(config);
-			break;
-		}
-		default:
-			throw new IllegalArgumentException("Unexpected value: " + deviceType);
-		}
+		props.saveDeviceConfiguration(config);
 		props.update();
 
 		JsonObject json = new JsonObject();

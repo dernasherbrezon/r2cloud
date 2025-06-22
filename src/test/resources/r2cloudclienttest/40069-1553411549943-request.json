@@ -17,14 +17,15 @@
 	"sampleRate": 288000,
 	"actualFrequency": 137908065,
 	"numberOfDecodedPackets": 0,
+	"totalSize": 0,
 	"device": {
-		"id": "rtlsdr.1",
-		"name": "RTL-SDR 1",
+		"id": "rtlsdr.0",
+		"name": "RTL-SDR 0",
 		"deviceType": "RTLSDR",
 		"minimumFrequency": 100000000,
 		"maximumFrequency": 1700000000,
 		"gain": 45,
-		"rtlDeviceId": "1",
+		"rtlDeviceId": "0",
 		"biast": false,
 		"ppm": 0,
 		"antenna": {
