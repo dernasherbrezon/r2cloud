@@ -36,8 +36,8 @@
 			"status": "CONNECTED",
 			"model": "Analog Devices PlutoSDR Rev.B (Z7010-AD9363A)",
 			"connection": "PlutoSDR",
-			"minFrequency": 100000000,
-			"maxFrequency": 1700000000,
+			"minFrequency": 325000000,
+			"maxFrequency": 3800000000,
 			"rotator": {
 				"status": "DISABLED"
 			}
@@ -47,8 +47,8 @@
 			"status": "CONNECTED",
 			"model": "Realtek, RTL2838UHIDIR, SN: 00000100",
 			"connection": "RTL-SDR 0",
-			"minFrequency": 100000000,
-			"maxFrequency": 1700000000,
+			"minFrequency": 24000000,
+			"maxFrequency": 1766000000,
 			"rotator": {
 				"status": "DISABLED"
 			}

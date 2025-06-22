@@ -19,7 +19,7 @@
 	"numberOfDecodedPackets": 1,
 	"device": {
 		"id": "loraatblec.0",
-		"name": "LoRa - 7b:7a:24:3c:ed:50",
+		"name": "LoRa - 7B:7A:24:3C:ED:50",
 		"deviceType": "LORAATBLEC",
 		"minimumFrequency": 433000000,
 		"maximumFrequency": 480000000,
