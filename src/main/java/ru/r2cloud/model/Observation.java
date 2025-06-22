@@ -357,7 +357,9 @@ public class Observation {
 				}
 				instrumentsObj.add(cur);
 			}
-			result.setInstruments(instrumentsObj);
+			if (!instrumentsObj.isEmpty()) {
+				result.setInstruments(instrumentsObj);
+			}
 		}
 		return result;
 	}
@@ -408,7 +410,7 @@ public class Observation {
 		if (device != null) {
 			json.add("device", device.toJson());
 		}
-		if (getInstruments() != null) {
+		if (getInstruments() != null && !getInstruments().isEmpty()) {
 			JsonArray instrumentsArray = new JsonArray();
 			for (Instrument cur : getInstruments()) {
 				instrumentsArray.add(cur.toJson(signed));

@@ -41,6 +41,9 @@ public class SputnixDecoder extends UspDecoder {
 			}
 			series.add(imageFile);
 		}
+		if (series.isEmpty()) {
+			return Collections.emptyList();
+		}
 		Instrument result = new Instrument(camera);
 		result.setImageSeries(series);
 		return Collections.singletonList(result);

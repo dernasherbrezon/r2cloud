@@ -47,6 +47,9 @@ public class Lucky7Decoder extends TelemetryDecoder {
 			}
 			series.add(imageFile);
 		}
+		if (series.isEmpty()) {
+			return Collections.emptyList();
+		}
 		Instrument result = new Instrument(camera);
 		result.setImageSeries(series);
 		return Collections.singletonList(result);

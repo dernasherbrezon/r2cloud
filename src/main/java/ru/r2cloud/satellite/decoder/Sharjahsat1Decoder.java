@@ -41,6 +41,9 @@ public class Sharjahsat1Decoder extends Ax25G3ruhDecoder {
 			}
 			series.add(imageFile);
 		}
+		if (series.isEmpty()) {
+			return Collections.emptyList();
+		}
 		Instrument result = new Instrument(camera);
 		result.setImageSeries(series);
 		return Collections.singletonList(result);
