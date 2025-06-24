@@ -25,8 +25,17 @@ public class MigrateConfigurationTest {
 
 	@Test
 	public void testRtlSdrConfigurationMigration() throws Exception {
+		assertMigration("expected.pre.r2cloud.properties", "pre.r2cloud.properties");
+	}
+
+	@Test
+	public void testLoraAtMigration() throws Exception {
+		assertMigration("expected.pre.loraat.properties", "pre.loraat.properties");
+	}
+
+	private void assertMigration(String expectedProperties, String preMigrationProperties) throws Exception {
 		File userSettingsLocation = new File(tempFolder.getRoot(), ".r2cloud-" + UUID.randomUUID().toString());
-		try (InputStream is = MigrateConfigurationTest.class.getClassLoader().getResourceAsStream("migration/pre.r2cloud.properties"); FileOutputStream fos = new FileOutputStream(userSettingsLocation)) {
+		try (InputStream is = MigrateConfigurationTest.class.getClassLoader().getResourceAsStream("migration/" + preMigrationProperties); FileOutputStream fos = new FileOutputStream(userSettingsLocation)) {
 			Properties props = new Properties();
 			props.load(is);
 			props.store(fos, "");
@@ -37,7 +46,7 @@ public class MigrateConfigurationTest {
 		}
 		MigrateConfiguration migrateConfiguration = new MigrateConfiguration(config);
 		migrateConfiguration.migrate();
-		assertPropertiesEquals("migration/expected.pre.r2cloud.properties", userSettingsLocation);
+		assertPropertiesEquals("migration/" + expectedProperties, userSettingsLocation);
 	}
 
 	private static void assertPropertiesEquals(String expected, File actual) throws Exception {

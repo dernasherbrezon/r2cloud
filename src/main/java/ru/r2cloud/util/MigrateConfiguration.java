@@ -40,6 +40,13 @@ public class MigrateConfiguration {
 				}
 			}
 		}
+		List<String> loraAtDevices = config.getProperties("loraat.devices");
+		if (!loraAtDevices.isEmpty()) {
+			for (String cur : loraAtDevices) {
+				String prefix = "loraat.device." + cur + ".";
+				migrate(prefix + "serialDevice", prefix + "port");
+			}
+		}
 		config.update();
 	}
 

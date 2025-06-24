@@ -587,14 +587,7 @@ public class Configuration {
 			config.setMaximumFrequency(maxFrequency);
 		}
 		config.setHost(getProperty(prefix + "host"));
-		String portStr = getProperty(prefix + "port");
-		if (portStr != null) {
-			try {
-				config.setPort(Integer.parseInt(portStr));
-			} catch (Exception e) {
-				// ignore. legacy serialDevice setting
-			}
-		}
+		config.setPort(getInteger(prefix + "port"));
 		config.setUsername(getProperty(prefix + "username"));
 		config.setPassword(getProperty(prefix + "password"));
 		config.setRtlDeviceId(getProperty(prefix + "index"));
@@ -603,11 +596,7 @@ public class Configuration {
 			gain = 0.0;
 		}
 		config.setGain(gain.floatValue());
-		String serialDevice = getProperty(prefix + "serialDevice");
-		if (serialDevice == null) {
-			serialDevice = getProperty(prefix + "port");
-		}
-		config.setSerialDevice(serialDevice);
+		config.setSerialDevice(getProperty(prefix + "serialDevice"));
 		String address = getProperty(prefix + "btaddress");
 		if (address != null) {
 			config.setBtAddress(address.toLowerCase(Locale.UK));
