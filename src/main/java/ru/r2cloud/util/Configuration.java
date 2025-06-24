@@ -587,7 +587,10 @@ public class Configuration {
 			config.setMaximumFrequency(maxFrequency);
 		}
 		config.setHost(getProperty(prefix + "host"));
-		config.setPort(getInteger(prefix + "port"));
+		Integer port = getInteger(prefix + "port");
+		if (port != null) {
+			config.setPort(port);
+		}
 		config.setUsername(getProperty(prefix + "username"));
 		config.setPassword(getProperty(prefix + "password"));
 		config.setRtlDeviceId(getProperty(prefix + "index"));
