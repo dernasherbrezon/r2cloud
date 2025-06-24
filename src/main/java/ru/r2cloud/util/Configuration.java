@@ -587,9 +587,13 @@ public class Configuration {
 			config.setMaximumFrequency(maxFrequency);
 		}
 		config.setHost(getProperty(prefix + "host"));
-		Integer port = getInteger(prefix + "port");
-		if (port != null) {
-			config.setPort(port);
+		String portStr = getProperty(prefix + "port");
+		if (portStr != null) {
+			try {
+				config.setPort(Integer.parseInt(portStr));
+			} catch (Exception e) {
+				// ignore. legacy serialDevice setting
+			}
 		}
 		config.setUsername(getProperty(prefix + "username"));
 		config.setPassword(getProperty(prefix + "password"));
