@@ -29,6 +29,8 @@ import ru.r2cloud.util.Util;
 
 public class APTDecoder implements Decoder {
 
+	private static final String PROCESS_NAME = "wxtoimg";
+
 	private static final Logger LOG = LoggerFactory.getLogger(APTDecoder.class);
 
 	private final ProcessFactory factory;
@@ -108,7 +110,7 @@ public class APTDecoder implements Decoder {
 			return result;
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			Util.shutdown("wxtoimg", process, 10000);
+			Util.shutdown(PROCESS_NAME, process, 10000);
 			return null;
 		} catch (IOException e) {
 			Util.logIOException(LOG, "unable to run", e);
@@ -149,7 +151,7 @@ public class APTDecoder implements Decoder {
 			return null;
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			Util.shutdown("wxtoimg", process, 10000);
+			Util.shutdown(PROCESS_NAME, process, 10000);
 			return null;
 		} catch (IOException e) {
 			Util.logIOException(LOG, "unable to run", e);
@@ -179,7 +181,7 @@ public class APTDecoder implements Decoder {
 			}
 			String name = cur.substring(0, index).trim();
 			String value = cur.substring(index + 1).trim();
-			if (name.equalsIgnoreCase("wxtoimg") && (value.equalsIgnoreCase("warning: couldn't find telemetry data") || value.contains("purchase upgrade key") || value.startsWith("error:"))) {
+			if (name.equalsIgnoreCase(PROCESS_NAME) && (value.equalsIgnoreCase("warning: couldn't find telemetry data") || value.contains("purchase upgrade key") || value.startsWith("error:"))) {
 				return false;
 			}
 		}

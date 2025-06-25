@@ -2,7 +2,6 @@ package ru.r2cloud;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.file.FileSystems;

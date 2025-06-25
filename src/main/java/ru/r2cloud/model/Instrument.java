@@ -225,15 +225,15 @@ public class Instrument {
 			}
 		}
 		if (imageSeriesURL != null) {
-			JsonArray series = new JsonArray();
+			JsonArray seriesArray = new JsonArray();
 			for (String cur : imageSeriesURL) {
 				if (signed != null) {
-					series.add(signed.sign(cur));
+					seriesArray.add(signed.sign(cur));
 				} else {
-					series.add(cur);
+					seriesArray.add(cur);
 				}
 			}
-			result.add("imageSeriesURL", series);
+			result.add("imageSeriesURL", seriesArray);
 		}
 		if (satdumpImageSeries != null) {
 			result.add("satdumpImageSeries", satdumpImageSeries);
