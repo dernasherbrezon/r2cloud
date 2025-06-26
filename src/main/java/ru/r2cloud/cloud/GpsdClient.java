@@ -132,7 +132,7 @@ public class GpsdClient {
 					haveResult = true;
 					this.lat = latValue.asDouble();
 					this.lon = lonValue.asDouble();
-					if (alt != null) {
+					if (altValue != null) {
 						this.alt = altValue.asDouble();
 					}
 					lock.notifyAll();
