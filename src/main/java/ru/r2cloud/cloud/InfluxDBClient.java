@@ -30,8 +30,8 @@ import ru.r2cloud.util.Util;
 
 public class InfluxDBClient {
 
-	private final static Pattern ESCAPE = Pattern.compile("[\\s=\\,]+");
-	private final static Logger LOG = LoggerFactory.getLogger(InfluxDBClient.class);
+	private static final Pattern ESCAPE = Pattern.compile("[\\s=\\,]+");
+	private static final Logger LOG = LoggerFactory.getLogger(InfluxDBClient.class);
 
 	private final Clock clock;
 	private final HttpClient httpclient;
@@ -44,7 +44,7 @@ public class InfluxDBClient {
 
 	public InfluxDBClient(Configuration config, Clock clock) {
 		this.clock = clock;
-		String influxDbHostname = config.getProperty("influxdb.hostname");
+		influxDbHostname = config.getProperty("influxdb.hostname");
 		port = config.getInteger("influxdb.port");
 		timeout = Duration.ofMillis(config.getInteger("influxdb.timeout"));
 		String username = config.getProperty("influxdb.username");
@@ -58,8 +58,6 @@ public class InfluxDBClient {
 		}
 		if (!influxDbHostname.startsWith("http://")) {
 			this.influxDbHostname = "http://" + influxDbHostname;
-		} else {
-			this.influxDbHostname = influxDbHostname;
 		}
 		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(timeout).build();
 		this.basicAuth = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.ISO_8859_1));

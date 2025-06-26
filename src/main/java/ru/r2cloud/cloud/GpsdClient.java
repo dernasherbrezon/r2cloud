@@ -120,20 +120,20 @@ public class GpsdClient {
 					// Unknown and no fix
 					continue;
 				}
-				JsonValue lat = obj.get("lat");
-				JsonValue lon = obj.get("lon");
-				if (lat == null || lon == null) {
+				JsonValue latValue = obj.get("lat");
+				JsonValue lonValue = obj.get("lon");
+				if (latValue == null || lonValue == null) {
 					// have fix but not coordinates?
 					continue;
 				}
 				// PredictOreKit use WGS84 model
-				JsonValue alt = obj.get("altHAE");
+				JsonValue altValue = obj.get("altHAE");
 				synchronized (lock) {
 					haveResult = true;
-					this.lat = lat.asDouble();
-					this.lon = lon.asDouble();
+					this.lat = latValue.asDouble();
+					this.lon = lonValue.asDouble();
 					if (alt != null) {
-						this.alt = alt.asDouble();
+						this.alt = altValue.asDouble();
 					}
 					lock.notifyAll();
 				}
