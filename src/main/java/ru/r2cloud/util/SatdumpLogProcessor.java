@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +14,14 @@ import org.slf4j.LoggerFactory;
 public class SatdumpLogProcessor {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SatdumpLogProcessor.class);
+	private static final Set<String> INFO_MESSAGES = new HashSet<>();
+
+	static {
+		// re-classify. missing data/signal is not an error
+		INFO_MESSAGES.add("Couldn't calibrate image with wedges");
+		INFO_MESSAGES.add("Failure solving!");
+		INFO_MESSAGES.add("Can't reproject an empty image");
+	}
 
 	private final String id;
 	private final InputStream is;
@@ -46,8 +56,7 @@ public class SatdumpLogProcessor {
 							if (!accept(message)) {
 								continue;
 							}
-							// re-classify. missing data is not an error
-							if (message.contains("Couldn't calibrate image with wedges") || message.contains("Failure solving!")) {
+							if (isInfo(message)) {
 								LOG.info("[{}] {}", id, message);
 							} else {
 								LOG.error("[{}] {}", id, message);
@@ -135,6 +144,15 @@ public class SatdumpLogProcessor {
 			return false;
 		}
 		return true;
+	}
+
+	private static boolean isInfo(String message) {
+		for (String cur : INFO_MESSAGES) {
+			if (message.contains(cur)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
