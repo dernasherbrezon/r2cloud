@@ -24,6 +24,7 @@ import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.spyclient.SpyClient;
 import ru.r2cloud.spyclient.SpyClientSync;
 import ru.r2cloud.spyclient.SpyServerDeviceInfo;
+import ru.r2cloud.spyclient.SpyServerDeviceType;
 import ru.r2cloud.spyclient.SpyServerParameter;
 
 public class SpyServerReaderTest {
@@ -103,7 +104,8 @@ public class SpyServerReaderTest {
 
 	public static SpyServerDeviceInfo createAirSpy() {
 		SpyServerDeviceInfo result = new SpyServerDeviceInfo();
-		result.setDeviceType(1);
+		result.setDeviceType(SpyServerDeviceType.AIRSPY_ONE);
+		result.setDeviceSerial(2836433);
 		result.setMaximumSampleRate(6000000);
 		result.setMinimumIQDecimation(0);
 		result.setResolution(12);

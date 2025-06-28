@@ -6,7 +6,7 @@ import java.io.OutputStream;
 
 public class SpyServerDeviceInfo implements CommandResponse {
 
-	private long deviceType;
+	private SpyServerDeviceType deviceType;
 	private long deviceSerial;
 	private long maximumSampleRate;
 	private long maximumBandwidth;
@@ -19,11 +19,11 @@ public class SpyServerDeviceInfo implements CommandResponse {
 	private long minimumIQDecimation;
 	private long forcedIQFormat;
 
-	public long getDeviceType() {
+	public SpyServerDeviceType getDeviceType() {
 		return deviceType;
 	}
 
-	public void setDeviceType(long deviceType) {
+	public void setDeviceType(SpyServerDeviceType deviceType) {
 		this.deviceType = deviceType;
 	}
 
@@ -117,7 +117,7 @@ public class SpyServerDeviceInfo implements CommandResponse {
 
 	@Override
 	public void read(InputStream is) throws IOException {
-		deviceType = SpyClient.readUnsignedInt(is);
+		deviceType = SpyServerDeviceType.valueOfCode(SpyClient.readUnsignedInt(is));
 		deviceSerial = SpyClient.readUnsignedInt(is);
 		maximumSampleRate = SpyClient.readUnsignedInt(is);
 		maximumBandwidth = SpyClient.readUnsignedInt(is);
@@ -133,7 +133,11 @@ public class SpyServerDeviceInfo implements CommandResponse {
 
 	@Override
 	public void write(OutputStream os) throws IOException {
-		SpyClient.writeUnsignedInt(os, (int) deviceType);
+		if (deviceType != null) {
+			SpyClient.writeUnsignedInt(os, (int) deviceType.getCode());
+		} else {
+			SpyClient.writeUnsignedInt(os, 0);
+		}
 		SpyClient.writeUnsignedInt(os, (int) deviceSerial);
 		SpyClient.writeUnsignedInt(os, (int) maximumSampleRate);
 		SpyClient.writeUnsignedInt(os, (int) maximumBandwidth);

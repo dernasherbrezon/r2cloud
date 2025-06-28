@@ -69,6 +69,7 @@
 		{
 			"id": "spyserver.0",
 			"status": "CONNECTED",
+			"model": "AIRSPY_ONE 0x2b47d1",
 			"connection": "SpyServer - 127.0.0.1:8008",
 			"minFrequency": 1650000000,
 			"maxFrequency": 1700000000,

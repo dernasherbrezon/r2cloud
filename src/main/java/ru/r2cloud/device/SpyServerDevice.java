@@ -51,6 +51,7 @@ public class SpyServerDevice extends Device {
 		SpyServerStatus spyServerStatus = getStatusInternal(result.getConfig());
 		result.setFailureMessage(spyServerStatus.getFailureMessage());
 		result.setStatus(spyServerStatus.getStatus());
+		result.setModel(spyServerStatus.getDeviceSerial());
 		return result;
 	}
 

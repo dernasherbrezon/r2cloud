@@ -180,6 +180,11 @@ public class SpyClient {
 			List<Long> supportedList = new ArrayList<>(supportedSamplingRates.keySet());
 			Collections.sort(supportedList);
 			status.setSupportedSampleRates(supportedList);
+			String deviceSerial = deviceInfo.getDeviceType().name();
+			if (deviceInfo.getDeviceSerial() != 0) {
+				deviceSerial += " 0x" + Long.toHexString(deviceInfo.getDeviceSerial());
+			}
+			status.setDeviceSerial(deviceSerial);
 		}
 	}
 

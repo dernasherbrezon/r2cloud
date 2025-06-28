@@ -9,10 +9,19 @@ public class SpyServerStatus {
 
 	private DeviceConnectionStatus status;
 	private String failureMessage;
+	private String deviceSerial;
 	private long minFrequency;
 	private long maxFrequency;
 	private DataFormat format;
 	private List<Long> supportedSampleRates;
+	
+	public String getDeviceSerial() {
+		return deviceSerial;
+	}
+	
+	public void setDeviceSerial(String deviceSerial) {
+		this.deviceSerial = deviceSerial;
+	}
 	
 	public List<Long> getSupportedSampleRates() {
 		return supportedSampleRates;
