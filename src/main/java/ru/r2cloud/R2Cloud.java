@@ -253,6 +253,7 @@ public class R2Cloud {
 			if (cur.getMaximumFrequency() == 0) {
 				cur.setMaximumFrequency(status.getMaxFrequency());
 			}
+			logSupportedSampleRates(cur.getId(), status.getSupportedSampleRates());
 			if (!status.getSupportedSampleRates().isEmpty()) {
 				cur.setMaximumSampleRate(status.getSupportedSampleRates().get(status.getSupportedSampleRates().size() - 1));
 			}
@@ -492,5 +493,16 @@ public class R2Cloud {
 			return "unknown";
 		}
 		return version;
+	}
+
+	private static void logSupportedSampleRates(String deviceId, List<Long> supportedList) {
+		StringBuilder out = new StringBuilder();
+		for (int i = 0; i < supportedList.size(); i++) {
+			if (i != 0) {
+				out.append(", ");
+			}
+			out.append(supportedList.get(i));
+		}
+		LOG.info("[{}] supported sample rates: {}", deviceId, out.toString());
 	}
 }
