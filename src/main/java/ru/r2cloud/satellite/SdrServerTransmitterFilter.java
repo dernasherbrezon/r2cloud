@@ -18,9 +18,6 @@ public class SdrServerTransmitterFilter extends SdrTransmitterFilter {
 		if (satellite.getFraming().equals(Framing.APT)) {
 			return false;
 		}
-		if (satellite.getFraming().equals(Framing.SATDUMP)) {
-			return false;
-		}
 		return true;
 	}
 

@@ -18,6 +18,7 @@ import org.junit.rules.TemporaryFolder;
 import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DeviceConfiguration;
+import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
@@ -38,42 +39,30 @@ public class SpyServerReaderTest {
 
 	@Test
 	public void testDeviceNotConnected() throws Exception {
-		mock = new SpyServerMock(deviceConfiguration.getHost());
-		mock.start();
-
-		deviceConfiguration.setPort(mock.getPort());
+		mock.setDeviceInfo(null);
 		SpyServerReader reader = new SpyServerReader(config, createValidRequest(), deviceConfiguration, createValidTransmitter(), new ReentrantLock());
 		reader.complete();
 		assertNull(reader.start());
 	}
 
 	@Test
+	public void testSatdump() throws Exception {
+		ObservationRequest req = createValidRequest();
+		Transmitter transmitter = createValidTransmitter();
+		// some generic satdump-based satellite info
+		transmitter.setBandwidth(2_400_000L);
+		transmitter.setFraming(Framing.SATDUMP);
+		SpyServerReader reader = new SpyServerReader(config, req, deviceConfiguration, transmitter, new ReentrantLock());
+		IQData result = syncRead(reader);
+		assertNotNull(result);
+		assertNotNull(result.getIq());
+	}
+
+	@Test
 	public void testSuccess() throws Exception {
-		mock = new SpyServerMock(deviceConfiguration.getHost());
-		mock.start();
-
-		mock.setDeviceInfo(createAirSpy());
-		mock.setSync(createValidSync());
-		mock.setData(createSample(), SpyClient.SPYSERVER_MSG_TYPE_INT16_IQ);
-
-		deviceConfiguration.setPort(mock.getPort());
 		ObservationRequest req = createValidRequest();
 		SpyServerReader reader = new SpyServerReader(config, req, deviceConfiguration, createValidTransmitter(), new ReentrantLock());
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					// make sure all config parameters are sent/read
-					mock.waitForDataSent();
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-					return;
-				}
-				reader.complete();
-			}
-		}).start();
-		IQData result = reader.start();
+		IQData result = syncRead(reader);
 		assertNotNull(result);
 		assertEquals(DataFormat.COMPLEX_SIGNED_SHORT, result.getDataFormat());
 		assertEquals(46875, result.getSampleRate());
@@ -84,10 +73,17 @@ public class SpyServerReaderTest {
 
 	@Before
 	public void start() throws Exception {
+		mock = new SpyServerMock("localhost");
+		mock.start();
+		mock.setDeviceInfo(createAirSpy());
+		mock.setSync(createValidSync());
+		mock.setData(createSample(), SpyClient.SPYSERVER_MSG_TYPE_INT16_IQ);
+
 		deviceConfiguration = new DeviceConfiguration();
 		deviceConfiguration.setHost("localhost");
 		deviceConfiguration.setTimeout(1000);
 		deviceConfiguration.setGain(10.0f);
+		deviceConfiguration.setPort(mock.getPort());
 
 		config = new TestConfiguration(tempFolder);
 		config.setProperty("server.tmp.directory", tempFolder.getRoot().getAbsolutePath());
@@ -135,6 +131,25 @@ public class SpyServerReaderTest {
 	public static SpyClientSync createValidSync() {
 		SpyClientSync result = new SpyClientSync();
 		result.setCanControl(1);
+		return result;
+	}
+
+	private IQData syncRead(SpyServerReader reader) throws InterruptedException {
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					// make sure all config parameters are sent/read
+					mock.waitForDataSent();
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					return;
+				}
+				reader.complete();
+			}
+		}).start();
+		IQData result = reader.start();
 		return result;
 	}
 

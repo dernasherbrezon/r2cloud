@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceConnectionStatus;
+import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.IQData;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
@@ -57,10 +58,6 @@ public class SpyServerReader implements IQReader {
 	}
 
 	private IQData startInternally() throws InterruptedException {
-		Integer maxBaudRate = Collections.max(transmitter.getBaudRates());
-		if (maxBaudRate == null) {
-			return null;
-		}
 		client = new SpyClient(deviceConfiguraiton.getHost(), deviceConfiguraiton.getPort(), deviceConfiguraiton.getTimeout());
 		client.start();
 		SpyServerStatus status = client.getStatus();
@@ -69,15 +66,13 @@ public class SpyServerReader implements IQReader {
 			client.stop();
 			return null;
 		}
+		Long sampleRate = getSampleRate(client, req.getId(), transmitter);
+		if (sampleRate == null) {
+			return null;
+		}
 		File rawFile = new File(config.getTempDirectory(), req.getSatelliteId() + "-" + req.getId() + "." + status.getFormat().getExtension());
-		Long sampleRate = null;
 		Long endTimeMillis = null;
 		try (OutputStream os = new BufferedOutputStream(new FileOutputStream(rawFile))) {
-			sampleRate = Util.getSmallestGoodDeviceSampleRate(maxBaudRate, status.getSupportedSampleRates());
-			if (sampleRate == null) {
-				LOG.error("[{}] cannot find sample rate for: {}", req.getId(), maxBaudRate);
-				return null;
-			}
 
 			LOG.info("[{}] starting observation on {} with sample rate {} gain {}", req.getId(), req.getFrequency(), sampleRate, deviceConfiguraiton.getGain());
 
@@ -147,6 +142,29 @@ public class SpyServerReader implements IQReader {
 	@Override
 	public void complete() {
 		latch.countDown();
+	}
+
+	private static Long getSampleRate(SpyClient client, String id, Transmitter transmitter) {
+		if (transmitter.getFraming() != null && transmitter.getFraming().equals(Framing.SATDUMP)) {
+			// assume sorted asc
+			for (Long cur : client.getStatus().getSupportedSampleRates()) {
+				if (cur >= transmitter.getBandwidth()) {
+					return cur;
+				}
+			}
+			return null;
+		}
+		Integer maxBaudRate = Collections.max(transmitter.getBaudRates());
+		if (maxBaudRate == null) {
+			LOG.error("[{}] no configured baud raters", id);
+			return null;
+		}
+		Long sampleRate = Util.getSmallestGoodDeviceSampleRate(maxBaudRate, client.getStatus().getSupportedSampleRates());
+		if (sampleRate == null) {
+			LOG.error("[{}] cannot find sample rate for: {}", id, maxBaudRate);
+			return null;
+		}
+		return sampleRate;
 	}
 
 }
