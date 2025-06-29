@@ -574,7 +574,7 @@ public final class Util {
 		return resultSampleRate;
 	}
 
-	public static Long getSmallestGoodDeviceSampleRate(int baudRate, List<Long> supportedSamplesRates) {
+	public static Long getSmallestGoodDeviceSampleRate(long baudRate, List<Long> supportedSamplesRates) {
 		// choose the lowest possible
 		SampleRateMapping result = null;
 		// assume supported sample rates is not big
@@ -595,7 +595,7 @@ public final class Util {
 			return result.getDeviceOutput();
 		}
 		Collections.sort(supportedSamplesRates);
-		int expectedSampleRate = baudRate * 3;
+		long expectedSampleRate = baudRate * 3;
 		if (expectedSampleRate < 48_000) {
 			expectedSampleRate = 48_000;
 		}

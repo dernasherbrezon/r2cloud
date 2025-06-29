@@ -3,9 +3,9 @@ package ru.r2cloud.model;
 public class SampleRateKey {
 
 	private long deviceOutput;
-	private int baudRate;
+	private long baudRate;
 
-	public SampleRateKey(long deviceOutput, int baudRate) {
+	public SampleRateKey(long deviceOutput, long baudRate) {
 		super();
 		this.deviceOutput = deviceOutput;
 		this.baudRate = baudRate;
@@ -19,11 +19,11 @@ public class SampleRateKey {
 		this.deviceOutput = deviceOutput;
 	}
 
-	public int getBaudRate() {
+	public long getBaudRate() {
 		return baudRate;
 	}
 
-	public void setBaudRate(int baudRate) {
+	public void setBaudRate(long baudRate) {
 		this.baudRate = baudRate;
 	}
 
@@ -31,7 +31,7 @@ public class SampleRateKey {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + baudRate;
+		result = prime * result + (int) (baudRate ^ (baudRate >>> 32));
 		result = prime * result + (int) (deviceOutput ^ (deviceOutput >>> 32));
 		return result;
 	}
