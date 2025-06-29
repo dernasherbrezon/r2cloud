@@ -3,11 +3,5 @@
 		"id": "rtlsdr.0",
 		"name": "RTL-SDR 0",
 		"status": "CONNECTED"
-	},
-	{
-		"id": "rtlsdr.1",
-		"name": "RTL-SDR 1",
-		"status": "FAILED",
-		"failureMessage": "unable to find device"
 	}
 ]

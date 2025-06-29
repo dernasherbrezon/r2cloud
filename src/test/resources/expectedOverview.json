@@ -43,19 +43,6 @@
 			}
 		},
 		{
-			"id": "rtlsdr.1",
-			"status": "FAILED",
-			"failureMessage": "unable to find device",
-			"connection": "RTL-SDR 1",
-			"minFrequency": 100000000,
-			"maxFrequency": 1700000000,
-			"rotator": {
-				"status": "CONNECTED",
-				"model": "TEST",
-				"connection": "127.0.0.1:8004"
-			}
-		},
-		{
 			"id": "spyserver.0",
 			"status": "CONNECTED",
 			"model": "AIRSPY_ONE 0x2b47d1",

@@ -37,7 +37,7 @@ public class DeviceConfigTest extends RegisteredTest {
 		HttpResponse<String> response = client.saveDeviceConfig(device.toJson());
 		assertEquals(200, response.statusCode());
 		JsonObject json = Json.parse(response.body()).asObject();
-		assertEquals("rtlsdr.2", json.getString("id", null));
+		assertEquals("rtlsdr.1", json.getString("id", null));
 
 		device = createConfig();
 		device.setGain(50.0f);

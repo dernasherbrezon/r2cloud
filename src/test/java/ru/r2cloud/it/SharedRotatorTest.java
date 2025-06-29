@@ -15,12 +15,15 @@ import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
+import ru.r2cloud.CollectingRequestHandler;
+import ru.r2cloud.RotctrldMock;
 import ru.r2cloud.TestUtil;
-import ru.r2cloud.it.util.BaseTest;
 import ru.r2cloud.it.util.RegisteredTest;
 import ru.r2cloud.util.Configuration;
 
 public class SharedRotatorTest extends RegisteredTest {
+
+	private RotctrldMock rotctrlMock;
 
 	@Test
 	public void testSuccess() throws Exception {
@@ -45,24 +48,38 @@ public class SharedRotatorTest extends RegisteredTest {
 	protected Configuration prepareConfiguration() throws IOException {
 		Configuration result = super.prepareConfiguration();
 		result.setProperty("satellites.meta.location", "./src/test/resources/satellites-test-schedule.json");
+		result.setProperty("rtlsdr.devices", "0,1");
 		result.setProperty("rtlsdr.device.0.rotctrld.hostname", "127.0.0.1");
-		result.setProperty("rtlsdr.device.0.rotctrld.port", BaseTest.ROTCTRLD_PORT);
+		result.setProperty("rtlsdr.device.0.rotctrld.port", "8004");
 		result.setProperty("rtlsdr.device.0.rotator.tolerance", 5);
 		result.setProperty("rtlsdr.device.0.rotator.cycleMillis", 1000);
 		result.setProperty("rtlsdr.device.0.minFrequency", 433000000);
 		result.setProperty("rtlsdr.device.0.maxFrequency", 480000000);
 
 		result.setProperty("rtlsdr.device.1.rotctrld.hostname", "127.0.0.1");
-		result.setProperty("rtlsdr.device.1.rotctrld.port", BaseTest.ROTCTRLD_PORT);
+		result.setProperty("rtlsdr.device.1.rotctrld.port", "8004");
 		result.setProperty("rtlsdr.device.1.rotator.tolerance", 5);
 		result.setProperty("rtlsdr.device.1.rotator.cycleMillis", 1000);
 		result.setProperty("rtlsdr.device.1.minFrequency", 433000000);
 		result.setProperty("rtlsdr.device.1.maxFrequency", 480000000);
 
-		result.remove("loraatwifi.devices");
-		result.remove("loraat.devices");
-
 		return result;
+	}
+
+	@Override
+	public void start() throws Exception {
+		rotctrlMock = new RotctrldMock(8004);
+		rotctrlMock.setHandler(new CollectingRequestHandler("RPRT 0\n"));
+		rotctrlMock.start();
+		super.start();
+	}
+
+	@Override
+	public void stop() {
+		super.stop();
+		if (rotctrlMock != null) {
+			rotctrlMock.stop();
+		}
 	}
 
 	private static void assertTimestamps(long expected, long actual) {
