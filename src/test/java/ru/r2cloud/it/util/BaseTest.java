@@ -11,7 +11,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.net.InetSocketAddress;
 import java.net.http.HttpResponse;
 import java.nio.file.FileSystems;
 import java.util.Properties;
@@ -28,19 +27,15 @@ import org.slf4j.LoggerFactory;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
-import com.sun.net.httpserver.HttpServer;
 
 import ru.r2cloud.CelestrakServer;
 import ru.r2cloud.CollectingRequestHandler;
 import ru.r2cloud.FixedClock;
-import ru.r2cloud.JsonHttpResponse;
 import ru.r2cloud.R2Cloud;
 import ru.r2cloud.RotctrldMock;
 import ru.r2cloud.RtlTestServer;
 import ru.r2cloud.SatnogsServerMock;
 import ru.r2cloud.TestUtil;
-import ru.r2cloud.satellite.reader.SpyServerMock;
-import ru.r2cloud.satellite.reader.SpyServerReaderTest;
 import ru.r2cloud.util.Configuration;
 
 public abstract class BaseTest {
@@ -50,7 +45,6 @@ public abstract class BaseTest {
 	private static final Logger LOG = LoggerFactory.getLogger(BaseTest.class);
 	public static final int ROTCTRLD_PORT = 8004;
 	private static final int ROTCTRLD_PORT_LORA = 8006;
-	private static final int LORA_AT_WIFI_PORT = 8005;
 
 	protected R2Cloud server;
 	private CelestrakServer celestrak;
@@ -58,12 +52,10 @@ public abstract class BaseTest {
 	private File rtlTestMock;
 	private File plutoSdrTestMock;
 	private RtlTestServer rtlTestServer;
-	private RtlTestServer plutoTestServer;
 	private RotctrldMock rotctrlMock;
 	private RotctrldMock rotctrlMockForLora;
 	private SatnogsServerMock satnogs;
-	private SpyServerMock spyServerMock;
-	protected HttpServer loraAtWifiServer;
+	
 	protected String unixFile = "/tmp/system_dbus_r2cloud_test_" + Math.abs(new Random().nextInt());
 
 	protected RestClient client;
@@ -99,16 +91,6 @@ public abstract class BaseTest {
 		rtlTestServer.mockDefault();
 		rtlTestServer.start();
 
-		plutoTestServer = new RtlTestServer(8010);
-		plutoTestServer.mockTest(
-				"Using auto-detected IIO context at URI \"usb:0.1.5\"\nIIO context created with usb backend.\nBackend description string: Linux (none) 4.19.0-119999-g6edc6cd #319 SMP PREEMPT Mon Jul 6 15:45:01 CEST 2020 armv7l\nIIO context has 15 attributes:\n	hw_model: Analog Devices PlutoSDR Rev.B (Z7010-AD9363A)\n	hw_model_variant: 0\n	hw_serial: 10447354119600050d003000d4311fd131\n");
-		plutoTestServer.start();
-
-		spyServerMock = new SpyServerMock("127.0.0.1");
-		spyServerMock.setDeviceInfo(SpyServerReaderTest.createAirSpy());
-		spyServerMock.setSync(SpyServerReaderTest.createValidSync());
-		spyServerMock.start();
-
 		rotctrlMock = new RotctrldMock(ROTCTRLD_PORT);
 		rotctrlMock.setHandler(new CollectingRequestHandler("RPRT 0\n"));
 		rotctrlMock.start();
@@ -116,10 +98,6 @@ public abstract class BaseTest {
 		rotctrlMockForLora = new RotctrldMock(ROTCTRLD_PORT_LORA);
 		rotctrlMockForLora.setHandler(new CollectingRequestHandler("RPRT 0\n"));
 		rotctrlMockForLora.start();
-
-		loraAtWifiServer = HttpServer.create(new InetSocketAddress("127.0.0.1", LORA_AT_WIFI_PORT), 0);
-		loraAtWifiServer.createContext("/api/v2/status", new JsonHttpResponse("loraatwifitest/status.json", 200));
-		loraAtWifiServer.start();
 
 		rtlSdrMock = TestUtil.setupScript(new File(tempFolder.getRoot(), "rtl_sdr_mock.sh"));
 		rtlTestMock = TestUtil.setupScript(new File(tempFolder.getRoot(), "rtl_test_mock.sh"));
@@ -190,23 +168,14 @@ public abstract class BaseTest {
 		if (celestrak != null) {
 			celestrak.stop();
 		}
-		if (plutoTestServer != null) {
-			plutoTestServer.stop();
-		}
 		if (rtlTestServer != null) {
 			rtlTestServer.stop();
 		}
 		if (rotctrlMock != null) {
 			rotctrlMock.stop();
 		}
-		if (spyServerMock != null) {
-			spyServerMock.stop();
-		}
 		if (rotctrlMockForLora != null) {
 			rotctrlMockForLora.stop();
-		}
-		if (loraAtWifiServer != null) {
-			loraAtWifiServer.stop(0);
 		}
 		if (satnogs != null) {
 			satnogs.stop();

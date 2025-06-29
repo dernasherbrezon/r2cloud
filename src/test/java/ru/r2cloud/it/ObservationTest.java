@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.eclipsesource.json.Json;
+import com.sun.net.httpserver.HttpServer;
 
 import ru.r2cloud.JsonHttpResponse;
 import ru.r2cloud.LeoSatDataServerMock;
@@ -20,11 +22,13 @@ import ru.r2cloud.RtlSdrDataServer;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.it.util.RegisteredTest;
 import ru.r2cloud.model.IntegrationConfiguration;
+import ru.r2cloud.util.Configuration;
 
 public class ObservationTest extends RegisteredTest {
 
 	private RtlSdrDataServer rtlSdrMock;
 	private LeoSatDataServerMock server;
+	private HttpServer loraAtWifiServer;
 
 	@Test
 	public void testMeteorObservation() throws Exception {
@@ -79,9 +83,25 @@ public class ObservationTest extends RegisteredTest {
 		}
 	}
 
+	@Override
+	protected Configuration prepareConfiguration() throws IOException {
+		Configuration result = super.prepareConfiguration();
+		result.setProperty("loraatwifi.devices", "0");
+		result.setProperty("loraatwifi.device.0.host", "127.0.0.1");
+		result.setProperty("loraatwifi.device.0.port", "8005");
+		return result;
+	}
+
 	@Before
 	@Override
 	public void start() throws Exception {
+		rtlSdrMock = new RtlSdrDataServer();
+		rtlSdrMock.start();
+		server = new LeoSatDataServerMock();
+		server.start();
+		loraAtWifiServer = HttpServer.create(new InetSocketAddress("127.0.0.1", 8005), 0);
+		loraAtWifiServer.createContext("/api/v2/status", new JsonHttpResponse("loraatwifitest/status.json", 200));
+		loraAtWifiServer.start();
 		super.start();
 		IntegrationConfiguration integrations = new IntegrationConfiguration();
 		integrations.setApiKey(UUID.randomUUID().toString());
@@ -89,22 +109,21 @@ public class ObservationTest extends RegisteredTest {
 		integrations.setSyncSpectogram(true);
 		integrations.setSatnogs(false);
 		client.saveIntegrationConfiguration(integrations);
-		rtlSdrMock = new RtlSdrDataServer();
-		rtlSdrMock.start();
-		server = new LeoSatDataServerMock();
-		server.start();
 	}
 
 	@After
 	@Override
 	public void stop() {
+		super.stop();
 		if (server != null) {
 			server.stop();
 		}
 		if (rtlSdrMock != null) {
 			rtlSdrMock.stop();
 		}
-		super.stop();
+		if (loraAtWifiServer != null) {
+			loraAtWifiServer.stop(0);
+		}
 	}
 
 }

@@ -43,7 +43,7 @@
 		"status": "ENABLED",
 		"source": "CONFIG",
 		"nextPass": 1559949406124,
-		"frequency": 436703000,
-		"modulation": "LORA"
+		"frequency": 436700000,
+		"modulation": "GFSK"
 	}
 ]

@@ -28,7 +28,7 @@ public class PresentationModeTest extends BaseTest {
 		config.setProperty("presentationMode", true);
 		// force cache reload
 		client.getObservationPresentation("41460", "1559942730784");
-		
+
 		JsonObject obj = client.getPresentationModeData();
 		TestUtil.assertJson("presentationMode.json", obj);
 	}

@@ -21,17 +21,6 @@
 			}
 		},
 		{
-			"id": "loraatwifi.1",
-			"status": "FAILED",
-			"failureMessage": "CONNECTION_FAILURE",
-			"connection": "LoRa - 255.255.255.255:80",
-			"minFrequency": 0,
-			"maxFrequency": 0,
-			"rotator": {
-				"status": "DISABLED"
-			}
-		},
-		{
 			"id": "plutosdr.0",
 			"status": "CONNECTED",
 			"model": "Analog Devices PlutoSDR Rev.B (Z7010-AD9363A)",

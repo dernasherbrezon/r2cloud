@@ -118,7 +118,7 @@ public class DeviceConfigTest extends RegisteredTest {
 		json.add("password", UUID.randomUUID().toString());
 		HttpResponse<String> response = client.saveDeviceConfig(json);
 		assertEquals(200, response.statusCode());
-		assertEquals("loraatwifi.2", Json.parse(response.body()).asObject().getString("id", null));
+		assertEquals("loraatwifi.0", Json.parse(response.body()).asObject().getString("id", null));
 
 		device = createValidLoraAtWifi();
 		device.setHost(null);
@@ -181,7 +181,7 @@ public class DeviceConfigTest extends RegisteredTest {
 		device.setPort(8080);
 		HttpResponse<String> response = client.saveDeviceConfig(device.toJson());
 		assertEquals(200, response.statusCode());
-		assertEquals("spyserver.1", Json.parse(response.body()).asObject().getString("id", null));
+		assertEquals("spyserver.0", Json.parse(response.body()).asObject().getString("id", null));
 	}
 
 	@Test
@@ -190,7 +190,7 @@ public class DeviceConfigTest extends RegisteredTest {
 		device.setDeviceType(DeviceType.PLUTOSDR);
 		HttpResponse<String> response = client.saveDeviceConfig(device.toJson());
 		assertEquals(200, response.statusCode());
-		assertEquals("plutosdr.1", Json.parse(response.body()).asObject().getString("id", null));
+		assertEquals("plutosdr.0", Json.parse(response.body()).asObject().getString("id", null));
 	}
 
 	private static DeviceConfiguration createValidSdrServer() {
