@@ -65,7 +65,7 @@ public class SpyClient {
 		try {
 			startInternally();
 		} catch (IOException e) {
-			Util.logIOException(LOG, "unable to start airspy", e);
+			Util.logIOException(LOG, "unable to connect to spyserver", e);
 			markStatusAsFailed(e);
 		}
 	}
