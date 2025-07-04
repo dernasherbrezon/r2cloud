@@ -2,7 +2,6 @@ package ru.r2cloud.satellite.reader;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.ProcessBuilder.Redirect;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
@@ -94,7 +93,9 @@ public class AirspyReader implements IQReader {
 			}
 			}
 
-			process = factory.create(command.toString(), Redirect.INHERIT, false);
+			process = factory.create(command.toString(), true, false);
+			new AirspyLogProcessor(req.getId(), process.getInputStream(), "airspy-stdio").start();
+			new AirspyLogProcessor(req.getId(), process.getErrorStream(), "airspy-stderr").start();
 			int responseCode = process.waitFor();
 			if (responseCode != 0) {
 				LOG.error("[{}] invalid response code airspy_rx: {}", req.getId(), responseCode);

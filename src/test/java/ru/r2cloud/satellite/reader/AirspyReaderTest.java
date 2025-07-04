@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,46 +38,39 @@ public class AirspyReaderTest {
 
 	@Test
 	public void testFailure() throws Exception {
-		String satelliteId = UUID.randomUUID().toString();
-		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 1)), satelliteId);
-
 		Transmitter transmitter = new Transmitter();
 		transmitter.setBaudRates(Collections.singletonList(9600));
 		transmitter.setFraming(Framing.SATDUMP);
 		transmitter.setBandwidth(2_400_000L);
 
-		IQData iqData = startReader(satelliteId, factory, transmitter);
+		IQData iqData = startReader(1, transmitter);
 		assertNull(iqData.getIq());
 	}
 
 	@Test
 	public void testUnsupportedSampleRate() throws Exception {
-		String satelliteId = UUID.randomUUID().toString();
-		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 0, true)), satelliteId);
-
 		Transmitter transmitter = new Transmitter();
 		transmitter.setBaudRates(Collections.singletonList(9600));
 		transmitter.setFraming(Framing.SATDUMP);
 		transmitter.setBandwidth(7_000_000L);
 
-		assertNull(startReader(satelliteId, factory, transmitter));
+		assertNull(startReader(0, transmitter));
 	}
 
 	@Test
 	public void testSuccess() throws Exception {
-		String satelliteId = UUID.randomUUID().toString();
-		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(null, null, 0, true)), satelliteId);
-
 		Transmitter transmitter = new Transmitter();
 		transmitter.setBaudRates(Collections.singletonList(9600));
 		transmitter.setFraming(Framing.AX25G3RUH);
 
-		IQData iqData = startReader(satelliteId, factory, transmitter);
+		IQData iqData = startReader(0, transmitter);
 		assertNotNull(iqData.getIq());
 		assertEquals(DataFormat.COMPLEX_SIGNED_SHORT, iqData.getDataFormat());
 	}
 
-	private IQData startReader(String satelliteId, ProcessFactoryMock factory, Transmitter transmitter) throws InterruptedException {
+	private IQData startReader(int statusCode, Transmitter transmitter) throws InterruptedException {
+		String satelliteId = UUID.randomUUID().toString();
+		ProcessFactoryMock factory = new ProcessFactoryMock(create(new ProcessWrapperMock(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), new ByteArrayInputStream(new byte[0]), statusCode, true)), satelliteId);
 		ObservationRequest req = new ObservationRequest();
 		req.setSatelliteId(satelliteId);
 
