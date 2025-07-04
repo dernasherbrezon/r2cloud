@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.freedesktop.dbus.utils.AddressBuilder;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import ru.r2cloud.cloud.InfluxDBClient;
 import ru.r2cloud.cloud.LeoSatDataClient;
 import ru.r2cloud.cloud.LeoSatDataService;
 import ru.r2cloud.cloud.SatnogsClient;
+import ru.r2cloud.device.AirspyDevice;
 import ru.r2cloud.device.Device;
 import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.device.LoraAtBleDevice;
@@ -57,6 +59,7 @@ import ru.r2cloud.satellite.SdrTransmitterFilter;
 import ru.r2cloud.satellite.SequentialTimetable;
 import ru.r2cloud.satellite.decoder.DecoderService;
 import ru.r2cloud.satellite.decoder.Decoders;
+import ru.r2cloud.sdr.AirspyStatusProcess;
 import ru.r2cloud.spyclient.SpyClient;
 import ru.r2cloud.spyclient.SpyServerStatus;
 import ru.r2cloud.tle.CelestrakClient;
@@ -259,6 +262,16 @@ public class R2Cloud {
 			}
 			client.stop();
 			deviceManager.addDevice(new SpyServerDevice(cur.getId(), new SdrServerTransmitterFilter(cur, framingFilter), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, props, predict, findSharedOrNull(sharedSchedule, cur), status));
+		}
+		for (DeviceConfiguration cur : props.getAirspyConfigurations()) {
+			ReentrantLock lock = new ReentrantLock();
+			AirspyStatusProcess airspyStatus = new AirspyStatusProcess(props, processFactory, cur.getRtlDeviceId(), lock);
+			List<Long> supportedSampleRates = airspyStatus.getSupportedSampleRates();
+			if (!supportedSampleRates.isEmpty()) {
+				cur.setMaximumSampleRate(supportedSampleRates.get(supportedSampleRates.size() - 1));
+				logSupportedSampleRates(cur.getId(), supportedSampleRates);
+			}
+			deviceManager.addDevice(new AirspyDevice(cur.getId(), new SdrTransmitterFilter(cur, framingFilter), 1, observationFactory, threadFactory, clock, cur, resultDao, decoderService, predict, findSharedOrNull(sharedSchedule, cur), props, processFactory, lock, airspyStatus));
 		}
 
 		houseKeeping = new Housekeeping(props, satelliteDao, threadFactory, new CelestrakClient(props, clock), tleDao, satnogsClient, leoSatDataClient, decoderService, priorityService, deviceManager, clock);

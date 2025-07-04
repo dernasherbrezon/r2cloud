@@ -1,6 +1,17 @@
 {
 	"devices": [
 		{
+			"id": "airspy.0",
+			"status": "CONNECTED",
+			"model": "AirSpy MINI cf1a374-dirty 2021-10-06",
+			"connection": "Airspy 0x62CC68FF21317A17",
+			"minFrequency": 430000000,
+			"maxFrequency": 440000000,
+			"rotator": {
+				"status": "DISABLED"
+			}
+		},
+		{
 			"id": "loraatblec.0",
 			"status": "FAILED",
 			"connection": "LoRa - 78:DD:08:A3:A7:52",

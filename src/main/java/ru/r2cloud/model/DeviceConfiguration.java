@@ -31,6 +31,42 @@ public class DeviceConfiguration {
 	private SdrServerConfiguration sdrServerConfiguration;
 	private double maximumBatteryVoltage;
 	private double minimumBatteryVoltage;
+	private AirspyGainType gainType;
+	private float lnaGain;
+	private float mixerGain;
+	private float vgaGain;
+
+	public AirspyGainType getGainType() {
+		return gainType;
+	}
+
+	public void setGainType(AirspyGainType gainType) {
+		this.gainType = gainType;
+	}
+
+	public float getLnaGain() {
+		return lnaGain;
+	}
+
+	public void setLnaGain(float lnaGain) {
+		this.lnaGain = lnaGain;
+	}
+
+	public float getMixerGain() {
+		return mixerGain;
+	}
+
+	public void setMixerGain(float mixerGain) {
+		this.mixerGain = mixerGain;
+	}
+
+	public float getVgaGain() {
+		return vgaGain;
+	}
+
+	public void setVgaGain(float vgaGain) {
+		this.vgaGain = vgaGain;
+	}
 
 	public String getSerialDevice() {
 		return serialDevice;
@@ -243,7 +279,9 @@ public class DeviceConfiguration {
 			json.add("username", username);
 		}
 		json.add("gain", gain);
-		json.add("rtlDeviceId", rtlDeviceId);
+		if (rtlDeviceId != null) {
+			json.add("rtlDeviceId", rtlDeviceId);
+		}
 		json.add("biast", biast);
 		json.add("ppm", ppm);
 		if (maximumBatteryVoltage != 0) {
@@ -271,6 +309,14 @@ public class DeviceConfiguration {
 		}
 		if (antennaConfiguration != null) {
 			json.add("antenna", antennaConfiguration.toJson());
+		}
+		if (gainType != null) {
+			json.add("gainType", gainType.name());
+			if (gainType.equals(AirspyGainType.FREE)) {
+				json.add("lnaGain", lnaGain);
+				json.add("mixerGain", mixerGain);
+				json.add("vgaGain", vgaGain);
+			}
 		}
 		return json;
 	}
@@ -318,6 +364,15 @@ public class DeviceConfiguration {
 		JsonValue antenna = meta.get("antenna");
 		if (antenna != null) {
 			result.setAntennaConfiguration(AntennaConfiguration.fromJson(antenna.asObject()));
+		}
+		JsonValue gainTypeValue = meta.get("gainType");
+		if (gainTypeValue != null) {
+			result.setGainType(AirspyGainType.valueOf(gainTypeValue.asString()));
+			if (result.getGainType().equals(AirspyGainType.FREE)) {
+				result.setLnaGain(meta.getFloat("lnaGain", 0.0f));
+				result.setMixerGain(meta.getFloat("mixerGain", 0.0f));
+				result.setVgaGain(meta.getFloat("vgaGain", 0.0f));
+			}
 		}
 		return result;
 	}

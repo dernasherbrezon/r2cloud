@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.model.AirspyGainType;
 import ru.r2cloud.model.AntennaConfiguration;
 import ru.r2cloud.model.AntennaType;
 import ru.r2cloud.model.DemodulatorType;
@@ -243,6 +244,14 @@ public class Configuration {
 		return Double.valueOf(str);
 	}
 
+	public Float getFloat(String name) {
+		String str = getProperty(name);
+		if (str == null) {
+			return null;
+		}
+		return Float.valueOf(str);
+	}
+
 	public String getProperty(String name) {
 		String result = userSettings.getProperty(name);
 		if (result != null) {
@@ -409,6 +418,29 @@ public class Configuration {
 		return result;
 	}
 
+	public List<DeviceConfiguration> getAirspyConfigurations() {
+		DeviceType deviceType = DeviceType.AIRSPY;
+		List<String> sdrDevices = getProperties(deviceType.name().toLowerCase(Locale.UK) + ".devices");
+		if (sdrDevices.isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<DeviceConfiguration> result = new ArrayList<>(sdrDevices.size());
+		for (String cur : sdrDevices) {
+			DeviceConfiguration config = getDeviceConfiguration(cur, deviceType);
+			config.setName("AIRSPY " + config.getRtlDeviceId());
+			config.setCompencateDcOffset(true);
+			if (config.getMinimumFrequency() == 0) {
+				config.setMinimumFrequency(24_000_000L);
+			}
+			if (config.getMaximumFrequency() == 0) {
+				config.setMaximumFrequency(1_750_000_000L);
+			}
+			config.setMaximumSampleRate(6_000_000L);
+			result.add(config);
+		}
+		return result;
+	}
+
 	@Deprecated
 	public List<DeviceConfiguration> getLoraConfigurations() {
 		List<String> loraDevices = getProperties("r2lora.devices");
@@ -553,6 +585,14 @@ public class Configuration {
 		}
 		setProperty(prefix + "index", config.getRtlDeviceId());
 		setProperty(prefix + "gain", config.getGain());
+		if (config.getGainType() != null) {
+			setProperty(prefix + "gainType", config.getGainType().name());
+			if (config.getGainType().equals(AirspyGainType.FREE)) {
+				setProperty(prefix + "vgaGain", config.getVgaGain());
+				setProperty(prefix + "mixerGain", config.getMixerGain());
+				setProperty(prefix + "lnaGain", config.getLnaGain());
+			}
+		}
 		setProperty(prefix + "biast", config.isBiast());
 		setProperty(prefix + "ppm", config.getPpm());
 		setProperty(prefix + "username", config.getUsername());
@@ -599,6 +639,15 @@ public class Configuration {
 			gain = 0.0;
 		}
 		config.setGain(gain.floatValue());
+		String gainTypeProperty = getProperty(prefix + "gainType");
+		if (gainTypeProperty != null) {
+			config.setGainType(AirspyGainType.valueOf(gainTypeProperty));
+			if (config.getGainType().equals(AirspyGainType.FREE)) {
+				config.setVgaGain(getFloat(prefix + "vgaGain"));
+				config.setMixerGain(getFloat(prefix + "mixerGain"));
+				config.setLnaGain(getFloat(prefix + "lnaGain"));
+			}
+		}
 		config.setSerialDevice(getProperty(prefix + "serialDevice"));
 		String address = getProperty(prefix + "btaddress");
 		if (address != null) {

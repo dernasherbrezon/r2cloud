@@ -12,6 +12,7 @@ import com.eclipsesource.json.JsonObject;
 
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.it.util.RegisteredTest;
+import ru.r2cloud.model.AirspyGainType;
 import ru.r2cloud.model.AntennaConfiguration;
 import ru.r2cloud.model.AntennaType;
 import ru.r2cloud.model.DeviceConfiguration;
@@ -86,24 +87,24 @@ public class DeviceConfigTest extends RegisteredTest {
 
 	@Test
 	public void testSaveLoraAtBle() throws Exception {
-		DeviceConfiguration device = createValidLoraAtBle();
+		DeviceConfiguration device = createLoraAtBleConfig();
 		HttpResponse<String> response = client.saveDeviceConfig(device.toJson());
 		assertEquals(200, response.statusCode());
 		assertEquals("loraatble.0", Json.parse(response.body()).asObject().getString("id", null));
 
-		device = createValidLoraAtBle();
+		device = createLoraAtBleConfig();
 		device.setBtAddress(null);
 		response = client.saveDeviceConfig(device.toJson());
 		assertEquals(400, response.statusCode());
 		assertErrorInField("btAddress", response);
 
-		device = createValidLoraAtBle();
+		device = createLoraAtBleConfig();
 		device.setGain(7.0f);
 		response = client.saveDeviceConfig(device.toJson());
 		assertEquals(400, response.statusCode());
 		assertErrorInField("gain", response);
 
-		device = createValidLoraAtBle();
+		device = createLoraAtBleConfig();
 		device.setMaximumBatteryVoltage(3.0);
 		device.setMinimumBatteryVoltage(4.2);
 		response = client.saveDeviceConfig(device.toJson());
@@ -113,14 +114,14 @@ public class DeviceConfigTest extends RegisteredTest {
 
 	@Test
 	public void testSaveLoraAtWifi() throws Exception {
-		DeviceConfiguration device = createValidLoraAtWifi();
+		DeviceConfiguration device = createLoraAtWifiConfig();
 		JsonObject json = device.toJson();
 		json.add("password", UUID.randomUUID().toString());
 		HttpResponse<String> response = client.saveDeviceConfig(json);
 		assertEquals(200, response.statusCode());
 		assertEquals("loraatwifi.0", Json.parse(response.body()).asObject().getString("id", null));
 
-		device = createValidLoraAtWifi();
+		device = createLoraAtWifiConfig();
 		device.setHost(null);
 		json = device.toJson();
 		json.add("password", UUID.randomUUID().toString());
@@ -128,7 +129,7 @@ public class DeviceConfigTest extends RegisteredTest {
 		assertEquals(400, response.statusCode());
 		assertErrorInField("host", response);
 
-		device = createValidLoraAtWifi();
+		device = createLoraAtWifiConfig();
 		device.setHost(UUID.randomUUID().toString());
 		json = device.toJson();
 		json.add("password", UUID.randomUUID().toString());
@@ -136,7 +137,7 @@ public class DeviceConfigTest extends RegisteredTest {
 		assertEquals(400, response.statusCode());
 		assertErrorInField("host", response);
 
-		device = createValidLoraAtWifi();
+		device = createLoraAtWifiConfig();
 		device.setUsername(null);
 		json = device.toJson();
 		json.add("password", UUID.randomUUID().toString());
@@ -144,13 +145,13 @@ public class DeviceConfigTest extends RegisteredTest {
 		assertEquals(400, response.statusCode());
 		assertErrorInField("username", response);
 
-		device = createValidLoraAtWifi();
+		device = createLoraAtWifiConfig();
 		device.setPassword(null);
 		response = client.saveDeviceConfig(device.toJson());
 		assertEquals(400, response.statusCode());
 		assertErrorInField("password", response);
 
-		device = createValidLoraAtWifi();
+		device = createLoraAtWifiConfig();
 		device.setGain(7.0f);
 		json = device.toJson();
 		json.add("password", UUID.randomUUID().toString());
@@ -161,12 +162,12 @@ public class DeviceConfigTest extends RegisteredTest {
 
 	@Test
 	public void testSaveSdrServer() throws Exception {
-		DeviceConfiguration device = createValidSdrServer();
+		DeviceConfiguration device = createSdrServerConfig();
 		HttpResponse<String> response = client.saveDeviceConfig(device.toJson());
 		assertEquals(200, response.statusCode());
 		assertEquals("sdrserver.0", Json.parse(response.body()).asObject().getString("id", null));
 
-		device = createValidSdrServer();
+		device = createSdrServerConfig();
 		device.getSdrServerConfiguration().setBasepath(null);
 		response = client.saveDeviceConfig(device.toJson());
 		assertEquals(400, response.statusCode());
@@ -193,18 +194,59 @@ public class DeviceConfigTest extends RegisteredTest {
 		assertEquals("plutosdr.0", Json.parse(response.body()).asObject().getString("id", null));
 	}
 
-	private static DeviceConfiguration createValidSdrServer() {
-		DeviceConfiguration device = createConfig();
-		device.setDeviceType(DeviceType.SDRSERVER);
-		device.setHost("localhost");
-		device.setPort(8080);
-		SdrServerConfiguration sdrServerConfig = new SdrServerConfiguration();
-		sdrServerConfig.setBandwidth(1400_000);
-		sdrServerConfig.setBandwidthCrop(48_000);
-		sdrServerConfig.setBasepath("/tmp");
-		sdrServerConfig.setUseGzip(true);
-		device.setSdrServerConfiguration(sdrServerConfig);
-		return device;
+	@Test
+	public void testSaveAirspy() throws Exception {
+		DeviceConfiguration device = createAirspyConfig();
+		HttpResponse<String> response = client.saveDeviceConfig(device.toJson());
+		assertEquals(200, response.statusCode());
+		assertEquals("airspy.0", Json.parse(response.body()).asObject().getString("id", null));
+
+		device = createAirspyConfig();
+		device.setMaximumFrequency(1_777_000_000L);
+		response = client.saveDeviceConfig(device.toJson());
+		assertEquals(400, response.statusCode());
+		assertErrorInField("maximumFrequency", response);
+
+		device = createAirspyConfig();
+		device.setMinimumFrequency(1_000_000L);
+		response = client.saveDeviceConfig(device.toJson());
+		assertEquals(400, response.statusCode());
+		assertErrorInField("minimumFrequency", response);
+
+		device = createAirspyConfig();
+		device.setGainType(null);
+		response = client.saveDeviceConfig(device.toJson());
+		assertEquals(400, response.statusCode());
+		assertErrorInField("gainType", response);
+
+		device = createAirspyConfig();
+		device.setGainType(AirspyGainType.SENSITIVE);
+		device.setGain(22);
+		response = client.saveDeviceConfig(device.toJson());
+		assertEquals(400, response.statusCode());
+		assertErrorInField("gain", response);
+
+		device = createAirspyConfig();
+		device.setGainType(AirspyGainType.FREE);
+		device.setVgaGain(16);
+		response = client.saveDeviceConfig(device.toJson());
+		assertEquals(400, response.statusCode());
+		assertErrorInField("vgaGain", response);
+
+		device = createAirspyConfig();
+		device.setGainType(AirspyGainType.FREE);
+		device.setMixerGain(16);
+		response = client.saveDeviceConfig(device.toJson());
+		assertEquals(400, response.statusCode());
+		assertErrorInField("mixerGain", response);
+
+		device = createAirspyConfig();
+		device.setGainType(AirspyGainType.FREE);
+		device.setLnaGain(16);
+		response = client.saveDeviceConfig(device.toJson());
+		assertEquals(400, response.statusCode());
+		assertErrorInField("lnaGain", response);
+
 	}
 
 	@Test
@@ -282,7 +324,7 @@ public class DeviceConfigTest extends RegisteredTest {
 		assertErrorInField("rotator.rotatorTolerance", response);
 	}
 
-	private static DeviceConfiguration createValidLoraAtWifi() {
+	private static DeviceConfiguration createLoraAtWifiConfig() {
 		DeviceConfiguration device = createConfig();
 		device.setDeviceType(DeviceType.LORAATWIFI);
 		device.setHost("localhost");
@@ -291,12 +333,26 @@ public class DeviceConfigTest extends RegisteredTest {
 		return device;
 	}
 
-	private static DeviceConfiguration createValidLoraAtBle() {
+	private static DeviceConfiguration createLoraAtBleConfig() {
 		DeviceConfiguration device = createConfig();
 		device.setDeviceType(DeviceType.LORAATBLE);
 		device.setBtAddress("78:DD:08:A3:A7:52");
 		device.setMaximumBatteryVoltage(4.1f);
 		device.setMinimumBatteryVoltage(3.0f);
+		return device;
+	}
+	
+	private static DeviceConfiguration createSdrServerConfig() {
+		DeviceConfiguration device = createConfig();
+		device.setDeviceType(DeviceType.SDRSERVER);
+		device.setHost("localhost");
+		device.setPort(8080);
+		SdrServerConfiguration sdrServerConfig = new SdrServerConfiguration();
+		sdrServerConfig.setBandwidth(1400_000);
+		sdrServerConfig.setBandwidthCrop(48_000);
+		sdrServerConfig.setBasepath("/tmp");
+		sdrServerConfig.setUseGzip(true);
+		device.setSdrServerConfiguration(sdrServerConfig);
 		return device;
 	}
 
@@ -314,6 +370,13 @@ public class DeviceConfigTest extends RegisteredTest {
 		result.setRtlDeviceId("1");
 		result.setMinimumFrequency(400_000_000L);
 		result.setMaximumFrequency(1_700_000_000L);
+		return result;
+	}
+
+	private static DeviceConfiguration createAirspyConfig() {
+		DeviceConfiguration result = createConfig();
+		result.setDeviceType(DeviceType.AIRSPY);
+		result.setGainType(AirspyGainType.LINEAR);
 		return result;
 	}
 }

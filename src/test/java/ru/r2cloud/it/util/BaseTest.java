@@ -44,7 +44,6 @@ public abstract class BaseTest {
 	private CelestrakServer celestrak;
 	private File rtlSdrMock;
 	private File rtlTestMock;
-	private File plutoSdrTestMock;
 	private RtlTestServer rtlTestServer;
 	private SatnogsServerMock satnogs;
 
@@ -85,7 +84,6 @@ public abstract class BaseTest {
 
 		rtlSdrMock = TestUtil.setupScript(new File(tempFolder.getRoot(), "rtl_sdr_mock.sh"));
 		rtlTestMock = TestUtil.setupScript(new File(tempFolder.getRoot(), "rtl_test_mock.sh"));
-		plutoSdrTestMock = TestUtil.setupScript(new File(tempFolder.getRoot(), "iio_info_mock.sh"));
 
 		config = prepareConfiguration();
 		config.update();
@@ -114,7 +112,6 @@ public abstract class BaseTest {
 		config.setProperty("satellits.validate.external", false);
 		config.setProperty("satellites.rtlsdr.path", rtlSdrMock.getAbsolutePath());
 		config.setProperty("satellites.rtlsdr.test.path", rtlTestMock.getAbsolutePath());
-		config.setProperty("satellites.plutosdr.test.path", plutoSdrTestMock.getAbsolutePath());
 		config.setProperty("satellites.sox.path", "sox");
 		config.setProperty("leosatdata.hostname", "http://localhost:8001");
 		config.setProperty("satnogs.hostname", satnogs.getUrl());

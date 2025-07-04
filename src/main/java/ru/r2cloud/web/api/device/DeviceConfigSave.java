@@ -10,6 +10,7 @@ import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.device.Device;
 import ru.r2cloud.device.DeviceManager;
+import ru.r2cloud.model.AirspyGainType;
 import ru.r2cloud.model.AntennaConfiguration;
 import ru.r2cloud.model.AntennaType;
 import ru.r2cloud.model.DeviceConfiguration;
@@ -60,10 +61,7 @@ public class DeviceConfigSave extends AbstractHttpController {
 		switch (deviceType) {
 		case RTLSDR: {
 			config.setRtlDeviceId(request.getString("rtlDeviceId", "0"));
-			config.setGain((float) readPositiveDouble(request, "gain", errors));
-			if (config.getGain() > 49.6f) {
-				errors.put("gain", "Cannot be more than 49.6");
-			}
+			config.setGain((float) readPositiveDouble(request, "gain", errors, 49.6));
 			config.setBiast(WebServer.getBoolean(request, "biast"));
 			config.setPpm((int) readOptionalLong(request, "ppm", 0, errors));
 			if (config.getMaximumFrequency() > 1_766_000_000L) {
@@ -71,6 +69,43 @@ public class DeviceConfigSave extends AbstractHttpController {
 			}
 			if (config.getMinimumFrequency() < 500_000L) {
 				errors.put("minimumFrequency", "RTL-SDR doesn't support less than 500 Khz");
+			}
+			break;
+		}
+		case AIRSPY: {
+			config.setRtlDeviceId(request.getString("rtlDeviceId", null));
+			config.setBiast(WebServer.getBoolean(request, "biast"));
+			String gainType = request.getString("gainType", null);
+			if (gainType == null) {
+				errors.put("gainType", "Cannot be null");
+			} else {
+				try {
+					config.setGainType(AirspyGainType.valueOf(gainType));
+					switch (config.getGainType()) {
+					case FREE: {
+						config.setVgaGain((float) readPositiveDouble(request, "vgaGain", errors, 15));
+						config.setMixerGain((float) readPositiveDouble(request, "mixerGain", errors, 15));
+						config.setLnaGain((float) readPositiveDouble(request, "lnaGain", errors, 14));
+						break;
+					}
+					case LINEAR: {
+						config.setGain((float) readPositiveDouble(request, "gain", errors, 21));
+						break;
+					}
+					case SENSITIVE: {
+						config.setGain((float) readPositiveDouble(request, "gain", errors, 21));
+						break;
+					}
+					}
+				} catch (Exception e) {
+					errors.put("gainType", "Unsupported gain type: " + gainType);
+				}
+			}
+			if (config.getMaximumFrequency() > 1_750_000_000L) {
+				errors.put("maximumFrequency", "AIRSPY doesn't support more than 1750 Mhz");
+			}
+			if (config.getMinimumFrequency() < 24_000_000L) {
+				errors.put("minimumFrequency", "AIRSPY doesn't support less than 24 Mhz");
 			}
 			break;
 		}
@@ -130,7 +165,7 @@ public class DeviceConfigSave extends AbstractHttpController {
 			break;
 		}
 		case PLUTOSDR: {
-			config.setGain((float) readPositiveDouble(request, "gain", errors));
+			config.setGain((float) readPositiveDouble(request, "gain", errors, 70));
 			break;
 		}
 		case SDRSERVER: {
@@ -142,7 +177,7 @@ public class DeviceConfigSave extends AbstractHttpController {
 		case SPYSERVER: {
 			config.setHost(readHost(request, "host", errors));
 			config.setPort((int) readLong(request, "port", errors));
-			config.setGain((float) readPositiveDouble(request, "gain", errors));
+			config.setGain((float) readPositiveDouble(request, "gain", errors, 100)); // 100 is the max
 			break;
 		}
 		default:
@@ -196,10 +231,7 @@ public class DeviceConfigSave extends AbstractHttpController {
 		RotatorConfiguration result = new RotatorConfiguration();
 		result.setHostname(readHost(request, "rotctrldHostname", errors));
 		result.setPort((int) readLong(request, "rotctrldPort", errors));
-		result.setTolerance(readPositiveDouble(request, "rotatorTolerance", errors));
-		if (result.getTolerance() > 360.0f) {
-			errors.put("rotatorTolerance", "cannot be more than 360 degrees");
-		}
+		result.setTolerance(readPositiveDouble(request, "rotatorTolerance", errors, 360));
 		result.setCycleMillis((int) readLong(request, "rotatorCycle", errors));
 		return result;
 	}
@@ -214,32 +246,17 @@ public class DeviceConfigSave extends AbstractHttpController {
 		switch (antennaType) {
 		case OMNIDIRECTIONAL:
 		case DIRECTIONAL: {
-			result.setMinElevation(readPositiveDouble(request, "minElevation", errors));
-			if (result.getMinElevation() > 90.0) {
-				errors.put("minElevation", "cannot be more than 90 degrees");
-			}
-			result.setGuaranteedElevation(readPositiveDouble(request, "guaranteedElevation", errors));
-			if (result.getGuaranteedElevation() > 90.0) {
-				errors.put("guaranteedElevation", "cannot be more than 90 degrees");
-			}
+			result.setMinElevation(readPositiveDouble(request, "minElevation", errors, 90.0));
+			result.setGuaranteedElevation(readPositiveDouble(request, "guaranteedElevation", errors, 90.0));
 			if (result.getMinElevation() > result.getGuaranteedElevation()) {
 				errors.put("minElevation", "Cannot be more than guaranteed elevation");
 			}
 			break;
 		}
 		case FIXED_DIRECTIONAL: {
-			result.setAzimuth(readPositiveDouble(request, "azimuth", errors));
-			if (result.getAzimuth() > 360.0f) {
-				errors.put("azimuth", "cannot be more than 360 degrees");
-			}
-			result.setElevation(readPositiveDouble(request, "elevation", errors));
-			if (result.getElevation() > 90.0) {
-				errors.put("elevation", "cannot be more than 90 degrees");
-			}
-			result.setBeamwidth(readPositiveDouble(request, "beamwidth", errors));
-			if (result.getBeamwidth() > 360.0f) {
-				errors.put("beamwidth", "cannot be more than 360 degrees");
-			}
+			result.setAzimuth(readPositiveDouble(request, "azimuth", errors, 360.0f));
+			result.setElevation(readPositiveDouble(request, "elevation", errors, 90.0));
+			result.setBeamwidth(readPositiveDouble(request, "beamwidth", errors, 360.0f));
 			break;
 		}
 		default:
@@ -335,7 +352,7 @@ public class DeviceConfigSave extends AbstractHttpController {
 		return result;
 	}
 
-	private static double readPositiveDouble(JsonObject requrst, String name, ValidationResult errors) {
+	private static double readPositiveDouble(JsonObject requrst, String name, ValidationResult errors, double max) {
 		JsonValue value = requrst.get(name);
 		if (value == null) {
 			errors.put(name, Messages.CANNOT_BE_EMPTY);
@@ -348,6 +365,10 @@ public class DeviceConfigSave extends AbstractHttpController {
 		double result = value.asDouble();
 		if (result < 0.0) {
 			errors.put(name, Messages.CANNOT_BE_NEGATIVE);
+			return 0.0;
+		}
+		if (result > max) {
+			errors.put(name, "Cannot be more than " + max);
 			return 0.0;
 		}
 		return result;
