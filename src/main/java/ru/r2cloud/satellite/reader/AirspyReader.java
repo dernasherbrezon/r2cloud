@@ -97,7 +97,7 @@ public class AirspyReader implements IQReader {
 			new AirspyLogProcessor(req.getId(), process.getInputStream(), "airspy-stdio").start();
 			new AirspyLogProcessor(req.getId(), process.getErrorStream(), "airspy-stderr").start();
 			int responseCode = process.waitFor();
-			if (responseCode != 0) {
+			if (responseCode != 0 && responseCode != 141) {
 				LOG.error("[{}] invalid response code airspy_rx: {}", req.getId(), responseCode);
 				Util.deleteQuietly(rawFile);
 			} else {
