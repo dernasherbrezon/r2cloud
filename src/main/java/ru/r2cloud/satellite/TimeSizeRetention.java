@@ -110,7 +110,7 @@ public class TimeSizeRetention {
 						}
 					}
 				} catch (IOException e) {
-					LOG.error("unable to delete raw IQ file from: {}", curObservation, e);
+					LOG.error("unable to delete IQ data from: {}", min.getPath(), e);
 				}
 			}
 			while (allObservationsSize > maxSize) {
@@ -124,6 +124,7 @@ public class TimeSizeRetention {
 					LOG.info("no observation with minimum time found"); // this is weird because at least one was just added
 					break;
 				}
+				rawIqStats.remove(minKey);
 				LOG.info("deleting old observation: {} last update time: {}", min.getPath(), new Date(min.getLastUpdateTime()));
 				if (Util.deleteDirectory(min.getPath())) {
 					allObservationsSize -= min.getSize();

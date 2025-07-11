@@ -28,6 +28,25 @@ public class TimeSizeRetentionTest {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
+	
+	// can happen when other observation data size is very close to IQ
+	@Test
+	public void testRetentionDeleteDirectoryFirst() throws Exception {
+		long currentTime = System.currentTimeMillis() - 1 * 60 * 60 * 1000;
+		TimeSizeRetention retention = new TimeSizeRetention(10, 2, tempFolder.getRoot().toPath());
+		Path folder1 = createObservationFolder(UUID.randomUUID().toString(), 3, 3, currentTime);
+		Path folder2 = createObservationFolder(UUID.randomUUID().toString(), 3, 3, currentTime + 1000);
+		Path folder3 = createObservationFolder(UUID.randomUUID().toString(), 3, 3, currentTime + 2000);
+
+		retention.indexAndCleanup(getObservationFolder(folder1));
+		assertFolder(true, true, true, folder1);
+		retention.indexAndCleanup(getObservationFolder(folder2));
+		assertFolder(true, true, true, folder2);
+		retention.indexAndCleanup(getObservationFolder(folder3));
+		assertFolder(true, true, true, folder3);
+		
+		assertFolder(false, false, false, folder1);
+	}
 
 	@Test
 	public void testDeleteRawIqFiles() throws Exception {
