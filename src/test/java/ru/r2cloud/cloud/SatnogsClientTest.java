@@ -30,6 +30,15 @@ public class SatnogsClientTest {
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	@Test
+	public void testPartialDownload() throws Exception {
+		String message = "{ \"test\": 1 }";
+		server.setSatellitesMock(message, message.length() * 2, 200);
+		server.setTransmittersMock(new JsonHttpResponse("satnogs/transmitters.json", 200));
+		server.setTleMockDirectory("satnogs");
+		assertTrue(client.loadSatellites().isEmpty());
+	}
+
+	@Test
 	public void testInvalidResponse() throws Exception {
 		server.setSatellitesMock(new JsonHttpResponse("satnogs/empty-response.json", 404));
 		server.setTransmittersMock(new JsonHttpResponse("satnogs/transmitters.json", 200));

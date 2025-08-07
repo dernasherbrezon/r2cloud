@@ -21,7 +21,7 @@ public class SatnogsServerMock {
 	private HttpServer server;
 	private Set<String> pathsConfigured = new HashSet<>();
 	private String tleBase;
-	
+
 	public SatnogsServerMock() throws IOException {
 		server = HttpServer.create(new InetSocketAddress("localhost", 8007), 0);
 	}
@@ -31,15 +31,21 @@ public class SatnogsServerMock {
 	}
 
 	public void setSatellitesMock(String message, int code) {
+		setSatellitesMock(message, message.length(), code);
+	}
+
+	public void setSatellitesMock(String message, int messageLength, int code) {
 		HttpHandler mock = new HttpHandler() {
 
 			@Override
 			public void handle(HttpExchange exchange) throws IOException {
 				exchange.getResponseHeaders().add("Content-Type", "application/json");
-				exchange.sendResponseHeaders(code, message.length());
+				exchange.sendResponseHeaders(code, messageLength);
 				OutputStream os = exchange.getResponseBody();
 				os.write(message.getBytes(StandardCharsets.UTF_8));
-				os.close();
+				if (messageLength == message.length()) {
+					os.close();
+				}
 			}
 		};
 		addHandler(mock, "/api/satellites/");

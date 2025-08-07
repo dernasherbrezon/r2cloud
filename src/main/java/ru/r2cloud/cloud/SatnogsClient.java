@@ -18,6 +18,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,12 +61,14 @@ public class SatnogsClient {
 	private final HttpClient httpclient;
 	private final String hostname;
 	private final Duration timeout;
+	private final long timeoutMillis;
 	private final Clock clock;
 
 	public SatnogsClient(Configuration config, Clock clock) {
 		this.hostname = config.getProperty("satnogs.hostname");
 		this.clock = clock;
-		this.timeout = Duration.ofMillis(config.getInteger("satnogs.connectionTimeout"));
+		this.timeoutMillis = config.getInteger("satnogs.connectionTimeout");
+		this.timeout = Duration.ofMillis(timeoutMillis);
 		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(timeout).build();
 	}
 
@@ -491,7 +497,8 @@ public class SatnogsClient {
 		int currentRetry = 0;
 		while (true) {
 			try {
-				HttpResponse<String> result = httpclient.send(request, responseBodyHandler);
+				CompletableFuture<HttpResponse<String>> response = httpclient.sendAsync(request, responseBodyHandler);
+				HttpResponse<String> result = response.get(timeoutMillis, TimeUnit.MILLISECONDS);
 				// retry for any server-side errors
 				// can happen during server upgrade
 				if (result.statusCode() < 500) {
@@ -502,10 +509,10 @@ public class SatnogsClient {
 					return result;
 				}
 				LOG.info("unable to send. status code: {}. retry {}", result.statusCode(), currentRetry);
-			} catch (IOException e) {
+			} catch (ExecutionException | TimeoutException e) {
 				currentRetry++;
 				if (currentRetry > MAX_RETRIES) {
-					throw e;
+					throw new IOException(e);
 				}
 				Util.logIOException(LOG, false, "unable to send. retry " + currentRetry, e);
 			}
