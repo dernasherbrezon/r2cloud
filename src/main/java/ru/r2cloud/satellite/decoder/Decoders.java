@@ -96,6 +96,9 @@ public class Decoders {
 		if (transmitter.getFraming().equals(Framing.LRPT)) {
 			return new LRPTDecoder(predict, props);
 		}
+		if (transmitter.getFraming().equals(Framing.GEOSCAN)) {
+			return new Geoscan2Decoder(predict, props, Geoscan2Beacon.class, 74);
+		}
 		if (transmitter.getFraming().equals(Framing.SATDUMP)) {
 			return new SatdumpDecoder(props, processFactory);
 		}
