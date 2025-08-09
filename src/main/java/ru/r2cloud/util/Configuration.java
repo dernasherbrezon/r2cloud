@@ -427,7 +427,10 @@ public class Configuration {
 		List<DeviceConfiguration> result = new ArrayList<>(sdrDevices.size());
 		for (String cur : sdrDevices) {
 			DeviceConfiguration config = getDeviceConfiguration(cur, deviceType);
-			config.setName("AIRSPY " + config.getRtlDeviceId());
+			config.setName("AIRSPY");
+			if (config.getRtlDeviceId() != null) {
+				config.setName(config.getName() + " " + config.getRtlDeviceId());
+			}
 			config.setCompencateDcOffset(true);
 			if (config.getMinimumFrequency() == 0) {
 				config.setMinimumFrequency(24_000_000L);
