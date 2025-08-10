@@ -1,6 +1,7 @@
 package ru.r2cloud.tle;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -30,6 +31,18 @@ public class TleDaoTest {
 	private TestConfiguration config;
 	private MockFileSystem fs;
 	private String fileLocation;
+
+	@Test
+	public void testAlwaysAddTle() {
+		String satelliteId = UUID.randomUUID().toString();
+		Map<String, Tle> tle = new HashMap<>();
+		// TleDao doesn't verify Tle format
+		tle.put(satelliteId, new Tle(new String[] { UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString() }));
+		dao.saveTle(tle, System.currentTimeMillis());
+		dao.saveTle(new HashMap<>(), System.currentTimeMillis());
+		assertEquals(1, dao.findAll().size());
+		assertNotNull(dao.find(satelliteId, null));
+	}
 
 	@Test
 	public void testLoadEmpty() {
