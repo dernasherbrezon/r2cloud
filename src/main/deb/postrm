@@ -10,6 +10,10 @@ if [ -d /run/systemd/system ]; then
 	systemctl --system daemon-reload >/dev/null || true
 fi
 
+rm -f /etc/nginx/sites-enabled/r2cloud.conf
+rm -f ${config.installDir}/ssl/domain-chain.crt
+rm -f ${config.installDir}/ssl/domain.key
+
 if [ -f /run/nginx.pid ]; then
 	nginx -s reload || true
 fi
