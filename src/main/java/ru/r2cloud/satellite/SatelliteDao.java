@@ -300,7 +300,7 @@ public class SatelliteDao {
 		try (BufferedReader r = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
 			rawSatellites = Json.parse(r).asArray();
 		} catch (Exception e) {
-			LOG.error("unable to parse satellites", e);
+			LOG.error("unable to parse satellites: {}", metaLocation, e);
 			return result;
 		}
 		for (int i = 0; i < rawSatellites.size(); i++) {
@@ -322,7 +322,7 @@ public class SatelliteDao {
 		try (BufferedReader r = Files.newBufferedReader(location)) {
 			raw = Json.parse(r).asArray();
 		} catch (Exception e) {
-			LOG.error("unable to load instruments", e);
+			LOG.error("unable to load instruments: {}", location, e);
 			return;
 		}
 		for (int i = 0; i < raw.size(); i++) {
@@ -343,7 +343,7 @@ public class SatelliteDao {
 		try (BufferedReader r = Files.newBufferedReader(metaLocation)) {
 			rawSatellites = Json.parse(r).asArray();
 		} catch (Exception e) {
-			LOG.error("unable to parse satellites", e);
+			LOG.error("unable to parse satellites: {}", metaLocation, e);
 			return result;
 		}
 		for (int i = 0; i < rawSatellites.size(); i++) {
