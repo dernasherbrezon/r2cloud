@@ -128,7 +128,7 @@ public class LoraAtSerialClient2Test {
 		assertEquals(3.2, frame.getSnr(), 0.0001f);
 		assertEquals(1703760413119L, frame.getTimestamp());
 	}
-	
+
 	@Test
 	public void testFailToSetTime() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -165,6 +165,14 @@ public class LoraAtSerialClient2Test {
 		LoraResponse response = client.startObservation(createRequest());
 		assertEquals(ResponseStatus.SUCCESS, response.getStatus());
 		assertEquals("AT+TIME=1649679986400\r\nAT+LORARX=433125000,500000,9,7,18,8,0,0,1,1,255\r\n", new String(baos.toByteArray(), StandardCharsets.ISO_8859_1));
+	}
+
+	@Test
+	public void testMessageFormat() {
+		byte[] data = new byte[] { (byte) 91, (byte) 48, (byte) 59, (byte) 51, (byte) 50, (byte) 109, (byte) 73, (byte) 32, (byte) 40, (byte) 50, (byte) 49, (byte) 53, (byte) 50, (byte) 49, (byte) 53, (byte) 54, (byte) 57, (byte) 50, (byte) 41, (byte) 32, (byte) 108, (byte) 111, (byte) 114, (byte) 97,
+				(byte) 45, (byte) 97, (byte) 116, (byte) 58, (byte) 32, (byte) 114, (byte) 120, (byte) 32, (byte) 115, (byte) 116, (byte) 97, (byte) 114, (byte) 116, (byte) 101, (byte) 100, (byte) 32, (byte) 111, (byte) 110, (byte) 32, (byte) 52, (byte) 51, (byte) 54, (byte) 53, (byte) 53,
+				(byte) 48, (byte) 48, (byte) 48, (byte) 48, (byte) 27, (byte) 91, (byte) 48, (byte) 109, (byte) 32 };
+		assertEquals("(215215692) lora-at: rx started on 436550000", LoraAtSerialClient2.formatMessage(new String(data)));
 	}
 
 	private static LoraObservationRequest createRequest() {

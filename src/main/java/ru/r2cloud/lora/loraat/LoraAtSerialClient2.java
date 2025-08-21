@@ -183,8 +183,8 @@ public class LoraAtSerialClient2 implements LoraAtClient {
 		if (!port.openPort()) {
 			throw new LoraAtException("can't open port: " + portDescriptor);
 		}
-		//TODO send \r\n before any command
-		//TODO discard everything 
+		// TODO send \r\n before any command
+		// TODO discard everything
 		try {
 			port.getOutputStream().write((request + "\r\n").getBytes(StandardCharsets.ISO_8859_1));
 		} catch (IOException e) {
@@ -216,11 +216,11 @@ public class LoraAtSerialClient2 implements LoraAtClient {
 					continue;
 				}
 				if (curLine.startsWith("E ") || curLine.startsWith("[0;32mE")) {
-					LOG.error("response: {}", curLine);
+					LOG.error("response: {}", formatMessage(curLine));
 				} else if (curLine.startsWith("W ") || curLine.startsWith("[0;32mW")) {
-					LOG.warn("response: {}", curLine);
+					LOG.warn("response: {}", formatMessage(curLine));
 				} else {
-					LOG.info("response: {}", curLine);
+					LOG.info("response: {}", formatMessage(curLine));
 				}
 				// skip logging
 				if (curLine.startsWith("I ") || curLine.startsWith("W ") || curLine.startsWith("E ") || curLine.contains("[") || curLine.contains("(")) {
@@ -242,6 +242,30 @@ public class LoraAtSerialClient2 implements LoraAtClient {
 			}
 		}
 		return Collections.emptyList();
+	}
+
+	static String formatMessage(String message) {
+		String prefix = "[0;32m";
+		String suffix = "[0m";
+		message = message.trim();
+		if (message.startsWith(prefix)) {
+			message = message.substring(prefix.length());
+		}
+		message = message.substring(1); // I/E/W
+		if (message.endsWith(suffix)) {
+			message = message.substring(0, message.length() - suffix.length());
+		}
+		StringBuilder result = new StringBuilder(message.length());
+		for (int i = 0; i < message.length(); i++) {
+			char c = message.charAt(i);
+			// ignore non-ascii printable
+			if (c < 32 || c > 127) {
+				result.append(' ');
+			} else {
+				result.append(c);
+			}
+		}
+		return result.toString().trim();
 	}
 
 }
