@@ -251,7 +251,9 @@ public class LoraAtSerialClient2 implements LoraAtClient {
 		if (message.startsWith(prefix)) {
 			message = message.substring(prefix.length());
 		}
-		message = message.substring(1); // I/E/W
+		if (message.startsWith("I ") || message.startsWith("W ") || message.startsWith("E ")) {
+			message = message.substring(1);
+		}
 		if (message.endsWith(suffix)) {
 			message = message.substring(0, message.length() - suffix.length());
 		}

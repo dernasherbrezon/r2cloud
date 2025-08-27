@@ -173,6 +173,7 @@ public class LoraAtSerialClient2Test {
 				(byte) 45, (byte) 97, (byte) 116, (byte) 58, (byte) 32, (byte) 114, (byte) 120, (byte) 32, (byte) 115, (byte) 116, (byte) 97, (byte) 114, (byte) 116, (byte) 101, (byte) 100, (byte) 32, (byte) 111, (byte) 110, (byte) 32, (byte) 52, (byte) 51, (byte) 54, (byte) 53, (byte) 53,
 				(byte) 48, (byte) 48, (byte) 48, (byte) 48, (byte) 27, (byte) 91, (byte) 48, (byte) 109, (byte) 32 };
 		assertEquals("(215215692) lora-at: rx started on 436550000", LoraAtSerialClient2.formatMessage(new String(data)));
+		assertEquals("OK", LoraAtSerialClient2.formatMessage(new String("OK")));
 	}
 
 	private static LoraObservationRequest createRequest() {
