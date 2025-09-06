@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
@@ -180,9 +181,9 @@ public class SatnogsClient {
 		}
 		JsonArray parsedArray = parsedJson.asArray();
 		List<Satellite> result = new ArrayList<>();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-		SimpleDateFormat updatedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		SimpleDateFormat updatedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
 		updatedFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		for (int i = 0; i < parsedArray.size(); i++) {
 			JsonValue jsonValue = parsedArray.get(i);
@@ -310,7 +311,7 @@ public class SatnogsClient {
 			LOG.info("malformed json");
 			return Collections.emptyList();
 		}
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		JsonArray parsedArray = parsedJson.asArray();
 		List<Transmitter> result = new ArrayList<>();

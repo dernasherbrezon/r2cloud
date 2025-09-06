@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -61,7 +62,7 @@ public class SignedURLTest {
 	
 	@Test
 	public void testExpiredUrl() throws Exception {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss, SSS");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss, SSS", Locale.US);
 		long current = sdf.parse("2018-10-23 00:00:00, 000").getTime();
 		when(clock.millis()).thenReturn(current);
 
@@ -71,7 +72,7 @@ public class SignedURLTest {
 	@Before
 	public void start() throws Exception {
 		clock = mock(Clock.class);
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss, SSS");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss, SSS", Locale.US);
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		long current = sdf.parse("2017-10-23 00:00:00, 000").getTime();
 		when(clock.millis()).thenReturn(current);

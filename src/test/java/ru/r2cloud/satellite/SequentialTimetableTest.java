@@ -7,12 +7,13 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import org.junit.Test;
 
 public class SequentialTimetableTest {
 
-	private static final SimpleDateFormat SDF = new SimpleDateFormat("HH:mm");
+	private static final SimpleDateFormat SDF = new SimpleDateFormat("HH:mm", Locale.US);
 	
 	@Test
 	public void testClear() throws Exception {

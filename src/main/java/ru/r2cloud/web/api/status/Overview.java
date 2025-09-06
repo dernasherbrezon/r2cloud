@@ -54,7 +54,7 @@ public class Overview extends AbstractHttpController {
 			devices.add(curObj);
 		}
 		entity.add("devices", devices);
-		SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm", Locale.UK);
+		SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm", Locale.US);
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		entity.add("serverTime", sdf.format(new Date()));
 		result.setData(entity.toString());

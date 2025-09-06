@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
@@ -109,7 +110,7 @@ public class LeoSatDataClient {
 			Optional<String> lastModifiedOnServer = response.headers().firstValue("Last-Modified");
 			lastModified = 0;
 			if (lastModifiedOnServer.isPresent()) {
-				SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+				SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
 				sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 				try {
 					lastModified = sdf.parse(lastModifiedOnServer.get()).getTime();
@@ -129,7 +130,7 @@ public class LeoSatDataClient {
 			throw new IllegalStateException(e);
 		}
 	}
-
+	
 	public List<Satellite> loadSatellites(long lastModified) throws NotModifiedException {
 		return loadSatellites(lastModified, null);
 	}
@@ -156,7 +157,7 @@ public class LeoSatDataClient {
 			Optional<String> lastModifiedOnServer = response.headers().firstValue("Last-Modified");
 			lastModified = 0;
 			if (lastModifiedOnServer.isPresent()) {
-				SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+				SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
 				sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 				try {
 					lastModified = sdf.parse(lastModifiedOnServer.get()).getTime();
@@ -407,7 +408,7 @@ public class LeoSatDataClient {
 		result.header("User-Agent", R2Cloud.getVersion() + " leosatdata.com");
 		result.header("Authorization", config.getProperty("r2cloud.apiKey"));
 		if (lastModified != 0) {
-			SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+			SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
 			sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 			result.header("If-Modified-Since", sdf.format(new Date(lastModified)));
 		}

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.junit.Before;
@@ -94,13 +95,13 @@ public class PredictOreKitTest {
 	}
 
 	private static Date getDate(String str) throws Exception {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US);
 		sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
 		return sdf.parse(str);
 	}
 
 	private static void assertPosition(String start, String end, SatPass pass) throws Exception {
-		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.US);
 		sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
 		assertEquals(start, sdf.format(new Date(pass.getStartMillis())));
 		assertEquals(end, sdf.format(new Date(pass.getEndMillis())));

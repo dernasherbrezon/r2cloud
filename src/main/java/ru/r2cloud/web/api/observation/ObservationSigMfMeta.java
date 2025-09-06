@@ -172,7 +172,7 @@ public class ObservationSigMfMeta extends AbstractHttpController {
 			global.set("r2cloud:device", deviceConfiguration);
 		}
 
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
 		JsonObject capture = new JsonObject();

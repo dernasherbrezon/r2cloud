@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
@@ -157,7 +158,7 @@ public class FixedDirectionalAntennaTest {
 	}
 
 	private static SimpleDateFormat createFormatter() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		return sdf;
 	}

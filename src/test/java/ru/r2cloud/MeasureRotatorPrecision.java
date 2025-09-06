@@ -196,7 +196,7 @@ public class MeasureRotatorPrecision {
 	}
 
 	private static long getTime(String str) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.UK);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		try {
 			return sdf.parse(str).getTime();
