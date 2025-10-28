@@ -1,5 +1,28 @@
 [
 	{
+		"id": "R2CLOUD566",
+		"name": "RSP-03",
+		"noradId": "65732",
+		"enabled": true,
+		"transmitters": [
+			{
+				"id": "65732-0",
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437050000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"deviation": 5000,
+				"assistedHeader": "AAABAAEAAAEAAQEAAAEAAQABAAAAAQEAAAEAAAEBAAEAAAAAAAEAAQABAAAAAAABAAAAAAABAQAAAAEAAQAAAQABAQAAAQABAAEAAAABAQAAAQAAAQEAAQABAQEBAAABAAEAAAEBAAEBAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1760125105000
+	},
+	{
 		"id": "R2CLOUD565",
 		"name": "AstroLine-4",
 		"noradId": "64889",
@@ -5695,28 +5718,6 @@
 		"lastUpdateTime": 1702322575000
 	},
 	{
-		"id": "R2CLOUD313",
-		"name": "VERONIKA",
-		"noradId": "58261",
-		"enabled": true,
-		"start": 1699728540000,
-		"transmitters": [
-			{
-				"id": "58261-0",
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.veronika.VeronikaBeacon",
-				"frequency": 436680000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1705264719000
-	},
-	{
 		"id": "R2CLOUD311",
 		"name": "CSTP 1.2 (STC 1.2)",
 		"noradId": "57186",
@@ -6674,29 +6675,6 @@
 			}
 		],
 		"lastUpdateTime": 1706647863000
-	},
-	{
-		"id": "R2CLOUD238",
-		"name": "CONNECTA T2.1",
-		"noradId": "56210",
-		"enabled": true,
-		"start": 1681541220000,
-		"transmitters": [
-			{
-				"id": "56210-0",
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 401525000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"assistedHeader": "AAAAAAABAAEAAAABAQAAAQABAAAAAAABAAABAQEAAAEAAQEAAAEAAQABAAAAAQEAAAAAAAABAQEAAQEAAAAAAQABAQEBAAABAAABAQEAAAEAAAABAAEAAQAAAQAAAQEAAAEAAAABAQABAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1682114728000
 	},
 	{
 		"id": "R2CLOUD237",
@@ -7929,27 +7907,6 @@
 					9600
 				],
 				"status": "WEAK"
-			}
-		],
-		"lastUpdateTime": 1662310762000
-	},
-	{
-		"id": "R2CLOUD55",
-		"name": "CSIM-FD",
-		"noradId": "43793",
-		"enabled": true,
-		"transmitters": [
-			{
-				"id": "43793-0",
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.csim.CsimBeacon",
-				"frequency": 437250000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "ENABLED"
 			}
 		],
 		"lastUpdateTime": 1662310762000
