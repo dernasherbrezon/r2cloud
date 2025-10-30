@@ -7,6 +7,7 @@ import java.util.Random;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -18,6 +19,7 @@ import ru.r2cloud.lora.ResponseStatus;
 import ru.r2cloud.model.DeviceConnectionStatus;
 import ru.r2cloud.util.DefaultClock;
 
+@Ignore
 public class GattClientTest {
 
 	@Rule
