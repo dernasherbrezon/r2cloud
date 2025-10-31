@@ -83,6 +83,12 @@ jobs:
         cd ./target/
         ${JAVA_HOME}/bin/java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename trixie --gpg-keyname 10E3EAED21238672  save --patterns ./*.deb
 
+    - name: Import GPG key
+      if: github.ref == 'refs/heads/master'
+      uses: crazy-max/ghaction-import-gpg@v5
+      with:
+        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+        passphrase: ${{ secrets.PASSPHRASE }}
     - name: Deploy
       if: github.ref == 'refs/heads/master'
       run: |
