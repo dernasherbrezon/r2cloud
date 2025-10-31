@@ -79,13 +79,13 @@ jobs:
     - name: Deploy SHA-512
       if: github.ref == 'refs/heads/master'
       run: |
+        cd ./target/
         ${JAVA_HOME}/bin/java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename trixie --gpg-keyname 10E3EAED21238672  save --patterns ./*.deb
 
     - name: Deploy
       if: github.ref == 'refs/heads/master'
       run: |
         echo "building for old OS"
-        cd ..
         mvn clean
         mvn -Dmaven.test.skip=true -Djdk.version="r2cloud-jdk (>=17.0.13-1)" package
         cd ./target/
