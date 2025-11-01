@@ -38,7 +38,7 @@ Please check recommended [bill of materials](https://github.com/dernasherbrezon/
 
 1. Install r2cloud
   - From the image. This is the easiest way to install r2cloud on Raspberry PI. It will require a brand new SD card:
-    - Download the [latest](http://apt.leosatdata.com/dist/image_2025-04-02-r2cloud-lite.zip) official image
+    - Download the [latest](http://apt.leosatdata.com/dist/image_2025-10-31-r2cloud-lite.zip) official image
     - Insert the SD card into the card reader and flash it. You could use [Raspberry PI Imager](https://www.raspberrypi.com/software/) or [Etcher](https://etcher.io) to do this
     - Insert the SD card into the card reader and create the file ```r2cloud.txt``` in the root directory. This file should contain any random string. This string is a login token. This token will be used during initial setup.
   
