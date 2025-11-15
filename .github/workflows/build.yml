@@ -33,9 +33,7 @@ jobs:
     - name: SonarCloud Scan
       run: |
         export JAVA_HOME=${JAVA_HOME_17_X64}
-        DEB_VERSION=$(date '+%Y%m%d%H%M%S')
-        echo "DEB_VERSION=${DEB_VERSION}" >> $GITHUB_ENV
-        mvn clean verify sonar:sonar -Pcoverage -Ddeb.version=${DEB_VERSION} -Dsonar.scm.disabled=true -Dsonar.projectKey=ru.r2cloud:r2cloud -Dsonar.organization=dernasherbrezon-github -Dsonar.host.url=https://sonarcloud.io -Dsonar.language=java
+        mvn clean verify sonar:sonar -Pcoverage -Dsonar.scm.disabled=true -Dsonar.projectKey=ru.r2cloud:r2cloud -Dsonar.organization=dernasherbrezon-github -Dsonar.host.url=https://sonarcloud.io -Dsonar.language=java
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -97,7 +95,7 @@ jobs:
         echo "building for old OS"
         export JAVA_HOME=${JAVA_HOME_17_X64}
         mvn clean
-        mvn -Dmaven.test.skip=true -Ddeb.version=${DEB_VERSION} -Djdk.version="r2cloud-jdk (>=17.0.13-1)" package
+        mvn -Dmaven.test.skip=true -Djdk.version="r2cloud-jdk (>=17.0.13-1)" package
         cd ./target/
         ${JAVA_HOME}/bin/java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename stretch --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb
         ${JAVA_HOME}/bin/java -jar ~/.m2/repository/apt-cli-1.7.jar --url s3://r2cloud --component main --codename buster --gpg-keyname F2DCBFDCA5A70917  save --patterns ./*.deb

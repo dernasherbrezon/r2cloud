@@ -278,7 +278,7 @@
 			<plugin>
 				<groupId>com.aerse.maven</groupId>
 				<artifactId>deb-maven-plugin</artifactId>
-				<version>1.24</version>
+				<version>1.19</version>
 				<executions>
 					<execution>
 						<id>package</id>
@@ -293,8 +293,6 @@
 					<unixGroupId>pi</unixGroupId>
 					<arch>all</arch>
 					<section>embedded</section>
-					<generateVersion>false</generateVersion>
-					<version>${deb.version}</version>
 					<depends>r2cloud-ui (>=20241102151628), ${jdk.version}, nginx-light(>=1.10.3), rtl-sdr(>=0.6.4), coreutils(>=8.26), libxft2(>=2.3.2), sox(>=14.4.1), wget</depends>
 					<javaServiceWrapper>false</javaServiceWrapper>
 					<fileSets>
