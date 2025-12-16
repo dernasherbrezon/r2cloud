@@ -19,7 +19,7 @@ public class Mrc100Decoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, Observation req) {
-		return new Mrc100(demodulator, 126, 260);
+		return new Mrc100<>(demodulator, 126, 260, beacon);
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import ru.r2cloud.jradio.fox.Fox1BBeacon;
 import ru.r2cloud.jradio.fox.Fox1CBeacon;
 import ru.r2cloud.jradio.fox.Fox1DBeacon;
 import ru.r2cloud.jradio.geoscan.Geoscan2Beacon;
+import ru.r2cloud.jradio.hunity.HunityBeacon;
 import ru.r2cloud.jradio.mrc100.Mrc100Beacon;
 import ru.r2cloud.jradio.usp.UspBeacon;
 import ru.r2cloud.model.DecoderKey;
@@ -70,6 +71,7 @@ public class Decoders {
 		index("51439", "51439-0", new GaspacsDecoder(predict, props));
 		index("53108", "53108-0", new CcsdsDecoder(predict, props, TransferFrame.class));
 		index("56993", "56993-0", new Mrc100Decoder(predict, props, Mrc100Beacon.class));
+		index("98537", "98537-0", new Mrc100Decoder(predict, props, HunityBeacon.class));
 		index("56211", "56211-1", new InspireSat7SpinoDecoder(predict, props));
 		index("57167", "57167-0", new StratosatTk1Decoder(predict, props));
 		index("55104", "55104-0", new Sharjahsat1Decoder(predict, props));
