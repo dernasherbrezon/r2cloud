@@ -72,6 +72,7 @@ public class Decoders {
 		index("53108", "53108-0", new CcsdsDecoder(predict, props, TransferFrame.class));
 		index("56993", "56993-0", new Mrc100Decoder(predict, props, Mrc100Beacon.class));
 		index("98537", "98537-0", new Mrc100Decoder(predict, props, HunityBeacon.class));
+		index("66670", "66670-0", new Mrc100Decoder(predict, props, HunityBeacon.class));
 		index("56211", "56211-1", new InspireSat7SpinoDecoder(predict, props));
 		index("57167", "57167-0", new StratosatTk1Decoder(predict, props));
 		index("55104", "55104-0", new Sharjahsat1Decoder(predict, props));
