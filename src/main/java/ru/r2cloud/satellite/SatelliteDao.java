@@ -234,7 +234,10 @@ public class SatelliteDao {
 		}
 		for (int i = 0; i < satellite.getTransmitters().size(); i++) {
 			Transmitter cur = satellite.getTransmitters().get(i);
-			cur.setId(satellite.getId() + "-" + i);
+			// fallback to old format
+			if (cur.getId() == null) {
+				cur.setId(satellite.getId() + "-" + i);
+			}
 			cur.setEnabled(satellite.isEnabled());
 			cur.setPriority(satellite.getPriority());
 			cur.setPriorityIndex(satellite.getPriorityIndex());
