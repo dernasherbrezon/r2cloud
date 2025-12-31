@@ -72,9 +72,12 @@ public abstract class TelemetryDecoder implements Decoder {
 						while (currentInput.hasNext()) {
 							Beacon next = currentInput.next();
 							next.setBeginMillis(req.getStartTimeMillis() + (long) ((next.getBeginSample() * 1000) / sampleRate));
-							RxMetadata meta = new RxMetadata();
+							RxMetadata meta = next.getRxMeta();
+							if (meta == null) {
+								meta = new RxMetadata();
+								next.setRxMeta(meta);
+							}
 							meta.setBaud(baudRate);
-							next.setRxMeta(meta);
 							beacons.add(next);
 							totalSize += next.getRawData().length;
 						}
