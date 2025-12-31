@@ -4,7 +4,6 @@ import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconSource;
 import ru.r2cloud.jradio.ByteInput;
 import ru.r2cloud.jradio.blocks.CorrelateSyncword;
-import ru.r2cloud.jradio.blocks.SoftToHard;
 import ru.r2cloud.jradio.snet.Snet;
 import ru.r2cloud.jradio.snet.SnetBeacon;
 import ru.r2cloud.model.Observation;
@@ -19,7 +18,7 @@ public class SnetDecoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, Observation req) {
-		CorrelateSyncword correlateTag = new CorrelateSyncword(new SoftToHard(demodulator), 4, "00000100110011110101111111001000", 512 * 8);
+		CorrelateSyncword correlateTag = new CorrelateSyncword(demodulator, 4, "00000100110011110101111111001000", 512 * 8);
 		return new Snet(correlateTag);
 	}
 

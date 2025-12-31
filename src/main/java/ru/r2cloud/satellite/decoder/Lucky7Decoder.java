@@ -10,7 +10,6 @@ import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconSource;
 import ru.r2cloud.jradio.ByteInput;
 import ru.r2cloud.jradio.blocks.CorrelateSyncword;
-import ru.r2cloud.jradio.blocks.SoftToHard;
 import ru.r2cloud.jradio.lucky7.Lucky7;
 import ru.r2cloud.jradio.lucky7.Lucky7Beacon;
 import ru.r2cloud.jradio.lucky7.Lucky7PictureDecoder;
@@ -57,8 +56,7 @@ public class Lucky7Decoder extends TelemetryDecoder {
 
 	@Override
 	public BeaconSource<? extends Beacon> createBeaconSource(ByteInput demodulator, Observation req) {
-		SoftToHard bs = new SoftToHard(demodulator);
-		CorrelateSyncword correlate = new CorrelateSyncword(bs, 3, "0010110111010100", 37 * 8);
+		CorrelateSyncword correlate = new CorrelateSyncword(demodulator, 3, "0010110111010100", 37 * 8);
 		return new Lucky7(correlate);
 	}
 

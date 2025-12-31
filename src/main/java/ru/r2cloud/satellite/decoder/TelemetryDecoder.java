@@ -22,7 +22,6 @@ import ru.r2cloud.jradio.RxMetadata;
 import ru.r2cloud.jradio.demod.AfskDemodulator;
 import ru.r2cloud.jradio.demod.BpskDemodulator;
 import ru.r2cloud.jradio.demod.FskDemodulator;
-import ru.r2cloud.jradio.sink.SnrCalculator;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.DemodulatorType;
 import ru.r2cloud.model.Instrument;
@@ -40,12 +39,10 @@ public abstract class TelemetryDecoder implements Decoder {
 
 	protected final Configuration config;
 	protected final PredictOreKit predict;
-	private final boolean calculateSnr;
 
 	public TelemetryDecoder(PredictOreKit predict, Configuration config) {
 		this.config = config;
 		this.predict = predict;
-		this.calculateSnr = config.getBoolean("satellites.snr");
 	}
 
 	@Override
@@ -83,11 +80,6 @@ public abstract class TelemetryDecoder implements Decoder {
 						}
 					} finally {
 						Util.closeQuietly(currentInput);
-					}
-					if (calculateSnr && !beacons.isEmpty()) {
-						try (FloatInput next = new DopplerCorrectedSource(predict, rawIq, req, transmitter, baudRate, true)) {
-							SnrCalculator.enrichSnr(next, beacons, transmitter.getBandwidth(), 1);
-						}
 					}
 					allBeacons.addAll(beacons);
 				}
