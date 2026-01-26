@@ -13,6 +13,7 @@ import ru.r2cloud.jradio.fox.Fox1CBeacon;
 import ru.r2cloud.jradio.fox.Fox1DBeacon;
 import ru.r2cloud.jradio.geoscan.Geoscan2Beacon;
 import ru.r2cloud.jradio.hunity.HunityBeacon;
+import ru.r2cloud.jradio.il2p.Il2pBeacon;
 import ru.r2cloud.jradio.mrc100.Mrc100Beacon;
 import ru.r2cloud.jradio.usp.UspBeacon;
 import ru.r2cloud.model.DecoderKey;
@@ -83,6 +84,7 @@ public class Decoders {
 		index("61746", "61746-0", new Geoscan2Decoder(predict, props, Geoscan2Beacon.class, 74));
 		index("61749", "61749-0", new Geoscan2Decoder(predict, props, Geoscan2Beacon.class, 74));
 		index("61782", "61782-0", new Geoscan2Decoder(predict, props, Geoscan2Beacon.class, 74));
+		index("66909", "66909-0", new SilversatDecoder(predict, props, Il2pBeacon.class, 255));
 	}
 
 	public Decoder findByTransmitter(Transmitter transmitter) {
