@@ -144,6 +144,8 @@ public class Decoders {
 			return new MobitexDecoder(predict, props, transmitter.getBeaconClass());
 		} else if (transmitter.getFraming().equals(Framing.OPENLST)) {
 			return new OpenLstDecoder(predict, props, transmitter.getBeaconClass());
+		} else if (transmitter.getFraming().equals(Framing.IL2P)) {
+			return new Il2pDecoder(predict, props, transmitter.getBeaconClass(), transmitter.getBeaconSizeBytes());
 		} else if (transmitter.getFraming().equals(Framing.CCSDS)) {
 			return new CcsdsDecoder(predict, props, transmitter.getBeaconClass());
 		} else if (transmitter.getFraming().equals(Framing.CC11XX)) {
