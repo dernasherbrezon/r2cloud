@@ -1,5 +1,303 @@
 [
 	{
+		"id": "R2CLOUD602",
+		"name": "SilverSat",
+		"noradId": "66909",
+		"enabled": true,
+		"transmitters": [
+			{
+				"id": "66909-0",
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.il2p.Il2pBeacon",
+				"frequency": 437175000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"deviation": 5000,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1769463114000,
+		"instruments": [
+			{
+				"id": "UnknownOpticalCamera",
+				"enabled": true,
+				"primary": true,
+				"series": true
+			}
+		]
+	},
+	{
+		"id": "R2CLOUD601",
+		"name": "MorSat-1",
+		"noradId": "67262",
+		"enabled": false,
+		"start": 1766927880000,
+		"transmitters": [
+			{
+				"id": "67262-0",
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 435000000,
+				"bandwidth": 125000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 7,
+				"loraSyncword": 18,
+				"loraPreambleLength": 10,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1768774249000
+	},
+	{
+		"id": "R2CLOUD600",
+		"name": "TY-41",
+		"noradId": "61231",
+		"enabled": false,
+		"transmitters": [
+			{
+				"id": "61231-0",
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 401750000,
+				"bandwidth": 48000,
+				"baudRates": [
+					19200
+				],
+				"deviation": 5000,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1767108360000
+	},
+	{
+		"id": "R2CLOUD596",
+		"name": "Grifon-3",
+		"noradId": "67280",
+		"enabled": false,
+		"start": 1766927880000,
+		"transmitters": [
+			{
+				"id": "98400-0",
+				"modulation": "LORA",
+				"framing": "LORA",
+				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
+				"frequency": 401400000,
+				"bandwidth": 125000,
+				"deviation": 0,
+				"transitionWidth": 0.0,
+				"status": "ENABLED",
+				"loraBandwidth": 125000,
+				"loraSpreadFactor": 9,
+				"loraSyncword": 18,
+				"loraPreambleLength": 12,
+				"loraExplicitHeader": true,
+				"loraCodingRate": 5,
+				"loraCrc": true
+			}
+		],
+		"lastUpdateTime": 1768774086000
+	},
+	{
+		"id": "R2CLOUD594",
+		"name": "SITRO-AIS-57",
+		"noradId": "67256",
+		"enabled": false,
+		"start": 1766927880000,
+		"transmitters": [
+			{
+				"id": "98446-0",
+				"modulation": "GFSK",
+				"framing": "USP",
+				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
+				"frequency": 401002500,
+				"bandwidth": 20000,
+				"baudRates": [
+					2400,
+					4800,
+					9600
+				],
+				"deviation": 5000,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1768251830000
+	},
+	{
+		"id": "R2CLOUD574",
+		"name": "HUNITY",
+		"noradId": "66670",
+		"enabled": true,
+		"start": 1764355440000,
+		"transmitters": [
+			{
+				"id": "98537-0",
+				"modulation": "GFSK",
+				"framing": "CUSTOM",
+				"beaconClass": "ru.r2cloud.jradio.hunity.HunityBeacon",
+				"frequency": 437390000,
+				"bandwidth": 75000,
+				"baudRates": [
+					12500
+				],
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1767017211000
+	},
+	{
+		"id": "R2CLOUD572",
+		"name": "INHA-ROSAT",
+		"noradId": "66652",
+		"enabled": false,
+		"start": 1764173580000,
+		"transmitters": [
+			{
+				"id": "66652-0",
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 437665000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"deviation": 5000,
+				"assistedHeader": "AAABAAABAAEAAQEBAQABAQABAQAAAQABAAEAAAAAAQEAAAABAAEBAQABAAAAAQEAAAAAAAABAQEAAQAAAAAAAQAAAQAAAAABAAEBAAAAAAEAAAABAAAAAQABAAEAAAABAAEBAQEAAAEBAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1767045440000
+	},
+	{
+		"id": "R2CLOUD571",
+		"name": "K-HERO",
+		"noradId": "66660",
+		"enabled": false,
+		"start": 1764173580000,
+		"transmitters": [
+			{
+				"id": "66660-0",
+				"modulation": "GFSK",
+				"framing": "AX100",
+				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
+				"frequency": 437180000,
+				"bandwidth": 20000,
+				"baudRates": [
+					4800
+				],
+				"deviation": 5000,
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1767045448000
+	},
+	{
+		"id": "R2CLOUD570",
+		"name": "SNUGLITE-III DURI",
+		"noradId": "66661",
+		"enabled": true,
+		"start": 1764173580000,
+		"transmitters": [
+			{
+				"id": "66661-0",
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 436788000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"deviation": 5000,
+				"assistedHeader": "AAAAAQAAAAEAAQEAAAEAAQAAAAAAAQEAAAAAAQAAAAEAAAAAAQAAAQAAAAAAAAEAAAAAAAABAQAAAAABAAAAAQABAQAAAQABAAAAAAABAQAAAAABAAAAAQAAAAABAAABAAAAAAAAAQABAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1767045422000
+	},
+	{
+		"id": "R2CLOUD569",
+		"name": "SPIRONE",
+		"noradId": "66657",
+		"enabled": false,
+		"start": 1764173580000,
+		"transmitters": [
+			{
+				"id": "66657-0",
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 436650000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"deviation": 5000,
+				"assistedHeader": "AAABAQABAQAAAQEAAQAAAQAAAAAAAQEAAAABAQAAAAEAAAAAAQEAAQAAAAAAAAAAAAAAAAABAQAAAAEBAAEBAAABAQABAAABAAAAAAABAQAAAAEBAAAAAQAAAAABAQABAAAAAAAAAAABAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1767045462000
+	},
+	{
+		"id": "R2CLOUD568",
+		"name": "JACK-004",
+		"noradId": "66659",
+		"enabled": false,
+		"start": 1764173580000,
+		"transmitters": [
+			{
+				"id": "66659-0",
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 436300000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"deviation": 5000,
+				"assistedHeader": "AAABAQABAQAAAAABAQAAAQAAAAEAAQEAAAEBAAABAQAAAQEAAAEBAAAAAAAAAAEAAAAAAAABAQAAAAABAAAAAQABAQAAAQABAAEBAAABAQAAAQABAAEBAAAAAAAAAAEAAAAAAAAAAQABAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1767045470000
+	},
+	{
+		"id": "R2CLOUD567",
+		"name": "JACK-003",
+		"noradId": "66654",
+		"enabled": false,
+		"start": 1764173580000,
+		"transmitters": [
+			{
+				"id": "66654-0",
+				"modulation": "GFSK",
+				"framing": "AX25G3RUH",
+				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
+				"frequency": 436300000,
+				"bandwidth": 20000,
+				"baudRates": [
+					9600
+				],
+				"deviation": 5000,
+				"assistedHeader": "AAABAQABAQAAAAABAQAAAQAAAAEAAQEAAAEBAAABAQAAAQEAAAEBAAAAAAAAAAEAAAAAAAABAQAAAAABAAAAAQABAQAAAQABAAEBAAABAQAAAQABAAEBAAAAAAAAAAEAAAAAAAAAAQABAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
+				"status": "ENABLED"
+			}
+		],
+		"lastUpdateTime": 1767045480000
+	},
+	{
 		"id": "R2CLOUD566",
 		"name": "RSP-03",
 		"noradId": "65732",
@@ -444,7 +742,7 @@
 		"start": 1750713480000,
 		"transmitters": [
 			{
-				"id": "98583-0",
+				"id": "64536-0",
 				"modulation": "LORA",
 				"framing": "LORA",
 				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
@@ -463,7 +761,7 @@
 				"loraCrc": true
 			}
 		],
-		"lastUpdateTime": 1754686048000
+		"lastUpdateTime": 1767045510000
 	},
 	{
 		"id": "R2CLOUD547",
@@ -473,7 +771,7 @@
 		"start": 1750713480000,
 		"transmitters": [
 			{
-				"id": "98563-0",
+				"id": "64530-0",
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
 				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
@@ -487,7 +785,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1754686073000
+		"lastUpdateTime": 1767045520000
 	},
 	{
 		"id": "R2CLOUD546",
@@ -497,7 +795,7 @@
 		"start": 1750713480000,
 		"transmitters": [
 			{
-				"id": "98584-0",
+				"id": "64550-0",
 				"modulation": "GFSK",
 				"framing": "AX100",
 				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
@@ -510,7 +808,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1754686089000
+		"lastUpdateTime": 1767045526000
 	},
 	{
 		"id": "R2CLOUD545",
@@ -520,7 +818,7 @@
 		"start": 1750713480000,
 		"transmitters": [
 			{
-				"id": "98599-0",
+				"id": "64553-0",
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
 				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
@@ -534,7 +832,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1754686108000
+		"lastUpdateTime": 1767045534000
 	},
 	{
 		"id": "R2CLOUD544",
@@ -544,7 +842,7 @@
 		"start": 1750713480000,
 		"transmitters": [
 			{
-				"id": "98598-0",
+				"id": "64557-0",
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
 				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
@@ -558,7 +856,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1754686124000
+		"lastUpdateTime": 1767045540000
 	},
 	{
 		"id": "R2CLOUD543",
@@ -568,7 +866,7 @@
 		"start": 1750713480000,
 		"transmitters": [
 			{
-				"id": "98597-0",
+				"id": "64555-0",
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
 				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
@@ -582,7 +880,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1754686139000
+		"lastUpdateTime": 1767045668000
 	},
 	{
 		"id": "R2CLOUD542",
@@ -592,7 +890,7 @@
 		"start": 1750713480000,
 		"transmitters": [
 			{
-				"id": "98596-0",
+				"id": "64534-0",
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
 				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
@@ -606,7 +904,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1754686156000
+		"lastUpdateTime": 1767045675000
 	},
 	{
 		"id": "R2CLOUD541",
@@ -616,7 +914,7 @@
 		"start": 1750713480000,
 		"transmitters": [
 			{
-				"id": "98580-0",
+				"id": "64575-0",
 				"modulation": "GFSK",
 				"framing": "AX100",
 				"beaconClass": "ru.r2cloud.jradio.csp.CspBeacon",
@@ -629,7 +927,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1754686173000
+		"lastUpdateTime": 1767045681000
 	},
 	{
 		"id": "R2CLOUD540",
@@ -639,7 +937,7 @@
 		"start": 1750713480000,
 		"transmitters": [
 			{
-				"id": "98595-0",
+				"id": "64590-0",
 				"modulation": "GFSK",
 				"framing": "AX25G3RUH",
 				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
@@ -653,7 +951,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1754686190000
+		"lastUpdateTime": 1767045687000
 	},
 	{
 		"id": "R2CLOUD539",
@@ -663,7 +961,7 @@
 		"start": 1750713480000,
 		"transmitters": [
 			{
-				"id": "98589-0",
+				"id": "64549-0",
 				"modulation": "GFSK",
 				"framing": "AX100",
 				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
@@ -676,7 +974,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1754686205000
+		"lastUpdateTime": 1767045693000
 	},
 	{
 		"id": "R2CLOUD538",
@@ -686,7 +984,7 @@
 		"start": 1750713480000,
 		"transmitters": [
 			{
-				"id": "98590-0",
+				"id": "64535-0",
 				"modulation": "GFSK",
 				"framing": "AX100",
 				"beaconClass": "ru.r2cloud.jradio.RawBeacon",
@@ -699,7 +997,7 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1754686220000
+		"lastUpdateTime": 1767045700000
 	},
 	{
 		"id": "R2CLOUD537",
@@ -751,7 +1049,8 @@
 			{
 				"id": "OMI",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": false
 			}
 		]
 	},
@@ -782,7 +1081,8 @@
 			{
 				"id": "MODIS",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": false
 			}
 		]
 	},
@@ -813,22 +1113,26 @@
 			{
 				"id": "MODIS",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "AIRS",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "AMSUA1",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "CERES",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			}
 		]
 	},
@@ -859,7 +1163,8 @@
 			{
 				"id": "MWR",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": false
 			}
 		]
 	},
@@ -890,7 +1195,8 @@
 			{
 				"id": "MSUGSA",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": false
 			}
 		]
 	},
@@ -1166,7 +1472,8 @@
 			{
 				"id": "SWAP",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": false
 			}
 		]
 	},
@@ -1197,7 +1504,8 @@
 			{
 				"id": "HRC",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": false
 			}
 		]
 	},
@@ -1228,22 +1536,26 @@
 			{
 				"id": "MERSIRM",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": false
 			},
 			{
 				"id": "MWRIRM",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "PMRKu",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "PMRKa",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			}
 		]
 	},
@@ -1274,22 +1586,26 @@
 			{
 				"id": "MERSI3",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": false
 			},
 			{
 				"id": "MWHS2",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "MWRI2",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "MWTS3",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			}
 		]
 	},
@@ -1320,62 +1636,74 @@
 			{
 				"id": "MERSILL",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": false
 			},
 			{
 				"id": "MWHS2",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "MWTS3",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "XEUVI",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "WindRadCHorizontal10",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "WindRadCHorizontal20",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "WindRadCVertical10",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "WindRadCVertical20",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "WindRadKuHorizontal10",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "WindRadKuHorizontal20",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "WindRadKuVertical10",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "WindRadKuVertical20",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			}
 		]
 	},
@@ -1406,32 +1734,38 @@
 			{
 				"id": "MERSI2",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": false
 			},
 			{
 				"id": "GAS",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "MWHS2",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "MWRI1",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "MWTS2",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "SWSWAI",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			}
 		]
 	},
@@ -1462,17 +1796,20 @@
 			{
 				"id": "VIRR",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": false
 			},
 			{
 				"id": "MWHS2",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "ERM1",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			}
 		]
 	},
@@ -1629,37 +1966,44 @@
 			{
 				"id": "AVHRR3",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": false
 			},
 			{
 				"id": "ASCAT",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "AMSUA",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "GOME2",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "IASI",
 				"enabled": false,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "MHS",
 				"enabled": false,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "SEM2",
 				"enabled": false,
-				"primary": false
+				"primary": false,
+				"series": false
 			}
 		]
 	},
@@ -1705,37 +2049,44 @@
 			{
 				"id": "AVHRR3",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": false
 			},
 			{
 				"id": "ASCAT",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "AMSUA",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "GOME2",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "IASI",
 				"enabled": false,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "MHS",
 				"enabled": false,
-				"primary": false
+				"primary": false,
+				"series": false
 			},
 			{
 				"id": "SEM2",
 				"enabled": false,
-				"primary": false
+				"primary": false,
+				"series": false
 			}
 		]
 	},
@@ -1781,12 +2132,14 @@
 			{
 				"id": "MSUMR",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": false
 			},
 			{
 				"id": "MTVZA",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			}
 		],
 		"satdumpSatelliteNumber": "M2-4"
@@ -3609,12 +3962,13 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1749677975000,
+		"lastUpdateTime": 1769463201000,
 		"instruments": [
 			{
 				"id": "UnknownOpticalCamera",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": true
 			}
 		]
 	},
@@ -3638,12 +3992,13 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1749677965000,
+		"lastUpdateTime": 1769463191000,
 		"instruments": [
 			{
 				"id": "UnknownOpticalCamera",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": true
 			}
 		]
 	},
@@ -3713,12 +4068,13 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1749677953000,
+		"lastUpdateTime": 1769463175000,
 		"instruments": [
 			{
 				"id": "UnknownOpticalCamera",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": true
 			}
 		]
 	},
@@ -3742,12 +4098,13 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1749677939000,
+		"lastUpdateTime": 1769463164000,
 		"instruments": [
 			{
 				"id": "UnknownOpticalCamera",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": true
 			}
 		]
 	},
@@ -3771,12 +4128,13 @@
 				"status": "ENABLED"
 			}
 		],
-		"lastUpdateTime": 1749677928000,
+		"lastUpdateTime": 1769463150000,
 		"instruments": [
 			{
 				"id": "UnknownOpticalCamera",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": true
 			}
 		]
 	},
@@ -4977,29 +5335,6 @@
 		"lastUpdateTime": 1705831222000
 	},
 	{
-		"id": "R2CLOUD356",
-		"name": "ENSO (ROBUSTA 1E)",
-		"noradId": "58470",
-		"enabled": true,
-		"transmitters": [
-			{
-				"id": "58470-0",
-				"modulation": "GFSK",
-				"framing": "AX25",
-				"beaconClass": "ru.r2cloud.jradio.enso.EnsoBeacon",
-				"frequency": 436500000,
-				"bandwidth": 20000,
-				"baudRates": [
-					2400,
-					9600
-				],
-				"assistedHeader": "AAABAQAAAAEAAAABAAEBAAABAQABAAABAAABAAEAAAEAAAAAAQEAAQAAAAAAAAEAAAAAAAABAQEAAAEBAAAAAQAAAAABAQABAAABAQABAQAAAAEBAAAAAQAAAQAAAQABAAEBAAAAAAEBAAAAAAEBAQEBAAAAAAAAAAAAAAEBAQE=",
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1723557498000
-	},
-	{
 		"id": "R2CLOUD355",
 		"name": "ION SCV Daring Diego",
 		"noradId": "58469",
@@ -5674,50 +6009,6 @@
 		"lastUpdateTime": 1702322649000
 	},
 	{
-		"id": "R2CLOUD315",
-		"name": "CONNECTA T3.2",
-		"noradId": "58268",
-		"enabled": false,
-		"start": 1699728540000,
-		"transmitters": [
-			{
-				"id": "58268-0",
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 401540000,
-				"bandwidth": 20000,
-				"baudRates": [
-					4800
-				],
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1744800065000
-	},
-	{
-		"id": "R2CLOUD314",
-		"name": "CONNECTA T3.1",
-		"noradId": "58256",
-		"enabled": false,
-		"start": 1699728540000,
-		"transmitters": [
-			{
-				"id": "58256-0",
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 401510000,
-				"bandwidth": 20000,
-				"baudRates": [
-					9600
-				],
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1702322575000
-	},
-	{
 		"id": "R2CLOUD311",
 		"name": "CSTP 1.2 (STC 1.2)",
 		"noradId": "57186",
@@ -6002,29 +6293,6 @@
 		"lastUpdateTime": 1744789018000
 	},
 	{
-		"id": "R2CLOUD297",
-		"name": "ARCCUBE 1 (RS25S)",
-		"noradId": "57205",
-		"enabled": false,
-		"transmitters": [
-			{
-				"id": "57205-0",
-				"modulation": "GFSK",
-				"framing": "USP",
-				"beaconClass": "ru.r2cloud.jradio.usp.UspBeacon",
-				"frequency": 437600000,
-				"bandwidth": 20000,
-				"baudRates": [
-					2400,
-					4800,
-					9600
-				],
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1693301463000
-	},
-	{
 		"id": "R2CLOUD296",
 		"name": "MONITOR-4 (RS57S)",
 		"noradId": "57182",
@@ -6194,7 +6462,8 @@
 			{
 				"id": "GeoscanHRCAMM",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": false
 			}
 		]
 	},
@@ -6363,12 +6632,14 @@
 			{
 				"id": "MSUMR",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": false
 			},
 			{
 				"id": "MTVZA",
 				"enabled": true,
-				"primary": false
+				"primary": false,
+				"series": false
 			}
 		],
 		"satdumpSatelliteNumber": "M2-3"
@@ -6807,7 +7078,8 @@
 			{
 				"id": "UnknownOpticalCamera",
 				"enabled": true,
-				"primary": true
+				"primary": true,
+				"series": false
 			}
 		]
 	},
@@ -7311,28 +7583,6 @@
 		"lastUpdateTime": 1681769296000
 	},
 	{
-		"id": "R2CLOUD142",
-		"name": "VZLUSAT-2",
-		"noradId": "51085",
-		"enabled": true,
-		"transmitters": [
-			{
-				"id": "51085-0",
-				"modulation": "GFSK",
-				"framing": "AX100",
-				"beaconClass": "ru.r2cloud.jradio.vzlusat.Vzlusat2Beacon",
-				"beaconSizeBytes": 512,
-				"frequency": 437326000,
-				"bandwidth": 20000,
-				"baudRates": [
-					4800
-				],
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1663275714000
-	},
-	{
 		"id": "R2CLOUD138",
 		"name": "CUTE",
 		"noradId": "49263",
@@ -7463,30 +7713,6 @@
 		"lastUpdateTime": 1695318687000
 	},
 	{
-		"id": "R2CLOUD126",
-		"name": "LEDSAT",
-		"noradId": "49069",
-		"enabled": true,
-		"transmitters": [
-			{
-				"id": "49069-0",
-				"modulation": "GFSK",
-				"framing": "AX100",
-				"beaconClass": "ru.r2cloud.jradio.ledsat.LedSatBeacon",
-				"beaconSizeBytes": 255,
-				"frequency": 435190000,
-				"bandwidth": 20000,
-				"baudRates": [
-					1200,
-					4800,
-					9600
-				],
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1663578483000
-	},
-	{
 		"id": "R2CLOUD122",
 		"name": "MCUBED-2",
 		"noradId": "39472",
@@ -7506,27 +7732,6 @@
 			}
 		],
 		"lastUpdateTime": 1719602190000
-	},
-	{
-		"id": "R2CLOUD119",
-		"name": "TUBIN",
-		"noradId": "48900",
-		"enabled": true,
-		"transmitters": [
-			{
-				"id": "48900-0",
-				"modulation": "GFSK",
-				"framing": "TUBIX20",
-				"beaconClass": "ru.r2cloud.jradio.technosat.TechnosatBeacon",
-				"frequency": 435950000,
-				"bandwidth": 20000,
-				"baudRates": [
-					4800
-				],
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1665909179000
 	},
 	{
 		"id": "R2CLOUD114",
@@ -7907,49 +8112,6 @@
 					9600
 				],
 				"status": "WEAK"
-			}
-		],
-		"lastUpdateTime": 1662310762000
-	},
-	{
-		"id": "R2CLOUD53",
-		"name": "ZHUHAI-1 02 (CAS-4B)",
-		"noradId": "42759",
-		"enabled": true,
-		"transmitters": [
-			{
-				"id": "42759-0",
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 145892000,
-				"bandwidth": 10000,
-				"baudRates": [
-					4800
-				],
-				"status": "ENABLED"
-			}
-		],
-		"lastUpdateTime": 1662310762000
-	},
-	{
-		"id": "R2CLOUD52",
-		"name": "ZHUHAI-1 01 (CAS-4A)",
-		"noradId": "42761",
-		"enabled": true,
-		"transmitters": [
-			{
-				"id": "42761-0",
-				"modulation": "GFSK",
-				"framing": "AX25G3RUH",
-				"beaconClass": "ru.r2cloud.jradio.ax25.Ax25Beacon",
-				"frequency": 145836000,
-				"bandwidth": 10000,
-				"baudRates": [
-					4800
-				],
-				"assistedHeader": "AAEBAAAAAAEAAQAAAAEAAQAAAAAAAAEAAAAAAAAAAQAAAAAAAAABAAAAAAAAAAEAAAAAAAABAQAAAAEAAAAAAQAAAQABAAABAAEAAAABAQAAAQEAAAEAAQABAQABAAABAAAAAAAAAQABAAAAAAEBAAEBAAAAAAAAAAAAAAEBAQE=",
-				"status": "ENABLED"
 			}
 		],
 		"lastUpdateTime": 1662310762000
