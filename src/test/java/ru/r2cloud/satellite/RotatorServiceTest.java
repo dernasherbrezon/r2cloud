@@ -42,6 +42,7 @@ import ru.r2cloud.model.Tle;
 import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.util.DefaultClock;
 import ru.r2cloud.util.ThreadPoolFactoryImpl;
+import ru.r2cloud.util.Util;
 
 public class RotatorServiceTest {
 
@@ -61,8 +62,8 @@ public class RotatorServiceTest {
 	@Test
 	public void testStaleTle() throws Exception {
 		ObservationRequest req = createRequest();
-		req.getTle().getRaw()[1] = "1 53376U 22096G   24125.30500733  .01222779  97906-3  12443-2 0  9998";
-		req.getTle().getRaw()[2] = "2 53376  97.3733  46.7756 0008493 160.3534 199.8078 16.11052950 97692";
+		Tle old = req.getTle();
+		req.setTle(Util.fromOldFormat(new String[] { old.getObjectName(), "1 53376U 22096G   24125.30500733  .01222779  97906-3  12443-2 0  9998", "2 53376  97.3733  46.7756 0008493 160.3534 199.8078 16.11052950 97692" }));
 		req.setStartTimeMillis(1725198038000L);
 		req.setEndTimeMillis(1725199038000L);
 		int times = (int) ((req.getEndTimeMillis() - req.getStartTimeMillis()) / 70000);
@@ -155,7 +156,7 @@ public class RotatorServiceTest {
 	}
 
 	private ObservationRequest createRequest() {
-		Tle tle = new Tle(new String[] { "funcube-1", "1 39444U 13066AE  20157.75071106  .00000221  00000-0  33451-4 0  9997", "2 39444  97.5589 158.6491 0056696 309.6463  49.9756 14.82127945351637" });
+		Tle tle = Util.fromOldFormat(new String[] { "funcube-1", "1 39444U 13066AE  20157.75071106  .00000221  00000-0  33451-4 0  9997", "2 39444  97.5589 158.6491 0056696 309.6463  49.9756 14.82127945351637" });
 		ObservationRequest result = new ObservationRequest();
 		result.setTle(tle);
 		result.setStartTimeMillis(getTime("2020-06-06 05:50:29"));

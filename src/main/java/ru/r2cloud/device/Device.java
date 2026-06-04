@@ -115,7 +115,7 @@ public abstract class Device implements Lifecycle {
 
 	private void schedule(ObservationRequest req, Transmitter transmitter) {
 		if (deviceConfiguration.isCompencateDcOffset() && !noDopplerCorrection.contains(transmitter.getFraming())) {
-			TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(transmitter.getTle().getRaw()[1], transmitter.getTle().getRaw()[2]));
+			TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(Util.convert(transmitter.getTle()));
 			long initialDopplerFrequency = predict.getDownlinkFreq(transmitter.getFrequency(), req.getStartTimeMillis(), predict.getPosition(), tlePropagator);
 			req.setFrequency(initialDopplerFrequency + DC_OFFSET);
 		}

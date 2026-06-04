@@ -65,7 +65,7 @@ public class TleDao {
 	private void index(Map<String, Tle> tleById) {
 		cache.putAll(tleById);
 		for (Tle cur : tleById.values()) {
-			cacheByName.put(cur.getRaw()[0], cur);
+			cacheByName.put(cur.getObjectName(), cur);
 		}
 	}
 
@@ -117,7 +117,7 @@ public class TleDao {
 			if (cur == null) {
 				continue;
 			}
-			String noradId = cur.getRaw()[cur.getRaw().length - 1].substring(2, 2 + 5).trim();
+			String noradId = String.valueOf(cur.getSatelliteNumber());
 			result.put(noradId, cur);
 		}
 		return result;

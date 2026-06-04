@@ -67,7 +67,7 @@ public class DopplerCorrectedSource implements FloatInput {
 			Util.closeQuietly(is);
 			throw new IllegalArgumentException("unsupported data format: " + req.getDataFormat());
 		}
-		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(req.getTle().getRaw()[1], req.getTle().getRaw()[2]));
+		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(Util.convert(req.getTle()));
 		TopocentricFrame groundStation = predict.getPosition(req.getGroundStation());
 		long startFrequency = predict.getDownlinkFreq(transmitter.getFrequency(), req.getStartTimeMillis(), groundStation, tlePropagator);
 		long endFrequency = predict.getDownlinkFreq(transmitter.getFrequency(), req.getEndTimeMillis(), groundStation, tlePropagator);

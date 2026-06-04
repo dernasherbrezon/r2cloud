@@ -5,15 +5,19 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.net.ConnectException;
 import java.nio.channels.UnresolvedAddressException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,18 +31,62 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
+import org.orekit.propagation.analytical.tle.TLE;
 import org.slf4j.Logger;
 
 import com.aerse.mockfs.FailingByteChannelCallback;
 import com.aerse.mockfs.MockFileSystem;
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.SampleClass;
+import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
+import ru.r2cloud.model.Tle;
+import ru.r2cloud.predict.PredictOreKit;
 
 public class UtilTest {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
+
+	@Test
+	public void testTle() throws Exception {
+		String[] oldFormat = readTle("tle/oldFormat.txt");
+
+		// initialize default data context for TLE
+		TestConfiguration config = new TestConfiguration(tempFolder, FileSystems.getDefault());
+		new PredictOreKit(config);
+
+		Tle tle = Util.fromOldFormat(oldFormat);
+
+		// not strictly equals to oldFormat.txt, but within tolerance
+		String[] oldFormatCompatible = readTle("tle/oldFormatSerialized.txt");
+		TLE predictOld = Util.convert(tle);
+		assertEquals(oldFormatCompatible[1], predictOld.getLine1());
+		assertEquals(oldFormatCompatible[2], predictOld.getLine2());
+
+		// these 3 not available in the new format
+		tle.setLaunchNumber(0);
+		tle.setLaunchPiece(null);
+		tle.setLaunchYear(0);
+		try (Reader is = new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream("tle/newFormat.json"), StandardCharsets.UTF_8)) {
+			JsonValue value = Json.parse(is);
+			Tle actual = Tle.fromJson(value.asObject());
+			TestUtil.assertJson("tle/newFormatSerialized.json", actual.toJson());
+			// not available in the old format
+			actual.setObjectId(null);
+			assertEquals(tle, actual);
+
+			// make compatible with old format
+			actual.setLaunchNumber(61);
+			actual.setLaunchPiece("G");
+			actual.setLaunchYear(2018);
+			TLE predictActual = Util.convert(actual);
+			assertEquals(oldFormatCompatible[1], predictActual.getLine1());
+			assertEquals(oldFormatCompatible[2], predictActual.getLine2());
+		}
+	}
 
 	@Test
 	public void testLogErrorShortMessage() {
@@ -214,6 +262,21 @@ public class UtilTest {
 	private static ConnectException createConnectException(Throwable e) {
 		ConnectException result = new ConnectException("connect failed");
 		result.initCause(e);
+		return result;
+	}
+
+	private static String[] readTle(String resourceName) {
+		String[] result = new String[3];
+		try (BufferedReader r = new BufferedReader(new InputStreamReader(TestUtil.class.getClassLoader().getResourceAsStream(resourceName), StandardCharsets.UTF_8))) {
+			String curLine = null;
+			int i = 0;
+			while ((curLine = r.readLine()) != null) {
+				result[i] = curLine;
+				i++;
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 		return result;
 	}
 }

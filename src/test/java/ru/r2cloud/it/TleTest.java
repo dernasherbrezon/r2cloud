@@ -15,13 +15,14 @@ import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.it.util.RegisteredTest;
 import ru.r2cloud.model.Tle;
+import ru.r2cloud.util.Util;
 
 public class TleTest extends RegisteredTest {
 
 	@Test
 	public void testEqualsHashCode() {
-		Tle first = new Tle(createTle().toArray(new String[0]));
-		Tle second = new Tle(createTle().toArray(new String[0]));
+		Tle first = Util.fromOldFormat(createTle().toArray(new String[0]));
+		Tle second = Util.fromOldFormat(createTle().toArray(new String[0]));
 		assertEquals(first.hashCode(), second.hashCode());
 		assertEquals(first, second);
 	}

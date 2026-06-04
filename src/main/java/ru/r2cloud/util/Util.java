@@ -27,12 +27,15 @@ import java.nio.file.StandardOpenOption;
 import java.security.cert.CertPathBuilderException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
@@ -41,6 +44,10 @@ import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
+import org.hipparchus.util.FastMath;
+import org.orekit.data.DataContext;
+import org.orekit.propagation.analytical.tle.TLE;
+import org.orekit.time.AbsoluteDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +58,7 @@ import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.model.SampleRateKey;
 import ru.r2cloud.model.SampleRateMapping;
+import ru.r2cloud.model.Tle;
 
 public final class Util {
 
@@ -668,6 +676,102 @@ public final class Util {
 			}
 		}
 		return result;
+	}
+
+	public static Tle fromOldFormat(String[] raw) {
+		Tle result = fromOldFormat(raw[1], raw[2]);
+		result.setObjectName(raw[0].trim());
+		return result;
+	}
+
+	public static Tle fromOldFormat(String line1, String line2) {
+		Tle result = new Tle();
+		result.setSatelliteNumber(parseInteger(line1, 2, 5));
+		int satNum2 = parseInteger(line2, 2, 5);
+		if (result.getSatelliteNumber() != satNum2) {
+			throw new IllegalArgumentException("invalid tle");
+		}
+		result.setClassification(line1.charAt(7));
+		result.setLaunchYear(parseYear(line1, 9));
+		result.setLaunchNumber(parseInteger(line1, 11, 3));
+		result.setLaunchPiece(line1.substring(14, 17).trim());
+		result.setEphemerisType(parseInteger(line1, 62, 1));
+		result.setElementNumber(parseInteger(line1, 64, 4));
+
+		// Date format transform (nota: 27/31250 == 86400/100000000)
+		int year = parseYear(line1, 18);
+		int dayInYear = parseInteger(line1, 20, 3);
+		double df = parseInteger(line1, 24, 8) / 100000000.0;
+
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+		cal.set(Calendar.YEAR, year);
+		cal.set(Calendar.DAY_OF_YEAR, dayInYear);
+		double temp = df * 24;
+		int hour = (int) temp;
+		cal.set(Calendar.HOUR_OF_DAY, hour);
+		temp = (temp - hour) * 60;
+		int minute = (int) temp;
+		cal.set(Calendar.MINUTE, minute);
+		temp = (temp - minute) * 60;
+		int second = (int) temp;
+		cal.set(Calendar.SECOND, second);
+		temp = (temp - second) * 1000;
+		cal.set(Calendar.MILLISECOND, (int) temp);
+		result.setEpoch(cal.getTimeInMillis());
+
+		// mean motion development
+		result.setMeanMotion(parseDouble(line2, 52, 11));
+		result.setMeanMotionFirstDerivative(parseDouble(line1, 33, 10));
+		result.setMeanMotionSecondDerivative(Double.parseDouble((line1.substring(44, 45) + '.' + line1.substring(45, 50) + 'e' + line1.substring(50, 52)).replace(' ', '0')));
+
+		result.setEccentricity(Double.parseDouble("." + line2.substring(26, 33).replace(' ', '0')));
+		result.setInclination(parseDouble(line2, 8, 8));
+		result.setPa(parseDouble(line2, 34, 8));
+		result.setRaan(Double.parseDouble(line2.substring(17, 25).replace(' ', '0')));
+		result.setMeanAnomaly(parseDouble(line2, 43, 8));
+		result.setRevolutionNumberAtEpoch(parseInteger(line2, 63, 5));
+		result.setBstar(Double.parseDouble((line1.substring(53, 54) + '.' + line1.substring(54, 59) + 'e' + line1.substring(59, 61)).replace(' ', '0')));
+		return result;
+	}
+
+	// @formatter:off
+	public static TLE convert(Tle tle) {
+		// converted from rev/day, 2 * rev/day^2 and 6 * rev/day^3 to rad/s, rad/s^2 and rad/s^3
+		TLE result = new TLE(tle.getSatelliteNumber(), 
+							 tle.getClassification(), 
+							 tle.getLaunchYear(), 
+							 tle.getLaunchNumber(), 
+							 tle.getLaunchPiece(),
+							 tle.getEphemerisType(), 
+							 tle.getElementNumber(),
+							 new AbsoluteDate(new Date(tle.getEpoch()), DataContext.getDefault().getTimeScales().getUTC()),
+							 tle.getMeanMotion() * FastMath.PI / 43200.0,
+							 tle.getMeanMotionFirstDerivative() * FastMath.PI / 1.86624e9,
+							 tle.getMeanMotionSecondDerivative() * FastMath.PI / 5.3747712e13,
+							 tle.getEccentricity(),
+							 FastMath.toRadians(tle.getInclination()),
+							 FastMath.toRadians(tle.getPa()),
+							 FastMath.toRadians(tle.getRaan()),
+							 FastMath.toRadians(tle.getMeanAnomaly()),
+							 tle.getRevolutionNumberAtEpoch(),
+							 tle.getBstar());
+		return result;
+	}
+	// @formatter:on
+
+	private static double parseDouble(final String line, final int start, final int length) {
+		final String field = line.substring(start, start + length).trim();
+		return field.length() > 0 ? Double.parseDouble(field.replace(' ', '0')) : 0;
+	}
+
+	private static int parseInteger(final String line, final int start, final int length) {
+		final String field = line.substring(start, start + length).trim();
+		return field.length() > 0 ? Integer.parseInt(field.replace(' ', '0')) : 0;
+	}
+
+	private static int parseYear(final String line, final int start) {
+		final int year = 2000 + parseInteger(line, start, 2);
+		return (year > 2056) ? (year - 100) : year;
 	}
 
 	private Util() {

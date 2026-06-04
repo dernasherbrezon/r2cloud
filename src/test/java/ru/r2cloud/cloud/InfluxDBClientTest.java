@@ -25,6 +25,7 @@ import ru.r2cloud.model.Observation;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.predict.PredictOreKit;
+import ru.r2cloud.util.Util;
 
 public class InfluxDBClientTest {
 
@@ -43,7 +44,7 @@ public class InfluxDBClientTest {
 		device.setId("rtlsdr.0");
 		device.setAntennaConfiguration(antenna);
 
-		Tle tle = new Tle(new String[] { "METEOR-M 2", "1 40069U 14037A   20271.10206173 -.00000043  00000-0 -42512-6 0  9995", "2 40069  98.4943 304.7538 0005678 359.8115   0.3056 14.20675232322649" });
+		Tle tle = Util.fromOldFormat(new String[] { "METEOR-M 2", "1 40069U 14037A   20271.10206173 -.00000043  00000-0 -42512-6 0  9995", "2 40069  98.4943 304.7538 0005678 359.8115   0.3056 14.20675232322649" });
 		tle.setLastUpdateTime(1601173618133L);
 
 		Observation observation = new Observation();

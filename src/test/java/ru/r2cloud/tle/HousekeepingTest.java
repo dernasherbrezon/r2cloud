@@ -40,6 +40,7 @@ import ru.r2cloud.satellite.ProcessFactoryMock;
 import ru.r2cloud.satellite.ProcessWrapperMock;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.satellite.SdrTransmitterFilter;
+import ru.r2cloud.util.Util;
 
 public class HousekeepingTest {
 
@@ -107,7 +108,7 @@ public class HousekeepingTest {
 
 	@Test
 	public void testTleUpdate() throws Exception {
-		Tle initial = new Tle(new String[] { "PEGASUS", "1 42784U 17036V   22114.09726310  .00014064  00000+0  52305-3 0  9992", "2 42784  97.2058 157.8198 0011701 152.8519 207.3335 15.27554982268713" });
+		Tle initial = Util.fromOldFormat(new String[] { "PEGASUS", "1 42784U 17036V   22114.09726310  .00014064  00000+0  52305-3 0  9992", "2 42784  97.2058 157.8198 0011701 152.8519 207.3335 15.27554982268713" });
 		initial.setSource("test data");
 		initial.setLastUpdateTime(clock.millis());
 
@@ -121,7 +122,7 @@ public class HousekeepingTest {
 
 		clock.setMillis(clock.millis() + 2);
 
-		Tle newTle = new Tle(new String[] { "PEGASUS", "1 42784U 17036V   22115.09726310  .00014064  00000+0  52305-3 0  9992", "2 42784  97.2058 157.8198 0011701 152.8519 207.3335 15.27554982268713" });
+		Tle newTle = Util.fromOldFormat(new String[] { "PEGASUS", "1 42784U 17036V   22115.09726310  .00014064  00000+0  52305-3 0  9992", "2 42784  97.2058 157.8198 0011701 152.8519 207.3335 15.27554982268713" });
 		newTle.setSource("test data");
 		newTle.setLastUpdateTime(clock.millis());
 		tleData.put("42784", newTle);
@@ -192,9 +193,7 @@ public class HousekeepingTest {
 
 	private static void assertTle(Tle expected, Tle actual) {
 		assertNotNull(actual);
-		for (int i = 0; i < expected.getRaw().length; i++) {
-			assertEquals(expected.getRaw()[i], actual.getRaw()[i]);
-		}
+		assertEquals(expected, actual);
 		assertEquals(expected.getLastUpdateTime(), actual.getLastUpdateTime());
 		assertEquals(expected.getSource(), actual.getSource());
 	}

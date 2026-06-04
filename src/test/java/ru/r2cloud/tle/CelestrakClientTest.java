@@ -16,6 +16,7 @@ import ru.r2cloud.TestConfiguration;
 import ru.r2cloud.TestUtil;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.util.DefaultClock;
+import ru.r2cloud.util.Util;
 
 public class CelestrakClientTest {
 
@@ -46,7 +47,7 @@ public class CelestrakClientTest {
 		Map<String, Tle> result = new HashMap<>();
 		String[] lines = body.split("\n");
 		for (int i = 0; i < lines.length; i += 3) {
-			result.put(lines[i + 2].substring(2, 2 + 5).trim(), new Tle(new String[] { lines[i], lines[i + 1], lines[i + 2] }));
+			result.put(lines[i + 2].substring(2, 2 + 5).trim(), Util.fromOldFormat(new String[] { lines[i], lines[i + 1], lines[i + 2] }));
 		}
 		return result;
 	}

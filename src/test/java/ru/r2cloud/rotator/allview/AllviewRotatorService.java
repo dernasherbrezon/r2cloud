@@ -63,7 +63,7 @@ public class AllviewRotatorService implements Lifecycle {
 		if (executor == null) {
 			return null;
 		}
-		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(req.getTle().getRaw()[1], req.getTle().getRaw()[2]));
+		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(Util.convert(req.getTle()));
 		TopocentricFrame groundStation = predict.getPosition(req.getGroundStation());
 		Future<?> result = executor.scheduleAtFixedRate(new Runnable() {
 

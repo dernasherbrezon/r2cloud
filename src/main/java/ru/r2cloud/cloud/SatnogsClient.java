@@ -156,14 +156,20 @@ public class SatnogsClient {
 		if (parsedArray.isEmpty()) {
 			return null;
 		}
-		JsonObject tle = parsedArray.get(0).asObject();
-
-		Tle result = new Tle(new String[] { getStringSafely(tle, "tle0"), getStringSafely(tle, "tle1"), getStringSafely(tle, "tle2") });
+		Tle result = Tle.fromJson(convertSatnogsTleToLegacyFormat(parsedArray.get(0).asObject()));
 		// ignore "updated" field from satnogs
 		// if satellite is new launch, then there is no other source for tle
 		// readTle is called only for new launches
 		result.setLastUpdateTime(clock.millis());
 		result.setSource(hostname);
+		return result;
+	}
+	
+	private static JsonObject convertSatnogsTleToLegacyFormat(JsonObject satnogs) {
+		JsonObject result = new JsonObject();
+		result.set("line1", getStringSafely(satnogs, "tle0"));
+		result.set("line2", getStringSafely(satnogs, "tle1"));
+		result.set("line3", getStringSafely(satnogs, "tle2"));
 		return result;
 	}
 

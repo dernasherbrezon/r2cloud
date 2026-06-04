@@ -37,7 +37,7 @@ public class TleDaoTest {
 		String satelliteId = UUID.randomUUID().toString();
 		Map<String, Tle> tle = new HashMap<>();
 		// TleDao doesn't verify Tle format
-		tle.put(satelliteId, new Tle(new String[] { UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString() }));
+		tle.put(satelliteId, create());
 		dao.saveTle(tle, System.currentTimeMillis());
 		dao.saveTle(new HashMap<>(), System.currentTimeMillis());
 		assertEquals(1, dao.findAll().size());
@@ -54,7 +54,7 @@ public class TleDaoTest {
 	public void testSaveLoadAndFail() {
 		Map<String, Tle> tle = new HashMap<>();
 		// TleDao doesn't verify Tle format
-		tle.put(UUID.randomUUID().toString(), new Tle(new String[] { UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString() }));
+		tle.put(UUID.randomUUID().toString(), create());
 
 		dao.saveTle(tle, System.currentTimeMillis());
 
@@ -64,7 +64,7 @@ public class TleDaoTest {
 		// simulate failure to save
 		Path failingPath = fs.getPath(fileLocation).getParent();
 		fs.mock(failingPath, new FailingByteChannelCallback(10));
-		tle.put(UUID.randomUUID().toString(), new Tle(new String[] { UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString() }));
+		tle.put(UUID.randomUUID().toString(), create());
 		dao.saveTle(tle, System.currentTimeMillis());
 		fs.removeMock(failingPath);
 
@@ -76,6 +76,12 @@ public class TleDaoTest {
 		dao = new TleDao(config);
 		actual = dao.findAll();
 		assertEquals(1, actual.size());
+	}
+
+	private static Tle create() {
+		Tle result = new Tle();
+		result.setObjectName(UUID.randomUUID().toString());
+		return result;
 	}
 
 	@Before

@@ -41,6 +41,7 @@ import ru.r2cloud.model.Page;
 import ru.r2cloud.model.RotatorConfiguration;
 import ru.r2cloud.model.SdrServerConfiguration;
 import ru.r2cloud.model.Tle;
+import ru.r2cloud.util.Util;
 
 public class ObservationDaoTest {
 
@@ -317,7 +318,7 @@ public class ObservationDaoTest {
 	}
 
 	private static Tle create() {
-		return new Tle(new String[] { "meteor", "1 40069U 14037A   18286.52491495 -.00000023  00000-0  92613-5 0  9990", "2 40069  98.5901 334.4030 0004544 256.4188 103.6490 14.20654800221188" });
+		return Util.fromOldFormat(new String[] { "meteor", "1 40069U 14037A   18286.52491495 -.00000023  00000-0  92613-5 0  9990", "2 40069  98.5901 334.4030 0004544 256.4188 103.6490 14.20654800221188" });
 	}
 
 	private static GeodeticPoint createGroundStation() {

@@ -15,6 +15,7 @@ import ru.r2cloud.model.SatPass;
 import ru.r2cloud.model.Tle;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.predict.PredictOreKit;
+import ru.r2cloud.util.Util;
 
 public class ObservationFactory {
 
@@ -33,7 +34,7 @@ public class ObservationFactory {
 			LOG.error("no tle for: {}", transmitter.getSatelliteId());
 			return Collections.emptyList();
 		}
-		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(transmitter.getTle().getRaw()[1], transmitter.getTle().getRaw()[2]));
+		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(Util.convert(transmitter.getTle()));
 		List<SatPass> batch = predict.calculateSchedule(antenna, date, tlePropagator);
 		if (batch == null || batch.isEmpty()) {
 			return Collections.emptyList();

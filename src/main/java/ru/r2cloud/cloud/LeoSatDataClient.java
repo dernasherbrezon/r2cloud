@@ -130,7 +130,7 @@ public class LeoSatDataClient {
 			throw new IllegalStateException(e);
 		}
 	}
-	
+
 	public List<Satellite> loadSatellites(long lastModified) throws NotModifiedException {
 		return loadSatellites(lastModified, null);
 	}
@@ -341,28 +341,9 @@ public class LeoSatDataClient {
 		if (tle == null || !tle.isObject()) {
 			return null;
 		}
-		JsonObject tleObj = tle.asObject();
-
-		String line1 = tleObj.getString("line1", null);
-		if (line1 == null) {
-			return null;
-		}
-		String line2 = tleObj.getString("line2", null);
-		if (line2 == null) {
-			return null;
-		}
-		String line3 = tleObj.getString("line3", null);
-		if (line3 == null) {
-			return null;
-		}
-		if (!org.orekit.propagation.analytical.tle.TLE.isFormatOK(line2, line3)) {
-			LOG.error("invalid tle format");
-			return null;
-		}
-		Tle result = new Tle(new String[] { line1, line2, line3 });
+		Tle result = Tle.fromJson(tle.asObject());
 		// assume downloaded TLE is always fresh
 		result.setLastUpdateTime(clock.millis());
-		result.setSource(tleObj.getString("source", null));
 		if (result.getSource() == null) {
 			result.setSource(hostname);
 		}

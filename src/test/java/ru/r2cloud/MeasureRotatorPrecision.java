@@ -37,6 +37,7 @@ import ru.r2cloud.rotctrld.RotctrldClient;
 import ru.r2cloud.satellite.RotatorService;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.ThreadPoolFactoryImpl;
+import ru.r2cloud.util.Util;
 
 public class MeasureRotatorPrecision {
 
@@ -52,7 +53,7 @@ public class MeasureRotatorPrecision {
 		config.setProperty("scheduler.orekit.path", "./src/test/resources/data/orekit-data");
 		PredictOreKit predict = new PredictOreKit(config);
 
-		Tle tle = new Tle(new String[] { "funcube-1", "1 39444U 13066AE  20157.75071106  .00000221  00000-0  33451-4 0  9997", "2 39444  97.5589 158.6491 0056696 309.6463  49.9756 14.82127945351637" });
+		Tle tle = Util.fromOldFormat(new String[] { "funcube-1", "1 39444U 13066AE  20157.75071106  .00000221  00000-0  33451-4 0  9997", "2 39444  97.5589 158.6491 0056696 309.6463  49.9756 14.82127945351637" });
 		ObservationRequest req = new ObservationRequest();
 		req.setTle(tle);
 		req.setStartTimeMillis(getTime("2020-06-06 05:50:29"));
@@ -174,7 +175,7 @@ public class MeasureRotatorPrecision {
 			String curLine = null;
 			Pattern p = Pattern.compile(",");
 			TopocentricFrame groundStation = predict.getPosition(req.getGroundStation());
-			TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(req.getTle().getRaw()[1], req.getTle().getRaw()[2]));
+			TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(Util.convert(req.getTle()));
 			while ((curLine = r.readLine()) != null) {
 				String[] parts = p.split(curLine);
 				long time = Long.valueOf(parts[2]);

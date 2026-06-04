@@ -7,6 +7,7 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.tle.TleDao;
+import ru.r2cloud.util.Util;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.ModelAndView;
 
@@ -36,9 +37,10 @@ public class TLE extends AbstractHttpController {
 			JsonObject curTle = new JsonObject();
 			curTle.add("id", cur.getId());
 			JsonArray curData = new JsonArray();
-			for (String curDataEntry : cur.getTle().getRaw()) {
-				curData.add(curDataEntry);
-			}
+			org.orekit.propagation.analytical.tle.TLE predictTle = Util.convert(cur.getTle());
+			curData.add(cur.getTle().getObjectName());
+			curData.add(predictTle.getLine1());
+			curData.add(predictTle.getLine2());
 			curTle.add("data", curData);
 			tle.add(curTle);
 		}

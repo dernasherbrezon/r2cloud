@@ -35,6 +35,7 @@ import ru.r2cloud.predict.PredictOreKit;
 import ru.r2cloud.rotctrld.Position;
 import ru.r2cloud.tle.CelestrakClient;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.Util;
 
 public class FixedDirectionalAntennaTest {
 
@@ -76,10 +77,10 @@ public class FixedDirectionalAntennaTest {
 
 		JsonArray ds = new JsonArray();
 		for (Tle cur : tles.values()) {
-			if (!supported.contains(cur.getRaw()[0])) {
+			if (!supported.contains(cur.getObjectName())) {
 				continue;
 			}
-			TLEPropagator propagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(cur.getRaw()[1], cur.getRaw()[2]));
+			TLEPropagator propagator = TLEPropagator.selectExtrapolator(Util.convert(cur));
 			List<SatPass> schedule = predict.calculateSchedule(antenna, new Date(current), propagator);
 			for (SatPass curPass : schedule) {
 				long length = curPass.getEndMillis() - curPass.getStartMillis();

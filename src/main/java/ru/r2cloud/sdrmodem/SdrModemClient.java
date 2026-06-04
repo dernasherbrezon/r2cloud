@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 import org.apache.commons.math3.util.FastMath;
+import org.orekit.propagation.analytical.tle.TLE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,9 +120,10 @@ public class SdrModemClient implements ByteInput {
 		fskDemodSettings.setDemodFskUseDcBlock(true);
 
 		doppler_settings.Builder dopplerSettings = doppler_settings.newBuilder();
-		for (String cur : req.getTle().getRaw()) {
-			dopplerSettings.addTle(cur);
-		}
+		TLE tle = Util.convert(req.getTle());
+		dopplerSettings.addTle(req.getTle().getObjectName());
+		dopplerSettings.addTle(tle.getLine1());
+		dopplerSettings.addTle(tle.getLine2());
 		dopplerSettings.setLatitude((int) (FastMath.toDegrees(req.getGroundStation().getLatitude()) * 10E6));
 		dopplerSettings.setLongitude((int) (FastMath.toDegrees(req.getGroundStation().getLongitude()) * 10E6));
 		dopplerSettings.setAltitude((int) (req.getGroundStation().getAltitude() * 10E6));

@@ -226,7 +226,7 @@ public class TestUtil {
 			fail("unable to assert json: " + classPathResource + " " + e.getMessage());
 		}
 	}
-
+	
 	public static void assertJson(JsonObject expected, JsonObject actual) {
 		StringBuilder message = new StringBuilder();
 		for (String name : expected.names()) {
@@ -335,7 +335,7 @@ public class TestUtil {
 					break;
 				}
 				String noradId = line2.substring(2, 2 + 5).trim();
-				Tle value = new Tle(new String[] { curLine.trim(), line1, line2 });
+				Tle value = Util.fromOldFormat(new String[] { curLine.trim(), line1, line2 });
 				value.setLastUpdateTime(millis);
 				value.setSource("test data");
 				result.put(noradId, value);

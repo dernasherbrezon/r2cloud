@@ -30,6 +30,7 @@ import ru.r2cloud.satellite.IObservationDao;
 import ru.r2cloud.satellite.SatelliteDao;
 import ru.r2cloud.util.Configuration;
 import ru.r2cloud.util.SignedURL;
+import ru.r2cloud.util.Util;
 import ru.r2cloud.web.AbstractHttpController;
 import ru.r2cloud.web.BadRequest;
 import ru.r2cloud.web.MimeType;
@@ -206,7 +207,7 @@ public class ObservationSigMfMeta extends AbstractHttpController {
 		if (clazz == null) {
 			return new JsonArray();
 		}
-		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(new org.orekit.propagation.analytical.tle.TLE(entity.getTle().getRaw()[1], entity.getTle().getRaw()[2]));
+		TLEPropagator tlePropagator = TLEPropagator.selectExtrapolator(Util.convert(entity.getTle()));
 		TopocentricFrame groundStation = predict.getPosition(entity.getGroundStation());
 		try (BeaconInputStream<?> ais = new BeaconInputStream<>(new BufferedInputStream(new FileInputStream(entity.getDataPath())), clazz)) {
 			JsonArray data = new JsonArray();

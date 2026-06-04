@@ -16,8 +16,6 @@ import java.time.Duration;
 import java.util.Base64;
 import java.util.regex.Pattern;
 
-import org.orekit.propagation.analytical.tle.TLE;
-import org.orekit.time.TimeScalesFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,8 +81,7 @@ public class InfluxDBClient {
 		metric.append(",hostname=").append(hostname);
 		metric.append(" tleUpdateLatency=").append(obs.getStartTimeMillis() - obs.getTle().getLastUpdateTime());
 
-		TLE tle = new TLE(obs.getTle().getRaw()[1], obs.getTle().getRaw()[2]);
-		long tleEpoch = tle.getDate().toDate(TimeScalesFactory.getUTC()).getTime();
+		long tleEpoch = obs.getTle().getEpoch();
 		metric.append(",tleEpochLatency=").append(obs.getStartTimeMillis() - tleEpoch);
 
 		Long frames = obs.getNumberOfDecodedPackets();

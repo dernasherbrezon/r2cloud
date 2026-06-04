@@ -48,7 +48,6 @@ import ru.r2cloud.model.DeviceStatus;
 import ru.r2cloud.model.Framing;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Priority;
-import ru.r2cloud.model.Tle;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.model.TransmitterStatus;
 import ru.r2cloud.predict.PredictOreKit;
@@ -56,6 +55,7 @@ import ru.r2cloud.satellite.LoraTransmitterFilter;
 import ru.r2cloud.satellite.ObservationFactory;
 import ru.r2cloud.util.Clock;
 import ru.r2cloud.util.ThreadPoolFactoryImpl;
+import ru.r2cloud.util.Util;
 
 public class GattServerTest {
 
@@ -190,7 +190,7 @@ public class GattServerTest {
 		result.setLoraSyncword(18);
 		result.setLoraPreambleLength(8);
 		result.setLoraLdro(0);
-		result.setTle(new Tle(new String[] { "NORBI", "1 46494U 20068J   22336.90274690  .00003263  00000+0  22606-3 0  9998", "2 46494  97.7471 278.8262 0018953  74.3629 285.9691 15.06230312119549" }));
+		result.setTle(Util.fromOldFormat(new String[] { "NORBI", "1 46494U 20068J   22336.90274690  .00003263  00000+0  22606-3 0  9998", "2 46494  97.7471 278.8262 0018953  74.3629 285.9691 15.06230312119549" }));
 		result.setEnabled(true);
 		result.setFrequencyBand(result.getFrequency());
 		result.setPriority(Priority.NORMAL);
