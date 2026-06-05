@@ -1,76 +1,92 @@
 {
-	"id": "1559942730784",
-	"start": 1559942730839,
-	"end": 1559942731040,
-	"satelliteName": "AAUSAT 4",
-	"satellite": "41460",
-	"transmitterId": "41460-0",
-	"tle": {
-		"line1": "AAUSAT 4",
-		"line2": "1 41460U 16025E   22114.24237288  .00023891  00000+0  95344-3 0  9995",
-		"line3": "2 41460  98.1778 281.1813 0131168  71.2285 290.3188 15.17490244329716",
-		"updated": 0
-	},
-	"groundStation": {
-		"lat": 53.72,
-		"lon": 47.57
-	},
-	"dataFormat": "COMPLEX_UNSIGNED_BYTE",
-	"sampleRate": 240000,
-	"actualFrequency": 437444309,
-	"numberOfDecodedPackets": 1,
-	"status": "UPLOADED",
-	"dataEntity": [
-		{
-			"time": 1562788405439,
-			"body": {
-				"adcs1": {
-					"bdot1": -2035,
-					"bdot2": 1356,
-					"bdot3": -2015,
-					"state": 0
-				},
-				"ais2": {
-					"bootCount": 417,
-					"uniqueMssi": 65535
-				},
-				"com": {
-					"bootCount": 2086,
-					"latestBitCorrection": 0,
-					"latestByteCorrection": 0,
-					"latestRssi": 0,
-					"packetsReceived": 0,
-					"packetsSend": 882
-				},
-				"eps": {
-					"batteryCurrent": -60,
-					"batteryVoltage": 7800,
-					"bootCount": 24590,
-					"cellDiff": 96,
-					"mainVoltage": -93,
-					"paTemperature": -1,
-					"pingStatus": 126,
-					"realtimeClock": 1562788359,
-					"solarPower": 2720,
-					"subsystemStatus": 3801,
-					"temperature": 0,
-					"uptime": 3282266
-				},
-				"header": {
-					"destination": 10,
-					"destinationPort": 18,
-					"priority": "CSP_PRIO_CRITICAL",
-					"source": 0,
-					"sourcePort": 18,
-					"fcrc32": false,
-					"ffrag": false,
-					"fhmac": true,
-					"frdp": false,
-					"fxtea": false
-				},
-				"hmac": "9756",
-				"length": 86
-			}
-		}
-	]
+  "id": "1559942730784",
+  "start": 1559942730839,
+  "end": 1559942731040,
+  "satelliteName": "AAUSAT 4",
+  "satellite": "41460",
+  "transmitterId": "41460-0",
+  "tle": {
+    "OBJECT_NAME": "AAUSAT 4",
+    "EPOCH": "2022-04-24T05:49:01.016",
+    "MEAN_MOTION": 15.17490244,
+    "ECCENTRICITY": 0.0131168,
+    "INCLINATION": 98.1778,
+    "RA_OF_ASC_NODE": 281.1813,
+    "ARG_OF_PERICENTER": 71.2285,
+    "MEAN_ANOMALY": 290.3188,
+    "EPHEMERIS_TYPE": 0,
+    "CLASSIFICATION_TYPE": "U",
+    "NORAD_CAT_ID": 41460,
+    "ELEMENT_SET_NO": 999,
+    "REV_AT_EPOCH": 32971,
+    "BSTAR": 9.5344E-4,
+    "MEAN_MOTION_DOT": 2.3891E-4,
+    "MEAN_MOTION_DDOT": 0,
+    "launchYear": 2016,
+    "launchNumber": 25,
+    "launchPiece": "E",
+    "updated": 0
+  },
+  "groundStation": {
+    "lat": 53.72,
+    "lon": 47.57
+  },
+  "dataFormat": "COMPLEX_UNSIGNED_BYTE",
+  "sampleRate": 240000,
+  "actualFrequency": 437444309,
+  "numberOfDecodedPackets": 1,
+  "status": "UPLOADED",
+  "dataEntity": [
+    {
+      "time": 1562788405439,
+      "body": {
+        "adcs1": {
+          "bdot1": -2035,
+          "bdot2": 1356,
+          "bdot3": -2015,
+          "state": 0
+        },
+        "ais2": {
+          "bootCount": 417,
+          "uniqueMssi": 65535
+        },
+        "com": {
+          "bootCount": 2086,
+          "latestBitCorrection": 0,
+          "latestByteCorrection": 0,
+          "latestRssi": 0,
+          "packetsReceived": 0,
+          "packetsSend": 882
+        },
+        "eps": {
+          "batteryCurrent": -60,
+          "batteryVoltage": 7800,
+          "bootCount": 24590,
+          "cellDiff": 96,
+          "mainVoltage": -93,
+          "paTemperature": -1,
+          "pingStatus": 126,
+          "realtimeClock": 1562788359,
+          "solarPower": 2720,
+          "subsystemStatus": 3801,
+          "temperature": 0,
+          "uptime": 3282266
+        },
+        "header": {
+          "destination": 10,
+          "destinationPort": 18,
+          "priority": "CSP_PRIO_CRITICAL",
+          "source": 0,
+          "sourcePort": 18,
+          "fcrc32": false,
+          "ffrag": false,
+          "fhmac": true,
+          "frdp": false,
+          "fxtea": false
+        },
+        "hmac": "9756",
+        "length": 86
+      }
+    }
+  ]
 }
