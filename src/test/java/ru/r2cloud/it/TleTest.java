@@ -41,7 +41,7 @@ public class TleTest extends RegisteredTest {
 	private static List<String> createTle() {
 		List<String> expected = new ArrayList<>();
 		expected.add("METEOR-M 2");
-		expected.add("1 40069U 14037A   18286.52491495 -.00000023  00000-0  92613-5 0  9990");
+		expected.add("1 40069U 14037A   18286.52491494 -.00000023  00000-0  92613-5 0  9999");
 		expected.add("2 40069  98.5901 334.4030 0004544 256.4188 103.6490 14.20654800221188");
 		return expected;
 	}

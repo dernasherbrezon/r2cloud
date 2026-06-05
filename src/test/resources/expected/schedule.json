@@ -1,49 +1,49 @@
 [
-	{
-		"id": "25338",
-		"name": "NOAA 15",
-		"enabled": true,
-		"status": "ENABLED",
-		"source": "CONFIG",
-		"nextPass": 1559969016026,
-		"frequency": 137620000
-	},
-	{
-		"id": "33591",
-		"name": "NOAA 19",
-		"enabled": true,
-		"status": "ENABLED",
-		"source": "CONFIG",
-		"nextPass": 1559960645848,
-		"frequency": 137100000
-	},
-	{
-		"id": "40069",
-		"name": "METEOR-M 2",
-		"enabled": true,
-		"status": "ENABLED",
-		"source": "CONFIG",
-		"nextPass": 1559973224691,
-		"frequency": 137900000,
-		"modulation": "QPSK"
-	},
-	{
-		"id": "42784",
-		"name": "PEGASUS",
-		"enabled": false,
-		"status": "ENABLED",
-		"source": "CONFIG",
-		"frequency": 436670000,
-		"modulation": "GFSK"
-	},
-	{
-		"id": "46494",
-		"name": "NORBI",
-		"enabled": true,
-		"status": "ENABLED",
-		"source": "CONFIG",
-		"nextPass": 1559949406124,
-		"frequency": 436700000,
-		"modulation": "GFSK"
-	}
+  {
+    "id": "25338",
+    "name": "NOAA 15",
+    "enabled": true,
+    "status": "ENABLED",
+    "source": "CONFIG",
+    "nextPass": 1559969016026,
+    "frequency": 137620000
+  },
+  {
+    "id": "33591",
+    "name": "NOAA 19",
+    "enabled": true,
+    "status": "ENABLED",
+    "source": "CONFIG",
+    "nextPass": 1559960645848,
+    "frequency": 137100000
+  },
+  {
+    "id": "40069",
+    "name": "METEOR-M 2",
+    "enabled": true,
+    "status": "ENABLED",
+    "source": "CONFIG",
+    "nextPass": 1559973224690,
+    "frequency": 137900000,
+    "modulation": "QPSK"
+  },
+  {
+    "id": "42784",
+    "name": "PEGASUS",
+    "enabled": false,
+    "status": "ENABLED",
+    "source": "CONFIG",
+    "frequency": 436670000,
+    "modulation": "GFSK"
+  },
+  {
+    "id": "46494",
+    "name": "NORBI",
+    "enabled": true,
+    "status": "ENABLED",
+    "source": "CONFIG",
+    "nextPass": 1559949406123,
+    "frequency": 436700000,
+    "modulation": "GFSK"
+  }
 ]
