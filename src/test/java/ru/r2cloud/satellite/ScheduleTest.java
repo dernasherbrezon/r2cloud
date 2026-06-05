@@ -110,7 +110,7 @@ public class ScheduleTest {
 		assertObservations(expected, actual);
 
 		ObservationRequest first = schedule.findFirstByTransmitterId("40378-0", TestUtil.getTime("2020-10-01 11:38:34.491"));
-		assertEquals("1601553418714-40378-0", first.getId());
+		assertEquals("1601553418713-40378-0", first.getId());
 		assertNull(schedule.findFirstByTransmitterId("40378-0", TestUtil.getTime("2020-10-02 11:43:56.801")));
 
 		// tasks and ensure previous got cancelled

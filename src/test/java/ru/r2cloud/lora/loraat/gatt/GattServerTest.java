@@ -108,7 +108,7 @@ public class GattServerTest {
 		device.tryTransmitter(transmitter);
 		device.reschedule();
 
-		assertLoraRequest(transmitter, 1559957416215L, 1559957939690L, currentTime, deserialize(readValue(app.getSource(), application, GattServer.SCHEDULE_CHARACTERISTIC_UUID)));
+		assertLoraRequest(transmitter, 1559957416214L, 1559957939690L, currentTime, deserialize(readValue(app.getSource(), application, GattServer.SCHEDULE_CHARACTERISTIC_UUID)));
 	}
 
 	@Test

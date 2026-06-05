@@ -315,7 +315,12 @@ public class Tle {
 		Tle result;
 		// old format
 		if (line1 != null && line2 != null && line3 != null) {
-			result = Util.fromOldFormat(line2, line3);
+			try {
+				result = Util.fromOldFormat(line2, line3);
+			} catch (Exception e) {
+				LOG.error("invalid tle format", e);
+				return null;
+			}
 			result.setObjectName(line1);
 		} else {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");

@@ -342,6 +342,9 @@ public class LeoSatDataClient {
 			return null;
 		}
 		Tle result = Tle.fromJson(tle.asObject());
+		if (result == null) {
+			return null;
+		}
 		// assume downloaded TLE is always fresh
 		result.setLastUpdateTime(clock.millis());
 		if (result.getSource() == null) {
