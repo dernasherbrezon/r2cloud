@@ -188,8 +188,9 @@ public class Housekeeping {
 		long periodMillis = config.getLong("housekeeping.tle.periodMillis");
 		boolean reloadTle = (currentTime - tleDao.getLastUpdateTime() >= periodMillis);
 		if (reloadTle) {
-			LOG.info("Skip TLE update. Last update was {}. Next update: {}", new Date(tleDao.getLastUpdateTime()), new Date(tleDao.getLastUpdateTime() + periodMillis));
 			tleDao.saveTle(celestrak.downloadTle(), currentTime);
+		} else {
+			LOG.info("Skip TLE update. Last update was {}. Next update: {}", new Date(tleDao.getLastUpdateTime()), new Date(tleDao.getLastUpdateTime() + periodMillis));
 		}
 		dao.setTle(tleDao.findAll());
 	}
