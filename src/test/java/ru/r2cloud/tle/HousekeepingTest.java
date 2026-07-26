@@ -15,11 +15,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import ru.r2cloud.CelestrakServer;
 import ru.r2cloud.FixedClock;
 import ru.r2cloud.NoOpTransmitterFilter;
 import ru.r2cloud.TestConfiguration;
@@ -50,10 +52,10 @@ public class HousekeepingTest {
 	private TestConfiguration config;
 	private SatelliteDao satelliteDao;
 	private CelestrakClient celestrak;
+	private CelestrakServer celestrakServer;
 	private LeoSatDataClient leosatdata;
 	private TleDao tleDao;
 	private PriorityService priorityService;
-	private Map<String, Tle> tleData;
 	private Housekeeping housekeeping;
 	private DeviceManager deviceManager;
 	private FixedClock clock;
@@ -107,9 +109,21 @@ public class HousekeepingTest {
 	}
 
 	@Test
+	public void testCleanStartWithJson() throws Exception {
+		celestrakServer.mockResponse("/NORAD/elements/active.txt", null);
+		celestrakServer.mockResponse("/NORAD/elements/active.json", TestUtil.loadExpected("sample-tle.json"));
+
+		Satellite sat = satelliteDao.findById("42784");
+		assertNull(sat.getTle());
+		housekeeping.run();
+		sat = satelliteDao.findById("42784");
+		assertNotNull(sat.getTle());
+	}
+
+	@Test
 	public void testTleUpdate() throws Exception {
 		Tle initial = Util.fromOldFormat(new String[] { "PEGASUS", "1 42784U 17036V   22114.09726310  .00014064  00000+0  52305-3 0  9992", "2 42784  97.2058 157.8198 0011701 152.8519 207.3335 15.27554982268713" });
-		initial.setSource("test data");
+		initial.setSource("localhost");
 		initial.setLastUpdateTime(clock.millis());
 
 		housekeeping.run();
@@ -123,10 +137,9 @@ public class HousekeepingTest {
 		clock.setMillis(clock.millis() + 2);
 
 		Tle newTle = Util.fromOldFormat(new String[] { "PEGASUS", "1 42784U 17036V   22115.09726310  .00014064  00000+0  52305-3 0  9992", "2 42784  97.2058 157.8198 0011701 152.8519 207.3335 15.27554982268713" });
-		newTle.setSource("test data");
+		newTle.setSource("localhost");
 		newTle.setLastUpdateTime(clock.millis());
-		tleData.put("42784", newTle);
-
+		celestrakServer.mockResponse("/NORAD/elements/active.txt", TestUtil.loadExpected("sample-tle-new.txt"));
 		housekeeping.run();
 		assertTle(newTle, satelliteDao.findById("42784"));
 	}
@@ -134,7 +147,10 @@ public class HousekeepingTest {
 	@Before
 	public void start() throws Exception {
 		clock = new FixedClock(TestUtil.getTime("2020-09-30 22:17:01.000"));
-		tleData = TestUtil.loadTle("sample-tle.txt", clock.millis());
+		celestrakServer = new CelestrakServer();
+		celestrakServer.start();
+		celestrakServer.mockResponse("/NORAD/elements/active.txt", TestUtil.loadExpected("sample-tle.txt"));
+		celestrakServer.mockResponse("/NORAD/elements/active.json", null);
 
 		String rtlsdr = UUID.randomUUID().toString();
 
@@ -147,12 +163,11 @@ public class HousekeepingTest {
 		config.setProperty("satellites.leosatdata.new.location", new File(tempFolder.getRoot(), "leosatdata.new.json").getAbsolutePath());
 		config.setProperty("satellites.rtlsdrwrapper.path", rtlsdr);
 		config.setProperty("satellites.satnogs.location", new File(tempFolder.getRoot(), "satnogs.json").getAbsolutePath());
+		config.setList("tle.urls", celestrakServer.getUrls());
 		config.update();
 
 		satelliteDao = new SatelliteDao(config);
-
-		celestrak = mock(CelestrakClient.class);
-		when(celestrak.downloadTle()).thenReturn(tleData);
+		celestrak = new CelestrakClient(config, clock);
 		tleDao = new TleDao(config);
 
 		priorityService = new PriorityService(config, clock);
@@ -184,6 +199,12 @@ public class HousekeepingTest {
 		deviceManager.addDevice(device);
 
 		housekeeping = new Housekeeping(config, satelliteDao, null, celestrak, tleDao, null, leosatdata, null, priorityService, deviceManager, clock);
+	}
+
+	@After
+	public void stop() {
+		housekeeping.stop();
+		celestrakServer.stop();
 	}
 
 	private static void assertTle(Tle expected, Satellite actualSatellite) {

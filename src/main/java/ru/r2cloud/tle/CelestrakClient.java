@@ -95,7 +95,8 @@ public class CelestrakClient {
 				Tle value = Tle.fromJson(cur.asObject());
 				value.setLastUpdateTime(clock.millis());
 				value.setSource(obj.getHost());
-				result.put(value.getObjectName(), value);
+				String noradId = String.valueOf(value.getSatelliteNumber());
+				result.put(noradId, value);
 			}
 		}
 		return result;

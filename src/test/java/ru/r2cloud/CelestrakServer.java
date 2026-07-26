@@ -6,7 +6,9 @@ import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -14,11 +16,40 @@ import com.sun.net.httpserver.HttpServer;
 
 public class CelestrakServer {
 
-	private String data;
+	private Set<String> mockedPaths = new HashSet<>();
 	private HttpServer server;
 
-	public void mockResponse(String data) {
-		this.data = data;
+	public void mockResponse(String queryPath, String data) {
+		if (mockedPaths.contains(queryPath)) {
+			server.removeContext(queryPath);
+		}
+		server.createContext(queryPath, new HttpHandler() {
+
+			@Override
+			public void handle(HttpExchange exchange) throws IOException {
+				if (data == null) {
+					String message = "expected not found";
+					byte[] body = message.getBytes(StandardCharsets.UTF_8);
+					exchange.sendResponseHeaders(404, body.length);
+					OutputStream os = exchange.getResponseBody();
+					os.write(body);
+					os.close();
+					return;
+				}
+				byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
+				exchange.sendResponseHeaders(200, bytes.length);
+				OutputStream os = exchange.getResponseBody();
+				os.write(bytes);
+				os.close();
+			}
+		});
+		mockedPaths.add(queryPath);
+	}
+
+	public void removeMock(String queryPath) {
+		if (mockedPaths.remove(queryPath)) {
+			server.removeContext(queryPath);
+		}
 	}
 
 	public void start() throws IOException {
@@ -42,37 +73,6 @@ public class CelestrakServer {
 	private void start(int port) throws IOException {
 		server = HttpServer.create(new InetSocketAddress("localhost", port), 0);
 		server.start();
-		server.createContext("/NORAD/elements/active.txt", new HttpHandler() {
-
-			@Override
-			public void handle(HttpExchange exchange) throws IOException {
-				if (data == null) {
-					String message = "expected not found";
-					byte[] body = message.getBytes(StandardCharsets.UTF_8);
-					exchange.sendResponseHeaders(404, body.length);
-					OutputStream os = exchange.getResponseBody();
-					os.write(body);
-					os.close();
-					return;
-				}
-				byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
-				exchange.sendResponseHeaders(200, bytes.length);
-				OutputStream os = exchange.getResponseBody();
-				os.write(bytes);
-				os.close();
-			}
-		});
-		server.createContext("/NORAD/elements/satnogs.txt", new HttpHandler() {
-
-			@Override
-			public void handle(HttpExchange exchange) throws IOException {
-				byte[] bytes = "".getBytes(StandardCharsets.UTF_8);
-				exchange.sendResponseHeaders(200, bytes.length);
-				OutputStream os = exchange.getResponseBody();
-				os.write(bytes);
-				os.close();
-			}
-		});
 	}
 
 	public void stop() {
@@ -83,21 +83,10 @@ public class CelestrakServer {
 
 	public List<String> getUrls() {
 		List<String> result = new ArrayList<>();
-		result.add("http://" + server.getAddress().getHostName() + ":" + server.getAddress().getPort() + "/NORAD/elements/satnogs.txt");
-		result.add("http://" + server.getAddress().getHostName() + ":" + server.getAddress().getPort() + "/NORAD/elements/active.txt");
-		return result;
-	}
-
-	public String getUrlsAsProperty() {
-		StringBuilder result = new StringBuilder();
-		List<String> urls = getUrls();
-		for (int i = 0; i < urls.size(); i++) {
-			if (i != 0) {
-				result.append(',');
-			}
-			result.append(urls.get(i));
+		for (String cur : mockedPaths) {
+			result.add("http://" + server.getAddress().getHostName() + ":" + server.getAddress().getPort() + cur);
 		}
-		return result.toString();
+		return result;
 	}
 
 }

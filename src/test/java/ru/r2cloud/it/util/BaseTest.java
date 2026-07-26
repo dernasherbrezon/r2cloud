@@ -71,7 +71,7 @@ public abstract class BaseTest {
 		}
 		celestrak = new CelestrakServer();
 		celestrak.start();
-		celestrak.mockResponse(TestUtil.loadExpected("sample-tle.txt"));
+		celestrak.mockResponse("/NORAD/elements/active.txt", TestUtil.loadExpected("sample-tle.txt"));
 
 		satnogs = new SatnogsServerMock();
 		satnogs.start();
@@ -101,7 +101,7 @@ public abstract class BaseTest {
 		try (InputStream is = BaseTest.class.getClassLoader().getResourceAsStream("config-dev.properties")) {
 			config = new Configuration(is, userSettingsLocation.getAbsolutePath(), "config-common-test.properties", FileSystems.getDefault());
 		}
-		config.setProperty("tle.urls", celestrak.getUrlsAsProperty());
+		config.setList("tle.urls", celestrak.getUrls());
 		config.setProperty("tle.cacheFileLocation", new File(tempFolder.getRoot(), "tle.txt").getAbsolutePath());
 		config.setProperty("satellites.meta.location", "./src/test/resources/satellites-test.json");
 		config.setProperty("satellites.satnogs.location", new File(tempFolder.getRoot(), "satnogs.json").getAbsolutePath());

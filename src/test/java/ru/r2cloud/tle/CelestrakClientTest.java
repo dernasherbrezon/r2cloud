@@ -20,6 +20,8 @@ import ru.r2cloud.util.Util;
 
 public class CelestrakClientTest {
 
+	private final static String PATH = "/NORAD/elements/active.txt";
+
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
@@ -30,8 +32,9 @@ public class CelestrakClientTest {
 	public void testSuccess() {
 		String expectedBody = TestUtil.loadExpected("sample-tle.txt");
 		Map<String, Tle> expected = convert(expectedBody);
-		server.mockResponse(expectedBody);
-		
+		server.mockResponse(PATH, expectedBody);
+		config.setList("tle.urls", server.getUrls());
+
 		CelestrakClient client = new CelestrakClient(config, new DefaultClock());
 		Map<String, Tle> actual = client.downloadTle();
 		assertEquals(expected.size(), actual.size());
@@ -39,6 +42,9 @@ public class CelestrakClientTest {
 
 	@Test
 	public void testFailure() {
+		server.mockResponse(PATH, null);
+		config.setList("tle.urls", server.getUrls());
+		
 		CelestrakClient client = new CelestrakClient(config, new DefaultClock());
 		assertEquals(0, client.downloadTle().size());
 	}
@@ -56,9 +62,8 @@ public class CelestrakClientTest {
 	public void start() throws Exception {
 		server = new CelestrakServer();
 		server.start();
-		
+
 		config = new TestConfiguration(tempFolder);
-		config.setList("tle.urls", server.getUrls());
 	}
 
 	@After

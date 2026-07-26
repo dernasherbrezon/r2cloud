@@ -63,7 +63,7 @@ public class UtilizationTest {
 
 		CelestrakServer celestrak = new CelestrakServer();
 		celestrak.start();
-		celestrak.mockResponse(TestUtil.loadExpected("tle-2020-09-27.txt"));
+		celestrak.mockResponse("/NORAD/elements/active.txt", TestUtil.loadExpected("tle-2020-09-27.txt"));
 		config.setList("tle.urls", celestrak.getUrls());
 		PredictOreKit predict = new PredictOreKit(config);
 		SatelliteDao satelliteDao = new SatelliteDao(config);
