@@ -70,7 +70,8 @@ public class LeoSatDataClient {
 		if (observation == null) {
 			return null;
 		}
-		HttpRequest request = createJsonRequest(OBSERVATION_BASEPATH, observation.toJson(null)).build();
+		JsonObject json = observation.toJson(null);
+		HttpRequest request = createJsonRequest(OBSERVATION_BASEPATH, json).build();
 		try {
 			HttpResponse<String> response = sendWithRetry(request, BodyHandlers.ofString());
 			if (response.statusCode() != 200) {
