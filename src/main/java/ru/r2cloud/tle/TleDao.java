@@ -26,14 +26,14 @@ public class TleDao {
 	private static final Logger LOG = LoggerFactory.getLogger(TleDao.class);
 
 	private final Path cacheFileLocation;
-	private final Map<String, Tle> cache = new ConcurrentHashMap<>();
+	private final Map<String, Tle> cacheById = new ConcurrentHashMap<>();
 	private final Map<String, Tle> cacheByName = new ConcurrentHashMap<>();
 	private long lastUpdateTime;
 
 	public TleDao(Configuration config) {
 		cacheFileLocation = config.getPathFromProperty("tle.cacheFileLocation");
 		index(loadTle(cacheFileLocation));
-		if (!cache.isEmpty() && Files.exists(cacheFileLocation)) {
+		if (!cacheById.isEmpty() && Files.exists(cacheFileLocation)) {
 			try {
 				lastUpdateTime = Files.getLastModifiedTime(cacheFileLocation).toMillis();
 			} catch (IOException e) {
@@ -45,14 +45,14 @@ public class TleDao {
 	}
 
 	public Map<String, Tle> findAll() {
-		return cache;
+		return cacheById;
 	}
 
 	public Tle find(String id, String name) {
 		if (id == null) {
 			return null;
 		}
-		Tle result = cache.get(id);
+		Tle result = cacheById.get(id);
 		if (result != null) {
 			return result;
 		}
@@ -63,7 +63,7 @@ public class TleDao {
 	}
 
 	private void index(Map<String, Tle> tleById) {
-		cache.putAll(tleById);
+		cacheById.putAll(tleById);
 		for (Tle cur : tleById.values()) {
 			cacheByName.put(cur.getObjectName(), cur);
 		}
