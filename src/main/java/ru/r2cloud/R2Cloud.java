@@ -161,12 +161,17 @@ public class R2Cloud {
 			ConcurrencyUtils.setNumberOfThreads(numberOfThreads);
 		}
 
+		ApplicationChecker appChecker = new ApplicationChecker(processFactory);
+		props.setProperty("satellites.wxtoimg.available", appChecker.checkApplication("wxtoimg", props.getProperty("satellites.wxtoimg.path") + " -h"));
+		props.setProperty("satellites.satdump.available", appChecker.checkApplication("satdump", props.getProperty("satellites.satdump.path") + " version"));
+		props.setProperty("satellites.sdrspectrogram.available", appChecker.checkApplication("sdr_spectrogram", props.getProperty("satellites.sdrspectrogram.path") + " -h"));
+
 		gpsdClient = new GpsdClient(props);
 		gpsdClient.updateCoordinates();
 
 		leoSatDataClient = new LeoSatDataClient(props, clock);
 		satnogsClient = new SatnogsClient(props, clock);
-		spectogramService = new SpectogramService(props);
+		spectogramService = new SpectogramService(props, processFactory);
 		resultDao = new ObservationDaoCache(new ObservationDao(props));
 		leoSatDataService = new LeoSatDataService(props, resultDao, leoSatDataClient, spectogramService);
 		influxClient = new InfluxDBClient(props, clock);
@@ -180,7 +185,7 @@ public class R2Cloud {
 		decoders = new Decoders(predict, props, processFactory, threadFactory);
 		decoderService = new DecoderService(props, decoders, resultDao, leoSatDataService, threadFactory, influxClient, satelliteDao);
 		priorityService = new PriorityService(props, clock);
-		FramingFilter framingFilter = new FramingFilter(props, processFactory);
+		FramingFilter framingFilter = new FramingFilter(props);
 
 		observationFactory = new ObservationFactory(predict);
 

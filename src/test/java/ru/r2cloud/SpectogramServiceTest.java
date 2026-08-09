@@ -29,7 +29,7 @@ public class SpectogramServiceTest {
 	@Test
 	public void testSpectogramSuccess() throws Exception {
 		File wav = TestUtil.setupClasspathResource(tempFolder, "8bit.wav");
-		SpectogramService service = new SpectogramService(config);
+		SpectogramService service = new SpectogramService(config, null);
 		File result = service.create(createWav(wav));
 		try (InputStream expected = SpectogramServiceTest.class.getClassLoader().getResourceAsStream("spectogram-output.wav.png"); InputStream actual = new FileInputStream(result)) {
 			assertStreamsEqual(expected, actual);
@@ -38,7 +38,7 @@ public class SpectogramServiceTest {
 
 	@Test
 	public void testNoInputFile() throws Exception {
-		SpectogramService service = new SpectogramService(config);
+		SpectogramService service = new SpectogramService(config, null);
 		assertNull(service.create(null));
 		Observation observation = new Observation();
 		observation.setRawPath(new File(UUID.randomUUID().toString()));
@@ -57,7 +57,7 @@ public class SpectogramServiceTest {
 	@Test
 	public void testSpectogramForIq() throws Exception {
 		File file = TestUtil.setupClasspathResource(tempFolder, "data/40069-1553411549943.raw.gz");
-		SpectogramService service = new SpectogramService(config);
+		SpectogramService service = new SpectogramService(config, null);
 		File result = service.create(create(file, 288_000));
 		try (InputStream expected = SpectogramServiceTest.class.getClassLoader().getResourceAsStream("spectogram-output.raw.gz.png"); InputStream actual = new FileInputStream(result)) {
 			assertStreamsEqual(expected, actual);

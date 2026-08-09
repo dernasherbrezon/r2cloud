@@ -109,7 +109,7 @@ public abstract class BaseTest {
 		config.setProperty("satellites.leosatdata.new.location", new File(tempFolder.getRoot(), "leosatdata.new.json").getAbsolutePath());
 		config.setProperty("locaiton.lat", "56.189");
 		config.setProperty("locaiton.lon", "38.174");
-		config.setProperty("satellits.validate.external", false);
+		config.setProperty("satellites.validate.external", false);
 		config.setProperty("satellites.rtlsdr.path", rtlSdrMock.getAbsolutePath());
 		config.setProperty("satellites.rtlsdr.test.path", rtlTestMock.getAbsolutePath());
 		config.setProperty("satellites.sox.path", "sox");

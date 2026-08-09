@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
@@ -21,6 +22,8 @@ import ru.r2cloud.jradio.source.RtlSdr;
 import ru.r2cloud.jradio.source.WavFileSource;
 import ru.r2cloud.model.Observation;
 import ru.r2cloud.util.Configuration;
+import ru.r2cloud.util.ProcessFactory;
+import ru.r2cloud.util.ProcessWrapper;
 import ru.r2cloud.util.Util;
 
 public class SpectogramService {
@@ -28,10 +31,12 @@ public class SpectogramService {
 	private static final Logger LOG = LoggerFactory.getLogger(SpectogramService.class);
 	private static final int OPTIMAL_WIDTH = 1024;
 
+	private final ProcessFactory factory;
 	private final Configuration config;
 
-	public SpectogramService(Configuration config) {
+	public SpectogramService(Configuration config, ProcessFactory factory) {
 		this.config = config;
+		this.factory = factory;
 	}
 
 	public File create(Observation observation) {
@@ -45,7 +50,7 @@ public class SpectogramService {
 		LOG.info("[{}] generating spectogram", observation.getId());
 		File result;
 		if (observation.getRawPath().getName().endsWith(".wav")) {
-			result = createFromWav(observation.getRawPath());
+			result = createFromWav(observation);
 		} else {
 			result = createFromIq(observation);
 		}
@@ -55,12 +60,13 @@ public class SpectogramService {
 		return result;
 	}
 
-	private File createFromWav(File file) {
+	private File createFromWav(Observation req) {
+		File file = req.getRawPath();
 		try (InputStream is = new BufferedInputStream(new FileInputStream(file))) {
 			WavFileSource source = new WavFileSource(is);
 			Spectogram spectogram = new Spectogram((int) (source.getContext().getSampleRate() / OPTIMAL_WIDTH));
 			BufferedImage image = spectogram.process(source);
-			File tmp = new File(config.getTempDirectory(), "spectogram-" + file.getName() + ".png");
+			File tmp = new File(config.getTempDirectory(), "spectogram-" + req.getId() + ".png");
 			ImageIO.write(image, "png", tmp);
 			return tmp;
 		} catch (Exception e) {
@@ -70,6 +76,36 @@ public class SpectogramService {
 	}
 
 	private File createFromIq(Observation req) {
+		// if sdr_spectrogram available then use it
+		// it is much faster
+		if (config.getBoolean("satellites.sdrspectrogram.available")) {
+			return createFromIqSdrSpectrogram(req);
+		}
+		return createFromIqJradio(req);
+	}
+
+	private File createFromIqSdrSpectrogram(Observation req) {
+		ProcessWrapper process = null;
+		File tmp = new File(config.getTempDirectory(), "spectogram-" + req.getId() + ".png");
+		try {
+			process = factory.create(config.getProperty("satellites.sdrspectrogram.path") + " -w " + OPTIMAL_WIDTH + " -s " + req.getSampleRate() + " -d " + req.getDataFormat().getExtension() + " -i " + req.getRawPath().getAbsolutePath() + " -o " + tmp.getAbsolutePath(), true, false);
+			int code = process.waitFor();
+			if (code != 0) {
+				LOG.error("unable to create spectrogram using sdr_spectrogram: {}", code);
+				tmp.delete(); // ignore status code because the file might not exist
+				return null;
+			}
+			return tmp;
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return null;
+		} catch (IOException e) {
+			LOG.error("unable to create spectogram", e);
+			return null;
+		}
+	}
+
+	private File createFromIqJradio(Observation req) {
 		Long totalBytes = Util.readTotalBytes(req.getRawPath().toPath());
 		if (totalBytes == null) {
 			return null;
@@ -108,7 +144,7 @@ public class SpectogramService {
 			}
 			Spectogram spectogram = new Spectogram((int) (source.getContext().getSampleRate() / OPTIMAL_WIDTH));
 			BufferedImage image = spectogram.process(source);
-			File tmp = new File(config.getTempDirectory(), "spectogram-" + req.getRawPath().getName() + ".png");
+			File tmp = new File(config.getTempDirectory(), "spectogram-" + req.getId() + ".png");
 			ImageIO.write(image, "png", tmp);
 			return tmp;
 		} catch (Exception e) {
