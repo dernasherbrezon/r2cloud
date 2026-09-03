@@ -98,6 +98,7 @@ public class SpyServerMock {
 									if (deviceInfo != null) {
 										ByteArrayOutputStream baos = new ByteArrayOutputStream();
 										deviceInfo.write(baos);
+										baos.write(0x01); // make sure extra bytes in the message won't break integration
 										byte[] body = baos.toByteArray();
 										// only message type is important
 										ResponseHeader header = new ResponseHeader();
@@ -111,13 +112,14 @@ public class SpyServerMock {
 									if (sync != null) {
 										ByteArrayOutputStream baos = new ByteArrayOutputStream();
 										sync.write(baos);
+										baos.write(0x01); // make sure extra bytes in the message won't break integration
 										byte[] body = baos.toByteArray();
 										// only message type is important
 										ResponseHeader header = new ResponseHeader();
 										header.setMessageType(SpyClient.SPYSERVER_MSG_TYPE_CLIENT_SYNC);
 										header.setBodySize(body.length);
 										header.write(os);
-										sync.write(os);
+										os.write(body);
 									}
 								}
 								if (messageType == SpyClient.SPYSERVER_CMD_SET_SETTING) {

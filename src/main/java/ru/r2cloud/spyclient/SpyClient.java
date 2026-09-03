@@ -97,10 +97,10 @@ public class SpyClient {
 								LOG.info("invalid header: {}", responseHeader.getBodySize());
 								continue;
 							}
+							byte[] body = new byte[(int) responseHeader.getBodySize()];
+							DataInputStream dis = new DataInputStream(inputStream);
+							dis.readFully(body);
 							synchronized (lock) {
-								byte[] body = new byte[(int) responseHeader.getBodySize()];
-								DataInputStream dis = new DataInputStream(inputStream);
-								dis.readFully(body);
 								deviceInfo = new SpyServerDeviceInfo();
 								deviceInfo.read(new ByteArrayInputStream(body));
 								LOG.info("spyserver connected: {}", deviceInfo.toString());
@@ -111,10 +111,10 @@ public class SpyClient {
 								LOG.info("invalid header: {}", responseHeader.getBodySize());
 								continue;
 							}
+							byte[] body = new byte[(int) responseHeader.getBodySize()];
+							DataInputStream dis = new DataInputStream(inputStream);
+							dis.readFully(body);
 							synchronized (lock) {
-								byte[] body = new byte[(int) responseHeader.getBodySize()];
-								DataInputStream dis = new DataInputStream(inputStream);
-								dis.readFully(body);
 								sync = new SpyClientSync();
 								sync.read(new ByteArrayInputStream(body));
 								LOG.info("state: {}", sync.toString());
