@@ -1,5 +1,6 @@
 package ru.r2cloud.satellite.reader;
 
+import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -95,18 +96,26 @@ public class SpyServerMock {
 									is.read(clientIdBytes);
 									LOG.info("client connected: {} version: {}", new String(clientIdBytes, StandardCharsets.US_ASCII), protocolVersion);
 									if (deviceInfo != null) {
+										ByteArrayOutputStream baos = new ByteArrayOutputStream();
+										deviceInfo.write(baos);
+										byte[] body = baos.toByteArray();
 										// only message type is important
 										ResponseHeader header = new ResponseHeader();
 										header.setMessageType(SpyClient.SPYSERVER_MSG_TYPE_DEVICE_INFO);
+										header.setBodySize(body.length);
 										header.write(os);
-										deviceInfo.write(os);
+										os.write(body);
 									} else {
 										break;
 									}
 									if (sync != null) {
+										ByteArrayOutputStream baos = new ByteArrayOutputStream();
+										sync.write(baos);
+										byte[] body = baos.toByteArray();
 										// only message type is important
 										ResponseHeader header = new ResponseHeader();
 										header.setMessageType(SpyClient.SPYSERVER_MSG_TYPE_CLIENT_SYNC);
+										header.setBodySize(body.length);
 										header.write(os);
 										sync.write(os);
 									}
