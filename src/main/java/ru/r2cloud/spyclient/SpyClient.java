@@ -1,6 +1,8 @@
 package ru.r2cloud.spyclient;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -91,16 +93,30 @@ public class SpyClient {
 					try {
 						responseHeader.read(inputStream);
 						if (responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_DEVICE_INFO) {
+							if (responseHeader.getBodySize() > 1024) {
+								LOG.info("invalid header: {}", responseHeader.getBodySize());
+								continue;
+							}
 							synchronized (lock) {
+								byte[] body = new byte[(int) responseHeader.getBodySize()];
+								DataInputStream dis = new DataInputStream(inputStream);
+								dis.readFully(body);
 								deviceInfo = new SpyServerDeviceInfo();
-								deviceInfo.read(inputStream);
+								deviceInfo.read(new ByteArrayInputStream(body));
 								LOG.info("spyserver connected: {}", deviceInfo.toString());
 								lock.notifyAll();
 							}
 						} else if (responseHeader.getMessageType() == SPYSERVER_MSG_TYPE_CLIENT_SYNC) {
+							if (responseHeader.getBodySize() > 1024) {
+								LOG.info("invalid header: {}", responseHeader.getBodySize());
+								continue;
+							}
 							synchronized (lock) {
+								byte[] body = new byte[(int) responseHeader.getBodySize()];
+								DataInputStream dis = new DataInputStream(inputStream);
+								dis.readFully(body);
 								sync = new SpyClientSync();
-								sync.read(inputStream);
+								sync.read(new ByteArrayInputStream(body));
 								LOG.info("state: {}", sync.toString());
 								lock.notifyAll();
 							}
@@ -115,7 +131,7 @@ public class SpyClient {
 								}
 							}
 						} else {
-							LOG.info("unknown message received: {}", responseHeader.getMessageType());
+							LOG.info("unknown message received: {} size: {}", responseHeader.getMessageType(), responseHeader.getBodySize());
 							inputStream.skipNBytes(responseHeader.getBodySize());
 						}
 					} catch (EOFException e) {

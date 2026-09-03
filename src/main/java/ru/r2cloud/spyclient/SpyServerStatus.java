@@ -14,27 +14,27 @@ public class SpyServerStatus {
 	private long maxFrequency;
 	private DataFormat format;
 	private List<Long> supportedSampleRates;
-	
+
 	public String getDeviceSerial() {
 		return deviceSerial;
 	}
-	
+
 	public void setDeviceSerial(String deviceSerial) {
 		this.deviceSerial = deviceSerial;
 	}
-	
+
 	public List<Long> getSupportedSampleRates() {
 		return supportedSampleRates;
 	}
-	
+
 	public void setSupportedSampleRates(List<Long> supportedSampleRates) {
 		this.supportedSampleRates = supportedSampleRates;
 	}
-	
+
 	public DataFormat getFormat() {
 		return format;
 	}
-	
+
 	public void setFormat(DataFormat format) {
 		this.format = format;
 	}
@@ -69,6 +69,11 @@ public class SpyServerStatus {
 
 	public void setMaxFrequency(long maxFrequency) {
 		this.maxFrequency = maxFrequency;
+	}
+
+	@Override
+	public String toString() {
+		return "SpyServerStatus [status=" + status + ", failureMessage=" + failureMessage + ", deviceSerial=" + deviceSerial + ", minFrequency=" + minFrequency + ", maxFrequency=" + maxFrequency + ", format=" + format + ", supportedSampleRates=" + supportedSampleRates + "]";
 	}
 
 }
