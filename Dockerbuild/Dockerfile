@@ -1,4 +1,4 @@
-FROM r2cloud/bullseye:latest
+FROM r2cloud/bookworm:latest
 
 COPY *.deb /usr/share/
 
