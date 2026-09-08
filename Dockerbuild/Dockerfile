@@ -11,8 +11,7 @@ RUN gpg --keyserver keyserver.ubuntu.com --recv-keys A5A70917 \
     && apt clean \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /home/pi/r2cloud-tests/bin \
-    && mkdir -p /home/pi/r2cloud-tests/lib \
-    && chmod +x /usr/bin/modprobe
+    && mkdir -p /home/pi/r2cloud-tests/lib
     
 COPY *.sh /home/pi/r2cloud-tests/bin/
 COPY *.jar /home/pi/r2cloud-tests/lib/
