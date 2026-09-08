@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -131,10 +132,28 @@ public class OreKitDataClientTest {
 
 	@Before
 	public void start() throws Exception {
-		server = HttpServer.create(new InetSocketAddress("localhost", 8000), 0);
-		server.start();
+		int port = 8000;
+		IOException last = null;
+		for (int i = 0; i < 10; i++) {
+			try {
+				start(port + i);
+				last = null;
+				break;
+			} catch (BindException e) {
+				last = e;
+				continue;
+			}
+		}
+		if (last != null) {
+			throw last;
+		}
 		dataFolder = tempFolder.getRoot().toPath().resolve("./orekit-data");
 		validZipFile = "http://" + server.getAddress().getHostName() + ":" + server.getAddress().getPort() + "/file.zip";
+	}
+	
+	private void start(int port) throws IOException {
+		server = HttpServer.create(new InetSocketAddress("localhost", port), 0);
+		server.start();
 	}
 
 	@After
