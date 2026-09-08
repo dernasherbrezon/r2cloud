@@ -2,7 +2,10 @@ FROM balenalib/armv7hf-debian:bookworm
 
 COPY *.deb /usr/share/
 
-RUN apt-get update \
+RUN gpg --keyserver keyserver.ubuntu.com --recv-keys A5A70917 \
+    && gpg --armor --export A5A70917 | sudo apt-key add - \
+    && bash -c "echo 'deb http://s3.amazonaws.com/r2cloud bookworm main' > /etc/apt/sources.list.d/r2cloud.list" \
+    && apt-get update \
     && apt install systemd sox r2cloud-ui \
     && apt-get install /usr/share/*.deb \
     && apt clean \
