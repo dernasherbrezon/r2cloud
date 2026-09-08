@@ -1,4 +1,4 @@
-FROM r2cloud/bookworm:latest
+FROM balenalib/armv7hf-debian:bookworm
 
 COPY *.deb /usr/share/
 
