@@ -1,7 +1,9 @@
 package ru.r2cloud.satellite.decoder;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,11 +19,13 @@ import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconOutputStream;
 import ru.r2cloud.jradio.BeaconSource;
 import ru.r2cloud.jradio.ByteInput;
+import ru.r2cloud.jradio.Context;
 import ru.r2cloud.jradio.FloatInput;
 import ru.r2cloud.jradio.RxMetadata;
 import ru.r2cloud.jradio.demod.AfskDemodulator;
 import ru.r2cloud.jradio.demod.BpskDemodulator;
 import ru.r2cloud.jradio.demod.FskDemodulator;
+import ru.r2cloud.jradio.source.InputStreamSource;
 import ru.r2cloud.model.DecoderResult;
 import ru.r2cloud.model.DemodulatorType;
 import ru.r2cloud.model.Instrument;
@@ -90,7 +94,7 @@ public abstract class TelemetryDecoder implements Decoder {
 				LOG.error("[{}] unable to process baud rate {}", req.getId(), baudRate, e);
 			}
 		}
-		if (satellite.getInstruments() != null) {
+		if (satellite != null && satellite.getInstruments() != null) {
 			result.setInstruments(decodeImage(satellite, allBeacons));
 		}
 		result.setNumberOfDecodedPackets(allBeacons.size());
@@ -126,6 +130,12 @@ public abstract class TelemetryDecoder implements Decoder {
 			break;
 		case FILE:
 			result.add(new BeaconInputStreamSource<>(rawIq, transmitter.getBeaconClass()));
+			break;
+		case SOFT_FILE:
+			Context context = new Context();
+			context.setSoftBits(true);
+			demodulator = new InputStreamSource(new BufferedInputStream(new FileInputStream(rawIq)), context);
+			result.add(createBeaconSource(demodulator, req));
 			break;
 		default:
 			LOG.error("unknown demodulator type: " + type);

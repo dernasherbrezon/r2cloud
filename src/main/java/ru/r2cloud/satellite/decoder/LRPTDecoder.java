@@ -16,8 +16,12 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.r2cloud.jradio.Beacon;
 import ru.r2cloud.jradio.BeaconInputStream;
 import ru.r2cloud.jradio.BeaconOutputStream;
+import ru.r2cloud.jradio.BeaconSource;
+import ru.r2cloud.jradio.ByteInput;
+import ru.r2cloud.jradio.Context;
 import ru.r2cloud.jradio.blocks.Constellation;
 import ru.r2cloud.jradio.demod.QpskDemodulator;
 import ru.r2cloud.jradio.lrpt.PacketReassembly;
@@ -25,7 +29,9 @@ import ru.r2cloud.jradio.lrpt.Vcdu;
 import ru.r2cloud.jradio.meteor.MeteorImage;
 import ru.r2cloud.jradio.meteor.MeteorM;
 import ru.r2cloud.jradio.meteor.MeteorMN2;
+import ru.r2cloud.jradio.source.InputStreamSource;
 import ru.r2cloud.model.DecoderResult;
+import ru.r2cloud.model.DemodulatorType;
 import ru.r2cloud.model.Instrument;
 import ru.r2cloud.model.InstrumentChannel;
 import ru.r2cloud.model.Observation;
@@ -49,7 +55,6 @@ public class LRPTDecoder implements Decoder {
 
 	@Override
 	public DecoderResult decode(final File rawIq, final Observation req, final Transmitter transmitter, final Satellite satellite) {
-		int baudRate = transmitter.getBaudRates().get(0);
 		MeteorM lrpt = null;
 		DecoderResult result = new DecoderResult();
 		result.setIq(rawIq);
@@ -57,10 +62,7 @@ public class LRPTDecoder implements Decoder {
 		int numberOfDecodedPackets = 0;
 		File binFile = new File(config.getTempDirectory(), "lrpt-" + req.getId() + ".bin");
 		try {
-			DopplerCorrectedSource source = new DopplerCorrectedSource(predict, rawIq, req, transmitter, baudRate);
-			Constellation constel = new Constellation(new float[] { -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f }, new int[] { 0, 1, 3, 2 }, 4, 1);
-			QpskDemodulator qpskDemod = new QpskDemodulator(source, baudRate, constel);
-			lrpt = new MeteorMN2(qpskDemod);
+			lrpt = (MeteorM) createBeaconSource(rawIq, req, transmitter, transmitter.getBaudRates().get(0));
 			try (BeaconOutputStream fos = new BeaconOutputStream(new BufferedOutputStream(new FileOutputStream(binFile)))) {
 				while (lrpt.hasNext()) {
 					fos.write(lrpt.next());
@@ -83,6 +85,24 @@ public class LRPTDecoder implements Decoder {
 			}
 		}
 		return result;
+	}
+
+	private BeaconSource<? extends Beacon> createBeaconSource(File rawIq, Observation req, final Transmitter transmitter, Integer baudRate) throws IOException {
+		DemodulatorType type = config.getDemodulatorType(transmitter.getModulation());
+		switch (type) {
+		case JRADIO:
+			Constellation constel = new Constellation(new float[] { -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f }, new int[] { 0, 1, 3, 2 }, 4, 1);
+			ByteInput demodulator = new QpskDemodulator(new DopplerCorrectedSource(predict, rawIq, req, transmitter, baudRate), baudRate, constel);
+			return new MeteorMN2(demodulator);
+		case SOFT_FILE:
+			Context context = new Context();
+			context.setSoftBits(true);
+			demodulator = new InputStreamSource(new BufferedInputStream(new FileInputStream(rawIq)), context);
+			return new MeteorMN2(demodulator);
+		default:
+			LOG.error("unknown demodulator type: " + type);
+			return null;
+		}
 	}
 
 	private Instrument setupMsumr(final Satellite satellite, File binFile) {
