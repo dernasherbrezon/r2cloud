@@ -46,6 +46,7 @@ import ru.r2cloud.lora.LoraFrame;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.DeviceStatus;
 import ru.r2cloud.model.Framing;
+import ru.r2cloud.model.LoraModulation;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Transmitter;
@@ -177,19 +178,22 @@ public class GattServerTest {
 	}
 
 	private static Transmitter createTransmitter() {
+		LoraModulation modulationSettings = new LoraModulation();
+		modulationSettings.setLoraBandwidth(250_000L);
+		modulationSettings.setLoraSpreadFactor(10);
+		modulationSettings.setLoraCodingRate(5);
+		modulationSettings.setLoraSyncword(18);
+		modulationSettings.setLoraPreambleLength(8);
+		modulationSettings.setLoraLdro(0);
+
 		Transmitter result = new Transmitter();
 		result.setModulation(Modulation.LORA);
 		result.setFraming(Framing.LORA);
 		result.setBeaconClass(NorbiBeacon.class);
 		result.setFrequency(436703000L);
 		result.setBandwidth(0);
+		result.setLoraModulation(modulationSettings);
 		result.setStatus(TransmitterStatus.ENABLED);
-		result.setLoraBandwidth(250_000L);
-		result.setLoraSpreadFactor(10);
-		result.setLoraCodingRate(5);
-		result.setLoraSyncword(18);
-		result.setLoraPreambleLength(8);
-		result.setLoraLdro(0);
 		result.setTle(Util.fromOldFormat(new String[] { "NORBI", "1 46494U 20068J   22336.90274690  .00003263  00000+0  22606-3 0  9998", "2 46494  97.7471 278.8262 0018953  74.3629 285.9691 15.06230312119549" }));
 		result.setEnabled(true);
 		result.setFrequencyBand(result.getFrequency());
@@ -234,18 +238,19 @@ public class GattServerTest {
 		assertEquals(endTime, actual.getEndTimeMillis());
 		assertEquals(time, actual.getCurrentTime());
 		assertEquals(transmitter.getFrequency(), actual.getFrequency());
-		assertEquals(transmitter.getLoraBandwidth(), actual.getLoraBandwidth());
-		assertEquals(transmitter.getLoraSpreadFactor(), actual.getLoraSpreadFactor());
-		assertEquals(transmitter.getLoraCodingRate(), actual.getLoraCodingRate());
-		assertEquals(transmitter.getLoraSyncword(), actual.getLoraSyncword());
+		LoraModulation modulationSettings = transmitter.getLoraModulation();
+		assertEquals(modulationSettings.getLoraBandwidth(), actual.getLoraBandwidth());
+		assertEquals(modulationSettings.getLoraSpreadFactor(), actual.getLoraSpreadFactor());
+		assertEquals(modulationSettings.getLoraCodingRate(), actual.getLoraCodingRate());
+		assertEquals(modulationSettings.getLoraSyncword(), actual.getLoraSyncword());
 		// 10 is hardcoded
 		assertEquals(10, actual.getPower());
-		assertEquals(transmitter.getLoraPreambleLength(), actual.getLoraPreambleLength());
+		assertEquals(modulationSettings.getLoraPreambleLength(), actual.getLoraPreambleLength());
 		assertEquals(gain, actual.getGain());
-		assertEquals(transmitter.getLoraLdro(), actual.getLoraLdro());
-		assertEquals(transmitter.isLoraCrc() ? 1 : 0, actual.getLoraCrc());
-		assertEquals(transmitter.isLoraExplicitHeader() ? 1 : 0, actual.getLoraExplicitHeader());
-		assertEquals(transmitter.getBeaconSizeBytes(), actual.getBeaconSizeBytes());
+		assertEquals(modulationSettings.getLoraLdro(), actual.getLoraLdro());
+		assertEquals(modulationSettings.isLoraCrc() ? 1 : 0, actual.getLoraCrc());
+		assertEquals(modulationSettings.isLoraExplicitHeader() ? 1 : 0, actual.getLoraExplicitHeader());
+		assertEquals(modulationSettings.getBeaconSizeBytes(), actual.getBeaconSizeBytes());
 	}
 
 	private static LoraBleObservationRequest deserialize(byte[] readValue) throws IOException {

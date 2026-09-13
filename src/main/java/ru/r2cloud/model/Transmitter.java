@@ -11,6 +11,9 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
 import ru.r2cloud.jradio.Beacon;
+import ru.r2cloud.jradio.ccsds.CcsdsFraming;
+import ru.r2cloud.jradio.ccsds.Coding;
+import ru.r2cloud.jradio.ccsds.ScramblerType;
 
 public class Transmitter {
 
@@ -32,19 +35,15 @@ public class Transmitter {
 	private double transitionWidth;
 	private String syncword;
 
-	private long loraBandwidth;
-	private int loraSpreadFactor;
-	private int loraSyncword;
-	private int loraPreambleLength;
-	private int loraLdro;
-	private boolean loraExplicitHeader;
-	// should be configured only for implicit mode header.
-	private int loraCodingRate;
-	private boolean loraCrc;
+	private LoraModulation loraModulation;
+	private PcmpskpmModulation pcmpskpmModulation;
+
 	private TransmitterStatus status;
 	private Date updated;
 	private String satdumpPipeline;
 	private int satdumpCaduSizeBytes;
+
+	private CcsdsFraming ccsdsFraming;
 
 	// copied from satellite
 	// to simplify code
@@ -82,14 +81,12 @@ public class Transmitter {
 		this.deviation = copy.deviation;
 		this.afCarrier = copy.afCarrier;
 		this.transitionWidth = copy.transitionWidth;
-		this.loraBandwidth = copy.loraBandwidth;
-		this.loraSpreadFactor = copy.loraSpreadFactor;
-		this.loraCodingRate = copy.loraCodingRate;
-		this.loraSyncword = copy.loraSyncword;
-		this.loraPreambleLength = copy.loraPreambleLength;
-		this.loraLdro = copy.loraLdro;
-		this.loraExplicitHeader = copy.loraExplicitHeader;
-		this.loraCrc = copy.loraCrc;
+		if (copy.loraModulation != null) {
+			this.loraModulation = new LoraModulation(copy.loraModulation);
+		}
+		if (copy.pcmpskpmModulation != null) {
+			this.pcmpskpmModulation = new PcmpskpmModulation(copy.pcmpskpmModulation);
+		}
 		this.tle = copy.tle;
 		this.syncword = copy.syncword;
 		if (copy.updated != null) {
@@ -97,6 +94,9 @@ public class Transmitter {
 		}
 		this.satdumpPipeline = copy.satdumpPipeline;
 		this.satdumpCaduSizeBytes = copy.satdumpCaduSizeBytes;
+		if (copy.ccsdsFraming != null) {
+			this.ccsdsFraming = new CcsdsFraming(copy.ccsdsFraming);
+		}
 	}
 
 	public int getSatdumpCaduSizeBytes() {
@@ -139,20 +139,20 @@ public class Transmitter {
 		this.frequencyBand = frequencyBand;
 	}
 
-	public boolean isLoraCrc() {
-		return loraCrc;
+	public LoraModulation getLoraModulation() {
+		return loraModulation;
 	}
 
-	public void setLoraCrc(boolean loraCrc) {
-		this.loraCrc = loraCrc;
+	public void setLoraModulation(LoraModulation loraModulation) {
+		this.loraModulation = loraModulation;
 	}
 
-	public boolean isLoraExplicitHeader() {
-		return loraExplicitHeader;
+	public CcsdsFraming getCcsdsFraming() {
+		return ccsdsFraming;
 	}
 
-	public void setLoraExplicitHeader(boolean loraExplicitHeader) {
-		this.loraExplicitHeader = loraExplicitHeader;
+	public void setCcsdsFraming(CcsdsFraming ccsdsFraming) {
+		this.ccsdsFraming = ccsdsFraming;
 	}
 
 	public Date getUpdated() {
@@ -323,54 +323,6 @@ public class Transmitter {
 		this.bpskCenterFrequency = bpskCenterFrequency;
 	}
 
-	public long getLoraBandwidth() {
-		return loraBandwidth;
-	}
-
-	public void setLoraBandwidth(long loraBandwidth) {
-		this.loraBandwidth = loraBandwidth;
-	}
-
-	public int getLoraSpreadFactor() {
-		return loraSpreadFactor;
-	}
-
-	public void setLoraSpreadFactor(int loraSpreadFactor) {
-		this.loraSpreadFactor = loraSpreadFactor;
-	}
-
-	public int getLoraCodingRate() {
-		return loraCodingRate;
-	}
-
-	public void setLoraCodingRate(int loraCodingRate) {
-		this.loraCodingRate = loraCodingRate;
-	}
-
-	public int getLoraSyncword() {
-		return loraSyncword;
-	}
-
-	public void setLoraSyncword(int loraSyncword) {
-		this.loraSyncword = loraSyncword;
-	}
-
-	public int getLoraPreambleLength() {
-		return loraPreambleLength;
-	}
-
-	public void setLoraPreambleLength(int loraPreambleLength) {
-		this.loraPreambleLength = loraPreambleLength;
-	}
-
-	public int getLoraLdro() {
-		return loraLdro;
-	}
-
-	public void setLoraLdro(int loraLdro) {
-		this.loraLdro = loraLdro;
-	}
-
 	@Override
 	public String toString() {
 		return id;
@@ -382,6 +334,14 @@ public class Transmitter {
 
 	public void setStatus(TransmitterStatus status) {
 		this.status = status;
+	}
+
+	public PcmpskpmModulation getPcmpskpmModulation() {
+		return pcmpskpmModulation;
+	}
+
+	public void setPcmpskpmModulation(PcmpskpmModulation pcmpskpmModulation) {
+		this.pcmpskpmModulation = pcmpskpmModulation;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -434,41 +394,8 @@ public class Transmitter {
 		if (beaconSizeBytes != null) {
 			result.setBeaconSizeBytes(beaconSizeBytes.asInt());
 		}
-		JsonValue loraBandwidth = asObject.get("loraBandwidth");
-		if (loraBandwidth != null) {
-			result.setLoraBandwidth(loraBandwidth.asLong());
-		}
-		JsonValue loraSpreadFactor = asObject.get("loraSpreadFactor");
-		if (loraSpreadFactor != null) {
-			result.setLoraSpreadFactor(loraSpreadFactor.asInt());
-		}
-		JsonValue loraCodingRate = asObject.get("loraCodingRate");
-		if (loraCodingRate != null) {
-			result.setLoraCodingRate(loraCodingRate.asInt());
-		}
-		JsonValue loraSyncword = asObject.get("loraSyncword");
-		if (loraSyncword != null) {
-			result.setLoraSyncword(loraSyncword.asInt());
-		}
-		JsonValue loraPreambleLength = asObject.get("loraPreambleLength");
-		if (loraPreambleLength != null) {
-			result.setLoraPreambleLength(loraPreambleLength.asInt());
-		}
-		JsonValue loraLdro = asObject.get("loraLdro");
-		if (loraLdro != null) {
-			result.setLoraLdro(loraLdro.asInt());
-		}
-		JsonValue loraCrc = asObject.get("loraCrc");
-		if (loraCrc != null) {
-			result.setLoraCrc(loraCrc.asBoolean());
-		} else {
-			result.setLoraCrc(true);
-		}
-		JsonValue loraExplicitHeader = asObject.get("loraExplicitHeader");
-		if (loraExplicitHeader != null) {
-			result.setLoraExplicitHeader(loraExplicitHeader.asBoolean());
-		} else {
-			result.setLoraExplicitHeader(true);
+		if (result.getModulation().equals(Modulation.LORA)) {
+			result.setLoraModulation(LoraModulation.fromJson(asObject));
 		}
 		JsonValue assistedHeader = asObject.get("assistedHeader");
 		if (assistedHeader != null) {
@@ -516,6 +443,14 @@ public class Transmitter {
 		if (satdumpCaduSizeBytes != null) {
 			result.setSatdumpCaduSizeBytes(satdumpCaduSizeBytes.asInt());
 		}
+		JsonValue ccsdsFraming = asObject.get("ccsdsFraming");
+		if (ccsdsFraming != null) {
+			result.setCcsdsFraming(ccsdsFramingFromJson(ccsdsFraming.asObject()));
+		}
+		JsonValue pcmpskpmModulation = asObject.get("pcmpskpmModulation");
+		if (pcmpskpmModulation != null) {
+			result.setPcmpskpmModulation(PcmpskpmModulation.fromJson(pcmpskpmModulation.asObject()));
+		}
 		return result;
 	}
 
@@ -553,27 +488,8 @@ public class Transmitter {
 		if (syncword != null) {
 			result.add("syncword", syncword);
 		}
-		if (loraBandwidth != 0) {
-			result.add("loraBandwidth", loraBandwidth);
-		}
-		if (loraSpreadFactor != 0) {
-			result.add("loraSpreadFactor", loraSpreadFactor);
-		}
-		if (loraCodingRate != 0) {
-			result.add("loraCodingRate", loraCodingRate);
-		}
-		if (loraSyncword != 0) {
-			result.add("loraSyncword", loraSyncword);
-		}
-		if (loraPreambleLength != 0) {
-			result.add("loraPreambleLength", loraPreambleLength);
-		}
-		if (loraLdro != 0) {
-			result.add("loraLdro", loraLdro);
-		}
-		if (modulation != null && modulation.equals(Modulation.LORA)) {
-			result.add("loraExplicitHeader", loraExplicitHeader);
-			result.add("loraCrc", loraCrc);
+		if (loraModulation != null) {
+			loraModulation.toJson(result);
 		}
 		if (deviation != 5000) {
 			result.add("deviation", deviation);
@@ -596,6 +512,30 @@ public class Transmitter {
 		if (satdumpCaduSizeBytes != 0) {
 			result.add("satdumpCaduSizeBytes", satdumpCaduSizeBytes);
 		}
+		if (ccsdsFraming != null) {
+			result.add("ccsdsFraming", ccsdsFramingToJson(ccsdsFraming));
+		}
+		if (pcmpskpmModulation != null) {
+			result.add("pcmpskpmModulation", pcmpskpmModulation.toJson());
+		}
+		return result;
+	}
+
+	private static JsonObject ccsdsFramingToJson(CcsdsFraming framing) {
+		JsonObject result = new JsonObject();
+		result.set("coding", framing.getCoding().name());
+		result.set("frameLengthBytes", framing.getFrameLength());
+		result.set("scrambler", framing.getScrambler().name());
+		result.set("syncwordThreshold", framing.getSyncwordThreshold());
+		return result;
+	}
+
+	private static CcsdsFraming ccsdsFramingFromJson(JsonObject obj) {
+		CcsdsFraming result = new CcsdsFraming();
+		result.setCoding(Coding.valueOf(obj.getString("coding", null)));
+		result.setFrameLength(obj.getInt("frameLengthBytes", 0));
+		result.setScrambler(ScramblerType.valueOf(obj.getString("scrambler", null)));
+		result.setSyncwordThreshold(obj.getInt("syncwordThreshold", 0));
 		return result;
 	}
 

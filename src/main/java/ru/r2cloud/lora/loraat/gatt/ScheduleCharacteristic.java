@@ -13,6 +13,7 @@ import ru.r2cloud.device.Device;
 import ru.r2cloud.device.DeviceManager;
 import ru.r2cloud.device.LoraAtBleDevice;
 import ru.r2cloud.lora.LoraFrame;
+import ru.r2cloud.model.LoraModulation;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.satellite.ObservationRequestComparator;
@@ -62,6 +63,11 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 			LOG.error("[{}] can't find transmitter: {}", bluetoothAddress, req.getTransmitterId());
 			return new byte[0];
 		}
+		LoraModulation modulationSettings = transmitter.getLoraModulation();
+		if (modulationSettings == null) {
+			LOG.error("[{}] lora modulation settings are missing: {}", bluetoothAddress, req.getTransmitterId());
+			return new byte[0];
+		}
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try (DataOutputStream dos = new DataOutputStream(baos)) {
 			dos.writeByte(PROTOCOL_VERSION);
@@ -69,26 +75,26 @@ public class ScheduleCharacteristic extends BleCharacteristic {
 			dos.writeLong(req.getEndTimeMillis());
 			dos.writeLong(currentTime);
 			dos.writeLong(req.getFrequency());
-			dos.writeInt((int) transmitter.getLoraBandwidth());
-			dos.writeByte(transmitter.getLoraSpreadFactor());
-			dos.writeByte(transmitter.getLoraCodingRate());
-			dos.writeByte(transmitter.getLoraSyncword());
+			dos.writeInt((int) modulationSettings.getLoraBandwidth());
+			dos.writeByte(modulationSettings.getLoraSpreadFactor());
+			dos.writeByte(modulationSettings.getLoraCodingRate());
+			dos.writeByte(modulationSettings.getLoraSyncword());
 			dos.writeByte(10); // power
-			dos.writeShort(transmitter.getLoraPreambleLength());
+			dos.writeShort(modulationSettings.getLoraPreambleLength());
 			dos.writeByte((int) device.getDeviceConfiguration().getGain());
-			dos.writeByte(transmitter.getLoraLdro());
-			if (transmitter.isLoraCrc()) {
+			dos.writeByte(modulationSettings.getLoraLdro());
+			if (modulationSettings.isLoraCrc()) {
 				dos.writeByte(1);
 			} else {
 				dos.writeByte(0);
 			}
-			if (transmitter.isLoraExplicitHeader()) {
+			if (modulationSettings.isLoraExplicitHeader()) {
 				dos.writeByte(1);
 			} else {
 				dos.writeByte(0);
 			}
 			// lora packet size cannot be more than 255 bytes
-			dos.writeByte(transmitter.getBeaconSizeBytes());
+			dos.writeByte(modulationSettings.getBeaconSizeBytes());
 			dos.writeShort(240); // over current protection. not used for RX
 			dos.writeByte(0); // pin for TX. not used in RX
 		} catch (IOException e) {

@@ -23,8 +23,8 @@ public class DeviceTransmitterFilter implements TransmitterFilter {
 			return false;
 		}
 		long bandwidth = transmitter.getBandwidth();
-		if (bandwidth == 0) {
-			bandwidth = transmitter.getLoraBandwidth();
+		if (bandwidth == 0 && transmitter.getLoraModulation() != null) {
+			bandwidth = transmitter.getLoraModulation().getLoraBandwidth();
 		}
 		if ((transmitter.getFrequency() + bandwidth / 2) > config.getMaximumFrequency()) {
 			return false;

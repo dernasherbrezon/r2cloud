@@ -21,6 +21,7 @@ import ru.r2cloud.lora.loraat.MultiStreamInputStream;
 import ru.r2cloud.lora.loraat.SerialMock;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
+import ru.r2cloud.model.LoraModulation;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
@@ -80,13 +81,15 @@ public class LoraAtReaderTest {
 	}
 
 	public static Transmitter createValidTransmitter() {
+		LoraModulation modulationSettings = new LoraModulation();
+		modulationSettings.setLoraCodingRate(7);
+		modulationSettings.setLoraPreambleLength(8);
+		modulationSettings.setLoraSpreadFactor(9);
+		modulationSettings.setLoraSyncword(18);
+		modulationSettings.setLoraLdro(0);
+		modulationSettings.setLoraBandwidth(500000);
 		Transmitter transmitter = new Transmitter();
-		transmitter.setLoraCodingRate(7);
-		transmitter.setLoraPreambleLength(8);
-		transmitter.setLoraSpreadFactor(9);
-		transmitter.setLoraSyncword(18);
-		transmitter.setLoraLdro(0);
-		transmitter.setLoraBandwidth(500000);
+		transmitter.setLoraModulation(modulationSettings);
 		return transmitter;
 	}
 

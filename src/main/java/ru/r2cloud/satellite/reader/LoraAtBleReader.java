@@ -15,6 +15,7 @@ import ru.r2cloud.lora.LoraFrame;
 import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
+import ru.r2cloud.model.LoraModulation;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
@@ -76,8 +77,9 @@ public class LoraAtBleReader implements IQReader {
 	}
 
 	private String toLoraAtFriendlyString() {
-		return String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", transmitter.getFrequency(), transmitter.getLoraBandwidth(), transmitter.getLoraSpreadFactor(), transmitter.getLoraCodingRate(), transmitter.getLoraSyncword(), transmitter.getLoraPreambleLength(),
-				(int) deviceConfiguration.getGain(), transmitter.getLoraLdro(), transmitter.isLoraCrc() ? 1 : 0, transmitter.isLoraExplicitHeader() ? 1 : 0, transmitter.getBeaconSizeBytes());
+		LoraModulation modulationSettings = transmitter.getLoraModulation();
+		return String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", transmitter.getFrequency(), modulationSettings.getLoraBandwidth(), modulationSettings.getLoraSpreadFactor(), modulationSettings.getLoraCodingRate(), modulationSettings.getLoraSyncword(), modulationSettings.getLoraPreambleLength(),
+				(int) deviceConfiguration.getGain(), modulationSettings.getLoraLdro(), modulationSettings.isLoraCrc() ? 1 : 0, modulationSettings.isLoraExplicitHeader() ? 1 : 0, modulationSettings.getBeaconSizeBytes());
 	}
 
 }

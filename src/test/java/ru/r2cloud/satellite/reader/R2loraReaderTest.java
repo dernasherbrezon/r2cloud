@@ -25,6 +25,7 @@ import ru.r2cloud.TestUtil;
 import ru.r2cloud.lora.r2lora.R2loraClient;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
+import ru.r2cloud.model.LoraModulation;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Satellite;
 import ru.r2cloud.model.Transmitter;
@@ -96,13 +97,16 @@ public class R2loraReaderTest {
 	}
 
 	private static Satellite createSatellite() {
+		LoraModulation modulationSettings = new LoraModulation();
+		modulationSettings.setLoraCodingRate(7);
+		modulationSettings.setLoraPreambleLength(8);
+		modulationSettings.setLoraSpreadFactor(9);
+		modulationSettings.setLoraSyncword(18);
+		modulationSettings.setLoraLdro(0);
+		modulationSettings.setLoraBandwidth(500000);
+
 		Transmitter transmitter = new Transmitter();
-		transmitter.setLoraCodingRate(7);
-		transmitter.setLoraPreambleLength(8);
-		transmitter.setLoraSpreadFactor(9);
-		transmitter.setLoraSyncword(18);
-		transmitter.setLoraLdro(0);
-		transmitter.setLoraBandwidth(500000);
+		transmitter.setLoraModulation(modulationSettings);
 
 		Satellite satellite = new Satellite();
 		satellite.setId(UUID.randomUUID().toString());

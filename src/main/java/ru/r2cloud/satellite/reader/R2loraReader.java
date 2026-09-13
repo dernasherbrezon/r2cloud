@@ -20,6 +20,7 @@ import ru.r2cloud.lora.r2lora.R2loraClient;
 import ru.r2cloud.model.DataFormat;
 import ru.r2cloud.model.DeviceConfiguration;
 import ru.r2cloud.model.IQData;
+import ru.r2cloud.model.LoraModulation;
 import ru.r2cloud.model.ObservationRequest;
 import ru.r2cloud.model.Transmitter;
 import ru.r2cloud.util.Configuration;
@@ -46,15 +47,16 @@ public class R2loraReader implements IQReader {
 
 	@Override
 	public IQData start() throws InterruptedException {
+		LoraModulation modulationSettings = transmitter.getLoraModulation();
 		LoraObservationRequest loraRequest = new LoraObservationRequest();
-		loraRequest.setBw(transmitter.getLoraBandwidth());
-		loraRequest.setCr(transmitter.getLoraCodingRate());
+		loraRequest.setBw(modulationSettings.getLoraBandwidth());
+		loraRequest.setCr(modulationSettings.getLoraCodingRate());
 		loraRequest.setFrequency(req.getFrequency());
 		loraRequest.setGain((int) deviceConfiguration.getGain());
-		loraRequest.setLdro(transmitter.getLoraLdro());
-		loraRequest.setPreambleLength(transmitter.getLoraPreambleLength());
-		loraRequest.setSf(transmitter.getLoraSpreadFactor());
-		loraRequest.setSyncword(transmitter.getLoraSyncword());
+		loraRequest.setLdro(modulationSettings.getLoraLdro());
+		loraRequest.setPreambleLength(modulationSettings.getLoraPreambleLength());
+		loraRequest.setSf(modulationSettings.getLoraSpreadFactor());
+		loraRequest.setSyncword(modulationSettings.getLoraSyncword());
 		LOG.info("[{}] starting lora observation for {} on {}Mhz", req.getId(), transmitter, loraRequest.getFrequency());
 		LoraResponse response = client.startObservation(loraRequest);
 		if (!response.getStatus().equals(ResponseStatus.SUCCESS)) {
