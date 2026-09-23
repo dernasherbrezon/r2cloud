@@ -527,6 +527,7 @@ public class Transmitter {
 		result.set("frameLengthBytes", framing.getFrameLength());
 		result.set("scrambler", framing.getScrambler().name());
 		result.set("syncwordThreshold", framing.getSyncwordThreshold());
+		result.set("syncword", framing.getSyncword());
 		return result;
 	}
 
@@ -536,6 +537,7 @@ public class Transmitter {
 		result.setFrameLength(obj.getInt("frameLengthBytes", 0));
 		result.setScrambler(ScramblerType.valueOf(obj.getString("scrambler", null)));
 		result.setSyncwordThreshold(obj.getInt("syncwordThreshold", 0));
+		result.setSyncword(obj.getString("syncword", null));
 		return result;
 	}
 

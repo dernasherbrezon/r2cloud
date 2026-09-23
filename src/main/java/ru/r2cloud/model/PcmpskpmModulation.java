@@ -7,6 +7,7 @@ public class PcmpskpmModulation {
 	private long subcarrierFrequency;
 	private float modulationIndex;
 	private float carrierPllBandwidth;
+	private long subcarrierBandwidth;
 
 	// bpsk settings
 	private float rrcBeta;
@@ -19,6 +20,7 @@ public class PcmpskpmModulation {
 	}
 
 	public PcmpskpmModulation(PcmpskpmModulation other) {
+		this.subcarrierBandwidth = other.subcarrierBandwidth;
 		this.subcarrierFrequency = other.subcarrierFrequency;
 		this.modulationIndex = other.modulationIndex;
 		this.carrierPllBandwidth = other.carrierPllBandwidth;
@@ -26,6 +28,14 @@ public class PcmpskpmModulation {
 		this.rrcDelay = other.rrcDelay;
 		this.costasBandwidth = other.costasBandwidth;
 		this.filterBankSize = other.filterBankSize;
+	}
+
+	public long getSubcarrierBandwidth() {
+		return subcarrierBandwidth;
+	}
+
+	public void setSubcarrierBandwidth(long subcarrierBandwidth) {
+		this.subcarrierBandwidth = subcarrierBandwidth;
 	}
 
 	public long getSubcarrierFrequency() {
@@ -86,9 +96,10 @@ public class PcmpskpmModulation {
 
 	public static PcmpskpmModulation fromJson(JsonObject obj) {
 		PcmpskpmModulation result = new PcmpskpmModulation();
-		result.setCarrierPllBandwidth(obj.getLong("subcarrierFrequency", 0));
+		result.setSubcarrierFrequency(obj.getLong("subcarrierFrequency", 0));
 		result.setModulationIndex(obj.getFloat("modulationIndex", 0));
 		result.setCarrierPllBandwidth(obj.getFloat("carrierPllBandwidth", 0));
+		result.setSubcarrierBandwidth(obj.getLong("subcarrierBandwidth", 0));
 
 		result.setRrcBeta(obj.getFloat("rrcBeta", 0));
 		result.setRrcDelay(obj.getInt("rrcDelay", 0));
@@ -102,6 +113,7 @@ public class PcmpskpmModulation {
 		result.set("subcarrierFrequency", subcarrierFrequency);
 		result.set("modulationIndex", modulationIndex);
 		result.set("carrierPllBandwidth", carrierPllBandwidth);
+		result.set("subcarrierBandwidth", subcarrierBandwidth);
 
 		result.set("rrcBeta", rrcBeta);
 		result.set("rrcDelay", rrcDelay);
