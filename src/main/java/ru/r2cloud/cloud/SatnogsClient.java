@@ -40,6 +40,7 @@ import ru.r2cloud.jradio.mobitex.MobitexBeacon;
 import ru.r2cloud.jradio.tubix20.TUBiX20Beacon;
 import ru.r2cloud.jradio.usp.UspBeacon;
 import ru.r2cloud.model.Framing;
+import ru.r2cloud.model.GfskModulation;
 import ru.r2cloud.model.Modulation;
 import ru.r2cloud.model.Priority;
 import ru.r2cloud.model.Satellite;
@@ -164,7 +165,7 @@ public class SatnogsClient {
 		result.setSource(hostname);
 		return result;
 	}
-	
+
 	private static JsonObject convertSatnogsTleToLegacyFormat(JsonObject satnogs) {
 		JsonObject result = new JsonObject();
 		result.set("line1", getStringSafely(satnogs, "tle0"));
@@ -387,7 +388,11 @@ public class SatnogsClient {
 			cur.setStatus(TransmitterStatus.ENABLED);
 			cur.setSatelliteId(satelliteId);
 			cur.setTransitionWidth(2000);
-			cur.setDeviation(5000);
+			if (cur.getModulation().equals(Modulation.GFSK)) {
+				GfskModulation modulationSettings = new GfskModulation();
+				modulationSettings.setDeviation(5000);
+				cur.setGfskModulation(modulationSettings);
+			}
 			if (description.contains(" usp ")) {
 				cur.setFraming(Framing.USP);
 				cur.setBeaconClass(UspBeacon.class);

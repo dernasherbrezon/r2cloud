@@ -115,7 +115,7 @@ public class SdrModemClient implements ByteInput {
 
 	private SdrMessage convert(File rawIq, Observation req, Transmitter transmitter) {
 		fsk_demodulation_settings.Builder fskDemodSettings = fsk_demodulation_settings.newBuilder();
-		fskDemodSettings.setDemodFskDeviation(transmitter.getDeviation());
+		fskDemodSettings.setDemodFskDeviation(transmitter.getGfskModulation().getDeviation());
 		fskDemodSettings.setDemodFskTransitionWidth((int) transmitter.getTransitionWidth());
 		fskDemodSettings.setDemodFskUseDcBlock(true);
 

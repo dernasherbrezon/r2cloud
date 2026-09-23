@@ -30,13 +30,14 @@ public class Transmitter {
 	private byte[] assistedHeader;
 	private boolean bpskDifferential;
 	private double bpskCenterFrequency;
-	private long deviation;
-	private long afCarrier;
+
 	private double transitionWidth;
 	private String syncword;
 
 	private LoraModulation loraModulation;
 	private PcmpskpmModulation pcmpskpmModulation;
+	private GfskModulation gfskModulation;
+	private AfskModulation afskModulation;
 
 	private TransmitterStatus status;
 	private Date updated;
@@ -78,14 +79,18 @@ public class Transmitter {
 		this.assistedHeader = copy.assistedHeader;
 		this.bpskDifferential = copy.bpskDifferential;
 		this.bpskCenterFrequency = copy.bpskCenterFrequency;
-		this.deviation = copy.deviation;
-		this.afCarrier = copy.afCarrier;
 		this.transitionWidth = copy.transitionWidth;
 		if (copy.loraModulation != null) {
 			this.loraModulation = new LoraModulation(copy.loraModulation);
 		}
 		if (copy.pcmpskpmModulation != null) {
 			this.pcmpskpmModulation = new PcmpskpmModulation(copy.pcmpskpmModulation);
+		}
+		if (copy.gfskModulation != null) {
+			this.gfskModulation = new GfskModulation(copy.gfskModulation);
+		}
+		if (copy.afskModulation != null) {
+			this.afskModulation = new AfskModulation(copy.afskModulation);
 		}
 		this.tle = copy.tle;
 		this.syncword = copy.syncword;
@@ -171,20 +176,20 @@ public class Transmitter {
 		this.transitionWidth = transitionWidth;
 	}
 
-	public long getAfCarrier() {
-		return afCarrier;
+	public AfskModulation getAfskModulation() {
+		return afskModulation;
 	}
 
-	public void setAfCarrier(long afCarrier) {
-		this.afCarrier = afCarrier;
+	public void setAfskModulation(AfskModulation afskModulation) {
+		this.afskModulation = afskModulation;
 	}
 
-	public long getDeviation() {
-		return deviation;
+	public GfskModulation getGfskModulation() {
+		return gfskModulation;
 	}
 
-	public void setDeviation(long deviation) {
-		this.deviation = deviation;
+	public void setGfskModulation(GfskModulation gfskModulation) {
+		this.gfskModulation = gfskModulation;
 	}
 
 	public String getSatelliteId() {
@@ -370,6 +375,8 @@ public class Transmitter {
 			} catch (IllegalArgumentException e) {
 				return null;
 			}
+		} else {
+			return null;
 		}
 		JsonValue framing = asObject.get("framing");
 		if (framing != null) {
@@ -401,12 +408,6 @@ public class Transmitter {
 		if (assistedHeader != null) {
 			result.setAssistedHeader(Base64.getDecoder().decode(assistedHeader.asString()));
 		}
-		JsonValue deviation = asObject.get("deviation");
-		if (deviation != null) {
-			result.setDeviation(deviation.asLong());
-		} else {
-			result.setDeviation(5000);
-		}
 		JsonValue bpskCenterFrequency = asObject.get("bpskCenterFrequency");
 		if (bpskCenterFrequency != null) {
 			result.setBpskCenterFrequency(bpskCenterFrequency.asDouble());
@@ -415,10 +416,7 @@ public class Transmitter {
 		if (bpskDifferential != null) {
 			result.setBpskDifferential(bpskDifferential.asBoolean());
 		}
-		JsonValue afCarrier = asObject.get("afCarrier");
-		if (afCarrier != null) {
-			result.setAfCarrier(afCarrier.asLong());
-		}
+		result.setAfskModulation(AfskModulation.fromJson(asObject));
 		JsonValue transitionWidth = asObject.get("transitionWidth");
 		if (transitionWidth != null) {
 			result.setTransitionWidth(transitionWidth.asDouble());
@@ -451,6 +449,7 @@ public class Transmitter {
 		if (pcmpskpmModulation != null) {
 			result.setPcmpskpmModulation(PcmpskpmModulation.fromJson(pcmpskpmModulation.asObject()));
 		}
+		result.setGfskModulation(GfskModulation.fromJson(asObject));
 		return result;
 	}
 
@@ -491,17 +490,14 @@ public class Transmitter {
 		if (loraModulation != null) {
 			loraModulation.toJson(result);
 		}
-		if (deviation != 5000) {
-			result.add("deviation", deviation);
-		}
 		if (bpskCenterFrequency != 0) {
 			result.add("bpskCenterFrequency", bpskCenterFrequency);
 		}
 		if (bpskDifferential) {
 			result.add("bpskDifferential", bpskDifferential);
 		}
-		if (afCarrier != 0) {
-			result.add("afCarrier", afCarrier);
+		if (afskModulation != null) {
+			afskModulation.toJson(result);
 		}
 		if (transitionWidth != 2000) {
 			result.add("transitionWidth", transitionWidth);
@@ -517,6 +513,9 @@ public class Transmitter {
 		}
 		if (pcmpskpmModulation != null) {
 			result.add("pcmpskpmModulation", pcmpskpmModulation.toJson());
+		}
+		if (gfskModulation != null) {
+			gfskModulation.toJson(result);
 		}
 		return result;
 	}
