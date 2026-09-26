@@ -387,10 +387,10 @@ public class SatnogsClient {
 			cur.setModulation(modulation);
 			cur.setStatus(TransmitterStatus.ENABLED);
 			cur.setSatelliteId(satelliteId);
-			cur.setTransitionWidth(2000);
 			if (cur.getModulation().equals(Modulation.GFSK)) {
 				GfskModulation modulationSettings = new GfskModulation();
 				modulationSettings.setDeviation(5000);
+				modulationSettings.setTransitionWidth(2000);
 				cur.setGfskModulation(modulationSettings);
 			}
 			if (description.contains(" usp ")) {

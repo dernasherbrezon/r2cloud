@@ -151,7 +151,7 @@ public abstract class TelemetryDecoder implements Decoder {
 		int decimation = (int) (source.getContext().getSampleRate() / Util.getSymbolSyncInput(baudRate, (long) source.getContext().getSampleRate()));
 		switch (transmitter.getModulation()) {
 		case GFSK:
-			return new FskDemodulator(source, baudRate, transmitter.getGfskModulation().getDeviation(), decimation, transmitter.getTransitionWidth(), true);
+			return new FskDemodulator(source, baudRate, transmitter.getGfskModulation().getDeviation(), decimation, transmitter.getGfskModulation().getTransitionWidth(), true);
 		case AFSK:
 			return new AfskDemodulator(source, baudRate, transmitter.getAfskModulation().getDeviation(), transmitter.getAfskModulation().getAfCarrier(), decimation);
 		case BPSK:

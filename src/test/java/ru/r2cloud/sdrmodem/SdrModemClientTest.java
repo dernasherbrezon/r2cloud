@@ -84,7 +84,7 @@ public class SdrModemClientTest {
 				RxRequest rx = RxRequest.parseFrom(new ByteArrayInputStream(payload));
 				FloatInput next = new DopplerCorrectedSource(predict, new File(rx.getFileSettings().getFilename()), req, transmitter, maxBaudRate);
 				int decimation = (int) (next.getContext().getSampleRate() / Util.getSymbolSyncInput(rx.getDemodBaudRate(), (long) next.getContext().getSampleRate()));
-				ByteInput input = new FskDemodulator(next, rx.getDemodBaudRate(), transmitter.getGfskModulation().getDeviation(), decimation, transmitter.getTransitionWidth(), true);
+				ByteInput input = new FskDemodulator(next, rx.getDemodBaudRate(), transmitter.getGfskModulation().getDeviation(), decimation, transmitter.getGfskModulation().getTransitionWidth(), true);
 
 				DataOutputStream out = new DataOutputStream(client.getOutputStream());
 				out.writeByte(0);

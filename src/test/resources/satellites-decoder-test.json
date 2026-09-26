@@ -25,6 +25,7 @@
 		"transmitters": [
 			{
 				"framing": "APT",
+				"modulation": "FM_AM",
 				"frequency": 137912500,
 				"bandwidth": 34000
 			},

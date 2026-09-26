@@ -50,8 +50,10 @@ public class AfskModulation {
 		return result;
 	}
 
-	public void toJson(JsonObject obj) {
-		obj.set("deviation", deviation);
-		obj.set("afCarrier", afCarrier);
+	public JsonObject toJson() {
+		JsonObject result = new JsonObject();
+		result.set("deviation", deviation);
+		result.set("afCarrier", afCarrier);
+		return result;
 	}
 }

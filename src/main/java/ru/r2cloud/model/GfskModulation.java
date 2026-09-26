@@ -7,6 +7,7 @@ public class GfskModulation {
 
 	private long deviation;
 	private float bt;
+	private double transitionWidth;
 
 	public GfskModulation() {
 		// do nothing
@@ -15,6 +16,15 @@ public class GfskModulation {
 	public GfskModulation(GfskModulation other) {
 		this.deviation = other.deviation;
 		this.bt = other.bt;
+		this.transitionWidth = other.transitionWidth;
+	}
+
+	public double getTransitionWidth() {
+		return transitionWidth;
+	}
+
+	public void setTransitionWidth(double transitionWidth) {
+		this.transitionWidth = transitionWidth;
 	}
 
 	public long getDeviation() {
@@ -47,11 +57,20 @@ public class GfskModulation {
 		} else {
 			result.setBt(0.5f); // GMSK by default
 		}
+		JsonValue transitionWidth = asObject.get("transitionWidth");
+		if (transitionWidth != null) {
+			result.setTransitionWidth(transitionWidth.asDouble());
+		} else {
+			result.setTransitionWidth(2000);
+		}
 		return result;
 	}
 
-	public void toJson(JsonObject obj) {
-		obj.set("deviation", deviation);
-		obj.set("bt", bt);
+	public JsonObject toJson() {
+		JsonObject result = new JsonObject();
+		result.set("deviation", deviation);
+		result.set("bt", bt);
+		result.set("transitionWidth", transitionWidth);
+		return result;
 	}
 }
