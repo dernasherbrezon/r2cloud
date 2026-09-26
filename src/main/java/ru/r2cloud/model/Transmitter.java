@@ -28,8 +28,6 @@ public class Transmitter {
 	private long bandwidth;
 	private List<Integer> baudRates;
 	private byte[] assistedHeader;
-	private boolean bpskDifferential;
-	private double bpskCenterFrequency;
 
 	private String syncword;
 
@@ -37,6 +35,7 @@ public class Transmitter {
 	private PcmpskpmModulation pcmpskpmModulation;
 	private GfskModulation gfskModulation;
 	private AfskModulation afskModulation;
+	private BpskModulation bpskModulation;
 
 	private TransmitterStatus status;
 	private Date updated;
@@ -76,8 +75,6 @@ public class Transmitter {
 		this.bandwidth = copy.bandwidth;
 		this.baudRates = copy.baudRates;
 		this.assistedHeader = copy.assistedHeader;
-		this.bpskDifferential = copy.bpskDifferential;
-		this.bpskCenterFrequency = copy.bpskCenterFrequency;
 		if (copy.loraModulation != null) {
 			this.loraModulation = new LoraModulation(copy.loraModulation);
 		}
@@ -89,6 +86,9 @@ public class Transmitter {
 		}
 		if (copy.afskModulation != null) {
 			this.afskModulation = new AfskModulation(copy.afskModulation);
+		}
+		if (copy.bpskModulation != null) {
+			this.bpskModulation = new BpskModulation(copy.bpskModulation);
 		}
 		this.tle = copy.tle;
 		this.syncword = copy.syncword;
@@ -302,20 +302,12 @@ public class Transmitter {
 		this.assistedHeader = assistedHeader;
 	}
 
-	public boolean isBpskDifferential() {
-		return bpskDifferential;
+	public BpskModulation getBpskModulation() {
+		return bpskModulation;
 	}
 
-	public void setBpskDifferential(boolean bpskDifferential) {
-		this.bpskDifferential = bpskDifferential;
-	}
-
-	public double getBpskCenterFrequency() {
-		return bpskCenterFrequency;
-	}
-
-	public void setBpskCenterFrequency(double bpskCenterFrequency) {
-		this.bpskCenterFrequency = bpskCenterFrequency;
+	public void setBpskModulation(BpskModulation bpskModulation) {
+		this.bpskModulation = bpskModulation;
 	}
 
 	@Override
@@ -398,20 +390,19 @@ public class Transmitter {
 		if (assistedHeader != null) {
 			result.setAssistedHeader(Base64.getDecoder().decode(assistedHeader.asString()));
 		}
-		JsonValue bpskCenterFrequency = asObject.get("bpskCenterFrequency");
-		if (bpskCenterFrequency != null) {
-			result.setBpskCenterFrequency(bpskCenterFrequency.asDouble());
-		}
-		JsonValue bpskDifferential = asObject.get("bpskDifferential");
-		if (bpskDifferential != null) {
-			result.setBpskDifferential(bpskDifferential.asBoolean());
-		}
 		JsonValue afskModulation = asObject.get("afskModulation");
 		if (afskModulation != null) {
 			result.setAfskModulation(AfskModulation.fromJson(afskModulation.asObject()));
 		} else {
 			// backward compatibility
 			result.setAfskModulation(AfskModulation.fromJson(asObject));
+		}
+		JsonValue bpskModulation = asObject.get("bpskModulation");
+		if (bpskModulation != null) {
+			result.setBpskModulation(BpskModulation.fromJson(bpskModulation.asObject()));
+		} else {
+			// backward compatibility
+			result.setBpskModulation(BpskModulation.fromJson(asObject));
 		}
 		JsonValue status = asObject.get("status");
 		if (status != null) {
@@ -486,11 +477,8 @@ public class Transmitter {
 		if (loraModulation != null) {
 			loraModulation.toJson(result);
 		}
-		if (bpskCenterFrequency != 0) {
-			result.add("bpskCenterFrequency", bpskCenterFrequency);
-		}
-		if (bpskDifferential) {
-			result.add("bpskDifferential", bpskDifferential);
+		if (bpskModulation != null) {
+			result.add("bpskModulation", bpskModulation.toJson());
 		}
 		if (afskModulation != null) {
 			result.add("afskModulation", afskModulation.toJson());

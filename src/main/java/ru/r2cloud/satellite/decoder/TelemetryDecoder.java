@@ -155,7 +155,7 @@ public abstract class TelemetryDecoder implements Decoder {
 		case AFSK:
 			return new AfskDemodulator(source, baudRate, transmitter.getAfskModulation().getDeviation(), transmitter.getAfskModulation().getAfCarrier(), decimation);
 		case BPSK:
-			return new BpskDemodulator(source, baudRate, decimation, transmitter.getBpskCenterFrequency(), transmitter.isBpskDifferential());
+			return new BpskDemodulator(source, baudRate, decimation, transmitter.getBpskModulation().getBpskCenterFrequency(), transmitter.getBpskModulation().isBpskDifferential());
 		default:
 			throw new RuntimeException("unknown jradio modulator: " + transmitter.getModulation());
 		}
