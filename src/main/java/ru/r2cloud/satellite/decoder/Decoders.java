@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.r2cloud.jradio.ax25.Ax25Beacon;
-import ru.r2cloud.jradio.ccsds.TransferFrame;
 import ru.r2cloud.jradio.fox.Fox1BBeacon;
 import ru.r2cloud.jradio.fox.Fox1CBeacon;
 import ru.r2cloud.jradio.fox.Fox1DBeacon;
@@ -70,7 +69,6 @@ public class Decoders {
 		index("47963", "47963-0", new Diy1Decoder(predict, props));
 		index("47964", "47964-0", new Smog1Decoder(predict, props));
 		index("51439", "51439-0", new GaspacsDecoder(predict, props));
-		index("53108", "53108-0", new CcsdsDecoder(predict, props, TransferFrame.class));
 		index("56993", "56993-0", new Mrc100Decoder(predict, props, Mrc100Beacon.class));
 		index("98537", "98537-0", new Mrc100Decoder(predict, props, HunityBeacon.class));
 		index("66670", "66670-0", new Mrc100Decoder(predict, props, HunityBeacon.class));
@@ -88,7 +86,7 @@ public class Decoders {
 	}
 
 	public Decoder findByTransmitter(Transmitter transmitter) {
-		if (transmitter == null) {
+		if (transmitter == null || transmitter.getFraming() == null) {
 			return null;
 		}
 		if (transmitter.getFraming().equals(Framing.CUSTOM)) {
@@ -149,7 +147,7 @@ public class Decoders {
 		} else if (transmitter.getFraming().equals(Framing.IL2P)) {
 			return new Il2pDecoder(predict, props, transmitter.getBeaconClass(), transmitter.getBeaconSizeBytes());
 		} else if (transmitter.getFraming().equals(Framing.CCSDS)) {
-			return new CcsdsDecoder(predict, props, transmitter.getBeaconClass());
+			return new CcsdsDecoder(predict, props, transmitter.getBeaconClass(), transmitter.getCcsdsFraming());
 		} else if (transmitter.getFraming().equals(Framing.CC11XX)) {
 			// default
 			String syncword = "11010011100100011101001110010001";
