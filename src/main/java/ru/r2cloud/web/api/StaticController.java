@@ -30,7 +30,7 @@ public class StaticController {
 	public StaticController(Configuration config, SignedURL signed) {
 		this.basePath = Util.initDirectory(config.getProperty("server.static.location"));
 		try {
-			this.canonicalBasePath = this.basePath.getCanonicalPath();
+			this.canonicalBasePath = this.basePath.getCanonicalPath() + File.separator;
 		} catch (IOException e) {
 			throw new RuntimeException("unable to get canonical path", e);
 		}
