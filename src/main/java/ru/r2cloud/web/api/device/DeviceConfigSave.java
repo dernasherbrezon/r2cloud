@@ -61,6 +61,9 @@ public class DeviceConfigSave extends AbstractHttpController {
 		switch (deviceType) {
 		case RTLSDR: {
 			config.setRtlDeviceId(request.getString("rtlDeviceId", "0"));
+			if (config.getRtlDeviceId().contains(" ") || config.getRtlDeviceId().startsWith("-")) {
+				errors.put("rtlDeviceId", "invalid value");
+			}
 			config.setGain((float) readPositiveDouble(request, "gain", errors, 49.6));
 			config.setBiast(WebServer.getBoolean(request, "biast"));
 			config.setPpm((int) readOptionalLong(request, "ppm", 0, errors));
