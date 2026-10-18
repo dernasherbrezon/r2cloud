@@ -37,8 +37,8 @@ public class SignedURLTest {
 	@Test
 	public void testSuccess() {
 		String signed = service.sign(path);
-		assertEquals("/img/a.jpg?hash=3679d97d8b1d497743cd8da8ba0440f5&timestamp=1508716800000", signed);
-		assertTrue(service.validate(path, createParameters("hash", "3679d97d8b1d497743cd8da8ba0440f5", "timestamp", "1508716800000")));
+		assertEquals("/img/a.jpg?hash=6fec5f06d5c28c41dac79854e57dd990&timestamp=1508716800000", signed);
+		assertTrue(service.validate(path, createParameters("hash", "6fec5f06d5c28c41dac79854e57dd990", "timestamp", "1508716800000")));
 	}
 
 	@Test
@@ -78,6 +78,7 @@ public class SignedURLTest {
 		when(clock.millis()).thenReturn(current);
 
 		config = new TestConfiguration(tempFolder);
+		config.setProperty("server.password", "stablerandom");
 
 		service = new SignedURL(config, clock);
 	}
