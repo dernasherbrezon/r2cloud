@@ -33,7 +33,11 @@ public class SignedURL {
 		} else {
 			concatChar = "?";
 		}
-		return path + concatChar + "hash=" + URLEncoder.encode(computeMD5(path + timestamp + config.getProperty(PASSWORD_PROPERTY_NAME)), StandardCharsets.UTF_8) + "&timestamp=" + timestamp;
+		String password = config.getProperty(PASSWORD_PROPERTY_NAME);
+		if (password == null) {
+			return null;
+		}
+		return path + concatChar + "hash=" + URLEncoder.encode(computeMD5(path + timestamp + password), StandardCharsets.UTF_8) + "&timestamp=" + timestamp;
 	}
 
 	public boolean validate(String path, Map<String, List<String>> parameters) {
@@ -46,7 +50,13 @@ public class SignedURL {
 			LOG.debug("missing hash or timestamp");
 			return false;
 		}
-		String expectedHash = computeMD5(path + timestampStr + config.getProperty(PASSWORD_PROPERTY_NAME));
+		String password = config.getProperty(PASSWORD_PROPERTY_NAME);
+		if (password == null) {
+			// can be missing during password recovery
+			LOG.debug("missing password");
+			return false;
+		}
+		String expectedHash = computeMD5(path + timestampStr + password);
 		if (!expectedHash.equals(hash)) {
 			LOG.debug("hash mismatched: {}", hash);
 			return false;
